@@ -1,0 +1,847 @@
+[
+  {
+    "topic": "module/v1/ff/NodeRed/status",
+    "payload": "{\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:19.493318"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/connection",
+    "payload": "{ \"headerId\": 2, \"timestamp\": \"2025-11-10T12:57:28.071649Z\", \"version\": \"1.0.0\", \"manufacturer\": \"Fischertechnik\", \"serialNumber\": \"SVR4H76530\", \"connectionState\": \"ONLINE\" }",
+    "timestamp": "2025-11-10T18:11:19.493335"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/state",
+    "payload": "{\"errors\": [], \"batteryState\": {}, \"serialNumber\": \"SVR4H76530\", \"timestamp\": \"2025-11-10T17:04:59.484865Z\", \"headerId\": 19, \"actionState\": {\"command\": \"CHECK_QUALITY\", \"result\": \"PASSED\", \"id\": \"5e919162-d76c-49f5-b597-5cdd96f385dc\", \"timestamp\": \"2025-11-10T17:04:59.484480Z\", \"state\": \"FINISHED\"}, \"paused\": false, \"orderUpdateId\": 10, \"orderId\": \"ceca8bef-bbe8-4012-aa18-725d7af68a10\"}",
+    "timestamp": "2025-11-10T18:11:19.493353"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/factsheet",
+    "payload": "{\"manufacturer\": \"Fischertechnik\", \"typeSpecification\": {\"moduleClass\": \"AIQS24\", \"seriesName\": \"MOD-FF22+AIQS+24V+TXT\"}, \"version\": \"1.3.0+git40c45a0\", \"serialNumber\": \"SVR4H76530\", \"timestamp\": \"2025-11-10T16:50:54.250610Z\", \"localizationParameters\": {}, \"headerId\": 1, \"protocolFeatures\": {\"moduleActions\": [{\"actionParameters\": [{\"parameterType\": \"string\", \"isOptional\": true, \"parameterDescription\": \"Type of workpiece that should checked\", \"parameterName\": \"type\"}], \"actionType\": \"CHECK_QUALITY\"}]}, \"protocolLimits\": {}, \"loadSpecification\": {\"loadSets\": []}, \"physicalParameters\": {}}",
+    "timestamp": "2025-11-10T18:11:19.493371"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/connection",
+    "payload": "{ \"headerId\": 2, \"timestamp\": \"2025-11-10T16:47:01.733656Z\", \"version\": \"1.6.0+gitc321c85\", \"manufacturer\": \"Fischertechnik\", \"serialNumber\": \"SVR4H73275\", \"connectionState\": \"ONLINE\", \"ip\": \"-1\" }",
+    "timestamp": "2025-11-10T18:11:19.493389"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"2413eb6e-fb6b-4ed1-b93f-fb17143a4593\", \"errors\": [], \"batteryState\": {}, \"headerId\": 29, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"DROP\", \"state\": \"FINISHED\", \"id\": \"1fcb2195-ef15-4d8b-b758-401ee33681f7\", \"timestamp\": \"2025-11-10T17:10:04.089535Z\"}, \"actionStates\": [{\"command\": \"DROP\", \"state\": \"FINISHED\", \"metadata\": {\"workpiece\": {\"type\": \"BLUE\", \"history\": [{\"ts\": 1762794186341, \"code\": 400}, {\"ts\": 1762794221125, \"code\": 700}, {\"ts\": 1762794262953, \"code\": 600}, {\"ts\": 1762794301037, \"code\": 200}, {\"ts\": 1762794342962, \"code\": 800}], \"state\": \"PROCESSED\", \"workpieceId\": \"04a189ca341290\"}}, \"id\": \"1fcb2195-ef15-4d8b-b758-401ee33681f7\", \"timestamp\": \"2025-11-10T17:10:04.089535Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:10:04.089842Z\"}",
+    "timestamp": "2025-11-10T18:11:19.493405"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/factsheet",
+    "payload": "{\"protocolFeatures\": {\"moduleActions\": [{\"actionParameters\": [{\"parameterType\": \"string\", \"parameterName\": \"type\", \"parameterDescription\": \"The load type to input\"}], \"actionType\": \"DROP\"}, {\"actionParameters\": [{\"parameterType\": \"string\", \"parameterName\": \"type\", \"parameterDescription\": \"The load type to output\"}], \"actionType\": \"PICK\"}, {\"actionScopes\": [\"INSTANT\"], \"actionType\": \"startCalibration\"}, {\"actionScopes\": [\"INSTANT\"], \"actionType\": \"stopCalibration\"}, {\"actionScopes\": [\"INSTANT\"], \"actionParameters\": [{\"parameterType\": \"array\", \"parameterName\": \"references\", \"parameterDescription\": \"Array of ReferenceValues objects with referenceKey and referenceValue\"}], \"actionType\": \"setCalibrationValues\"}, {\"actionScopes\": [\"INSTANT\"], \"actionParameters\": [{\"isOptional\": true, \"parameterType\": \"array\", \"parameterName\": \"references\", \"parameterDescription\": \"Array of ReferenceValues objects with referenceKey and referenceValue\"}], \"actionType\": \"storeCalibrationValues\"}, {\"actionScopes\": [\"INSTANT\"], \"actionParameters\": [{\"parameterType\": \"string\", \"parameterName\": \"position\", \"parameterDescription\": \"Position to select\"}], \"actionType\": \"selectCalibrationPosition\"}, {\"actionScopes\": [\"INSTANT\"], \"actionParameters\": [{\"parameterType\": \"string\", \"parameterName\": \"position\", \"parameterDescription\": \"Position to test\"}], \"actionType\": \"testCalibrationPosition\"}, {\"actionScopes\": [\"INSTANT\"], \"actionParameters\": [{\"isOptional\": true, \"parameterType\": \"boolean\", \"parameterName\": \"factory\", \"parameterDescription\": \"Reset to factory defaults\"}], \"actionType\": \"resetCalibration\"}, {\"actionScopes\": [\"INSTANT\"], \"actionParameters\": [{\"parameterType\": \"string\", \"parameterName\": \"orderId\", \"parameterDescription\": \"The orderId that will deliver the workpiece to output\"}], \"actionType\": \"announceOutput\"}, {\"actionScopes\": [\"INSTANT\"], \"actionType\": \"cancelStorageOrder\"}], \"moduleParameters\": {\"clearModuleOnPick\": true}}, \"headerId\": 1, \"protocolLimits\": {}, \"physicalParameters\": {}, \"manufacturer\": \"Fischertechnik\", \"loadSpecification\": {\"loadSets\": [{\"loadType\": \"WHITE\", \"setName\": \"WHITES\"}, {\"loadType\": \"RED\", \"setName\": \"REDS\"}, {\"loadType\": \"BLUE\", \"setName\": \"BLUES\"}]}, \"version\": \"1.6.0+gitc321c85\", \"typeSpecification\": {\"moduleClass\": \"DPS\", \"seriesName\": \"MOD-FF22+DPS\"}, \"localizationParameters\": {}, \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T16:50:54.557162Z\"}",
+    "timestamp": "2025-11-10T18:11:19.493518"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":66,\"loads\":[],\"actionState\":{\"command\":\"DROP\",\"id\":\"b9ec0dcd-917c-487e-bdc2-d0addafec877\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:04:31.820Z\",\"errors\":[],\"orderUpdateId\":9,\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:11:19.493539"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":93,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:19.493557"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/factsheet",
+    "payload": "{\"headerId\":1,\"timestamp\":\"2025-11-10T16:47:29.064Z\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"typeSpecification\":{\"seriesName\":\"MOD-FF22+MILL+24V\",\"moduleClass\":\"MILL\"},\"physicalParameters\":{},\"protocolLimits\":{},\"protocolFeatures\":{\"moduleActions\":[{\"actionType\":\"DROP\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece that should be put on the FTS\",\"isOptional\":true}]},{\"actionType\":\"PICK\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece to pick up and process\"}]},{\"actionType\":\"MILL\",\"actionParameters\":[{\"parameterName\":\"duration\",\"parameterType\":\"number\",\"parameterDescription\":\"Set the duration of the milling operation\"},{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece to process\",\"isOptional\":true}]}]},\"localizationParameters\":{},\"loadSpecification\":{\"loadSets\":[{\"setName\":\"WHITES\",\"loadType\":\"WHITE\"},{\"setName\":\"REDS\",\"loadType\":\"RED\"},{\"setName\":\"BLUES\",\"loadType\":\"BLUE\"}]}}",
+    "timestamp": "2025-11-10T18:11:19.493574"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "payload": "{\"headerId\":69,\"loads\":[],\"actionState\":{\"command\":\"DROP\",\"id\":\"09ee7983-7f92-4e5a-8dde-a88b499a4a5f\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR4H76449\",\"timestamp\":\"2025-11-10T17:03:51.033Z\",\"errors\":[],\"orderUpdateId\":5,\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:11:19.493610"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":99,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:19.493639"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/factsheet",
+    "payload": "{\"headerId\":1,\"timestamp\":\"2025-11-10T16:47:29.066Z\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"typeSpecification\":{\"seriesName\":\"MOD-FF22+DRILL+24V\",\"moduleClass\":\"DRILL\"},\"physicalParameters\":{},\"protocolLimits\":{},\"protocolFeatures\":{\"moduleActions\":[{\"actionType\":\"DROP\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece that should be put on the FTS\",\"isOptional\":true}]},{\"actionType\":\"PICK\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece to pick up and process\"}]},{\"actionType\":\"DRILL\",\"actionParameters\":[{\"parameterName\":\"duration\",\"parameterType\":\"number\",\"parameterDescription\":\"Set the duration of the drilling operation\"},{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece to process\",\"isOptional\":true}]}]},\"localizationParameters\":{},\"loadSpecification\":{\"loadSets\":[{\"setName\":\"WHITES\",\"loadType\":\"WHITE\"},{\"setName\":\"REDS\",\"loadType\":\"RED\"},{\"setName\":\"BLUES\",\"loadType\":\"BLUE\"}]}}",
+    "timestamp": "2025-11-10T18:11:19.493662"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/state",
+    "payload": "{\"headerId\":77,\"loads\":[],\"actionState\":{\"command\":\"DROP\",\"id\":\"e3f68c76-e8e8-4cb2-8eca-d7cdace5b821\",\"metadata\":{\"type\":\"BLUE\",\"workpieceId\":\"04a189ca341290\"},\"state\":\"FINISHED\"},\"serialNumber\":\"SVR4H76530\",\"timestamp\":\"2025-11-10T17:05:10.113Z\",\"errors\":[],\"orderUpdateId\":0,\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:11:19.493682"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":101,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:19.493700"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/factsheet",
+    "payload": "{\"headerId\":1,\"timestamp\":\"2025-11-10T16:47:29.221Z\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"typeSpecification\":{\"seriesName\":\"MOD-FF22+AIQS+24V\",\"moduleClass\":\"AIQS\"},\"physicalParameters\":{},\"protocolLimits\":{},\"protocolFeatures\":{\"moduleActions\":[{\"actionType\":\"PICK\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece to pick up and process\"}]},{\"actionType\":\"DROP\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece that should be put on the FTS\",\"isOptional\":true}]},{\"actionType\":\"CHECK_QUALITY\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece that should checked\",\"isOptional\":true}]},{\"actionType\":\"startCalibration\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"stopCalibration\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"setCalibrationValues\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"references\",\"parameterType\":\"array\",\"parameterDescription\":\"Array of ReferenceValues objects with referenceKey and referenceValue\"}]},{\"actionType\":\"storeCalibrationValues\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"references\",\"parameterType\":\"array\",\"parameterDescription\":\"Array of ReferenceValues objects with referenceKey and referenceValue\",\"isOptional\":true}]},{\"actionType\":\"selectCalibrationPosition\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"position\",\"parameterType\":\"string\",\"parameterDescription\":\"Position to select\"}]},{\"actionType\":\"testCalibrationPosition\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"position\",\"parameterType\":\"string\",\"parameterDescription\":\"Position to test\"}]},{\"actionType\":\"resetCalibration\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"factory\",\"parameterType\":\"boolean\",\"parameterDescription\":\"Reset to factory defaults\",\"isOptional\":true}]}]},\"localizationParameters\":{},\"loadSpecification\":{\"loadSets\":[{\"setName\":\"WHITES\",\"loadType\":\"WHITE\"},{\"setName\":\"REDS\",\"loadType\":\"RED\"},{\"setName\":\"BLUES\",\"loadType\":\"BLUE\"}]}}",
+    "timestamp": "2025-11-10T18:11:19.493719"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "payload": "{\"headerId\":90,\"loads\":[{\"loadType\":\"WHITE\",\"loadId\":\"04798eca341290\",\"loadPosition\":\"A1\",\"loadTimestamp\":1762794465298},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"A2\",\"loadTimestamp\":0},{\"loadType\":\"BLUE\",\"loadId\":\"048989ca341290\",\"loadPosition\":\"A3\",\"loadTimestamp\":1762771099463},{\"loadType\":\"BLUE\",\"loadId\":\"04a189ca341290\",\"loadPosition\":\"B1\",\"loadTimestamp\":1762794615886},{\"loadType\":\"RED\",\"loadId\":\"040a8dca341291\",\"loadPosition\":\"B2\",\"loadTimestamp\":1762258037251},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"B3\",\"loadTimestamp\":0},{\"loadType\":\"BLUE\",\"loadId\":\"047389ca341291\",\"loadPosition\":\"C1\",\"loadTimestamp\":1762770942249},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"C2\",\"loadTimestamp\":0},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"C3\",\"loadTimestamp\":0}],\"actionState\":{\"id\":\"fb698a0e-d18d-4d10-9641-840fa4226069\",\"command\":\"PICK\",\"metadata\":{\"type\":\"BLUE\",\"workpieceId\":\"04a189ca341290\"},\"state\":\"FINISHED\"},\"serialNumber\":\"SVR3QA0022\",\"timestamp\":\"2025-11-10T17:10:33.223Z\",\"errors\":[],\"orderUpdateId\":3,\"orderId\":\"2413eb6e-fb6b-4ed1-b93f-fb17143a4593\",\"paused\":false,\"operatingMode\":\"AUTOMATIC\",\"metadata\":{\"opcuaState\":\"connected\"},\"information\":[]}",
+    "timestamp": "2025-11-10T18:11:19.493737"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":93,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:19.493754"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/factsheet",
+    "payload": "{\"headerId\":1,\"timestamp\":\"2025-11-10T16:47:29.462Z\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"typeSpecification\":{\"seriesName\":\"MOD-FF22+HBW+24V\",\"moduleClass\":\"HBW\"},\"physicalParameters\":{},\"protocolLimits\":{},\"protocolFeatures\":{\"moduleActions\":[{\"actionType\":\"DROP\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"The load type to unload\"}]},{\"actionType\":\"PICK\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"The load type to store\"}]},{\"actionType\":\"startCalibration\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"stopCalibration\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"setCalibrationValues\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"references\",\"parameterType\":\"array\",\"parameterDescription\":\"Array of ReferenceValues objects with referenceKey and referenceValue\"}]},{\"actionType\":\"storeCalibrationValues\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"references\",\"parameterType\":\"array\",\"parameterDescription\":\"Array of ReferenceValues objects with referenceKey and referenceValue\",\"isOptional\":true}]},{\"actionType\":\"selectCalibrationPosition\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"position\",\"parameterType\":\"string\",\"parameterDescription\":\"Position to select\"}]},{\"actionType\":\"testCalibrationPosition\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"position\",\"parameterType\":\"string\",\"parameterDescription\":\"Position to test\"}]},{\"actionType\":\"resetCalibration\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"factory\",\"parameterType\":\"boolean\",\"parameterDescription\":\"Reset to factory defaults\",\"isOptional\":true}]}],\"moduleParameters\":{\"clearModuleOnPick\":true}},\"localizationParameters\":{},\"loadSpecification\":{\"loadPositions\":[\"A1\",\"B1\",\"C1\",\"A2\",\"B2\",\"C2\",\"A3\",\"B3\",\"C3\"],\"loadSets\":[{\"setName\":\"WHITES\",\"loadType\":\"WHITE\",\"maxAmount\":3},{\"setName\":\"REDS\",\"loadType\":\"RED\",\"maxAmount\":3},{\"setName\":\"BLUES\",\"loadType\":\"BLUE\",\"maxAmount\":3}]}}",
+    "timestamp": "2025-11-10T18:11:19.493813"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\":1,\"orderId\":\"2413eb6e-fb6b-4ed1-b93f-fb17143a4593\",\"errors\":[],\"batteryState\":{},\"headerId\":29,\"paused\":false,\"operatingMode\":\"AUTOMATIC\",\"information\":[],\"actionState\":{\"command\":\"DROP\",\"state\":\"FINISHED\",\"id\":\"1fcb2195-ef15-4d8b-b758-401ee33681f7\",\"timestamp\":\"2025-11-10T17:10:04.089535Z\"},\"actionStates\":[{\"command\":\"DROP\",\"state\":\"FINISHED\",\"metadata\":{\"workpiece\":{\"type\":\"BLUE\",\"history\":[{\"ts\":1762794186341,\"code\":400},{\"ts\":1762794221125,\"code\":700},{\"ts\":1762794262953,\"code\":600},{\"ts\":1762794301037,\"code\":200},{\"ts\":1762794342962,\"code\":800}],\"state\":\"PROCESSED\",\"workpieceId\":\"04a189ca341290\"}},\"id\":\"1fcb2195-ef15-4d8b-b758-401ee33681f7\",\"timestamp\":\"2025-11-10T17:10:04.089535Z\"}],\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:04.089842Z\"}",
+    "timestamp": "2025-11-10T18:11:19.493834"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":955,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:19.493854"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/factsheet",
+    "payload": "{\"headerId\":1,\"timestamp\":\"2025-11-10T16:47:29.616Z\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"typeSpecification\":{\"seriesName\":\"MOD-FF22+DPS+24V\",\"moduleClass\":\"DPS\"},\"physicalParameters\":{},\"protocolLimits\":{},\"protocolFeatures\":{\"moduleActions\":[{\"actionType\":\"DROP\",\"actionScopes\":[\"ORDER\"],\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"The load type to input\"}]},{\"actionType\":\"PICK\",\"actionScopes\":[\"ORDER\"],\"actionParameters\":[{\"parameterName\":\"workpiece\",\"parameterType\":\"OBJECT\",\"parameterDescription\":\"The workpiece object with workpieceId, type, state and the history array\"}]},{\"actionType\":\"factsheetRequest\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"reset\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"startCalibration\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"stopCalibration\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"setCalibrationValues\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"references\",\"parameterType\":\"array\",\"parameterDescription\":\"Array of ReferenceValues objects with referenceKey and referenceValue\"}]},{\"actionType\":\"storeCalibrationValues\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"references\",\"parameterType\":\"array\",\"parameterDescription\":\"Array of ReferenceValues objects with referenceKey and referenceValue\",\"isOptional\":true}]},{\"actionType\":\"selectCalibrationPosition\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"position\",\"parameterType\":\"string\",\"parameterDescription\":\"Position to select\"}]},{\"actionType\":\"testCalibrationPosition\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"position\",\"parameterType\":\"string\",\"parameterDescription\":\"Position to test\"}]},{\"actionType\":\"resetCalibration\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"factory\",\"parameterType\":\"boolean\",\"parameterDescription\":\"Reset to factory defaults\",\"isOptional\":true}]},{\"actionType\":\"announceOutput\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"orderId\",\"parameterType\":\"string\",\"parameterDescription\":\"The orderId that will deliver the workpiece to output\"}]},{\"actionType\":\"cancelStorageOrder\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"setStatusLED\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"red\",\"parameterType\":\"boolean\",\"parameterDescription\":\"Traffic light LED\"},{\"parameterName\":\"yellow\",\"parameterType\":\"boolean\",\"parameterDescription\":\"Traffic light LED\"},{\"parameterName\":\"green\",\"parameterType\":\"boolean\",\"parameterDescription\":\"Traffic light LED\"}]}],\"moduleParameters\":{\"clearModuleOnPick\":true}},\"localizationParameters\":{},\"loadSpecification\":{\"loadSets\":[{\"setName\":\"WHITES\",\"loadType\":\"WHITE\"},{\"setName\":\"REDS\",\"loadType\":\"RED\"},{\"setName\":\"BLUES\",\"loadType\":\"BLUE\"}]}}",
+    "timestamp": "2025-11-10T18:11:19.493872"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":94,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:24.033596"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:23.995Z\",\"actions\":[{\"actionId\":\"6c0c99d1-2ae2-4bb2-bb2d-d71a00940565\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:11:24.048813"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":100,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:24.096510"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:24.089Z\",\"actions\":[{\"actionId\":\"31c89678-2f8f-498c-ae1a-5683f2d94b79\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:11:24.141046"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":102,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:24.247815"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:24.241Z\",\"actions\":[{\"actionId\":\"e74eb69f-7193-4c90-ab23-1774f7e75193\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:11:24.292729"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":94,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:24.430499"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":961,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:24.452175"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:24.424Z\",\"actions\":[{\"actionId\":\"8b4ab9d0-b5dc-4459-84d6-db94d9808f78\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:11:24.499988"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:24.446Z\",\"actions\":[{\"actionId\":\"bd39a413-b756-4eb2-80f5-69ce86f8cedf\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:11:24.503723"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"headerId\":964,\"loads\":[{\"loadType\":\"UNKNOWN\"}],\"actionState\":null,\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:25.615Z\",\"errors\":[{}],\"orderUpdateId\":0,\"orderId\":\"0\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:11:25.639969"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:11:25.627Z\",\"orderId\":\"d9bece3f-73d4-401d-8db4-47636411c6e3\",\"orderUpdateId\":1,\"action\":{\"id\":\"d9bece3f-73d4-401d-8db4-47636411c6e3\",\"command\":\"INPUT_RGB\",\"metadata\":{}}}",
+    "timestamp": "2025-11-10T18:11:25.643739"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:25.636Z\",\"actions\":[{\"actionId\":\"5901e294-52e3-43d6-b0de-950a21fc4121\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:25.688570"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"errors\": [], \"batteryState\": {}, \"headerId\": 30, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"INPUT_RGB\", \"state\": \"WAITIING\", \"id\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"timestamp\": \"2025-11-10T17:11:25.628670Z\"}, \"actionStates\": [{\"command\": \"INPUT_RGB\", \"state\": \"WAITIING\", \"metadata\": {}, \"id\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"timestamp\": \"2025-11-10T17:11:25.628670Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:11:25.635480Z\"}",
+    "timestamp": "2025-11-10T18:11:25.716030"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"errors\": [], \"batteryState\": {}, \"headerId\": 31, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"INPUT_RGB\", \"state\": \"RUNNING\", \"id\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"timestamp\": \"2025-11-10T17:11:26.038139Z\"}, \"actionStates\": [{\"command\": \"INPUT_RGB\", \"state\": \"RUNNING\", \"metadata\": {}, \"id\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"timestamp\": \"2025-11-10T17:11:26.038139Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:11:26.038735Z\"}",
+    "timestamp": "2025-11-10T18:11:26.076777"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":95,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:39.083157"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:38.994Z\",\"actions\":[{\"actionId\":\"28aa03f4-d5b0-43d2-9276-970a1c18dfad\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:39.083377"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":101,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:39.090543"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:39.084Z\",\"actions\":[{\"actionId\":\"17f22e55-f48d-43a4-804e-8dd109b0b3a6\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:39.136284"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":103,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:39.245175"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:39.236Z\",\"actions\":[{\"actionId\":\"b261bfaa-c472-483c-bcfe-213481393bce\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:39.289788"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":95,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:39.426579"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":969,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:39.450670"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:39.418Z\",\"actions\":[{\"actionId\":\"cfecde91-a065-4918-b0a1-21356ad999f3\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:39.495634"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:39.442Z\",\"actions\":[{\"actionId\":\"0805dae8-790c-43b4-8cd6-6d30c8d5901d\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:39.498475"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"errors\": [], \"batteryState\": {}, \"headerId\": 32, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"INPUT_RGB\", \"state\": \"FINISHED\", \"result\": null, \"id\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"timestamp\": \"2025-11-10T17:11:40.697964Z\"}, \"actionStates\": [{\"command\": \"INPUT_RGB\", \"metadata\": {}, \"state\": \"FINISHED\", \"result\": null, \"id\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"timestamp\": \"2025-11-10T17:11:40.697964Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:11:40.698266Z\"}",
+    "timestamp": "2025-11-10T18:11:40.824541"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"headerId\":972,\"loads\":[{\"type\":\"RED\"}],\"actionState\":null,\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:41.719Z\",\"errors\":[{}],\"orderUpdateId\":0,\"orderId\":\"0\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:11:41.731656"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:11:41.720Z\",\"orderId\":\"0\",\"orderUpdateId\":1,\"action\":{\"id\":\"0\",\"command\":\"RGB_NFC\",\"metadata\":{\"type\":\"RED\"}}}",
+    "timestamp": "2025-11-10T18:11:41.734518"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:41.725Z\",\"actions\":[{\"actionId\":\"a8fe2896-3290-41da-abf0-31c0c38407e5\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:41.776142"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"0\", \"errors\": [], \"batteryState\": {}, \"headerId\": 33, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"RGB_NFC\", \"state\": \"WAITIING\", \"id\": \"0\", \"timestamp\": \"2025-11-10T17:11:41.721876Z\"}, \"actionStates\": [{\"command\": \"RGB_NFC\", \"state\": \"WAITIING\", \"metadata\": {\"type\": \"RED\"}, \"id\": \"0\", \"timestamp\": \"2025-11-10T17:11:41.721876Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:11:41.722213Z\"}",
+    "timestamp": "2025-11-10T18:11:41.779353"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"0\", \"errors\": [], \"batteryState\": {}, \"headerId\": 34, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"RGB_NFC\", \"state\": \"RUNNING\", \"id\": \"0\", \"timestamp\": \"2025-11-10T17:11:41.813751Z\"}, \"actionStates\": [{\"command\": \"RGB_NFC\", \"state\": \"RUNNING\", \"metadata\": {\"type\": \"RED\"}, \"id\": \"0\", \"timestamp\": \"2025-11-10T17:11:41.813751Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:11:41.814118Z\"}",
+    "timestamp": "2025-11-10T18:11:41.870448"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":96,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:54.003680"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:53.997Z\",\"actions\":[{\"actionId\":\"86a609bc-c55d-44ee-bc58-a1b8940e7706\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:54.054705"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":102,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:54.096079"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:54.090Z\",\"actions\":[{\"actionId\":\"b420ccf9-5f39-4365-a005-536a796ec9d5\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:54.145243"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":104,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:54.250083"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:54.245Z\",\"actions\":[{\"actionId\":\"a06644e6-269b-4cc8-8d92-616d7dfb3167\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:54.297200"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":96,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:54.425303"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":977,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:54.453244"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:54.418Z\",\"actions\":[{\"actionId\":\"51dedda5-30a9-432e-b72c-c259eff66eca\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:54.500348"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:54.446Z\",\"actions\":[{\"actionId\":\"0422142b-b6b0-4bea-bf26-2f35d99c1c63\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:54.503777"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"0\", \"errors\": [], \"batteryState\": {}, \"headerId\": 35, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"RGB_NFC\", \"state\": \"FINISHED\", \"result\": \"04808dca341291\", \"id\": \"0\", \"timestamp\": \"2025-11-10T17:11:58.629680Z\"}, \"actionStates\": [{\"command\": \"RGB_NFC\", \"metadata\": {\"type\": \"RED\"}, \"state\": \"FINISHED\", \"result\": \"04808dca341291\", \"id\": \"0\", \"timestamp\": \"2025-11-10T17:11:58.629680Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:11:58.629972Z\"}",
+    "timestamp": "2025-11-10T18:11:58.667631"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"headerId\":980,\"loads\":[{\"type\":\"RED\"}],\"actionState\":{\"command\":\"RGB_NFC\",\"metadata\":{\"type\":\"RED\"},\"state\":\"FINISHED\",\"result\":\"04808dca341291\",\"id\":\"0\",\"timestamp\":\"2025-11-10T17:11:58.629680Z\"},\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:59.663Z\",\"errors\":[{}],\"orderUpdateId\":0,\"orderId\":\"0\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:11:59.768806"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:59.674Z\",\"actions\":[{\"actionId\":\"ff0d7952-ff21-4733-803b-b45d4c25e7ee\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:59.769066"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:59.679Z\",\"actions\":[{\"actionId\":\"4bf5a316-8a9f-4776-87c3-b2dcef10f418\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:59.769169"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:59.810Z\",\"actions\":[{\"actionId\":\"4f010aac-4f99-471a-8986-c4ed3110d1c8\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:59.823307"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:59.819Z\",\"actions\":[{\"actionId\":\"2dba3a27-ccfd-43cb-b5d9-df566023e282\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:59.832195"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:59.895Z\",\"actions\":[{\"actionId\":\"6b6f8dc3-dbfc-43b9-805a-2e7545579ed2\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:59.944414"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:59.981Z\",\"actions\":[{\"actionId\":\"f95d8d21-3955-470e-b523-525d50a7bb9f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:00.032488"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:02.025Z\",\"actions\":[{\"actionId\":\"e5250d58-5c8d-4b0a-ad79-29d8beed5fdc\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:02.076644"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:02.117Z\",\"actions\":[{\"actionId\":\"f737d7fa-4120-4dc0-9afd-6507fe1cb0b7\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:02.151535"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:02.142Z\",\"actions\":[{\"actionId\":\"15716a83-ded6-4882-afe2-9554e76d3f14\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:02.154684"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:04.247Z\",\"actions\":[{\"actionId\":\"effbac07-bef6-4dbe-80c7-0d0c3c3a186f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:04.296296"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:04.333Z\",\"actions\":[{\"actionId\":\"912d05d2-d8d9-460e-ba6c-84e73a112ee5\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:04.393344"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:04.377Z\",\"actions\":[{\"actionId\":\"4599ebed-6b63-4420-a29e-013d2c9a1b03\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:04.393450"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:06.153Z\",\"actions\":[{\"actionId\":\"3262426e-41c5-4ad7-bc4a-8b51ec11e8c6\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:06.201403"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":97,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:09.086290"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:09.011Z\",\"actions\":[{\"actionId\":\"4aba0fdd-0c2c-4e2c-a3ef-d0de091f1657\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:09.086718"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":103,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:09.112090"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:09.106Z\",\"actions\":[{\"actionId\":\"83438a5e-151e-4cd3-90c7-1fa9451daed0\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:09.157491"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":105,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:09.267221"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:09.260Z\",\"actions\":[{\"actionId\":\"b57adc56-aae5-4d40-afc0-852c6fed408e\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:09.313411"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":97,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:09.428027"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":997,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:09.452725"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:09.420Z\",\"actions\":[{\"actionId\":\"732dc849-e79f-4028-833d-717dc53d0a2b\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:09.498013"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:09.445Z\",\"actions\":[{\"actionId\":\"3370995e-ec5b-4292-a91d-5a3e553c9d01\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:09.501819"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:10.477Z\",\"actions\":[{\"actionId\":\"1635ae69-1e51-46e7-8f1d-4eb753fe7b58\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:10.521077"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:10.490Z\",\"actions\":[{\"actionId\":\"e49fcc1c-7502-4287-9c31-42b8a703648e\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:10.521192"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:12:10.506Z\",\"serialNumber\":\"SVR4H73275\",\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"orderUpdateId\":1,\"action\":{\"id\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"command\":\"DROP\",\"metadata\":{\"workpiece\":{\"workpieceId\":\"04808dca341291\",\"type\":\"RED\",\"history\":[],\"state\":\"PROCESSED\"}}}}",
+    "timestamp": "2025-11-10T18:12:10.522289"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"headerId\":1002,\"loads\":[{\"type\":\"RED\"}],\"actionState\":{\"id\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"state\":\"RUNNING\"},\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:10.529Z\",\"errors\":[],\"orderUpdateId\":0,\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:12:10.542695"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:12:10.506Z\",\"serialNumber\":\"SVR4H73275\",\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"orderUpdateId\":1,\"action\":{\"id\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"command\":\"DROP\",\"metadata\":{\"workpiece\":{\"workpieceId\":\"04808dca341291\",\"type\":\"RED\",\"history\":[],\"state\":\"PROCESSED\"}}}}",
+    "timestamp": "2025-11-10T18:12:10.546094"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"batteryState\": {}, \"headerId\": 36, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"DROP\", \"state\": \"WAITIING\", \"id\": \"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\", \"timestamp\": \"2025-11-10T17:12:10.533201Z\"}, \"actionStates\": [{\"command\": \"DROP\", \"state\": \"WAITIING\", \"metadata\": {\"workpiece\": {\"type\": \"RED\", \"history\": [], \"state\": \"PROCESSED\", \"workpieceId\": \"04808dca341291\"}}, \"id\": \"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\", \"timestamp\": \"2025-11-10T17:12:10.533201Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:12:10.533514Z\"}",
+    "timestamp": "2025-11-10T18:12:10.573722"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:10.557Z\",\"actions\":[{\"actionId\":\"2ebe61fa-c092-4e15-95ff-c53b94949c1d\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:10.608789"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"batteryState\": {}, \"headerId\": 37, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"DROP\", \"state\": \"RUNNING\", \"id\": \"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\", \"timestamp\": \"2025-11-10T17:12:10.775567Z\"}, \"actionStates\": [{\"command\": \"DROP\", \"state\": \"RUNNING\", \"metadata\": {\"workpiece\": {\"type\": \"RED\", \"history\": [], \"state\": \"PROCESSED\", \"workpieceId\": \"04808dca341291\"}}, \"id\": \"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\", \"timestamp\": \"2025-11-10T17:12:10.775567Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:12:10.776074Z\"}",
+    "timestamp": "2025-11-10T18:12:10.808991"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"batteryState\": {}, \"headerId\": 38, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"DROP\", \"state\": \"FINISHED\", \"id\": \"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\", \"timestamp\": \"2025-11-10T17:12:23.862916Z\"}, \"actionStates\": [{\"command\": \"DROP\", \"state\": \"FINISHED\", \"metadata\": {\"workpiece\": {\"type\": \"RED\", \"history\": [], \"state\": \"PROCESSED\", \"workpieceId\": \"04808dca341291\"}}, \"id\": \"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\", \"timestamp\": \"2025-11-10T17:12:23.862916Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:12:23.863227Z\"}",
+    "timestamp": "2025-11-10T18:12:23.933748"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":98,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:24.007368"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:23.999Z\",\"actions\":[{\"actionId\":\"648b266c-3c6d-4e25-aa96-4339b63554bd\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:24.053342"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":104,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:24.100330"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:24.092Z\",\"actions\":[{\"actionId\":\"a9c7a785-ce9c-4c14-8f9f-d05052ffd12c\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:24.145155"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":106,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:24.251381"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:24.243Z\",\"actions\":[{\"actionId\":\"a6274d0f-bd0d-4b84-a9aa-6b74eac09038\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:24.297374"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":98,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:24.440048"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":1007,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:24.455339"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:24.433Z\",\"actions\":[{\"actionId\":\"7feb3bac-50b1-42c6-b5e1-2ab7e5229bb5\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:24.500152"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:24.448Z\",\"actions\":[{\"actionId\":\"8d229ca8-e146-4ec3-a066-7cd2f3f66e6b\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:24.503735"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\":1,\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"errors\":[],\"batteryState\":{},\"headerId\":38,\"paused\":false,\"operatingMode\":\"AUTOMATIC\",\"information\":[],\"actionState\":{\"command\":\"DROP\",\"state\":\"FINISHED\",\"id\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"timestamp\":\"2025-11-10T17:12:23.862916Z\"},\"actionStates\":[{\"command\":\"DROP\",\"state\":\"FINISHED\",\"metadata\":{\"workpiece\":{\"type\":\"RED\",\"history\":[],\"state\":\"PROCESSED\",\"workpieceId\":\"04808dca341291\"}},\"id\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"timestamp\":\"2025-11-10T17:12:23.862916Z\"}],\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:23.863227Z\"}",
+    "timestamp": "2025-11-10T18:12:24.957920"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:24.912Z\",\"actions\":[{\"actionId\":\"799f5c05-0763-49b1-ac98-d95b61457a43\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:24.965484"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:25.028Z\",\"actions\":[{\"actionId\":\"60497c21-ffb1-4256-be97-b9fa016933d7\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:12:25.081326"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:25.111Z\",\"actions\":[{\"actionId\":\"d8b93a13-6d84-4ff6-98d8-a172d4b1e64d\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:25.124198"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:25.119Z\",\"actions\":[{\"actionId\":\"8cd44699-8f7f-4ef7-95ab-44880e798d8d\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:25.131509"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:25.302Z\",\"actions\":[{\"actionId\":\"fd4fc412-faa9-4549-a757-be89693e366f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:25.313989"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:25.310Z\",\"actions\":[{\"actionId\":\"b706d194-d1cf-40b2-9e15-1360ba2c64a8\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:25.323337"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:27.315Z\",\"actions\":[{\"actionId\":\"9cc6505e-a15b-47da-8b43-60679ad47f76\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:27.364577"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:27.401Z\",\"actions\":[{\"actionId\":\"d636acb2-d528-4d2a-9813-c91dbf37e9b9\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:27.449151"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:27.440Z\",\"actions\":[{\"actionId\":\"efacc73f-d059-4146-9ce9-76e7b0100b18\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:27.454785"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:29.492Z\",\"actions\":[{\"actionId\":\"8bba0213-c2e3-46c2-ade0-a6590e8d43ff\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:29.543712"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:29.581Z\",\"actions\":[{\"actionId\":\"5e569501-2b7a-4d65-bfcd-476d9356c42e\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:29.626995"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:29.617Z\",\"actions\":[{\"actionId\":\"42836b76-66bd-4b7d-aee9-a9cb4f333de0\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:29.631597"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:31.362Z\",\"actions\":[{\"actionId\":\"24f5dc3d-c0bd-4dbc-89ae-09d5a661a42f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:31.414386"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:35.502Z\",\"actions\":[{\"actionId\":\"ee062f92-0f09-4b1d-b678-2e2ad739ce40\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:35.609368"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:35.514Z\",\"actions\":[{\"actionId\":\"7bbec8fe-93bf-40c6-a330-f3b2aaaf9d56\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:35.609477"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:12:35.530Z\",\"serialNumber\":\"SVR3QA0022\",\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"orderUpdateId\":3,\"action\":{\"id\":\"ed0f2bf6-1441-4841-885f-c20332244cdd\",\"command\":\"PICK\",\"metadata\":{\"type\":\"RED\",\"workpieceId\":\"04808dca341291\"}}}",
+    "timestamp": "2025-11-10T18:12:35.609698"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "payload": "{\"headerId\":99,\"loads\":[{\"loadType\":\"WHITE\",\"loadId\":\"04798eca341290\",\"loadPosition\":\"A1\",\"loadTimestamp\":1762794465298},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"A2\",\"loadTimestamp\":0},{\"loadType\":\"BLUE\",\"loadId\":\"048989ca341290\",\"loadPosition\":\"A3\",\"loadTimestamp\":1762771099463},{\"loadType\":\"BLUE\",\"loadId\":\"04a189ca341290\",\"loadPosition\":\"B1\",\"loadTimestamp\":1762794615886},{\"loadType\":\"RED\",\"loadId\":\"040a8dca341291\",\"loadPosition\":\"B2\",\"loadTimestamp\":1762258037251},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"B3\",\"loadTimestamp\":0},{\"loadType\":\"BLUE\",\"loadId\":\"047389ca341291\",\"loadPosition\":\"C1\",\"loadTimestamp\":1762770942249},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"C2\",\"loadTimestamp\":0},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"C3\",\"loadTimestamp\":0}],\"actionState\":{\"id\":\"ed0f2bf6-1441-4841-885f-c20332244cdd\",\"command\":\"PICK\",\"metadata\":{\"type\":\"RED\",\"workpieceId\":\"04808dca341291\"},\"state\":\"RUNNING\"},\"serialNumber\":\"SVR3QA0022\",\"timestamp\":\"2025-11-10T17:12:35.645Z\",\"errors\":[],\"orderUpdateId\":3,\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"paused\":false,\"operatingMode\":\"AUTOMATIC\",\"metadata\":{\"opcuaState\":\"connected\"},\"information\":[]}",
+    "timestamp": "2025-11-10T18:12:35.657772"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:35.649Z\",\"actions\":[{\"actionId\":\"20aef730-b4d2-4a1e-88eb-e43313e5f537\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:35.700663"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":99,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:38.999811"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:38.991Z\",\"actions\":[{\"actionId\":\"c50482d5-4611-4778-af27-8f265c5d21d6\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:39.044704"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":105,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:39.088227"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:39.080Z\",\"actions\":[{\"actionId\":\"4f6562d6-5d62-4805-b12e-9f3a221eb1a1\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:39.132509"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":107,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:39.243533"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:39.237Z\",\"actions\":[{\"actionId\":\"9ce3eff2-4b36-4dbb-a29f-a0b952c7f4c4\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:39.288675"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":100,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:39.429693"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":1029,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:39.452693"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:39.421Z\",\"actions\":[{\"actionId\":\"50aab294-29b8-4abf-9bb3-960a83b8cb77\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:39.495705"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:39.442Z\",\"actions\":[{\"actionId\":\"a70bebde-007a-4fb8-8172-c166da5a01e8\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:39.502596"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":100,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:54.003721"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:53.996Z\",\"actions\":[{\"actionId\":\"b37d065a-6c27-4f04-adf3-0ec76b84aefb\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:54.049673"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":106,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:54.096811"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:54.089Z\",\"actions\":[{\"actionId\":\"95544275-5a54-4e62-b931-8172076d2e96\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:54.141696"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":108,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:54.251888"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:54.244Z\",\"actions\":[{\"actionId\":\"b2a5c62c-1718-4a15-9296-25786c725525\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:54.297701"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":101,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:54.427932"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":1035,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:54.453551"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:54.418Z\",\"actions\":[{\"actionId\":\"42c06ed0-215f-4000-96d3-7f740b2cb738\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:54.500788"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:54.446Z\",\"actions\":[{\"actionId\":\"16d33f7a-3b8b-4d61-9464-8d26281173f6\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:54.504083"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "payload": "{\"headerId\":102,\"loads\":[{\"loadType\":\"WHITE\",\"loadId\":\"04798eca341290\",\"loadPosition\":\"A1\",\"loadTimestamp\":1762794465298},{\"loadType\":\"RED\",\"loadId\":\"04808dca341291\",\"loadPosition\":\"A2\",\"loadTimestamp\":1762794755558},{\"loadType\":\"BLUE\",\"loadId\":\"048989ca341290\",\"loadPosition\":\"A3\",\"loadTimestamp\":1762771099463},{\"loadType\":\"BLUE\",\"loadId\":\"04a189ca341290\",\"loadPosition\":\"B1\",\"loadTimestamp\":1762794615886},{\"loadType\":\"RED\",\"loadId\":\"040a8dca341291\",\"loadPosition\":\"B2\",\"loadTimestamp\":1762258037251},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"B3\",\"loadTimestamp\":0},{\"loadType\":\"BLUE\",\"loadId\":\"047389ca341291\",\"loadPosition\":\"C1\",\"loadTimestamp\":1762770942249},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"C2\",\"loadTimestamp\":0},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"C3\",\"loadTimestamp\":0}],\"actionState\":{\"id\":\"ed0f2bf6-1441-4841-885f-c20332244cdd\",\"command\":\"PICK\",\"metadata\":{\"type\":\"RED\",\"workpieceId\":\"04808dca341291\"},\"state\":\"FINISHED\"},\"serialNumber\":\"SVR3QA0022\",\"timestamp\":\"2025-11-10T17:12:56.212Z\",\"errors\":[],\"orderUpdateId\":3,\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"paused\":false,\"operatingMode\":\"AUTOMATIC\",\"metadata\":{\"opcuaState\":\"connected\"},\"information\":[]}",
+    "timestamp": "2025-11-10T18:12:56.293912"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:56.223Z\",\"actions\":[{\"actionId\":\"63231eb1-8f51-4ff4-a856-42868742130c\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:56.294140"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:56.444Z\",\"actions\":[{\"actionId\":\"8f7689d0-abaa-4afe-85d2-d0b0d6a70d1a\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:12:56.495021"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":101,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:09.018077"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:09.008Z\",\"actions\":[{\"actionId\":\"1e4ff560-fe78-40fd-90e0-3b6c9973428f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:09.062019"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":107,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:09.108941"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:09.101Z\",\"actions\":[{\"actionId\":\"eb7379ab-0013-492c-acf2-95dbb13ca3c5\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:09.153794"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":109,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:09.259329"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:09.252Z\",\"actions\":[{\"actionId\":\"97b01b9b-3408-45f2-979f-4a2cf4f1187b\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:09.306214"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":103,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:09.434543"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":1043,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:09.454537"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:09.428Z\",\"actions\":[{\"actionId\":\"cece6907-3433-426f-a2a5-adee5771c037\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:09.500986"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:09.447Z\",\"actions\":[{\"actionId\":\"8a83672e-8923-4cb8-83dd-5568b5b881d6\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:09.505400"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":102,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:24.046195"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:23.997Z\",\"actions\":[{\"actionId\":\"99afb38a-086c-4768-9320-d5963fac4a60\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:24.048640"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":108,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:24.095883"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:24.089Z\",\"actions\":[{\"actionId\":\"97ffd1e4-be56-49d2-ae05-30f96fa107c1\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:24.141864"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":110,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:24.258836"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:24.250Z\",\"actions\":[{\"actionId\":\"bf09a2aa-bdb7-40f7-a343-4c7bf0cf02b5\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:24.305878"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":104,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:24.435385"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":1049,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:24.455335"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:24.430Z\",\"actions\":[{\"actionId\":\"bdacfafb-025a-41ca-bf16-5c1df751de7e\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:24.500822"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:24.446Z\",\"actions\":[{\"actionId\":\"0bf78c6c-2255-4ce6-b915-733aace48061\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:24.504002"
+  }
+]

@@ -1,0 +1,117 @@
+[
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:16:52.614Z\",\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"orderUpdateId\":0,\"nodes\":[{\"id\":\"SVR3QA0022\",\"linkedEdges\":[],\"action\":{\"type\":\"DOCK\",\"id\":\"0aeef470-72ba-47b3-8630-26b15f0876a9\",\"metadata\":{\"loadType\":\"BLUE\",\"loadPosition\":\"1\"}}}],\"edges\":[],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:16:52.644339"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:17:35.534Z\",\"orderId\":\"2ada017e-dc9e-4f63-9c08-64e7c59f20ff\",\"orderUpdateId\":0,\"nodes\":[{\"id\":\"SVR3QA0022\",\"linkedEdges\":[],\"action\":{\"type\":\"DOCK\",\"id\":\"cd1989de-ecb4-4f30-8acf-cfc5008abdfb\",\"metadata\":{\"loadType\":\"WHITE\",\"loadPosition\":\"2\"}}}],\"edges\":[],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:17:35.569276"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:18:24.459Z\",\"orderId\":\"8fd237e5-2170-4570-8023-36e8b4cd9b30\",\"orderUpdateId\":0,\"nodes\":[{\"id\":\"SVR3QA0022\",\"linkedEdges\":[],\"action\":{\"type\":\"DOCK\",\"id\":\"a83e8f5c-60e7-4a43-bd89-75d7d61d84ea\",\"metadata\":{\"loadType\":\"RED\",\"loadPosition\":\"3\"}}}],\"edges\":[],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:18:24.483651"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:19:18.407Z\",\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"orderUpdateId\":2,\"nodes\":[{\"id\":\"SVR3QA0022\",\"linkedEdges\":[\"SVR3QA0022-1\"]},{\"id\":\"1\",\"linkedEdges\":[\"SVR3QA0022-1\",\"1-3\"],\"action\":{\"id\":\"4cc15589-e9d7-4e85-a1cf-4ba56a5afeb2\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"RIGHT\"}}},{\"id\":\"3\",\"linkedEdges\":[\"1-3\",\"3-SVR4H76449\"],\"action\":{\"id\":\"408f8154-0997-41c6-9a4d-93b51973caf3\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"RIGHT\"}}},{\"id\":\"SVR4H76449\",\"linkedEdges\":[\"3-SVR4H76449\"],\"action\":{\"type\":\"DOCK\",\"id\":\"9c5aeb1b-7c77-4595-9afd-3e10f876207d\",\"metadata\":{\"loadId\":\"047389ca341291\",\"loadType\":\"BLUE\",\"loadPosition\":\"1\"}}}],\"edges\":[{\"id\":\"SVR3QA0022-1\",\"length\":380,\"linkedNodes\":[\"SVR3QA0022\",\"1\"]},{\"id\":\"1-3\",\"length\":360,\"linkedNodes\":[\"1\",\"3\"]},{\"id\":\"3-SVR4H76449\",\"length\":380,\"linkedNodes\":[\"3\",\"SVR4H76449\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:19:18.445504"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:19:42.296Z\",\"orderId\":\"8fd237e5-2170-4570-8023-36e8b4cd9b30\",\"orderUpdateId\":2,\"nodes\":[{\"id\":\"SVR4H76449\",\"linkedEdges\":[\"SVR4H76449-3\"]},{\"id\":\"3\",\"linkedEdges\":[\"SVR4H76449-3\",\"3-1\"],\"action\":{\"id\":\"f6a1dd63-f824-4355-af80-75f22029f2ee\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"LEFT\"}}},{\"id\":\"1\",\"linkedEdges\":[\"3-1\",\"1-SVR3QA2098\"],\"action\":{\"id\":\"81114643-c704-47ca-91af-514222b2e25e\",\"type\":\"PASS\"}},{\"id\":\"SVR3QA2098\",\"linkedEdges\":[\"1-SVR3QA2098\"],\"action\":{\"type\":\"DOCK\",\"id\":\"586212f7-31b0-41bf-8174-5214c4103122\",\"metadata\":{\"loadId\":\"040a8dca341291\",\"loadType\":\"RED\",\"loadPosition\":\"3\"}}}],\"edges\":[{\"id\":\"SVR4H76449-3\",\"length\":380,\"linkedNodes\":[\"SVR4H76449\",\"3\"]},{\"id\":\"3-1\",\"length\":360,\"linkedNodes\":[\"3\",\"1\"]},{\"id\":\"1-SVR3QA2098\",\"length\":380,\"linkedNodes\":[\"1\",\"SVR3QA2098\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:19:42.371951"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:20:04.203Z\",\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"orderUpdateId\":5,\"nodes\":[{\"id\":\"SVR3QA2098\",\"linkedEdges\":[\"SVR3QA2098-1\"]},{\"id\":\"1\",\"linkedEdges\":[\"SVR3QA2098-1\",\"1-3\"],\"action\":{\"id\":\"b4cf0005-3288-49d2-a120-6ba01e978697\",\"type\":\"PASS\"}},{\"id\":\"3\",\"linkedEdges\":[\"1-3\",\"3-SVR4H76449\"],\"action\":{\"id\":\"31e14397-9a8f-4bc6-9de4-58fd077ec6ed\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"RIGHT\"}}},{\"id\":\"SVR4H76449\",\"linkedEdges\":[\"3-SVR4H76449\"],\"action\":{\"type\":\"DOCK\",\"id\":\"f3aa5aa6-be51-4120-a019-92fcc5a62187\",\"metadata\":{\"loadId\":\"047389ca341291\",\"loadType\":\"BLUE\",\"loadPosition\":\"1\"}}}],\"edges\":[{\"id\":\"SVR3QA2098-1\",\"length\":380,\"linkedNodes\":[\"SVR3QA2098\",\"1\"]},{\"id\":\"1-3\",\"length\":360,\"linkedNodes\":[\"1\",\"3\"]},{\"id\":\"3-SVR4H76449\",\"length\":380,\"linkedNodes\":[\"3\",\"SVR4H76449\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:20:04.277251"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:20:25.191Z\",\"orderId\":\"2ada017e-dc9e-4f63-9c08-64e7c59f20ff\",\"orderUpdateId\":2,\"nodes\":[{\"id\":\"SVR4H76449\",\"linkedEdges\":[],\"action\":{\"type\":\"DOCK\",\"id\":\"8dd2d08d-7afd-41db-a11e-e5f1fcf9a440\",\"metadata\":{\"loadId\":\"04798eca341290\",\"loadType\":\"WHITE\",\"loadPosition\":\"2\"}}}],\"edges\":[],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:20:25.222172"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:20:38.226Z\",\"orderId\":\"8fd237e5-2170-4570-8023-36e8b4cd9b30\",\"orderUpdateId\":5,\"nodes\":[{\"id\":\"SVR4H76449\",\"linkedEdges\":[\"SVR4H76449-3\"]},{\"id\":\"3\",\"linkedEdges\":[\"SVR4H76449-3\",\"3-1\"],\"action\":{\"id\":\"8bbae088-b291-4302-8dca-2803164cf3de\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"LEFT\"}}},{\"id\":\"1\",\"linkedEdges\":[\"3-1\",\"1-SVR3QA2098\"],\"action\":{\"id\":\"8ba95dee-68d6-4f8e-95e6-ab8c25d1ba8a\",\"type\":\"PASS\"}},{\"id\":\"SVR3QA2098\",\"linkedEdges\":[\"1-SVR3QA2098\"],\"action\":{\"type\":\"DOCK\",\"id\":\"f57bc606-72c9-4c8c-ab8a-f11be9312c00\",\"metadata\":{\"loadId\":\"040a8dca341291\",\"loadType\":\"RED\",\"loadPosition\":\"2\"}}}],\"edges\":[{\"id\":\"SVR4H76449-3\",\"length\":380,\"linkedNodes\":[\"SVR4H76449\",\"3\"]},{\"id\":\"3-1\",\"length\":360,\"linkedNodes\":[\"3\",\"1\"]},{\"id\":\"1-SVR3QA2098\",\"length\":380,\"linkedNodes\":[\"1\",\"SVR3QA2098\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:20:38.300896"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:20:57.021Z\",\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"orderUpdateId\":7,\"nodes\":[{\"id\":\"SVR3QA2098\",\"linkedEdges\":[],\"action\":{\"type\":\"DOCK\",\"id\":\"8660e85b-b2d4-41b3-8273-3dcff9dbb96d\",\"metadata\":{\"loadId\":\"047389ca341291\",\"loadType\":\"BLUE\",\"loadPosition\":\"1\"}}}],\"edges\":[],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:20:57.053608"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:21:08.216Z\",\"orderId\":\"2ada017e-dc9e-4f63-9c08-64e7c59f20ff\",\"orderUpdateId\":5,\"nodes\":[{\"id\":\"SVR3QA2098\",\"linkedEdges\":[\"SVR3QA2098-1\"]},{\"id\":\"1\",\"linkedEdges\":[\"SVR3QA2098-1\",\"1-3\"],\"action\":{\"id\":\"27a82a91-1378-4f7d-b524-35793eaad242\",\"type\":\"PASS\"}},{\"id\":\"3\",\"linkedEdges\":[\"1-3\",\"3-SVR4H76449\"],\"action\":{\"id\":\"9dfbc6b4-45a1-4e18-98ea-58b3d6d2a8c0\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"RIGHT\"}}},{\"id\":\"SVR4H76449\",\"linkedEdges\":[\"3-SVR4H76449\"],\"action\":{\"type\":\"DOCK\",\"id\":\"cadf14c1-d7f5-4c6f-9fb2-8ecb5f81abd0\",\"metadata\":{\"loadId\":\"04798eca341290\",\"loadType\":\"WHITE\",\"loadPosition\":\"1\"}}}],\"edges\":[{\"id\":\"SVR3QA2098-1\",\"length\":380,\"linkedNodes\":[\"SVR3QA2098\",\"1\"]},{\"id\":\"1-3\",\"length\":360,\"linkedNodes\":[\"1\",\"3\"]},{\"id\":\"3-SVR4H76449\",\"length\":380,\"linkedNodes\":[\"3\",\"SVR4H76449\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:21:08.293585"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:21:31.305Z\",\"orderId\":\"8fd237e5-2170-4570-8023-36e8b4cd9b30\",\"orderUpdateId\":7,\"nodes\":[{\"id\":\"SVR4H76449\",\"linkedEdges\":[\"SVR4H76449-3\"]},{\"id\":\"3\",\"linkedEdges\":[\"SVR4H76449-3\",\"3-1\"],\"action\":{\"id\":\"d05f54e3-f0cf-4406-aaf5-25d3af6e2a2f\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"LEFT\"}}},{\"id\":\"1\",\"linkedEdges\":[\"3-1\",\"1-2\"],\"action\":{\"id\":\"e54e4c0b-1607-4983-bdd5-f4bb44eba702\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"RIGHT\"}}},{\"id\":\"2\",\"linkedEdges\":[\"1-2\",\"2-SVR4H76530\"],\"action\":{\"id\":\"373721df-c1f9-4c1f-9e58-722d08747c93\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"LEFT\"}}},{\"id\":\"SVR4H76530\",\"linkedEdges\":[\"2-SVR4H76530\"],\"action\":{\"type\":\"DOCK\",\"id\":\"57af8bed-b933-406c-9aad-2572a77e8198\",\"metadata\":{\"loadId\":\"040a8dca341291\",\"loadType\":\"RED\",\"loadPosition\":\"2\"}}}],\"edges\":[{\"id\":\"SVR4H76449-3\",\"length\":380,\"linkedNodes\":[\"SVR4H76449\",\"3\"]},{\"id\":\"3-1\",\"length\":360,\"linkedNodes\":[\"3\",\"1\"]},{\"id\":\"1-2\",\"length\":360,\"linkedNodes\":[\"1\",\"2\"]},{\"id\":\"2-SVR4H76530\",\"length\":380,\"linkedNodes\":[\"2\",\"SVR4H76530\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:21:31.338889"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:21:57.234Z\",\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"orderUpdateId\":10,\"nodes\":[{\"id\":\"SVR4H76530\",\"linkedEdges\":[\"SVR4H76530-2\"]},{\"id\":\"2\",\"linkedEdges\":[\"SVR4H76530-2\",\"2-1\"],\"action\":{\"id\":\"6bc042be-f965-4d06-9b72-cc42143c7c4b\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"RIGHT\"}}},{\"id\":\"1\",\"linkedEdges\":[\"2-1\",\"1-SVR3QA2098\"],\"action\":{\"id\":\"6eefe3bc-998d-46d2-ba47-e1f861bc7da4\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"RIGHT\"}}},{\"id\":\"SVR3QA2098\",\"linkedEdges\":[\"1-SVR3QA2098\"],\"action\":{\"type\":\"DOCK\",\"id\":\"3672581b-43d3-4f03-9a33-2b48650050f9\",\"metadata\":{\"loadId\":\"047389ca341291\",\"loadType\":\"BLUE\",\"loadPosition\":\"2\"}}}],\"edges\":[{\"id\":\"SVR4H76530-2\",\"length\":380,\"linkedNodes\":[\"SVR4H76530\",\"2\"]},{\"id\":\"2-1\",\"length\":360,\"linkedNodes\":[\"2\",\"1\"]},{\"id\":\"1-SVR3QA2098\",\"length\":380,\"linkedNodes\":[\"1\",\"SVR3QA2098\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:21:57.309487"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:22:17.076Z\",\"orderId\":\"8fd237e5-2170-4570-8023-36e8b4cd9b30\",\"orderUpdateId\":10,\"nodes\":[{\"id\":\"SVR3QA2098\",\"linkedEdges\":[\"SVR3QA2098-1\"]},{\"id\":\"1\",\"linkedEdges\":[\"SVR3QA2098-1\",\"1-2\"],\"action\":{\"id\":\"4544cf39-a5c7-4f2d-b32c-1d3b1b5b2b5e\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"LEFT\"}}},{\"id\":\"2\",\"linkedEdges\":[\"1-2\",\"2-SVR4H76530\"],\"action\":{\"id\":\"882917b9-8dd9-4544-8d7a-85df4b1f6add\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"LEFT\"}}},{\"id\":\"SVR4H76530\",\"linkedEdges\":[\"2-SVR4H76530\"],\"action\":{\"type\":\"DOCK\",\"id\":\"a05b31a5-471b-4fcb-b9ce-b6b8a505f122\",\"metadata\":{\"loadId\":\"040a8dca341291\",\"loadType\":\"RED\",\"loadPosition\":\"3\"}}}],\"edges\":[{\"id\":\"SVR3QA2098-1\",\"length\":380,\"linkedNodes\":[\"SVR3QA2098\",\"1\"]},{\"id\":\"1-2\",\"length\":360,\"linkedNodes\":[\"1\",\"2\"]},{\"id\":\"2-SVR4H76530\",\"length\":380,\"linkedNodes\":[\"2\",\"SVR4H76530\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:22:17.115559"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:22:37.411Z\",\"orderId\":\"2ada017e-dc9e-4f63-9c08-64e7c59f20ff\",\"orderUpdateId\":7,\"nodes\":[{\"id\":\"SVR4H76530\",\"linkedEdges\":[],\"action\":{\"type\":\"DOCK\",\"id\":\"606bdbeb-47a4-4f04-991b-02f471516b3d\",\"metadata\":{\"loadId\":\"04798eca341290\",\"loadType\":\"WHITE\",\"loadPosition\":\"1\"}}}],\"edges\":[],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:22:37.453187"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:22:47.195Z\",\"orderId\":\"8fd237e5-2170-4570-8023-36e8b4cd9b30\",\"orderUpdateId\":12,\"nodes\":[{\"id\":\"SVR4H76530\",\"linkedEdges\":[\"SVR4H76530-2\"]},{\"id\":\"2\",\"linkedEdges\":[\"SVR4H76530-2\",\"2-SVR4H73275\"],\"action\":{\"id\":\"292cde1a-9b97-480f-8259-2b43e6da6485\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"LEFT\"}}},{\"id\":\"SVR4H73275\",\"linkedEdges\":[\"2-SVR4H73275\"],\"action\":{\"type\":\"DOCK\",\"id\":\"bffe08b6-9a2f-4957-bcfb-a0f30b017f3f\",\"metadata\":{\"loadId\":\"040a8dca341291\",\"loadType\":\"RED\",\"loadPosition\":\"3\"}}}],\"edges\":[{\"id\":\"SVR4H76530-2\",\"length\":380,\"linkedNodes\":[\"SVR4H76530\",\"2\"]},{\"id\":\"2-SVR4H73275\",\"length\":380,\"linkedNodes\":[\"2\",\"SVR4H73275\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:22:47.271760"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:23:20.269Z\",\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"orderUpdateId\":12,\"nodes\":[{\"id\":\"SVR4H73275\",\"linkedEdges\":[\"SVR4H73275-2\"]},{\"id\":\"2\",\"linkedEdges\":[\"SVR4H73275-2\",\"2-SVR4H76530\"],\"action\":{\"id\":\"9e1be62f-18cf-4ae8-a7a1-257290f9d20a\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"RIGHT\"}}},{\"id\":\"SVR4H76530\",\"linkedEdges\":[\"2-SVR4H76530\"],\"action\":{\"type\":\"DOCK\",\"id\":\"3163ec1b-7b19-495c-8cb0-7c0a112b648b\",\"metadata\":{\"loadId\":\"047389ca341291\",\"loadType\":\"BLUE\",\"loadPosition\":\"2\"}}}],\"edges\":[{\"id\":\"SVR4H73275-2\",\"length\":380,\"linkedNodes\":[\"SVR4H73275\",\"2\"]},{\"id\":\"2-SVR4H76530\",\"length\":380,\"linkedNodes\":[\"2\",\"SVR4H76530\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:23:20.305667"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:23:37.328Z\",\"orderId\":\"dc7b8963-68b6-4b8b-9c94-c271d11b64dc\",\"orderUpdateId\":0,\"nodes\":[{\"id\":\"SVR4H76530\",\"linkedEdges\":[\"SVR4H76530-2\"]},{\"id\":\"2\",\"linkedEdges\":[\"SVR4H76530-2\",\"2-1\"],\"action\":{\"id\":\"142c56d5-dbff-445c-8bcd-e00f979cb0cf\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"RIGHT\"}}},{\"id\":\"1\",\"linkedEdges\":[\"2-1\",\"1-SVR3QA0022\"],\"action\":{\"id\":\"2510c392-72f1-41e2-bb76-7f441aa0f50c\",\"type\":\"PASS\"}},{\"id\":\"SVR3QA0022\",\"linkedEdges\":[\"1-SVR3QA0022\"],\"action\":{\"type\":\"DOCK\",\"id\":\"cb67a01f-8e18-4c13-831d-cc2519007a99\",\"metadata\":{\"loadType\":\"WHITE\",\"loadPosition\":\"1\"}}}],\"edges\":[{\"id\":\"SVR4H76530-2\",\"length\":380,\"linkedNodes\":[\"SVR4H76530\",\"2\"]},{\"id\":\"2-1\",\"length\":360,\"linkedNodes\":[\"2\",\"1\"]},{\"id\":\"1-SVR3QA0022\",\"length\":380,\"linkedNodes\":[\"1\",\"SVR3QA0022\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:23:37.406249"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:24:35.446Z\",\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"orderUpdateId\":15,\"nodes\":[{\"id\":\"SVR3QA0022\",\"linkedEdges\":[\"SVR3QA0022-1\"]},{\"id\":\"1\",\"linkedEdges\":[\"SVR3QA0022-1\",\"1-2\"],\"action\":{\"id\":\"06c5833e-fba0-4cb2-b2bf-8dfe024babeb\",\"type\":\"PASS\"}},{\"id\":\"2\",\"linkedEdges\":[\"1-2\",\"2-SVR4H76530\"],\"action\":{\"id\":\"be3b5cff-ac0d-49da-b4d7-85b15a3368e7\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"LEFT\"}}},{\"id\":\"SVR4H76530\",\"linkedEdges\":[\"2-SVR4H76530\"],\"action\":{\"type\":\"DOCK\",\"id\":\"5a3a9272-ba3f-440a-b31f-efd3ea800258\",\"metadata\":{\"loadId\":\"047389ca341291\",\"loadType\":\"BLUE\",\"loadPosition\":\"2\"}}}],\"edges\":[{\"id\":\"SVR3QA0022-1\",\"length\":380,\"linkedNodes\":[\"SVR3QA0022\",\"1\"]},{\"id\":\"1-2\",\"length\":360,\"linkedNodes\":[\"1\",\"2\"]},{\"id\":\"2-SVR4H76530\",\"length\":380,\"linkedNodes\":[\"2\",\"SVR4H76530\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:24:35.480617"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:24:54.193Z\",\"orderId\":\"dc7b8963-68b6-4b8b-9c94-c271d11b64dc\",\"orderUpdateId\":2,\"nodes\":[{\"id\":\"SVR4H76530\",\"linkedEdges\":[\"SVR4H76530-2\"]},{\"id\":\"2\",\"linkedEdges\":[\"SVR4H76530-2\",\"2-1\"],\"action\":{\"id\":\"9c30f6ea-7df5-4416-bc30-d471751bf267\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"RIGHT\"}}},{\"id\":\"1\",\"linkedEdges\":[\"2-1\",\"1-3\"],\"action\":{\"id\":\"25175bb5-720a-43ed-8155-9d498279207c\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"LEFT\"}}},{\"id\":\"3\",\"linkedEdges\":[\"1-3\",\"3-SVR4H76449\"],\"action\":{\"id\":\"eb16b7f3-21b2-4140-a494-2be74baae8e2\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"RIGHT\"}}},{\"id\":\"SVR4H76449\",\"linkedEdges\":[\"3-SVR4H76449\"],\"action\":{\"type\":\"DOCK\",\"id\":\"ca017c25-ed44-45b2-a532-99662d22aa56\",\"metadata\":{\"loadId\":\"047c8bca341291\",\"loadType\":\"WHITE\",\"loadPosition\":\"1\"}}}],\"edges\":[{\"id\":\"SVR4H76530-2\",\"length\":380,\"linkedNodes\":[\"SVR4H76530\",\"2\"]},{\"id\":\"2-1\",\"length\":360,\"linkedNodes\":[\"2\",\"1\"]},{\"id\":\"1-3\",\"length\":360,\"linkedNodes\":[\"1\",\"3\"]},{\"id\":\"3-SVR4H76449\",\"length\":380,\"linkedNodes\":[\"3\",\"SVR4H76449\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:24:54.231761"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:25:21.385Z\",\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"orderUpdateId\":17,\"nodes\":[{\"id\":\"SVR4H76449\",\"linkedEdges\":[\"SVR4H76449-3\"]},{\"id\":\"3\",\"linkedEdges\":[\"SVR4H76449-3\",\"3-1\"],\"action\":{\"id\":\"c0d396b7-7a54-427f-8a0e-d9f87f11ff6e\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"LEFT\"}}},{\"id\":\"1\",\"linkedEdges\":[\"3-1\",\"1-2\"],\"action\":{\"id\":\"c545937d-6006-4185-9891-98270aa80a00\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"RIGHT\"}}},{\"id\":\"2\",\"linkedEdges\":[\"1-2\",\"2-SVR4H73275\"],\"action\":{\"id\":\"b26caa85-40f6-4ece-b9de-e5302b4a3442\",\"type\":\"PASS\"}},{\"id\":\"SVR4H73275\",\"linkedEdges\":[\"2-SVR4H73275\"],\"action\":{\"type\":\"DOCK\",\"id\":\"ef7c300e-254a-49dd-998f-b2c9f23f6994\",\"metadata\":{\"loadId\":\"047389ca341291\",\"loadType\":\"BLUE\",\"loadPosition\":\"2\"}}}],\"edges\":[{\"id\":\"SVR4H76449-3\",\"length\":380,\"linkedNodes\":[\"SVR4H76449\",\"3\"]},{\"id\":\"3-1\",\"length\":360,\"linkedNodes\":[\"3\",\"1\"]},{\"id\":\"1-2\",\"length\":360,\"linkedNodes\":[\"1\",\"2\"]},{\"id\":\"2-SVR4H73275\",\"length\":380,\"linkedNodes\":[\"2\",\"SVR4H73275\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:25:21.435733"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:26:04.928Z\",\"orderId\":\"dc7b8963-68b6-4b8b-9c94-c271d11b64dc\",\"orderUpdateId\":5,\"nodes\":[{\"id\":\"SVR4H73275\",\"linkedEdges\":[\"SVR4H73275-2\"]},{\"id\":\"2\",\"linkedEdges\":[\"SVR4H73275-2\",\"2-1\"],\"action\":{\"id\":\"08900ac4-e0a0-4bf8-93de-aa2da67bc63e\",\"type\":\"PASS\"}},{\"id\":\"1\",\"linkedEdges\":[\"2-1\",\"1-3\"],\"action\":{\"id\":\"9803c080-96df-4373-aa59-e59c25dfd38b\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"LEFT\"}}},{\"id\":\"3\",\"linkedEdges\":[\"1-3\",\"3-SVR4H76449\"],\"action\":{\"id\":\"9308d166-1107-477a-96de-3b3c315db763\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"RIGHT\"}}},{\"id\":\"SVR4H76449\",\"linkedEdges\":[\"3-SVR4H76449\"],\"action\":{\"type\":\"DOCK\",\"id\":\"b9f65587-17ba-40a2-8943-bc8b769ef61d\",\"metadata\":{\"loadId\":\"047c8bca341291\",\"loadType\":\"WHITE\",\"loadPosition\":\"1\"}}}],\"edges\":[{\"id\":\"SVR4H73275-2\",\"length\":380,\"linkedNodes\":[\"SVR4H73275\",\"2\"]},{\"id\":\"2-1\",\"length\":360,\"linkedNodes\":[\"2\",\"1\"]},{\"id\":\"1-3\",\"length\":360,\"linkedNodes\":[\"1\",\"3\"]},{\"id\":\"3-SVR4H76449\",\"length\":380,\"linkedNodes\":[\"3\",\"SVR4H76449\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:26:04.948803"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:26:30.172Z\",\"orderId\":\"dc7b8963-68b6-4b8b-9c94-c271d11b64dc\",\"orderUpdateId\":7,\"nodes\":[{\"id\":\"SVR4H76449\",\"linkedEdges\":[\"SVR4H76449-3\"]},{\"id\":\"3\",\"linkedEdges\":[\"SVR4H76449-3\",\"3-1\"],\"action\":{\"id\":\"9dac3429-1655-4994-8074-28a3a5f82212\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"LEFT\"}}},{\"id\":\"1\",\"linkedEdges\":[\"3-1\",\"1-2\"],\"action\":{\"id\":\"e94e1872-aec6-4c81-85a9-edc6ee0674cb\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"RIGHT\"}}},{\"id\":\"2\",\"linkedEdges\":[\"1-2\",\"2-SVR4H76530\"],\"action\":{\"id\":\"9b94d98b-7ef9-4cc0-a35c-1592e18aa029\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"LEFT\"}}},{\"id\":\"SVR4H76530\",\"linkedEdges\":[\"2-SVR4H76530\"],\"action\":{\"type\":\"DOCK\",\"id\":\"00581088-bcc3-4a25-9c26-d05a64c11c60\",\"metadata\":{\"loadId\":\"047c8bca341291\",\"loadType\":\"WHITE\",\"loadPosition\":\"1\"}}}],\"edges\":[{\"id\":\"SVR4H76449-3\",\"length\":380,\"linkedNodes\":[\"SVR4H76449\",\"3\"]},{\"id\":\"3-1\",\"length\":360,\"linkedNodes\":[\"3\",\"1\"]},{\"id\":\"1-2\",\"length\":360,\"linkedNodes\":[\"1\",\"2\"]},{\"id\":\"2-SVR4H76530\",\"length\":380,\"linkedNodes\":[\"2\",\"SVR4H76530\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:26:30.188263"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:27:12.185Z\",\"orderId\":\"dc7b8963-68b6-4b8b-9c94-c271d11b64dc\",\"orderUpdateId\":11,\"nodes\":[{\"id\":\"SVR4H76530\",\"linkedEdges\":[\"SVR4H76530-2\"]},{\"id\":\"2\",\"linkedEdges\":[\"SVR4H76530-2\",\"2-SVR4H73275\"],\"action\":{\"id\":\"f6e5a654-6eee-469a-a802-ea301baad20f\",\"type\":\"TURN\",\"metadata\":{\"direction\":\"LEFT\"}}},{\"id\":\"SVR4H73275\",\"linkedEdges\":[\"2-SVR4H73275\"],\"action\":{\"type\":\"DOCK\",\"id\":\"da2f4110-879d-4a28-8a7d-5191821f2af6\",\"metadata\":{\"loadId\":\"047c8bca341291\",\"loadType\":\"WHITE\",\"loadPosition\":\"1\"}}}],\"edges\":[{\"id\":\"SVR4H76530-2\",\"length\":380,\"linkedNodes\":[\"SVR4H76530\",\"2\"]},{\"id\":\"2-SVR4H73275\",\"length\":380,\"linkedNodes\":[\"2\",\"SVR4H73275\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:27:12.206382"
+  }
+]

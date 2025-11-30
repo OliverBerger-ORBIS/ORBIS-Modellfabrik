@@ -1,0 +1,12 @@
+[
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:09:40.689Z\",\"orderId\":\"2413eb6e-fb6b-4ed1-b93f-fb17143a4593\",\"orderUpdateId\":0,\"nodes\":[{\"id\":\"SVR3QA0022\",\"linkedEdges\":[\"SVR3QA0022-1\"]},{\"id\":\"1\",\"linkedEdges\":[\"SVR3QA0022-1\",\"1-2\"],\"action\":{\"id\":\"c4e9ddac-807d-42de-a7ee-325a16c8252f\",\"type\":\"PASS\"}},{\"id\":\"2\",\"linkedEdges\":[\"1-2\",\"2-SVR4H73275\"],\"action\":{\"id\":\"39d769d0-3c14-40dd-bd6b-bc7f655822d5\",\"type\":\"PASS\"}},{\"id\":\"SVR4H73275\",\"linkedEdges\":[\"2-SVR4H73275\"],\"action\":{\"type\":\"DOCK\",\"id\":\"a40df199-a19f-4e97-979b-bea26758634e\",\"metadata\":{\"loadId\":\"04a189ca341290\",\"loadType\":\"BLUE\",\"loadPosition\":\"1\"}}}],\"edges\":[{\"id\":\"SVR3QA0022-1\",\"length\":380,\"linkedNodes\":[\"SVR3QA0022\",\"1\"]},{\"id\":\"1-2\",\"length\":360,\"linkedNodes\":[\"1\",\"2\"]},{\"id\":\"2-SVR4H73275\",\"length\":380,\"linkedNodes\":[\"2\",\"SVR4H73275\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:09:40.720478"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:10:05.323Z\",\"orderId\":\"2413eb6e-fb6b-4ed1-b93f-fb17143a4593\",\"orderUpdateId\":2,\"nodes\":[{\"id\":\"SVR4H73275\",\"linkedEdges\":[\"SVR4H73275-2\"]},{\"id\":\"2\",\"linkedEdges\":[\"SVR4H73275-2\",\"2-1\"],\"action\":{\"id\":\"194b2468-a2c5-40e5-b82f-1dde4c7ab83b\",\"type\":\"PASS\"}},{\"id\":\"1\",\"linkedEdges\":[\"2-1\",\"1-SVR3QA0022\"],\"action\":{\"id\":\"cf71c76a-b844-4b33-94fd-c9204c405924\",\"type\":\"PASS\"}},{\"id\":\"SVR3QA0022\",\"linkedEdges\":[\"1-SVR3QA0022\"],\"action\":{\"type\":\"DOCK\",\"id\":\"79615cb6-50a6-43b0-8f81-b652b308934c\",\"metadata\":{\"loadId\":\"04a189ca341290\",\"loadType\":\"BLUE\",\"loadPosition\":\"1\"}}}],\"edges\":[{\"id\":\"SVR4H73275-2\",\"length\":380,\"linkedNodes\":[\"SVR4H73275\",\"2\"]},{\"id\":\"2-1\",\"length\":360,\"linkedNodes\":[\"2\",\"1\"]},{\"id\":\"1-SVR3QA0022\",\"length\":380,\"linkedNodes\":[\"1\",\"SVR3QA0022\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:10:05.354337"
+  }
+]

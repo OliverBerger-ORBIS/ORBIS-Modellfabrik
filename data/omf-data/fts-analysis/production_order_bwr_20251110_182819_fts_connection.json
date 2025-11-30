@@ -1,0 +1,12 @@
+[
+  {
+    "topic": "fts/v1/ff/5iO4/connection",
+    "payload": "{ \"headerId\": 2, \"timestamp\": \"2025-11-10T16:49:42.548892Z\", \"version\": \"1.1.0+git250d287\", \"manufacturer\": \"Fischertechnik\", \"serialNumber\": \"5iO4\", \"connectionState\": \"ONLINE\", \"ip\": \"192.168.0.105\" }",
+    "timestamp": "2025-11-10T18:16:47.562362"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/connection",
+    "payload": "{ \"headerId\": 2, \"timestamp\": \"2025-11-10T16:49:42.548892Z\", \"version\": \"1.1.0+git250d287\", \"manufacturer\": \"Fischertechnik\", \"serialNumber\": \"5iO4\", \"connectionState\": \"ONLINE\", \"ip\": \"192.168.0.105\" }",
+    "timestamp": "2025-11-10T18:27:48.905940"
+  }
+]

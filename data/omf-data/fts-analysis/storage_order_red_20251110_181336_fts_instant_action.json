@@ -1,0 +1,12 @@
+[
+  {
+    "topic": "fts/v1/ff/5iO4/instantAction",
+    "payload": "{\"serialNumber\":\"5iO4\",\"timestamp\":\"2025-11-10T17:12:24.961Z\",\"actions\":[{\"actionId\":\"0e69c1fb-2037-436a-86e3-450664f2f019\",\"actionType\":\"clearLoadHandler\",\"metadata\":{\"loadDropped\":false,\"loadType\":\"RED\",\"loadId\":\"04808dca341291\",\"loadPosition\":\"1\"}}]}",
+    "timestamp": "2025-11-10T18:12:24.983902"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/instantAction",
+    "payload": "{\"serialNumber\":\"5iO4\",\"timestamp\":\"2025-11-10T17:12:56.280Z\",\"actions\":[{\"actionId\":\"1159a566-6bf2-44f8-a7af-5d28b43a15da\",\"actionType\":\"clearLoadHandler\",\"metadata\":{\"loadDropped\":true,\"loadType\":\"RED\",\"loadId\":\"04808dca341291\",\"loadPosition\":\"1\"}}]}",
+    "timestamp": "2025-11-10T18:12:56.295790"
+  }
+]

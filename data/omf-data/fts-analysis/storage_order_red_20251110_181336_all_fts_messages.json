@@ -1,0 +1,1057 @@
+[
+  {
+    "topic": "ccu/order/active",
+    "payload": "[]",
+    "timestamp": "2025-11-10T18:11:19.493085"
+  },
+  {
+    "topic": "ccu/order/completed",
+    "payload": "[{\"orderType\":\"PRODUCTION\",\"type\":\"WHITE\",\"timestamp\":\"2025-11-10T16:53:05.362Z\",\"orderId\":\"bd3ac19a-615b-4cea-8527-af10b2ca1eff\",\"productionSteps\":[{\"id\":\"ec49f0d5-71a2-481a-8673-4b33251acc15\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"HBW\",\"startedAt\":\"2025-11-10T16:53:05.471Z\",\"stoppedAt\":\"2025-11-10T16:53:07.449Z\"},{\"id\":\"680658e6-2327-424a-a386-f60a4f7e285a\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"ec49f0d5-71a2-481a-8673-4b33251acc15\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"HBW\",\"startedAt\":\"2025-11-10T16:53:07.464Z\",\"serialNumber\":\"SVR3QA0022\",\"stoppedAt\":\"2025-11-10T16:53:55.320Z\"},{\"id\":\"43e5370e-a41c-44db-816c-f2f8621ba78b\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"HBW\",\"target\":\"DRILL\",\"dependentActionId\":\"680658e6-2327-424a-a386-f60a4f7e285a\",\"startedAt\":\"2025-11-10T16:53:55.522Z\",\"stoppedAt\":\"2025-11-10T16:54:07.502Z\"},{\"id\":\"07865870-69dd-4f2c-a6d5-5e05d970893e\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"43e5370e-a41c-44db-816c-f2f8621ba78b\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T16:54:07.509Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T16:54:18.073Z\"},{\"id\":\"8d792d60-c8ba-42a0-9154-be2634c3d9a3\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"07865870-69dd-4f2c-a6d5-5e05d970893e\",\"state\":\"FINISHED\",\"command\":\"DRILL\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T16:54:18.082Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T16:54:28.020Z\"},{\"id\":\"5a555dd5-b06c-4324-b601-629e4662217c\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"8d792d60-c8ba-42a0-9154-be2634c3d9a3\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T16:54:28.045Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T16:54:38.173Z\"},{\"id\":\"ab3b31b1-a19f-4087-9d96-0905bb322649\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"DRILL\",\"target\":\"AIQS\",\"dependentActionId\":\"5a555dd5-b06c-4324-b601-629e4662217c\",\"startedAt\":\"2025-11-10T16:54:38.397Z\",\"stoppedAt\":\"2025-11-10T16:54:55.373Z\"},{\"id\":\"82d1881d-5325-4085-8588-02f862006a41\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"ab3b31b1-a19f-4087-9d96-0905bb322649\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T16:54:55.380Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T16:55:03.158Z\"},{\"id\":\"6126aa21-75b3-4359-ade5-cfba00267fb0\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"82d1881d-5325-4085-8588-02f862006a41\",\"state\":\"ERROR\",\"command\":\"CHECK_QUALITY\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T16:55:03.166Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T16:55:12.126Z\"},{\"id\":\"4d07bb08-3e15-4eb9-ad69-029a8022f31f\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"6126aa21-75b3-4359-ade5-cfba00267fb0\",\"state\":\"CANCELLED\",\"command\":\"DROP\",\"moduleType\":\"AIQS\"},{\"id\":\"d51d5efc-80e6-4f2f-8ab4-48cedf874112\",\"type\":\"NAVIGATION\",\"state\":\"CANCELLED\",\"source\":\"AIQS\",\"target\":\"DPS\",\"dependentActionId\":\"4d07bb08-3e15-4eb9-ad69-029a8022f31f\"},{\"id\":\"eba02e4f-3a71-4f68-958e-6e1ec69dd8e1\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"d51d5efc-80e6-4f2f-8ab4-48cedf874112\",\"state\":\"CANCELLED\",\"command\":\"PICK\",\"moduleType\":\"DPS\"}],\"receivedAt\":\"2025-11-10T16:53:05.428Z\",\"state\":\"ERROR\",\"workpieceId\":\"04798eca341290\",\"startedAt\":\"2025-11-10T16:53:05.429Z\",\"stoppedAt\":\"2025-11-10T16:55:12.128Z\"},{\"orderType\":\"PRODUCTION\",\"type\":\"WHITE\",\"timestamp\":\"2025-11-10T16:53:05.362Z\",\"orderId\":\"25e3dbe9-e956-41a0-8c1e-bade61141271\",\"productionSteps\":[{\"id\":\"3a884908-5217-47eb-9cf8-b29eac2d6f99\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"HBW\",\"startedAt\":\"2025-11-10T16:55:12.184Z\",\"stoppedAt\":\"2025-11-10T16:55:23.264Z\"},{\"id\":\"94f38c98-f7b8-4733-853d-db177b2715cb\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"3a884908-5217-47eb-9cf8-b29eac2d6f99\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"HBW\",\"startedAt\":\"2025-11-10T16:55:23.270Z\",\"serialNumber\":\"SVR3QA0022\",\"stoppedAt\":\"2025-11-10T16:56:11.212Z\"},{\"id\":\"d8314c27-a6fc-4887-9207-d8c493dbd804\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"HBW\",\"target\":\"DRILL\",\"dependentActionId\":\"94f38c98-f7b8-4733-853d-db177b2715cb\",\"startedAt\":\"2025-11-10T16:56:11.430Z\",\"stoppedAt\":\"2025-11-10T16:56:23.577Z\"},{\"id\":\"0b3e0090-a8d1-48a6-ac40-101eb87c69c5\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"d8314c27-a6fc-4887-9207-d8c493dbd804\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T16:56:23.581Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T16:56:34.123Z\"},{\"id\":\"bdcd36e7-cf41-4e09-9548-e4f703966285\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"0b3e0090-a8d1-48a6-ac40-101eb87c69c5\",\"state\":\"FINISHED\",\"command\":\"DRILL\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T16:56:34.127Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T16:56:44.106Z\"},{\"id\":\"8c3c746a-8dd8-4a6e-8239-af04ff13361f\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"bdcd36e7-cf41-4e09-9548-e4f703966285\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T16:56:44.130Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T16:56:55.073Z\"},{\"id\":\"91c1570d-f8d6-410e-88cc-03dee5c1711f\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"DRILL\",\"target\":\"AIQS\",\"dependentActionId\":\"8c3c746a-8dd8-4a6e-8239-af04ff13361f\",\"startedAt\":\"2025-11-10T16:56:55.247Z\",\"stoppedAt\":\"2025-11-10T16:57:17.845Z\"},{\"id\":\"dd73c21a-7bb3-4341-a37e-dbdef6fcd564\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"91c1570d-f8d6-410e-88cc-03dee5c1711f\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T16:57:17.856Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T16:57:25.974Z\"},{\"id\":\"91934750-a809-4e59-b9e3-b02cf299229e\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"dd73c21a-7bb3-4341-a37e-dbdef6fcd564\",\"state\":\"ERROR\",\"command\":\"CHECK_QUALITY\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T16:57:25.982Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T16:57:35.202Z\"},{\"id\":\"c0da8f99-a5be-4881-be0c-02a8690ef786\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"91934750-a809-4e59-b9e3-b02cf299229e\",\"state\":\"CANCELLED\",\"command\":\"DROP\",\"moduleType\":\"AIQS\"},{\"id\":\"3d2f2ecc-5e3d-44f9-9657-48ac432cc2c1\",\"type\":\"NAVIGATION\",\"state\":\"CANCELLED\",\"source\":\"AIQS\",\"target\":\"DPS\",\"dependentActionId\":\"c0da8f99-a5be-4881-be0c-02a8690ef786\"},{\"id\":\"f7e5ec68-e5c8-4afe-b044-82947883411e\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"3d2f2ecc-5e3d-44f9-9657-48ac432cc2c1\",\"state\":\"CANCELLED\",\"command\":\"PICK\",\"moduleType\":\"DPS\"}],\"receivedAt\":\"2025-11-10T16:55:12.136Z\",\"state\":\"ERROR\",\"workpieceId\":\"047b8bca341291\",\"startedAt\":\"2025-11-10T16:55:12.137Z\",\"stoppedAt\":\"2025-11-10T16:57:35.202Z\"},{\"orderType\":\"PRODUCTION\",\"type\":\"RED\",\"timestamp\":\"2025-11-10T16:58:23.943Z\",\"orderId\":\"c9da720e-98e6-4d96-84d3-7baad5c5383d\",\"productionSteps\":[{\"id\":\"db0529cc-d135-42fb-9167-91e1981cfa17\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"HBW\",\"startedAt\":\"2025-11-10T16:58:24.163Z\",\"stoppedAt\":\"2025-11-10T16:58:36.124Z\"},{\"id\":\"7146ac7c-42dd-44e9-9f1c-e20edc090f0d\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"db0529cc-d135-42fb-9167-91e1981cfa17\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"HBW\",\"startedAt\":\"2025-11-10T16:58:36.130Z\",\"serialNumber\":\"SVR3QA0022\",\"stoppedAt\":\"2025-11-10T16:59:18.373Z\"},{\"id\":\"4817c3bd-b5fb-4bff-9ec3-3ac82ee74849\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"HBW\",\"target\":\"MILL\",\"dependentActionId\":\"7146ac7c-42dd-44e9-9f1c-e20edc090f0d\",\"startedAt\":\"2025-11-10T16:59:18.556Z\",\"stoppedAt\":\"2025-11-10T16:59:27.383Z\"},{\"id\":\"f0107ec0-e13a-47f8-8b4d-090a089c923a\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"4817c3bd-b5fb-4bff-9ec3-3ac82ee74849\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"MILL\",\"startedAt\":\"2025-11-10T16:59:27.388Z\",\"serialNumber\":\"SVR3QA2098\",\"stoppedAt\":\"2025-11-10T16:59:36.945Z\"},{\"id\":\"41d67550-5791-4646-ac50-c2a0b84128ec\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"f0107ec0-e13a-47f8-8b4d-090a089c923a\",\"state\":\"FINISHED\",\"command\":\"MILL\",\"moduleType\":\"MILL\",\"startedAt\":\"2025-11-10T16:59:36.954Z\",\"serialNumber\":\"SVR3QA2098\",\"stoppedAt\":\"2025-11-10T16:59:46.891Z\"},{\"id\":\"7853b911-1232-43c1-8cd9-820c9ea25ffa\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"41d67550-5791-4646-ac50-c2a0b84128ec\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"MILL\",\"startedAt\":\"2025-11-10T16:59:46.914Z\",\"serialNumber\":\"SVR3QA2098\",\"stoppedAt\":\"2025-11-10T16:59:56.843Z\"},{\"id\":\"19f21955-6044-4609-867d-7592f7b4219b\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"MILL\",\"target\":\"AIQS\",\"dependentActionId\":\"7853b911-1232-43c1-8cd9-820c9ea25ffa\",\"startedAt\":\"2025-11-10T16:59:57.073Z\",\"stoppedAt\":\"2025-11-10T17:00:09.837Z\"},{\"id\":\"f23d5f39-de14-40ff-91a0-8e017067e35d\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"19f21955-6044-4609-867d-7592f7b4219b\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T17:00:09.840Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T17:00:18.007Z\"},{\"id\":\"b361aca3-dece-46ba-b07e-a360600c2516\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"f23d5f39-de14-40ff-91a0-8e017067e35d\",\"state\":\"FINISHED\",\"command\":\"CHECK_QUALITY\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T17:00:18.012Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T17:00:26.169Z\"},{\"id\":\"a1fc404a-3f4f-4363-b137-9607ae8104e8\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"b361aca3-dece-46ba-b07e-a360600c2516\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T17:00:26.187Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T17:00:35.075Z\"},{\"id\":\"2472a86c-98db-4dd0-a886-d7ae28fd455a\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"AIQS\",\"target\":\"DPS\",\"dependentActionId\":\"a1fc404a-3f4f-4363-b137-9607ae8104e8\",\"startedAt\":\"2025-11-10T17:00:35.236Z\",\"stoppedAt\":\"2025-11-10T17:00:44.384Z\"},{\"id\":\"4db0d5dc-3841-4f92-85e1-fde21f9a569d\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"2472a86c-98db-4dd0-a886-d7ae28fd455a\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"DPS\",\"startedAt\":\"2025-11-10T17:00:44.393Z\",\"serialNumber\":\"SVR4H73275\",\"stoppedAt\":\"2025-11-10T17:01:08.644Z\"}],\"receivedAt\":\"2025-11-10T16:58:24.003Z\",\"state\":\"FINISHED\",\"workpieceId\":\"04d78cca341290\",\"startedAt\":\"2025-11-10T16:58:24.004Z\",\"stoppedAt\":\"2025-11-10T17:01:08.645Z\"},{\"orderType\":\"PRODUCTION\",\"type\":\"BLUE\",\"timestamp\":\"2025-11-10T17:02:15.789Z\",\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"productionSteps\":[{\"id\":\"93a03101-b829-4d73-970b-e82e76ec8049\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"HBW\",\"startedAt\":\"2025-11-10T17:02:15.927Z\",\"stoppedAt\":\"2025-11-10T17:02:25.656Z\"},{\"id\":\"8e820351-7933-4d7c-9aba-0ab5a1ab84bb\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"93a03101-b829-4d73-970b-e82e76ec8049\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"HBW\",\"startedAt\":\"2025-11-10T17:02:25.660Z\",\"serialNumber\":\"SVR3QA0022\",\"stoppedAt\":\"2025-11-10T17:03:06.341Z\"},{\"id\":\"8111d5a4-e67d-47b4-bf59-4bc0eaa1a610\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"HBW\",\"target\":\"DRILL\",\"dependentActionId\":\"8e820351-7933-4d7c-9aba-0ab5a1ab84bb\",\"startedAt\":\"2025-11-10T17:03:06.528Z\",\"stoppedAt\":\"2025-11-10T17:03:20.271Z\"},{\"id\":\"f6986d0b-7e2e-42dc-b537-f750cf2a6880\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"8111d5a4-e67d-47b4-bf59-4bc0eaa1a610\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T17:03:20.281Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T17:03:31.150Z\"},{\"id\":\"503de4f6-676c-48ec-a4e2-481adeab9f79\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"f6986d0b-7e2e-42dc-b537-f750cf2a6880\",\"state\":\"FINISHED\",\"command\":\"DRILL\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T17:03:31.156Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T17:03:41.125Z\"},{\"id\":\"09ee7983-7f92-4e5a-8dde-a88b499a4a5f\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"503de4f6-676c-48ec-a4e2-481adeab9f79\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T17:03:41.134Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T17:03:51.093Z\"},{\"id\":\"b8a1107a-b86b-4119-8986-6e813e739ed8\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"DRILL\",\"target\":\"MILL\",\"dependentActionId\":\"09ee7983-7f92-4e5a-8dde-a88b499a4a5f\",\"startedAt\":\"2025-11-10T17:03:51.282Z\",\"stoppedAt\":\"2025-11-10T17:04:03.387Z\"},{\"id\":\"669535a0-1891-49d8-99e8-6efa1e5cff42\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"b8a1107a-b86b-4119-8986-6e813e739ed8\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"MILL\",\"startedAt\":\"2025-11-10T17:04:03.391Z\",\"serialNumber\":\"SVR3QA2098\",\"stoppedAt\":\"2025-11-10T17:04:12.967Z\"},{\"id\":\"d16d4714-c250-43ca-89a1-fb2caadd15a1\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"669535a0-1891-49d8-99e8-6efa1e5cff42\",\"state\":\"FINISHED\",\"command\":\"MILL\",\"moduleType\":\"MILL\",\"startedAt\":\"2025-11-10T17:04:12.969Z\",\"serialNumber\":\"SVR3QA2098\",\"stoppedAt\":\"2025-11-10T17:04:22.953Z\"},{\"id\":\"b9ec0dcd-917c-487e-bdc2-d0addafec877\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"d16d4714-c250-43ca-89a1-fb2caadd15a1\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"MILL\",\"startedAt\":\"2025-11-10T17:04:22.965Z\",\"serialNumber\":\"SVR3QA2098\",\"stoppedAt\":\"2025-11-10T17:04:31.879Z\"},{\"id\":\"cbe87b29-69ee-4b7f-90c7-5c7ff9c023cb\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"MILL\",\"target\":\"AIQS\",\"dependentActionId\":\"b9ec0dcd-917c-487e-bdc2-d0addafec877\",\"startedAt\":\"2025-11-10T17:04:32.043Z\",\"stoppedAt\":\"2025-11-10T17:04:44.584Z\"},{\"id\":\"688ff93f-00b3-4657-a650-a48001c0273a\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"cbe87b29-69ee-4b7f-90c7-5c7ff9c023cb\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T17:04:44.587Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T17:04:52.073Z\"},{\"id\":\"5e919162-d76c-49f5-b597-5cdd96f385dc\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"688ff93f-00b3-4657-a650-a48001c0273a\",\"state\":\"FINISHED\",\"command\":\"CHECK_QUALITY\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T17:04:52.079Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T17:05:01.037Z\"},{\"id\":\"e3f68c76-e8e8-4cb2-8eca-d7cdace5b821\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"5e919162-d76c-49f5-b597-5cdd96f385dc\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T17:05:01.054Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T17:05:10.174Z\"},{\"id\":\"b2c28112-b68d-455b-8f01-dd770154f541\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"AIQS\",\"target\":\"DPS\",\"dependentActionId\":\"e3f68c76-e8e8-4cb2-8eca-d7cdace5b821\",\"startedAt\":\"2025-11-10T17:05:10.338Z\",\"stoppedAt\":\"2025-11-10T17:05:19.479Z\"},{\"id\":\"09c098e5-5b7f-45fc-b31d-e580c4627c50\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"b2c28112-b68d-455b-8f01-dd770154f541\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"DPS\",\"startedAt\":\"2025-11-10T17:05:19.502Z\",\"serialNumber\":\"SVR4H73275\",\"stoppedAt\":\"2025-11-10T17:05:42.962Z\"}],\"receivedAt\":\"2025-11-10T17:02:15.843Z\",\"state\":\"FINISHED\",\"workpieceId\":\"04a189ca341290\",\"startedAt\":\"2025-11-10T17:02:15.844Z\",\"stoppedAt\":\"2025-11-10T17:05:42.963Z\"},{\"orderType\":\"STORAGE\",\"type\":\"WHITE\",\"timestamp\":\"2025-11-10T17:07:17.871Z\",\"orderId\":\"3adc738c-c149-4fed-8f83-8b00f84f5b92\",\"productionSteps\":[{\"id\":\"2f7c4f58-a891-4cf3-a721-e670c93b8359\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"DPS\",\"startedAt\":\"2025-11-10T17:07:18.015Z\",\"stoppedAt\":\"2025-11-10T17:07:20.084Z\"},{\"id\":\"a130f581-0b5a-4948-9220-0d4e82ae0b18\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"2f7c4f58-a891-4cf3-a721-e670c93b8359\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"DPS\",\"startedAt\":\"2025-11-10T17:07:20.095Z\",\"serialNumber\":\"SVR4H73275\",\"stoppedAt\":\"2025-11-10T17:07:34.318Z\"},{\"id\":\"2e7a1a11-5115-414c-8c9e-8db89af796f0\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"DPS\",\"target\":\"HBW\",\"dependentActionId\":\"a130f581-0b5a-4948-9220-0d4e82ae0b18\",\"startedAt\":\"2025-11-10T17:07:34.505Z\",\"stoppedAt\":\"2025-11-10T17:07:45.249Z\"},{\"id\":\"126c4e1b-50c4-47bc-99bc-e1d8f3295d4f\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"2e7a1a11-5115-414c-8c9e-8db89af796f0\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"HBW\",\"startedAt\":\"2025-11-10T17:07:45.251Z\",\"serialNumber\":\"SVR3QA0022\",\"stoppedAt\":\"2025-11-10T17:08:03.375Z\"}],\"receivedAt\":\"2025-11-10T17:07:17.986Z\",\"state\":\"FINISHED\",\"workpieceId\":\"04798eca341290\",\"startedAt\":\"2025-11-10T17:07:17.987Z\",\"stoppedAt\":\"2025-11-10T17:08:03.385Z\"},{\"orderType\":\"STORAGE\",\"type\":\"BLUE\",\"timestamp\":\"2025-11-10T17:09:40.559Z\",\"orderId\":\"2413eb6e-fb6b-4ed1-b93f-fb17143a4593\",\"productionSteps\":[{\"id\":\"a40df199-a19f-4e97-979b-bea26758634e\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"DPS\",\"startedAt\":\"2025-11-10T17:09:40.710Z\",\"stoppedAt\":\"2025-11-10T17:09:50.921Z\"},{\"id\":\"1fcb2195-ef15-4d8b-b758-401ee33681f7\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"a40df199-a19f-4e97-979b-bea26758634e\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"DPS\",\"startedAt\":\"2025-11-10T17:09:50.928Z\",\"serialNumber\":\"SVR4H73275\",\"stoppedAt\":\"2025-11-10T17:10:05.188Z\"},{\"id\":\"79615cb6-50a6-43b0-8f81-b652b308934c\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"DPS\",\"target\":\"HBW\",\"dependentActionId\":\"1fcb2195-ef15-4d8b-b758-401ee33681f7\",\"startedAt\":\"2025-11-10T17:10:05.344Z\",\"stoppedAt\":\"2025-11-10T17:10:15.877Z\"},{\"id\":\"fb698a0e-d18d-4d10-9641-840fa4226069\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"79615cb6-50a6-43b0-8f81-b652b308934c\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"HBW\",\"startedAt\":\"2025-11-10T17:10:15.880Z\",\"serialNumber\":\"SVR3QA0022\",\"stoppedAt\":\"2025-11-10T17:10:33.292Z\"}],\"receivedAt\":\"2025-11-10T17:09:40.662Z\",\"state\":\"FINISHED\",\"workpieceId\":\"04a189ca341290\",\"startedAt\":\"2025-11-10T17:09:40.662Z\",\"stoppedAt\":\"2025-11-10T17:10:33.299Z\"}]",
+    "timestamp": "2025-11-10T18:11:19.493113"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/status",
+    "payload": "{\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:19.493318"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/connection",
+    "payload": "{ \"headerId\": 2, \"timestamp\": \"2025-11-10T12:57:28.071649Z\", \"version\": \"1.0.0\", \"manufacturer\": \"Fischertechnik\", \"serialNumber\": \"SVR4H76530\", \"connectionState\": \"ONLINE\" }",
+    "timestamp": "2025-11-10T18:11:19.493335"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/state",
+    "payload": "{\"errors\": [], \"batteryState\": {}, \"serialNumber\": \"SVR4H76530\", \"timestamp\": \"2025-11-10T17:04:59.484865Z\", \"headerId\": 19, \"actionState\": {\"command\": \"CHECK_QUALITY\", \"result\": \"PASSED\", \"id\": \"5e919162-d76c-49f5-b597-5cdd96f385dc\", \"timestamp\": \"2025-11-10T17:04:59.484480Z\", \"state\": \"FINISHED\"}, \"paused\": false, \"orderUpdateId\": 10, \"orderId\": \"ceca8bef-bbe8-4012-aa18-725d7af68a10\"}",
+    "timestamp": "2025-11-10T18:11:19.493353"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/factsheet",
+    "payload": "{\"manufacturer\": \"Fischertechnik\", \"typeSpecification\": {\"moduleClass\": \"AIQS24\", \"seriesName\": \"MOD-FF22+AIQS+24V+TXT\"}, \"version\": \"1.3.0+git40c45a0\", \"serialNumber\": \"SVR4H76530\", \"timestamp\": \"2025-11-10T16:50:54.250610Z\", \"localizationParameters\": {}, \"headerId\": 1, \"protocolFeatures\": {\"moduleActions\": [{\"actionParameters\": [{\"parameterType\": \"string\", \"isOptional\": true, \"parameterDescription\": \"Type of workpiece that should checked\", \"parameterName\": \"type\"}], \"actionType\": \"CHECK_QUALITY\"}]}, \"protocolLimits\": {}, \"loadSpecification\": {\"loadSets\": []}, \"physicalParameters\": {}}",
+    "timestamp": "2025-11-10T18:11:19.493371"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/connection",
+    "payload": "{ \"headerId\": 2, \"timestamp\": \"2025-11-10T16:47:01.733656Z\", \"version\": \"1.6.0+gitc321c85\", \"manufacturer\": \"Fischertechnik\", \"serialNumber\": \"SVR4H73275\", \"connectionState\": \"ONLINE\", \"ip\": \"-1\" }",
+    "timestamp": "2025-11-10T18:11:19.493389"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"2413eb6e-fb6b-4ed1-b93f-fb17143a4593\", \"errors\": [], \"batteryState\": {}, \"headerId\": 29, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"DROP\", \"state\": \"FINISHED\", \"id\": \"1fcb2195-ef15-4d8b-b758-401ee33681f7\", \"timestamp\": \"2025-11-10T17:10:04.089535Z\"}, \"actionStates\": [{\"command\": \"DROP\", \"state\": \"FINISHED\", \"metadata\": {\"workpiece\": {\"type\": \"BLUE\", \"history\": [{\"ts\": 1762794186341, \"code\": 400}, {\"ts\": 1762794221125, \"code\": 700}, {\"ts\": 1762794262953, \"code\": 600}, {\"ts\": 1762794301037, \"code\": 200}, {\"ts\": 1762794342962, \"code\": 800}], \"state\": \"PROCESSED\", \"workpieceId\": \"04a189ca341290\"}}, \"id\": \"1fcb2195-ef15-4d8b-b758-401ee33681f7\", \"timestamp\": \"2025-11-10T17:10:04.089535Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:10:04.089842Z\"}",
+    "timestamp": "2025-11-10T18:11:19.493405"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/factsheet",
+    "payload": "{\"protocolFeatures\": {\"moduleActions\": [{\"actionParameters\": [{\"parameterType\": \"string\", \"parameterName\": \"type\", \"parameterDescription\": \"The load type to input\"}], \"actionType\": \"DROP\"}, {\"actionParameters\": [{\"parameterType\": \"string\", \"parameterName\": \"type\", \"parameterDescription\": \"The load type to output\"}], \"actionType\": \"PICK\"}, {\"actionScopes\": [\"INSTANT\"], \"actionType\": \"startCalibration\"}, {\"actionScopes\": [\"INSTANT\"], \"actionType\": \"stopCalibration\"}, {\"actionScopes\": [\"INSTANT\"], \"actionParameters\": [{\"parameterType\": \"array\", \"parameterName\": \"references\", \"parameterDescription\": \"Array of ReferenceValues objects with referenceKey and referenceValue\"}], \"actionType\": \"setCalibrationValues\"}, {\"actionScopes\": [\"INSTANT\"], \"actionParameters\": [{\"isOptional\": true, \"parameterType\": \"array\", \"parameterName\": \"references\", \"parameterDescription\": \"Array of ReferenceValues objects with referenceKey and referenceValue\"}], \"actionType\": \"storeCalibrationValues\"}, {\"actionScopes\": [\"INSTANT\"], \"actionParameters\": [{\"parameterType\": \"string\", \"parameterName\": \"position\", \"parameterDescription\": \"Position to select\"}], \"actionType\": \"selectCalibrationPosition\"}, {\"actionScopes\": [\"INSTANT\"], \"actionParameters\": [{\"parameterType\": \"string\", \"parameterName\": \"position\", \"parameterDescription\": \"Position to test\"}], \"actionType\": \"testCalibrationPosition\"}, {\"actionScopes\": [\"INSTANT\"], \"actionParameters\": [{\"isOptional\": true, \"parameterType\": \"boolean\", \"parameterName\": \"factory\", \"parameterDescription\": \"Reset to factory defaults\"}], \"actionType\": \"resetCalibration\"}, {\"actionScopes\": [\"INSTANT\"], \"actionParameters\": [{\"parameterType\": \"string\", \"parameterName\": \"orderId\", \"parameterDescription\": \"The orderId that will deliver the workpiece to output\"}], \"actionType\": \"announceOutput\"}, {\"actionScopes\": [\"INSTANT\"], \"actionType\": \"cancelStorageOrder\"}], \"moduleParameters\": {\"clearModuleOnPick\": true}}, \"headerId\": 1, \"protocolLimits\": {}, \"physicalParameters\": {}, \"manufacturer\": \"Fischertechnik\", \"loadSpecification\": {\"loadSets\": [{\"loadType\": \"WHITE\", \"setName\": \"WHITES\"}, {\"loadType\": \"RED\", \"setName\": \"REDS\"}, {\"loadType\": \"BLUE\", \"setName\": \"BLUES\"}]}, \"version\": \"1.6.0+gitc321c85\", \"typeSpecification\": {\"moduleClass\": \"DPS\", \"seriesName\": \"MOD-FF22+DPS\"}, \"localizationParameters\": {}, \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T16:50:54.557162Z\"}",
+    "timestamp": "2025-11-10T18:11:19.493518"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":66,\"loads\":[],\"actionState\":{\"command\":\"DROP\",\"id\":\"b9ec0dcd-917c-487e-bdc2-d0addafec877\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:04:31.820Z\",\"errors\":[],\"orderUpdateId\":9,\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:11:19.493539"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":93,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:19.493557"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/factsheet",
+    "payload": "{\"headerId\":1,\"timestamp\":\"2025-11-10T16:47:29.064Z\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"typeSpecification\":{\"seriesName\":\"MOD-FF22+MILL+24V\",\"moduleClass\":\"MILL\"},\"physicalParameters\":{},\"protocolLimits\":{},\"protocolFeatures\":{\"moduleActions\":[{\"actionType\":\"DROP\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece that should be put on the FTS\",\"isOptional\":true}]},{\"actionType\":\"PICK\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece to pick up and process\"}]},{\"actionType\":\"MILL\",\"actionParameters\":[{\"parameterName\":\"duration\",\"parameterType\":\"number\",\"parameterDescription\":\"Set the duration of the milling operation\"},{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece to process\",\"isOptional\":true}]}]},\"localizationParameters\":{},\"loadSpecification\":{\"loadSets\":[{\"setName\":\"WHITES\",\"loadType\":\"WHITE\"},{\"setName\":\"REDS\",\"loadType\":\"RED\"},{\"setName\":\"BLUES\",\"loadType\":\"BLUE\"}]}}",
+    "timestamp": "2025-11-10T18:11:19.493574"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "payload": "{\"headerId\":69,\"loads\":[],\"actionState\":{\"command\":\"DROP\",\"id\":\"09ee7983-7f92-4e5a-8dde-a88b499a4a5f\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR4H76449\",\"timestamp\":\"2025-11-10T17:03:51.033Z\",\"errors\":[],\"orderUpdateId\":5,\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:11:19.493610"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":99,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:19.493639"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/factsheet",
+    "payload": "{\"headerId\":1,\"timestamp\":\"2025-11-10T16:47:29.066Z\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"typeSpecification\":{\"seriesName\":\"MOD-FF22+DRILL+24V\",\"moduleClass\":\"DRILL\"},\"physicalParameters\":{},\"protocolLimits\":{},\"protocolFeatures\":{\"moduleActions\":[{\"actionType\":\"DROP\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece that should be put on the FTS\",\"isOptional\":true}]},{\"actionType\":\"PICK\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece to pick up and process\"}]},{\"actionType\":\"DRILL\",\"actionParameters\":[{\"parameterName\":\"duration\",\"parameterType\":\"number\",\"parameterDescription\":\"Set the duration of the drilling operation\"},{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece to process\",\"isOptional\":true}]}]},\"localizationParameters\":{},\"loadSpecification\":{\"loadSets\":[{\"setName\":\"WHITES\",\"loadType\":\"WHITE\"},{\"setName\":\"REDS\",\"loadType\":\"RED\"},{\"setName\":\"BLUES\",\"loadType\":\"BLUE\"}]}}",
+    "timestamp": "2025-11-10T18:11:19.493662"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/state",
+    "payload": "{\"headerId\":77,\"loads\":[],\"actionState\":{\"command\":\"DROP\",\"id\":\"e3f68c76-e8e8-4cb2-8eca-d7cdace5b821\",\"metadata\":{\"type\":\"BLUE\",\"workpieceId\":\"04a189ca341290\"},\"state\":\"FINISHED\"},\"serialNumber\":\"SVR4H76530\",\"timestamp\":\"2025-11-10T17:05:10.113Z\",\"errors\":[],\"orderUpdateId\":0,\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:11:19.493682"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":101,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:19.493700"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/factsheet",
+    "payload": "{\"headerId\":1,\"timestamp\":\"2025-11-10T16:47:29.221Z\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"typeSpecification\":{\"seriesName\":\"MOD-FF22+AIQS+24V\",\"moduleClass\":\"AIQS\"},\"physicalParameters\":{},\"protocolLimits\":{},\"protocolFeatures\":{\"moduleActions\":[{\"actionType\":\"PICK\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece to pick up and process\"}]},{\"actionType\":\"DROP\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece that should be put on the FTS\",\"isOptional\":true}]},{\"actionType\":\"CHECK_QUALITY\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece that should checked\",\"isOptional\":true}]},{\"actionType\":\"startCalibration\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"stopCalibration\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"setCalibrationValues\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"references\",\"parameterType\":\"array\",\"parameterDescription\":\"Array of ReferenceValues objects with referenceKey and referenceValue\"}]},{\"actionType\":\"storeCalibrationValues\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"references\",\"parameterType\":\"array\",\"parameterDescription\":\"Array of ReferenceValues objects with referenceKey and referenceValue\",\"isOptional\":true}]},{\"actionType\":\"selectCalibrationPosition\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"position\",\"parameterType\":\"string\",\"parameterDescription\":\"Position to select\"}]},{\"actionType\":\"testCalibrationPosition\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"position\",\"parameterType\":\"string\",\"parameterDescription\":\"Position to test\"}]},{\"actionType\":\"resetCalibration\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"factory\",\"parameterType\":\"boolean\",\"parameterDescription\":\"Reset to factory defaults\",\"isOptional\":true}]}]},\"localizationParameters\":{},\"loadSpecification\":{\"loadSets\":[{\"setName\":\"WHITES\",\"loadType\":\"WHITE\"},{\"setName\":\"REDS\",\"loadType\":\"RED\"},{\"setName\":\"BLUES\",\"loadType\":\"BLUE\"}]}}",
+    "timestamp": "2025-11-10T18:11:19.493719"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "payload": "{\"headerId\":90,\"loads\":[{\"loadType\":\"WHITE\",\"loadId\":\"04798eca341290\",\"loadPosition\":\"A1\",\"loadTimestamp\":1762794465298},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"A2\",\"loadTimestamp\":0},{\"loadType\":\"BLUE\",\"loadId\":\"048989ca341290\",\"loadPosition\":\"A3\",\"loadTimestamp\":1762771099463},{\"loadType\":\"BLUE\",\"loadId\":\"04a189ca341290\",\"loadPosition\":\"B1\",\"loadTimestamp\":1762794615886},{\"loadType\":\"RED\",\"loadId\":\"040a8dca341291\",\"loadPosition\":\"B2\",\"loadTimestamp\":1762258037251},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"B3\",\"loadTimestamp\":0},{\"loadType\":\"BLUE\",\"loadId\":\"047389ca341291\",\"loadPosition\":\"C1\",\"loadTimestamp\":1762770942249},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"C2\",\"loadTimestamp\":0},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"C3\",\"loadTimestamp\":0}],\"actionState\":{\"id\":\"fb698a0e-d18d-4d10-9641-840fa4226069\",\"command\":\"PICK\",\"metadata\":{\"type\":\"BLUE\",\"workpieceId\":\"04a189ca341290\"},\"state\":\"FINISHED\"},\"serialNumber\":\"SVR3QA0022\",\"timestamp\":\"2025-11-10T17:10:33.223Z\",\"errors\":[],\"orderUpdateId\":3,\"orderId\":\"2413eb6e-fb6b-4ed1-b93f-fb17143a4593\",\"paused\":false,\"operatingMode\":\"AUTOMATIC\",\"metadata\":{\"opcuaState\":\"connected\"},\"information\":[]}",
+    "timestamp": "2025-11-10T18:11:19.493737"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":93,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:19.493754"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/factsheet",
+    "payload": "{\"headerId\":1,\"timestamp\":\"2025-11-10T16:47:29.462Z\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"typeSpecification\":{\"seriesName\":\"MOD-FF22+HBW+24V\",\"moduleClass\":\"HBW\"},\"physicalParameters\":{},\"protocolLimits\":{},\"protocolFeatures\":{\"moduleActions\":[{\"actionType\":\"DROP\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"The load type to unload\"}]},{\"actionType\":\"PICK\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"The load type to store\"}]},{\"actionType\":\"startCalibration\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"stopCalibration\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"setCalibrationValues\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"references\",\"parameterType\":\"array\",\"parameterDescription\":\"Array of ReferenceValues objects with referenceKey and referenceValue\"}]},{\"actionType\":\"storeCalibrationValues\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"references\",\"parameterType\":\"array\",\"parameterDescription\":\"Array of ReferenceValues objects with referenceKey and referenceValue\",\"isOptional\":true}]},{\"actionType\":\"selectCalibrationPosition\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"position\",\"parameterType\":\"string\",\"parameterDescription\":\"Position to select\"}]},{\"actionType\":\"testCalibrationPosition\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"position\",\"parameterType\":\"string\",\"parameterDescription\":\"Position to test\"}]},{\"actionType\":\"resetCalibration\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"factory\",\"parameterType\":\"boolean\",\"parameterDescription\":\"Reset to factory defaults\",\"isOptional\":true}]}],\"moduleParameters\":{\"clearModuleOnPick\":true}},\"localizationParameters\":{},\"loadSpecification\":{\"loadPositions\":[\"A1\",\"B1\",\"C1\",\"A2\",\"B2\",\"C2\",\"A3\",\"B3\",\"C3\"],\"loadSets\":[{\"setName\":\"WHITES\",\"loadType\":\"WHITE\",\"maxAmount\":3},{\"setName\":\"REDS\",\"loadType\":\"RED\",\"maxAmount\":3},{\"setName\":\"BLUES\",\"loadType\":\"BLUE\",\"maxAmount\":3}]}}",
+    "timestamp": "2025-11-10T18:11:19.493813"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\":1,\"orderId\":\"2413eb6e-fb6b-4ed1-b93f-fb17143a4593\",\"errors\":[],\"batteryState\":{},\"headerId\":29,\"paused\":false,\"operatingMode\":\"AUTOMATIC\",\"information\":[],\"actionState\":{\"command\":\"DROP\",\"state\":\"FINISHED\",\"id\":\"1fcb2195-ef15-4d8b-b758-401ee33681f7\",\"timestamp\":\"2025-11-10T17:10:04.089535Z\"},\"actionStates\":[{\"command\":\"DROP\",\"state\":\"FINISHED\",\"metadata\":{\"workpiece\":{\"type\":\"BLUE\",\"history\":[{\"ts\":1762794186341,\"code\":400},{\"ts\":1762794221125,\"code\":700},{\"ts\":1762794262953,\"code\":600},{\"ts\":1762794301037,\"code\":200},{\"ts\":1762794342962,\"code\":800}],\"state\":\"PROCESSED\",\"workpieceId\":\"04a189ca341290\"}},\"id\":\"1fcb2195-ef15-4d8b-b758-401ee33681f7\",\"timestamp\":\"2025-11-10T17:10:04.089535Z\"}],\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:04.089842Z\"}",
+    "timestamp": "2025-11-10T18:11:19.493834"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":955,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:19.493854"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/factsheet",
+    "payload": "{\"headerId\":1,\"timestamp\":\"2025-11-10T16:47:29.616Z\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"typeSpecification\":{\"seriesName\":\"MOD-FF22+DPS+24V\",\"moduleClass\":\"DPS\"},\"physicalParameters\":{},\"protocolLimits\":{},\"protocolFeatures\":{\"moduleActions\":[{\"actionType\":\"DROP\",\"actionScopes\":[\"ORDER\"],\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"The load type to input\"}]},{\"actionType\":\"PICK\",\"actionScopes\":[\"ORDER\"],\"actionParameters\":[{\"parameterName\":\"workpiece\",\"parameterType\":\"OBJECT\",\"parameterDescription\":\"The workpiece object with workpieceId, type, state and the history array\"}]},{\"actionType\":\"factsheetRequest\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"reset\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"startCalibration\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"stopCalibration\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"setCalibrationValues\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"references\",\"parameterType\":\"array\",\"parameterDescription\":\"Array of ReferenceValues objects with referenceKey and referenceValue\"}]},{\"actionType\":\"storeCalibrationValues\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"references\",\"parameterType\":\"array\",\"parameterDescription\":\"Array of ReferenceValues objects with referenceKey and referenceValue\",\"isOptional\":true}]},{\"actionType\":\"selectCalibrationPosition\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"position\",\"parameterType\":\"string\",\"parameterDescription\":\"Position to select\"}]},{\"actionType\":\"testCalibrationPosition\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"position\",\"parameterType\":\"string\",\"parameterDescription\":\"Position to test\"}]},{\"actionType\":\"resetCalibration\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"factory\",\"parameterType\":\"boolean\",\"parameterDescription\":\"Reset to factory defaults\",\"isOptional\":true}]},{\"actionType\":\"announceOutput\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"orderId\",\"parameterType\":\"string\",\"parameterDescription\":\"The orderId that will deliver the workpiece to output\"}]},{\"actionType\":\"cancelStorageOrder\",\"actionScopes\":[\"INSTANT\"]},{\"actionType\":\"setStatusLED\",\"actionScopes\":[\"INSTANT\"],\"actionParameters\":[{\"parameterName\":\"red\",\"parameterType\":\"boolean\",\"parameterDescription\":\"Traffic light LED\"},{\"parameterName\":\"yellow\",\"parameterType\":\"boolean\",\"parameterDescription\":\"Traffic light LED\"},{\"parameterName\":\"green\",\"parameterType\":\"boolean\",\"parameterDescription\":\"Traffic light LED\"}]}],\"moduleParameters\":{\"clearModuleOnPick\":true}},\"localizationParameters\":{},\"loadSpecification\":{\"loadSets\":[{\"setName\":\"WHITES\",\"loadType\":\"WHITE\"},{\"setName\":\"REDS\",\"loadType\":\"RED\"},{\"setName\":\"BLUES\",\"loadType\":\"BLUE\"}]}}",
+    "timestamp": "2025-11-10T18:11:19.493872"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/connection",
+    "payload": "{ \"headerId\": 2, \"timestamp\": \"2025-11-10T16:49:42.548892Z\", \"version\": \"1.1.0+git250d287\", \"manufacturer\": \"Fischertechnik\", \"serialNumber\": \"5iO4\", \"connectionState\": \"ONLINE\", \"ip\": \"192.168.0.105\" }",
+    "timestamp": "2025-11-10T18:11:19.493889"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 2, \"batteryState\": {\"currentVoltage\": 9.2, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 107, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"SVR3QA0022\", \"driving\": false, \"edgeStates\": [], \"orderId\": \"2413eb6e-fb6b-4ed1-b93f-fb17143a4593\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:10:33.294835Z\", \"actionState\": {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:10:15.797073Z\", \"id\": \"79615cb6-50a6-43b0-8f81-b652b308934c\", \"state\": \"FINISHED\"}, \"load\": [{\"loadId\": null, \"loadType\": null, \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:10:07.578289Z\", \"id\": \"194b2468-a2c5-40e5-b82f-1dde4c7ab83b\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:10:10.102691Z\", \"id\": \"cf71c76a-b844-4b33-94fd-c9204c405924\", \"state\": \"FINISHED\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:10:15.797073Z\", \"id\": \"79615cb6-50a6-43b0-8f81-b652b308934c\", \"state\": \"FINISHED\"}, {\"command\": \"clearLoadHandler\", \"timestamp\": \"2025-11-10T17:10:33.294510Z\", \"id\": \"d9bc2718-d125-483e-a5a2-bdda5d716648\", \"state\": \"FINISHED\"}], \"headerId\": 335}",
+    "timestamp": "2025-11-10T18:11:19.493905"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/factsheet",
+    "payload": "{\"manufacturer\": \"Fischertechnik\", \"typeSpecification\": {\"seriesName\": \"FTS-FF22+\", \"agvClass\": \"CARRIER\", \"navigationTypes\": [\"PHYSICAL_LINE_GUIDED\"]}, \"agvGeometry\": {}, \"version\": \"1.1.0+git250d287\", \"protocolFeatures\": {\"agvActions\": [{\"actionType\": \"DOCK\", \"actionScopes\": \"NODE\"}]}, \"protocolLimits\": {}, \"localizationParameters\": {}, \"loadSpecification\": {\"loadSets\": [{\"setName\": \"WHITES\", \"loadType\": \"WHITE\"}, {\"setName\": \"REDS\", \"loadType\": \"RED\"}, {\"setName\": \"BLUES\", \"loadType\": \"BLUE\"}], \"loadPositions\": [\"LEFT\", \"MIDDLE\", \"RIGHT\"]}, \"physicalParameters\": {}, \"timestamp\": \"2025-11-10T16:49:42.759168Z\", \"serialNumber\": \"5iO4\", \"headerId\": 1}",
+    "timestamp": "2025-11-10T18:11:19.493952"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":94,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:24.033596"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:23.995Z\",\"actions\":[{\"actionId\":\"6c0c99d1-2ae2-4bb2-bb2d-d71a00940565\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:11:24.048813"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":100,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:24.096510"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:24.089Z\",\"actions\":[{\"actionId\":\"31c89678-2f8f-498c-ae1a-5683f2d94b79\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:11:24.141046"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":102,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:24.247815"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:24.241Z\",\"actions\":[{\"actionId\":\"e74eb69f-7193-4c90-ab23-1774f7e75193\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:11:24.292729"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":94,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:24.430499"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":961,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:24.452175"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:24.424Z\",\"actions\":[{\"actionId\":\"8b4ab9d0-b5dc-4459-84d6-db94d9808f78\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:11:24.499988"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:24.446Z\",\"actions\":[{\"actionId\":\"bd39a413-b756-4eb2-80f5-69ce86f8cedf\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:11:24.503723"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"headerId\":964,\"loads\":[{\"loadType\":\"UNKNOWN\"}],\"actionState\":null,\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:25.615Z\",\"errors\":[{}],\"orderUpdateId\":0,\"orderId\":\"0\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:11:25.639969"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:11:25.627Z\",\"orderId\":\"d9bece3f-73d4-401d-8db4-47636411c6e3\",\"orderUpdateId\":1,\"action\":{\"id\":\"d9bece3f-73d4-401d-8db4-47636411c6e3\",\"command\":\"INPUT_RGB\",\"metadata\":{}}}",
+    "timestamp": "2025-11-10T18:11:25.643739"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:25.636Z\",\"actions\":[{\"actionId\":\"5901e294-52e3-43d6-b0de-950a21fc4121\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:25.688570"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"errors\": [], \"batteryState\": {}, \"headerId\": 30, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"INPUT_RGB\", \"state\": \"WAITIING\", \"id\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"timestamp\": \"2025-11-10T17:11:25.628670Z\"}, \"actionStates\": [{\"command\": \"INPUT_RGB\", \"state\": \"WAITIING\", \"metadata\": {}, \"id\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"timestamp\": \"2025-11-10T17:11:25.628670Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:11:25.635480Z\"}",
+    "timestamp": "2025-11-10T18:11:25.716030"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"errors\": [], \"batteryState\": {}, \"headerId\": 31, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"INPUT_RGB\", \"state\": \"RUNNING\", \"id\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"timestamp\": \"2025-11-10T17:11:26.038139Z\"}, \"actionStates\": [{\"command\": \"INPUT_RGB\", \"state\": \"RUNNING\", \"metadata\": {}, \"id\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"timestamp\": \"2025-11-10T17:11:26.038139Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:11:26.038735Z\"}",
+    "timestamp": "2025-11-10T18:11:26.076777"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":95,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:39.083157"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:38.994Z\",\"actions\":[{\"actionId\":\"28aa03f4-d5b0-43d2-9276-970a1c18dfad\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:39.083377"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":101,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:39.090543"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:39.084Z\",\"actions\":[{\"actionId\":\"17f22e55-f48d-43a4-804e-8dd109b0b3a6\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:39.136284"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":103,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:39.245175"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:39.236Z\",\"actions\":[{\"actionId\":\"b261bfaa-c472-483c-bcfe-213481393bce\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:39.289788"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":95,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:39.426579"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":969,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:39.450670"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:39.418Z\",\"actions\":[{\"actionId\":\"cfecde91-a065-4918-b0a1-21356ad999f3\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:39.495634"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:39.442Z\",\"actions\":[{\"actionId\":\"0805dae8-790c-43b4-8cd6-6d30c8d5901d\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:39.498475"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"errors\": [], \"batteryState\": {}, \"headerId\": 32, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"INPUT_RGB\", \"state\": \"FINISHED\", \"result\": null, \"id\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"timestamp\": \"2025-11-10T17:11:40.697964Z\"}, \"actionStates\": [{\"command\": \"INPUT_RGB\", \"metadata\": {}, \"state\": \"FINISHED\", \"result\": null, \"id\": \"d9bece3f-73d4-401d-8db4-47636411c6e3\", \"timestamp\": \"2025-11-10T17:11:40.697964Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:11:40.698266Z\"}",
+    "timestamp": "2025-11-10T18:11:40.824541"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"headerId\":972,\"loads\":[{\"type\":\"RED\"}],\"actionState\":null,\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:41.719Z\",\"errors\":[{}],\"orderUpdateId\":0,\"orderId\":\"0\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:11:41.731656"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:11:41.720Z\",\"orderId\":\"0\",\"orderUpdateId\":1,\"action\":{\"id\":\"0\",\"command\":\"RGB_NFC\",\"metadata\":{\"type\":\"RED\"}}}",
+    "timestamp": "2025-11-10T18:11:41.734518"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:41.725Z\",\"actions\":[{\"actionId\":\"a8fe2896-3290-41da-abf0-31c0c38407e5\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:41.776142"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"0\", \"errors\": [], \"batteryState\": {}, \"headerId\": 33, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"RGB_NFC\", \"state\": \"WAITIING\", \"id\": \"0\", \"timestamp\": \"2025-11-10T17:11:41.721876Z\"}, \"actionStates\": [{\"command\": \"RGB_NFC\", \"state\": \"WAITIING\", \"metadata\": {\"type\": \"RED\"}, \"id\": \"0\", \"timestamp\": \"2025-11-10T17:11:41.721876Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:11:41.722213Z\"}",
+    "timestamp": "2025-11-10T18:11:41.779353"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"0\", \"errors\": [], \"batteryState\": {}, \"headerId\": 34, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"RGB_NFC\", \"state\": \"RUNNING\", \"id\": \"0\", \"timestamp\": \"2025-11-10T17:11:41.813751Z\"}, \"actionStates\": [{\"command\": \"RGB_NFC\", \"state\": \"RUNNING\", \"metadata\": {\"type\": \"RED\"}, \"id\": \"0\", \"timestamp\": \"2025-11-10T17:11:41.813751Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:11:41.814118Z\"}",
+    "timestamp": "2025-11-10T18:11:41.870448"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":96,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:54.003680"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:53.997Z\",\"actions\":[{\"actionId\":\"86a609bc-c55d-44ee-bc58-a1b8940e7706\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:54.054705"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":102,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:54.096079"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:54.090Z\",\"actions\":[{\"actionId\":\"b420ccf9-5f39-4365-a005-536a796ec9d5\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:54.145243"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":104,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:54.250083"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:54.245Z\",\"actions\":[{\"actionId\":\"a06644e6-269b-4cc8-8d92-616d7dfb3167\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:54.297200"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":96,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:54.425303"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":977,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:11:54.453244"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:54.418Z\",\"actions\":[{\"actionId\":\"51dedda5-30a9-432e-b72c-c259eff66eca\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:54.500348"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:54.446Z\",\"actions\":[{\"actionId\":\"0422142b-b6b0-4bea-bf26-2f35d99c1c63\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:54.503777"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"0\", \"errors\": [], \"batteryState\": {}, \"headerId\": 35, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"RGB_NFC\", \"state\": \"FINISHED\", \"result\": \"04808dca341291\", \"id\": \"0\", \"timestamp\": \"2025-11-10T17:11:58.629680Z\"}, \"actionStates\": [{\"command\": \"RGB_NFC\", \"metadata\": {\"type\": \"RED\"}, \"state\": \"FINISHED\", \"result\": \"04808dca341291\", \"id\": \"0\", \"timestamp\": \"2025-11-10T17:11:58.629680Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:11:58.629972Z\"}",
+    "timestamp": "2025-11-10T18:11:58.667631"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"headerId\":980,\"loads\":[{\"type\":\"RED\"}],\"actionState\":{\"command\":\"RGB_NFC\",\"metadata\":{\"type\":\"RED\"},\"state\":\"FINISHED\",\"result\":\"04808dca341291\",\"id\":\"0\",\"timestamp\":\"2025-11-10T17:11:58.629680Z\"},\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:59.663Z\",\"errors\":[{}],\"orderUpdateId\":0,\"orderId\":\"0\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:11:59.768806"
+  },
+  {
+    "topic": "ccu/order/request",
+    "payload": "{\"timestamp\":\"2025-11-10T17:11:59.664Z\",\"orderType\":\"STORAGE\",\"type\":\"RED\",\"workpieceId\":\"04808dca341291\"}",
+    "timestamp": "2025-11-10T18:11:59.768945"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:59.674Z\",\"actions\":[{\"actionId\":\"ff0d7952-ff21-4733-803b-b45d4c25e7ee\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:59.769066"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:59.679Z\",\"actions\":[{\"actionId\":\"4bf5a316-8a9f-4776-87c3-b2dcef10f418\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:59.769169"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:59.810Z\",\"actions\":[{\"actionId\":\"4f010aac-4f99-471a-8986-c4ed3110d1c8\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:59.823307"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:59.819Z\",\"actions\":[{\"actionId\":\"2dba3a27-ccfd-43cb-b5d9-df566023e282\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:59.832195"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:11:59.807Z\",\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"orderUpdateId\":0,\"nodes\":[{\"id\":\"SVR3QA0022\",\"linkedEdges\":[\"SVR3QA0022-1\"]},{\"id\":\"1\",\"linkedEdges\":[\"SVR3QA0022-1\",\"1-2\"],\"action\":{\"id\":\"af330cf7-ffaf-4290-a3d9-19138f792285\",\"type\":\"PASS\"}},{\"id\":\"2\",\"linkedEdges\":[\"1-2\",\"2-SVR4H73275\"],\"action\":{\"id\":\"2bfa6f35-51ca-46e8-8299-8e13c6273f55\",\"type\":\"PASS\"}},{\"id\":\"SVR4H73275\",\"linkedEdges\":[\"2-SVR4H73275\"],\"action\":{\"type\":\"DOCK\",\"id\":\"265590a3-4cd9-4693-be73-df5402eb41db\",\"metadata\":{\"loadId\":\"04808dca341291\",\"loadType\":\"RED\",\"loadPosition\":\"1\"}}}],\"edges\":[{\"id\":\"SVR3QA0022-1\",\"length\":380,\"linkedNodes\":[\"SVR3QA0022\",\"1\"]},{\"id\":\"1-2\",\"length\":360,\"linkedNodes\":[\"1\",\"2\"]},{\"id\":\"2-SVR4H73275\",\"length\":380,\"linkedNodes\":[\"2\",\"SVR4H73275\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:11:59.840011"
+  },
+  {
+    "topic": "ccu/order/active",
+    "payload": "[{\"orderType\":\"STORAGE\",\"type\":\"RED\",\"timestamp\":\"2025-11-10T17:11:59.664Z\",\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"productionSteps\":[{\"id\":\"265590a3-4cd9-4693-be73-df5402eb41db\",\"type\":\"NAVIGATION\",\"state\":\"IN_PROGRESS\",\"source\":\"START\",\"target\":\"DPS\",\"startedAt\":\"2025-11-10T17:11:59.831Z\"},{\"id\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"265590a3-4cd9-4693-be73-df5402eb41db\",\"state\":\"ENQUEUED\",\"command\":\"DROP\",\"moduleType\":\"DPS\"},{\"id\":\"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\",\"type\":\"NAVIGATION\",\"state\":\"ENQUEUED\",\"source\":\"DPS\",\"target\":\"HBW\",\"dependentActionId\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\"},{\"id\":\"ed0f2bf6-1441-4841-885f-c20332244cdd\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\",\"state\":\"ENQUEUED\",\"command\":\"PICK\",\"moduleType\":\"HBW\"}],\"receivedAt\":\"2025-11-10T17:11:59.766Z\",\"state\":\"IN_PROGRESS\",\"workpieceId\":\"04808dca341291\",\"startedAt\":\"2025-11-10T17:11:59.767Z\"}]",
+    "timestamp": "2025-11-10T18:11:59.846298"
+  },
+  {
+    "topic": "ccu/order/response",
+    "payload": "{\"orderType\":\"STORAGE\",\"type\":\"RED\",\"timestamp\":\"2025-11-10T17:11:59.664Z\",\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"productionSteps\":[{\"id\":\"265590a3-4cd9-4693-be73-df5402eb41db\",\"type\":\"NAVIGATION\",\"state\":\"IN_PROGRESS\",\"source\":\"START\",\"target\":\"DPS\",\"startedAt\":\"2025-11-10T17:11:59.831Z\"},{\"id\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"265590a3-4cd9-4693-be73-df5402eb41db\",\"state\":\"ENQUEUED\",\"command\":\"DROP\",\"moduleType\":\"DPS\"},{\"id\":\"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\",\"type\":\"NAVIGATION\",\"state\":\"ENQUEUED\",\"source\":\"DPS\",\"target\":\"HBW\",\"dependentActionId\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\"},{\"id\":\"ed0f2bf6-1441-4841-885f-c20332244cdd\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\",\"state\":\"ENQUEUED\",\"command\":\"PICK\",\"moduleType\":\"HBW\"}],\"receivedAt\":\"2025-11-10T17:11:59.766Z\",\"state\":\"IN_PROGRESS\",\"workpieceId\":\"04808dca341291\",\"startedAt\":\"2025-11-10T17:11:59.767Z\"}",
+    "timestamp": "2025-11-10T18:11:59.853200"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 0, \"batteryState\": {\"currentVoltage\": 9.1, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 100, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"SVR3QA0022\", \"driving\": false, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:11:59.829524Z\", \"actionState\": {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:11:59.830849Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"WAITING\"}, \"load\": [{\"loadId\": null, \"loadType\": null, \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:11:59.829841Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"WAITING\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:11:59.830025Z\", \"id\": \"2bfa6f35-51ca-46e8-8299-8e13c6273f55\", \"state\": \"WAITING\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:11:59.830183Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"WAITING\"}], \"headerId\": 336}",
+    "timestamp": "2025-11-10T18:11:59.901938"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:59.895Z\",\"actions\":[{\"actionId\":\"6b6f8dc3-dbfc-43b9-805a-2e7545579ed2\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:11:59.944414"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 0, \"batteryState\": {\"currentVoltage\": 9.1, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 100, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"SVR3QA0022\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:11:59.858063Z\", \"actionState\": {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:11:59.858953Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"WAITING\"}, \"load\": [{\"loadId\": null, \"loadType\": null, \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:11:59.858400Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"WAITING\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:11:59.858575Z\", \"id\": \"2bfa6f35-51ca-46e8-8299-8e13c6273f55\", \"state\": \"WAITING\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:11:59.858732Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"WAITING\"}], \"headerId\": 337}",
+    "timestamp": "2025-11-10T18:11:59.961895"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:11:59.981Z\",\"actions\":[{\"actionId\":\"f95d8d21-3955-470e-b523-525d50a7bb9f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:00.032488"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 0, \"batteryState\": {\"currentVoltage\": 9.1, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 100, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"1\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:02.000320Z\", \"actionState\": {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.001221Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"WAITING\"}, \"load\": [{\"loadId\": null, \"loadType\": null, \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.000642Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"WAITING\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.000814Z\", \"id\": \"2bfa6f35-51ca-46e8-8299-8e13c6273f55\", \"state\": \"WAITING\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:02.000971Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"WAITING\"}], \"headerId\": 338}",
+    "timestamp": "2025-11-10T18:12:02.031245"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:02.025Z\",\"actions\":[{\"actionId\":\"e5250d58-5c8d-4b0a-ad79-29d8beed5fdc\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:02.076644"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 0, \"batteryState\": {\"currentVoltage\": 9.1, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 100, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"1\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:02.059577Z\", \"actionState\": {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.059196Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"FINISHED\"}, \"load\": [{\"loadId\": null, \"loadType\": null, \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.059196Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.060264Z\", \"id\": \"2bfa6f35-51ca-46e8-8299-8e13c6273f55\", \"state\": \"WAITING\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:02.060501Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"WAITING\"}], \"headerId\": 339}",
+    "timestamp": "2025-11-10T18:12:02.085895"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 0, \"batteryState\": {\"currentVoltage\": 9.1, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 100, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"1\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:02.118304Z\", \"actionState\": {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.059196Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"FINISHED\"}, \"load\": [{\"loadId\": null, \"loadType\": null, \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.059196Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.118852Z\", \"id\": \"2bfa6f35-51ca-46e8-8299-8e13c6273f55\", \"state\": \"WAITING\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:02.119019Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"WAITING\"}], \"headerId\": 340}",
+    "timestamp": "2025-11-10T18:12:02.148155"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:02.117Z\",\"actions\":[{\"actionId\":\"f737d7fa-4120-4dc0-9afd-6507fe1cb0b7\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:02.151535"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:02.142Z\",\"actions\":[{\"actionId\":\"15716a83-ded6-4882-afe2-9554e76d3f14\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:02.154684"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 0, \"batteryState\": {\"currentVoltage\": 9.1, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 100, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"2\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:04.225796Z\", \"actionState\": {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.059196Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"FINISHED\"}, \"load\": [{\"loadId\": null, \"loadType\": null, \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.059196Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:04.226289Z\", \"id\": \"2bfa6f35-51ca-46e8-8299-8e13c6273f55\", \"state\": \"WAITING\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:04.226423Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"WAITING\"}], \"headerId\": 341}",
+    "timestamp": "2025-11-10T18:12:04.271817"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:04.247Z\",\"actions\":[{\"actionId\":\"effbac07-bef6-4dbe-80c7-0d0c3c3a186f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:04.296296"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 0, \"batteryState\": {\"currentVoltage\": 9.1, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 100, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"2\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:04.284386Z\", \"actionState\": {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:04.283985Z\", \"id\": \"2bfa6f35-51ca-46e8-8299-8e13c6273f55\", \"state\": \"FINISHED\"}, \"load\": [{\"loadId\": null, \"loadType\": null, \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.059196Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:04.283985Z\", \"id\": \"2bfa6f35-51ca-46e8-8299-8e13c6273f55\", \"state\": \"FINISHED\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:04.285046Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"WAITING\"}], \"headerId\": 342}",
+    "timestamp": "2025-11-10T18:12:04.315797"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 0, \"batteryState\": {\"currentVoltage\": 9.1, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 100, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"2\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:04.344642Z\", \"actionState\": {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:04.344228Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"INITIALIZING\"}, \"load\": [{\"loadId\": null, \"loadType\": null, \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.059196Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:04.283985Z\", \"id\": \"2bfa6f35-51ca-46e8-8299-8e13c6273f55\", \"state\": \"FINISHED\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:04.344228Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"INITIALIZING\"}], \"headerId\": 343}",
+    "timestamp": "2025-11-10T18:12:04.382685"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:04.333Z\",\"actions\":[{\"actionId\":\"912d05d2-d8d9-460e-ba6c-84e73a112ee5\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:04.393344"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:04.377Z\",\"actions\":[{\"actionId\":\"4599ebed-6b63-4420-a29e-013d2c9a1b03\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:04.393450"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 0, \"batteryState\": {\"currentVoltage\": 9.1, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 100, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"2\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:06.082965Z\", \"actionState\": {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:06.082615Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"RUNNING\"}, \"load\": [{\"loadId\": null, \"loadType\": null, \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.059196Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:04.283985Z\", \"id\": \"2bfa6f35-51ca-46e8-8299-8e13c6273f55\", \"state\": \"FINISHED\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:06.082615Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"RUNNING\"}], \"headerId\": 344}",
+    "timestamp": "2025-11-10T18:12:06.153383"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:06.153Z\",\"actions\":[{\"actionId\":\"3262426e-41c5-4ad7-bc4a-8b51ec11e8c6\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:06.201403"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":97,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:09.086290"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:09.011Z\",\"actions\":[{\"actionId\":\"4aba0fdd-0c2c-4e2c-a3ef-d0de091f1657\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:09.086718"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":103,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:09.112090"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:09.106Z\",\"actions\":[{\"actionId\":\"83438a5e-151e-4cd3-90c7-1fa9451daed0\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:09.157491"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":105,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:09.267221"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:09.260Z\",\"actions\":[{\"actionId\":\"b57adc56-aae5-4d40-afc0-852c6fed408e\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:09.313411"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":97,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:09.428027"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":997,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:09.452725"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:09.420Z\",\"actions\":[{\"actionId\":\"732dc849-e79f-4028-833d-717dc53d0a2b\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:09.498013"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:09.445Z\",\"actions\":[{\"actionId\":\"3370995e-ec5b-4292-a91d-5a3e553c9d01\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:09.501819"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 0, \"batteryState\": {\"currentVoltage\": 9.1, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 100, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": true, \"lastNodeId\": \"SVR4H73275\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:10.336732Z\", \"actionState\": {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:10.336221Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"FINISHED\"}, \"load\": [{\"loadId\": \"04808dca341291\", \"loadType\": \"RED\", \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.059196Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:04.283985Z\", \"id\": \"2bfa6f35-51ca-46e8-8299-8e13c6273f55\", \"state\": \"FINISHED\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:10.336221Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"FINISHED\"}], \"headerId\": 345}",
+    "timestamp": "2025-11-10T18:12:10.520590"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 0, \"batteryState\": {\"currentVoltage\": 9.1, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 100, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": true, \"lastNodeId\": \"SVR4H73275\", \"driving\": false, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:10.341369Z\", \"actionState\": {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:10.336221Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"FINISHED\"}, \"load\": [{\"loadId\": \"04808dca341291\", \"loadType\": \"RED\", \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.059196Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:04.283985Z\", \"id\": \"2bfa6f35-51ca-46e8-8299-8e13c6273f55\", \"state\": \"FINISHED\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:10.336221Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"FINISHED\"}], \"headerId\": 346}",
+    "timestamp": "2025-11-10T18:12:10.520921"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:10.477Z\",\"actions\":[{\"actionId\":\"1635ae69-1e51-46e7-8f1d-4eb753fe7b58\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:10.521077"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:10.490Z\",\"actions\":[{\"actionId\":\"e49fcc1c-7502-4287-9c31-42b8a703648e\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:10.521192"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:12:10.506Z\",\"serialNumber\":\"SVR4H73275\",\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"orderUpdateId\":1,\"action\":{\"id\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"command\":\"DROP\",\"metadata\":{\"workpiece\":{\"workpieceId\":\"04808dca341291\",\"type\":\"RED\",\"history\":[],\"state\":\"PROCESSED\"}}}}",
+    "timestamp": "2025-11-10T18:12:10.522289"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"headerId\":1002,\"loads\":[{\"type\":\"RED\"}],\"actionState\":{\"id\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"state\":\"RUNNING\"},\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:10.529Z\",\"errors\":[],\"orderUpdateId\":0,\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:12:10.542695"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:12:10.506Z\",\"serialNumber\":\"SVR4H73275\",\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"orderUpdateId\":1,\"action\":{\"id\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"command\":\"DROP\",\"metadata\":{\"workpiece\":{\"workpieceId\":\"04808dca341291\",\"type\":\"RED\",\"history\":[],\"state\":\"PROCESSED\"}}}}",
+    "timestamp": "2025-11-10T18:12:10.546094"
+  },
+  {
+    "topic": "ccu/order/active",
+    "payload": "[{\"orderType\":\"STORAGE\",\"type\":\"RED\",\"timestamp\":\"2025-11-10T17:11:59.664Z\",\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"productionSteps\":[{\"id\":\"265590a3-4cd9-4693-be73-df5402eb41db\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"DPS\",\"startedAt\":\"2025-11-10T17:11:59.831Z\",\"stoppedAt\":\"2025-11-10T17:12:10.502Z\"},{\"id\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"265590a3-4cd9-4693-be73-df5402eb41db\",\"state\":\"IN_PROGRESS\",\"command\":\"DROP\",\"moduleType\":\"DPS\",\"startedAt\":\"2025-11-10T17:12:10.508Z\",\"serialNumber\":\"SVR4H73275\"},{\"id\":\"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\",\"type\":\"NAVIGATION\",\"state\":\"ENQUEUED\",\"source\":\"DPS\",\"target\":\"HBW\",\"dependentActionId\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\"},{\"id\":\"ed0f2bf6-1441-4841-885f-c20332244cdd\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\",\"state\":\"ENQUEUED\",\"command\":\"PICK\",\"moduleType\":\"HBW\"}],\"receivedAt\":\"2025-11-10T17:11:59.766Z\",\"state\":\"IN_PROGRESS\",\"workpieceId\":\"04808dca341291\",\"startedAt\":\"2025-11-10T17:11:59.767Z\"}]",
+    "timestamp": "2025-11-10T18:12:10.564614"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"batteryState\": {}, \"headerId\": 36, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"DROP\", \"state\": \"WAITIING\", \"id\": \"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\", \"timestamp\": \"2025-11-10T17:12:10.533201Z\"}, \"actionStates\": [{\"command\": \"DROP\", \"state\": \"WAITIING\", \"metadata\": {\"workpiece\": {\"type\": \"RED\", \"history\": [], \"state\": \"PROCESSED\", \"workpieceId\": \"04808dca341291\"}}, \"id\": \"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\", \"timestamp\": \"2025-11-10T17:12:10.533201Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:12:10.533514Z\"}",
+    "timestamp": "2025-11-10T18:12:10.573722"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:10.557Z\",\"actions\":[{\"actionId\":\"2ebe61fa-c092-4e15-95ff-c53b94949c1d\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:10.608789"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"batteryState\": {}, \"headerId\": 37, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"DROP\", \"state\": \"RUNNING\", \"id\": \"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\", \"timestamp\": \"2025-11-10T17:12:10.775567Z\"}, \"actionStates\": [{\"command\": \"DROP\", \"state\": \"RUNNING\", \"metadata\": {\"workpiece\": {\"type\": \"RED\", \"history\": [], \"state\": \"PROCESSED\", \"workpieceId\": \"04808dca341291\"}}, \"id\": \"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\", \"timestamp\": \"2025-11-10T17:12:10.775567Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:12:10.776074Z\"}",
+    "timestamp": "2025-11-10T18:12:10.808991"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"batteryState\": {}, \"headerId\": 38, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"DROP\", \"state\": \"FINISHED\", \"id\": \"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\", \"timestamp\": \"2025-11-10T17:12:23.862916Z\"}, \"actionStates\": [{\"command\": \"DROP\", \"state\": \"FINISHED\", \"metadata\": {\"workpiece\": {\"type\": \"RED\", \"history\": [], \"state\": \"PROCESSED\", \"workpieceId\": \"04808dca341291\"}}, \"id\": \"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\", \"timestamp\": \"2025-11-10T17:12:23.862916Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:12:23.863227Z\"}",
+    "timestamp": "2025-11-10T18:12:23.933748"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":98,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:24.007368"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:23.999Z\",\"actions\":[{\"actionId\":\"648b266c-3c6d-4e25-aa96-4339b63554bd\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:24.053342"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":104,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:24.100330"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:24.092Z\",\"actions\":[{\"actionId\":\"a9c7a785-ce9c-4c14-8f9f-d05052ffd12c\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:24.145155"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":106,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:24.251381"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:24.243Z\",\"actions\":[{\"actionId\":\"a6274d0f-bd0d-4b84-a9aa-6b74eac09038\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:24.297374"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":98,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:24.440048"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":1007,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:24.455339"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:24.433Z\",\"actions\":[{\"actionId\":\"7feb3bac-50b1-42c6-b5e1-2ab7e5229bb5\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:24.500152"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:24.448Z\",\"actions\":[{\"actionId\":\"8d229ca8-e146-4ec3-a066-7cd2f3f66e6b\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:24.503735"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\":1,\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"errors\":[],\"batteryState\":{},\"headerId\":38,\"paused\":false,\"operatingMode\":\"AUTOMATIC\",\"information\":[],\"actionState\":{\"command\":\"DROP\",\"state\":\"FINISHED\",\"id\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"timestamp\":\"2025-11-10T17:12:23.862916Z\"},\"actionStates\":[{\"command\":\"DROP\",\"state\":\"FINISHED\",\"metadata\":{\"workpiece\":{\"type\":\"RED\",\"history\":[],\"state\":\"PROCESSED\",\"workpieceId\":\"04808dca341291\"}},\"id\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"timestamp\":\"2025-11-10T17:12:23.862916Z\"}],\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:23.863227Z\"}",
+    "timestamp": "2025-11-10T18:12:24.957920"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:24.912Z\",\"actions\":[{\"actionId\":\"799f5c05-0763-49b1-ac98-d95b61457a43\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:24.965484"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/instantAction",
+    "payload": "{\"serialNumber\":\"5iO4\",\"timestamp\":\"2025-11-10T17:12:24.961Z\",\"actions\":[{\"actionId\":\"0e69c1fb-2037-436a-86e3-450664f2f019\",\"actionType\":\"clearLoadHandler\",\"metadata\":{\"loadDropped\":false,\"loadType\":\"RED\",\"loadId\":\"04808dca341291\",\"loadPosition\":\"1\"}}]}",
+    "timestamp": "2025-11-10T18:12:24.983902"
+  },
+  {
+    "topic": "ccu/order/active",
+    "payload": "[{\"orderType\":\"STORAGE\",\"type\":\"RED\",\"timestamp\":\"2025-11-10T17:11:59.664Z\",\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"productionSteps\":[{\"id\":\"265590a3-4cd9-4693-be73-df5402eb41db\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"DPS\",\"startedAt\":\"2025-11-10T17:11:59.831Z\",\"stoppedAt\":\"2025-11-10T17:12:10.502Z\"},{\"id\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"265590a3-4cd9-4693-be73-df5402eb41db\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"DPS\",\"startedAt\":\"2025-11-10T17:12:10.508Z\",\"serialNumber\":\"SVR4H73275\",\"stoppedAt\":\"2025-11-10T17:12:24.962Z\"},{\"id\":\"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\",\"type\":\"NAVIGATION\",\"state\":\"ENQUEUED\",\"source\":\"DPS\",\"target\":\"HBW\",\"dependentActionId\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\"},{\"id\":\"ed0f2bf6-1441-4841-885f-c20332244cdd\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\",\"state\":\"ENQUEUED\",\"command\":\"PICK\",\"moduleType\":\"HBW\"}],\"receivedAt\":\"2025-11-10T17:11:59.766Z\",\"state\":\"IN_PROGRESS\",\"workpieceId\":\"04808dca341291\",\"startedAt\":\"2025-11-10T17:11:59.767Z\"}]",
+    "timestamp": "2025-11-10T18:12:24.990691"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 0, \"batteryState\": {\"currentVoltage\": 9.2, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 107, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"SVR4H73275\", \"driving\": false, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:24.971931Z\", \"actionState\": {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:10.336221Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"FINISHED\"}, \"load\": [{\"loadId\": \"04808dca341291\", \"loadType\": \"RED\", \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:02.059196Z\", \"id\": \"af330cf7-ffaf-4290-a3d9-19138f792285\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:04.283985Z\", \"id\": \"2bfa6f35-51ca-46e8-8299-8e13c6273f55\", \"state\": \"FINISHED\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:10.336221Z\", \"id\": \"265590a3-4cd9-4693-be73-df5402eb41db\", \"state\": \"FINISHED\"}, {\"command\": \"clearLoadHandler\", \"timestamp\": \"2025-11-10T17:12:24.971575Z\", \"id\": \"0e69c1fb-2037-436a-86e3-450664f2f019\", \"state\": \"FINISHED\"}], \"headerId\": 347}",
+    "timestamp": "2025-11-10T18:12:24.999658"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:25.028Z\",\"actions\":[{\"actionId\":\"60497c21-ffb1-4256-be97-b9fa016933d7\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:12:25.081326"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:25.111Z\",\"actions\":[{\"actionId\":\"d8b93a13-6d84-4ff6-98d8-a172d4b1e64d\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:25.124198"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:25.119Z\",\"actions\":[{\"actionId\":\"8cd44699-8f7f-4ef7-95ab-44880e798d8d\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:25.131509"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:12:25.108Z\",\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"orderUpdateId\":2,\"nodes\":[{\"id\":\"SVR4H73275\",\"linkedEdges\":[\"SVR4H73275-2\"]},{\"id\":\"2\",\"linkedEdges\":[\"SVR4H73275-2\",\"2-1\"],\"action\":{\"id\":\"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\",\"type\":\"PASS\"}},{\"id\":\"1\",\"linkedEdges\":[\"2-1\",\"1-SVR3QA0022\"],\"action\":{\"id\":\"99d3ee28-752d-419e-8d10-1b80b7e24eb3\",\"type\":\"PASS\"}},{\"id\":\"SVR3QA0022\",\"linkedEdges\":[\"1-SVR3QA0022\"],\"action\":{\"type\":\"DOCK\",\"id\":\"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\",\"metadata\":{\"loadId\":\"04808dca341291\",\"loadType\":\"RED\",\"loadPosition\":\"1\"}}}],\"edges\":[{\"id\":\"SVR4H73275-2\",\"length\":380,\"linkedNodes\":[\"SVR4H73275\",\"2\"]},{\"id\":\"2-1\",\"length\":360,\"linkedNodes\":[\"2\",\"1\"]},{\"id\":\"1-SVR3QA0022\",\"length\":380,\"linkedNodes\":[\"1\",\"SVR3QA0022\"]}],\"serialNumber\":\"5iO4\"}",
+    "timestamp": "2025-11-10T18:12:25.137328"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 2, \"batteryState\": {\"currentVoltage\": 9.2, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 107, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"SVR4H73275\", \"driving\": false, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:25.125032Z\", \"actionState\": {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:25.125885Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"WAITING\"}, \"load\": [{\"loadId\": \"04808dca341291\", \"loadType\": \"RED\", \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:25.125354Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"WAITING\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:25.125526Z\", \"id\": \"99d3ee28-752d-419e-8d10-1b80b7e24eb3\", \"state\": \"WAITING\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:25.125668Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"WAITING\"}], \"headerId\": 348}",
+    "timestamp": "2025-11-10T18:12:25.308133"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 2, \"batteryState\": {\"currentVoltage\": 9.2, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 107, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"SVR4H73275\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:25.144964Z\", \"actionState\": {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:25.145881Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"WAITING\"}, \"load\": [{\"loadId\": \"04808dca341291\", \"loadType\": \"RED\", \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:25.145300Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"WAITING\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:25.145488Z\", \"id\": \"99d3ee28-752d-419e-8d10-1b80b7e24eb3\", \"state\": \"WAITING\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:25.145655Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"WAITING\"}], \"headerId\": 349}",
+    "timestamp": "2025-11-10T18:12:25.311678"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:25.302Z\",\"actions\":[{\"actionId\":\"fd4fc412-faa9-4549-a757-be89693e366f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:25.313989"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:25.310Z\",\"actions\":[{\"actionId\":\"b706d194-d1cf-40b2-9e15-1360ba2c64a8\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:25.323337"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 2, \"batteryState\": {\"currentVoltage\": 9.2, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 107, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"2\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:27.297300Z\", \"actionState\": {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.298363Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"WAITING\"}, \"load\": [{\"loadId\": \"04808dca341291\", \"loadType\": \"RED\", \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.297836Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"WAITING\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.298030Z\", \"id\": \"99d3ee28-752d-419e-8d10-1b80b7e24eb3\", \"state\": \"WAITING\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:27.298168Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"WAITING\"}], \"headerId\": 350}",
+    "timestamp": "2025-11-10T18:12:27.320838"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:27.315Z\",\"actions\":[{\"actionId\":\"9cc6505e-a15b-47da-8b43-60679ad47f76\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:27.364577"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 2, \"batteryState\": {\"currentVoltage\": 9.2, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 107, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"2\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:27.353736Z\", \"actionState\": {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.353377Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"FINISHED\"}, \"load\": [{\"loadId\": \"04808dca341291\", \"loadType\": \"RED\", \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.353377Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.354201Z\", \"id\": \"99d3ee28-752d-419e-8d10-1b80b7e24eb3\", \"state\": \"WAITING\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:27.354362Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"WAITING\"}], \"headerId\": 351}",
+    "timestamp": "2025-11-10T18:12:27.383300"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 2, \"batteryState\": {\"currentVoltage\": 9.2, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 107, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"2\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:27.414503Z\", \"actionState\": {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.353377Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"FINISHED\"}, \"load\": [{\"loadId\": \"04808dca341291\", \"loadType\": \"RED\", \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.353377Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.415022Z\", \"id\": \"99d3ee28-752d-419e-8d10-1b80b7e24eb3\", \"state\": \"WAITING\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:27.415191Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"WAITING\"}], \"headerId\": 352}",
+    "timestamp": "2025-11-10T18:12:27.445828"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:27.401Z\",\"actions\":[{\"actionId\":\"d636acb2-d528-4d2a-9813-c91dbf37e9b9\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:27.449151"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:27.440Z\",\"actions\":[{\"actionId\":\"efacc73f-d059-4146-9ce9-76e7b0100b18\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:27.454785"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 2, \"batteryState\": {\"currentVoltage\": 9.2, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 107, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"1\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:29.474193Z\", \"actionState\": {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.353377Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"FINISHED\"}, \"load\": [{\"loadId\": \"04808dca341291\", \"loadType\": \"RED\", \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.353377Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:29.474659Z\", \"id\": \"99d3ee28-752d-419e-8d10-1b80b7e24eb3\", \"state\": \"WAITING\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:29.474790Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"WAITING\"}], \"headerId\": 353}",
+    "timestamp": "2025-11-10T18:12:29.498905"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:29.492Z\",\"actions\":[{\"actionId\":\"8bba0213-c2e3-46c2-ade0-a6590e8d43ff\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:29.543712"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 2, \"batteryState\": {\"currentVoltage\": 9.2, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 107, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"1\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:29.533161Z\", \"actionState\": {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:29.532801Z\", \"id\": \"99d3ee28-752d-419e-8d10-1b80b7e24eb3\", \"state\": \"FINISHED\"}, \"load\": [{\"loadId\": \"04808dca341291\", \"loadType\": \"RED\", \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.353377Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:29.532801Z\", \"id\": \"99d3ee28-752d-419e-8d10-1b80b7e24eb3\", \"state\": \"FINISHED\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:29.533917Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"WAITING\"}], \"headerId\": 354}",
+    "timestamp": "2025-11-10T18:12:29.559968"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 2, \"batteryState\": {\"currentVoltage\": 9.2, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 107, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"1\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:29.592627Z\", \"actionState\": {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:29.592283Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"INITIALIZING\"}, \"load\": [{\"loadId\": \"04808dca341291\", \"loadType\": \"RED\", \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.353377Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:29.532801Z\", \"id\": \"99d3ee28-752d-419e-8d10-1b80b7e24eb3\", \"state\": \"FINISHED\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:29.592283Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"INITIALIZING\"}], \"headerId\": 355}",
+    "timestamp": "2025-11-10T18:12:29.623582"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:29.581Z\",\"actions\":[{\"actionId\":\"5e569501-2b7a-4d65-bfcd-476d9356c42e\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:29.626995"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:29.617Z\",\"actions\":[{\"actionId\":\"42836b76-66bd-4b7d-aee9-a9cb4f333de0\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:29.631597"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 2, \"batteryState\": {\"currentVoltage\": 9.2, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 107, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"1\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:31.326666Z\", \"actionState\": {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:31.326311Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"RUNNING\"}, \"load\": [{\"loadId\": \"04808dca341291\", \"loadType\": \"RED\", \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.353377Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:29.532801Z\", \"id\": \"99d3ee28-752d-419e-8d10-1b80b7e24eb3\", \"state\": \"FINISHED\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:31.326311Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"RUNNING\"}], \"headerId\": 356}",
+    "timestamp": "2025-11-10T18:12:31.409326"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:31.362Z\",\"actions\":[{\"actionId\":\"24f5dc3d-c0bd-4dbc-89ae-09d5a661a42f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:31.414386"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 2, \"batteryState\": {\"currentVoltage\": 9.2, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 107, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": true, \"lastNodeId\": \"SVR3QA0022\", \"driving\": true, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:35.466397Z\", \"actionState\": {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:35.466049Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"FINISHED\"}, \"load\": [{\"loadId\": \"04808dca341291\", \"loadType\": \"RED\", \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.353377Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:29.532801Z\", \"id\": \"99d3ee28-752d-419e-8d10-1b80b7e24eb3\", \"state\": \"FINISHED\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:35.466049Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"FINISHED\"}], \"headerId\": 357}",
+    "timestamp": "2025-11-10T18:12:35.609018"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 2, \"batteryState\": {\"currentVoltage\": 9.2, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 107, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": true, \"lastNodeId\": \"SVR3QA0022\", \"driving\": false, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:35.472350Z\", \"actionState\": {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:35.466049Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"FINISHED\"}, \"load\": [{\"loadId\": \"04808dca341291\", \"loadType\": \"RED\", \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.353377Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:29.532801Z\", \"id\": \"99d3ee28-752d-419e-8d10-1b80b7e24eb3\", \"state\": \"FINISHED\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:35.466049Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"FINISHED\"}], \"headerId\": 358}",
+    "timestamp": "2025-11-10T18:12:35.609249"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:35.502Z\",\"actions\":[{\"actionId\":\"ee062f92-0f09-4b1d-b678-2e2ad739ce40\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:35.609368"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:35.514Z\",\"actions\":[{\"actionId\":\"7bbec8fe-93bf-40c6-a330-f3b2aaaf9d56\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:35.609477"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:12:35.530Z\",\"serialNumber\":\"SVR3QA0022\",\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"orderUpdateId\":3,\"action\":{\"id\":\"ed0f2bf6-1441-4841-885f-c20332244cdd\",\"command\":\"PICK\",\"metadata\":{\"type\":\"RED\",\"workpieceId\":\"04808dca341291\"}}}",
+    "timestamp": "2025-11-10T18:12:35.609698"
+  },
+  {
+    "topic": "ccu/order/active",
+    "payload": "[{\"orderType\":\"STORAGE\",\"type\":\"RED\",\"timestamp\":\"2025-11-10T17:11:59.664Z\",\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"productionSteps\":[{\"id\":\"265590a3-4cd9-4693-be73-df5402eb41db\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"DPS\",\"startedAt\":\"2025-11-10T17:11:59.831Z\",\"stoppedAt\":\"2025-11-10T17:12:10.502Z\"},{\"id\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"265590a3-4cd9-4693-be73-df5402eb41db\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"DPS\",\"startedAt\":\"2025-11-10T17:12:10.508Z\",\"serialNumber\":\"SVR4H73275\",\"stoppedAt\":\"2025-11-10T17:12:24.962Z\"},{\"id\":\"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"DPS\",\"target\":\"HBW\",\"dependentActionId\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"startedAt\":\"2025-11-10T17:12:25.127Z\",\"stoppedAt\":\"2025-11-10T17:12:35.527Z\"},{\"id\":\"ed0f2bf6-1441-4841-885f-c20332244cdd\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\",\"state\":\"IN_PROGRESS\",\"command\":\"PICK\",\"moduleType\":\"HBW\",\"startedAt\":\"2025-11-10T17:12:35.531Z\",\"serialNumber\":\"SVR3QA0022\"}],\"receivedAt\":\"2025-11-10T17:11:59.766Z\",\"state\":\"IN_PROGRESS\",\"workpieceId\":\"04808dca341291\",\"startedAt\":\"2025-11-10T17:11:59.767Z\"}]",
+    "timestamp": "2025-11-10T18:12:35.612232"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "payload": "{\"headerId\":99,\"loads\":[{\"loadType\":\"WHITE\",\"loadId\":\"04798eca341290\",\"loadPosition\":\"A1\",\"loadTimestamp\":1762794465298},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"A2\",\"loadTimestamp\":0},{\"loadType\":\"BLUE\",\"loadId\":\"048989ca341290\",\"loadPosition\":\"A3\",\"loadTimestamp\":1762771099463},{\"loadType\":\"BLUE\",\"loadId\":\"04a189ca341290\",\"loadPosition\":\"B1\",\"loadTimestamp\":1762794615886},{\"loadType\":\"RED\",\"loadId\":\"040a8dca341291\",\"loadPosition\":\"B2\",\"loadTimestamp\":1762258037251},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"B3\",\"loadTimestamp\":0},{\"loadType\":\"BLUE\",\"loadId\":\"047389ca341291\",\"loadPosition\":\"C1\",\"loadTimestamp\":1762770942249},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"C2\",\"loadTimestamp\":0},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"C3\",\"loadTimestamp\":0}],\"actionState\":{\"id\":\"ed0f2bf6-1441-4841-885f-c20332244cdd\",\"command\":\"PICK\",\"metadata\":{\"type\":\"RED\",\"workpieceId\":\"04808dca341291\"},\"state\":\"RUNNING\"},\"serialNumber\":\"SVR3QA0022\",\"timestamp\":\"2025-11-10T17:12:35.645Z\",\"errors\":[],\"orderUpdateId\":3,\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"paused\":false,\"operatingMode\":\"AUTOMATIC\",\"metadata\":{\"opcuaState\":\"connected\"},\"information\":[]}",
+    "timestamp": "2025-11-10T18:12:35.657772"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:35.649Z\",\"actions\":[{\"actionId\":\"20aef730-b4d2-4a1e-88eb-e43313e5f537\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:35.700663"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":99,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:38.999811"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:38.991Z\",\"actions\":[{\"actionId\":\"c50482d5-4611-4778-af27-8f265c5d21d6\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:39.044704"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":105,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:39.088227"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:39.080Z\",\"actions\":[{\"actionId\":\"4f6562d6-5d62-4805-b12e-9f3a221eb1a1\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:39.132509"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":107,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:39.243533"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:39.237Z\",\"actions\":[{\"actionId\":\"9ce3eff2-4b36-4dbb-a29f-a0b952c7f4c4\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:39.288675"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":100,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:39.429693"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":1029,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:39.452693"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:39.421Z\",\"actions\":[{\"actionId\":\"50aab294-29b8-4abf-9bb3-960a83b8cb77\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:39.495705"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:39.442Z\",\"actions\":[{\"actionId\":\"a70bebde-007a-4fb8-8172-c166da5a01e8\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:39.502596"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":100,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:54.003721"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:53.996Z\",\"actions\":[{\"actionId\":\"b37d065a-6c27-4f04-adf3-0ec76b84aefb\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:54.049673"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":106,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:54.096811"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:54.089Z\",\"actions\":[{\"actionId\":\"95544275-5a54-4e62-b931-8172076d2e96\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:54.141696"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":108,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:54.251888"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:54.244Z\",\"actions\":[{\"actionId\":\"b2a5c62c-1718-4a15-9296-25786c725525\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:54.297701"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":101,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:54.427932"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":1035,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:12:54.453551"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:54.418Z\",\"actions\":[{\"actionId\":\"42c06ed0-215f-4000-96d3-7f740b2cb738\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:54.500788"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:54.446Z\",\"actions\":[{\"actionId\":\"16d33f7a-3b8b-4d61-9464-8d26281173f6\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:54.504083"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "payload": "{\"headerId\":102,\"loads\":[{\"loadType\":\"WHITE\",\"loadId\":\"04798eca341290\",\"loadPosition\":\"A1\",\"loadTimestamp\":1762794465298},{\"loadType\":\"RED\",\"loadId\":\"04808dca341291\",\"loadPosition\":\"A2\",\"loadTimestamp\":1762794755558},{\"loadType\":\"BLUE\",\"loadId\":\"048989ca341290\",\"loadPosition\":\"A3\",\"loadTimestamp\":1762771099463},{\"loadType\":\"BLUE\",\"loadId\":\"04a189ca341290\",\"loadPosition\":\"B1\",\"loadTimestamp\":1762794615886},{\"loadType\":\"RED\",\"loadId\":\"040a8dca341291\",\"loadPosition\":\"B2\",\"loadTimestamp\":1762258037251},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"B3\",\"loadTimestamp\":0},{\"loadType\":\"BLUE\",\"loadId\":\"047389ca341291\",\"loadPosition\":\"C1\",\"loadTimestamp\":1762770942249},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"C2\",\"loadTimestamp\":0},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"C3\",\"loadTimestamp\":0}],\"actionState\":{\"id\":\"ed0f2bf6-1441-4841-885f-c20332244cdd\",\"command\":\"PICK\",\"metadata\":{\"type\":\"RED\",\"workpieceId\":\"04808dca341291\"},\"state\":\"FINISHED\"},\"serialNumber\":\"SVR3QA0022\",\"timestamp\":\"2025-11-10T17:12:56.212Z\",\"errors\":[],\"orderUpdateId\":3,\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"paused\":false,\"operatingMode\":\"AUTOMATIC\",\"metadata\":{\"opcuaState\":\"connected\"},\"information\":[]}",
+    "timestamp": "2025-11-10T18:12:56.293912"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:56.223Z\",\"actions\":[{\"actionId\":\"63231eb1-8f51-4ff4-a856-42868742130c\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:12:56.294140"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/instantAction",
+    "payload": "{\"serialNumber\":\"5iO4\",\"timestamp\":\"2025-11-10T17:12:56.280Z\",\"actions\":[{\"actionId\":\"1159a566-6bf2-44f8-a7af-5d28b43a15da\",\"actionType\":\"clearLoadHandler\",\"metadata\":{\"loadDropped\":true,\"loadType\":\"RED\",\"loadId\":\"04808dca341291\",\"loadPosition\":\"1\"}}]}",
+    "timestamp": "2025-11-10T18:12:56.295790"
+  },
+  {
+    "topic": "ccu/order/completed",
+    "payload": "[{\"orderType\":\"PRODUCTION\",\"type\":\"WHITE\",\"timestamp\":\"2025-11-10T16:53:05.362Z\",\"orderId\":\"bd3ac19a-615b-4cea-8527-af10b2ca1eff\",\"productionSteps\":[{\"id\":\"ec49f0d5-71a2-481a-8673-4b33251acc15\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"HBW\",\"startedAt\":\"2025-11-10T16:53:05.471Z\",\"stoppedAt\":\"2025-11-10T16:53:07.449Z\"},{\"id\":\"680658e6-2327-424a-a386-f60a4f7e285a\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"ec49f0d5-71a2-481a-8673-4b33251acc15\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"HBW\",\"startedAt\":\"2025-11-10T16:53:07.464Z\",\"serialNumber\":\"SVR3QA0022\",\"stoppedAt\":\"2025-11-10T16:53:55.320Z\"},{\"id\":\"43e5370e-a41c-44db-816c-f2f8621ba78b\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"HBW\",\"target\":\"DRILL\",\"dependentActionId\":\"680658e6-2327-424a-a386-f60a4f7e285a\",\"startedAt\":\"2025-11-10T16:53:55.522Z\",\"stoppedAt\":\"2025-11-10T16:54:07.502Z\"},{\"id\":\"07865870-69dd-4f2c-a6d5-5e05d970893e\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"43e5370e-a41c-44db-816c-f2f8621ba78b\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T16:54:07.509Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T16:54:18.073Z\"},{\"id\":\"8d792d60-c8ba-42a0-9154-be2634c3d9a3\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"07865870-69dd-4f2c-a6d5-5e05d970893e\",\"state\":\"FINISHED\",\"command\":\"DRILL\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T16:54:18.082Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T16:54:28.020Z\"},{\"id\":\"5a555dd5-b06c-4324-b601-629e4662217c\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"8d792d60-c8ba-42a0-9154-be2634c3d9a3\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T16:54:28.045Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T16:54:38.173Z\"},{\"id\":\"ab3b31b1-a19f-4087-9d96-0905bb322649\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"DRILL\",\"target\":\"AIQS\",\"dependentActionId\":\"5a555dd5-b06c-4324-b601-629e4662217c\",\"startedAt\":\"2025-11-10T16:54:38.397Z\",\"stoppedAt\":\"2025-11-10T16:54:55.373Z\"},{\"id\":\"82d1881d-5325-4085-8588-02f862006a41\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"ab3b31b1-a19f-4087-9d96-0905bb322649\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T16:54:55.380Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T16:55:03.158Z\"},{\"id\":\"6126aa21-75b3-4359-ade5-cfba00267fb0\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"82d1881d-5325-4085-8588-02f862006a41\",\"state\":\"ERROR\",\"command\":\"CHECK_QUALITY\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T16:55:03.166Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T16:55:12.126Z\"},{\"id\":\"4d07bb08-3e15-4eb9-ad69-029a8022f31f\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"6126aa21-75b3-4359-ade5-cfba00267fb0\",\"state\":\"CANCELLED\",\"command\":\"DROP\",\"moduleType\":\"AIQS\"},{\"id\":\"d51d5efc-80e6-4f2f-8ab4-48cedf874112\",\"type\":\"NAVIGATION\",\"state\":\"CANCELLED\",\"source\":\"AIQS\",\"target\":\"DPS\",\"dependentActionId\":\"4d07bb08-3e15-4eb9-ad69-029a8022f31f\"},{\"id\":\"eba02e4f-3a71-4f68-958e-6e1ec69dd8e1\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"d51d5efc-80e6-4f2f-8ab4-48cedf874112\",\"state\":\"CANCELLED\",\"command\":\"PICK\",\"moduleType\":\"DPS\"}],\"receivedAt\":\"2025-11-10T16:53:05.428Z\",\"state\":\"ERROR\",\"workpieceId\":\"04798eca341290\",\"startedAt\":\"2025-11-10T16:53:05.429Z\",\"stoppedAt\":\"2025-11-10T16:55:12.128Z\"},{\"orderType\":\"PRODUCTION\",\"type\":\"WHITE\",\"timestamp\":\"2025-11-10T16:53:05.362Z\",\"orderId\":\"25e3dbe9-e956-41a0-8c1e-bade61141271\",\"productionSteps\":[{\"id\":\"3a884908-5217-47eb-9cf8-b29eac2d6f99\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"HBW\",\"startedAt\":\"2025-11-10T16:55:12.184Z\",\"stoppedAt\":\"2025-11-10T16:55:23.264Z\"},{\"id\":\"94f38c98-f7b8-4733-853d-db177b2715cb\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"3a884908-5217-47eb-9cf8-b29eac2d6f99\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"HBW\",\"startedAt\":\"2025-11-10T16:55:23.270Z\",\"serialNumber\":\"SVR3QA0022\",\"stoppedAt\":\"2025-11-10T16:56:11.212Z\"},{\"id\":\"d8314c27-a6fc-4887-9207-d8c493dbd804\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"HBW\",\"target\":\"DRILL\",\"dependentActionId\":\"94f38c98-f7b8-4733-853d-db177b2715cb\",\"startedAt\":\"2025-11-10T16:56:11.430Z\",\"stoppedAt\":\"2025-11-10T16:56:23.577Z\"},{\"id\":\"0b3e0090-a8d1-48a6-ac40-101eb87c69c5\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"d8314c27-a6fc-4887-9207-d8c493dbd804\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T16:56:23.581Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T16:56:34.123Z\"},{\"id\":\"bdcd36e7-cf41-4e09-9548-e4f703966285\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"0b3e0090-a8d1-48a6-ac40-101eb87c69c5\",\"state\":\"FINISHED\",\"command\":\"DRILL\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T16:56:34.127Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T16:56:44.106Z\"},{\"id\":\"8c3c746a-8dd8-4a6e-8239-af04ff13361f\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"bdcd36e7-cf41-4e09-9548-e4f703966285\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T16:56:44.130Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T16:56:55.073Z\"},{\"id\":\"91c1570d-f8d6-410e-88cc-03dee5c1711f\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"DRILL\",\"target\":\"AIQS\",\"dependentActionId\":\"8c3c746a-8dd8-4a6e-8239-af04ff13361f\",\"startedAt\":\"2025-11-10T16:56:55.247Z\",\"stoppedAt\":\"2025-11-10T16:57:17.845Z\"},{\"id\":\"dd73c21a-7bb3-4341-a37e-dbdef6fcd564\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"91c1570d-f8d6-410e-88cc-03dee5c1711f\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T16:57:17.856Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T16:57:25.974Z\"},{\"id\":\"91934750-a809-4e59-b9e3-b02cf299229e\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"dd73c21a-7bb3-4341-a37e-dbdef6fcd564\",\"state\":\"ERROR\",\"command\":\"CHECK_QUALITY\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T16:57:25.982Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T16:57:35.202Z\"},{\"id\":\"c0da8f99-a5be-4881-be0c-02a8690ef786\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"91934750-a809-4e59-b9e3-b02cf299229e\",\"state\":\"CANCELLED\",\"command\":\"DROP\",\"moduleType\":\"AIQS\"},{\"id\":\"3d2f2ecc-5e3d-44f9-9657-48ac432cc2c1\",\"type\":\"NAVIGATION\",\"state\":\"CANCELLED\",\"source\":\"AIQS\",\"target\":\"DPS\",\"dependentActionId\":\"c0da8f99-a5be-4881-be0c-02a8690ef786\"},{\"id\":\"f7e5ec68-e5c8-4afe-b044-82947883411e\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"3d2f2ecc-5e3d-44f9-9657-48ac432cc2c1\",\"state\":\"CANCELLED\",\"command\":\"PICK\",\"moduleType\":\"DPS\"}],\"receivedAt\":\"2025-11-10T16:55:12.136Z\",\"state\":\"ERROR\",\"workpieceId\":\"047b8bca341291\",\"startedAt\":\"2025-11-10T16:55:12.137Z\",\"stoppedAt\":\"2025-11-10T16:57:35.202Z\"},{\"orderType\":\"PRODUCTION\",\"type\":\"RED\",\"timestamp\":\"2025-11-10T16:58:23.943Z\",\"orderId\":\"c9da720e-98e6-4d96-84d3-7baad5c5383d\",\"productionSteps\":[{\"id\":\"db0529cc-d135-42fb-9167-91e1981cfa17\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"HBW\",\"startedAt\":\"2025-11-10T16:58:24.163Z\",\"stoppedAt\":\"2025-11-10T16:58:36.124Z\"},{\"id\":\"7146ac7c-42dd-44e9-9f1c-e20edc090f0d\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"db0529cc-d135-42fb-9167-91e1981cfa17\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"HBW\",\"startedAt\":\"2025-11-10T16:58:36.130Z\",\"serialNumber\":\"SVR3QA0022\",\"stoppedAt\":\"2025-11-10T16:59:18.373Z\"},{\"id\":\"4817c3bd-b5fb-4bff-9ec3-3ac82ee74849\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"HBW\",\"target\":\"MILL\",\"dependentActionId\":\"7146ac7c-42dd-44e9-9f1c-e20edc090f0d\",\"startedAt\":\"2025-11-10T16:59:18.556Z\",\"stoppedAt\":\"2025-11-10T16:59:27.383Z\"},{\"id\":\"f0107ec0-e13a-47f8-8b4d-090a089c923a\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"4817c3bd-b5fb-4bff-9ec3-3ac82ee74849\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"MILL\",\"startedAt\":\"2025-11-10T16:59:27.388Z\",\"serialNumber\":\"SVR3QA2098\",\"stoppedAt\":\"2025-11-10T16:59:36.945Z\"},{\"id\":\"41d67550-5791-4646-ac50-c2a0b84128ec\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"f0107ec0-e13a-47f8-8b4d-090a089c923a\",\"state\":\"FINISHED\",\"command\":\"MILL\",\"moduleType\":\"MILL\",\"startedAt\":\"2025-11-10T16:59:36.954Z\",\"serialNumber\":\"SVR3QA2098\",\"stoppedAt\":\"2025-11-10T16:59:46.891Z\"},{\"id\":\"7853b911-1232-43c1-8cd9-820c9ea25ffa\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"41d67550-5791-4646-ac50-c2a0b84128ec\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"MILL\",\"startedAt\":\"2025-11-10T16:59:46.914Z\",\"serialNumber\":\"SVR3QA2098\",\"stoppedAt\":\"2025-11-10T16:59:56.843Z\"},{\"id\":\"19f21955-6044-4609-867d-7592f7b4219b\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"MILL\",\"target\":\"AIQS\",\"dependentActionId\":\"7853b911-1232-43c1-8cd9-820c9ea25ffa\",\"startedAt\":\"2025-11-10T16:59:57.073Z\",\"stoppedAt\":\"2025-11-10T17:00:09.837Z\"},{\"id\":\"f23d5f39-de14-40ff-91a0-8e017067e35d\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"19f21955-6044-4609-867d-7592f7b4219b\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T17:00:09.840Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T17:00:18.007Z\"},{\"id\":\"b361aca3-dece-46ba-b07e-a360600c2516\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"f23d5f39-de14-40ff-91a0-8e017067e35d\",\"state\":\"FINISHED\",\"command\":\"CHECK_QUALITY\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T17:00:18.012Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T17:00:26.169Z\"},{\"id\":\"a1fc404a-3f4f-4363-b137-9607ae8104e8\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"b361aca3-dece-46ba-b07e-a360600c2516\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T17:00:26.187Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T17:00:35.075Z\"},{\"id\":\"2472a86c-98db-4dd0-a886-d7ae28fd455a\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"AIQS\",\"target\":\"DPS\",\"dependentActionId\":\"a1fc404a-3f4f-4363-b137-9607ae8104e8\",\"startedAt\":\"2025-11-10T17:00:35.236Z\",\"stoppedAt\":\"2025-11-10T17:00:44.384Z\"},{\"id\":\"4db0d5dc-3841-4f92-85e1-fde21f9a569d\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"2472a86c-98db-4dd0-a886-d7ae28fd455a\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"DPS\",\"startedAt\":\"2025-11-10T17:00:44.393Z\",\"serialNumber\":\"SVR4H73275\",\"stoppedAt\":\"2025-11-10T17:01:08.644Z\"}],\"receivedAt\":\"2025-11-10T16:58:24.003Z\",\"state\":\"FINISHED\",\"workpieceId\":\"04d78cca341290\",\"startedAt\":\"2025-11-10T16:58:24.004Z\",\"stoppedAt\":\"2025-11-10T17:01:08.645Z\"},{\"orderType\":\"PRODUCTION\",\"type\":\"BLUE\",\"timestamp\":\"2025-11-10T17:02:15.789Z\",\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"productionSteps\":[{\"id\":\"93a03101-b829-4d73-970b-e82e76ec8049\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"HBW\",\"startedAt\":\"2025-11-10T17:02:15.927Z\",\"stoppedAt\":\"2025-11-10T17:02:25.656Z\"},{\"id\":\"8e820351-7933-4d7c-9aba-0ab5a1ab84bb\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"93a03101-b829-4d73-970b-e82e76ec8049\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"HBW\",\"startedAt\":\"2025-11-10T17:02:25.660Z\",\"serialNumber\":\"SVR3QA0022\",\"stoppedAt\":\"2025-11-10T17:03:06.341Z\"},{\"id\":\"8111d5a4-e67d-47b4-bf59-4bc0eaa1a610\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"HBW\",\"target\":\"DRILL\",\"dependentActionId\":\"8e820351-7933-4d7c-9aba-0ab5a1ab84bb\",\"startedAt\":\"2025-11-10T17:03:06.528Z\",\"stoppedAt\":\"2025-11-10T17:03:20.271Z\"},{\"id\":\"f6986d0b-7e2e-42dc-b537-f750cf2a6880\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"8111d5a4-e67d-47b4-bf59-4bc0eaa1a610\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T17:03:20.281Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T17:03:31.150Z\"},{\"id\":\"503de4f6-676c-48ec-a4e2-481adeab9f79\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"f6986d0b-7e2e-42dc-b537-f750cf2a6880\",\"state\":\"FINISHED\",\"command\":\"DRILL\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T17:03:31.156Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T17:03:41.125Z\"},{\"id\":\"09ee7983-7f92-4e5a-8dde-a88b499a4a5f\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"503de4f6-676c-48ec-a4e2-481adeab9f79\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"DRILL\",\"startedAt\":\"2025-11-10T17:03:41.134Z\",\"serialNumber\":\"SVR4H76449\",\"stoppedAt\":\"2025-11-10T17:03:51.093Z\"},{\"id\":\"b8a1107a-b86b-4119-8986-6e813e739ed8\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"DRILL\",\"target\":\"MILL\",\"dependentActionId\":\"09ee7983-7f92-4e5a-8dde-a88b499a4a5f\",\"startedAt\":\"2025-11-10T17:03:51.282Z\",\"stoppedAt\":\"2025-11-10T17:04:03.387Z\"},{\"id\":\"669535a0-1891-49d8-99e8-6efa1e5cff42\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"b8a1107a-b86b-4119-8986-6e813e739ed8\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"MILL\",\"startedAt\":\"2025-11-10T17:04:03.391Z\",\"serialNumber\":\"SVR3QA2098\",\"stoppedAt\":\"2025-11-10T17:04:12.967Z\"},{\"id\":\"d16d4714-c250-43ca-89a1-fb2caadd15a1\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"669535a0-1891-49d8-99e8-6efa1e5cff42\",\"state\":\"FINISHED\",\"command\":\"MILL\",\"moduleType\":\"MILL\",\"startedAt\":\"2025-11-10T17:04:12.969Z\",\"serialNumber\":\"SVR3QA2098\",\"stoppedAt\":\"2025-11-10T17:04:22.953Z\"},{\"id\":\"b9ec0dcd-917c-487e-bdc2-d0addafec877\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"d16d4714-c250-43ca-89a1-fb2caadd15a1\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"MILL\",\"startedAt\":\"2025-11-10T17:04:22.965Z\",\"serialNumber\":\"SVR3QA2098\",\"stoppedAt\":\"2025-11-10T17:04:31.879Z\"},{\"id\":\"cbe87b29-69ee-4b7f-90c7-5c7ff9c023cb\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"MILL\",\"target\":\"AIQS\",\"dependentActionId\":\"b9ec0dcd-917c-487e-bdc2-d0addafec877\",\"startedAt\":\"2025-11-10T17:04:32.043Z\",\"stoppedAt\":\"2025-11-10T17:04:44.584Z\"},{\"id\":\"688ff93f-00b3-4657-a650-a48001c0273a\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"cbe87b29-69ee-4b7f-90c7-5c7ff9c023cb\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T17:04:44.587Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T17:04:52.073Z\"},{\"id\":\"5e919162-d76c-49f5-b597-5cdd96f385dc\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"688ff93f-00b3-4657-a650-a48001c0273a\",\"state\":\"FINISHED\",\"command\":\"CHECK_QUALITY\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T17:04:52.079Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T17:05:01.037Z\"},{\"id\":\"e3f68c76-e8e8-4cb2-8eca-d7cdace5b821\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"5e919162-d76c-49f5-b597-5cdd96f385dc\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"AIQS\",\"startedAt\":\"2025-11-10T17:05:01.054Z\",\"serialNumber\":\"SVR4H76530\",\"stoppedAt\":\"2025-11-10T17:05:10.174Z\"},{\"id\":\"b2c28112-b68d-455b-8f01-dd770154f541\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"AIQS\",\"target\":\"DPS\",\"dependentActionId\":\"e3f68c76-e8e8-4cb2-8eca-d7cdace5b821\",\"startedAt\":\"2025-11-10T17:05:10.338Z\",\"stoppedAt\":\"2025-11-10T17:05:19.479Z\"},{\"id\":\"09c098e5-5b7f-45fc-b31d-e580c4627c50\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"b2c28112-b68d-455b-8f01-dd770154f541\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"DPS\",\"startedAt\":\"2025-11-10T17:05:19.502Z\",\"serialNumber\":\"SVR4H73275\",\"stoppedAt\":\"2025-11-10T17:05:42.962Z\"}],\"receivedAt\":\"2025-11-10T17:02:15.843Z\",\"state\":\"FINISHED\",\"workpieceId\":\"04a189ca341290\",\"startedAt\":\"2025-11-10T17:02:15.844Z\",\"stoppedAt\":\"2025-11-10T17:05:42.963Z\"},{\"orderType\":\"STORAGE\",\"type\":\"WHITE\",\"timestamp\":\"2025-11-10T17:07:17.871Z\",\"orderId\":\"3adc738c-c149-4fed-8f83-8b00f84f5b92\",\"productionSteps\":[{\"id\":\"2f7c4f58-a891-4cf3-a721-e670c93b8359\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"DPS\",\"startedAt\":\"2025-11-10T17:07:18.015Z\",\"stoppedAt\":\"2025-11-10T17:07:20.084Z\"},{\"id\":\"a130f581-0b5a-4948-9220-0d4e82ae0b18\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"2f7c4f58-a891-4cf3-a721-e670c93b8359\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"DPS\",\"startedAt\":\"2025-11-10T17:07:20.095Z\",\"serialNumber\":\"SVR4H73275\",\"stoppedAt\":\"2025-11-10T17:07:34.318Z\"},{\"id\":\"2e7a1a11-5115-414c-8c9e-8db89af796f0\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"DPS\",\"target\":\"HBW\",\"dependentActionId\":\"a130f581-0b5a-4948-9220-0d4e82ae0b18\",\"startedAt\":\"2025-11-10T17:07:34.505Z\",\"stoppedAt\":\"2025-11-10T17:07:45.249Z\"},{\"id\":\"126c4e1b-50c4-47bc-99bc-e1d8f3295d4f\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"2e7a1a11-5115-414c-8c9e-8db89af796f0\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"HBW\",\"startedAt\":\"2025-11-10T17:07:45.251Z\",\"serialNumber\":\"SVR3QA0022\",\"stoppedAt\":\"2025-11-10T17:08:03.375Z\"}],\"receivedAt\":\"2025-11-10T17:07:17.986Z\",\"state\":\"FINISHED\",\"workpieceId\":\"04798eca341290\",\"startedAt\":\"2025-11-10T17:07:17.987Z\",\"stoppedAt\":\"2025-11-10T17:08:03.385Z\"},{\"orderType\":\"STORAGE\",\"type\":\"BLUE\",\"timestamp\":\"2025-11-10T17:09:40.559Z\",\"orderId\":\"2413eb6e-fb6b-4ed1-b93f-fb17143a4593\",\"productionSteps\":[{\"id\":\"a40df199-a19f-4e97-979b-bea26758634e\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"DPS\",\"startedAt\":\"2025-11-10T17:09:40.710Z\",\"stoppedAt\":\"2025-11-10T17:09:50.921Z\"},{\"id\":\"1fcb2195-ef15-4d8b-b758-401ee33681f7\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"a40df199-a19f-4e97-979b-bea26758634e\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"DPS\",\"startedAt\":\"2025-11-10T17:09:50.928Z\",\"serialNumber\":\"SVR4H73275\",\"stoppedAt\":\"2025-11-10T17:10:05.188Z\"},{\"id\":\"79615cb6-50a6-43b0-8f81-b652b308934c\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"DPS\",\"target\":\"HBW\",\"dependentActionId\":\"1fcb2195-ef15-4d8b-b758-401ee33681f7\",\"startedAt\":\"2025-11-10T17:10:05.344Z\",\"stoppedAt\":\"2025-11-10T17:10:15.877Z\"},{\"id\":\"fb698a0e-d18d-4d10-9641-840fa4226069\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"79615cb6-50a6-43b0-8f81-b652b308934c\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"HBW\",\"startedAt\":\"2025-11-10T17:10:15.880Z\",\"serialNumber\":\"SVR3QA0022\",\"stoppedAt\":\"2025-11-10T17:10:33.292Z\"}],\"receivedAt\":\"2025-11-10T17:09:40.662Z\",\"state\":\"FINISHED\",\"workpieceId\":\"04a189ca341290\",\"startedAt\":\"2025-11-10T17:09:40.662Z\",\"stoppedAt\":\"2025-11-10T17:10:33.299Z\"},{\"orderType\":\"STORAGE\",\"type\":\"RED\",\"timestamp\":\"2025-11-10T17:11:59.664Z\",\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"productionSteps\":[{\"id\":\"265590a3-4cd9-4693-be73-df5402eb41db\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"DPS\",\"startedAt\":\"2025-11-10T17:11:59.831Z\",\"stoppedAt\":\"2025-11-10T17:12:10.502Z\"},{\"id\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"265590a3-4cd9-4693-be73-df5402eb41db\",\"state\":\"FINISHED\",\"command\":\"DROP\",\"moduleType\":\"DPS\",\"startedAt\":\"2025-11-10T17:12:10.508Z\",\"serialNumber\":\"SVR4H73275\",\"stoppedAt\":\"2025-11-10T17:12:24.962Z\"},{\"id\":\"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"DPS\",\"target\":\"HBW\",\"dependentActionId\":\"d79e4797-7e3a-4aaa-a2eb-21f7097f195d\",\"startedAt\":\"2025-11-10T17:12:25.127Z\",\"stoppedAt\":\"2025-11-10T17:12:35.527Z\"},{\"id\":\"ed0f2bf6-1441-4841-885f-c20332244cdd\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"moduleType\":\"HBW\",\"startedAt\":\"2025-11-10T17:12:35.531Z\",\"serialNumber\":\"SVR3QA0022\",\"stoppedAt\":\"2025-11-10T17:12:56.282Z\"}],\"receivedAt\":\"2025-11-10T17:11:59.766Z\",\"state\":\"FINISHED\",\"workpieceId\":\"04808dca341291\",\"startedAt\":\"2025-11-10T17:11:59.767Z\",\"stoppedAt\":\"2025-11-10T17:12:56.289Z\"}]",
+    "timestamp": "2025-11-10T18:12:56.308730"
+  },
+  {
+    "topic": "ccu/order/active",
+    "payload": "[]",
+    "timestamp": "2025-11-10T18:12:56.311141"
+  },
+  {
+    "topic": "ccu/order/active",
+    "payload": "[]",
+    "timestamp": "2025-11-10T18:12:56.317591"
+  },
+  {
+    "topic": "fts/v1/ff/5iO4/state",
+    "payload": "{\"orderUpdateId\": 2, \"batteryState\": {\"currentVoltage\": 9.1, \"minVolt\": 7.84, \"maxVolt\": 9.1, \"percentage\": 100, \"charging\": false}, \"lastNodeSequenceId\": 0, \"paused\": false, \"nodeStates\": [], \"waitingForLoadHandling\": false, \"lastNodeId\": \"SVR3QA0022\", \"driving\": false, \"edgeStates\": [], \"orderId\": \"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\", \"errors\": [], \"lastCode\": \"\", \"serialNumber\": \"5iO4\", \"timestamp\": \"2025-11-10T17:12:56.285927Z\", \"actionState\": {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:35.466049Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"FINISHED\"}, \"load\": [{\"loadId\": null, \"loadType\": null, \"loadPosition\": \"1\"}], \"actionStates\": [{\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:27.353377Z\", \"id\": \"e9506cd9-a2e7-440e-8141-c62ddc87a0a4\", \"state\": \"FINISHED\"}, {\"command\": \"PASS\", \"timestamp\": \"2025-11-10T17:12:29.532801Z\", \"id\": \"99d3ee28-752d-419e-8d10-1b80b7e24eb3\", \"state\": \"FINISHED\"}, {\"command\": \"DOCK\", \"timestamp\": \"2025-11-10T17:12:35.466049Z\", \"id\": \"6f4a2dd6-7cc1-4f77-89ee-bbf0225cc045\", \"state\": \"FINISHED\"}, {\"command\": \"clearLoadHandler\", \"timestamp\": \"2025-11-10T17:12:56.285478Z\", \"id\": \"1159a566-6bf2-44f8-a7af-5d28b43a15da\", \"state\": \"FINISHED\"}], \"headerId\": 359}",
+    "timestamp": "2025-11-10T18:12:56.448003"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:12:56.444Z\",\"actions\":[{\"actionId\":\"8f7689d0-abaa-4afe-85d2-d0b0d6a70d1a\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:12:56.495021"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":101,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:09.018077"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:09.008Z\",\"actions\":[{\"actionId\":\"1e4ff560-fe78-40fd-90e0-3b6c9973428f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:09.062019"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":107,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:09.108941"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:09.101Z\",\"actions\":[{\"actionId\":\"eb7379ab-0013-492c-acf2-95dbb13ca3c5\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:09.153794"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":109,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:09.259329"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:09.252Z\",\"actions\":[{\"actionId\":\"97b01b9b-3408-45f2-979f-4a2cf4f1187b\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:09.306214"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":103,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:09.434543"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":1043,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:09.454537"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:09.428Z\",\"actions\":[{\"actionId\":\"cece6907-3433-426f-a2a5-adee5771c037\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:09.500986"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:09.447Z\",\"actions\":[{\"actionId\":\"8a83672e-8923-4cb8-83dd-5568b5b881d6\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:09.505400"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/connection",
+    "payload": "{\"headerId\":102,\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"ip\":\"192.168.0.40\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:24.046195"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:23.997Z\",\"actions\":[{\"actionId\":\"99afb38a-086c-4768-9320-d5963fac4a60\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:24.048640"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/connection",
+    "payload": "{\"headerId\":108,\"timestamp\":\"2025-11-10T16:50:54.148Z\",\"ip\":\"192.168.0.50\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76449\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:24.095883"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:24.089Z\",\"actions\":[{\"actionId\":\"97ffd1e4-be56-49d2-ae05-30f96fa107c1\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:24.141864"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":110,\"timestamp\":\"2025-11-10T16:50:54.318Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:24.258836"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:24.250Z\",\"actions\":[{\"actionId\":\"bf09a2aa-bdb7-40f7-a343-4c7bf0cf02b5\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:24.305878"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA0022/connection",
+    "payload": "{\"headerId\":104,\"timestamp\":\"2025-11-10T16:50:54.495Z\",\"ip\":\"192.168.0.80\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA0022\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:24.435385"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/connection",
+    "payload": "{\"headerId\":1049,\"timestamp\":\"2025-11-10T16:50:54.643Z\",\"ip\":\"192.168.0.90\",\"version\":\"1.6.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H73275\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-11-10T18:13:24.455335"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:24.430Z\",\"actions\":[{\"actionId\":\"bdacfafb-025a-41ca-bf16-5c1df751de7e\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:24.500822"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:13:24.446Z\",\"actions\":[{\"actionId\":\"0bf78c6c-2255-4ce6-b915-733aace48061\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:13:24.504002"
+  }
+]
