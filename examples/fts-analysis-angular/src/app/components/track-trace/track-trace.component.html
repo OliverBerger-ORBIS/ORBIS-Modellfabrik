@@ -65,7 +65,7 @@
     
     <div class="timeline">
       <div 
-        *ngFor="let event of history.events; trackBy: trackByEventTimestamp; let last = last"
+        *ngFor="let event of history.events; trackBy: trackByEvent; let last = last"
         class="timeline-item"
         [class]="event.eventType.toLowerCase()">
         

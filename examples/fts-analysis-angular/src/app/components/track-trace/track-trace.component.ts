@@ -86,7 +86,8 @@ export class TrackTraceComponent {
     return workpiece.workpieceId;
   }
   
-  trackByEventTimestamp(_index: number, event: TrackTraceEvent): string {
-    return event.timestamp;
+  trackByEvent(index: number, event: TrackTraceEvent): string {
+    // Use combination of timestamp and index for unique tracking
+    return `${event.timestamp}-${index}`;
   }
 }

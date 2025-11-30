@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, interval } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Observable, interval, Subscription } from 'rxjs';
 import { map, distinctUntilChanged } from 'rxjs/operators';
 import {
   FtsState,
@@ -22,16 +22,21 @@ import {
 @Injectable({
   providedIn: 'root'
 })
-export class FtsMockService {
+export class FtsMockService implements OnDestroy {
   private ftsStateSubject = new BehaviorSubject<FtsState>(this.createInitialState());
   private ftsOrderSubject = new BehaviorSubject<FtsOrder | null>(null);
   private workpieceHistorySubject = new BehaviorSubject<Map<string, WorkpieceHistory>>(new Map());
   
   private simulationIndex = 0;
   private readonly simulatedStates: Partial<FtsState>[] = this.createSimulatedStates();
+  private simulationSubscription: Subscription | null = null;
   
   constructor() {
     this.startSimulation();
+  }
+  
+  ngOnDestroy(): void {
+    this.simulationSubscription?.unsubscribe();
   }
   
   /** Observable for current FTS state */
@@ -312,7 +317,7 @@ export class FtsMockService {
   
   private startSimulation(): void {
     // Update state every 2 seconds
-    interval(2000).subscribe(() => {
+    this.simulationSubscription = interval(2000).subscribe(() => {
       const partialState = this.simulatedStates[this.simulationIndex];
       const currentState = this.ftsStateSubject.value;
       

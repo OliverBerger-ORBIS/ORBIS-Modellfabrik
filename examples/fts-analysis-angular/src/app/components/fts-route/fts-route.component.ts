@@ -1,5 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FtsState, FtsActionState, getActionStateClass } from '../../models/fts.types';
 
 /** Node positions for visualization (simplified shopfloor layout) */
@@ -21,7 +21,7 @@ const NODE_POSITIONS: Record<string, { x: number; y: number; label: string }> = 
 @Component({
   selector: 'app-fts-route',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, DatePipe],
   templateUrl: './fts-route.component.html',
   styleUrls: ['./fts-route.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
