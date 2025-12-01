@@ -112,7 +112,41 @@
             </span>
           </div>
           
-          <div class="timeline">
+          <!-- Station-grouped manufacturing tasks for Production Orders -->
+          <div class="station-groups" *ngIf="group.stationGroups && group.stationGroups.length > 0">
+            <div 
+              *ngFor="let station of group.stationGroups; trackBy: trackByStation"
+              class="station-group">
+              <div class="station-header">
+                <span class="station-icon">{{ getStationIcon(station.stationId) }}</span>
+                <span class="station-name">{{ station.stationName }}</span>
+                <span class="station-task-count">{{ station.events.length }} tasks</span>
+              </div>
+              
+              <div class="station-tasks">
+                <div 
+                  *ngFor="let event of station.events; trackBy: trackByEvent"
+                  class="task-item"
+                  [class]="event.eventType.toLowerCase()">
+                  
+                  <div class="task-icon">{{ getEventIcon(event.eventType) }}</div>
+                  
+                  <div class="task-content">
+                    <div class="task-header">
+                      <span class="task-type">{{ event.eventType }}</span>
+                      <span class="task-duration" *ngIf="event.processDuration">
+                        {{ formatDuration(event.processDuration) }}
+                      </span>
+                    </div>
+                    <div class="task-time">{{ formatTimestamp(event.timestamp) }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Regular timeline for non-station events (Storage order, transport) -->
+          <div class="timeline" *ngIf="!group.stationGroups || group.stationGroups.length === 0">
             <div 
               *ngFor="let event of group.events; trackBy: trackByEvent; let last = last"
               class="timeline-item"
@@ -147,7 +181,7 @@
     </p>
     <p>
       Select a workpiece from the list to view its complete journey through the production process.
-      Events are grouped by order type (Storage Order / Production Order) with links to ERP systems.
+      Manufacturing tasks are grouped by station (PICK → PROCESS → DROP) within Production Orders.
     </p>
   </div>
 </div>

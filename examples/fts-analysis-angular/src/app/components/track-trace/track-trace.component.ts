@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Observable, map } from 'rxjs';
 import { FtsMockService } from '../../services/fts-mock.service';
-import { WorkpieceHistory, TrackTraceEvent, OrderContext } from '../../models/fts.types';
+import { WorkpieceHistory, TrackTraceEvent, OrderContext, StationTaskGroup } from '../../models/fts.types';
 
 /**
  * Track & Trace Component
  * Enables workpiece-based tracking through the entire production process
  * Shows Order context (Storage Order vs Production Order) with ERP links
+ * Groups manufacturing tasks by station (PICK → PROCESS → DROP)
  */
 @Component({
   selector: 'app-track-trace',
@@ -79,12 +80,29 @@ export class TrackTraceComponent {
     }
   }
   
+  getStationIcon(stationId: string | undefined): string {
+    if (!stationId) return '🏭';
+    switch (stationId.toUpperCase()) {
+      case 'HBW': return '🏢';
+      case 'DRILL': return '🔩';
+      case 'MILL': return '⚙️';
+      case 'AIQS': return '🔍';
+      case 'DPS': return '📦';
+      default: return '🏭';
+    }
+  }
+  
   formatTimestamp(timestamp: string): string {
     try {
       return new Date(timestamp).toLocaleString();
     } catch {
       return timestamp;
     }
+  }
+  
+  formatDuration(seconds: number | undefined): string {
+    if (!seconds) return '';
+    return `${seconds}s`;
   }
   
   getLocationLabel(location: string): string {
@@ -103,12 +121,12 @@ export class TrackTraceComponent {
   }
   
   /** Group events by order context */
-  groupEventsByOrder(history: WorkpieceHistory): { order: OrderContext | null; events: TrackTraceEvent[] }[] {
+  groupEventsByOrder(history: WorkpieceHistory): { order: OrderContext | null; events: TrackTraceEvent[]; stationGroups: StationTaskGroup[] }[] {
     if (!history.orders || history.orders.length === 0) {
-      return [{ order: null, events: history.events }];
+      return [{ order: null, events: history.events, stationGroups: [] }];
     }
     
-    const groups: { order: OrderContext | null; events: TrackTraceEvent[] }[] = [];
+    const groups: { order: OrderContext | null; events: TrackTraceEvent[]; stationGroups: StationTaskGroup[] }[] = [];
     
     // Group events by order type
     let currentOrderType: string | undefined = undefined;
@@ -118,7 +136,8 @@ export class TrackTraceComponent {
       if (event.orderType !== currentOrderType) {
         if (currentGroup.length > 0) {
           const order = history.orders?.find(o => o.orderType === currentOrderType) || null;
-          groups.push({ order, events: [...currentGroup] });
+          const stationGroups = this.groupEventsByStation(currentGroup, currentOrderType);
+          groups.push({ order, events: [...currentGroup], stationGroups });
         }
         currentOrderType = event.orderType;
         currentGroup = [event];
@@ -130,10 +149,57 @@ export class TrackTraceComponent {
     // Add last group
     if (currentGroup.length > 0) {
       const order = history.orders?.find(o => o.orderType === currentOrderType) || null;
-      groups.push({ order, events: currentGroup });
+      const stationGroups = this.groupEventsByStation(currentGroup, currentOrderType);
+      groups.push({ order, events: currentGroup, stationGroups });
     }
     
     return groups;
+  }
+  
+  /** Group production events by station (PICK → PROCESS → DROP) */
+  private groupEventsByStation(events: TrackTraceEvent[], orderType: string | undefined): StationTaskGroup[] {
+    if (orderType !== 'PRODUCTION') {
+      return [];
+    }
+    
+    const stationGroups: StationTaskGroup[] = [];
+    let currentStation: string | undefined = undefined;
+    let currentStationEvents: TrackTraceEvent[] = [];
+    
+    for (const event of events) {
+      // Only group station events (PICK, PROCESS, DROP)
+      if (event.stationId && ['PICK', 'PROCESS', 'DROP'].includes(event.eventType.toUpperCase())) {
+        if (event.stationId !== currentStation) {
+          // Save previous station group
+          if (currentStation && currentStationEvents.length > 0) {
+            stationGroups.push({
+              stationId: currentStation,
+              stationName: currentStationEvents[0]?.stationName || currentStation,
+              events: [...currentStationEvents],
+              startTime: currentStationEvents[0]?.timestamp,
+              endTime: currentStationEvents[currentStationEvents.length - 1]?.timestamp,
+            });
+          }
+          currentStation = event.stationId;
+          currentStationEvents = [event];
+        } else {
+          currentStationEvents.push(event);
+        }
+      }
+    }
+    
+    // Add last station group
+    if (currentStation && currentStationEvents.length > 0) {
+      stationGroups.push({
+        stationId: currentStation,
+        stationName: currentStationEvents[0]?.stationName || currentStation,
+        events: [...currentStationEvents],
+        startTime: currentStationEvents[0]?.timestamp,
+        endTime: currentStationEvents[currentStationEvents.length - 1]?.timestamp,
+      });
+    }
+    
+    return stationGroups;
   }
   
   trackByWorkpieceId(_index: number, workpiece: WorkpieceHistory): string {
@@ -147,5 +213,9 @@ export class TrackTraceComponent {
   
   trackByOrder(index: number, group: { order: OrderContext | null; events: TrackTraceEvent[] }): string {
     return group.order?.orderId || `group-${index}`;
+  }
+  
+  trackByStation(index: number, station: StationTaskGroup): string {
+    return `${station.stationId}-${index}`;
   }
 }

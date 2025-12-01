@@ -138,7 +138,19 @@ export interface TrackTraceEvent {
   location?: string;
   orderId?: string;
   orderType?: 'STORAGE' | 'PRODUCTION' | string;
+  stationId?: string;    // Station/module where action takes place (e.g., DRILL, MILL)
+  stationName?: string;  // Human-readable station name
+  processDuration?: number; // Process duration in seconds (for PROCESS events)
   details?: Record<string, unknown>;
+}
+
+/** Station task group - groups PICK, PROCESS, DROP at a station */
+export interface StationTaskGroup {
+  stationId: string;
+  stationName: string;
+  events: TrackTraceEvent[];
+  startTime?: string;
+  endTime?: string;
 }
 
 /** Order context for Track & Trace */

@@ -351,6 +351,123 @@
       }
     }
     
+    // Station groups for Production Order manufacturing tasks
+    .station-groups {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 0.5rem;
+      
+      .station-group {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        
+        .station-header {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1rem;
+          background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+          border-bottom: 1px solid #c8e6c9;
+          
+          .station-icon {
+            font-size: 1.25rem;
+          }
+          
+          .station-name {
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: #2e7d32;
+            flex: 1;
+          }
+          
+          .station-task-count {
+            font-size: 0.7rem;
+            color: #558b2f;
+            padding: 0.125rem 0.5rem;
+            background: white;
+            border-radius: 10px;
+          }
+        }
+        
+        .station-tasks {
+          padding: 0.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          
+          .task-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 0.75rem;
+            border-radius: 6px;
+            background: #fafafa;
+            border-left: 3px solid #ccc;
+            
+            &.pick {
+              border-left-color: #9c27b0;
+              background: linear-gradient(90deg, rgba(156, 39, 176, 0.05) 0%, transparent 30%);
+            }
+            
+            &.process {
+              border-left-color: #ff9800;
+              background: linear-gradient(90deg, rgba(255, 152, 0, 0.08) 0%, transparent 30%);
+            }
+            
+            &.drop {
+              border-left-color: #4caf50;
+              background: linear-gradient(90deg, rgba(76, 175, 80, 0.05) 0%, transparent 30%);
+            }
+            
+            .task-icon {
+              font-size: 1rem;
+              width: 24px;
+              text-align: center;
+            }
+            
+            .task-content {
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+              gap: 0.125rem;
+              
+              .task-header {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                
+                .task-type {
+                  font-weight: 600;
+                  font-size: 0.8rem;
+                  text-transform: uppercase;
+                }
+                
+                .task-duration {
+                  font-size: 0.7rem;
+                  padding: 0.0625rem 0.375rem;
+                  background: #fff3e0;
+                  color: #e65100;
+                  border-radius: 4px;
+                  font-family: monospace;
+                  font-weight: 600;
+                }
+              }
+              
+              .task-time {
+                font-size: 0.65rem;
+                color: var(--text-secondary);
+                font-family: monospace;
+              }
+            }
+          }
+        }
+      }
+    }
+    
     .timeline {
       position: relative;
       padding-left: 3rem;

@@ -137,12 +137,13 @@ export class FtsRouteComponent implements OnChanges, OnDestroy {
           // Animate movement between adjacent nodes
           this.animateBetweenNodes(this.previousNodeId, newNodeId);
         } else {
-          // Jump directly (shouldn't happen in normal flow, but handle it)
+          // Arrived at destination - stop animation and clear path highlighting
           this.stopAnimation();
           this.animatedPosition = null;
         }
-      } else if (!isDriving && !this.isAnimating) {
-        // Not driving and not animating - reset position
+      } else if (!isDriving) {
+        // Not driving - AGV has stopped at destination, clear route highlighting
+        this.stopAnimation();
         this.animatedPosition = null;
       }
       

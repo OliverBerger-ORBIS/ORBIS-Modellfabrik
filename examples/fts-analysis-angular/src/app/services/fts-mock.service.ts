@@ -360,6 +360,22 @@ export class FtsMockService implements OnDestroy {
   private updateWorkpieceHistory(state: FtsState): void {
     const historyMap = new Map(this.workpieceHistorySubject.value);
     
+    // Station serial number to name mapping
+    const stationNames: Record<string, string> = {
+      'SVR3QA0022': 'HBW',
+      'SVR4H76449': 'DRILL',
+      'SVR3QA2098': 'MILL',
+      'SVR4H76530': 'AIQS',
+      'SVR4H73275': 'DPS',
+    };
+    
+    // Process durations in seconds for each station
+    const processDurations: Record<string, number> = {
+      'DRILL': 15,
+      'MILL': 20,
+      'AIQS': 10,
+    };
+    
     state.load.forEach(loadItem => {
       if (loadItem.loadId && loadItem.loadType) {
         const existingHistory = historyMap.get(loadItem.loadId) || {
@@ -372,26 +388,70 @@ export class FtsMockService implements OnDestroy {
         };
         
         // Determine order type based on location
-        // DPS -> HBW is STORAGE order (raw material)
-        // HBW -> Stations -> DPS is PRODUCTION order
         const orderType = this.determineOrderType(state.lastNodeId, existingHistory.events);
         
-        // Add event if location changed
+        // Get station info
+        const stationName = stationNames[state.lastNodeId];
+        const isStation = ['SVR4H76449', 'SVR3QA2098', 'SVR4H76530'].includes(state.lastNodeId);
+        const processDuration = stationName ? processDurations[stationName] : undefined;
+        
+        // Check if location changed to generate proper station events
         const lastEvent = existingHistory.events[existingHistory.events.length - 1];
         if (!lastEvent || lastEvent.location !== state.lastNodeId) {
-          existingHistory.events.push({
+          const baseEvent = {
             timestamp: state.timestamp,
-            eventType: state.actionState.command,
             workpieceId: loadItem.loadId,
             workpieceType: loadItem.loadType,
             location: state.lastNodeId,
             orderId: state.orderId,
             orderType: orderType,
-            details: {
-              actionState: state.actionState.state,
-              loadPosition: loadItem.loadPosition,
-            },
-          });
+            stationId: stationName || undefined,
+            stationName: stationName ? this.getStationDisplayName(stationName) : undefined,
+          };
+          
+          if (isStation && orderType === 'PRODUCTION') {
+            // Generate PICK -> PROCESS -> DROP sequence for manufacturing stations
+            // PICK event
+            existingHistory.events.push({
+              ...baseEvent,
+              eventType: 'PICK',
+              timestamp: state.timestamp,
+              details: { actionState: 'FINISHED', loadPosition: loadItem.loadPosition },
+            });
+            
+            // PROCESS event (drilling, milling, etc.)
+            const processTime = new Date(new Date(state.timestamp).getTime() + 1000);
+            existingHistory.events.push({
+              ...baseEvent,
+              eventType: 'PROCESS',
+              timestamp: processTime.toISOString(),
+              processDuration: processDuration,
+              details: { 
+                actionState: 'FINISHED', 
+                loadPosition: loadItem.loadPosition,
+                processType: stationName,
+              },
+            });
+            
+            // DROP event
+            const dropTime = new Date(processTime.getTime() + (processDuration || 10) * 1000);
+            existingHistory.events.push({
+              ...baseEvent,
+              eventType: 'DROP',
+              timestamp: dropTime.toISOString(),
+              details: { actionState: 'FINISHED', loadPosition: loadItem.loadPosition },
+            });
+          } else {
+            // Regular event for transport/storage
+            existingHistory.events.push({
+              ...baseEvent,
+              eventType: state.actionState.command,
+              details: {
+                actionState: state.actionState.state,
+                loadPosition: loadItem.loadPosition,
+              },
+            });
+          }
         }
         
         existingHistory.currentLocation = state.lastNodeId;
@@ -400,6 +460,18 @@ export class FtsMockService implements OnDestroy {
     });
     
     this.workpieceHistorySubject.next(historyMap);
+  }
+  
+  /** Get human-readable station display name */
+  private getStationDisplayName(stationId: string): string {
+    const names: Record<string, string> = {
+      'HBW': 'High Bay Warehouse',
+      'DRILL': 'Drilling Station',
+      'MILL': 'Milling Station',
+      'AIQS': 'Quality Inspection',
+      'DPS': 'Dispatch Station',
+    };
+    return names[stationId] || stationId;
   }
   
   /** Generate order context with fake ERP IDs */
