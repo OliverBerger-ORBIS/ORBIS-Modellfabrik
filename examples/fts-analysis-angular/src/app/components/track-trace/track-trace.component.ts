@@ -5,6 +5,9 @@ import { Observable, map } from 'rxjs';
 import { FtsMockService } from '../../services/fts-mock.service';
 import { WorkpieceHistory, TrackTraceEvent, OrderContext, StationTaskGroup } from '../../models/fts.types';
 
+/** Manufacturing event types that should be grouped by station */
+const MANUFACTURING_EVENT_TYPES = ['PICK', 'PROCESS', 'DROP'] as const;
+
 /**
  * Track & Trace Component
  * Enables workpiece-based tracking through the entire production process
@@ -167,8 +170,8 @@ export class TrackTraceComponent {
     let currentStationEvents: TrackTraceEvent[] = [];
     
     for (const event of events) {
-      // Only group station events (PICK, PROCESS, DROP)
-      if (event.stationId && ['PICK', 'PROCESS', 'DROP'].includes(event.eventType.toUpperCase())) {
+      // Only group manufacturing events (PICK, PROCESS, DROP)
+      if (event.stationId && MANUFACTURING_EVENT_TYPES.includes(event.eventType.toUpperCase() as typeof MANUFACTURING_EVENT_TYPES[number])) {
         if (event.stationId !== currentStation) {
           // Save previous station group
           if (currentStation && currentStationEvents.length > 0) {

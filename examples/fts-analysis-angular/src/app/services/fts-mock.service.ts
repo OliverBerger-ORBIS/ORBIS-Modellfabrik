@@ -12,7 +12,28 @@ import {
   OrderContext,
 } from '../models/fts.types';
 
-/** Generate fake ERP IDs for demo */
+/** Manufacturing station serial numbers */
+const MANUFACTURING_STATIONS = ['SVR4H76449', 'SVR3QA2098', 'SVR4H76530'] as const;
+
+/** Process event timing constants */
+const PROCESS_START_DELAY_MS = 1000;  // 1 second after PICK
+const DEFAULT_PROCESS_DURATION_S = 10; // 10 seconds fallback
+
+/** Station serial number to name mapping */
+const STATION_NAMES: Record<string, string> = {
+  'SVR3QA0022': 'HBW',
+  'SVR4H76449': 'DRILL',
+  'SVR3QA2098': 'MILL',
+  'SVR4H76530': 'AIQS',
+  'SVR4H73275': 'DPS',
+};
+
+/** Process durations in seconds for each station */
+const PROCESS_DURATIONS: Record<string, number> = {
+  'DRILL': 15,
+  'MILL': 20,
+  'AIQS': 10,
+};
 function generatePurchaseOrderId(): string {
   return `PO-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
 }
@@ -360,22 +381,6 @@ export class FtsMockService implements OnDestroy {
   private updateWorkpieceHistory(state: FtsState): void {
     const historyMap = new Map(this.workpieceHistorySubject.value);
     
-    // Station serial number to name mapping
-    const stationNames: Record<string, string> = {
-      'SVR3QA0022': 'HBW',
-      'SVR4H76449': 'DRILL',
-      'SVR3QA2098': 'MILL',
-      'SVR4H76530': 'AIQS',
-      'SVR4H73275': 'DPS',
-    };
-    
-    // Process durations in seconds for each station
-    const processDurations: Record<string, number> = {
-      'DRILL': 15,
-      'MILL': 20,
-      'AIQS': 10,
-    };
-    
     state.load.forEach(loadItem => {
       if (loadItem.loadId && loadItem.loadType) {
         const existingHistory = historyMap.get(loadItem.loadId) || {
@@ -391,9 +396,9 @@ export class FtsMockService implements OnDestroy {
         const orderType = this.determineOrderType(state.lastNodeId, existingHistory.events);
         
         // Get station info
-        const stationName = stationNames[state.lastNodeId];
-        const isStation = ['SVR4H76449', 'SVR3QA2098', 'SVR4H76530'].includes(state.lastNodeId);
-        const processDuration = stationName ? processDurations[stationName] : undefined;
+        const stationName = STATION_NAMES[state.lastNodeId];
+        const isManufacturingStation = MANUFACTURING_STATIONS.includes(state.lastNodeId as typeof MANUFACTURING_STATIONS[number]);
+        const processDuration = stationName ? PROCESS_DURATIONS[stationName] : undefined;
         
         // Check if location changed to generate proper station events
         const lastEvent = existingHistory.events[existingHistory.events.length - 1];
@@ -409,7 +414,7 @@ export class FtsMockService implements OnDestroy {
             stationName: stationName ? this.getStationDisplayName(stationName) : undefined,
           };
           
-          if (isStation && orderType === 'PRODUCTION') {
+          if (isManufacturingStation && orderType === 'PRODUCTION') {
             // Generate PICK -> PROCESS -> DROP sequence for manufacturing stations
             // PICK event
             existingHistory.events.push({
@@ -420,7 +425,7 @@ export class FtsMockService implements OnDestroy {
             });
             
             // PROCESS event (drilling, milling, etc.)
-            const processTime = new Date(new Date(state.timestamp).getTime() + 1000);
+            const processTime = new Date(new Date(state.timestamp).getTime() + PROCESS_START_DELAY_MS);
             existingHistory.events.push({
               ...baseEvent,
               eventType: 'PROCESS',
@@ -434,7 +439,7 @@ export class FtsMockService implements OnDestroy {
             });
             
             // DROP event
-            const dropTime = new Date(processTime.getTime() + (processDuration || 10) * 1000);
+            const dropTime = new Date(processTime.getTime() + (processDuration || DEFAULT_PROCESS_DURATION_S) * 1000);
             existingHistory.events.push({
               ...baseEvent,
               eventType: 'DROP',
