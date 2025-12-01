@@ -1,0 +1,120 @@
+.loads-card {
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    
+    .icon {
+      font-size: 1.25rem;
+    }
+    
+    .badge {
+      margin-left: auto;
+      background: var(--primary-color);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+  }
+  
+  .loads-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .load-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: var(--background-color);
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: translateX(4px);
+    }
+    
+    &.empty {
+      opacity: 0.6;
+      
+      .load-position {
+        background: var(--neutral-color);
+      }
+    }
+    
+    &.blue .load-position {
+      background: #1976d2;
+    }
+    
+    &.white .load-position {
+      background: #455a64;
+    }
+    
+    &.red .load-position {
+      background: #c62828;
+    }
+    
+    .load-position {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    
+    .load-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+      
+      .load-type {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        
+        &.blue { color: #1976d2; }
+        &.white { color: #455a64; }
+        &.red { color: #c62828; }
+      }
+      
+      .load-id {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        font-family: monospace;
+      }
+    }
+    
+    .load-status {
+      .status-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--neutral-color);
+        
+        &.loaded {
+          background: var(--success-color);
+          box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+      }
+    }
+  }
+  
+  .loads-empty {
+    text-align: center;
+    padding: 1rem;
+    color: var(--text-secondary);
+  }
+}

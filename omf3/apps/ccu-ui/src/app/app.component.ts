@@ -62,6 +62,11 @@ const NAVIGATION_ITEMS: Omit<NavigationItem, 'label'>[] = [
     roles: ['admin'],
   },
   {
+    id: 'fts',
+    route: '/fts',
+    roles: ['operator', 'admin'],
+  },
+  {
     id: 'settings',
     route: '/settings',
     roles: ['admin'],
@@ -100,6 +105,7 @@ export class AppComponent implements OnDestroy {
       'configuration': $localize`:@@navConfiguration:Configuration`,
       'message-monitor': $localize`:@@navMessageMonitor:Message Monitor`,
       'dsp-action': $localize`:@@navDspAction:DSP Actions`,
+      'fts': $localize`:@@navFts:AGV`,
       'settings': $localize`:@@navSettings:Settings`,
     };
     
