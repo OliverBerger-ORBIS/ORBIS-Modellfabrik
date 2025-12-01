@@ -430,8 +430,9 @@ export class FtsTabComponent implements OnInit, OnDestroy {
         
         // If still not found, try intersection: prefix for numeric IDs
         if (!nodePos && nodeId.match(/^\d+$/)) {
+          // Try intersection: prefix first (canonical form)
           nodePos = this.ftsRouteService.getNodePosition(`intersection:${nodeId}`);
-          // Also try direct numeric lookup
+          // Also try direct numeric lookup (alias)
           if (!nodePos) {
             nodePos = this.ftsRouteService.getNodePosition(nodeId);
           }
@@ -443,7 +444,15 @@ export class FtsTabComponent implements OnInit, OnDestroy {
         }
         
         // Fallback: return null if node not found (layout not loaded yet)
-        console.warn('[FTS Tab] Node not found in layout:', state.lastNodeId);
+        // Only warn if it's not a known intersection and layout is initialized
+        if (!nodeId.match(/^\d+$/)) {
+          // Only warn if layout is initialized but this specific node is missing
+          if (this.ftsRouteService.isLayoutInitialized()) {
+            const availableNodes = this.ftsRouteService.getAvailableNodeIds();
+            console.warn('[FTS Tab] Node not found in layout:', state.lastNodeId, '- Available nodes:', availableNodes.slice(0, 10));
+          }
+          // If layout not initialized yet, silently return null (will be retried when layout loads)
+        }
         return null;
       }),
       distinctUntilChanged((prev, curr) => {
@@ -474,9 +483,11 @@ export class FtsTabComponent implements OnInit, OnDestroy {
   getLocationName(nodeId: string | undefined): string {
     if (!nodeId) return $localize`:@@ftsLocationUnknown:Unknown`;
     
-    // For intersections, use custom mapping
-    if (['1', '2', '3', '4'].includes(nodeId)) {
-      return $localize`:@@ftsLocationIntersection:Intersection ${nodeId}`;
+    // For intersections, use FtsRouteService mapping
+    const resolved = this.resolveNodeRef(nodeId);
+    if (resolved && resolved.startsWith('intersection:')) {
+      const intersectionNumber = resolved.replace('intersection:', '');
+      return $localize`:@@ftsLocationIntersection:Intersection ${intersectionNumber}`;
     }
     
     // Convert serial number to module type, then get full name
@@ -492,8 +503,11 @@ export class FtsTabComponent implements OnInit, OnDestroy {
   getLocationShortName(nodeId: string | undefined): string {
     if (!nodeId) return $localize`:@@ftsLocationUnknown:Unknown`;
     
-    if (['1', '2', '3', '4'].includes(nodeId)) {
-      return `INT-${nodeId}`;
+    // For intersections, use FtsRouteService mapping
+    const resolved = this.resolveNodeRef(nodeId);
+    if (resolved && resolved.startsWith('intersection:')) {
+      const intersectionNumber = resolved.replace('intersection:', '');
+      return `INT-${intersectionNumber}`;
     }
     
     // Convert serial number to module type, then get ID

@@ -1,0 +1,269 @@
+<div class="track-trace-card card">
+  <h3>
+    <img src="headings/track-trace.svg" alt="" width="24" height="24" />
+    <span i18n="@@trackTraceTitle">Track & Trace</span>
+  </h3>
+
+  <div class="search-section">
+    <div class="search-input">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        placeholder=""
+        i18n-placeholder="@@trackTraceSearchPlaceholder"
+        class="search-field"
+      />
+      <button class="clear-btn" *ngIf="searchTerm" (click)="clearSelection()">✕</button>
+    </div>
+  </div>
+
+  <div class="workpieces-list" *ngIf="(workpieces$ | async) as workpieces">
+    <div class="section-title">
+      <span i18n="@@trackTraceWorkpiecesTitle">Tracked Workpieces ({{ workpieces.length }})</span>
+    </div>
+
+    <div class="workpiece-items" *ngIf="workpieces.length > 0">
+      <div
+        *ngFor="let wp of workpieces; trackBy: trackByWorkpieceId"
+        class="workpiece-item"
+        [class.selected]="selectedWorkpieceId === wp.workpieceId"
+        [class]="getTypeClass(wp.workpieceType)"
+        (click)="selectWorkpiece(wp.workpieceId)"
+        (keyup.enter)="selectWorkpiece(wp.workpieceId)"
+        tabindex="0"
+        role="button"
+      >
+        <img [src]="getWorkpieceIcon(wp.workpieceType)" alt="" width="24" height="24" class="workpiece-icon" />
+
+        <div class="workpiece-info">
+          <span class="workpiece-id">{{ wp.workpieceId }}</span>
+          <span class="workpiece-location">{{ getLocationLabel(wp.currentLocation || '') }}</span>
+        </div>
+
+        <div class="workpiece-events">{{ wp.events.length }} events</div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="workpieces.length === 0">
+      <p i18n="@@trackTraceNoWorkpieces">No workpieces tracked yet.</p>
+      <p class="hint" i18n="@@trackTraceNoWorkpiecesHint">Workpieces will appear here as they are loaded on the AGV.</p>
+    </div>
+  </div>
+
+  <div class="history-section" *ngIf="selectedWorkpieceId && (selectedHistory$ | async) as history">
+    <div class="section-title">
+      <span i18n="@@trackTraceEventHistory">Event History</span>
+      <button class="close-btn" (click)="clearSelection()" i18n="@@trackTraceClose">✕ Close</button>
+    </div>
+
+    <div class="history-header">
+      <img [src]="getWorkpieceIcon(history.workpieceType)" alt="" width="32" height="32" class="workpiece-icon large" />
+      <div class="header-info">
+        <span class="id-label" i18n="@@trackTraceIdLabel">ID:</span>
+        <span class="id-value">{{ history.workpieceId }}</span>
+      </div>
+    </div>
+
+    <!-- Two-column layout: Shopfloor Events | Order Context -->
+    <div class="history-content">
+      <!-- Column 1: Shopfloor Events -->
+      <div class="shopfloor-events-column">
+        <div class="column-title" i18n="@@trackTraceShopfloorEvents">Shopfloor Events</div>
+        
+        <!-- Events grouped by order -->
+        <div class="events-by-order">
+          <ng-container *ngFor="let group of groupEventsByOrder(history); trackBy: trackByOrder">
+            <div
+              class="order-group"
+              [class.storage]="group.order?.orderType === 'STORAGE'"
+              [class.production]="group.order?.orderType === 'PRODUCTION'"
+            >
+              <div class="order-group-header" *ngIf="group.order">
+                <img [src]="getOrderTypeIcon(group.order.orderType)" alt="" width="16" height="16" />
+                <span class="order-group-label">{{ getOrderTypeLabel(group.order.orderType) }}</span>
+                <span class="order-group-id" *ngIf="group.order.orderId">
+                  {{ group.order.orderId }}
+                </span>
+              </div>
+
+              <!-- Events grouped by Sub-Order-ID and Module -->
+              <div class="sub-order-groups">
+                <ng-container *ngFor="let subOrderGroup of groupEventsBySubOrder(group.events, group.stationGroups); trackBy: trackBySubOrderGroup">
+                  <!-- Module-grouped events (same Sub-Order-ID) -->
+                  <div class="module-group" *ngIf="subOrderGroup.moduleId">
+                    <div class="module-header">
+                      <img [src]="getStationIcon(subOrderGroup.moduleId)" alt="" width="20" height="20" />
+                      <span class="module-name">{{ subOrderGroup.moduleName }}</span>
+                      <span class="module-task-count">{{ subOrderGroup.events.length }} tasks</span>
+                      <!-- Location info in header (all events are at this location) -->
+                      <span class="module-location" *ngIf="subOrderGroup.events[0]?.location">
+                        <img src="shopfloor/location-marker.svg" alt="" width="12" height="12" />
+                        <ng-container *ngIf="getLocationInfo(subOrderGroup.events[0].location!) as locationInfo">
+                          <span class="location-module-type">{{ locationInfo.moduleType }}</span>
+                          <span class="location-full-name">({{ locationInfo.fullName }})</span>
+                          <span class="location-serial" *ngIf="locationInfo.serialId">({{ locationInfo.serialId }})</span>
+                        </ng-container>
+                      </span>
+                    </div>
+                    <div class="module-events">
+                      <div
+                        *ngFor="let event of subOrderGroup.events; trackBy: trackByEvent"
+                        class="event-item"
+                        [class]="event.eventType.toLowerCase()"
+                      >
+                        <img [src]="getEventIcon(event.eventType)" alt="" width="16" height="16" class="event-icon" />
+                        <div class="event-content">
+                          <div class="event-row">
+                            <!-- Column 1: Module/FTS-Name + Action, Date Time -->
+                            <div class="event-col-1">
+                              <div class="event-module-action">
+                                <span class="event-module-name">{{ event.moduleName || 'FTS' }}</span>
+                                <span class="event-action-type">{{ event.eventType }}</span>
+                              </div>
+                              <div class="event-time">{{ formatTimestamp(event.timestamp) }}</div>
+                              <span class="event-duration" *ngIf="event.processDuration">
+                                {{ formatDuration(event.processDuration) }}
+                              </span>
+                            </div>
+                            <!-- Column 2: OrderUpdate-ID, Sub-Order-ID, Action-ID (compact, in one line) -->
+                            <div class="event-col-2">
+                              <span class="event-ids-compact">
+                                <span class="event-order-update-id" *ngIf="event.orderUpdateId !== undefined">
+                                  OrderUpdate: {{ event.orderUpdateId }}
+                                </span>
+                                <span class="event-sub-order-id" *ngIf="event.subOrderId">
+                                  Sub-Order: {{ event.subOrderId }}
+                                </span>
+                                <span class="event-action-id" *ngIf="event.actionId">
+                                  Action: {{ event.actionId }}
+                                </span>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Other events (different Sub-Order-IDs, no module) -->
+                  <div class="other-events" *ngIf="!subOrderGroup.moduleId && subOrderGroup.events.length > 0">
+                    <div
+                      *ngFor="let event of subOrderGroup.events; trackBy: trackByEvent"
+                      class="event-item"
+                      [class]="event.eventType.toLowerCase()"
+                    >
+                      <img [src]="getEventIcon(event.eventType)" alt="" width="16" height="16" class="event-icon" />
+                      <div class="event-content">
+                        <div class="event-row">
+                          <!-- Column 1: Module/FTS-Name + Action, Date Time, Location -->
+                          <div class="event-col-1">
+                            <div class="event-module-action">
+                              <span class="event-module-name">{{ event.moduleName || 'FTS' }}</span>
+                              <span class="event-action-type">{{ event.eventType }}</span>
+                            </div>
+                            <div class="event-time">{{ formatTimestamp(event.timestamp) }}</div>
+                            <div class="event-location" *ngIf="event.location">
+                              <img src="shopfloor/location-marker.svg" alt="" width="12" height="12" />
+                              <ng-container *ngIf="getLocationInfo(event.location) as locationInfo">
+                                <span class="location-module-type">{{ locationInfo.moduleType }}</span>
+                                <span class="location-full-name">({{ locationInfo.fullName }})</span>
+                                <span class="location-serial" *ngIf="locationInfo.serialId">({{ locationInfo.serialId }})</span>
+                              </ng-container>
+                            </div>
+                          </div>
+                          <!-- Column 2: OrderUpdate-ID, Sub-Order-ID, Action-ID (compact, in one line) -->
+                          <div class="event-col-2">
+                            <span class="event-ids-compact">
+                              <span class="event-order-update-id" *ngIf="event.orderUpdateId !== undefined">
+                                OrderUpdate: {{ event.orderUpdateId }}
+                              </span>
+                              <span class="event-sub-order-id" *ngIf="event.subOrderId">
+                                Sub-Order: {{ event.subOrderId }}
+                              </span>
+                              <span class="event-action-id" *ngIf="event.actionId">
+                                Action: {{ event.actionId }}
+                              </span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Column 2: Order Context -->
+      <div class="order-context-column">
+        <div class="column-title" i18n="@@trackTraceOrderContext">Order Context</div>
+        <div class="order-context" *ngIf="history.orders && history.orders.length > 0">
+          <div class="orders-list">
+            <div
+              *ngFor="let order of history.orders"
+              class="order-card"
+              [class.storage]="order.orderType === 'STORAGE'"
+              [class.production]="order.orderType === 'PRODUCTION'"
+            >
+              <div class="order-header">
+                <img [src]="getOrderTypeIcon(order.orderType)" alt="" width="16" height="16" />
+                <span class="order-type-label">{{ getOrderTypeLabel(order.orderType) }}</span>
+              </div>
+              <div class="order-details">
+                <!-- Storage Order Details -->
+                <div *ngIf="order.orderType === 'STORAGE'">
+                  <div class="order-field" *ngIf="order.purchaseOrderId">
+                    <span class="field-label" i18n="@@trackTracePurchaseOrder">Purchase Order:</span>
+                    <span class="field-value erp-id">{{ order.purchaseOrderId }}</span>
+                  </div>
+                  <div class="order-field" *ngIf="order.supplierId">
+                    <span class="field-label" i18n="@@trackTraceSupplierId">Supplier ID:</span>
+                    <span class="field-value erp-id">{{ order.supplierId }}</span>
+                  </div>
+                  <div class="order-field" *ngIf="order.orderDate">
+                    <span class="field-label" i18n="@@trackTraceOrderDate">Order Date:</span>
+                    <span class="field-value">{{ formatTimestamp(order.orderDate) }}</span>
+                  </div>
+                </div>
+                <!-- Production Order Details -->
+                <div *ngIf="order.orderType === 'PRODUCTION'">
+                  <div class="order-field" *ngIf="order.customerOrderId">
+                    <span class="field-label" i18n="@@trackTraceCustomerOrder">Customer Order:</span>
+                    <span class="field-value erp-id">{{ order.customerOrderId }}</span>
+                  </div>
+                  <div class="order-field" *ngIf="order.customerId">
+                    <span class="field-label" i18n="@@trackTraceCustomerId">Customer ID:</span>
+                    <span class="field-value erp-id">{{ order.customerId }}</span>
+                  </div>
+                  <div class="order-field" *ngIf="order.orderDate">
+                    <span class="field-label" i18n="@@trackTraceOrderDate">Order Date:</span>
+                    <span class="field-value">{{ formatTimestamp(order.orderDate) }}</span>
+                  </div>
+                </div>
+                <div class="order-route" *ngIf="order.fromLocation || order.toLocation">
+                  <span class="route-from">{{ getLocationLabel(order.fromLocation || '') }}</span>
+                  <span class="route-arrow">→</span>
+                  <span class="route-to">{{ getLocationLabel(order.toLocation || '') }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-banner" *ngIf="!selectedWorkpieceId">
+    <p>
+      <img src="headings/info-page.svg" alt="" width="16" height="16" />
+      <strong i18n="@@trackTraceInfoTitle">Track & Trace</strong>
+    </p>
+    <p i18n="@@trackTraceInfoDescription">
+      Select a workpiece from the list to view its complete journey through the production process. Manufacturing
+      tasks are grouped by station (PICK → PROCESS → DROP) within Production Orders.
+    </p>
+  </div>
+</div>
+

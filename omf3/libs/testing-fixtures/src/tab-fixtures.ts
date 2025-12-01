@@ -18,7 +18,8 @@ export type OrderFixtureName =
   | 'red'
   | 'mixed'
   | 'storage'
-  | 'startup';
+  | 'startup'
+  | 'track-trace';
 
 export type ModuleFixtureName =
   | 'default'
@@ -239,6 +240,16 @@ export const TAB_FIXTURE_PRESETS: Record<string, TabFixtureConfig> = {
   // DSP Action tab presets
   'dsp-action-default': {
     orders: 'startup',
+    modules: 'default',
+    stock: 'default',
+    flows: 'default',
+    config: 'default',
+    sensors: 'default',
+  },
+  
+  // Track & Trace tab presets
+  'track-trace-default': {
+    orders: 'track-trace',
     modules: 'default',
     stock: 'default',
     flows: 'default',

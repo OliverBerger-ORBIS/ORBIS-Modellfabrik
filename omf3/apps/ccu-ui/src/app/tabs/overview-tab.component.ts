@@ -70,7 +70,7 @@ export class OverviewTabComponent implements OnInit, OnDestroy {
   readonly fixtureOptions: OrderFixtureName[] = ['startup', 'white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
 
-  readonly fixtureLabels: Record<OrderFixtureName, string> = {
+  readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
     startup: $localize`:@@fixtureLabelStartup:Startup`,
     white: $localize`:@@fixtureLabelWhite:White`,
     white_step3: $localize`:@@fixtureLabelWhiteStep3:White • Step 3`,
@@ -151,7 +151,7 @@ export class OverviewTabComponent implements OnInit, OnDestroy {
       this.resetInventoryTracking();
       
       // Map OrderFixtureName to tab-specific preset
-      const presetMap: Record<OrderFixtureName, string> = {
+      const presetMap: Partial<Record<OrderFixtureName, string>> = {
         startup: 'overview-startup',
         white: 'overview-active',
         white_step3: 'overview-active',

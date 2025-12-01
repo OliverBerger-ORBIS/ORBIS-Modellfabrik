@@ -238,6 +238,16 @@ export class FtsAnimationService {
     for (let i = 0; i < this.animationPath.length - 1; i++) {
       const from = this.animationPath[i];
       const to = this.animationPath[i + 1];
+      
+      // Resolve both nodes to canonical form to check if they're the same
+      const fromCanonical = this.ftsRouteService.resolveNodeRef(from) ?? from;
+      const toCanonical = this.ftsRouteService.resolveNodeRef(to) ?? to;
+      
+      // Skip if from and to resolve to the same node (different formats of same node)
+      if (fromCanonical === toCanonical) {
+        continue;
+      }
+      
       const road = this.ftsRouteService.findRoadBetween(from, to);
       if (road) {
         const segment = this.ftsRouteService.buildRoadSegment(road);
@@ -245,7 +255,7 @@ export class FtsAnimationService {
           segments.push(segment);
         }
       } else {
-        console.warn('[FtsAnimationService] Road not found between nodes:', { from, to, animationPath: this.animationPath });
+        console.warn('[FtsAnimationService] Road not found between nodes:', { from, to, fromCanonical, toCanonical, animationPath: this.animationPath });
       }
     }
 

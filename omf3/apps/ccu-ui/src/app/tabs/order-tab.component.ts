@@ -64,7 +64,7 @@ export class OrderTabComponent implements OnInit, OnDestroy {
   storageCompleted$: Observable<OrderActive[]> = of([]);
 
   readonly fixtureOptions: OrderFixtureName[] = ['white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];
-  readonly fixtureLabels: Record<OrderFixtureName, string> = {
+  readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
     white: $localize`:@@fixtureLabelWhite:White`,
     white_step3: $localize`:@@fixtureLabelWhiteStep3:White • Step 3`,
     blue: $localize`:@@fixtureLabelBlue:Blue`,
@@ -247,7 +247,7 @@ export class OrderTabComponent implements OnInit, OnDestroy {
     this.activeFixture = fixture;
     
     // Map OrderFixtureName to tab-specific preset
-    const presetMap: Record<OrderFixtureName, string> = {
+    const presetMap: Partial<Record<OrderFixtureName, string>> = {
       startup: 'startup',
       white: 'order-white',
       white_step3: 'order-white-step3', // Stops at step 3

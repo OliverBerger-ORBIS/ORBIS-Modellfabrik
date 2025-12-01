@@ -34,7 +34,7 @@ export class SensorTabComponent implements OnInit, OnDestroy {
   stepSize = 10;
 
   readonly fixtureOptions: OrderFixtureName[] = ['startup', 'white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];
-  readonly fixtureLabels: Record<OrderFixtureName, string> = {
+  readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
     startup: $localize`:@@fixtureLabelStartup:Startup`,
     white: $localize`:@@fixtureLabelWhite:White`,
     white_step3: $localize`:@@fixtureLabelWhiteStep3:White • Step 3`,

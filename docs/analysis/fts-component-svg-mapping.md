@@ -418,45 +418,29 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 - ✅ `shopfloor/{station}.svg` - Station Icons (bereits vorhanden)
 - ✅ `shopfloor/robotic.svg` - FTS Icon (als Fallback/Platzhalter)
 
-### Neue SVGs zu erstellen (Priorität HOCH) - ODER Platzhalter verwenden
+### ✅ Alle SVGs sind vorhanden (KEINE neuen SVGs nötig)
 
-**Option: Platzhalter (Emojis/Unicode)**
-- 🚗 FTS/AGV Icon
-- 🚀 Driving Status
-- 🛑 Stopped Status
-- ⏸️ Paused Status
-- 📦 Load Information
-- 🔋 Battery Status
-- ⚡ Charging Active
+**Shopfloor Icons (✅ ALLE VORHANDEN)**
+1. ✅ `shopfloor/robotic.svg` - FTS/AGV Icon (verwendet)
+2. ✅ `shopfloor/battery.svg` - Batteriestatus Icon (verwendet)
+3. ✅ `shopfloor/charging-active.svg` - Aktives Laden Icon (verwendet)
+4. ✅ `shopfloor/driving-status.svg` - Driving Status Icon (verwendet)
+5. ✅ `shopfloor/stopped-status.svg` - Stopped Status Icon (verwendet)
+6. ✅ `shopfloor/paused-status.svg` - Paused Status Icon (verwendet)
+7. ✅ `shopfloor/dock-event.svg` - DOCK Event (verwendet)
+8. ✅ `shopfloor/pick-event.svg` - PICK Event (verwendet)
+9. ✅ `shopfloor/drop-event.svg` - DROP Event (verwendet)
+10. ✅ `shopfloor/pass-event.svg` - PASS Event (verwendet)
+11. ✅ `shopfloor/process-event.svg` - PROCESS Event (verwendet)
+12. ✅ `shopfloor/turn-event.svg` - TURN Event (verwendet)
+13. ✅ `shopfloor/location-marker.svg` - Location Marker (vorhanden)
 
-**Option: SVGs erstellen**
-1. `shopfloor/fts.svg` - FTS/AGV Icon (NEU, nicht umbenennen von `robotic.svg`)
-2. `shopfloor/battery.svg` - Batteriestatus Icon
-3. `shopfloor/charging-active.svg` - Aktives Laden Icon
-4. `shopfloor/driving.svg` - Driving Status Icon
-5. `shopfloor/stopped.svg` - Stopped Status Icon
-6. `shopfloor/paused.svg` - Paused Status Icon
-7. `shopfloor/load.svg` - Load Information Icon
-8. `headings/fts.svg` - FTS Tab Heading
-
-### Neue SVGs zu erstellen (Priorität MITTEL) - ODER Platzhalter verwenden
-
-**Option: Platzhalter (Emojis/Unicode)**
-- 🔍 Track&Trace Icon
-- 💡 Info/Help Icon
-- 🗺️ Route/Map Icon
-- 🔗 DOCK Event
-- ↩️ TURN Event
-- ➡️ PASS Event
-- 📍 Location Marker
-
-**Option: SVGs erstellen**
-9. `shopfloor/location.svg` - Location Marker
-10. `shopfloor/turn.svg` - TURN Event Icon
-11. `shopfloor/pass.svg` - PASS Event Icon
-12. `headings/track-trace.svg` - Track&Trace Tab Heading
-13. `headings/info.svg` - Info/Help Icon
-14. `headings/route.svg` - Route/Map Icon
+**Headings Icons (✅ ALLE VORHANDEN)**
+14. ✅ `headings/track-trace.svg` - Track&Trace Tab Heading (vorhanden)
+15. ✅ `headings/route.svg` - Route/Map Heading (vorhanden)
+16. ✅ `headings/info-page.svg` - Info/Help Icon (vorhanden)
+17. ✅ `headings/maschine.svg` - Production Order (vorhanden)
+18. ✅ `headings/ladung.svg` - Storage Order (vorhanden)
 
 ### Bestehende SVGs (unverändert)
 
@@ -467,15 +451,15 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 ---
 
 **Status:** ✅ Komponenten-Mapping abgeschlossen  
-**Status:** ✅ SVG-Mapping abgeschlossen (KORRIGIERT)  
+**Status:** ✅ SVG-Mapping abgeschlossen (ALLE SVGs VORHANDEN)  
 **Status:** ✅ Breaking Changes Analyse abgeschlossen  
 **Status:** ✅ Production/Storage Order Icons korrigiert (`headings/maschine.svg`, `headings/ladung.svg`)  
-**Entscheidung:** ✅ Option A (Konservativ) - Neue SVGs erstellen ODER Platzhalter verwenden  
-**Empfehlung:** ✅ Platzhalter (Emojis) für schnellen Start, später durch SVGs ersetzen  
+**Status:** ✅ Alle benötigten SVGs sind vorhanden - keine neuen SVGs nötig  
+**Entscheidung:** ✅ Alle SVGs verwenden (keine Platzhalter nötig)  
 
 **Nächster Schritt:** 
-- **Option 1:** Mit Platzhaltern starten → Phase 2 (FTS Tab) implementieren
-- **Option 2:** SVGs erstellen → Dann Phase 2 (FTS Tab) starten
+- ✅ FTS Tab implementiert
+- ⏳ Track&Trace Tab implementieren (nächster Schritt)
 
 ---
 
@@ -495,8 +479,76 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 - ✅ Replay-Mode Support (keine Fixtures im Replay-Mode)
 
 ### Offene Punkte / Verbesserungen
-- ⏳ FTS Animation im Shopfloor (Position wird berechnet, Animation noch nicht vollständig)
-- ⏳ Route-Segmente in Orange hervorheben (teilweise implementiert)
-- ⏳ Track&Trace Tab (noch nicht implementiert)
-- ⏳ i18n Übersetzungen (teilweise vorhanden)
+- ✅ FTS Animation im Shopfloor (vollständig implementiert mit FtsAnimationService)
+- ✅ Route-Segmente in Orange hervorheben (vollständig implementiert)
+- ⏳ Track&Trace Tab (noch nicht implementiert - nächster Schritt)
+- ✅ i18n Übersetzungen (DE, FR vorhanden)
+
+---
+
+## ✅ SVG-Status Update (2025-01-XX)
+
+### Alle benötigten SVGs sind vorhanden!
+
+#### Shopfloor Icons (✅ ALLE VORHANDEN)
+- ✅ `shopfloor/battery.svg` - Battery Status
+- ✅ `shopfloor/charging-active.svg` - Charging Active
+- ✅ `shopfloor/driving-status.svg` - Driving Status
+- ✅ `shopfloor/stopped-status.svg` - Stopped Status
+- ✅ `shopfloor/paused-status.svg` - Paused Status
+- ✅ `shopfloor/dock-event.svg` - DOCK Event
+- ✅ `shopfloor/pick-event.svg` - PICK Event
+- ✅ `shopfloor/drop-event.svg` - DROP Event
+- ✅ `shopfloor/pass-event.svg` - PASS Event
+- ✅ `shopfloor/process-event.svg` - PROCESS Event
+- ✅ `shopfloor/turn-event.svg` - TURN Event
+- ✅ `shopfloor/location-marker.svg` - Location Marker
+- ✅ `shopfloor/robotic.svg` - FTS/AGV Icon
+- ✅ `shopfloor/stock.svg` - HBW Station
+- ✅ `shopfloor/bohrer.svg` - DRILL Station
+- ✅ `shopfloor/milling-machine.svg` - MILL Station
+- ✅ `shopfloor/ai-assistant.svg` - AIQS Station
+- ✅ `shopfloor/robot-arm.svg` - DPS Station
+- ✅ `shopfloor/factory.svg` - Production Order
+- ✅ `shopfloor/warehouse.svg` - Storage Order
+
+#### Headings Icons (✅ ALLE VORHANDEN)
+- ✅ `headings/track-trace.svg` - Track&Trace Tab Heading
+- ✅ `headings/route.svg` - Route/Map Heading
+- ✅ `headings/info-page.svg` - Info/Help Icon
+- ✅ `headings/maschine.svg` - Production Order
+- ✅ `headings/ladung.svg` - Storage Order
+- ✅ `headings/lieferung-bestellen.svg` - Order Context
+
+#### Workpiece Icons (✅ ALLE VORHANDEN)
+- ✅ `workpieces/{color}_instock_unprocessed.svg` - PICK Event, Raw Material
+- ✅ `workpieces/{color}_instock_processed.svg` - Processed Workpiece
+- ✅ `workpieces/{color}_product.svg` - DROP Event, Finished Product
+- ✅ `workpieces/{color}_instock_reserved.svg` - Reserved Workpiece
+- ✅ `workpieces/slot_empty.svg` - Empty Slot
+
+### SVG-Mapping für Track&Trace Tab
+
+| Event/Element | Emoji (Example App) | OMF3 SVG (Final) | Status |
+|---------------|---------------------|------------------|--------|
+| DOCK Event | 🔗 | `shopfloor/dock-event.svg` | ✅ Vorhanden |
+| PICK Event | 📤 | `workpieces/{color}_instock_unprocessed.svg` | ✅ Vorhanden |
+| DROP Event | 📥 | `workpieces/{color}_product.svg` | ✅ Vorhanden |
+| TURN Event | ↩️ | `shopfloor/turn-event.svg` | ✅ Vorhanden |
+| PASS Event | ➡️ | `shopfloor/pass-event.svg` | ✅ Vorhanden |
+| TRANSPORT Event | 🚗 | `shopfloor/robotic.svg` | ✅ Vorhanden |
+| PROCESS Event | ⚙️ | `shopfloor/process-event.svg` | ✅ Vorhanden |
+| Storage Order | 📥 | `headings/ladung.svg` | ✅ Vorhanden |
+| Production Order | 🏭 | `headings/maschine.svg` | ✅ Vorhanden |
+| Location Marker | 📍 | `shopfloor/location-marker.svg` | ✅ Vorhanden |
+| Track&Trace Heading | 🔍 | `headings/track-trace.svg` | ✅ Vorhanden |
+| Route/Map | 🗺️ | `headings/route.svg` | ✅ Vorhanden |
+| Info/Help | 💡 | `headings/info-page.svg` | ✅ Vorhanden |
+| HBW Station | 🏢 | `shopfloor/stock.svg` | ✅ Vorhanden |
+| DRILL Station | 🔩 | `shopfloor/bohrer.svg` | ✅ Vorhanden |
+| MILL Station | ⚙️ | `shopfloor/milling-machine.svg` | ✅ Vorhanden |
+| AIQS Station | 🔍 | `shopfloor/ai-assistant.svg` | ✅ Vorhanden |
+| DPS Station | 📦 | `shopfloor/robot-arm.svg` | ✅ Vorhanden |
+
+**Fazit:** Alle benötigten SVGs sind vorhanden! Keine neuen SVGs müssen erstellt werden. Die Track&Trace Tab Implementierung kann direkt mit den vorhandenen SVGs starten.
 

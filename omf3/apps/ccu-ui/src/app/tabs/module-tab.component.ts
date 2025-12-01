@@ -137,7 +137,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
   }
 
   readonly fixtureOptions: (OrderFixtureName | 'shopfloor-status')[] = ['startup', 'white', 'white_step3', 'blue', 'red', 'mixed', 'storage', 'shopfloor-status'];
-  readonly fixtureLabels: Record<OrderFixtureName | 'shopfloor-status', string> = {
+  readonly fixtureLabels: Partial<Record<OrderFixtureName | 'shopfloor-status', string>> = {
     startup: $localize`:@@fixtureLabelStartup:Startup`,
     white: $localize`:@@fixtureLabelWhite:White`,
     white_step3: $localize`:@@fixtureLabelWhiteStep3:White • Step 3`,
@@ -145,6 +145,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     red: $localize`:@@fixtureLabelRed:Red`,
     mixed: $localize`:@@fixtureLabelMixed:Mixed`,
     storage: $localize`:@@fixtureLabelStorage:Storage`,
+    'track-trace': $localize`:@@fixtureLabelTrackTrace:Track & Trace`,
     'shopfloor-status': $localize`:@@fixtureLabelShopfloorStatus:Shopfloor Status`,
   };
 
@@ -257,7 +258,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       } else {
         // Map OrderFixtureName to tab-specific preset
-        const presetMap: Record<OrderFixtureName, string> = {
+        const presetMap: Partial<Record<OrderFixtureName, string>> = {
           startup: 'module-status-test',
           white: 'module-status-test',
           white_step3: 'module-status-test',

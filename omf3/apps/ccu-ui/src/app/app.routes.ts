@@ -64,6 +64,11 @@ export const appRoutes: Routes = [
         loadComponent: () =>
           import('./tabs/fts-tab.component').then((m) => m.FtsTabComponent),
       },
+      {
+        path: 'track-trace',
+        loadComponent: () =>
+          import('./tabs/track-trace-tab.component').then((m) => m.TrackTraceTabComponent),
+      },
     ],
   },
   {

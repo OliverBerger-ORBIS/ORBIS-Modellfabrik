@@ -67,6 +67,11 @@ const NAVIGATION_ITEMS: Omit<NavigationItem, 'label'>[] = [
     roles: ['operator', 'admin'],
   },
   {
+    id: 'track-trace',
+    route: '/track-trace',
+    roles: ['operator', 'admin'],
+  },
+  {
     id: 'settings',
     route: '/settings',
     roles: ['admin'],
@@ -106,6 +111,7 @@ export class AppComponent implements OnDestroy {
       'message-monitor': $localize`:@@navMessageMonitor:Message Monitor`,
       'dsp-action': $localize`:@@navDspAction:DSP Actions`,
       'fts': $localize`:@@navFts:AGV`,
+      'track-trace': $localize`:@@navTrackTrace:Track & Trace`,
       'settings': $localize`:@@navSettings:Settings`,
     };
     

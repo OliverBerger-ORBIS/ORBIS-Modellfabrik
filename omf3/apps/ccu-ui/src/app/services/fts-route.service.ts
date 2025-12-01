@@ -27,6 +27,20 @@ export class FtsRouteService {
   private nodePoints = new Map<string, ShopfloorPoint>();
 
   /**
+   * Check if layout has been initialized
+   */
+  isLayoutInitialized(): boolean {
+    return this.nodePoints.size > 0;
+  }
+  
+  /**
+   * Get available node IDs (for debugging)
+   */
+  getAvailableNodeIds(): string[] {
+    return Array.from(this.nodePoints.keys());
+  }
+
+  /**
    * Initialize the service with shopfloor layout configuration
    * Must be called before using route calculation methods
    */
