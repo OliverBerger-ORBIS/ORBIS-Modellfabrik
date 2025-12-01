@@ -62,11 +62,19 @@
   z-index: 6;
 
   line {
-    stroke: rgba(249, 115, 22, 0.95);
-    stroke-width: 4;
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-dasharray: none;
+  }
+  
+  // Active route (orange - currently driving)
+  &--active {
+    z-index: 6; // Above next target route
+    
+    line {
+      stroke: rgba(249, 115, 22, 0.95); // Orange
+      stroke-width: 8; // Increased from 6px to 8px for stronger presence
+    }
   }
 }
 
@@ -193,6 +201,12 @@
   background-color: rgba(249, 115, 22, 0.12);
 }
 
+// Current position highlighting (ORBIS-blue-medium) - for FTS tab
+.preview__element--current-position {
+  border: 3px solid var(--orbis-blue-medium) !important;
+  box-shadow: 0 0 0 1px rgba(var(--orbis-blue-medium-rgb), 0.3);
+}
+
 // Module status highlighting (availability-based border colors)
 // Base border is defined above, these override it when status is present
 .preview__module {
@@ -299,11 +313,47 @@
 
 .preview__fts {
   position: absolute;
-  width: 80px;
-  height: 80px;
+  // Size is set via inline styles from TypeScript (62px = 30% larger than 48px)
+  // Default fallback size if not set inline
+  width: 62px;
+  height: 62px;
   transform: translate(-50%, -50%);
-  z-index: 8;
-  filter: drop-shadow(0 8px 16px rgba(249, 115, 22, 0.35));
+  z-index: 15; // Increased from 8 to 15 to be above intersections (z-index: 2) and other elements
+  // Stronger visual presence: larger shadow, glow effect
+  filter: drop-shadow(0 8px 16px rgba(249, 115, 22, 0.5)) 
+          drop-shadow(0 0 20px rgba(249, 115, 22, 0.4))
+          drop-shadow(0 0 40px rgba(249, 115, 22, 0.2));
+  // Removed scale(1.1) - size is already increased via width/height (62px = 30% larger than 48px)
+  
+  // Dashed circle around FTS (80px diameter for better visibility)
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px; // 80px diameter for better visibility
+    height: 80px;
+    border: 2px dashed rgba(249, 115, 22, 0.6);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  // Solid background circle to cover underlying elements within dashed circle
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 78px; // Slightly smaller than dashed circle (80px - 2px border)
+    height: 78px;
+    background: #ffffff; // White background to cover underlying elements
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -2; // Behind dashed circle but above shopfloor elements
+  }
   
   // Inline SVG: Orange fill color is already applied in SVG content
   &.preview__fts--inline {

@@ -82,6 +82,7 @@
         <div
           class="preview__module"
           [class.preview__element--highlight]="module.highlighted"
+          [class.preview__element--current-position]="module.isCurrentPosition"
           [class.preview__element--selectable]="selectionEnabled"
           [class.preview__module--connected]="module.status?.connected"
           [class.preview__module--disconnected]="module.status && !module.status.connected"
@@ -157,9 +158,10 @@
         <span *ngIf="!node.icon" class="preview__intersection-dot"></span>
       </div>
 
+      <!-- Active route segments (orange - currently driving) -->
       <svg
         *ngIf="vm.activeRouteSegments?.length"
-        class="preview__route-overlay"
+        class="preview__route-overlay preview__route-overlay--active"
         [attr.width]="vm.width"
         [attr.height]="vm.height"
       >

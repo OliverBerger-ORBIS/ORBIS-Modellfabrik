@@ -59,6 +59,11 @@ export const appRoutes: Routes = [
         loadComponent: () =>
           import('./tabs/dsp-action-tab.component').then((m) => m.DspActionTabComponent),
       },
+      {
+        path: 'fts',
+        loadComponent: () =>
+          import('./tabs/fts-tab.component').then((m) => m.FtsTabComponent),
+      },
     ],
   },
   {

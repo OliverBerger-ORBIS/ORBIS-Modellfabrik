@@ -1,0 +1,271 @@
+<section class="fts-tab">
+  <header class="fts-tab__toolbar">
+    <div class="fts-tab__title">
+      <img [src]="headingIcon" alt="FTS" class="fts-tab__icon" width="32" height="32" />
+      <div>
+        <h1 i18n="@@ftsTabHeadline">AGV Status</h1>
+        <p class="fts-tab__subtitle" i18n="@@ftsTabDescription">
+          Real-time status, battery, and route information for the Automated Guided Vehicle.
+        </p>
+      </div>
+    </div>
+    <div class="fts-tab__fixtures" *ngIf="isMockMode">
+      <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
+      <div class="fixture-switch">
+        <button
+          type="button"
+          *ngFor="let fixture of fixtureOptions"
+          [class.active]="fixture === activeFixture"
+          (click)="loadFixture(fixture)"
+        >
+          {{ fixtureLabels[fixture] }}
+        </button>
+      </div>
+      <div class="environment-hint" *ngIf="isReplayMode">
+        <span i18n="@@ftsReplayHint">Using replay environment - FTS data from MQTT broker</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="fts-tab__content" *ngIf="ftsState$ | async as ftsState; else noData">
+    <div class="fts-tab__grid">
+      <!-- Left Column: Status & Battery (1) -->
+      <div class="fts-tab__column fts-tab__column--left">
+        <!-- Status Section -->
+        <section class="fts-tab__section status-section">
+          <h2>
+            <img [src]="statusIcon" alt="Status" class="section-icon-img" width="24" height="24" />
+            <span i18n="@@ftsStatusTitle">AGV Status</span>
+            <span class="serial-badge">{{ ftsState.serialNumber }}</span>
+          </h2>
+          
+          <div class="status-card">
+            <div class="status-overview">
+              <div class="status-item">
+                <span class="status-label" i18n="@@ftsStatusDriving">Status</span>
+                <div class="status-badges">
+                  <span class="status-badge" [class.driving]="ftsState.driving" [class.stopped]="!ftsState.driving">
+                    <img [src]="ftsState.driving ? drivingIcon : stoppedIcon" alt="" width="16" height="16" />
+                    <span *ngIf="ftsState.driving" i18n="@@ftsStatusDriving">Driving</span>
+                    <span *ngIf="!ftsState.driving" i18n="@@ftsStatusStopped">Stopped</span>
+                  </span>
+                  <span class="status-badge warning" *ngIf="ftsState.paused">
+                    <img [src]="pausedIcon" alt="" width="16" height="16" />
+                    <span i18n="@@ftsStatusPaused">Paused</span>
+                  </span>
+                  <span class="status-badge info" *ngIf="ftsState.waitingForLoadHandling">
+                    <img [src]="loadingIcon" alt="" width="16" height="16" />
+                    <span i18n="@@ftsStatusLoading">Loading</span>
+                  </span>
+                </div>
+              </div>
+              
+              <div class="status-item">
+                <span class="status-label" i18n="@@ftsStatusLocation">Current Location</span>
+                <span class="status-value location">{{ getLocationName(ftsState.lastNodeId) }}</span>
+              </div>
+              
+              <div class="status-item">
+                <span class="status-label" i18n="@@ftsStatusOrder">Active Order</span>
+                <span class="status-value order-id">{{ getOrderIdDisplay(ftsState.orderId) }}</span>
+              </div>
+              
+              <div class="status-item">
+                <span class="status-label" i18n="@@ftsStatusLastUpdate">Last Update</span>
+                <span class="status-value timestamp">{{ ftsState.timestamp | date: 'shortTime' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Current Action -->
+          <div class="current-action" *ngIf="getCurrentAction(ftsState)">
+            <h4 i18n="@@ftsCurrentAction">Current Action</h4>
+            <div class="action-display">
+              <img [src]="getActionIcon(getCurrentAction(ftsState)!.command)" alt="" width="20" height="20" class="action-icon" />
+              <span class="action-command">{{ getCurrentAction(ftsState)!.command }}</span>
+              <span class="status-badge" [class]="getStateClass(getCurrentAction(ftsState)!.state)">
+                {{ getCurrentAction(ftsState)!.state }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Recent Actions -->
+          <div class="recent-actions" *ngIf="getRecentActions(ftsState).length > 0">
+            <h4 i18n="@@ftsRecentActions">Recent Actions</h4>
+            <ul class="action-list">
+              <li *ngFor="let action of getRecentActions(ftsState); trackBy: trackByActionId" [class]="getStateClass(action.state)">
+                <img [src]="getActionIcon(action.command)" alt="" width="20" height="20" class="action-icon" />
+                <span class="action-command">{{ action.command }}</span>
+                <span class="status-badge small" [class]="getStateClass(action.state)">
+                  {{ action.state }}
+                </span>
+                <span class="action-timestamp">{{ formatTimestamp(action.timestamp) }}</span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Battery Section -->
+        <section class="fts-tab__section battery-section" *ngIf="batteryState$ | async as batteryState">
+          <h2>
+            <img [src]="batteryIcon" alt="Battery" class="section-icon-img" width="24" height="24" />
+            <span i18n="@@ftsBatteryTitle">Battery Status</span>
+          </h2>
+          
+          <div class="battery-card">
+            <div class="battery-main">
+              <div class="battery-indicator">
+                <div class="battery-bar">
+                  <div 
+                    class="battery-fill" 
+                    [class]="getBatteryLevelClass(batteryState.percentage)"
+                    [style.width.%]="batteryState.percentage">
+                  </div>
+                </div>
+                <span class="battery-text" [class]="getBatteryLevelClass(batteryState.percentage)">
+                  {{ batteryState.percentage }}%
+                </span>
+                <span class="battery-charging" *ngIf="batteryState.charging">
+                  <img [src]="chargingIcon" alt="Charging" width="24" height="24" />
+                </span>
+              </div>
+            </div>
+            
+            <div class="battery-details">
+              <div class="info-row">
+                <span class="label" i18n="@@ftsBatteryVoltage">Current Voltage</span>
+                <span class="value">{{ getVoltageDisplay(batteryState) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label" i18n="@@ftsBatteryRange">Voltage Range</span>
+                <span class="value range">{{ getVoltageRange(batteryState) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label" i18n="@@ftsBatteryCharging">Charging</span>
+                <span class="value" [class.charging]="batteryState.charging">
+                  {{ getChargingStatusText(batteryState.charging) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Center Column: Route & Position (2) -->
+      <div class="fts-tab__column fts-tab__column--center">
+        <section class="fts-tab__section route-section">
+          <h2>
+            <img [src]="routeIcon" alt="Route" class="section-icon-img" width="24" height="24" />
+            <span i18n="@@ftsRouteTitle">Route & Position</span>
+          </h2>
+          
+          <div class="shopfloor-wrapper">
+            <app-shopfloor-preview
+              [order]="null"
+              [scale]="0.8"
+              [badgeText]="'FTS Position'"
+              [infoText]="getLocationName(ftsState.lastNodeId)"
+              [highlightModulesOverride]="null"
+              [highlightFixedOverride]="null"
+              [currentPositionModulesOverride]="currentPositionNode$ | async"
+              [selectionEnabled]="false"
+              [showBaseRoads]="true"
+              [showZoomControls]="true"
+              [ftsPosition]="ftsPosition$ | async"
+              [ftsRouteSegments]="activeRouteSegments$ | async"
+            ></app-shopfloor-preview>
+          </div>
+
+          <!-- Route Status Info -->
+          <div class="route-info">
+            <div class="info-row">
+              <span class="label" i18n="@@ftsRouteCurrentNode">Current Node</span>
+              <span class="value node-id">{{ ftsState.lastNodeId || getUnknownLocationText() }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label" i18n="@@ftsRouteStatus">Status</span>
+              <span class="value route-status" [class.driving]="ftsState.driving" [class.stationary]="!ftsState.driving">
+                {{ getRouteStatus(ftsState) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Action Timeline -->
+          <div class="action-timeline" *ngIf="getActionStates(ftsState).length > 0">
+            <h4 i18n="@@ftsActionTimeline">Action Timeline</h4>
+            <div class="timeline-container">
+              <div class="timeline">
+                <div 
+                  *ngFor="let action of getActionStatesSorted(ftsState); let i = index" 
+                  class="timeline-item"
+                  [class]="action.command.toLowerCase()">
+                  <div class="timeline-connector" *ngIf="i < getActionStatesSorted(ftsState).length - 1"></div>
+                  <div class="timeline-point">
+                  </div>
+                  <div class="timeline-content">
+                    <span class="timeline-time-display">{{ action.timestamp | date:'HH:mm:ss' }}</span>
+                    <img [src]="getActionIcon(action.command)" alt="" width="20" height="20" class="action-icon" />
+                    <strong>{{ action.command }}</strong>
+                    <span class="status-badge small" [class]="getStateClass(action.state)">
+                      {{ action.state }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Load Information (1) -->
+      <div class="fts-tab__column fts-tab__column--right">
+        <section class="fts-tab__section loads-section">
+          <h2>
+            <img [src]="loadIcon" alt="Load" class="section-icon-img" width="24" height="24" />
+            <span i18n="@@ftsLoadsTitle">Load Information</span>
+            <span class="load-count-badge" *ngIf="loads$ | async as loads">
+              {{ getLoadedCount(loads) }}/3
+            </span>
+          </h2>
+          
+          <div class="loads-list" *ngIf="loads$ | async as loads">
+            <div 
+              class="load-item" 
+              *ngFor="let load of getLoadPositions(loads)"
+              [class.empty]="!load.loadType"
+              [class.blue]="load.loadType === 'BLUE'"
+              [class.white]="load.loadType === 'WHITE'"
+              [class.red]="load.loadType === 'RED'">
+              
+              <div class="load-info">
+                <div class="load-header">
+                  <span class="load-position-number">{{ load.loadPosition }}</span>
+                  <img [src]="getLoadIcon(load)" alt="" width="32" height="32" class="load-icon" />
+                  <span class="load-type" [class]="load.loadType?.toLowerCase() ?? ''">
+                    <ng-container *ngIf="load.loadType">{{ load.loadType }}</ng-container>
+                    <ng-container *ngIf="!load.loadType" i18n="@@ftsLoadEmpty">Empty</ng-container>
+                  </span>
+                </div>
+                <span class="load-id" *ngIf="load.loadId">
+                  ID: {{ load.loadId.length > 12 ? (load.loadId.substring(0, 12) + '...') : load.loadId }}
+                </span>
+              </div>
+              
+              <div class="load-status">
+                <span class="status-dot" [class.loaded]="load.loadType"></span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noData>
+    <div class="fts-tab__empty">
+      <p i18n="@@ftsNoData">No FTS data available</p>
+      <p class="hint" i18n="@@ftsNoDataHint">Connect to MQTT broker to receive FTS status updates.</p>
+    </div>
+  </ng-template>
+</section>
+

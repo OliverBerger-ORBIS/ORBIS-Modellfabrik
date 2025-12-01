@@ -53,6 +53,7 @@ interface RenderModule {
   iconTop: number;
   iconLeft: number;
   highlighted: boolean;
+  isCurrentPosition: boolean; // True if this module is the current position (for FTS tab)
   showLabel: boolean;
   attachments: RenderAttachment[];
   status?: ModuleStatus; // Module status for overlays and highlighting
@@ -115,7 +116,7 @@ interface ShopfloorView {
   fixedPositions: RenderFixed[];
   intersections: RenderIntersection[];
   roads: RenderRoad[];
-  activeRouteSegments?: RouteSegment[];
+  activeRouteSegments?: RouteSegment[]; // Orange - currently driving
   routeEndpoints?: ShopfloorPoint[];
   routeOverlay?: RouteOverlay;
   ftsOverlay?: RouteOverlay; // FTS position overlay (when no active route)
@@ -140,6 +141,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   @Input() scale = 0.6;
   @Input() highlightModulesOverride: string[] | null = null;
   @Input() highlightFixedOverride: string[] | null = null;
+  @Input() currentPositionModulesOverride: string[] | null = null; // Current position modules for FTS tab (ORBIS-blue-medium highlighting)
   @Input() selectionEnabled = false;
   @Input() badgeText?: string;
   @Input() infoText?: string;
@@ -147,6 +149,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   @Input() showZoomControls = false;
   @Input() moduleStatusMap: Map<string, ModuleStatus> | null = null; // Module status data for overlays
   @Input() ftsPosition: { x: number; y: number } | null = null; // FTS position for display (when no active route)
+  @Input() ftsRouteSegments: RouteSegment[] | null = null; // FTS route segments for display (when driving - orange)
   @Output() cellSelected = new EventEmitter<{ id: string; kind: 'module' | 'fixed' }>();
   @Output() cellDoubleClicked = new EventEmitter<{ id: string; kind: 'module' | 'fixed' }>();
 
@@ -207,7 +210,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
         this.currentScale = this.scale;
       }
     }
-    if (changes['activeStep'] || changes['order'] || changes['highlightModulesOverride'] || changes['highlightFixedOverride'] || changes['moduleStatusMap'] || changes['ftsPosition']) {
+    if (changes['activeStep'] || changes['order'] || changes['highlightModulesOverride'] || changes['highlightFixedOverride'] || changes['currentPositionModulesOverride'] || changes['moduleStatusMap'] || changes['ftsPosition'] || changes['ftsRouteSegments']) {
       this.updateViewModel();
     }
   }
@@ -493,11 +496,12 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
 
     const moduleHighlightSet = this.buildHighlightAliasSet(this.highlightModulesOverride);
     const fixedHighlightSet = this.buildHighlightAliasSet(this.highlightFixedOverride);
+    const currentPositionModuleSet = this.buildHighlightAliasSet(this.currentPositionModulesOverride);
     this.applyActiveStepHighlights(moduleHighlightSet, fixedHighlightSet);
 
     const modules = this.layoutConfig.cells
       .filter((cell) => cell.role === 'module')
-      .map((cell) => this.createModuleRender(cell, moduleHighlightSet));
+      .map((cell) => this.createModuleRender(cell, moduleHighlightSet, currentPositionModuleSet));
 
     const fixedPositions = this.layoutConfig.cells
       .filter((cell) => cell.role === 'company' || cell.role === 'software')
@@ -515,17 +519,21 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
 
     const route = this.computeActiveRoute();
     
-    // Compute FTS overlay if position is provided and no active route exists
+    // Use FTS route segments if provided (for FTS tab), otherwise use order route
+    const activeRouteSegments = this.ftsRouteSegments ?? route?.segments;
+    
+    // Compute FTS overlay if position is provided
     let ftsOverlay: RouteOverlay | undefined;
-    if (!route && this.ftsPosition) {
+    if (this.ftsPosition) {
       const ftsIcon = this.getAssetPath('FTS');
       if (ftsIcon) {
+        // Increase FTS size by 30% for stronger presence (48 * 1.3 = 62.4, rounded to 62)
         ftsOverlay = {
           x: this.ftsPosition.x,
           y: this.ftsPosition.y,
           icon: ftsIcon,
-          width: 48,
-          height: 48,
+          width: 62,
+          height: 62,
         };
         // Load SVG with orange fill color for FTS
         const svgPath = ftsIcon.startsWith('/') ? ftsIcon : `/${ftsIcon}`;
@@ -545,7 +553,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       fixedPositions,
       intersections,
       roads,
-      activeRouteSegments: route?.segments,
+      activeRouteSegments,
       routeEndpoints: route?.endpoints,
       routeOverlay: route?.overlay,
       ftsOverlay,
@@ -583,7 +591,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     }
   }
 
-  private createModuleRender(cell: ShopfloorCellConfig, highlightAliases: Set<string>): RenderModule {
+  private createModuleRender(cell: ShopfloorCellConfig, highlightAliases: Set<string>, currentPositionAliases: Set<string>): RenderModule {
     const mainSubcell = cell.subcells?.find((sub) => sub.is_main);
     const iconArea = mainSubcell
       ? {
@@ -635,6 +643,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       highlightCandidates.push(cell.serial_number);
     }
     const highlighted = highlightCandidates.some((candidate) => candidate && highlightAliases.has(candidate));
+    const isCurrentPosition = highlightCandidates.some((candidate) => candidate && currentPositionAliases.has(candidate));
 
     // Use i18n name for modules, keep original name for fixed cells (ORBIS, DSP, etc.)
     const label = cell.role === 'module' || cell.role === 'module_main_compartment'
@@ -675,6 +684,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       iconTop,
       iconLeft,
       highlighted,
+      isCurrentPosition,
       showLabel: cell.show_name !== false,
       attachments,
       status, // Include status for overlays and highlighting
@@ -950,7 +960,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       endpoints,
       overlay:
         overlayPoint && overlayIcon
-          ? { x: overlayPoint.x, y: overlayPoint.y, icon: overlayIcon, svgContent, width: 80, height: 80 }
+          ? { x: overlayPoint.x, y: overlayPoint.y, icon: overlayIcon, svgContent, width: 62, height: 62 }
           : undefined,
     };
   }

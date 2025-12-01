@@ -4,7 +4,7 @@
   "description": "Angular FTS/AGV Analysis Example with Battery, Route and Track & Trace features",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --port 4300",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
