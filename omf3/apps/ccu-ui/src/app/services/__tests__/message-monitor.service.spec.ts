@@ -1,18 +1,28 @@
 import { TestBed } from '@angular/core/testing';
 import { MessageMonitorService, MonitoredMessage } from '../message-monitor.service';
+import { MessageValidationService } from '../message-validation.service';
+import { MessagePersistenceService } from '../message-persistence.service';
 import { firstValueFrom } from 'rxjs';
 
 describe('MessageMonitorService', () => {
   let service: MessageMonitorService;
+  let validationService: MessageValidationService;
+  let persistenceService: MessagePersistenceService;
 
   beforeEach(() => {
     // Clear localStorage before each test
     localStorage.clear();
     
     TestBed.configureTestingModule({
-      providers: [MessageMonitorService],
+      providers: [
+        MessageMonitorService,
+        MessageValidationService,
+        MessagePersistenceService,
+      ],
     });
     service = TestBed.inject(MessageMonitorService);
+    validationService = TestBed.inject(MessageValidationService);
+    persistenceService = TestBed.inject(MessagePersistenceService);
   });
 
   afterEach(() => {
@@ -154,6 +164,44 @@ describe('MessageMonitorService', () => {
       expect(history.length).toBe(1);
       expect(history[0].valid).toBe(true);
     });
+
+    it('should handle null payload gracefully', () => {
+      const topic = 'test/null';
+      service.addMessage(topic, null);
+      
+      const history = service.getHistory(topic);
+      expect(history.length).toBe(1);
+      expect(history[0].payload).toBeNull();
+      expect(history[0].valid).toBe(true);
+    });
+
+    it('should handle undefined payload gracefully', () => {
+      const topic = 'test/undefined';
+      service.addMessage(topic, undefined);
+      
+      const history = service.getHistory(topic);
+      expect(history.length).toBe(1);
+      expect(history[0].payload).toBeUndefined();
+      expect(history[0].valid).toBe(true);
+    });
+
+    it('should handle empty string payload', () => {
+      const topic = 'test/empty-string';
+      service.addMessage(topic, '');
+      
+      const history = service.getHistory(topic);
+      expect(history.length).toBe(1);
+      expect(history[0].payload).toBe('');
+    });
+
+    it('should handle invalid timestamp', () => {
+      const topic = 'test/invalid-timestamp';
+      service.addMessage(topic, { data: 'test' }, 'invalid-date');
+      
+      const history = service.getHistory(topic);
+      expect(history.length).toBe(1);
+      expect(history[0].timestamp).toBe('invalid-date');
+    });
   });
 
   describe('persistence', () => {
@@ -179,14 +227,24 @@ describe('MessageMonitorService', () => {
       // Create first service instance and add message
       service.addMessage(topic, payload);
       
-      // Create new service instance (simulates app restart)
-      const newService = new MessageMonitorService();
+      // Don't clear - keep data in localStorage
+      // Create new TestBed to get fresh service instance
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          MessageMonitorService,
+          MessageValidationService,
+          MessagePersistenceService,
+        ],
+      });
+      const newService = TestBed.inject(MessageMonitorService);
       
       const history = newService.getHistory(topic);
       expect(history.length).toBeGreaterThan(0);
       expect(history[history.length - 1].payload).toEqual(payload);
       
       newService.clearAll();
+      localStorage.clear();
     });
 
     it('should not persist camera data', () => {
@@ -207,7 +265,16 @@ describe('MessageMonitorService', () => {
       service.addMessage(topic, payload);
       
       // Simulate app restart: create new service instance
-      const newService = new MessageMonitorService();
+      // Don't clear - keep data in localStorage
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          MessageMonitorService,
+          MessageValidationService,
+          MessagePersistenceService,
+        ],
+      });
+      const newService = TestBed.inject(MessageMonitorService);
       
       // Get observable IMMEDIATELY after construction (before any messages arrive)
       const lastMessage$ = newService.getLastMessage(topic);
@@ -219,6 +286,7 @@ describe('MessageMonitorService', () => {
       expect(firstValue?.topic).toBe(topic);
       
       newService.clearAll();
+      localStorage.clear();
     });
 
     it('should trim messages exceeding retention when loading persisted data', () => {
@@ -233,7 +301,16 @@ describe('MessageMonitorService', () => {
       expect(service.getHistory(topic).length).toBe(50);
       
       // Create new service instance (simulates app restart)
-      const newService = new MessageMonitorService();
+      // Don't clear - keep data in localStorage
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          MessageMonitorService,
+          MessageValidationService,
+          MessagePersistenceService,
+        ],
+      });
+      const newService = TestBed.inject(MessageMonitorService);
       
       // Should only load the last 50 messages
       const history = newService.getHistory(topic);
@@ -242,6 +319,7 @@ describe('MessageMonitorService', () => {
       expect(history[49].payload).toEqual({ id: 59 });
       
       newService.clearAll();
+      localStorage.clear();
     });
 
     it('should handle corrupted persisted data gracefully', () => {
@@ -252,7 +330,15 @@ describe('MessageMonitorService', () => {
       localStorage.setItem(key, '{"not": "an array"}');
       
       // Create new service - should skip corrupted entry and not crash
-      const newService = new MessageMonitorService();
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          MessageMonitorService,
+          MessageValidationService,
+          MessagePersistenceService,
+        ],
+      });
+      const newService = TestBed.inject(MessageMonitorService);
       
       // Should have empty history for corrupted topic
       const history = newService.getHistory(topic);
@@ -262,6 +348,7 @@ describe('MessageMonitorService', () => {
       expect(localStorage.getItem(key)).toBeNull();
       
       newService.clearAll();
+      localStorage.clear();
     });
 
     it('should handle invalid JSON in persisted data', () => {
@@ -272,7 +359,15 @@ describe('MessageMonitorService', () => {
       localStorage.setItem(key, 'not valid json at all{{{');
       
       // Create new service - should skip invalid entry and not crash
-      const newService = new MessageMonitorService();
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          MessageMonitorService,
+          MessageValidationService,
+          MessagePersistenceService,
+        ],
+      });
+      const newService = TestBed.inject(MessageMonitorService);
       
       // Should have empty history
       const history = newService.getHistory(topic);
@@ -282,6 +377,7 @@ describe('MessageMonitorService', () => {
       expect(localStorage.getItem(key)).toBeNull();
       
       newService.clearAll();
+      localStorage.clear();
     });
   });
 

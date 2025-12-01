@@ -24,6 +24,11 @@ module.exports = [
           style: 'kebab-case',
         },
       ],
+      // Angular Best Practices
+      '@angular-eslint/prefer-on-push-component-change-detection': 'error',
+      // Note: TypeScript ESLint rules are configured via typescript-eslint in base config
+      // Note: RxJS subscription rules require eslint-plugin-rxjs which is not compatible with ESLint 9
+      // Consider manual code review for subscription management until plugin is updated
     },
   },
   {

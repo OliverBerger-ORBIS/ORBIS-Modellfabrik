@@ -32,41 +32,6 @@
           {
             "glob": "**/*",
             "input": "omf3/apps/ccu-ui/public"
-          },
-          {
-            "glob": "**/*.log",
-            "input": "omf3/testing/fixtures/orders",
-            "output": "fixtures/orders"
-          },
-          {
-            "glob": "**/*.json",
-            "input": "omf3/testing/fixtures/orders",
-            "output": "fixtures/orders"
-          },
-          {
-            "glob": "**/*.log",
-            "input": "omf3/testing/fixtures/modules",
-            "output": "fixtures/modules"
-          },
-          {
-            "glob": "**/*.log",
-            "input": "omf3/testing/fixtures/stock",
-            "output": "fixtures/stock"
-          },
-          {
-            "glob": "**/*.log",
-            "input": "omf3/testing/fixtures/flows",
-            "output": "fixtures/flows"
-          },
-          {
-            "glob": "**/*.log",
-            "input": "omf3/testing/fixtures/config",
-            "output": "fixtures/config"
-          },
-          {
-            "glob": "**/*.log",
-            "input": "omf3/testing/fixtures/sensors",
-            "output": "fixtures/sensors"
           }
         ],
         "styles": [
@@ -98,13 +63,60 @@
             "en",
             "de",
             "fr"
+          ],
+          "assets": [
+            {
+              "glob": "**/*",
+              "input": "omf3/apps/ccu-ui/public"
+            }
           ]
         },
         "development": {
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true,
-          "localize": false
+          "localize": false,
+          "assets": [
+            {
+              "glob": "**/*",
+              "input": "omf3/apps/ccu-ui/public"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "omf3/testing/fixtures/orders",
+              "output": "fixtures/orders"
+            },
+            {
+              "glob": "**/*.json",
+              "input": "omf3/testing/fixtures/orders",
+              "output": "fixtures/orders"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "omf3/testing/fixtures/modules",
+              "output": "fixtures/modules"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "omf3/testing/fixtures/stock",
+              "output": "fixtures/stock"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "omf3/testing/fixtures/flows",
+              "output": "fixtures/flows"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "omf3/testing/fixtures/config",
+              "output": "fixtures/config"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "omf3/testing/fixtures/sensors",
+              "output": "fixtures/sensors"
+            }
+          ]
         },
         "netlify": {
           "outputHashing": "all",
