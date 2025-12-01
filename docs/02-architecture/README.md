@@ -18,6 +18,7 @@ Die Dokumente beschreiben den Systemkontext, die Message Flows, und die Namensko
 ### OMF3 Architecture (aktuell)
 - [OMF3 Project Structure](project-structure.md) – Nx Workspace Struktur und OMF3 Architektur
 - [Naming Conventions](naming-conventions.md) – Topics, Template-Keys, IDs
+- [DSP Architecture Component Spec](dsp-architecture-component-spec.md) – DSP Architecture Component Specification
 
 ### APS Physical Architecture
 - [APS Physical Architecture](../../06-integrations/APS-Ecosystem/system-overview.md) – Fischertechnik Netzwerk & Hardware
