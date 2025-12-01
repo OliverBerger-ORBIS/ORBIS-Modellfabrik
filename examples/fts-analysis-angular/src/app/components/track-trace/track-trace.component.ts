@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Observable, map } from 'rxjs';
 import { FtsMockService } from '../../services/fts-mock.service';
-import { WorkpieceHistory, TrackTraceEvent } from '../../models/fts.types';
+import { WorkpieceHistory, TrackTraceEvent, OrderContext } from '../../models/fts.types';
 
 /**
  * Track & Trace Component
  * Enables workpiece-based tracking through the entire production process
+ * Shows Order context (Storage Order vs Production Order) with ERP links
  */
 @Component({
   selector: 'app-track-trace',
@@ -60,6 +61,24 @@ export class TrackTraceComponent {
     }
   }
   
+  getOrderTypeIcon(orderType: string | undefined): string {
+    if (!orderType) return '📋';
+    switch (orderType.toUpperCase()) {
+      case 'STORAGE': return '📥';
+      case 'PRODUCTION': return '🏭';
+      default: return '📋';
+    }
+  }
+  
+  getOrderTypeLabel(orderType: string | undefined): string {
+    if (!orderType) return 'Order';
+    switch (orderType.toUpperCase()) {
+      case 'STORAGE': return 'Storage Order (Raw Material)';
+      case 'PRODUCTION': return 'Production Order';
+      default: return orderType;
+    }
+  }
+  
   formatTimestamp(timestamp: string): string {
     try {
       return new Date(timestamp).toLocaleString();
@@ -75,11 +94,46 @@ export class TrackTraceComponent {
       'SVR3QA2098': 'MILL Station',
       'SVR4H76530': 'AIQS (Quality Inspection)',
       'SVR4H73275': 'DPS (Processing Station)',
-      '1': 'Navigation Node 1',
-      '2': 'Navigation Node 2',
-      '3': 'Navigation Node 3',
+      '1': 'Intersection ①',
+      '2': 'Intersection ②',
+      '3': 'Intersection ③',
+      '4': 'Intersection ④',
     };
     return labels[location] || location;
+  }
+  
+  /** Group events by order context */
+  groupEventsByOrder(history: WorkpieceHistory): { order: OrderContext | null; events: TrackTraceEvent[] }[] {
+    if (!history.orders || history.orders.length === 0) {
+      return [{ order: null, events: history.events }];
+    }
+    
+    const groups: { order: OrderContext | null; events: TrackTraceEvent[] }[] = [];
+    
+    // Group events by order type
+    let currentOrderType: string | undefined = undefined;
+    let currentGroup: TrackTraceEvent[] = [];
+    
+    for (const event of history.events) {
+      if (event.orderType !== currentOrderType) {
+        if (currentGroup.length > 0) {
+          const order = history.orders?.find(o => o.orderType === currentOrderType) || null;
+          groups.push({ order, events: [...currentGroup] });
+        }
+        currentOrderType = event.orderType;
+        currentGroup = [event];
+      } else {
+        currentGroup.push(event);
+      }
+    }
+    
+    // Add last group
+    if (currentGroup.length > 0) {
+      const order = history.orders?.find(o => o.orderType === currentOrderType) || null;
+      groups.push({ order, events: currentGroup });
+    }
+    
+    return groups;
   }
   
   trackByWorkpieceId(_index: number, workpiece: WorkpieceHistory): string {
@@ -89,5 +143,9 @@ export class TrackTraceComponent {
   trackByEvent(index: number, event: TrackTraceEvent): string {
     // Use combination of timestamp and index for unique tracking
     return `${event.timestamp}-${index}`;
+  }
+  
+  trackByOrder(index: number, group: { order: OrderContext | null; events: TrackTraceEvent[] }): string {
+    return group.order?.orderId || `group-${index}`;
   }
 }

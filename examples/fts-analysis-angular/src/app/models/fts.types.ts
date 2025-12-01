@@ -137,7 +137,20 @@ export interface TrackTraceEvent {
   moduleId?: string;
   location?: string;
   orderId?: string;
+  orderType?: 'STORAGE' | 'PRODUCTION' | string;
   details?: Record<string, unknown>;
+}
+
+/** Order context for Track & Trace */
+export interface OrderContext {
+  orderId: string;
+  orderType: 'STORAGE' | 'PRODUCTION' | string;
+  purchaseOrderId?: string;  // From ERP system
+  customerOrderId?: string;  // For production orders
+  startTime?: string;
+  endTime?: string;
+  fromLocation?: string;
+  toLocation?: string;
 }
 
 /** Workpiece tracking history */
@@ -147,6 +160,7 @@ export interface WorkpieceHistory {
   events: TrackTraceEvent[];
   currentLocation?: string;
   currentState?: string;
+  orders?: OrderContext[];  // Order context for this workpiece
 }
 
 /** Raw MQTT message wrapper */

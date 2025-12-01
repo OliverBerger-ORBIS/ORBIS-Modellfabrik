@@ -9,7 +9,17 @@ import {
   FtsLoadInfo,
   TrackTraceEvent,
   WorkpieceHistory,
+  OrderContext,
 } from '../models/fts.types';
+
+/** Generate fake ERP IDs for demo */
+function generatePurchaseOrderId(): string {
+  return `PO-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+}
+
+function generateCustomerOrderId(): string {
+  return `CO-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+}
 
 /**
  * Mock MQTT Service for FTS Data
@@ -359,7 +369,13 @@ export class FtsMockService implements OnDestroy {
           events: [],
           currentLocation: state.lastNodeId,
           currentState: 'IN_TRANSPORT',
+          orders: this.generateOrderContext(loadItem.loadType),
         };
+        
+        // Determine order type based on location
+        // DPS -> HBW is STORAGE order (raw material)
+        // HBW -> Stations -> DPS is PRODUCTION order
+        const orderType = this.determineOrderType(state.lastNodeId, existingHistory.events);
         
         // Add event if location changed
         const lastEvent = existingHistory.events[existingHistory.events.length - 1];
@@ -371,6 +387,7 @@ export class FtsMockService implements OnDestroy {
             workpieceType: loadItem.loadType,
             location: state.lastNodeId,
             orderId: state.orderId,
+            orderType: orderType,
             details: {
               actionState: state.actionState.state,
               loadPosition: loadItem.loadPosition,
@@ -384,6 +401,45 @@ export class FtsMockService implements OnDestroy {
     });
     
     this.workpieceHistorySubject.next(historyMap);
+  }
+  
+  /** Generate order context with fake ERP IDs */
+  private generateOrderContext(workpieceType: string): OrderContext[] {
+    return [
+      {
+        orderId: `storage-${workpieceType.toLowerCase()}-${Date.now()}`,
+        orderType: 'STORAGE',
+        purchaseOrderId: generatePurchaseOrderId(),
+        fromLocation: 'SVR4H73275', // DPS
+        toLocation: 'SVR3QA0022',   // HBW
+        startTime: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+      },
+      {
+        orderId: `production-${workpieceType.toLowerCase()}-${Date.now()}`,
+        orderType: 'PRODUCTION',
+        customerOrderId: generateCustomerOrderId(),
+        fromLocation: 'SVR3QA0022', // HBW
+        toLocation: 'SVR4H73275',   // DPS
+        startTime: new Date().toISOString(),
+      },
+    ];
+  }
+  
+  /** Determine order type based on current location and event history */
+  private determineOrderType(location: string, events: TrackTraceEvent[]): 'STORAGE' | 'PRODUCTION' {
+    // If at DPS (destination) or coming from DPS, it's a storage order (raw material inbound)
+    // If at HBW (source) or going through stations, it's a production order
+    const dpsId = 'SVR4H73275';
+    const hbwId = 'SVR3QA0022';
+    
+    // Check if we've been at HBW - if so, we're in production
+    const wasAtHbw = events.some(e => e.location === hbwId);
+    
+    if (location === dpsId && !wasAtHbw) {
+      return 'STORAGE';
+    }
+    
+    return wasAtHbw ? 'PRODUCTION' : 'STORAGE';
   }
   
   /** Reset simulation to initial state */

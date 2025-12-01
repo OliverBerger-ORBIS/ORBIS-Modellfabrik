@@ -27,9 +27,10 @@
                 [attr.y1]="coords.y1" 
                 [attr.x2]="coords.x2" 
                 [attr.y2]="coords.y2" 
-                stroke="#cbd5e1" 
-                stroke-width="6"
-                stroke-linecap="round"/>
+                [attr.stroke]="isActiveEdge(edge) ? '#22c55e' : '#cbd5e1'"
+                [attr.stroke-width]="isActiveEdge(edge) ? 8 : 6"
+                stroke-linecap="round"
+                [class.active]="isActiveEdge(edge)"/>
         </ng-container>
       </g>
       

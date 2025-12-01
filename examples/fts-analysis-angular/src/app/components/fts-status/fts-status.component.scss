@@ -56,7 +56,6 @@
         
         &.location {
           color: var(--primary-color);
-          font-family: monospace;
         }
         
         &.order-id {
@@ -67,6 +66,12 @@
         &.timestamp {
           font-size: 0.875rem;
         }
+      }
+      
+      .status-serial {
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        font-family: monospace;
       }
       
       .status-badges {

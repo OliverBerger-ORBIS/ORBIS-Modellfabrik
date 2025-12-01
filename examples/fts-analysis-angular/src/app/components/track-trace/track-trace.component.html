@@ -63,32 +63,81 @@
       </div>
     </div>
     
-    <div class="timeline">
-      <div 
-        *ngFor="let event of history.events; trackBy: trackByEvent; let last = last"
-        class="timeline-item"
-        [class]="event.eventType.toLowerCase()">
-        
-        <div class="timeline-marker">
-          <span class="event-icon">{{ getEventIcon(event.eventType) }}</span>
-        </div>
-        
-        <div class="timeline-content">
-          <div class="event-header">
-            <span class="event-type">{{ event.eventType }}</span>
-            <span class="event-time">{{ formatTimestamp(event.timestamp) }}</span>
+    <!-- Order Context Display -->
+    <div class="order-context" *ngIf="history.orders && history.orders.length > 0">
+      <div class="order-context-title">📋 Order Context</div>
+      <div class="orders-list">
+        <div *ngFor="let order of history.orders" 
+             class="order-card"
+             [class.storage]="order.orderType === 'STORAGE'"
+             [class.production]="order.orderType === 'PRODUCTION'">
+          <div class="order-header">
+            <span class="order-type-icon">{{ getOrderTypeIcon(order.orderType) }}</span>
+            <span class="order-type-label">{{ getOrderTypeLabel(order.orderType) }}</span>
           </div>
-          
-          <div class="event-details">
-            <span class="location" *ngIf="event.location">
-              📍 {{ getLocationLabel(event.location) }}
-            </span>
-            <span class="order" *ngIf="event.orderId">
-              Order: {{ event.orderId.substring(0, 8) }}...
-            </span>
+          <div class="order-details">
+            <div class="order-field" *ngIf="order.purchaseOrderId">
+              <span class="field-label">Purchase Order:</span>
+              <span class="field-value erp-id">{{ order.purchaseOrderId }}</span>
+            </div>
+            <div class="order-field" *ngIf="order.customerOrderId">
+              <span class="field-label">Customer Order:</span>
+              <span class="field-value erp-id">{{ order.customerOrderId }}</span>
+            </div>
+            <div class="order-route">
+              <span class="route-from">{{ getLocationLabel(order.fromLocation || '') }}</span>
+              <span class="route-arrow">→</span>
+              <span class="route-to">{{ getLocationLabel(order.toLocation || '') }}</span>
+            </div>
           </div>
         </div>
       </div>
+    </div>
+    
+    <!-- Events grouped by order -->
+    <div class="events-by-order">
+      <ng-container *ngFor="let group of groupEventsByOrder(history); trackBy: trackByOrder">
+        <div class="order-group" 
+             [class.storage]="group.order?.orderType === 'STORAGE'"
+             [class.production]="group.order?.orderType === 'PRODUCTION'">
+          
+          <div class="order-group-header" *ngIf="group.order">
+            <span class="order-group-icon">{{ getOrderTypeIcon(group.order.orderType) }}</span>
+            <span class="order-group-label">{{ getOrderTypeLabel(group.order.orderType) }}</span>
+            <span class="order-group-id" *ngIf="group.order.purchaseOrderId">
+              {{ group.order.purchaseOrderId }}
+            </span>
+            <span class="order-group-id" *ngIf="group.order.customerOrderId">
+              {{ group.order.customerOrderId }}
+            </span>
+          </div>
+          
+          <div class="timeline">
+            <div 
+              *ngFor="let event of group.events; trackBy: trackByEvent; let last = last"
+              class="timeline-item"
+              [class]="event.eventType.toLowerCase()">
+              
+              <div class="timeline-marker">
+                <span class="event-icon">{{ getEventIcon(event.eventType) }}</span>
+              </div>
+              
+              <div class="timeline-content">
+                <div class="event-header">
+                  <span class="event-type">{{ event.eventType }}</span>
+                  <span class="event-time">{{ formatTimestamp(event.timestamp) }}</span>
+                </div>
+                
+                <div class="event-details">
+                  <span class="location" *ngIf="event.location">
+                    📍 {{ getLocationLabel(event.location) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
     </div>
   </div>
   
@@ -98,7 +147,7 @@
     </p>
     <p>
       Select a workpiece from the list to view its complete journey through the production process.
-      Each event shows the location, timestamp, and action performed.
+      Events are grouped by order type (Storage Order / Production Order) with links to ERP systems.
     </p>
   </div>
 </div>
