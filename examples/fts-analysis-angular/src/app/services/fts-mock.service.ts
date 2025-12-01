@@ -22,6 +22,62 @@ function generateCustomerOrderId(): string {
 }
 
 /**
+ * Route network matching the shopfloor layout
+ * Edges from parsed_roads in shopfloor_layout.json
+ */
+const ROUTE_EDGES: Array<{ from: string; to: string }> = [
+  // Module to intersection connections
+  { from: 'SVR3QA0022', to: '1' },   // HBW -> intersection 1
+  { from: 'SVR3QA2098', to: '1' },   // MILL -> intersection 1  
+  { from: 'SVR4H76449', to: '3' },   // DRILL -> intersection 3
+  { from: 'SVR4H76530', to: '2' },   // AIQS -> intersection 2
+  { from: 'SVR4H73275', to: '2' },   // DPS -> intersection 2
+  { from: 'CHRG0', to: '4' },        // CHRG -> intersection 4
+  
+  // Intersection to intersection connections
+  { from: '1', to: '2' },            // intersection 1 <-> intersection 2
+  { from: '3', to: '1' },            // intersection 3 <-> intersection 1
+  { from: '3', to: '4' },            // intersection 3 <-> intersection 4
+  { from: '4', to: '2' },            // intersection 4 <-> intersection 2
+];
+
+/** Build adjacency list for pathfinding */
+const ADJACENCY: Record<string, string[]> = {};
+ROUTE_EDGES.forEach(edge => {
+  if (!ADJACENCY[edge.from]) ADJACENCY[edge.from] = [];
+  if (!ADJACENCY[edge.to]) ADJACENCY[edge.to] = [];
+  ADJACENCY[edge.from].push(edge.to);
+  ADJACENCY[edge.to].push(edge.from);
+});
+
+/** Find shortest path between two nodes using BFS */
+function findPath(from: string, to: string): string[] {
+  if (from === to) return [from];
+  if (!ADJACENCY[from] || !ADJACENCY[to]) return [from, to]; // Direct fallback
+  
+  const visited = new Set<string>();
+  const queue: { node: string; path: string[] }[] = [{ node: from, path: [from] }];
+  visited.add(from);
+  
+  while (queue.length > 0) {
+    const { node, path } = queue.shift()!;
+    const neighbors = ADJACENCY[node] || [];
+    
+    for (const neighbor of neighbors) {
+      if (neighbor === to) {
+        return [...path, neighbor];
+      }
+      if (!visited.has(neighbor)) {
+        visited.add(neighbor);
+        queue.push({ node: neighbor, path: [...path, neighbor] });
+      }
+    }
+  }
+  
+  return [from, to]; // No path found, direct fallback
+}
+
+/**
  * Mock MQTT Service for FTS Data
  * 
  * Simulates real-time FTS/AGV data based on actual production data from
@@ -155,179 +211,122 @@ export class FtsMockService implements OnDestroy {
   }
   
   private createSimulatedStates(): Partial<FtsState>[] {
-    // Simulated state transitions based on real production data
-    return [
-      // Initial idle at HBW
-      {
-        lastNodeId: 'SVR3QA0022',
-        driving: false,
-        batteryState: { currentVoltage: 9.1, minVolt: 7.84, maxVolt: 9.1, percentage: 100, charging: false },
-        actionState: { id: 'a1', command: 'DOCK', state: 'FINISHED', timestamp: new Date().toISOString() },
-        load: [{ loadId: null, loadType: null, loadPosition: '1' }],
-      },
-      // Starting DOCK action - waiting
-      {
-        lastNodeId: 'SVR3QA0022',
-        driving: false,
-        batteryState: { currentVoltage: 9.1, minVolt: 7.84, maxVolt: 9.1, percentage: 100, charging: false },
-        actionState: { id: 'a2', command: 'DOCK', state: 'WAITING', timestamp: new Date().toISOString() },
-        load: [{ loadId: null, loadType: null, loadPosition: '1' }],
-      },
-      // DOCK action - initializing
-      {
-        lastNodeId: 'SVR3QA0022',
-        driving: true,
-        batteryState: { currentVoltage: 9.1, minVolt: 7.84, maxVolt: 9.1, percentage: 100, charging: false },
-        actionState: { id: 'a2', command: 'DOCK', state: 'INITIALIZING', timestamp: new Date().toISOString() },
-        load: [{ loadId: null, loadType: null, loadPosition: '1' }],
-      },
-      // DOCK action - running
-      {
-        lastNodeId: 'SVR3QA0022',
-        driving: true,
-        batteryState: { currentVoltage: 9.1, minVolt: 7.84, maxVolt: 9.1, percentage: 100, charging: false },
-        actionState: { id: 'a2', command: 'DOCK', state: 'RUNNING', timestamp: new Date().toISOString() },
-        load: [{ loadId: null, loadType: null, loadPosition: '1' }],
-      },
-      // DOCK finished - picked up BLUE workpiece
-      {
-        lastNodeId: 'SVR3QA0022',
-        driving: false,
-        waitingForLoadHandling: true,
-        batteryState: { currentVoltage: 9.0, minVolt: 7.84, maxVolt: 9.1, percentage: 92, charging: false },
-        actionState: { id: 'a2', command: 'DOCK', state: 'FINISHED', timestamp: new Date().toISOString() },
-        load: [{ loadId: null, loadType: 'BLUE', loadPosition: '1' }],
-      },
-      // Load handling complete - workpiece ID assigned
-      {
-        lastNodeId: 'SVR3QA0022',
-        driving: false,
-        waitingForLoadHandling: false,
-        batteryState: { currentVoltage: 9.1, minVolt: 7.84, maxVolt: 9.1, percentage: 100, charging: false },
-        actionState: { id: 'a2', command: 'DOCK', state: 'FINISHED', timestamp: new Date().toISOString() },
-        load: [{ loadId: '047389ca341291', loadType: 'BLUE', loadPosition: '1' }],
-      },
-      // Second DOCK - picking WHITE
-      {
-        lastNodeId: 'SVR3QA0022',
-        driving: true,
-        batteryState: { currentVoltage: 9.0, minVolt: 7.84, maxVolt: 9.1, percentage: 92, charging: false },
-        actionState: { id: 'a3', command: 'DOCK', state: 'RUNNING', timestamp: new Date().toISOString() },
-        load: [{ loadId: '047389ca341291', loadType: 'BLUE', loadPosition: '1' }],
-      },
-      // Second DOCK finished - added WHITE workpiece
-      {
-        lastNodeId: 'SVR3QA0022',
-        driving: false,
-        waitingForLoadHandling: true,
-        batteryState: { currentVoltage: 9.0, minVolt: 7.84, maxVolt: 9.1, percentage: 92, charging: false },
-        actionState: { id: 'a3', command: 'DOCK', state: 'FINISHED', timestamp: new Date().toISOString() },
-        load: [
-          { loadId: '047389ca341291', loadType: 'BLUE', loadPosition: '1' },
-          { loadId: null, loadType: 'WHITE', loadPosition: '2' },
-        ],
-      },
-      // Third DOCK - picking RED
-      {
-        lastNodeId: 'SVR3QA0022',
-        driving: true,
-        batteryState: { currentVoltage: 9.0, minVolt: 7.84, maxVolt: 9.1, percentage: 92, charging: false },
-        actionState: { id: 'a4', command: 'DOCK', state: 'RUNNING', timestamp: new Date().toISOString() },
-        load: [
-          { loadId: '047389ca341291', loadType: 'BLUE', loadPosition: '1' },
-          { loadId: '04798eca341290', loadType: 'WHITE', loadPosition: '2' },
-        ],
-      },
-      // All three workpieces loaded
-      {
-        lastNodeId: 'SVR3QA0022',
-        driving: false,
-        batteryState: { currentVoltage: 9.0, minVolt: 7.84, maxVolt: 9.1, percentage: 92, charging: false },
-        actionState: { id: 'a4', command: 'DOCK', state: 'FINISHED', timestamp: new Date().toISOString() },
-        load: [
-          { loadId: '047389ca341291', loadType: 'BLUE', loadPosition: '1' },
-          { loadId: '04798eca341290', loadType: 'WHITE', loadPosition: '2' },
-          { loadId: '040a8dca341291', loadType: 'RED', loadPosition: '3' },
-        ],
-      },
-      // TURN action at node 1
-      {
-        lastNodeId: '1',
-        driving: true,
-        batteryState: { currentVoltage: 9.0, minVolt: 7.84, maxVolt: 9.1, percentage: 92, charging: false },
-        actionState: { id: 'a5', command: 'TURN', state: 'RUNNING', timestamp: new Date().toISOString() },
-        load: [
-          { loadId: '047389ca341291', loadType: 'BLUE', loadPosition: '1' },
-          { loadId: '04798eca341290', loadType: 'WHITE', loadPosition: '2' },
-          { loadId: '040a8dca341291', loadType: 'RED', loadPosition: '3' },
-        ],
-      },
-      // TURN finished
-      {
-        lastNodeId: '1',
-        driving: true,
-        batteryState: { currentVoltage: 9.0, minVolt: 7.84, maxVolt: 9.1, percentage: 92, charging: false },
-        actionState: { id: 'a5', command: 'TURN', state: 'FINISHED', timestamp: new Date().toISOString() },
-        load: [
-          { loadId: '047389ca341291', loadType: 'BLUE', loadPosition: '1' },
-          { loadId: '04798eca341290', loadType: 'WHITE', loadPosition: '2' },
-          { loadId: '040a8dca341291', loadType: 'RED', loadPosition: '3' },
-        ],
-      },
-      // Arrived at DRILL station
-      {
-        lastNodeId: 'SVR4H76449',
-        driving: false,
-        batteryState: { currentVoltage: 8.9, minVolt: 7.84, maxVolt: 9.1, percentage: 84, charging: false },
-        actionState: { id: 'a6', command: 'DOCK', state: 'FINISHED', timestamp: new Date().toISOString() },
-        load: [
-          { loadId: '047389ca341291', loadType: 'BLUE', loadPosition: '1' },
-          { loadId: '04798eca341290', loadType: 'WHITE', loadPosition: '2' },
-          { loadId: '040a8dca341291', loadType: 'RED', loadPosition: '3' },
-        ],
-      },
-      // At MILL station - dropped BLUE
-      {
-        lastNodeId: 'SVR3QA2098',
-        driving: false,
-        batteryState: { currentVoltage: 8.8, minVolt: 7.84, maxVolt: 9.1, percentage: 76, charging: false },
-        actionState: { id: 'a7', command: 'DOCK', state: 'FINISHED', timestamp: new Date().toISOString() },
-        load: [
-          { loadId: null, loadType: null, loadPosition: '1' },
-          { loadId: '04798eca341290', loadType: 'WHITE', loadPosition: '2' },
-          { loadId: '040a8dca341291', loadType: 'RED', loadPosition: '3' },
-        ],
-      },
-      // At AIQS - inspection
-      {
-        lastNodeId: 'SVR4H76530',
-        driving: false,
-        batteryState: { currentVoltage: 8.7, minVolt: 7.84, maxVolt: 9.1, percentage: 68, charging: false },
-        actionState: { id: 'a8', command: 'DOCK', state: 'FINISHED', timestamp: new Date().toISOString() },
-        load: [
-          { loadId: '047c8bca341291', loadType: 'WHITE', loadPosition: '1' },
-          { loadId: null, loadType: null, loadPosition: '2' },
-          { loadId: null, loadType: null, loadPosition: '3' },
-        ],
-      },
-      // At DPS - storage
-      {
-        lastNodeId: 'SVR4H73275',
-        driving: false,
-        batteryState: { currentVoltage: 8.9, minVolt: 7.84, maxVolt: 9.1, percentage: 84, charging: false },
-        actionState: { id: 'a9', command: 'DOCK', state: 'FINISHED', timestamp: new Date().toISOString() },
-        load: [
-          { loadId: null, loadType: null, loadPosition: '1' },
-          { loadId: null, loadType: null, loadPosition: '2' },
-          { loadId: null, loadType: null, loadPosition: '3' },
-        ],
-      },
+    const states: Partial<FtsState>[] = [];
+    
+    // Helper to create a state at a node
+    const createState = (
+      nodeId: string, 
+      driving: boolean, 
+      actionId: string, 
+      command: string, 
+      actionState: string, 
+      battery: number, 
+      load: FtsLoadInfo[]
+    ): Partial<FtsState> => ({
+      lastNodeId: nodeId,
+      driving,
+      batteryState: { currentVoltage: 7.84 + (battery / 100) * 1.26, minVolt: 7.84, maxVolt: 9.1, percentage: battery, charging: false },
+      actionState: { id: actionId, command, state: actionState, timestamp: new Date().toISOString() },
+      load,
+    });
+    
+    // Helper to generate movement states between two nodes
+    const generateMovement = (
+      fromNode: string, 
+      toNode: string, 
+      actionId: string, 
+      battery: number, 
+      load: FtsLoadInfo[]
+    ): Partial<FtsState>[] => {
+      const path = findPath(fromNode, toNode);
+      const moveStates: Partial<FtsState>[] = [];
+      
+      for (let i = 0; i < path.length; i++) {
+        const node = path[i];
+        const isLastNode = i === path.length - 1;
+        
+        // At each intermediate node, show PASS action
+        if (i > 0 && !isLastNode) {
+          // Passing through intersection
+          moveStates.push(createState(node, true, actionId, 'PASS', 'RUNNING', battery, load));
+          moveStates.push(createState(node, true, actionId, 'PASS', 'FINISHED', battery, load));
+        } else if (i > 0 && isLastNode) {
+          // Arriving at destination - will get DOCK action later
+          moveStates.push(createState(node, true, actionId, 'PASS', 'FINISHED', battery, load));
+        } else if (i === 0 && path.length > 1) {
+          // Starting movement from first node
+          moveStates.push(createState(node, true, actionId, 'PASS', 'RUNNING', battery, load));
+        }
+      }
+      
+      return moveStates;
+    };
+    
+    // Initial load at HBW
+    const emptyLoad: FtsLoadInfo[] = [{ loadId: null, loadType: null, loadPosition: '1' }];
+    const blueLoad: FtsLoadInfo[] = [{ loadId: '047389ca341291', loadType: 'BLUE', loadPosition: '1' }];
+    const twoLoad: FtsLoadInfo[] = [
+      { loadId: '047389ca341291', loadType: 'BLUE', loadPosition: '1' },
+      { loadId: '04798eca341290', loadType: 'WHITE', loadPosition: '2' },
     ];
+    const fullLoad: FtsLoadInfo[] = [
+      { loadId: '047389ca341291', loadType: 'BLUE', loadPosition: '1' },
+      { loadId: '04798eca341290', loadType: 'WHITE', loadPosition: '2' },
+      { loadId: '040a8dca341291', loadType: 'RED', loadPosition: '3' },
+    ];
+    
+    // Phase 1: Loading at HBW
+    states.push(createState('SVR3QA0022', false, 'a1', 'DOCK', 'FINISHED', 100, emptyLoad));
+    states.push(createState('SVR3QA0022', false, 'a2', 'DOCK', 'WAITING', 100, emptyLoad));
+    states.push(createState('SVR3QA0022', true, 'a2', 'DOCK', 'INITIALIZING', 100, emptyLoad));
+    states.push(createState('SVR3QA0022', true, 'a2', 'DOCK', 'RUNNING', 100, emptyLoad));
+    states.push(createState('SVR3QA0022', false, 'a2', 'DOCK', 'FINISHED', 98, blueLoad));
+    states.push(createState('SVR3QA0022', true, 'a3', 'DOCK', 'RUNNING', 96, blueLoad));
+    states.push(createState('SVR3QA0022', false, 'a3', 'DOCK', 'FINISHED', 94, twoLoad));
+    states.push(createState('SVR3QA0022', true, 'a4', 'DOCK', 'RUNNING', 92, twoLoad));
+    states.push(createState('SVR3QA0022', false, 'a4', 'DOCK', 'FINISHED', 90, fullLoad));
+    
+    // Phase 2: Move from HBW to DRILL (HBW -> 1 -> 3 -> DRILL)
+    states.push(...generateMovement('SVR3QA0022', 'SVR4H76449', 'a5', 88, fullLoad));
+    states.push(createState('SVR4H76449', false, 'a6', 'DOCK', 'RUNNING', 86, fullLoad));
+    states.push(createState('SVR4H76449', false, 'a6', 'DOCK', 'FINISHED', 84, fullLoad));
+    
+    // Phase 3: Move from DRILL to MILL (DRILL -> 3 -> 1 -> MILL)
+    states.push(...generateMovement('SVR4H76449', 'SVR3QA2098', 'a7', 82, fullLoad));
+    states.push(createState('SVR3QA2098', false, 'a8', 'DOCK', 'RUNNING', 80, fullLoad));
+    const afterMillLoad: FtsLoadInfo[] = [
+      { loadId: null, loadType: null, loadPosition: '1' },
+      { loadId: '04798eca341290', loadType: 'WHITE', loadPosition: '2' },
+      { loadId: '040a8dca341291', loadType: 'RED', loadPosition: '3' },
+    ];
+    states.push(createState('SVR3QA2098', false, 'a8', 'DOCK', 'FINISHED', 78, afterMillLoad));
+    
+    // Phase 4: Move from MILL to AIQS (MILL -> 1 -> 2 -> AIQS)
+    states.push(...generateMovement('SVR3QA2098', 'SVR4H76530', 'a9', 76, afterMillLoad));
+    states.push(createState('SVR4H76530', false, 'a10', 'DOCK', 'RUNNING', 74, afterMillLoad));
+    const afterAiqsLoad: FtsLoadInfo[] = [
+      { loadId: '047c8bca341291', loadType: 'WHITE', loadPosition: '1' },
+      { loadId: null, loadType: null, loadPosition: '2' },
+      { loadId: null, loadType: null, loadPosition: '3' },
+    ];
+    states.push(createState('SVR4H76530', false, 'a10', 'DOCK', 'FINISHED', 72, afterAiqsLoad));
+    
+    // Phase 5: Move from AIQS to DPS (AIQS -> 2 -> DPS)
+    states.push(...generateMovement('SVR4H76530', 'SVR4H73275', 'a11', 70, afterAiqsLoad));
+    states.push(createState('SVR4H73275', false, 'a12', 'DOCK', 'RUNNING', 68, afterAiqsLoad));
+    const finalLoad: FtsLoadInfo[] = [
+      { loadId: null, loadType: null, loadPosition: '1' },
+      { loadId: null, loadType: null, loadPosition: '2' },
+      { loadId: null, loadType: null, loadPosition: '3' },
+    ];
+    states.push(createState('SVR4H73275', false, 'a12', 'DOCK', 'FINISHED', 66, finalLoad));
+    
+    return states;
   }
   
   private startSimulation(): void {
-    // Update state every 2 seconds
-    this.simulationSubscription = interval(2000).subscribe(() => {
+    // Update state every 1 second for smoother movement animation
+    this.simulationSubscription = interval(1000).subscribe(() => {
       const partialState = this.simulatedStates[this.simulationIndex];
       const currentState = this.ftsStateSubject.value;
       

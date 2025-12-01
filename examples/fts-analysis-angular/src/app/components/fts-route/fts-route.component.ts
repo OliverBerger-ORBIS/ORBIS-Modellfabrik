@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, OnChanges, OnDestroy, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FtsState, FtsActionState, getActionStateClass } from '../../models/fts.types';
 
@@ -102,7 +102,7 @@ function findPath(from: string, to: string): string[] {
   styleUrls: ['./fts-route.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FtsRouteComponent implements OnChanges {
+export class FtsRouteComponent implements OnChanges, OnDestroy {
   @Input() ftsState: FtsState | null = null;
   
   readonly nodePositions = NODE_POSITIONS;
@@ -112,25 +112,37 @@ export class FtsRouteComponent implements OnChanges {
   // Animation state
   private previousNodeId: string = '';
   private animationInterval: number | null = null;
+  private animationStartTime: number = 0;
   
   // Animated position
   animatedPosition: { x: number; y: number } | null = null;
   isAnimating = false;
   animationPath: string[] = [];
+  currentAnimationSegment: { from: string; to: string } | null = null;
   
   constructor(private cdr: ChangeDetectorRef) {}
+  
+  ngOnDestroy(): void {
+    this.stopAnimation();
+  }
   
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['ftsState']) {
       const newNodeId = this.ftsState?.lastNodeId ?? '';
       const isDriving = this.ftsState?.driving ?? false;
       
-      // If node changed and driving, animate along the path
-      if (newNodeId && this.previousNodeId && newNodeId !== this.previousNodeId && isDriving) {
-        this.startAnimation(this.previousNodeId, newNodeId);
-      } else if (!isDriving) {
-        // Stop animation when not driving
-        this.stopAnimation();
+      // If node changed, animate along the path
+      if (newNodeId && this.previousNodeId && newNodeId !== this.previousNodeId) {
+        if (isDriving) {
+          // Animate movement between adjacent nodes
+          this.animateBetweenNodes(this.previousNodeId, newNodeId);
+        } else {
+          // Jump directly (shouldn't happen in normal flow, but handle it)
+          this.stopAnimation();
+          this.animatedPosition = null;
+        }
+      } else if (!isDriving && !this.isAnimating) {
+        // Not driving and not animating - reset position
         this.animatedPosition = null;
       }
       
@@ -138,50 +150,68 @@ export class FtsRouteComponent implements OnChanges {
     }
   }
   
-  private startAnimation(from: string, to: string): void {
-    this.stopAnimation();
+  /** Animate between two adjacent (or connected) nodes */
+  private animateBetweenNodes(from: string, to: string): void {
+    // Check if this is a continuation of current animation path
+    if (this.currentAnimationSegment?.to === from) {
+      // Continue the animation to the new target
+      this.currentAnimationSegment = { from, to };
+      this.animationPath = [...this.animationPath, to];
+    } else {
+      // Start new animation
+      this.stopAnimation();
+      this.animationPath = [from, to];
+      this.currentAnimationSegment = { from, to };
+    }
     
-    // Find path between nodes
-    this.animationPath = findPath(from, to);
-    if (this.animationPath.length < 2) {
+    this.startSegmentAnimation(from, to);
+  }
+  
+  /** Start animation for a single segment between two nodes */
+  private startSegmentAnimation(from: string, to: string): void {
+    // Stop any existing animation
+    if (this.animationInterval) {
+      window.clearInterval(this.animationInterval);
+    }
+    
+    const fromPos = NODE_POSITIONS[from];
+    const toPos = NODE_POSITIONS[to];
+    
+    if (!fromPos || !toPos) {
+      this.stopAnimation();
       return;
     }
     
     this.isAnimating = true;
-    let animationProgress = 0;
+    this.animationStartTime = Date.now();
     
-    const totalSteps = (this.animationPath.length - 1) * 20; // 20 steps per segment
-    let currentStep = 0;
+    const animationDuration = 800; // 800ms per segment
     
     this.animationInterval = window.setInterval(() => {
-      currentStep++;
-      animationProgress = currentStep / totalSteps;
+      const elapsed = Date.now() - this.animationStartTime;
+      const progress = Math.min(elapsed / animationDuration, 1);
       
-      if (currentStep >= totalSteps) {
-        this.stopAnimation();
-        this.animatedPosition = null;
-        this.cdr.markForCheck();
-        return;
-      }
+      // Ease-in-out cubic for smoother animation
+      const easeProgress = progress < 0.5
+        ? 4 * progress * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
       
-      // Calculate position along path
-      const segmentIndex = Math.floor(animationProgress * (this.animationPath.length - 1));
-      const segmentProgress = (animationProgress * (this.animationPath.length - 1)) - segmentIndex;
+      this.animatedPosition = {
+        x: fromPos.x + (toPos.x - fromPos.x) * easeProgress,
+        y: fromPos.y + (toPos.y - fromPos.y) * easeProgress,
+      };
       
-      const fromNode = this.animationPath[segmentIndex];
-      const toNode = this.animationPath[Math.min(segmentIndex + 1, this.animationPath.length - 1)];
+      this.cdr.markForCheck();
       
-      const fromPos = NODE_POSITIONS[fromNode];
-      const toPos = NODE_POSITIONS[toNode];
-      
-      if (fromPos && toPos) {
-        this.animatedPosition = {
-          x: fromPos.x + (toPos.x - fromPos.x) * segmentProgress,
-          y: fromPos.y + (toPos.y - fromPos.y) * segmentProgress,
-        };
+      if (progress >= 1) {
+        // Animation segment complete
+        window.clearInterval(this.animationInterval!);
+        this.animationInterval = null;
+        this.isAnimating = false;
+        this.animatedPosition = null; // Reset to show at node position
         this.cdr.markForCheck();
       }
-    }, 50); // 50ms per step = ~1 second per segment
+    }, 16); // ~60fps
   }
   
   private stopAnimation(): void {
@@ -191,6 +221,7 @@ export class FtsRouteComponent implements OnChanges {
     }
     this.isAnimating = false;
     this.animationPath = [];
+    this.currentAnimationSegment = null;
   }
   
   get currentNodeId(): string {
