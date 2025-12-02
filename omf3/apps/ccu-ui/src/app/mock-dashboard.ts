@@ -277,25 +277,40 @@ export const createMockDashboardController = (options?: {
   let mqttClient = options?.mqttClient; // Store in closure (mutable)
   const messageMonitor = options?.messageMonitor; // Store in closure
   let bundle = createStreamSet(messageSubject, mqttClient);
+  let messageMonitorSubscription: Subscription | undefined;
   
-  // In mock mode (no MQTT client), forward fixture messages to MessageMonitor
-  if (!mqttClient && messageMonitor) {
-    messageSubject.subscribe((message: RawMqttMessage) => {
-      try {
-        let payload: unknown = message.payload;
-        if (typeof payload === 'string') {
-          try {
-            payload = JSON.parse(payload);
-          } catch {
-            // Keep as string if not valid JSON
+  // Helper function to setup MessageMonitor forwarding
+  // This ensures messages from fixtures are forwarded to MessageMonitorService
+  const setupMessageMonitorForwarding = () => {
+    // Unsubscribe existing subscription if any
+    if (messageMonitorSubscription) {
+      messageMonitorSubscription.unsubscribe();
+      messageMonitorSubscription = undefined;
+    }
+    
+    // In mock mode (no MQTT client), forward fixture messages to MessageMonitor
+    if (!mqttClient && messageMonitor) {
+      console.log('[mock-dashboard] Setting up MessageMonitor forwarding for fixture messages');
+      messageMonitorSubscription = messageSubject.subscribe((message: RawMqttMessage) => {
+        try {
+          let payload: unknown = message.payload;
+          if (typeof payload === 'string') {
+            try {
+              payload = JSON.parse(payload);
+            } catch {
+              // Keep as string if not valid JSON
+            }
           }
+          messageMonitor.addMessage(message.topic, payload, message.timestamp);
+        } catch (error) {
+          console.error('[mock-dashboard] Failed to forward message to MessageMonitor:', error);
         }
-        messageMonitor.addMessage(message.topic, payload, message.timestamp);
-      } catch (error) {
-        console.error('[mock-dashboard] Failed to forward message to MessageMonitor:', error);
-      }
-    });
-  }
+      });
+    }
+  };
+  
+  // Initial setup of MessageMonitor forwarding
+  setupMessageMonitorForwarding();
   const shouldReplayPersistedMessages = (): boolean =>
     Boolean(mqttClient && messageMonitor?.getTopics && messageMonitor.getHistory);
 
@@ -362,6 +377,8 @@ export const createMockDashboardController = (options?: {
     if (!mqttClient) {
       messageSubject.complete();
       messageSubject = new Subject<RawMqttMessage>();
+      // CRITICAL FIX: Reconnect MessageMonitor forwarding after creating new subject
+      setupMessageMonitorForwarding();
     } else {
       // In live/replay mode, keep the same messageSubject and reconnect MQTT subscription
       messageSubject = new Subject<RawMqttMessage>();
