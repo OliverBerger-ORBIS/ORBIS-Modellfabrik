@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
-import { BehaviorSubject, Observable, combineLatest, Subscription } from 'rxjs';
-import { map, distinctUntilChanged, shareReplay, startWith } from 'rxjs/operators';
+import { BehaviorSubject, Observable, combineLatest, Subscription, merge } from 'rxjs';
+import { map, distinctUntilChanged, shareReplay, startWith, filter } from 'rxjs/operators';
 import { MessageMonitorService } from './message-monitor.service';
 import { ModuleNameService } from './module-name.service';
 import { EnvironmentService } from './environment.service';
@@ -89,6 +89,27 @@ interface FtsState {
     loadId: string | null;
     loadType: 'BLUE' | 'WHITE' | 'RED' | null;
     loadPosition: string;
+  }>;
+  _topic?: string; // Topic from MQTT message
+  _moduleSerialId?: string; // Module serial ID extracted from topic
+}
+
+/**
+ * Module State interface (from MQTT messages)
+ */
+interface ModuleState {
+  serialNumber: string;
+  timestamp: string;
+  orderId?: string;
+  orderUpdateId?: number;
+  actionState?: {
+    id: string;
+    command: string;
+    state: string;
+    timestamp: string;
+  } | null;
+  loads?: Array<{
+    loadType?: 'BLUE' | 'WHITE' | 'RED' | null;
   }>;
   _topic?: string; // Topic from MQTT message
   _moduleSerialId?: string; // Module serial ID extracted from topic
@@ -216,9 +237,57 @@ export class WorkpieceHistoryService implements OnDestroy {
       })
     );
 
+    // Subscribe to module state messages for manufacturing stations (DRILL, MILL, AIQS)
+    // These modules send PROCESS events via module/v1/ff/<serial>/state
+    const moduleStateStreams = MODULE_STATIONS.map((serial) => {
+      // Try both patterns: module/v1/ff/<serial>/state and module/v1/ff/NodeRed/<serial>/state
+      const topic1 = `module/v1/ff/${serial}/state`;
+      const topic2 = `module/v1/ff/NodeRed/${serial}/state`;
+      
+      const stream1$ = this.messageMonitor.getLastMessage(topic1).pipe(
+        map((msg) => {
+          if (!msg?.valid || !msg.payload) return null;
+          try {
+            const payload = typeof msg.payload === 'string' ? JSON.parse(msg.payload) : msg.payload;
+            const moduleSerialId = this.extractModuleSerialFromTopic(msg.topic);
+            return {
+              ...payload,
+              _topic: msg.topic,
+              _moduleSerialId: moduleSerialId || serial,
+            };
+          } catch {
+            return null;
+          }
+        }),
+        filter((state): state is ModuleState => state !== null && state.actionState !== null && state.actionState !== undefined)
+      );
+      
+      const stream2$ = this.messageMonitor.getLastMessage(topic2).pipe(
+        map((msg) => {
+          if (!msg?.valid || !msg.payload) return null;
+          try {
+            const payload = typeof msg.payload === 'string' ? JSON.parse(msg.payload) : msg.payload;
+            const moduleSerialId = this.extractModuleSerialFromTopic(msg.topic);
+            return {
+              ...payload,
+              _topic: msg.topic,
+              _moduleSerialId: moduleSerialId || serial,
+            };
+          } catch {
+            return null;
+          }
+        }),
+        filter((state): state is ModuleState => state !== null && state.actionState !== null && state.actionState !== undefined)
+      );
+      
+      return merge(stream1$, stream2$);
+    });
+    
+    const moduleState$ = merge(...moduleStateStreams);
+
     // Combine FTS state and orders to update history
     // Use startWith(null) to ensure combineLatest emits even if one stream hasn't emitted yet
-    const subscription = combineLatest([
+    const ftsSubscription = combineLatest([
       ftsState$.pipe(startWith(null)),
       activeOrders$.pipe(startWith(null))
     ]).subscribe(([ftsState, activeOrders]) => {
@@ -226,12 +295,32 @@ export class WorkpieceHistoryService implements OnDestroy {
         try {
           this.updateWorkpieceHistory(environmentKey, ftsState as FtsState, activeOrders);
         } catch (error) {
-          console.error('[WorkpieceHistoryService] Error updating history:', error);
+          console.error('[WorkpieceHistoryService] Error updating history from FTS:', error);
         }
       }
     });
 
-    this.subscriptions.set(environmentKey, subscription);
+    // Subscribe to module state messages to process PICK/PROCESS/DROP events
+    // Combine with activeOrders to have order context available
+    const moduleSubscription = combineLatest([
+      moduleState$.pipe(startWith(null)),
+      activeOrders$.pipe(startWith(null))
+    ]).subscribe(([moduleState, activeOrders]) => {
+      if (moduleState) {
+        try {
+          this.updateWorkpieceHistoryFromModule(environmentKey, moduleState as ModuleState, activeOrders);
+        } catch (error) {
+          console.error('[WorkpieceHistoryService] Error updating history from module:', error);
+        }
+      }
+    });
+
+    // Combine both subscriptions
+    const combinedSubscription = new Subscription();
+    combinedSubscription.add(ftsSubscription);
+    combinedSubscription.add(moduleSubscription);
+
+    this.subscriptions.set(environmentKey, combinedSubscription);
   }
 
   /**
@@ -490,6 +579,179 @@ export class WorkpieceHistoryService implements OnDestroy {
   }
 
   /**
+   * Update workpiece history from module state messages
+   * Processes PICK, PROCESS, DROP events from manufacturing stations (DRILL, MILL, AIQS)
+   */
+  private updateWorkpieceHistoryFromModule(
+    environmentKey: string,
+    moduleState: ModuleState,
+    activeOrders: unknown
+  ): void {
+
+    const historyMap = new Map(this.getStore(environmentKey).value);
+
+    // Extract module serial ID
+    const moduleSerialId = moduleState._moduleSerialId || moduleState.serialNumber;
+    const moduleName = this.getModuleNameFromSerial(moduleSerialId);
+    const stationName = this.getStationName(moduleSerialId);
+
+    // Skip if no actionState or no loads
+    if (!moduleState.actionState || !moduleState.loads || moduleState.loads.length === 0) {
+      return;
+    }
+
+    const actionState = moduleState.actionState;
+    const command = actionState.command.toUpperCase();
+    const actionStateValue = actionState.state.toUpperCase();
+
+    // Map CHECK_QUALITY to PROCESS for AIQS
+    const mappedCommand = command === 'CHECK_QUALITY' ? 'PROCESS' : command;
+
+    // Only process PICK, PROCESS, DROP commands (including CHECK_QUALITY mapped to PROCESS)
+    if (!['PICK', 'PROCESS', 'DROP'].includes(mappedCommand)) {
+      return;
+    }
+
+    // Get workpiece type from loads array
+    const loadItem = moduleState.loads[0];
+    const workpieceType = loadItem?.loadType;
+
+    if (!workpieceType) {
+      return; // No workpiece type, skip
+    }
+
+    // Find workpiece history by matching orderId and workpieceType
+    // We need to find the workpiece that matches this module's orderId and workpieceType
+    let matchingWorkpieceId: string | null = null;
+    let matchingHistory: WorkpieceHistory | null = null;
+
+    for (const [workpieceId, history] of historyMap.entries()) {
+      if (history.workpieceType === workpieceType) {
+        // Check if any event has matching orderId and orderUpdateId
+        const hasMatchingOrder = history.events.some(
+          (event) =>
+            event.orderId === moduleState.orderId &&
+            (moduleState.orderUpdateId === undefined || event.orderUpdateId === moduleState.orderUpdateId)
+        );
+        
+        if (hasMatchingOrder) {
+          matchingWorkpieceId = workpieceId;
+          matchingHistory = history;
+          break;
+        }
+      }
+    }
+
+    // If no matching workpiece found, we might need to create one
+    // But for now, we'll skip if we can't find a match
+    if (!matchingWorkpieceId || !matchingHistory) {
+      console.warn('[WorkpieceHistoryService] No matching workpiece found for module state:', {
+        moduleSerialId,
+        moduleName,
+        orderId: moduleState.orderId,
+        orderUpdateId: moduleState.orderUpdateId,
+        workpieceType,
+        command,
+      });
+      return;
+    }
+
+    // Check if this event already exists (avoid duplicates)
+    const eventExists = matchingHistory.events.some(
+      (event) =>
+        event.moduleId === moduleSerialId &&
+        event.eventType === mappedCommand &&
+        event.actionId === actionState.id &&
+        event.timestamp === moduleState.timestamp
+    );
+
+    if (eventExists) {
+      return; // Event already exists, skip
+    }
+
+    // Generate event
+    // IMPORTANT: For module events, use stationName (DRILL, AIQS, etc.) as moduleName
+    // This ensures that events in Level 3 show "DRILL PICK" instead of "FTS PICK"
+    const eventModuleName = stationName || moduleName || 'UNKNOWN';
+    
+    const baseEvent: Partial<TrackTraceEvent> = {
+      timestamp: moduleState.timestamp,
+      workpieceId: matchingWorkpieceId,
+      workpieceType: workpieceType,
+      location: moduleSerialId,
+      moduleId: moduleSerialId,
+      moduleName: eventModuleName, // Use stationName (DRILL, AIQS, etc.) for module events
+      orderId: moduleState.orderId,
+      orderUpdateId: moduleState.orderUpdateId,
+      orderType: 'PRODUCTION', // Module events are always production
+      stationId: stationName || undefined,
+      stationName: stationName ? this.getStationDisplayName(stationName) : undefined,
+      eventType: mappedCommand, // Use mapped command (CHECK_QUALITY -> PROCESS)
+      actionId: actionState.id,
+      processDuration: mappedCommand === 'PROCESS' && stationName ? PROCESS_DURATIONS[stationName] : undefined,
+      details: {
+        actionState: actionStateValue,
+        command: command, // Keep original command in details
+        originalCommand: command, // Store original for reference
+      },
+    };
+
+    // Generate sub-order ID - find the most recent FTS event that brought the workpiece to this module
+    // This ensures Module-Events use the same Sub-Order-ID as the FTS DOCK event
+    const ftsDockEvent = matchingHistory.events
+      .filter((e) => 
+        e.orderId === moduleState.orderId &&
+        e.location === moduleSerialId &&
+        e.eventType === 'DOCK' &&
+        e.moduleName === 'FTS'
+      )
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0];
+    
+    // If we found a DOCK event, use its subOrderId
+    // Otherwise, try to find any event with matching orderId and orderUpdateId
+    let subOrderId: string;
+    if (ftsDockEvent?.subOrderId) {
+      subOrderId = ftsDockEvent.subOrderId;
+    } else {
+      // Fallback: find the most recent event with matching orderId and orderUpdateId
+      const matchingEvent = matchingHistory.events
+        .filter((e) => 
+          e.orderId === moduleState.orderId &&
+          (moduleState.orderUpdateId === undefined || e.orderUpdateId === moduleState.orderUpdateId)
+        )
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0];
+      
+      subOrderId = matchingEvent?.subOrderId || `${moduleState.orderId}-${matchingHistory.events.length + 1}`;
+    }
+    
+    baseEvent.subOrderId = subOrderId;
+
+    // Add event to history
+    matchingHistory.events.push(baseEvent as TrackTraceEvent);
+
+    // Sort events by timestamp, then subOrderId, then actionId
+    matchingHistory.events.sort((a, b) => {
+      const timeA = new Date(a.timestamp).getTime();
+      const timeB = new Date(b.timestamp).getTime();
+      if (timeA !== timeB) return timeA - timeB;
+      
+      if (a.subOrderId && b.subOrderId) {
+        const subOrderCompare = a.subOrderId.localeCompare(b.subOrderId);
+        if (subOrderCompare !== 0) return subOrderCompare;
+      }
+      
+      if (a.actionId && b.actionId) {
+        return a.actionId.localeCompare(b.actionId);
+      }
+      
+      return 0;
+    });
+
+    historyMap.set(matchingWorkpieceId, matchingHistory);
+    this.getStore(environmentKey).next(historyMap);
+  }
+
+  /**
    * Map FTS action command to Track&Trace event type
    */
   private mapActionCommandToEventType(command: string): string {
@@ -505,7 +767,13 @@ export class WorkpieceHistoryService implements OnDestroy {
    * Get station name from node ID
    */
   private getStationName(nodeId: string): string | null {
-    // Try to get from module name service
+    // First, try to get module type from serial ID (for module serial IDs like SVR4H76449)
+    const moduleType = this.moduleNameService.getModuleTypeFromSerial(nodeId);
+    if (moduleType) {
+      return moduleType; // Returns DRILL, MILL, AIQS, HBW, DPS, etc.
+    }
+    
+    // Fallback: Try to get from module name service
     const moduleName = this.moduleNameService.getModuleDisplayText(nodeId);
     if (moduleName && moduleName !== nodeId) {
       // Extract station name (e.g., "HBW" from "HBW (High-Bay Warehouse)")

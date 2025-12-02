@@ -158,24 +158,24 @@ Track & Trace soll die komplette Historie eines Workpieces (Rohmaterial → Prod
 - `omf2/registry/schemas/ccu_order_active.schema.json`
 - `omf2/registry/topics/ccu.yml`
 
-## Aktueller Status & Bekannte Probleme (2025-12-02)
+## Aktueller Status (2025-12-02)
 
-### Fixture Loading Issue
+### Fixture System
 
-**Problem:**
-- Track & Trace Tab zeigt Fixture-Button, aber beim Klicken werden keine Workpieces angezeigt
-- `WorkpieceHistoryService` wird bereits im `TrackTraceComponent.ngOnInit()` initialisiert
-- Beim Fixture-Load wird `clear()` und `initialize()` aufgerufen, aber der Service reagiert nicht auf neue Messages
+**Status:** ✅ Vollständig funktionsfähig
 
-**Aktuelle Implementierung:**
-- `TrackTraceTabComponent.loadFixture()` ruft `clear()` und dann `initialize()` auf
-- `clear()` löscht die Subscription, danach kann `initialize()` erneut aufgerufen werden
-- Service sollte auf neue Messages vom Fixture reagieren über `MessageMonitorService.getLastMessage()`
+**Verfügbare Fixtures:**
+- `production_bwr`: Production BWR Szenario (1478 Messages, 34 FTS Messages mit loadId)
+- `production_white`: Production White Szenario (977 Messages, 9 FTS Messages mit loadId)
+- `storage_blue`: Storage Blue Szenario (371 Messages, 18 FTS Messages mit loadId)
 
-**Status:** In Testing - Fixture-Load funktioniert, aber Workpieces werden nicht angezeigt
+**UI-Konsistenz:**
+- Alle Tabs verwenden einheitliches Fixture-UI-Pattern (basierend auf Module-Tab)
+- Track & Trace Tab bietet 3 Fixture-Optionen: Production BWR, Production White, Storage Blue
+- AGV-Tab bietet erweiterte Fixture-Optionen: `startup`, `white`, `blue`, `red`, `mixed`, `storage`, `production_bwr`, `production_white`, `storage_blue`
 
-**Nächste Schritte:**
-- Debugging: Prüfen ob Messages vom Fixture korrekt an `MessageMonitorService` weitergegeben werden
-- Prüfen ob `WorkpieceHistoryService` korrekt auf neue Messages subscribed
-- Falls nicht: Eventuell `getLastMessage()` durch direkten Stream-Subscription ersetzen
+**Dokumentation:**
+- Hauptdokumentation: `omf3/libs/testing-fixtures/README.md`
+- Tab-spezifische Presets: `omf3/libs/testing-fixtures/TAB-FIXTURES.md`
+- System-Fix-Dokumentation: `docs/FIXTURE_SYSTEM_FIX.md`
 

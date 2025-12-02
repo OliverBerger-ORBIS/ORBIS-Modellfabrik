@@ -105,12 +105,29 @@ export class FtsTabComponent implements OnInit, OnDestroy {
   readonly chargingIcon = 'shopfloor/charging-active.svg'; // ✅ Neues SVG
 
   // Fixtures für Testing
-  readonly fixtureOptions: OrderFixtureName[] = ['startup', 'mixed'];
-  readonly fixtureLabels: Record<string, string> = {
+  readonly fixtureOptions: OrderFixtureName[] = [
+    'startup',
+    'white',
+    'blue',
+    'red',
+    'mixed',
+    'storage',
+    'production_bwr',
+    'production_white',
+    'storage_blue',
+  ];
+  readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
     startup: $localize`:@@fixtureLabelStartup:Startup`,
+    white: $localize`:@@fixtureLabelWhite:White`,
+    blue: $localize`:@@fixtureLabelBlue:Blue`,
+    red: $localize`:@@fixtureLabelRed:Red`,
     mixed: $localize`:@@fixtureLabelMixed:Mixed`,
+    storage: $localize`:@@fixtureLabelStorage:Storage`,
+    production_bwr: $localize`:@@fixtureLabelProductionBwr:Production BWR`,
+    production_white: $localize`:@@fixtureLabelProductionWhite:Production White`,
+    storage_blue: $localize`:@@fixtureLabelStorageBlue:Storage Blue`,
   };
-  activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
+  activeFixture: OrderFixtureName | null = this.dashboard.getCurrentFixture();
 
   // Observable streams
   ftsState$!: Observable<FtsState | null>;
@@ -582,9 +599,16 @@ export class FtsTabComponent implements OnInit, OnDestroy {
     
     try {
       // Map OrderFixtureName to tab-specific preset
-      const presetMap: Record<string, string> = {
+      const presetMap: Partial<Record<OrderFixtureName, string>> = {
         startup: 'startup',
+        white: 'order-white',
+        blue: 'order-blue',
+        red: 'order-red',
         mixed: 'order-mixed',
+        storage: 'order-storage',
+        production_bwr: 'track-trace-production-bwr',
+        production_white: 'track-trace-production-white',
+        storage_blue: 'track-trace-storage-blue',
       };
       
       const preset = presetMap[fixture] || 'startup';

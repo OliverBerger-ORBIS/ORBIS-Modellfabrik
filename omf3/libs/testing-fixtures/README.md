@@ -1,6 +1,26 @@
-# libs/testing-fixtures
+# Testing Fixtures System
 
 Replay helpers for deterministic demo data in the OMF3 workspace.
+
+## UI Consistency
+
+All tabs use a consistent fixture UI pattern based on the Module Tab design:
+
+- **Badge**: "FIXTURE" label with consistent styling
+- **Fixture Switch**: Rounded button group with active state highlighting
+- **Button Styling**: 
+  - Inactive: Transparent background, dark grey text
+  - Active: Blue background (`--orbis-blue-strong`), white text
+  - Special buttons (e.g., "Drill Action"): Green background when active
+
+### Available Fixtures by Tab
+
+- **AGV Tab**: `startup`, `white`, `blue`, `red`, `mixed`, `storage`, `production_bwr`, `production_white`, `storage_blue`
+- **Track & Trace Tab**: `production_bwr`, `production_white`, `storage_blue`
+- **Configuration Tab**: `startup`, `white`, `white_step3`, `blue`, `red`, `mixed`, `storage` + "Drill Action" (special)
+- **Module Tab**: `startup`, `white`, `white_step3`, `blue`, `red`, `mixed`, `storage`, `shopfloor-status`
+- **Order Tab**: `startup`, `white`, `white_step3`, `blue`, `red`, `mixed`, `storage`
+- **Other Tabs**: Various combinations based on tab requirements
 
 ## Overview
 
@@ -110,6 +130,15 @@ Available presets in `TAB_FIXTURE_PRESETS`:
 - `order-red` - Red workpiece production order
 - `order-mixed` - Mixed workpiece types
 - `order-storage` - Storage order (inbound raw materials)
+
+### Track & Trace Tab
+- `track-trace-default` / `track-trace-production-bwr` - Production BWR scenario (1478 messages, includes FTS state with loadId)
+- `track-trace-production-white` - Production White scenario (977 messages, includes FTS state with loadId)
+- `track-trace-storage-blue` - Storage Blue scenario (371 messages, includes FTS state with loadId)
+
+### AGV Tab
+- Uses same presets as Order Tab (`startup`, `white`, `blue`, `red`, `mixed`, `storage`)
+- Also supports Track & Trace presets for production/storage scenarios (`production_bwr`, `production_white`, `storage_blue`)
 
 ### Other Tabs
 - `module-default` - Default module states

@@ -21,7 +21,8 @@
           </button>
           <button
             type="button"
-            class="fixture-switch__drill-action"
+            class="fixture-switch__button fixture-switch__button--drill-action"
+            [class.active]="drillActionActive"
             (click)="loadDrillActionFixture()"
             i18n="@@dspActionFixtureLabel"
           >

@@ -339,6 +339,7 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     storage: $localize`:@@fixtureLabelStorage:Storage`,
   };
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
+  drillActionActive = false;
 
   constructor(
     private readonly http: HttpClient,
@@ -755,6 +756,7 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     if (!this.isMockMode) {
       return; // Don't load fixtures in live/replay mode
     }
+    this.drillActionActive = true;
     try {
       const { createDspActionFixtureStream } = await import('@omf3/testing-fixtures');
       const stream$ = createDspActionFixtureStream({

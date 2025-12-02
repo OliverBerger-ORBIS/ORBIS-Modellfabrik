@@ -60,15 +60,17 @@ export class TrackTraceTabComponent implements OnInit {
     return this.environmentService.current.key === 'mock';
   }
 
-  readonly fixtureOptions: OrderFixtureName[] = ['track-trace'];
+  readonly fixtureOptions: OrderFixtureName[] = ['production_bwr', 'production_white', 'storage_blue'];
   readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
-    'track-trace': $localize`:@@fixtureLabelTrackTrace:Track & Trace`,
+    production_bwr: $localize`:@@fixtureLabelProductionBwr:Production BWR`,
+    production_white: $localize`:@@fixtureLabelProductionWhite:Production White`,
+    storage_blue: $localize`:@@fixtureLabelStorageBlue:Storage Blue`,
   };
   activeFixture: OrderFixtureName | null = this.dashboard.getCurrentFixture();
 
   ngOnInit(): void {
     if (this.isMockMode) {
-      void this.loadFixture('track-trace');
+      void this.loadFixture('production_bwr');
     }
   }
 
@@ -82,8 +84,17 @@ export class TrackTraceTabComponent implements OnInit {
     const environmentKey = this.environmentService.current.key;
     this.workpieceHistoryService.clear(environmentKey);
     
+    // Map fixture name to tab preset name
+    const presetMap: Partial<Record<OrderFixtureName, string>> = {
+      production_bwr: 'track-trace-production-bwr',
+      production_white: 'track-trace-production-white',
+      storage_blue: 'track-trace-storage-blue',
+    };
+    
+    const presetName = presetMap[fixture] || 'track-trace-default';
+    
     // Load the fixture
-    await this.dashboard.loadTabFixture('track-trace-default');
+    await this.dashboard.loadTabFixture(presetName);
     
     // Re-initialize service to process new messages
     // The TrackTraceComponent will also re-initialize, but this ensures we catch all messages

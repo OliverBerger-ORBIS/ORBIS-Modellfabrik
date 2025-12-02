@@ -411,15 +411,16 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Sort module groups by first event timestamp
-    moduleGroups.sort((a, b) => {
-      if (a.events.length === 0 || b.events.length === 0) return 0;
-      return new Date(a.events[0].timestamp).getTime() - new Date(b.events[0].timestamp).getTime();
+    // Collect all groups (module groups + other events) and sort them together by Sub-Order-ID
+    // This ensures that FTS events are interleaved correctly with module groups
+    const allGroups: Array<{ subOrderId: string; moduleId?: string; moduleName?: string; events: TrackTraceEvent[] }> = [];
+    
+    // Add module groups
+    moduleGroups.forEach(group => {
+      allGroups.push(group);
     });
-
-    groups.push(...moduleGroups);
-
-    // Then, add other events with Sub-Order-ID but no module assignment
+    
+    // Add other events with Sub-Order-ID but no module assignment
     eventsBySubOrder.forEach((eventList, subOrderId) => {
       if (!subOrderToModule.has(subOrderId)) {
         // Sort events: timestamp first, then subOrderId, then actionId
@@ -432,12 +433,27 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
           
           return (a.actionId || '').localeCompare(b.actionId || '');
         });
-        groups.push({
+        allGroups.push({
           subOrderId,
           events: eventList,
         });
       }
     });
+    
+    // Sort ALL groups together by Sub-Order-ID (extract numeric part after last '-')
+    // Format: orderId-1, orderId-2, etc. -> sort by numeric part (1, 2, 3...)
+    // This ensures correct sequence: Sub-Order-ID -1, -2, -3, etc.
+    allGroups.sort((a, b) => {
+      const numA = this.extractSubOrderNumber(a.subOrderId);
+      const numB = this.extractSubOrderNumber(b.subOrderId);
+      if (numA !== null && numB !== null) {
+        return numA - numB; // Numeric sort
+      }
+      // Fallback to string comparison if numeric extraction fails
+      return (a.subOrderId || '').localeCompare(b.subOrderId || '');
+    });
+    
+    groups.push(...allGroups);
 
     // Finally, add events without Sub-Order-ID (sorted by timestamp, then actionId)
     if (eventsWithoutSubOrder.length > 0) {
@@ -453,6 +469,24 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     }
 
     return groups;
+  }
+
+  /**
+   * Extract numeric part from Sub-Order-ID
+   * Format: "orderId-1" -> 1, "orderId-10" -> 10
+   * Returns null if extraction fails
+   */
+  private extractSubOrderNumber(subOrderId: string | undefined): number | null {
+    if (!subOrderId) return null;
+    
+    // Extract number after last '-'
+    const parts = subOrderId.split('-');
+    if (parts.length < 2) return null;
+    
+    const lastPart = parts[parts.length - 1];
+    const num = parseInt(lastPart, 10);
+    
+    return isNaN(num) ? null : num;
   }
 
 }

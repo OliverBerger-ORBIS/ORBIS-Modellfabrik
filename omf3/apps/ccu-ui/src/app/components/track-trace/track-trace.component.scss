@@ -246,7 +246,16 @@
               font-weight: 700;
               font-size: 0.875rem;
               color: #2e7d32;
-              flex: 1;
+            }
+
+            .module-sub-order-id {
+              font-size: 0.7rem;
+              color: var(--orbis-blue-medium, #4a90e2);
+              font-weight: 600;
+              padding: 0.125rem 0.5rem;
+              background: rgba(var(--orbis-blue-medium-rgb, 74, 144, 226), 0.1);
+              border-radius: 4px;
+              margin-left: 0.5rem;
             }
 
             .module-task-count {
@@ -255,6 +264,7 @@
               padding: 0.125rem 0.5rem;
               background: white;
               border-radius: 10px;
+              margin-left: auto;
             }
 
             .module-location {

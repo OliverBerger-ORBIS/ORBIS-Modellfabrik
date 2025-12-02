@@ -19,7 +19,10 @@ export type OrderFixtureName =
   | 'mixed'
   | 'storage'
   | 'startup'
-  | 'track-trace';
+  | 'track-trace'
+  | 'production_bwr'
+  | 'production_white'
+  | 'storage_blue';
 
 export type ModuleFixtureName =
   | 'default'
@@ -249,7 +252,31 @@ export const TAB_FIXTURE_PRESETS: Record<string, TabFixtureConfig> = {
   
   // Track & Trace tab presets
   'track-trace-default': {
-    orders: 'track-trace',
+    orders: 'production_bwr',
+    modules: 'default',
+    stock: 'default',
+    flows: 'default',
+    config: 'default',
+    sensors: 'default',
+  },
+  'track-trace-production-bwr': {
+    orders: 'production_bwr',
+    modules: 'default',
+    stock: 'default',
+    flows: 'default',
+    config: 'default',
+    sensors: 'default',
+  },
+  'track-trace-production-white': {
+    orders: 'production_white',
+    modules: 'default',
+    stock: 'default',
+    flows: 'default',
+    config: 'default',
+    sensors: 'default',
+  },
+  'track-trace-storage-blue': {
+    orders: 'storage_blue',
     modules: 'default',
     stock: 'default',
     flows: 'default',

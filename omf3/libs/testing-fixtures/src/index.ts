@@ -11,7 +11,10 @@ export type OrderFixtureName =
   | 'mixed'
   | 'storage'
   | 'startup'
-  | 'track-trace';
+  | 'track-trace'
+  | 'production_bwr'
+  | 'production_white'
+  | 'storage_blue';
 export type ModuleFixtureName =
   | 'default'
   | 'white'
@@ -110,6 +113,9 @@ const FIXTURE_PATHS: Record<OrderFixtureName, string> = {
   storage: 'storage/orders.log',
   startup: 'startup/orders.log',
   'track-trace': 'track-trace/track-trace.log',
+  production_bwr: 'production_bwr/production_bwr.log',
+  production_white: 'production_white/production_white.log',
+  storage_blue: 'storage_blue/storage_blue.log',
 };
 
 const MODULE_FIXTURE_PATHS: Record<ModuleFixtureName, string> = {
