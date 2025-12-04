@@ -1,3 +1,14 @@
+// Mock URL.createObjectURL before any imports that might use it
+if (typeof global.URL === 'undefined') {
+  (global as any).URL = {
+    createObjectURL: jest.fn(() => 'blob:mock-url'),
+    revokeObjectURL: jest.fn(),
+  };
+} else if (!global.URL.createObjectURL) {
+  global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
+  global.URL.revokeObjectURL = jest.fn();
+}
+
 import { TestBed } from '@angular/core/testing';
 import { ConnectionService, ConnectionState, ConnectionSettings } from '../connection.service';
 import { EnvironmentService, EnvironmentDefinition } from '../environment.service';
@@ -24,6 +35,18 @@ describe('ConnectionService', () => {
   beforeEach(() => {
     // Clear localStorage before each test
     localStorage.clear();
+
+    // Mock URL.createObjectURL for worker-timers (used by mqtt client)
+    // Must be set before any imports that use it
+    if (typeof global.URL === 'undefined') {
+      (global as any).URL = {
+        createObjectURL: jest.fn(() => 'blob:mock-url'),
+        revokeObjectURL: jest.fn(),
+      };
+    } else if (!global.URL.createObjectURL) {
+      global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
+      global.URL.revokeObjectURL = jest.fn();
+    }
 
     TestBed.configureTestingModule({
       providers: [ConnectionService, EnvironmentService, MessageMonitorService],
@@ -279,21 +302,23 @@ describe('ConnectionService', () => {
     it('should clear retry when already connected', async () => {
       service.updateSettings({ retryEnabled: true });
 
-      // Connect first
-      service.connect(mockEnvironment);
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      // Try to retry when already connected
+      // Set state to connected via the stateSubject to avoid actual MQTT connection
+      (service as any).stateSubject.next('connected');
+      
+      // Mock interval to avoid async timing issues
+      jest.useFakeTimers();
       const clearRetrySpy = jest.spyOn(service as any, 'clearRetry');
+      
+      // Call retry - this should set up an interval
       (service as any).retry(mockEnvironment);
-
-      // Wait a bit for retry logic to run
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      // If connected, clearRetry should be called
-      if (service.currentState === 'connected') {
-        expect(clearRetrySpy).toHaveBeenCalled();
-      }
+      
+      // Fast-forward time to trigger the interval callback
+      jest.advanceTimersByTime(100);
+      
+      // clearRetry should be called when already connected
+      expect(clearRetrySpy).toHaveBeenCalled();
+      
+      jest.useRealTimers();
     });
 
     it('should not retry when retryEnabled is false in retry method', () => {

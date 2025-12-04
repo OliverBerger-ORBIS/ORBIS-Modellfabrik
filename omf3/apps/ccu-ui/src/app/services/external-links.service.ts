@@ -13,9 +13,9 @@ const STORAGE_KEY = 'omf3.externalLinks';
 
 const DEFAULT_SETTINGS: ExternalLinksSettings = {
   orbisWebsiteUrl: 'https://www.orbis.de',
-  dspControlUrl: 'https://www.orbis.de/en-de/solutions/orbis-dsp.html',
-  managementCockpitUrl: 'https://www.orbis.de/en-de/solutions/orbis-dsp.html',
-  grafanaDashboardUrl: 'https://grafana.example.com',
+  dspControlUrl: 'https://www.orbis-group.com/de-de/sap-orbis-loesungen/distributed-shopfloor-processing.html',
+  managementCockpitUrl: 'https://dspmcorbisprd.powerappsportals.com',
+  grafanaDashboardUrl: 'http://192.168.0.201:3000/dashboards',
   smartfactoryDashboardUrl: '/dsp-action',
 };
 
