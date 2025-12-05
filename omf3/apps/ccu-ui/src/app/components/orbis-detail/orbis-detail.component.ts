@@ -18,11 +18,11 @@ export class OrbisDetailComponent {
   // Map phase IDs to relative asset paths (from ASSET_PATHS in detail-asset-map.ts)
   // Use relative paths without leading slash - Angular will combine with baseHref automatically
   private readonly phaseIconMap: Record<string, string> = {
-    phase1: 'details/orbis/data-lake.svg',
-    phase2: 'details/orbis/semantic.svg',
-    phase3: 'details/orbis/dashboard.svg',
-    phase4: 'details/orbis/workflow_1.svg',
-    phase5: 'details/orbis/ai.svg',
+    phase1: 'assets/svg/orbis/data-lake.svg',
+    phase2: 'assets/svg/orbis/semantic.svg',
+    phase3: 'assets/svg/orbis/dashboard.svg',
+    phase4: 'assets/svg/orbis/workflow-1.svg',
+    phase5: 'assets/svg/methodology/phase5-autonomous-enterprise.svg',
   };
 
   selectPhase(phaseId: string): void {
@@ -48,7 +48,7 @@ export class OrbisDetailComponent {
     if (relativePath) {
       return relativePath;
     }
-    return 'details/orbis/stack.svg';
+    return 'assets/svg/orbis/stack.svg';
   }
 
   protected getPhaseName(title: string): string {

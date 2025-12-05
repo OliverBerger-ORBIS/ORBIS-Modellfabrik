@@ -1,30 +1,21 @@
-/**
- * Central Icon Key Registry for DSP Architecture visualization.
- * Maps semantic icon keys to actual file paths under assets/icons/.
- *
- * Use icon keys in configuration objects instead of direct filenames
- * to allow easy asset swapping without touching component logic.
- */
+import { ICONS, type IconRegistry } from '../shared/icons/icon.registry';
 
 /**
- * Semantic icon key union type covering all supported icons.
- * Categories: logos, edge functions, devices, shopfloor systems, UX, business processes.
+ * Legacy IconKey union retained for DSP detail configuration.
+ * Maps onto the new ICONS registry paths under assets/svg.
  */
 export type IconKey =
-  // Logos
   | 'logo-orbis'
   | 'logo-sap'
   | 'logo-azure'
   | 'logo-dsp'
   | 'logo-distributed'
-  // Edge function icons
   | 'edge-connectivity'
   | 'edge-digital-twin'
   | 'edge-data-storage'
   | 'edge-analytics'
   | 'edge-workflow'
   | 'edge-network'
-  // Device icons (using shopfloor/*.svg)
   | 'device-drill'
   | 'device-hbw'
   | 'device-mill'
@@ -37,7 +28,6 @@ export type IconKey =
   | 'device-camera'
   | 'device-sensor'
   | 'device-printer'
-  // Shopfloor system icons
   | 'shopfloor-systems'
   | 'shopfloor-fts'
   | 'shopfloor-mes'
@@ -45,95 +35,77 @@ export type IconKey =
   | 'shopfloor-aps'
   | 'shopfloor-warehouse'
   | 'shopfloor-it'
-  // UX icons
   | 'ux-dashboard'
   | 'ux-monitor'
-  // Business process icons
   | 'bp-sap-shopfloor'
   | 'bp-cloud-apps'
   | 'bp-analytics'
   | 'bp-data-lake'
   | 'bp-business-process';
 
-/**
- * Configuration for function icons displayed inside containers.
- */
 export interface FunctionIconConfig {
   iconKey: IconKey;
   size: number;
 }
 
 /**
- * Central mapping from IconKey to asset file paths.
- * All paths are relative to the public folder root.
+ * Central mapping from IconKey to asset file paths (new svg structure).
+ * Paths are relative (no leading slash) and served from /assets/.
  */
 export const ICON_MAP: Record<IconKey, string> = {
-  // Logos
-  'logo-orbis': 'shopfloor/ORBIS_logo_RGB.svg',
-  'logo-sap': 'details/dsp/sap.svg',
-  'logo-azure': 'details/dsp/azure.svg',
-  // DSP uses ORBIS logo as DSP is an ORBIS product; can be swapped to dedicated DSP logo later
-  'logo-dsp': 'shopfloor/ORBIS_logo_RGB.svg',
-  'logo-distributed': 'details/orbis/distributed.svg',
+  'logo-orbis': ICONS.brand.orbis,
+  'logo-sap': ICONS.brand.sap,
+  'logo-azure': ICONS.brand.azure,
+  'logo-dsp': ICONS.brand.orbis,
+  'logo-distributed': ICONS.dsp.architecture.edgeBox,
 
-  // Edge function icons
-  'edge-connectivity': 'details/dsp/network.svg',
-  'edge-digital-twin': 'details/dsp/digital-twin.svg',
-  'edge-data-storage': 'details/dsp/database-storage.svg',
-  'edge-analytics': 'details/dsp/dashboard.svg',
-  'edge-workflow': 'details/dsp/workflow.svg',
-  'edge-network': 'details/dsp/network.svg',
+  'edge-connectivity': ICONS.dsp.functions.connectivity,
+  'edge-digital-twin': ICONS.dsp.functions.digitalTwin,
+  'edge-data-storage': ICONS.dsp.functions.dataStorage,
+  'edge-analytics': ICONS.dsp.functions.analytics,
+  'edge-workflow': ICONS.dsp.functions.workflow,
+  'edge-network': ICONS.dsp.functions.connectivity,
 
-  // Device icons (using shopfloor/*.svg as specified)
-  'device-drill': 'shopfloor/bohrer.svg',
-  'device-hbw': 'shopfloor/stock.svg',
-  'device-mill': 'shopfloor/milling-machine.svg',
-  'device-aiqs': 'shopfloor/ai-assistant.svg',
-  'device-dps': 'shopfloor/robot-arm.svg',
-  'device-chrg': 'shopfloor/fuel.svg',
-  'device-plc': 'shopfloor/information-technology.svg',
-  'device-robot-arm': 'shopfloor/robot-arm.svg',
-  'device-conveyor': 'shopfloor/conveyor.svg',
-  'device-camera': 'shopfloor/ai-assistant.svg',
-  'device-sensor': 'shopfloor/information-technology.svg',
-  'device-printer': 'shopfloor/information-technology.svg',
+  'device-drill': ICONS.shopfloor.stations.drill,
+  'device-hbw': ICONS.shopfloor.stations.hbw,
+  'device-mill': ICONS.shopfloor.stations.mill,
+  'device-aiqs': ICONS.shopfloor.stations.aiqs,
+  'device-dps': ICONS.shopfloor.stations.dps,
+  'device-chrg': ICONS.shopfloor.stations.chrg,
+  'device-plc': ICONS.shopfloor.systems.any,
+  'device-robot-arm': ICONS.shopfloor.stations.dps,
+  'device-conveyor': ICONS.shopfloor.systems.any,
+  'device-camera': ICONS.shopfloor.stations.aiqs,
+  'device-sensor': ICONS.shopfloor.systems.any,
+  'device-printer': ICONS.shopfloor.systems.any,
 
-  // Shopfloor system icons
-  'shopfloor-systems': 'shopfloor/factory.svg',
-  'shopfloor-fts': 'shopfloor/robotic.svg',
-  'shopfloor-mes': 'shopfloor/question.svg',
-  'shopfloor-scada': 'shopfloor/information-technology.svg',
-  'shopfloor-aps': 'shopfloor/order-tracking.svg',
-  'shopfloor-warehouse': 'shopfloor/warehouse.svg',
-  'shopfloor-it': 'shopfloor/information-technology.svg',
+  'shopfloor-systems': ICONS.shopfloor.systems.any,
+  'shopfloor-fts': ICONS.shopfloor.systems.fts,
+  'shopfloor-mes': ICONS.shopfloor.shared.question,
+  'shopfloor-scada': ICONS.shopfloor.systems.any,
+  'shopfloor-aps': ICONS.shopfloor.stations.dps,
+  'shopfloor-warehouse': ICONS.shopfloor.stations.hbw,
+  'shopfloor-it': ICONS.shopfloor.systems.any,
 
-  // UX icons
-  'ux-dashboard': 'details/dsp/dashboard.svg',
-  'ux-monitor': 'details/orbis/work.svg',
+  'ux-dashboard': ICONS.dsp.architecture.smartFactoryDashboard,
+  'ux-monitor': ICONS.dsp.architecture.cockpitBox,
 
-  // Business process icons
-  'bp-sap-shopfloor': 'details/dsp/sap.svg',
-  'bp-cloud-apps': 'details/dsp/cloud-computing.svg',
-  'bp-analytics': 'details/dsp/dashboard.svg',
-  'bp-data-lake': 'details/dsp/data-lake.svg',
-  'bp-business-process': 'details/orbis/workflow_1.svg',
+  'bp-sap-shopfloor': ICONS.brand.sap,
+  'bp-cloud-apps': ICONS.business.cloud,
+  'bp-analytics': ICONS.business.analytics,
+  'bp-data-lake': ICONS.business.dataLake,
+  'bp-business-process': ICONS.dsp.functions.workflow,
 };
 
-/**
- * Resolves an IconKey to its full asset path.
- * Returns a fallback path if the key is not found.
- *
- * @param key - The semantic icon key to resolve
- * @returns The resolved asset path (without leading slash)
- */
 export function getIconPath(key: IconKey | undefined | null): string {
   if (!key) {
-    return 'shopfloor/question.svg';
+    return ICONS.shopfloor.shared.question;
   }
   const path = ICON_MAP[key];
   if (!path) {
-    return 'shopfloor/question.svg';
+    return ICONS.shopfloor.shared.question;
   }
-  // Ensure no leading slash for consistent usage
   return path.startsWith('/') ? path.slice(1) : path;
 }
+
+export { ICONS, type IconRegistry } from '../shared/icons/icon.registry';

@@ -54,7 +54,7 @@ const NAVIGATION_ITEMS: Omit<NavigationItem, 'label'>[] = [
     id: 'message-monitor',
     route: '/message-monitor',
     roles: ['admin'],
-    icon: 'headings/zentral.svg',
+    icon: 'assets/svg/ui/heading-message-monitor.svg',
   },
   {
     id: 'dsp-action',
@@ -133,7 +133,7 @@ export class AppComponent implements OnDestroy {
     $localize`:@@headerSubtitle:Fischertechnik Model Factory (APS) orchestrated by ORBIS DSP — IT/OT integration, ERP connectivity and AI-enabled shopfloor intelligence.`;
   readonly resetLabel = $localize`:@@headerResetButton:Reset factory`;
   readonly connectButtonLabel = $localize`:@@headerConnectButtonLabel:Connect`;
-  readonly orbitLogoPath = 'shopfloor/ORBIS_logo_RGB.svg';
+  readonly orbitLogoPath = 'assets/svg/brand/orbis-logo.svg';
 
   readonly mqttStatusLabel = $localize`:@@sidebarMqttStatusLabel:MQTT connection`;
   readonly mqttStatusSimulated = $localize`:@@sidebarMqttStatusMock:Simulated (mock)`;

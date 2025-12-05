@@ -5,6 +5,8 @@ import { MessageMonitorService, MonitoredMessage } from '../services/message-mon
 import { EnvironmentService } from '../services/environment.service';
 import { ModuleNameService } from '../services/module-name.service';
 import { ShopfloorMappingService } from '../services/shopfloor-mapping.service';
+import { resolveLegacyShopfloorPath } from '../shared/icons/legacy-shopfloor-map';
+import { ICONS } from '../shared/icons/icon.registry';
 import { BehaviorSubject, combineLatest, interval, Subscription } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import hljs from 'highlight.js';
@@ -26,8 +28,9 @@ interface ModuleInfo {
 type TopicTypeFilter = 'all' | 'ccu' | 'module-fts';
 type StatusFilter = 'all' | 'connection' | 'state' | 'factsheet';
 
-const CCU_ICON = 'headings/dezentral_1.svg';
-const TXT_ICON = 'shopfloor/mixer.svg';
+const CCU_ICON = 'assets/svg/ui/heading-ccu.svg';
+const TXT_ICON = 'assets/svg/shopfloor/stations/mixer.svg';
+const DSP_ICON = ICONS.brand.dsp;
 
 @Component({
   standalone: true,
@@ -64,7 +67,7 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
   // Available modules/FTS for dropdown (extracted from topics)
   availableModules: ModuleInfo[] = [];
   
-  readonly monitorHeadingIcon = 'headings/zentral.svg';
+  readonly monitorHeadingIcon = 'assets/svg/ui/heading-message-monitor.svg';
   
   private readonly STORAGE_KEY = 'omf3.message-monitor.filters';
 
@@ -287,7 +290,7 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
       .map((serial) => {
         const moduleType = this.mappingService.getModuleTypeFromSerial(serial) ?? serial;
         const displayName = this.moduleNameService.getModuleDisplayText(moduleType, 'id-full');
-        const icon = this.mappingService.getModuleIcon(serial) ?? 'shopfloor/robot-arm.svg';
+        const icon = this.mappingService.getModuleIcon(serial) ?? resolveLegacyShopfloorPath('shopfloor/robot-arm.svg');
         return { serial, name: displayName, icon };
       })
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -301,7 +304,7 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
         moduleList.unshift({
           serial: 'AGV',
           name: this.moduleNameService.getModuleDisplayText('FTS', 'id-full'),
-          icon: 'shopfloor/robotic.svg'
+          icon: resolveLegacyShopfloorPath('shopfloor/robotic.svg')
         });
       }
     }
@@ -317,7 +320,7 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
 
     // DSP topics (use DSP icon)
     if (topic.startsWith('dsp/')) {
-      return { name: 'DSP', icon: 'shopfloor/information-technology.svg' };
+      return { name: 'DSP', icon: DSP_ICON };
     }
 
     // TXT topics
@@ -341,7 +344,7 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
       if (serial) {
         const moduleType = this.mappingService.getModuleTypeFromSerial(serial) ?? serial;
         const displayName = this.moduleNameService.getModuleDisplayText(moduleType, 'id-only');
-        const icon = this.mappingService.getModuleIcon(serial) ?? 'shopfloor/robot-arm.svg';
+        const icon = this.mappingService.getModuleIcon(serial) ?? resolveLegacyShopfloorPath('shopfloor/robot-arm.svg');
         return { name: displayName, icon };
       }
     }
@@ -353,14 +356,14 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
         const serial = parts[3];
         const moduleType = this.mappingService.getModuleTypeFromSerial(serial) ?? 'FTS';
         const displayName = this.moduleNameService.getModuleDisplayText(moduleType, 'id-only');
-        const icon = this.mappingService.getModuleIcon(serial) ?? 'shopfloor/robotic.svg';
+        const icon = this.mappingService.getModuleIcon(serial) ?? resolveLegacyShopfloorPath('shopfloor/robotic.svg');
         return { name: displayName, icon };
       }
     }
 
     // Default: use first element of topic path
     const firstElement = topic.split('/')[0] || topic;
-    return { name: firstElement, icon: 'shopfloor/robot-arm.svg' };
+    return { name: firstElement, icon: resolveLegacyShopfloorPath('shopfloor/robot-arm.svg') };
   }
 
   private loadFilterSettings(): void {

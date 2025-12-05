@@ -4,6 +4,8 @@ import type { OrderActive, ProductionStep } from '@omf3/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
 import { ShopfloorPreviewComponent } from '../shopfloor-preview/shopfloor-preview.component';
 import { ModuleNameService } from '../../services/module-name.service';
+import { resolveLegacyShopfloorPath } from '../../shared/icons/legacy-shopfloor-map';
+import { ICONS } from '../../shared/icons/icon.registry';
 
 type StepState = 'queued' | 'running' | 'completed' | 'failed';
 
@@ -15,23 +17,23 @@ const STEP_STATE_MAP: Record<StepState, { class: string; label: () => string; ic
 };
 
 const ORDER_TYPE_ICONS: Record<'PRODUCTION' | 'STORAGE', string> = {
-  PRODUCTION: 'headings/maschine.svg',
-  STORAGE: 'headings/ladung.svg',
+  PRODUCTION: ICONS.ui.orderProduction,
+  STORAGE: ICONS.ui.orderStorage,
 };
 
 const PRODUCT_ICON_MAP: Record<'BLUE' | 'WHITE' | 'RED', string> = {
-  BLUE: 'workpieces/blue_product.svg',
-  WHITE: 'workpieces/white_product.svg',
-  RED: 'workpieces/red_product.svg',
+  BLUE: ICONS.shopfloor.workpieces.blue.product,
+  WHITE: ICONS.shopfloor.workpieces.white.product,
+  RED: ICONS.shopfloor.workpieces.red.product,
 };
 
 const THREE_D_ICON_MAP: Record<'BLUE' | 'WHITE' | 'RED', string> = {
-  BLUE: 'workpieces/blue_3dim.svg',
-  WHITE: 'workpieces/white_3dim.svg',
-  RED: 'workpieces/red_3dim.svg',
+  BLUE: ICONS.shopfloor.workpieces.blue.dim3,
+  WHITE: ICONS.shopfloor.workpieces.white.dim3,
+  RED: ICONS.shopfloor.workpieces.red.dim3,
 };
 
-const DEFAULT_SHOPFLOOR_ICON = SHOPFLOOR_ASSET_MAP['QUESTION'] ?? '/shopfloor/question.svg';
+const DEFAULT_SHOPFLOOR_ICON = resolveLegacyShopfloorPath('shopfloor/question.svg');
 
 @Component({
   standalone: true,
@@ -364,7 +366,7 @@ export class OrderCardComponent implements OnChanges {
     if (!asset) {
       return null;
     }
-    return asset.startsWith('/') ? asset.slice(1) : asset;
+    return resolveLegacyShopfloorPath(asset);
   }
 
   toggleCollapse(): void {

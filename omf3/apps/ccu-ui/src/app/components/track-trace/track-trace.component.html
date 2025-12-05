@@ -1,6 +1,6 @@
 <div class="track-trace-card card">
   <h3>
-    <img src="headings/track-trace.svg" alt="" width="24" height="24" />
+    <img src="assets/svg/ui/heading-track-trace.svg" alt="" width="24" height="24" />
     <span i18n="@@trackTraceTitle">Track & Trace</span>
   </h3>
 
@@ -100,7 +100,7 @@
                       <span class="module-task-count">{{ subOrderGroup.events.length }} tasks</span>
                       <!-- Location info in header (all events are at this location) -->
                       <span class="module-location" *ngIf="subOrderGroup.events[0]?.location">
-                        <img src="shopfloor/location-marker.svg" alt="" width="12" height="12" />
+                        <img src="assets/svg/shopfloor/shared/location-marker.svg" alt="" width="12" height="12" />
                         <ng-container *ngIf="getLocationInfo(subOrderGroup.events[0].location!) as locationInfo">
                           <span class="location-module-type">{{ locationInfo.moduleType }}</span>
                           <span class="location-full-name">({{ locationInfo.fullName }})</span>
@@ -166,7 +166,7 @@
                             </div>
                             <div class="event-time">{{ formatTimestamp(event.timestamp) }}</div>
                             <div class="event-location" *ngIf="event.location">
-                              <img src="shopfloor/location-marker.svg" alt="" width="12" height="12" />
+                              <img src="assets/svg/shopfloor/shared/location-marker.svg" alt="" width="12" height="12" />
                               <ng-container *ngIf="getLocationInfo(event.location) as locationInfo">
                                 <span class="location-module-type">{{ locationInfo.moduleType }}</span>
                                 <span class="location-full-name">({{ locationInfo.fullName }})</span>
@@ -260,7 +260,7 @@
 
   <div class="info-banner" *ngIf="!selectedWorkpieceId">
     <p>
-      <img src="headings/info-page.svg" alt="" width="16" height="16" />
+          <img src="assets/svg/ui/heading-info.svg" alt="" width="16" height="16" />
       <strong i18n="@@trackTraceInfoTitle">Track & Trace</strong>
     </p>
     <p i18n="@@trackTraceInfoDescription">

@@ -10,6 +10,8 @@ import { ConnectionService } from '../services/connection.service';
 import type { Observable } from 'rxjs';
 import { map, shareReplay, filter, startWith, distinctUntilChanged } from 'rxjs/operators';
 import { merge, Subscription } from 'rxjs';
+import { ICONS } from '../shared/icons/icon.registry';
+import { resolveLegacyShopfloorPath } from '../shared/icons/legacy-shopfloor-map';
 
 interface ProcessStepView {
   id: string;
@@ -40,7 +42,7 @@ interface ProcessProductView {
 export class ProcessTabComponent implements OnInit, OnDestroy {
   private dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
-  private readonly defaultShopfloorIcon = SHOPFLOOR_ASSET_MAP['QUESTION'] ?? '/shopfloor/question.svg';
+  private readonly defaultShopfloorIcon = resolveLegacyShopfloorPath('shopfloor/question.svg');
 
   readonly fixtureOptions: OrderFixtureName[] = ['startup', 'white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];
   readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
@@ -67,12 +69,12 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
     this.initializeStreams();
   }
 
-  readonly processIcon = 'headings/gang.svg';
-  readonly startIcon = this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['HBW'] ?? '/shopfloor/stock.svg');
+  readonly processIcon = ICONS.ui.processFlow;
+  readonly startIcon = this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['HBW'] ?? 'shopfloor/stock.svg');
   readonly endIcons = [
-    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS_SQUARE1'] ?? '/shopfloor/warehouse.svg'),
-    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS'] ?? '/shopfloor/robot-arm.svg'),
-    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS_SQUARE2'] ?? '/shopfloor/order-tracking.svg'),
+    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS_SQUARE1'] ?? 'shopfloor/warehouse.svg'),
+    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS'] ?? 'shopfloor/robot-arm.svg'),
+    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS_SQUARE2'] ?? 'shopfloor/order-tracking.svg'),
   ];
   readonly stepCountI18nMap: { [k: string]: string } = {
     '=0': $localize`:@@processNoSteps:No processing steps`,
@@ -87,22 +89,22 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
     BLUE: {
       label: $localize`:@@processWorkpieceBlue:Blue`,
       dotClass: 'blue',
-      productIcon: 'workpieces/blue_product.svg',
-      product3dIcon: 'workpieces/blue_3dim.svg',
+      productIcon: ICONS.shopfloor.workpieces.blue.product,
+      product3dIcon: ICONS.shopfloor.workpieces.blue.dim3,
       backgroundClass: 'bg-blue',
     },
     WHITE: {
       label: $localize`:@@processWorkpieceWhite:White`,
       dotClass: 'white',
-      productIcon: 'workpieces/white_product.svg',
-      product3dIcon: 'workpieces/white_3dim.svg',
+      productIcon: ICONS.shopfloor.workpieces.white.product,
+      product3dIcon: ICONS.shopfloor.workpieces.white.dim3,
       backgroundClass: 'bg-white',
     },
     RED: {
       label: $localize`:@@processWorkpieceRed:Red`,
       dotClass: 'red',
-      productIcon: 'workpieces/red_product.svg',
-      product3dIcon: 'workpieces/red_3dim.svg',
+      productIcon: ICONS.shopfloor.workpieces.red.product,
+      product3dIcon: ICONS.shopfloor.workpieces.red.dim3,
       backgroundClass: 'bg-red',
     },
   } as const;
@@ -116,8 +118,7 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
 
   private resolveAssetPath(path?: string): string {
     const candidate = path && path.length > 0 ? path : this.defaultShopfloorIcon;
-    const normalized = candidate.startsWith('/') ? candidate.slice(1) : candidate;
-    return normalized;
+    return resolveLegacyShopfloorPath(candidate);
   }
 
   private buildProductViews(flows: ProductionFlowMap): ProcessProductView[] {

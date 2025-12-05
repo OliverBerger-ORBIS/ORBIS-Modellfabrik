@@ -13,6 +13,7 @@ import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopf
 import { getDashboardController } from '../mock-dashboard';
 import type { OrderFixtureName } from '@omf3/testing-fixtures';
 import type { ShopfloorLayoutConfig, ShopfloorPoint, ParsedRoad, ShopfloorCellConfig, ShopfloorRoadEndpoint } from '../components/shopfloor-preview/shopfloor-layout.types';
+import { ICONS } from '../shared/icons/icon.registry';
 
 // FTS Types (from example app - will be moved to @omf3/entities later)
 interface FtsBatteryState {
@@ -90,19 +91,19 @@ export class FtsTabComponent implements OnInit, OnDestroy {
   private previousNodeId: string | null = null;
   private layoutConfig: ShopfloorLayoutConfig | null = null;
 
-  // Icons - verwende neue SVGs aus shopfloor/ und headings/
-  readonly headingIcon = 'shopfloor/robotic.svg'; // FTS/AGV Icon
-  readonly statusIcon = 'shopfloor/robotic.svg';
-  readonly batteryIcon = 'shopfloor/battery.svg'; // ✅ Neues SVG
-  readonly loadIcon = 'headings/box.svg'; // ✅ Verwendet box.svg aus headings
-  readonly routeIcon = 'headings/route.svg'; // ✅ Neues SVG
+  // Icons - neue SVGs aus assets/svg/ui & shopfloor
+  readonly headingIcon = 'assets/svg/shopfloor/shared/agv-vehicle.svg'; // FTS/AGV Icon
+  readonly statusIcon = 'assets/svg/shopfloor/shared/agv-vehicle.svg';
+  readonly batteryIcon = 'assets/svg/shopfloor/shared/battery.svg';
+  readonly loadIcon = 'assets/svg/ui/heading-purchase-orders.svg';
+  readonly routeIcon = 'assets/svg/ui/heading-route.svg';
 
   // Status icons - verwende neue SVGs
-  readonly drivingIcon = 'shopfloor/driving-status.svg'; // ✅ Neues SVG
-  readonly stoppedIcon = 'shopfloor/stopped-status.svg'; // ✅ Neues SVG
-  readonly pausedIcon = 'shopfloor/paused-status.svg'; // ✅ Neues SVG
-  readonly loadingIcon = 'headings/box.svg';
-  readonly chargingIcon = 'shopfloor/charging-active.svg'; // ✅ Neues SVG
+  readonly drivingIcon = 'assets/svg/shopfloor/shared/driving-status.svg';
+  readonly stoppedIcon = 'assets/svg/shopfloor/shared/stopped-status.svg';
+  readonly pausedIcon = 'assets/svg/shopfloor/shared/paused-status.svg';
+  readonly loadingIcon = 'assets/svg/ui/heading-purchase-orders.svg';
+  readonly chargingIcon = 'assets/svg/shopfloor/shared/charging-active.svg';
 
   // Fixtures für Testing
   readonly fixtureOptions: OrderFixtureName[] = [
@@ -662,23 +663,26 @@ export class FtsTabComponent implements OnInit, OnDestroy {
   
   getActionIcon(command: string): string {
     const iconMap: Record<string, string> = {
-      'TURN': 'shopfloor/turn-event.svg',
-      'DOCK': 'shopfloor/dock-event.svg',
-      'PASS': 'shopfloor/pass-event.svg',
-      'PICK': 'shopfloor/pick-event.svg',
-      'DROP': 'shopfloor/drop-event.svg',
-      'PROCESS': 'shopfloor/process-event.svg',
+      TURN: ICONS.shopfloor.shared.turnEvent,
+      DOCK: ICONS.shopfloor.shared.dockEvent,
+      PASS: ICONS.shopfloor.shared.passEvent,
+      PICK: ICONS.shopfloor.shared.pickEvent,
+      DROP: ICONS.shopfloor.shared.dropEvent,
+      PROCESS: ICONS.shopfloor.shared.processEvent,
     };
-    return iconMap[command.toUpperCase()] || 'shopfloor/process-event.svg';
+    return iconMap[command.toUpperCase()] || ICONS.shopfloor.shared.processEvent;
   }
   
   getLoadIcon(load: FtsLoadInfo): string {
     if (!load.loadType) {
-      return 'workpieces/slot_empty.svg';
+      return ICONS.shopfloor.workpieces.slotEmpty;
     }
     const color = load.loadType.toLowerCase();
     // Use _instock_processed.svg as specified by user
-    return `workpieces/${color}_instock_processed.svg`;
+    if (color === 'blue') return ICONS.shopfloor.workpieces.blue.instockProcessed;
+    if (color === 'white') return ICONS.shopfloor.workpieces.white.instockProcessed;
+    if (color === 'red') return ICONS.shopfloor.workpieces.red.instockProcessed;
+    return ICONS.shopfloor.workpieces.slotEmpty;
   }
   
   // Ensure we always have 3 load positions

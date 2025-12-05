@@ -18,7 +18,7 @@ import { OrderFixtureName } from '@omf3/testing-fixtures';
     <section class="track-trace-tab">
       <header class="track-trace-tab__toolbar">
         <div class="track-trace-tab__title">
-          <img src="headings/track-trace.svg" alt="Track & Trace" class="track-trace-tab__icon" width="32" height="32" />
+          <img src="assets/svg/ui/heading-track-trace.svg" alt="Track & Trace" class="track-trace-tab__icon" width="32" height="32" />
           <div>
             <h1 i18n="@@trackTraceTabHeadline">Track & Trace</h1>
             <p class="track-trace-tab__subtitle" i18n="@@trackTraceTabDescription">

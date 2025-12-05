@@ -52,30 +52,35 @@ export function getAssetPath(relativePath: string): string {
 // Relative paths (without leading '/') - Angular will combine with baseHref automatically
 // when used in [src] bindings. For runtime resolution, use getAssetPath().
 const ASSET_PATHS = {
-  ORBIS_PHASE_1: 'details/orbis/data-lake.svg',
-  ORBIS_PHASE_2: 'details/orbis/semantic.svg',
-  ORBIS_PHASE_3: 'details/orbis/dashboard.svg',
-  ORBIS_PHASE_4: 'details/orbis/workflow_1.svg',
-  ORBIS_PHASE_5: 'details/orbis/ai.svg',
-  ORBIS_FALLBACK: 'details/orbis/stack.svg',
+  ORBIS_PHASE_1: 'assets/svg/orbis/data-lake.svg',
+  ORBIS_PHASE_2: 'assets/svg/orbis/semantic.svg',
+  ORBIS_PHASE_3: 'assets/svg/orbis/dashboard.svg',
+  ORBIS_PHASE_4: 'assets/svg/orbis/workflow-1.svg',
+  ORBIS_PHASE_5: 'assets/svg/methodology/phase5-autonomous-enterprise.svg',
+  ORBIS_FALLBACK: 'assets/svg/orbis/stack.svg',
 
-  DSP_LAYER_CLOUD: 'details/dsp/database.svg',
-  DSP_LAYER_EDGE: 'details/orbis/distributed.svg',
-  DSP_LAYER_SHOPFLOOR: 'details/orbis/work.svg',
-  DSP_FALLBACK: 'details/dsp/workflow.svg',
-  DSP_EDGE_DATABASE: 'details/dsp/database.svg',
-  DSP_EDGE_DIGITAL_TWIN: 'details/dsp/digital-twin.svg',
-  DSP_EDGE_WORKFLOW: 'details/dsp/workflow.svg',
-  DSP_EDGE_NETWORK: 'details/dsp/network.svg',
-  DSP_BUSINESS_SAP: 'details/dsp/sap.svg',
-  DSP_BUSINESS_CLOUD: 'details/dsp/cloud-computing.svg',
-  DSP_BUSINESS_ANALYTICS: 'details/dsp/dashboard.svg',
-  DSP_BUSINESS_DATA_LAKE: 'details/dsp/data-lake.svg',
+  DSP_LAYER_CLOUD: 'assets/svg/dsp/extra/database.svg',
+  DSP_LAYER_EDGE: 'assets/svg/orbis/stack.svg',
+  DSP_LAYER_SHOPFLOOR: 'assets/svg/shopfloor/shared/order-tracking.svg',
+  DSP_FALLBACK: 'assets/svg/dsp/extra/workflow.svg',
+  DSP_EDGE_DATABASE: 'assets/svg/dsp/extra/database.svg',
+  DSP_EDGE_DIGITAL_TWIN: 'assets/svg/dsp/extra/digital-twin.svg',
+  DSP_EDGE_WORKFLOW: 'assets/svg/dsp/extra/workflow.svg',
+  DSP_EDGE_NETWORK: 'assets/svg/dsp/extra/network.svg',
+  DSP_BUSINESS_SAP: 'assets/svg/brand/sap-logo.svg',
+  DSP_BUSINESS_CLOUD: 'assets/svg/dsp/extra/cloud-computing.svg',
+  DSP_BUSINESS_ANALYTICS: 'assets/svg/dsp/extra/dashboard.svg',
+  DSP_BUSINESS_DATA_LAKE: 'assets/svg/dsp/extra/data-lake.svg',
 
-  ORBIS_USECASE_AGGREGATION: 'details/orbis/consolidate.svg',
-  ORBIS_USECASE_TRACKTRACE: 'details/orbis/integration.svg',
-  ORBIS_USECASE_PREDICTIVE: 'details/orbis/ai-algorithm.svg',
-  ORBIS_USECASE_OPTIMIZATION: 'details/orbis/database-management.svg',
+  ORBIS_USECASE_AGGREGATION: 'assets/svg/orbis/consolidate.svg',
+  ORBIS_USECASE_TRACKTRACE: 'assets/svg/orbis/integration.svg',
+  ORBIS_USECASE_PREDICTIVE: 'assets/svg/orbis/ai-algorithm.svg',
+  ORBIS_USECASE_OPTIMIZATION: 'assets/svg/orbis/database-management.svg',
+
+  DSP_USECASE_AGGREGATION: 'assets/svg/dsp/use-cases/use-case-data-aggregation.svg',
+  DSP_USECASE_TRACKTRACE: 'assets/svg/dsp/use-cases/use-case-track-trace.svg',
+  DSP_USECASE_PREDICTIVE: 'assets/svg/dsp/use-cases/use-case-predictive-maintenance.svg',
+  DSP_USECASE_OPTIMIZATION: 'assets/svg/dsp/use-cases/use-case-process-optimization.svg',
 } as const;
 
 /**
@@ -108,5 +113,9 @@ export const DETAIL_ASSET_MAP: Record<keyof typeof ASSET_PATHS, string> = {
   ORBIS_USECASE_TRACKTRACE: getAssetPath(ASSET_PATHS.ORBIS_USECASE_TRACKTRACE),
   ORBIS_USECASE_PREDICTIVE: getAssetPath(ASSET_PATHS.ORBIS_USECASE_PREDICTIVE),
   ORBIS_USECASE_OPTIMIZATION: getAssetPath(ASSET_PATHS.ORBIS_USECASE_OPTIMIZATION),
+  DSP_USECASE_AGGREGATION: getAssetPath(ASSET_PATHS.DSP_USECASE_AGGREGATION),
+  DSP_USECASE_TRACKTRACE: getAssetPath(ASSET_PATHS.DSP_USECASE_TRACKTRACE),
+  DSP_USECASE_PREDICTIVE: getAssetPath(ASSET_PATHS.DSP_USECASE_PREDICTIVE),
+  DSP_USECASE_OPTIMIZATION: getAssetPath(ASSET_PATHS.DSP_USECASE_OPTIMIZATION),
 };
 

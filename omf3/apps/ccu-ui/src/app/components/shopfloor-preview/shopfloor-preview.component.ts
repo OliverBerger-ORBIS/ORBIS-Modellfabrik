@@ -16,6 +16,7 @@ import { firstValueFrom } from 'rxjs';
 import { ORBIS_COLORS } from '../../assets/color-palette';
 import type { OrderActive, ProductionStep, ModuleAvailabilityStatus } from '@omf3/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
+import { resolveLegacyShopfloorPath } from '../../shared/icons/legacy-shopfloor-map';
 import { ModuleNameService } from '../../services/module-name.service';
 import { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
 import type {
@@ -108,7 +109,7 @@ interface RouteOverlay {
   height?: number;
 }
 
-const DEFAULT_SHOPFLOOR_ICON = SHOPFLOOR_ASSET_MAP['QUESTION'] ?? '/shopfloor/question.svg';
+const DEFAULT_SHOPFLOOR_ICON = resolveLegacyShopfloorPath('shopfloor/question.svg');
 
 interface ShopfloorView {
   width: number;

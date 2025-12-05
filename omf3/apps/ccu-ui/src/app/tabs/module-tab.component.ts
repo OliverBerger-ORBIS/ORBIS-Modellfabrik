@@ -65,7 +65,7 @@ const MODULE_NAME_MAP: Record<string, string> = {
   FTS: 'FTS',
 };
 
-const DEFAULT_SHOPFLOOR_ICON = SHOPFLOOR_ASSET_MAP['QUESTION'] ?? '/shopfloor/question.svg';
+const DEFAULT_SHOPFLOOR_ICON = SHOPFLOOR_ASSET_MAP['QUESTION'] ?? 'assets/svg/shopfloor/shared/question.svg';
 
 const STATUS_ICONS = {
   registry: {
@@ -158,7 +158,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
   // Shopfloor layout config for serial number lookup
   private layoutConfig: ShopfloorLayoutConfig | null = null;
 
-  readonly headingIcon = 'headings/mehrere.svg';
+  readonly headingIcon = 'assets/svg/ui/heading-modules.svg';
 
   // I18n labels for shopfloor preview
   readonly shopfloorPreviewExpandLabel = $localize`:@@moduleTabShopfloorPreviewExpand:Expand shopfloor preview`;

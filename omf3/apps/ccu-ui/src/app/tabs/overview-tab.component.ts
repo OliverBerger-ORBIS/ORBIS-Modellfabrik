@@ -12,30 +12,31 @@ import { EnvironmentService } from '../services/environment.service';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { ConnectionService } from '../services/connection.service';
 import { InventoryStateService } from '../services/inventory-state.service';
+import { ICONS } from '../shared/icons/icon.registry';
 
 const INVENTORY_LOCATIONS = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
 const WORKPIECE_TYPES = ['BLUE', 'WHITE', 'RED'] as const;
 const PRODUCT_ICON_MAP: Record<(typeof WORKPIECE_TYPES)[number], string> = {
-  BLUE: 'workpieces/blue_product.svg',
-  WHITE: 'workpieces/white_product.svg',
-  RED: 'workpieces/red_product.svg',
+  BLUE: ICONS.shopfloor.workpieces.blue.product,
+  WHITE: ICONS.shopfloor.workpieces.white.product,
+  RED: ICONS.shopfloor.workpieces.red.product,
 };
 const RAW_ICON_MAP: Record<(typeof WORKPIECE_TYPES)[number], string> = {
-  BLUE: 'workpieces/blue_instock_unprocessed.svg',
-  WHITE: 'workpieces/white_instock_unprocessed.svg',
-  RED: 'workpieces/red_instock_unprocessed.svg',
+  BLUE: ICONS.shopfloor.workpieces.blue.instockUnprocessed,
+  WHITE: ICONS.shopfloor.workpieces.white.instockUnprocessed,
+  RED: ICONS.shopfloor.workpieces.red.instockUnprocessed,
 };
 const RESERVED_ICON_MAP: Record<(typeof WORKPIECE_TYPES)[number], string> = {
-  BLUE: 'workpieces/blue_instock_reserved.svg',
-  WHITE: 'workpieces/white_instock_reserved.svg',
-  RED: 'workpieces/red_instock_reserved.svg',
+  BLUE: ICONS.shopfloor.workpieces.blue.instockReserved,
+  WHITE: ICONS.shopfloor.workpieces.white.instockReserved,
+  RED: ICONS.shopfloor.workpieces.red.instockReserved,
 };
 const THREE_D_ICON_MAP: Record<(typeof WORKPIECE_TYPES)[number], string> = {
-  BLUE: 'workpieces/blue_3dim.svg',
-  WHITE: 'workpieces/white_3dim.svg',
-  RED: 'workpieces/red_3dim.svg',
+  BLUE: ICONS.shopfloor.workpieces.blue.dim3,
+  WHITE: ICONS.shopfloor.workpieces.white.dim3,
+  RED: ICONS.shopfloor.workpieces.red.dim3,
 };
-const EMPTY_SLOT_ICON = 'workpieces/slot_empty.svg';
+const EMPTY_SLOT_ICON = ICONS.shopfloor.workpieces.slotEmpty;
 const MAX_CAPACITY = 3;
 
 @Component({
@@ -103,9 +104,9 @@ export class OverviewTabComponent implements OnInit, OnDestroy {
   readonly erpRequiredLabel = $localize`:@@overviewErpRequired:ERP integration required`;
   readonly emptySlotLabel = $localize`:@@overviewInventoryEmpty:Empty`;
 
-  readonly customerOrdersIcon = 'headings/lieferung-bestellen.svg';
-  readonly inventoryIcon = 'headings/warehouse.svg';
-  readonly purchaseOrdersIcon = 'headings/box.svg';
+  readonly customerOrdersIcon = 'assets/svg/ui/heading-customer-orders.svg';
+  readonly inventoryIcon = 'assets/svg/ui/heading-inventory.svg';
+  readonly purchaseOrdersIcon = 'assets/svg/ui/heading-purchase-orders.svg';
 
   ngOnInit(): void {
     this.subscriptions.add(

@@ -6,6 +6,7 @@ import { shareReplay } from 'rxjs/operators';
 import { WorkpieceHistoryService, WorkpieceHistory, TrackTraceEvent, OrderContext, StationTaskGroup } from '../../services/workpiece-history.service';
 import { ModuleNameService } from '../../services/module-name.service';
 import { EnvironmentService } from '../../services/environment.service';
+import { ICONS } from '../../shared/icons/icon.registry';
 
 /** Manufacturing event types that should be grouped by station */
 const MANUFACTURING_EVENT_TYPES = ['PICK', 'PROCESS', 'DROP'] as const;
@@ -86,33 +87,33 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     // Return SVG path instead of emoji
     switch (eventType.toUpperCase()) {
       case 'DOCK':
-        return 'shopfloor/dock-event.svg';
+        return ICONS.shopfloor.shared.dockEvent;
       case 'PICK':
-        return 'shopfloor/pick-event.svg';
+        return ICONS.shopfloor.shared.pickEvent;
       case 'DROP':
-        return 'shopfloor/drop-event.svg';
+        return ICONS.shopfloor.shared.dropEvent;
       case 'TURN':
-        return 'shopfloor/turn-event.svg';
+        return ICONS.shopfloor.shared.turnEvent;
       case 'PASS':
-        return 'shopfloor/pass-event.svg';
+        return ICONS.shopfloor.shared.passEvent;
       case 'TRANSPORT':
-        return 'shopfloor/robotic.svg';
+        return ICONS.shopfloor.shared.agvVehicle;
       case 'PROCESS':
-        return 'shopfloor/process-event.svg';
+        return ICONS.shopfloor.shared.processEvent;
       default:
-        return 'shopfloor/location-marker.svg';
+        return ICONS.shopfloor.shared.locationMarker;
     }
   }
 
   getOrderTypeIcon(orderType: string | undefined): string {
-    if (!orderType) return 'headings/lieferung-bestellen.svg';
+    if (!orderType) return 'assets/svg/ui/heading-customer-orders.svg';
     switch (orderType.toUpperCase()) {
       case 'STORAGE':
-        return 'headings/ladung.svg';
+        return 'assets/svg/ui/heading-storage.svg';
       case 'PRODUCTION':
-        return 'headings/maschine.svg';
+        return 'assets/svg/ui/heading-production.svg';
       default:
-        return 'headings/lieferung-bestellen.svg';
+        return 'assets/svg/ui/heading-customer-orders.svg';
     }
   }
 
@@ -129,20 +130,20 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
   }
 
   getStationIcon(stationId: string | undefined): string {
-    if (!stationId) return 'shopfloor/factory.svg';
+    if (!stationId) return ICONS.shopfloor.systems.factory;
     switch (stationId.toUpperCase()) {
       case 'HBW':
-        return 'shopfloor/stock.svg';
+        return ICONS.shopfloor.stations.hbw;
       case 'DRILL':
-        return 'shopfloor/bohrer.svg';
+        return ICONS.shopfloor.stations.drill;
       case 'MILL':
-        return 'shopfloor/milling-machine.svg';
+        return ICONS.shopfloor.stations.mill;
       case 'AIQS':
-        return 'shopfloor/ai-assistant.svg';
+        return ICONS.shopfloor.stations.aiqs;
       case 'DPS':
-        return 'shopfloor/robot-arm.svg';
+        return ICONS.shopfloor.stations.dps;
       default:
-        return 'shopfloor/factory.svg';
+        return ICONS.shopfloor.systems.factory;
     }
   }
 
@@ -173,7 +174,10 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
 
   getWorkpieceIcon(workpieceType: string): string {
     const type = workpieceType.toUpperCase();
-    return `workpieces/${type.toLowerCase()}_3dim.svg`;
+    if (type === 'BLUE') return ICONS.shopfloor.workpieces.blue.dim3;
+    if (type === 'WHITE') return ICONS.shopfloor.workpieces.white.dim3;
+    if (type === 'RED') return ICONS.shopfloor.workpieces.red.dim3;
+    return ICONS.shopfloor.workpieces.slotEmpty;
   }
 
   /** Group events by order context */

@@ -29,8 +29,8 @@ export class SensorTabComponent implements OnInit, OnDestroy {
   readonly gaugeCenterX = 110;
   readonly gaugeCenterY = 95;
 
-  readonly sensorHeadingIcon = 'headings/smart.svg';
-  readonly cameraHeadingIcon = 'headings/camera.svg';
+  readonly sensorHeadingIcon = 'assets/svg/ui/heading-sensors.svg';
+  readonly cameraHeadingIcon = 'assets/svg/ui/heading-camera.svg';
   stepSize = 10;
 
   readonly fixtureOptions: OrderFixtureName[] = ['startup', 'white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];

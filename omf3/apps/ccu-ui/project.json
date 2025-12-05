@@ -32,6 +32,11 @@
           {
             "glob": "**/*",
             "input": "omf3/apps/ccu-ui/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "omf3/apps/ccu-ui/src/assets",
+            "output": "assets"
           }
         ],
         "styles": [
@@ -68,6 +73,11 @@
             {
               "glob": "**/*",
               "input": "omf3/apps/ccu-ui/public"
+            },
+            {
+              "glob": "**/*",
+              "input": "omf3/apps/ccu-ui/src/assets",
+              "output": "assets"
             }
           ]
         },
@@ -80,6 +90,11 @@
             {
               "glob": "**/*",
               "input": "omf3/apps/ccu-ui/public"
+            },
+            {
+              "glob": "**/*",
+              "input": "omf3/apps/ccu-ui/src/assets",
+              "output": "assets"
             },
             {
               "glob": "**/*.log",

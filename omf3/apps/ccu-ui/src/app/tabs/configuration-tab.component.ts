@@ -18,6 +18,7 @@ import { DspDetailComponent } from '../components/dsp-detail/dsp-detail.componen
 import { DspArchitectureComponent } from '../components/dsp-architecture/dsp-architecture.component';
 import type { ShopfloorLayoutConfig, ShopfloorCellConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
 import { ExternalLinksService, type ExternalLinksSettings } from '../services/external-links.service';
+import { ICONS } from '../shared/icons/icon.registry';
 import {
   type DetailItem,
   type SelectedDetailView,
@@ -222,7 +223,7 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         $localize`:@@orbisUseCaseAggregationHighlight3:Environmental data (temperature, humidity, air quality) linked to production sequences and genealogy.`,
         $localize`:@@orbisUseCaseAggregationHighlight4:Process optimization via analysis of cycle times, takt variability, energy consumption, and machine utilization.`,
       ],
-      icon: 'details/orbis/consolidate.svg',
+      icon: 'assets/svg/orbis/consolidate.svg',
     },
     {
       id: 'track-trace',
@@ -233,7 +234,7 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         $localize`:@@orbisUseCaseTrackTraceHighlight2:Correlation of process parameters (DRILL, MILL, AIQS) with ERP/MES customer orders.`,
         $localize`:@@orbisUseCaseTrackTraceHighlight3:Sensor and telemetry data linked to quality outcomes, rework decisions, and root-cause analysis.`,
       ],
-      icon: 'details/orbis/integration.svg',
+      icon: 'assets/svg/orbis/integration.svg',
     },
     {
       id: 'predictive-maintenance',
@@ -244,7 +245,7 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         $localize`:@@orbisUseCasePredictiveHighlight2:Anomaly scoring with automated escalation to maintenance bots or SAP notifications.`,
         $localize`:@@orbisUseCasePredictiveHighlight3:Predictive forecasts feeding SAP maintenance plans, spare-part logistics, and operator guidance.`,
       ],
-      icon: 'details/orbis/ai-algorithm.svg',
+      icon: 'assets/svg/orbis/ai-algorithm.svg',
     },
     {
       id: 'process-optimization',
@@ -258,7 +259,7 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         $localize`:@@orbisUseCaseOptimizationHighlight5:Simulation of what-if scenarios before applying changes to the physical line.`,
         $localize`:@@orbisUseCaseOptimizationHighlight6:Closed-loop improvements via DSP executors and MES/DSP workflows.`,
       ],
-      icon: 'details/orbis/database-management.svg',
+      icon: 'assets/svg/orbis/database-management.svg',
     },
   ];
 
@@ -552,9 +553,9 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
   private buildParameterCards(config: CcuConfigSnapshot): ParameterCardView[] {
     const durations = config.productionDurations ?? {};
     const workpieceIcons: Record<string, string> = {
-      BLUE: 'workpieces/blue_product.svg',
-      WHITE: 'workpieces/white_product.svg',
-      RED: 'workpieces/red_product.svg',
+      BLUE: ICONS.shopfloor.workpieces.blue.product,
+      WHITE: ICONS.shopfloor.workpieces.white.product,
+      RED: ICONS.shopfloor.workpieces.red.product,
     };
 
     const durationItems: ParameterItemView[] = ['BLUE', 'WHITE', 'RED'].map((type) => ({
@@ -591,7 +592,7 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     return [
       {
         title: $localize`:@@configurationProductionDurations:Production Durations`,
-        icon: 'headings/maschine.svg',
+        icon: 'assets/svg/ui/heading-production.svg',
         description: $localize`:@@configurationProductionDurationsDescription:Configured target durations for each workpiece colour`,
         items: durationItems,
       },
