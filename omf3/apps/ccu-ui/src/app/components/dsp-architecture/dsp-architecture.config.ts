@@ -214,7 +214,7 @@ export function createDefaultContainers(): ContainerConfig[] {
 
   containers.push({
     id: 'erp-application',
-    label: '',  // "ERP Applications" - label at top center
+    label: '',  // "ERP Applications" - label at bottom center
     x: businessStartX,
     y: businessBoxY,
     width: businessBoxWidth,
@@ -226,13 +226,13 @@ export function createDefaultContainers(): ContainerConfig[] {
     secondaryLogoPosition: 'top-right',
     borderColor: 'rgba(22, 65, 148, 0.25)', // ORBIS Blue Strong RGB
     backgroundColor: '#ffffff',
-    labelPosition: 'top-center',
-    fontSize: 20,  // Increased font size for BP layer (16 + 4pt)
+    labelPosition: 'bottom-center',
+    fontSize: 16,
   });
 
   containers.push({
     id: 'bp-cloud-apps',
-    label: '',  // "Cloud Anwendungen" - label at top center
+    label: '',  // "Cloud Anwendungen" - label at bottom center
     x: businessStartX + (businessBoxWidth + businessGap),
     y: businessBoxY,
     width: businessBoxWidth,
@@ -242,13 +242,13 @@ export function createDefaultContainers(): ContainerConfig[] {
     logoIconKey: 'bp-cloud-apps' as IconKey,  // dsp/cloud-computing.svg
     borderColor: 'rgba(22, 65, 148, 0.25)', // ORBIS Blue Strong RGB
     backgroundColor: '#ffffff',
-    labelPosition: 'top-center',
-    fontSize: 20,  // Increased font size for BP layer (16 + 4pt)
+    labelPosition: 'bottom-center',
+    fontSize: 16,
   });
 
   containers.push({
     id: 'bp-analytics',
-    label: '',  // "Analytische\nAnwendungen" - label at top center
+    label: '',  // "Analytische\nAnwendungen" - label at bottom center
     x: businessStartX + (businessBoxWidth + businessGap) * 2,
     y: businessBoxY,
     width: businessBoxWidth,
@@ -256,16 +256,17 @@ export function createDefaultContainers(): ContainerConfig[] {
     type: 'business',
     state: 'hidden',
     logoIconKey: 'bp-analytics' as IconKey,  // dsp/dashboard.svg
+    secondaryLogoIconKey: 'logo-grafana' as IconKey,  // Grafana logo in top-right corner
+    secondaryLogoPosition: 'top-right',
     borderColor: 'rgba(22, 65, 148, 0.25)', // ORBIS Blue Strong RGB
     backgroundColor: '#ffffff',
-    labelPosition: 'top-center',
-    fontSize: 20,  // Increased font size for BP layer (16 + 4pt)
-    url: '/analytics',  // Default URL for Analytische Anwendungen
+    labelPosition: 'bottom-center',
+    fontSize: 16,
   });
 
   containers.push({
     id: 'bp-data-lake',
-    label: '',  // "Data Lake" - label at top center
+    label: '',  // "Data Lake" - label at bottom center
     x: businessStartX + (businessBoxWidth + businessGap) * 3,
     y: businessBoxY,
     width: businessBoxWidth,
@@ -275,8 +276,8 @@ export function createDefaultContainers(): ContainerConfig[] {
     logoIconKey: 'bp-data-lake' as IconKey,  // dsp/data-lake.svg
     borderColor: 'rgba(22, 65, 148, 0.25)', // ORBIS Blue Strong RGB
     backgroundColor: '#ffffff',
-    labelPosition: 'top-center',
-    fontSize: 20,  // Increased font size for BP layer (16 + 4pt)
+    labelPosition: 'bottom-center',
+    fontSize: 16,
   });
 
   // ========== SHOPFLOOR LAYER CONTENT ==========
@@ -395,6 +396,7 @@ export function createDefaultContainers(): ContainerConfig[] {
       backgroundColor: '#f8f9fa',  // Leichte graue Füllung
       labelPosition: 'bottom',
       fontSize: 10,  // Reduced font size for better fit with long labels
+      url: '/module',  // Link to module tab (will show module details)
     });
   });
 
@@ -644,7 +646,7 @@ export function createDefaultSteps(): StepConfig[] {
       showFunctionIcons: false,
     },
 
-    // Step 4: Edge Connectivity - OPC UA, MQTT, REST
+    // Step 4: Edge Connectivity - OPC UA, MQTT, REST (with shopfloor connections)
     {
       id: 'step-4',
       label: '',
@@ -655,12 +657,12 @@ export function createDefaultSteps(): StepConfig[] {
         ...baseShopfloorContainers,
       ],
       highlightedContainerIds: ['edge'],
-      visibleConnectionIds: [],
-      highlightedConnectionIds: [],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: baseShopfloorConnections,
       showFunctionIcons: true,
     },
 
-    // Step 5: Digital Twin & Data Modeling - Edge normalisiert Datenströme
+    // Step 5: Digital Twin & Data Modeling - Edge normalisiert Datenströme (with shopfloor connections)
     {
       id: 'step-5',
       label: '',
@@ -671,12 +673,12 @@ export function createDefaultSteps(): StepConfig[] {
         ...baseShopfloorContainers,
       ],
       highlightedContainerIds: ['edge'],
-      visibleConnectionIds: [],
-      highlightedConnectionIds: [],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: baseShopfloorConnections,
       showFunctionIcons: true,
     },
 
-    // Step 6: Process Logic / Choreography - Prozessobjekte, dezentral
+    // Step 6: Process Logic / Choreography - Prozessobjekte, dezentral (with shopfloor connections)
     {
       id: 'step-6',
       label: '',
@@ -687,12 +689,12 @@ export function createDefaultSteps(): StepConfig[] {
         ...baseShopfloorContainers,
       ],
       highlightedContainerIds: ['edge'],
-      visibleConnectionIds: [],
-      highlightedConnectionIds: [],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: baseShopfloorConnections,
       showFunctionIcons: true,
     },
 
-    // Step 7: Analytics / AI Preparation - Edge verdichtet Daten für KPIs, ML
+    // Step 7: Analytics / AI Preparation - Edge verdichtet Daten für KPIs, ML (with shopfloor connections)
     {
       id: 'step-7',
       label: '',
@@ -703,8 +705,8 @@ export function createDefaultSteps(): StepConfig[] {
         ...baseShopfloorContainers,
       ],
       highlightedContainerIds: ['edge'],
-      visibleConnectionIds: [],
-      highlightedConnectionIds: [],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: baseShopfloorConnections,
       showFunctionIcons: true,
     },
 

@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DspArchitectureComponent } from '../../../../components/dsp-architecture/dsp-architecture.component';
 import type { DspDetailView } from '../../../../tabs/configuration-detail.types';
+import { ExternalLinksService } from '../../../../services/external-links.service';
 
 /**
  * Wrapper component for DSP Architecture that provides the necessary view configuration.
@@ -16,12 +17,12 @@ import type { DspDetailView } from '../../../../tabs/configuration-detail.types'
   styleUrl: './dsp-architecture-wrapper.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DspArchitectureWrapperComponent {
+export class DspArchitectureWrapperComponent implements OnInit {
   readonly sectionTitle = $localize`:@@dspArchSectionTitle:DSP Reference Architecture`;
   readonly sectionDescription = $localize`:@@dspArchSectionDesc:Interactive 12-step animation showing the complete DSP architecture from shopfloor devices to AI excellence.`;
 
   // Create a view configuration for the DSP Architecture component
-  readonly dspView: DspDetailView = {
+  dspView: DspDetailView = {
     architecture: [
       {
         id: 'ux',
@@ -86,7 +87,22 @@ export class DspArchitectureWrapperComponent {
     smartfactoryDashboardUrl: '/dashboard',
   };
 
-  constructor(private readonly router: Router) {}
+  constructor(
+    private readonly router: Router,
+    private readonly externalLinksService: ExternalLinksService
+  ) {}
+
+  ngOnInit(): void {
+    // Update URLs from external links service
+    const links = this.externalLinksService.current;
+    this.dspView = {
+      ...this.dspView,
+      edgeUrl: links.dspControlUrl,
+      managementUrl: links.managementCockpitUrl,
+      analyticsUrl: links.grafanaDashboardUrl,
+      smartfactoryDashboardUrl: links.smartfactoryDashboardUrl,
+    };
+  }
 
   onActionTriggered(event: { id: string; url: string }): void {
     if (event.url && event.url.startsWith('/')) {

@@ -9,6 +9,7 @@ export type IconKey =
   | 'logo-sap'
   | 'logo-azure'
   | 'logo-dsp'
+  | 'logo-grafana'
   | 'logo-distributed'
   | 'edge-connectivity'
   | 'edge-digital-twin'
@@ -57,6 +58,7 @@ export const ICON_MAP: Record<IconKey, string> = {
   'logo-sap': ICONS.brand.sap,
   'logo-azure': ICONS.brand.azure,
   'logo-dsp': ICONS.brand.orbis,
+  'logo-grafana': ICONS.brand.grafana,
   'logo-distributed': ICONS.dsp.architecture.edgeBox,
 
   'edge-connectivity': ICONS.dsp.functions.connectivity,
