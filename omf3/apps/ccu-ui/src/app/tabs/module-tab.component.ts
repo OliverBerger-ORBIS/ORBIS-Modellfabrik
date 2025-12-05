@@ -14,13 +14,14 @@ import { distinctUntilChanged, map, shareReplay } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { EnvironmentService } from '../services/environment.service';
 import { ModuleNameService } from '../services/module-name.service';
-import { ConnectionService } from '../services/connection.service';
+import { ConnectionService, type ConnectionState } from '../services/connection.service';
 import { ModuleOverviewStateService } from '../services/module-overview-state.service';
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { ModuleDetailsSidebarComponent } from '../components/module-details-sidebar/module-details-sidebar.component';
 import { HttpClient } from '@angular/common/http';
 import type { ShopfloorLayoutConfig, ShopfloorCellConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
+import { ShopfloorMappingService, type ModuleInfo } from '../services/shopfloor-mapping.service';
 
 interface ModuleCommand {
   label: string;
@@ -53,21 +54,6 @@ type ModuleRegistryEntry = {
   type: keyof typeof MODULE_NAME_MAP;
   kind: 'module' | 'transport';
 };
-
-const MODULE_REGISTRY: ModuleRegistryEntry[] = [
-  { id: 'SVR3QA0022', type: 'HBW', kind: 'module' },
-  { id: 'SVR4H76449', type: 'DRILL', kind: 'module' },
-  { id: 'SVR3QA2098', type: 'MILL', kind: 'module' },
-  { id: 'SVR4H76530', type: 'AIQS', kind: 'module' },
-  { id: 'SVR4H73275', type: 'DPS', kind: 'module' },
-  { id: 'CHRG0', type: 'CHRG', kind: 'module' },
-  { id: '5iO4', type: 'FTS', kind: 'transport' },
-];
-
-const MODULE_REGISTRY_ORDER = MODULE_REGISTRY.map((entry) => entry.id);
-const MODULE_REGISTRY_LOOKUP = new Map<string, ModuleRegistryEntry>(
-  MODULE_REGISTRY.map((entry) => [entry.id, entry])
-);
 
 const MODULE_NAME_MAP: Record<string, string> = {
   HBW: 'HBW',
@@ -112,6 +98,9 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
   private fixtureSubscriptions = new Subscription();
   private moduleOverviewSub?: Subscription;
   private currentEnvironmentKey: string;
+  private moduleRegistry: ModuleRegistryEntry[] = [];
+  private moduleRegistryOrder: string[] = [];
+  private moduleRegistryLookup = new Map<string, ModuleRegistryEntry>();
 
   // Shopfloor preview state
   shopfloorPreviewExpanded = false;
@@ -124,7 +113,8 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     private readonly moduleOverviewState: ModuleOverviewStateService,
     private readonly messageMonitor: MessageMonitorService,
     private readonly cdr: ChangeDetectorRef,
-    private readonly http: HttpClient
+    private readonly http: HttpClient,
+    private readonly mappingService: ShopfloorMappingService
   ) {
     this.currentEnvironmentKey = this.environmentService.current.key;
     this.loadShopfloorPreviewState();
@@ -174,11 +164,33 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
   readonly shopfloorPreviewExpandLabel = $localize`:@@moduleTabShopfloorPreviewExpand:Expand shopfloor preview`;
   readonly shopfloorPreviewCollapseLabel = $localize`:@@moduleTabShopfloorPreviewCollapse:Collapse shopfloor preview`;
 
+  private initializeRegistry(): void {
+    // Build registry from mapping service; fallback: add common FTS serial if not present
+    const modules = this.mappingService.getAllModules();
+    this.moduleRegistry = modules.map((m: ModuleInfo) => ({
+      id: m.serialId,
+      type: (m.moduleType as keyof typeof MODULE_NAME_MAP) ?? 'UNKNOWN',
+      kind: 'module',
+    }));
+
+    // Ensure FTS placeholder exists (common serial for AGV)
+    if (!this.moduleRegistry.find((e) => e.id === '5iO4')) {
+      this.moduleRegistry.push({ id: '5iO4', type: 'FTS', kind: 'transport' });
+    }
+
+    this.moduleRegistryOrder = this.moduleRegistry.map((entry) => entry.id);
+    this.moduleRegistryLookup = new Map<string, ModuleRegistryEntry>(
+      this.moduleRegistry.map((entry) => [entry.id, entry])
+    );
+  }
+
   ngOnInit(): void {
-    // Load shopfloor layout config for serial number lookup
+    // Load shopfloor layout config for serial number lookup and registry initialization
     this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').subscribe({
       next: (config) => {
         this.layoutConfig = config;
+        this.mappingService.initializeLayout(config);
+        this.initializeRegistry();
       },
       error: (error) => {
         console.warn('Failed to load shopfloor layout config:', error);
@@ -188,7 +200,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.connectionService.state$
         .pipe(distinctUntilChanged())
-        .subscribe((state) => {
+        .subscribe((state: ConnectionState) => {
           if (state === 'connected') {
             this.initializeStreams();
           }
@@ -380,7 +392,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
 
   private bindModuleOverviewStream(source: Observable<ModuleOverviewState>): void {
     this.moduleOverviewSub?.unsubscribe();
-    this.moduleOverviewSub = source.subscribe((state) => {
+    this.moduleOverviewSub = source.subscribe((state: ModuleOverviewState) => {
       this.moduleOverviewState.setState(this.currentEnvironmentKey, state);
     });
   }
@@ -416,7 +428,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
   private buildRows(state: ModuleOverviewState): ModuleRow[] {
     const rows = new Map<string, ModuleRow>();
 
-    MODULE_REGISTRY.forEach((entry) => {
+    this.moduleRegistry.forEach((entry) => {
       rows.set(entry.id, this.createRegistryPlaceholderRow(entry));
     });
 
@@ -440,7 +452,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
 
   private sortRows(rows: ModuleRow[]): ModuleRow[] {
     const orderLookup = new Map<string, number>();
-    MODULE_REGISTRY_ORDER.forEach((id, index) => orderLookup.set(id, index));
+    this.moduleRegistryOrder.forEach((id, index) => orderLookup.set(id, index));
 
     return [...rows].sort((a, b) => {
       const orderA = orderLookup.has(a.id) ? orderLookup.get(a.id)! : Number.MAX_SAFE_INTEGER;
@@ -457,7 +469,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     const name = this.moduleNameService.getModuleDisplayText(moduleType, 'id-full');
     const iconPath = this.resolveIconPath(moduleType);
     const availabilityLabel = this.getAvailabilityLabel(module.availability);
-    const registryEntry = MODULE_REGISTRY_LOOKUP.get(module.id);
+    const registryEntry = this.moduleRegistryLookup.get(module.id);
     const isRegistryModule = registryEntry?.kind === 'module';
 
     const actions: ModuleCommand[] = [];
@@ -492,7 +504,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
   private createTransportRow(transport: TransportOverviewStatus): ModuleRow {
     const availabilityLabel = this.getAvailabilityLabel(transport.availability);
     const actions: ModuleCommand[] = [];
-    const registryEntry = MODULE_REGISTRY_LOOKUP.get(transport.id);
+    const registryEntry = this.moduleRegistryLookup.get(transport.id);
     const isRegistryTransport = registryEntry?.kind === 'transport';
 
     const needsInitialDock =

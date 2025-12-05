@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, OnChanges, SimpleChanges, Output, EventEmitter, AfterViewChecked, ElementRef, ViewChild, QueryList, ViewChildren } from '@angular/core';
 import { MessageMonitorService, MonitoredMessage } from '../../services/message-monitor.service';
+import { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
 import { combineLatest, Observable, of } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import hljs from 'highlight.js';
@@ -35,7 +36,8 @@ export class ModuleDetailsSidebarComponent implements OnInit, OnChanges, AfterVi
 
   constructor(
     private readonly messageMonitor: MessageMonitorService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private readonly mappingService: ShopfloorMappingService
   ) {}
 
   ngOnInit(): void {
@@ -88,10 +90,12 @@ export class ModuleDetailsSidebarComponent implements OnInit, OnChanges, AfterVi
     // - fts/v1/ff/<serialId>/... (for FTS)
     
     allTopics.forEach((topic) => {
-      if (this.serialId && topic.includes(this.serialId)) {
-        // Check if it's a module-related topic
+      // Try to resolve serial from topic by mapping known serials
+      const knownSerials = this.mappingService.getAllModules().map((m) => m.serialId);
+      const matchingSerial = knownSerials.find((s) => topic.includes(s));
+
+      if (this.serialId && matchingSerial === this.serialId) {
         if (topic.startsWith('module/') || topic.startsWith('fts/')) {
-          // Filter for connection, state, factsheet topics
           if (topic.includes('/connection') || topic.includes('/state') || topic.includes('/factsheet')) {
             moduleTopics.push(topic);
           }

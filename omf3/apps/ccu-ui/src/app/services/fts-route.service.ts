@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import type {
   ShopfloorLayoutConfig,
   ShopfloorPoint,
@@ -6,6 +6,7 @@ import type {
   ShopfloorCellConfig,
   ShopfloorRoadEndpoint,
 } from '../components/shopfloor-preview/shopfloor-layout.types';
+import { ShopfloorMappingService } from './shopfloor-mapping.service';
 
 export interface RouteSegment {
   x1: number;
@@ -20,6 +21,7 @@ export interface RouteSegment {
  */
 @Injectable({ providedIn: 'root' })
 export class FtsRouteService {
+  private readonly mappingService = inject(ShopfloorMappingService);
   private parsedRoads: ParsedRoad[] = [];
   private cellById = new Map<string, ShopfloorCellConfig>();
   private cellByRouteRef = new Map<string, ShopfloorCellConfig>();
@@ -48,6 +50,9 @@ export class FtsRouteService {
     // Roads are already parsed in config.parsed_roads
     this.parsedRoads = config.parsed_roads ?? [];
 
+    // Initialize centralized mapping
+    this.mappingService.initializeLayout(config);
+
     // Build cell map and route ref map
     this.cellById.clear();
     this.cellByRouteRef.clear();
@@ -57,12 +62,6 @@ export class FtsRouteService {
     for (const cell of config.cells) {
       this.cellById.set(cell.id, cell);
     }
-
-    // Build serial to cell ID mapping
-    const serialToCellId = new Map<string, string>();
-    Object.entries(config.modules_by_serial ?? {}).forEach(([serial, meta]) => {
-      serialToCellId.set(serial, meta.cell_id);
-    });
 
     // Register module aliases
     const registerModuleAliases = (serial: string, cell: ShopfloorCellConfig) => {
@@ -103,12 +102,12 @@ export class FtsRouteService {
     });
 
     // Register modules
-    for (const [serial, cellId] of serialToCellId.entries()) {
-      const cell = this.cellById.get(cellId);
+    Object.entries(config.modules_by_serial ?? {}).forEach(([serial, meta]) => {
+      const cell = this.cellById.get(meta.cell_id);
       if (cell) {
         registerModuleAliases(serial, cell);
       }
-    }
+    });
 
     // Build node points map from parsed roads (with adjusted points for main compartments)
     const registerNode = (ref: string, point: ShopfloorPoint) => {
@@ -293,19 +292,38 @@ export class FtsRouteService {
   /**
    * Build road segment with trimmed endpoints
    */
-  buildRoadSegment(road: ParsedRoad): RouteSegment | null {
+  buildRoadSegment(road: ParsedRoad, trimToCenter: boolean = false): RouteSegment | null {
     const fromPoint = this.resolveRoutePoint(road.from);
     const toPoint = this.resolveRoutePoint(road.to);
-    const start = this.trimPointTowards(road.from.ref, fromPoint, toPoint);
-    const end = this.trimPointTowards(road.to.ref, toPoint, fromPoint);
-    if (!start || !end) {
-      return null;
+
+    // Determine if the target node is a module (only modules get trimmed in Active Orders)
+    const toCell = this.cellByRouteRef.get(road.to.ref);
+    const isTargetModule = toCell?.role === 'module';
+
+    // FTS-Tab: trimToCenter=true → route goes all the way to center (no trimming)
+    // Active-Orders: trim when target is a module, otherwise go to center
+    const shouldTrim = !trimToCenter && isTargetModule;
+
+    if (shouldTrim) {
+      const start = this.trimPointTowards(road.from.ref, fromPoint, toPoint);
+      const end = this.trimPointTowards(road.to.ref, toPoint, fromPoint);
+      if (!start || !end) {
+        return null;
+      }
+      return {
+        x1: start.x,
+        y1: start.y,
+        x2: end.x,
+        y2: end.y,
+      };
     }
+
+    // Route to exact centers (no trimming)
     return {
-      x1: start.x,
-      y1: start.y,
-      x2: end.x,
-      y2: end.y,
+      x1: fromPoint.x,
+      y1: fromPoint.y,
+      x2: toPoint.x,
+      y2: toPoint.y,
     };
   }
 

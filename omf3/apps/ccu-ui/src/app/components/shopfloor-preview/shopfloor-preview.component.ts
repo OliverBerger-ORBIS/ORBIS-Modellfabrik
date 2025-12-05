@@ -17,6 +17,7 @@ import { ORBIS_COLORS } from '../../assets/color-palette';
 import type { OrderActive, ProductionStep, ModuleAvailabilityStatus } from '@omf3/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
 import { ModuleNameService } from '../../services/module-name.service';
+import { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
 import type {
   ParsedRoad,
   ShopfloorCellConfig,
@@ -171,7 +172,8 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     private readonly http: HttpClient,
     private readonly cdr: ChangeDetectorRef,
     private readonly sanitizer: DomSanitizer,
-    private readonly moduleNameService: ModuleNameService
+    private readonly moduleNameService: ModuleNameService,
+    private readonly mappingService: ShopfloorMappingService
   ) {}
 
   ngOnInit(): void {
@@ -411,10 +413,8 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       this.cellById.set(cell.id, cell);
     }
 
-    const serialToCellId = new Map<string, string>();
-    Object.entries(config.modules_by_serial ?? {}).forEach(([serial, meta]) => {
-      serialToCellId.set(serial, meta.cell_id);
-    });
+    // Initialize centralized mapping for downstream consumers
+    this.mappingService.initializeLayout(config);
 
     const registerModuleAliases = (serial: string, cell: ShopfloorCellConfig) => {
       const canonical = `serial:${serial}`;
@@ -451,12 +451,12 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       }
     });
 
-    for (const [serial, cellId] of serialToCellId.entries()) {
-      const cell = this.cellById.get(cellId);
+    Object.entries(config.modules_by_serial ?? {}).forEach(([serial, meta]) => {
+      const cell = this.cellById.get(meta.cell_id);
       if (cell) {
         registerModuleAliases(serial, cell);
       }
-    }
+    });
 
     const registerNode = (ref: string, point: ShopfloorPoint) => {
       if (!this.nodePoints.has(ref)) {
@@ -733,11 +733,27 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   private buildRoadSegment(road: ParsedRoad): RenderRoad | null {
     const fromPoint = this.resolveRoutePoint(road.from);
     const toPoint = this.resolveRoutePoint(road.to);
-    const start = this.trimPointTowards(road.from.ref, fromPoint, toPoint);
-    const end = this.trimPointTowards(road.to.ref, toPoint, fromPoint);
-    if (!start || !end) {
-      return null;
-    }
+
+    // Only trim when an endpoint is a module (Active Orders orange route)
+    const fromCell = this.cellByRouteRef.get(road.from.ref);
+    const toCell = this.cellByRouteRef.get(road.to.ref);
+    const moduleTrimRatio = 0.35; // keep ~65% of the line towards the module center
+
+    const trimPoint = (point: ShopfloorPoint, other: ShopfloorPoint, cell?: ShopfloorCellConfig): ShopfloorPoint => {
+      if (!cell || cell.role !== 'module') {
+        return { ...point };
+      }
+      const dx = point.x - other.x;
+      const dy = point.y - other.y;
+      return {
+        x: other.x + dx * (1 - moduleTrimRatio),
+        y: other.y + dy * (1 - moduleTrimRatio),
+      };
+    };
+
+    const start = trimPoint(fromPoint, toPoint, fromCell);
+    const end = trimPoint(toPoint, fromPoint, toCell);
+
     return {
       x1: start.x,
       y1: start.y,
@@ -783,7 +799,9 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     if (cell.role === 'intersection') {
       return 0;
     }
-    return 0.2;
+    // For module targets in Active Orders, stop the orange route roughly one-third inside the cell
+    // insetFraction = 0.33 -> travel ≈ 67% of distance from center to edge
+    return 0.33;
   }
 
   private getCellBounds(cell: ShopfloorCellConfig): { left: number; top: number; width: number; height: number } {

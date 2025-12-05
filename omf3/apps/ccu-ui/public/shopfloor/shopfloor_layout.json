@@ -124,7 +124,7 @@
     },
     {
       "id": "CELL_1_1",
-      "name": "INTERSECTION-1",
+      "name": "1",
       "position": { "x": 200, "y": 200 },
       "size": { "w": 200, "h": 200 },
       "center": { "x": 300, "y": 300 },
@@ -135,7 +135,7 @@
     },
     {
       "id": "CELL_1_2",
-      "name": "INTERSECTION-2",
+      "name": "2",
       "position": { "x": 400, "y": 200 },
       "size": { "w": 200, "h": 200 },
       "center": { "x": 500, "y": 300 },
@@ -204,7 +204,7 @@
     },
     {
       "id": "CELL_2_1",
-      "name": "INTERSECTION-3",
+      "name": "3",
       "position": { "x": 200, "y": 400 },
       "size": { "w": 200, "h": 200 },
       "center": { "x": 300, "y": 500 },
@@ -215,7 +215,7 @@
     },
     {
       "id": "CELL_2_2",
-      "name": "INTERSECTION-4",
+      "name": "4",
       "position": { "x": 400, "y": 400 },
       "size": { "w": 200, "h": 200 },
       "center": { "x": 500, "y": 500 },

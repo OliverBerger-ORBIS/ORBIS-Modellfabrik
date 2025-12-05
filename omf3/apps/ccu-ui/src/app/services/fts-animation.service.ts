@@ -250,7 +250,8 @@ export class FtsAnimationService {
       
       const road = this.ftsRouteService.findRoadBetween(from, to);
       if (road) {
-        const segment = this.ftsRouteService.buildRoadSegment(road);
+        // FTS-Tab: always render route to the center (no trimming)
+        const segment = this.ftsRouteService.buildRoadSegment(road, true);
         if (segment) {
           segments.push(segment);
         }

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MessageMonitorService, MonitoredMessage } from '../services/message-monitor.service';
 import { EnvironmentService } from '../services/environment.service';
 import { ModuleNameService } from '../services/module-name.service';
+import { ShopfloorMappingService } from '../services/shopfloor-mapping.service';
 import { BehaviorSubject, combineLatest, interval, Subscription } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import hljs from 'highlight.js';
@@ -24,16 +25,6 @@ interface ModuleInfo {
 
 type TopicTypeFilter = 'all' | 'ccu' | 'module-fts';
 type StatusFilter = 'all' | 'connection' | 'state' | 'factsheet';
-
-// Module/Serial Mapping based on docs/06-integrations/00-REFERENCE/module-serial-mapping.md
-const MODULE_MAPPING: Record<string, ModuleInfo> = {
-  'SVR3QA0022': { serial: 'SVR3QA0022', name: 'HBW', icon: 'shopfloor/stock.svg' },
-  'SVR4H76449': { serial: 'SVR4H76449', name: 'DRILL', icon: 'shopfloor/bohrer.svg' },
-  'SVR3QA2098': { serial: 'SVR3QA2098', name: 'MILL', icon: 'shopfloor/milling-machine.svg' },
-  'SVR4H73275': { serial: 'SVR4H73275', name: 'DPS', icon: 'shopfloor/robot-arm.svg' },
-  'SVR4H76530': { serial: 'SVR4H76530', name: 'AIQS', icon: 'shopfloor/ai-assistant.svg' },
-  '5iO4': { serial: '5iO4', name: 'FTS', icon: 'shopfloor/robotic.svg' },
-};
 
 const CCU_ICON = 'headings/dezentral_1.svg';
 const TXT_ICON = 'shopfloor/mixer.svg';
@@ -80,7 +71,8 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
   constructor(
     private readonly messageMonitor: MessageMonitorService,
     private readonly environmentService: EnvironmentService,
-    private readonly moduleNameService: ModuleNameService
+    private readonly moduleNameService: ModuleNameService,
+    private readonly mappingService: ShopfloorMappingService
   ) {}
 
   get isMockMode(): boolean {
@@ -292,16 +284,11 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
 
     // Build module info list
     const moduleList = Array.from(moduleSerials)
-      .map(serial => {
-        const module = MODULE_MAPPING[serial];
-        if (module) {
-          return {
-            serial: module.serial,
-            name: this.moduleNameService.getModuleDisplayText(module.name, 'id-full'),
-            icon: module.icon
-          };
-        }
-        return { serial, name: serial, icon: 'shopfloor/robot-arm.svg' };
+      .map((serial) => {
+        const moduleType = this.mappingService.getModuleTypeFromSerial(serial) ?? serial;
+        const displayName = this.moduleNameService.getModuleDisplayText(moduleType, 'id-full');
+        const icon = this.mappingService.getModuleIcon(serial) ?? 'shopfloor/robot-arm.svg';
+        return { serial, name: displayName, icon };
       })
       .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -351,11 +338,11 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
         serial = parts[3];
       }
 
-      if (serial && MODULE_MAPPING[serial]) {
-        const module = MODULE_MAPPING[serial];
-        // For table display, show only ID (short version)
-        const displayName = this.moduleNameService.getModuleDisplayText(module.name, 'id-only');
-        return { name: displayName, icon: module.icon };
+      if (serial) {
+        const moduleType = this.mappingService.getModuleTypeFromSerial(serial) ?? serial;
+        const displayName = this.moduleNameService.getModuleDisplayText(moduleType, 'id-only');
+        const icon = this.mappingService.getModuleIcon(serial) ?? 'shopfloor/robot-arm.svg';
+        return { name: displayName, icon };
       }
     }
 
@@ -364,12 +351,10 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
       const parts = topic.split('/');
       if (parts.length >= 4) {
         const serial = parts[3];
-        if (MODULE_MAPPING[serial]) {
-          const module = MODULE_MAPPING[serial];
-          // For table display, show only ID (short version)
-          const displayName = this.moduleNameService.getModuleDisplayText(module.name, 'id-only');
-          return { name: displayName, icon: module.icon };
-        }
+        const moduleType = this.mappingService.getModuleTypeFromSerial(serial) ?? 'FTS';
+        const displayName = this.moduleNameService.getModuleDisplayText(moduleType, 'id-only');
+        const icon = this.mappingService.getModuleIcon(serial) ?? 'shopfloor/robotic.svg';
+        return { name: displayName, icon };
       }
     }
 

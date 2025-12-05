@@ -8,6 +8,7 @@ import type { ModuleOverviewStateService } from '../../services/module-overview-
 import type { MessageMonitorService } from '../../services/message-monitor.service';
 import type { HttpClient } from '@angular/common/http';
 import type { ChangeDetectorRef } from '@angular/core';
+import type { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
 
 jest.mock('../../mock-dashboard', () => {
   const mockCommands = {
@@ -68,6 +69,11 @@ const createComponent = () => {
     markForCheck: jest.fn(),
   } as unknown as ChangeDetectorRef;
 
+  const mappingServiceStub = {
+    initializeLayout: jest.fn(),
+    getAllModules: jest.fn(() => []),
+  } as unknown as ShopfloorMappingService;
+
   const initSpy = jest
     .spyOn(ModuleTabComponent.prototype as any, 'initializeStreams')
     .mockImplementation(() => {});
@@ -79,7 +85,8 @@ const createComponent = () => {
     moduleOverviewStateStub,
     messageMonitorStub,
     cdrStub,
-    httpStub
+    httpStub,
+    mappingServiceStub
   );
   initSpy.mockRestore();
   return component;

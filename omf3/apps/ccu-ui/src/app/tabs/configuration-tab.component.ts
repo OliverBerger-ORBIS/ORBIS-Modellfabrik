@@ -9,6 +9,7 @@ import { map, shareReplay, tap, filter, startWith, distinctUntilChanged } from '
 import { getDashboardController, type DashboardStreamSet } from '../mock-dashboard';
 import { MessageMonitorService, MonitoredMessage } from '../services/message-monitor.service';
 import { ModuleNameService } from '../services/module-name.service';
+import { ShopfloorMappingService } from '../services/shopfloor-mapping.service';
 import { EnvironmentService } from '../services/environment.service';
 import { ConnectionService } from '../services/connection.service';
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
@@ -349,10 +350,12 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     private readonly connectionService: ConnectionService,
     private readonly externalLinksService: ExternalLinksService,
     private readonly router: Router,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly mappingService: ShopfloorMappingService
   ) {
     this.externalLinks$ = this.externalLinksService.settings$;
     this.layoutInfo$ = this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').pipe(
+      tap((layout) => this.mappingService.initializeLayout(layout)),
       map((layout) => this.buildLayout(layout)),
       tap((layout) => {
         if (!this.selectedCellSubject.value && layout.cells.length > 0) {

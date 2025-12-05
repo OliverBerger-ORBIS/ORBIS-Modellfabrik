@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map, shareReplay } from 'rxjs';
 import { ShopfloorLayoutConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
 import { FtsRouteService } from './fts-route.service';
+import { ShopfloorMappingService } from './shopfloor-mapping.service';
 
 export interface ModuleDisplayName {
   id: string;
@@ -17,21 +18,15 @@ export interface SerialToModuleInfo {
 @Injectable({ providedIn: 'root' })
 export class ModuleNameService {
   private readonly ftsRouteService = inject(FtsRouteService);
+  private readonly mappingService = inject(ShopfloorMappingService);
   private layoutConfig$?: Observable<ShopfloorLayoutConfig>;
-  private serialToModuleCache = new Map<string, SerialToModuleInfo>();
 
   constructor(private readonly http: HttpClient) {
     // Load shopfloor layout to build serial-to-module mapping
     this.layoutConfig$ = this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').pipe(
       map((config) => {
-        // Build serial-to-module cache
-        this.serialToModuleCache.clear();
-        Object.entries(config.modules_by_serial ?? {}).forEach(([serial, meta]) => {
-          this.serialToModuleCache.set(serial, {
-            moduleType: meta.type,
-            serialId: serial,
-          });
-        });
+        // Initialize centralized mapping service
+        this.mappingService.initializeLayout(config);
         return config;
       }),
       shareReplay({ bufferSize: 1, refCount: true })
@@ -44,8 +39,7 @@ export class ModuleNameService {
    * Get module type from serial ID
    */
   getModuleTypeFromSerial(serialId: string): string | null {
-    const info = this.serialToModuleCache.get(serialId);
-    return info?.moduleType ?? null;
+    return this.mappingService.getModuleTypeFromSerial(serialId);
   }
 
   /**
