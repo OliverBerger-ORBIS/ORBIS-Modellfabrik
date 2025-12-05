@@ -1,0 +1,53 @@
+<div class="dsp-use-cases">
+  <h2 class="dsp-use-cases__title">{{ sectionTitle }}</h2>
+  <p class="dsp-use-cases__subtitle">{{ sectionSubtitle }}</p>
+
+  <div class="dsp-use-cases__grid">
+    <div
+      *ngFor="let useCase of useCases; trackBy: trackById"
+      class="dsp-use-case"
+      [class.dsp-use-case--expanded]="useCase.expanded"
+    >
+      <div class="dsp-use-case__header" 
+           (click)="toggleUseCase(useCase.id)" 
+           (keydown.enter)="toggleUseCase(useCase.id)"
+           (keydown.space)="toggleUseCase(useCase.id)"
+           tabindex="0"
+           role="button"
+           [attr.aria-expanded]="useCase.expanded"
+           [attr.aria-controls]="'use-case-content-' + useCase.id">
+        <div class="dsp-use-case__icon">
+          <img [src]="useCase.icon" [alt]="useCase.title" />
+        </div>
+        <div class="dsp-use-case__header-content">
+          <h3 class="dsp-use-case__title">{{ useCase.title }}</h3>
+          <p class="dsp-use-case__description">{{ useCase.description }}</p>
+        </div>
+        <div class="dsp-use-case__toggle">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <div class="dsp-use-case__content" 
+           *ngIf="useCase.expanded"
+           [attr.id]="'use-case-content-' + useCase.id">
+        <ul class="dsp-use-case__highlights">
+          <li *ngFor="let highlight of useCase.highlights" class="dsp-use-case__highlight">
+            {{ highlight }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

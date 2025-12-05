@@ -557,21 +557,48 @@ export function createDefaultConnections(): ConnectionConfig[] {
 }
 
 /**
- * Default animation steps based on PowerPoint slides.
- * 9 animation steps as specified:
- * 1. Devices only with highlighting
- * 2. Shopfloor systems added
- * 3. DSP layer with Edge only (no function icons yet)
- * 4. Edge function icons shown with highlight
- * 5. Arrows from Edge to all Shopfloor icons (bidirectional)
- * 6. Business Process layer with SAP Shopfloor and connection highlight
- * 7. Remaining BP components with connection highlight
- * 8. Management Cockpit with highlight and connection to Edge
- * 9. SmartFactory Dashboard with highlight and connection to Edge
+ * Default animation steps - Extended to 12 steps for comprehensive DSP story.
+ * 1. Shopfloor Devices - heterogeneous devices
+ * 2. Shopfloor Systems - AGVs, warehouses, custom controllers
+ * 3. DSP Edge Core - local runtime appears
+ * 4. Edge Connectivity - OPC UA, MQTT, REST
+ * 5. Digital Twin & Data Modeling - normalization and twin
+ * 6. Process Logic / Choreography - decentralized processes
+ * 7. Analytics / AI Preparation - KPIs, OEE, ML prep
+ * 8. Connections Shopfloor ↔ Edge - bidirectional communication
+ * 9. Management Cockpit - cloud-based orchestration
+ * 10. Business Integration - ERP, Cloud, Analytics, Data Lake
+ * 11. SmartFactory Dashboard - visualization layer
+ * 12. AI Excellence (Phase 5) - autonomous optimization highlight
  */
 export function createDefaultSteps(): StepConfig[] {
+  const baseShopfloorContainers = [
+    'layer-shopfloor',
+    'shopfloor-systems-group',
+    'shopfloor-system-bp',
+    'shopfloor-system-fts',
+    'shopfloor-devices-group',
+    'shopfloor-device-1',
+    'shopfloor-device-2',
+    'shopfloor-device-3',
+    'shopfloor-device-4',
+    'shopfloor-device-5',
+    'shopfloor-device-6',
+  ];
+
+  const baseShopfloorConnections = [
+    'conn-edge-system-bp',
+    'conn-edge-system-fts',
+    'conn-edge-device-1',
+    'conn-edge-device-2',
+    'conn-edge-device-3',
+    'conn-edge-device-4',
+    'conn-edge-device-5',
+    'conn-edge-device-6',
+  ];
+
   return [
-    // Step 1: Devices only with highlighting (like step 2 previously)
+    // Step 1: Shopfloor Devices - DSP vernetzt heterogene Geräte
     {
       id: 'step-1',
       label: '',
@@ -590,215 +617,140 @@ export function createDefaultSteps(): StepConfig[] {
       highlightedConnectionIds: [],
     },
 
-    // Step 2: Shopfloor systems added
+    // Step 2: Shopfloor Systems - DSP integriert komplette Systeme (AGVs, Lager, etc.)
     {
       id: 'step-2',
       label: '',
-      visibleContainerIds: [
-        'layer-shopfloor',
-        'shopfloor-systems-group',
-        'shopfloor-system-bp',
-        'shopfloor-system-fts',
-        'shopfloor-devices-group',
-        'shopfloor-device-1',
-        'shopfloor-device-2',
-        'shopfloor-device-3',
-        'shopfloor-device-4',
-        'shopfloor-device-5',
-        'shopfloor-device-6',
-      ],
+      visibleContainerIds: baseShopfloorContainers,
       highlightedContainerIds: ['shopfloor-systems-group', 'shopfloor-system-bp', 'shopfloor-system-fts'],
       visibleConnectionIds: [],
       highlightedConnectionIds: [],
     },
 
-    // Step 3: DSP layer with Edge only (NO function icons yet - they appear in step 4)
+    // Step 3: DSP Edge Core erscheint - lokale Runtime
     {
       id: 'step-3',
       label: '',
       visibleContainerIds: [
         'layer-dsp',
-        'layer-shopfloor',
         'dsp-label-onpremise',
         'edge',
-        'shopfloor-systems-group',
-        'shopfloor-system-bp',
-        'shopfloor-system-fts',
-        'shopfloor-devices-group',
-        'shopfloor-device-1',
-        'shopfloor-device-2',
-        'shopfloor-device-3',
-        'shopfloor-device-4',
-        'shopfloor-device-5',
-        'shopfloor-device-6',
+        ...baseShopfloorContainers,
       ],
       highlightedContainerIds: ['layer-dsp', 'edge'],
       visibleConnectionIds: [],
       highlightedConnectionIds: [],
-      // Note: Edge function icons are controlled by showFunctionIcons flag
-      showFunctionIcons: false,  // Hide function icons in this step
+      showFunctionIcons: false,
     },
 
-    // Step 4: Edge function icons shown with highlight
+    // Step 4: Edge Connectivity - OPC UA, MQTT, REST
     {
       id: 'step-4',
       label: '',
       visibleContainerIds: [
         'layer-dsp',
-        'layer-shopfloor',
         'dsp-label-onpremise',
         'edge',
-        'shopfloor-systems-group',
-        'shopfloor-system-bp',
-        'shopfloor-system-fts',
-        'shopfloor-devices-group',
-        'shopfloor-device-1',
-        'shopfloor-device-2',
-        'shopfloor-device-3',
-        'shopfloor-device-4',
-        'shopfloor-device-5',
-        'shopfloor-device-6',
+        ...baseShopfloorContainers,
       ],
       highlightedContainerIds: ['edge'],
       visibleConnectionIds: [],
       highlightedConnectionIds: [],
-      showFunctionIcons: true,  // Show function icons in this step
+      showFunctionIcons: true,
     },
 
-    // Step 5: Arrows from Edge to all Shopfloor icons
+    // Step 5: Digital Twin & Data Modeling - Edge normalisiert Datenströme
     {
       id: 'step-5',
       label: '',
       visibleContainerIds: [
         'layer-dsp',
-        'layer-shopfloor',
         'dsp-label-onpremise',
         'edge',
-        'shopfloor-systems-group',
-        'shopfloor-system-bp',
-        'shopfloor-system-fts',
-        'shopfloor-devices-group',
-        'shopfloor-device-1',
-        'shopfloor-device-2',
-        'shopfloor-device-3',
-        'shopfloor-device-4',
-        'shopfloor-device-5',
-        'shopfloor-device-6',
+        ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: [],
-      visibleConnectionIds: [
-        'conn-edge-system-bp',
-        'conn-edge-system-fts',
-        'conn-edge-device-1',
-        'conn-edge-device-2',
-        'conn-edge-device-3',
-        'conn-edge-device-4',
-        'conn-edge-device-5',
-        'conn-edge-device-6',
-      ],
-      highlightedConnectionIds: [
-        'conn-edge-system-bp',
-        'conn-edge-system-fts',
-        'conn-edge-device-1',
-        'conn-edge-device-2',
-        'conn-edge-device-3',
-        'conn-edge-device-4',
-        'conn-edge-device-5',
-        'conn-edge-device-6',
-      ],
+      highlightedContainerIds: ['edge'],
+      visibleConnectionIds: [],
+      highlightedConnectionIds: [],
       showFunctionIcons: true,
     },
 
-    // Step 6: Business Process layer with SAP Shopfloor and connection highlight
+    // Step 6: Process Logic / Choreography - Prozessobjekte, dezentral
     {
       id: 'step-6',
       label: '',
       visibleContainerIds: [
-        'layer-business',
         'layer-dsp',
-        'layer-shopfloor',
         'dsp-label-onpremise',
-        'bp-sap-shopfloor',
         'edge',
-        'shopfloor-systems-group',
-        'shopfloor-system-bp',
-        'shopfloor-system-fts',
-        'shopfloor-devices-group',
-        'shopfloor-device-1',
-        'shopfloor-device-2',
-        'shopfloor-device-3',
-        'shopfloor-device-4',
-        'shopfloor-device-5',
-        'shopfloor-device-6',
+        ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: ['layer-business', 'bp-sap-shopfloor'],
-      visibleConnectionIds: [
-        'conn-sap-edge',
-        'conn-edge-system-bp',
-        'conn-edge-system-fts',
-        'conn-edge-device-1',
-        'conn-edge-device-2',
-        'conn-edge-device-3',
-        'conn-edge-device-4',
-        'conn-edge-device-5',
-        'conn-edge-device-6',
-      ],
-      highlightedConnectionIds: ['conn-sap-edge'],
+      highlightedContainerIds: ['edge'],
+      visibleConnectionIds: [],
+      highlightedConnectionIds: [],
       showFunctionIcons: true,
     },
 
-    // Step 7: Remaining BP components with connection highlight
+    // Step 7: Analytics / AI Preparation - Edge verdichtet Daten für KPIs, ML
     {
       id: 'step-7',
       label: '',
       visibleContainerIds: [
-        'layer-business',
         'layer-dsp',
-        'layer-shopfloor',
         'dsp-label-onpremise',
-        'bp-sap-shopfloor',
-        'bp-cloud-apps',
-        'bp-analytics',
-        'bp-data-lake',
         'edge',
-        'shopfloor-systems-group',
-        'shopfloor-system-bp',
-        'shopfloor-system-fts',
-        'shopfloor-devices-group',
-        'shopfloor-device-1',
-        'shopfloor-device-2',
-        'shopfloor-device-3',
-        'shopfloor-device-4',
-        'shopfloor-device-5',
-        'shopfloor-device-6',
+        ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: ['bp-cloud-apps', 'bp-analytics', 'bp-data-lake'],
-      visibleConnectionIds: [
-        'conn-sap-edge',
-        'conn-cloud-edge',
-        'conn-analytics-edge',
-        'conn-datalake-edge',
-        'conn-edge-system-bp',
-        'conn-edge-system-fts',
-        'conn-edge-device-1',
-        'conn-edge-device-2',
-        'conn-edge-device-3',
-        'conn-edge-device-4',
-        'conn-edge-device-5',
-        'conn-edge-device-6',
-      ],
-      highlightedConnectionIds: ['conn-cloud-edge', 'conn-analytics-edge', 'conn-datalake-edge'],
+      highlightedContainerIds: ['edge'],
+      visibleConnectionIds: [],
+      highlightedConnectionIds: [],
       showFunctionIcons: true,
     },
 
-    // Step 8: Management Cockpit with highlight and connection to Edge
+    // Step 8: Connections Shopfloor ↔ Edge - bidirektionale Kommunikation
     {
       id: 'step-8',
       label: '',
       visibleContainerIds: [
+        'layer-dsp',
+        'dsp-label-onpremise',
+        'edge',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: [],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: baseShopfloorConnections,
+      showFunctionIcons: true,
+    },
+
+    // Step 9: Management Cockpit - zentral in der Cloud
+    {
+      id: 'step-9',
+      label: '',
+      visibleContainerIds: [
+        'layer-dsp',
+        'dsp-label-onpremise',
+        'dsp-label-cloud',
+        'edge',
+        'management',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: ['management'],
+      visibleConnectionIds: [
+        'conn-edge-management',
+        ...baseShopfloorConnections,
+      ],
+      highlightedConnectionIds: ['conn-edge-management'],
+      showFunctionIcons: true,
+    },
+
+    // Step 10: Business Integration - ERP, Cloud, Analytics, Data Lake
+    {
+      id: 'step-10',
+      label: '',
+      visibleContainerIds: [
         'layer-business',
         'layer-dsp',
-        'layer-shopfloor',
         'dsp-label-onpremise',
         'dsp-label-cloud',
         'bp-sap-shopfloor',
@@ -807,45 +759,28 @@ export function createDefaultSteps(): StepConfig[] {
         'bp-data-lake',
         'edge',
         'management',
-        'shopfloor-systems-group',
-        'shopfloor-system-bp',
-        'shopfloor-system-fts',
-        'shopfloor-devices-group',
-        'shopfloor-device-1',
-        'shopfloor-device-2',
-        'shopfloor-device-3',
-        'shopfloor-device-4',
-        'shopfloor-device-5',
-        'shopfloor-device-6',
+        ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: ['management'],
+      highlightedContainerIds: ['layer-business', 'bp-sap-shopfloor', 'bp-cloud-apps', 'bp-analytics', 'bp-data-lake'],
       visibleConnectionIds: [
         'conn-edge-management',
         'conn-sap-edge',
         'conn-cloud-edge',
         'conn-analytics-edge',
         'conn-datalake-edge',
-        'conn-edge-system-bp',
-        'conn-edge-system-fts',
-        'conn-edge-device-1',
-        'conn-edge-device-2',
-        'conn-edge-device-3',
-        'conn-edge-device-4',
-        'conn-edge-device-5',
-        'conn-edge-device-6',
+        ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: ['conn-edge-management'],
+      highlightedConnectionIds: ['conn-sap-edge', 'conn-cloud-edge', 'conn-analytics-edge', 'conn-datalake-edge'],
       showFunctionIcons: true,
     },
 
-    // Step 9: SmartFactory Dashboard with highlight and connection to Edge (final state - no highlighting at end)
+    // Step 11: SmartFactory Dashboard - Visualisierung
     {
-      id: 'step-9',
+      id: 'step-11',
       label: '',
       visibleContainerIds: [
         'layer-business',
         'layer-dsp',
-        'layer-shopfloor',
         'dsp-label-onpremise',
         'dsp-label-cloud',
         'bp-sap-shopfloor',
@@ -855,18 +790,9 @@ export function createDefaultSteps(): StepConfig[] {
         'ux',
         'edge',
         'management',
-        'shopfloor-systems-group',
-        'shopfloor-system-bp',
-        'shopfloor-system-fts',
-        'shopfloor-devices-group',
-        'shopfloor-device-1',
-        'shopfloor-device-2',
-        'shopfloor-device-3',
-        'shopfloor-device-4',
-        'shopfloor-device-5',
-        'shopfloor-device-6',
+        ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: [],  // No highlighting at end
+      highlightedContainerIds: ['ux'],
       visibleConnectionIds: [
         'conn-ux-edge',
         'conn-edge-management',
@@ -874,16 +800,51 @@ export function createDefaultSteps(): StepConfig[] {
         'conn-cloud-edge',
         'conn-analytics-edge',
         'conn-datalake-edge',
-        'conn-edge-system-bp',
-        'conn-edge-system-fts',
-        'conn-edge-device-1',
-        'conn-edge-device-2',
-        'conn-edge-device-3',
-        'conn-edge-device-4',
-        'conn-edge-device-5',
-        'conn-edge-device-6',
+        ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: [],  // No highlighting at end
+      highlightedConnectionIds: ['conn-ux-edge'],
+      showFunctionIcons: true,
+    },
+
+    // Step 12: AI Excellence (Phase 5) - alle Ebenen hervorgehoben
+    {
+      id: 'step-12',
+      label: '',
+      visibleContainerIds: [
+        'layer-business',
+        'layer-dsp',
+        'dsp-label-onpremise',
+        'dsp-label-cloud',
+        'bp-sap-shopfloor',
+        'bp-cloud-apps',
+        'bp-analytics',
+        'bp-data-lake',
+        'ux',
+        'edge',
+        'management',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: [
+        'layer-business',
+        'layer-dsp',
+        'ux',
+        'edge',
+        'management',
+        'bp-sap-shopfloor',
+        'bp-cloud-apps',
+        'bp-analytics',
+        'bp-data-lake',
+      ],
+      visibleConnectionIds: [
+        'conn-ux-edge',
+        'conn-edge-management',
+        'conn-sap-edge',
+        'conn-cloud-edge',
+        'conn-analytics-edge',
+        'conn-datalake-edge',
+        ...baseShopfloorConnections,
+      ],
+      highlightedConnectionIds: [],
       showFunctionIcons: true,
     },
   ];

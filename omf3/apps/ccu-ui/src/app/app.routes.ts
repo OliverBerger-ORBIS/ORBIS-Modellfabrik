@@ -4,7 +4,7 @@ export const appRoutes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'en/overview',
+    redirectTo: 'en/dsp',
   },
   {
     path: ':locale',
@@ -12,7 +12,12 @@ export const appRoutes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'overview',
+        redirectTo: 'dsp',
+      },
+      {
+        path: 'dsp',
+        loadComponent: () =>
+          import('./pages/dsp/dsp-page.component').then((m) => m.DspPageComponent),
       },
       {
         path: 'overview',

@@ -94,17 +94,20 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   protected readonly zoomInLabel = $localize`:@@shopfloorPreviewZoomIn:Zoom in`;
   protected readonly resetZoomLabel = $localize`:@@shopfloorPreviewResetZoom:Reset zoom`;
 
-  // Step labels (9 steps)
+  // Step labels (12 steps)
   protected readonly stepLabels = [
-    $localize`:@@dspArchStep1:Devices`,
+    $localize`:@@dspArchStep1:Shopfloor Devices`,
     $localize`:@@dspArchStep2:Shopfloor Systems`,
-    $localize`:@@dspArchStep3:DSP EDGE`,
-    $localize`:@@dspArchStep4:EDGE Functions`,
-    $localize`:@@dspArchStep5:Shopfloor Connections`,
-    $localize`:@@dspArchStep6:SAP Integration`,
-    $localize`:@@dspArchStep7:Business Processes`,
-    $localize`:@@dspArchStep8:Management Cockpit`,
-    $localize`:@@dspArchStep9:SmartFactory Dashboard`,
+    $localize`:@@dspArchStep3:DSP Edge Core`,
+    $localize`:@@dspArchStep4:Edge Connectivity`,
+    $localize`:@@dspArchStep5:Digital Twin & Data Modeling`,
+    $localize`:@@dspArchStep6:Process Logic / Choreography`,
+    $localize`:@@dspArchStep7:Analytics / AI Preparation`,
+    $localize`:@@dspArchStep8:Shopfloor Connections`,
+    $localize`:@@dspArchStep9:Management Cockpit`,
+    $localize`:@@dspArchStep10:Business Integration`,
+    $localize`:@@dspArchStep11:SmartFactory Dashboard`,
+    $localize`:@@dspArchStep12:AI Excellence (Phase 5)`,
   ];
 
   // Container labels from view
