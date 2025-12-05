@@ -107,7 +107,7 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
     $localize`:@@dspArchStep9:Management Cockpit`,
     $localize`:@@dspArchStep10:Business Integration`,
     $localize`:@@dspArchStep11:SmartFactory Dashboard`,
-    $localize`:@@dspArchStep12:AI Excellence (Phase 5)`,
+    $localize`:@@dspArchStep12:Autonomous & Adaptive Enterprise`,
   ];
 
   // Container labels from view
@@ -215,7 +215,7 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
    */
   private mapBusinessProcessId(viewId: string): string {
     const mapping: Record<string, string> = {
-      'shopfloor': 'bp-sap-shopfloor',
+      'shopfloor': 'erp-application',
       'cloud-apps': 'bp-cloud-apps',
       'analytics': 'bp-analytics',
       'data-lake': 'bp-data-lake',

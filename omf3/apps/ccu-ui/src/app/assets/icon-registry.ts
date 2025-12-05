@@ -37,7 +37,7 @@ export type IconKey =
   | 'shopfloor-it'
   | 'ux-dashboard'
   | 'ux-monitor'
-  | 'bp-sap-shopfloor'
+  | 'erp-application'
   | 'bp-cloud-apps'
   | 'bp-analytics'
   | 'bp-data-lake'
@@ -90,7 +90,7 @@ export const ICON_MAP: Record<IconKey, string> = {
   'ux-dashboard': ICONS.dsp.architecture.smartFactoryDashboard,
   'ux-monitor': ICONS.dsp.architecture.cockpitBox,
 
-  'bp-sap-shopfloor': ICONS.brand.sap,
+  'erp-application': ICONS.business.erp,
   'bp-cloud-apps': ICONS.business.cloud,
   'bp-analytics': ICONS.business.analytics,
   'bp-data-lake': ICONS.business.dataLake,

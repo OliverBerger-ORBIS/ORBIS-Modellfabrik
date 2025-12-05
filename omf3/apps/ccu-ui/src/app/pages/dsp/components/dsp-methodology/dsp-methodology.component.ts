@@ -9,7 +9,7 @@ interface Phase {
   activities: string[];
   outcome: string;
   icon: string;
-  isAiExcellence: boolean;
+  isAutonomousAdaptive: boolean;
   active: boolean;
 }
 
@@ -17,7 +17,7 @@ interface Phase {
  * DSP Methodology Component
  * 
  * Displays the 5-phase DSP implementation methodology with special
- * emphasis on Phase 5 (AI Excellence).
+ * emphasis on Phase 5 (Autonomous & Adaptive Enterprise).
  */
 @Component({
   standalone: true,
@@ -45,7 +45,7 @@ export class DspMethodologyComponent {
       ],
       outcome: $localize`:@@dspPhase1Outcome:End-to-end visibility and data availability`,
       icon: 'assets/svg/orbis/data-lake.svg',
-      isAiExcellence: false,
+      isAutonomousAdaptive: false,
       active: false,
     },
     {
@@ -61,7 +61,7 @@ export class DspMethodologyComponent {
       ],
       outcome: $localize`:@@dspPhase2Outcome:Trusted, consistent single source of truth`,
       icon: 'assets/svg/orbis/semantic.svg',
-      isAiExcellence: false,
+      isAutonomousAdaptive: false,
       active: false,
     },
     {
@@ -77,7 +77,7 @@ export class DspMethodologyComponent {
       ],
       outcome: $localize`:@@dspPhase3Outcome:Actionable insights and performance visibility`,
       icon: 'assets/svg/orbis/dashboard.svg',
-      isAiExcellence: false,
+      isAutonomousAdaptive: false,
       active: false,
     },
     {
@@ -93,13 +93,13 @@ export class DspMethodologyComponent {
       ],
       outcome: $localize`:@@dspPhase4Outcome:Closed-loop automation, faster reaction time, reduced manual effort`,
       icon: 'assets/svg/orbis/workflow-1.svg',
-      isAiExcellence: false,
+      isAutonomousAdaptive: false,
       active: false,
     },
     {
       id: 'phase5',
       number: 5,
-      title: $localize`:@@dspPhase5Title:AI Excellence`,
+      title: $localize`:@@dspPhase5Title:Autonomous & Adaptive Enterprise`,
       summary: $localize`:@@dspPhase5Summary:Autonomous Decisions, ML/AI, Data Lake + ERP + Edge Integration`,
       activities: [
         $localize`:@@dspPhase5Activity1:Deploy agentic AI to reason, plan, and act autonomously`,
@@ -109,7 +109,7 @@ export class DspMethodologyComponent {
       ],
       outcome: $localize`:@@dspPhase5Outcome:Self-learning, adaptive, intelligent manufacturing enterprise`,
       icon: 'assets/svg/methodology/phase5-autonomous-enterprise.svg',
-      isAiExcellence: true,
+      isAutonomousAdaptive: true,
       active: false,
     },
   ];

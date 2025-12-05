@@ -213,16 +213,17 @@ export function createDefaultContainers(): ContainerConfig[] {
   const businessStartX = LAYOUT.CONTENT_START_X;
 
   containers.push({
-    id: 'bp-sap-shopfloor',
-    label: '',  // "Shopfloor" - label at top center
+    id: 'erp-application',
+    label: '',  // "ERP Applications" - label at top center
     x: businessStartX,
     y: businessBoxY,
     width: businessBoxWidth,
     height: LAYOUT.BUSINESS_BOX_HEIGHT,
     type: 'business',
     state: 'hidden',
-    logoIconKey: 'logo-sap' as IconKey,  // SAP logo, centered
-    // logoPosition not set = centered icon
+    logoIconKey: 'erp-application' as IconKey,  // Generic ERP application icon, centered
+    secondaryLogoIconKey: 'logo-sap' as IconKey,  // SAP logo in top-right corner
+    secondaryLogoPosition: 'top-right',
     borderColor: 'rgba(22, 65, 148, 0.25)', // ORBIS Blue Strong RGB
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
@@ -514,8 +515,8 @@ export function createDefaultConnections(): ConnectionConfig[] {
 
     // Business to DSP connections (all bidirectional)
     {
-      id: 'conn-sap-edge',
-      fromId: 'bp-sap-shopfloor',
+      id: 'conn-erp-edge',
+      fromId: 'erp-application',
       toId: 'edge',
       fromSide: 'bottom',
       toSide: 'top',
@@ -569,7 +570,7 @@ export function createDefaultConnections(): ConnectionConfig[] {
  * 9. Management Cockpit - cloud-based orchestration
  * 10. Business Integration - ERP, Cloud, Analytics, Data Lake
  * 11. SmartFactory Dashboard - visualization layer
- * 12. AI Excellence (Phase 5) - autonomous optimization highlight
+ * 12. Autonomous & Adaptive Enterprise (Phase 5) - autonomous optimization highlight
  */
 export function createDefaultSteps(): StepConfig[] {
   const baseShopfloorContainers = [
@@ -753,7 +754,7 @@ export function createDefaultSteps(): StepConfig[] {
         'layer-dsp',
         'dsp-label-onpremise',
         'dsp-label-cloud',
-        'bp-sap-shopfloor',
+        'erp-application',
         'bp-cloud-apps',
         'bp-analytics',
         'bp-data-lake',
@@ -761,16 +762,16 @@ export function createDefaultSteps(): StepConfig[] {
         'management',
         ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: ['layer-business', 'bp-sap-shopfloor', 'bp-cloud-apps', 'bp-analytics', 'bp-data-lake'],
+      highlightedContainerIds: ['layer-business', 'erp-application', 'bp-cloud-apps', 'bp-analytics', 'bp-data-lake'],
       visibleConnectionIds: [
         'conn-edge-management',
-        'conn-sap-edge',
+        'conn-erp-edge',
         'conn-cloud-edge',
         'conn-analytics-edge',
         'conn-datalake-edge',
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: ['conn-sap-edge', 'conn-cloud-edge', 'conn-analytics-edge', 'conn-datalake-edge'],
+      highlightedConnectionIds: ['conn-erp-edge', 'conn-cloud-edge', 'conn-analytics-edge', 'conn-datalake-edge'],
       showFunctionIcons: true,
     },
 
@@ -783,7 +784,7 @@ export function createDefaultSteps(): StepConfig[] {
         'layer-dsp',
         'dsp-label-onpremise',
         'dsp-label-cloud',
-        'bp-sap-shopfloor',
+        'erp-application',
         'bp-cloud-apps',
         'bp-analytics',
         'bp-data-lake',
@@ -796,7 +797,7 @@ export function createDefaultSteps(): StepConfig[] {
       visibleConnectionIds: [
         'conn-ux-edge',
         'conn-edge-management',
-        'conn-sap-edge',
+        'conn-erp-edge',
         'conn-cloud-edge',
         'conn-analytics-edge',
         'conn-datalake-edge',
@@ -806,7 +807,7 @@ export function createDefaultSteps(): StepConfig[] {
       showFunctionIcons: true,
     },
 
-    // Step 12: AI Excellence (Phase 5) - alle Ebenen hervorgehoben
+    // Step 12: Autonomous & Adaptive Enterprise (Phase 5) - alle Ebenen hervorgehoben
     {
       id: 'step-12',
       label: '',
@@ -815,7 +816,7 @@ export function createDefaultSteps(): StepConfig[] {
         'layer-dsp',
         'dsp-label-onpremise',
         'dsp-label-cloud',
-        'bp-sap-shopfloor',
+        'erp-application',
         'bp-cloud-apps',
         'bp-analytics',
         'bp-data-lake',
@@ -830,7 +831,7 @@ export function createDefaultSteps(): StepConfig[] {
         'ux',
         'edge',
         'management',
-        'bp-sap-shopfloor',
+        'erp-application',
         'bp-cloud-apps',
         'bp-analytics',
         'bp-data-lake',
@@ -838,7 +839,7 @@ export function createDefaultSteps(): StepConfig[] {
       visibleConnectionIds: [
         'conn-ux-edge',
         'conn-edge-management',
-        'conn-sap-edge',
+        'conn-erp-edge',
         'conn-cloud-edge',
         'conn-analytics-edge',
         'conn-datalake-edge',

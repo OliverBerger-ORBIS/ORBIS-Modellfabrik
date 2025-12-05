@@ -7,7 +7,7 @@
       *ngFor="let phase of phases; trackBy: trackById"
       class="dsp-phase"
       [class.dsp-phase--active]="phase.active"
-      [class.dsp-phase--ai-excellence]="phase.isAiExcellence"
+      [class.dsp-phase--autonomous-adaptive]="phase.isAutonomousAdaptive"
     >
       <div class="dsp-phase__header" 
            (click)="togglePhase(phase.id)"
@@ -59,8 +59,8 @@
         </div>
       </div>
 
-      <div *ngIf="phase.isAiExcellence" class="dsp-phase__badge">
-        <span i18n="@@dspPhaseAiExcellenceBadge">🚀 AI Excellence</span>
+      <div *ngIf="phase.isAutonomousAdaptive" class="dsp-phase__badge">
+        <span i18n="@@dspPhaseAutonomousAdaptiveBadge">🚀 Autonomous & Adaptive Enterprise</span>
       </div>
     </div>
   </div>

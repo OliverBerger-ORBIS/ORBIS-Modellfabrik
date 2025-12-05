@@ -13,7 +13,7 @@ import { DspMesTeaserComponent } from './components/dsp-mes-teaser/dsp-mes-tease
  * - Introduction to DSP concepts
  * - Interactive architecture animation (12 steps)
  * - Use cases (Data Aggregation, Track & Trace, Predictive Maintenance, Process Optimization)
- * - Methodology (Phases 1-5 with AI Excellence)
+ * - Methodology (Phases 1-5 with Autonomous & Adaptive Enterprise)
  * - MES/ERP Integration teaser
  */
 @Component({

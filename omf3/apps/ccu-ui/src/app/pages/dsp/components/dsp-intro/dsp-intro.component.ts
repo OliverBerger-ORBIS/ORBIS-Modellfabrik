@@ -57,8 +57,8 @@ export class DspIntroComponent {
       icon: 'assets/svg/orbis/consolidate.svg',
     },
     {
-      title: $localize`:@@dspIntroAiExcellenceTitle:AI Excellence`,
-      description: $localize`:@@dspIntroAiExcellenceDesc:Phase 5 of the methodology combines data from shopfloor, Edge, business & analytics for autonomous optimization.`,
+      title: $localize`:@@dspIntroAutonomousAdaptiveTitle:Autonomous & Adaptive Enterprise`,
+      description: $localize`:@@dspIntroAutonomousAdaptiveDesc:Phase 5 represents the fully connected, autonomous and adaptive enterprise where data from shopfloor, Edge, ERP, analytics and data lakes enables self-optimizing workflows.`,
       icon: 'assets/svg/orbis/ai-algorithm.svg',
     },
   ];
