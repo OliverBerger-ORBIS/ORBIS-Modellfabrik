@@ -141,16 +141,7 @@ export class EdgeArchitectureComponent {
     };
   }
 
-  /**
-   * Generate SVG path for a connection between two boxes
-   */
-  getConnectionPath(connection: EdgeConnection): string {
-    const from = this.getBoxCenter(connection.from);
-    const to = this.getBoxCenter(connection.to);
-    
-    // Simple straight line for now
-    return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
-  }
+
 
   /**
    * Get connection points at the edge of boxes (for cleaner arrow placement)
@@ -198,10 +189,15 @@ export class EdgeArchitectureComponent {
     const cos = Math.cos(normalizedAngle);
     const sin = Math.sin(normalizedAngle);
 
+    // Prevent division by zero by using a small epsilon value
+    const epsilon = 0.0001;
+    const safeCos = Math.abs(cos) < epsilon ? epsilon * Math.sign(cos || 1) : cos;
+    const safeSin = Math.abs(sin) < epsilon ? epsilon * Math.sign(sin || 1) : sin;
+
     // Check intersection with each edge
     const t = Math.min(
-      Math.abs(halfWidth / cos),
-      Math.abs(halfHeight / sin)
+      Math.abs(halfWidth / safeCos),
+      Math.abs(halfHeight / safeSin)
     );
 
     return {
