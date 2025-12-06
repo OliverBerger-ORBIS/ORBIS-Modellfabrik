@@ -328,6 +328,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     backgroundColor: '#f8f9fa',  // Leichte graue Füllung
     labelPosition: 'bottom',
     fontSize: 13,  // Increased font size
+    url: 'fts',  // Link to AGV/FTS tab (relative URL)
   });
 
   containers.push({
@@ -344,6 +345,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     backgroundColor: '#f8f9fa',  // Leichte graue Füllung
     labelPosition: 'bottom',
     fontSize: 13,  // Increased font size
+    url: 'process',  // Link to process tab (relative URL)
   });
 
   // Geräte container (right) - label at bottom, horizontally centered
@@ -396,7 +398,7 @@ export function createDefaultContainers(): ContainerConfig[] {
       backgroundColor: '#f8f9fa',  // Leichte graue Füllung
       labelPosition: 'bottom',
       fontSize: 10,  // Reduced font size for better fit with long labels
-      url: '/module',  // Link to module tab (will show module details)
+      url: 'module',  // Link to module tab (relative URL - respects locale)
     });
   });
 
@@ -604,7 +606,7 @@ export function createDefaultSteps(): StepConfig[] {
     // Step 1: Shopfloor Devices - DSP vernetzt heterogene Geräte
     {
       id: 'step-1',
-      label: '',
+      label: $localize`:@@dspArchStep1:Shopfloor Devices`,
       visibleContainerIds: [
         'layer-shopfloor',
         'shopfloor-devices-group',
@@ -623,7 +625,7 @@ export function createDefaultSteps(): StepConfig[] {
     // Step 2: Shopfloor Systems - DSP integriert komplette Systeme (AGVs, Lager, etc.)
     {
       id: 'step-2',
-      label: '',
+      label: $localize`:@@dspArchStep2:Shopfloor Systems`,
       visibleContainerIds: baseShopfloorContainers,
       highlightedContainerIds: ['shopfloor-systems-group', 'shopfloor-system-bp', 'shopfloor-system-fts'],
       visibleConnectionIds: [],
@@ -633,7 +635,7 @@ export function createDefaultSteps(): StepConfig[] {
     // Step 3: DSP Edge Core erscheint - lokale Runtime
     {
       id: 'step-3',
-      label: '',
+      label: $localize`:@@dspArchStep3:DSP Edge Core`,
       visibleContainerIds: [
         'layer-dsp',
         'dsp-label-onpremise',
@@ -649,7 +651,7 @@ export function createDefaultSteps(): StepConfig[] {
     // Step 4: Edge Connectivity - OPC UA, MQTT, REST
     {
       id: 'step-4',
-      label: '',
+      label: $localize`:@@dspArchStep4:Connectivity`,
       description: $localize`:@@dspArchStep4Desc:Connect any machine via OPC UA, MQTT, REST, and custom protocols.`,
       visibleContainerIds: [
         'layer-dsp',
@@ -667,7 +669,7 @@ export function createDefaultSteps(): StepConfig[] {
     // Step 5: Digital Twin - Real-time state modeling
     {
       id: 'step-5',
-      label: '',
+      label: $localize`:@@dspArchStep5:Digital Twin`,
       description: $localize`:@@dspArchStep5Desc:Real-time machine and workpiece state modelling at the edge.`,
       visibleContainerIds: [
         'layer-dsp',
@@ -685,7 +687,7 @@ export function createDefaultSteps(): StepConfig[] {
     // Step 6: Process Logic / Choreography - Event-driven processes
     {
       id: 'step-6',
-      label: '',
+      label: $localize`:@@dspArchStep6:Process Logic`,
       description: $localize`:@@dspArchStep6Desc:Model event-driven shopfloor processes with decentralized orchestration.`,
       visibleContainerIds: [
         'layer-dsp',
@@ -703,7 +705,7 @@ export function createDefaultSteps(): StepConfig[] {
     // Step 7: Edge Analytics - KPIs, OEE, quality metrics
     {
       id: 'step-7',
-      label: '',
+      label: $localize`:@@dspArchStep7:Edge Analytics`,
       description: $localize`:@@dspArchStep7Desc:Edge analytics for cycle time, vibrations, quality, utilization.`,
       visibleContainerIds: [
         'layer-dsp',
@@ -721,7 +723,7 @@ export function createDefaultSteps(): StepConfig[] {
     // Step 7a: Edge Buffering - Guaranteed delivery
     {
       id: 'step-7a',
-      label: '',
+      label: $localize`:@@dspArchStep7a:Buffering`,
       description: $localize`:@@dspArchStep7aDesc:Guaranteed event delivery with local buffering during connection loss.`,
       visibleContainerIds: [
         'layer-dsp',
@@ -739,7 +741,7 @@ export function createDefaultSteps(): StepConfig[] {
     // Step 8: Connections Shopfloor ↔ Edge - bidirektionale Kommunikation
     {
       id: 'step-8',
-      label: '',
+      label: $localize`:@@dspArchStep8:Shopfloor ↔ Edge`,
       visibleContainerIds: [
         'layer-dsp',
         'dsp-label-onpremise',
@@ -755,7 +757,7 @@ export function createDefaultSteps(): StepConfig[] {
     // Step 9: Management Cockpit - zentral in der Cloud
     {
       id: 'step-9',
-      label: '',
+      label: $localize`:@@dspArchStep9:Management Cockpit`,
       visibleContainerIds: [
         'layer-dsp',
         'dsp-label-onpremise',
@@ -776,7 +778,7 @@ export function createDefaultSteps(): StepConfig[] {
     // Step 10: Business Integration - ERP, Cloud, Analytics, Data Lake
     {
       id: 'step-10',
-      label: '',
+      label: $localize`:@@dspArchStep10:Business Integration`,
       visibleContainerIds: [
         'layer-business',
         'layer-dsp',
@@ -806,7 +808,7 @@ export function createDefaultSteps(): StepConfig[] {
     // Step 11: SmartFactory Dashboard - Visualisierung
     {
       id: 'step-11',
-      label: '',
+      label: $localize`:@@dspArchStep11:SmartFactory Dashboard`,
       visibleContainerIds: [
         'layer-business',
         'layer-dsp',
@@ -838,7 +840,7 @@ export function createDefaultSteps(): StepConfig[] {
     // Step 12: Autonomous & Adaptive Enterprise (Phase 5) - alle Ebenen hervorgehoben
     {
       id: 'step-12',
-      label: '',
+      label: $localize`:@@dspArchStep12:Autonomous & Adaptive Enterprise`,
       visibleContainerIds: [
         'layer-business',
         'layer-dsp',

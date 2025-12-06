@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { DspArchitectureComponent } from '../../../../components/dsp-architecture/dsp-architecture.component';
 import type { DspDetailView } from '../../../../tabs/configuration-detail.types';
 import { ExternalLinksService } from '../../../../services/external-links.service';
@@ -78,7 +78,34 @@ export class DspArchitectureWrapperComponent implements OnInit {
     ],
     actions: [],
     resources: [],
-    businessProcesses: [],
+    businessProcesses: [
+      {
+        id: 'erp-application',
+        label: $localize`:@@dspBusinessErp:ERP Applications`,
+        description: '',
+        logoIconKey: 'erp-application',
+        secondaryLogoIconKey: 'logo-sap',
+      },
+      {
+        id: 'bp-cloud-apps',
+        label: $localize`:@@dspBusinessCloud:Cloud Applications`,
+        description: '',
+        logoIconKey: 'bp-cloud-apps',
+      },
+      {
+        id: 'bp-analytics',
+        label: $localize`:@@dspBusinessAnalytics:Analytics Applications`,
+        description: '',
+        logoIconKey: 'bp-analytics',
+        secondaryLogoIconKey: 'logo-grafana',
+      },
+      {
+        id: 'bp-data-lake',
+        label: $localize`:@@dspBusinessDataLake:Data Lake`,
+        description: '',
+        logoIconKey: 'bp-data-lake',
+      },
+    ],
     shopfloorPlatforms: [],
     shopfloorSystems: [],
     edgeUrl: '#',
@@ -87,12 +114,26 @@ export class DspArchitectureWrapperComponent implements OnInit {
     smartfactoryDashboardUrl: '/dashboard',
   };
 
+  private locale = 'en';  // Default locale
+
   constructor(
     private readonly router: Router,
+    private readonly route: ActivatedRoute,
     private readonly externalLinksService: ExternalLinksService
   ) {}
 
   ngOnInit(): void {
+    // Get locale from route - traverse up the route tree
+    let currentRoute = this.route;
+    while (currentRoute.parent) {
+      const localeParam = currentRoute.snapshot.paramMap.get('locale');
+      if (localeParam) {
+        this.locale = localeParam;
+        break;
+      }
+      currentRoute = currentRoute.parent;
+    }
+
     // Update URLs from external links service
     const links = this.externalLinksService.current;
     this.dspView = {
@@ -105,12 +146,24 @@ export class DspArchitectureWrapperComponent implements OnInit {
   }
 
   onActionTriggered(event: { id: string; url: string }): void {
-    if (event.url && event.url.startsWith('/')) {
-      // Internal navigation
-      this.router.navigateByUrl(event.url);
-    } else if (event.url) {
-      // External link
-      window.open(event.url, '_blank', 'noreferrer noopener');
+    if (!event.url) {
+      return;
     }
+
+    // Check if it's an external URL (http/https)
+    if (event.url.startsWith('http://') || event.url.startsWith('https://')) {
+      window.open(event.url, '_blank', 'noreferrer noopener');
+      return;
+    }
+
+    // Check if it's an absolute internal path
+    if (event.url.startsWith('/')) {
+      this.router.navigateByUrl(event.url);
+      return;
+    }
+
+    // Relative path - prepend with locale
+    const fullPath = `/${this.locale}/${event.url}`;
+    this.router.navigateByUrl(fullPath);
   }
 }
