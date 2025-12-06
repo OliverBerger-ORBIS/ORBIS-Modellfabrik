@@ -260,9 +260,9 @@
             />
 
             <!-- Label - positioned based on labelPosition -->
-            <!-- Exclude shopfloor containers with bottom-center as they have a separate label element -->
+            <!-- Exclude shopfloor and business containers with bottom-center as they have a separate label element -->
             <text
-              *ngIf="getContainerLabel(container.id) && !(container.type === 'shopfloor' && container.labelPosition === 'bottom-center')"
+              *ngIf="getContainerLabel(container.id) && !((container.type === 'shopfloor' || container.type === 'business') && container.labelPosition === 'bottom-center')"
               [attr.x]="getLabelX(container)"
               [attr.y]="getLabelY(container)"
               [attr.text-anchor]="getLabelAnchor(container)"

@@ -844,7 +844,7 @@ export function createDefaultSteps(): StepConfig[] {
       showFunctionIcons: true,
     },
 
-    // Step 12: Autonomous & Adaptive Enterprise (Phase 5) - alle Ebenen hervorgehoben
+    // Step 12: Autonomous & Adaptive Enterprise (Phase 5) - Overview without highlighting
     {
       id: 'step-12',
       label: $localize`:@@dspArchStep12:Autonomous & Adaptive Enterprise`,
@@ -863,17 +863,7 @@ export function createDefaultSteps(): StepConfig[] {
         'management',
         ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: [
-        'layer-business',
-        'layer-dsp',
-        'ux',
-        'edge',
-        'management',
-        'erp-application',
-        'bp-cloud-apps',
-        'bp-analytics',
-        'bp-data-lake',
-      ],
+      highlightedContainerIds: [],  // No highlighting in final overview step
       visibleConnectionIds: [
         'conn-ux-edge',
         'conn-edge-management',
@@ -883,8 +873,8 @@ export function createDefaultSteps(): StepConfig[] {
         'conn-datalake-edge',
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: [],
-      showFunctionIcons: true,
+      highlightedConnectionIds: [],  // No connection highlighting in final overview
+      showFunctionIcons: false,  // No function icon highlighting in final overview
     },
   ];
 }
