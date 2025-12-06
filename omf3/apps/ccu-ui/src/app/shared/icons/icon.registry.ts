@@ -4,6 +4,7 @@ export const ICONS = {
     sap: 'assets/svg/brand/sap-logo.svg',
     azure: 'assets/svg/brand/azure-logo.svg',
     dsp: 'assets/svg/brand/dsp-logo.svg',
+    grafana: 'assets/svg/brand/grafana-logo.svg',
   },
   shopfloor: {
     stations: {

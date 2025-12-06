@@ -63,8 +63,8 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
 
   // Zoom state
   protected zoom = 1;
-  protected readonly minZoom = 0.5;
-  protected readonly maxZoom = 2;
+  protected readonly minZoom = 0.6;
+  protected readonly maxZoom = 1.6;
   protected readonly zoomStep = 0.1;
   private readonly zoomStorageKey = 'dsp-architecture-zoom';
 
@@ -94,17 +94,22 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   protected readonly zoomInLabel = $localize`:@@shopfloorPreviewZoomIn:Zoom in`;
   protected readonly resetZoomLabel = $localize`:@@shopfloorPreviewResetZoom:Reset zoom`;
 
-  // Step labels (9 steps)
+  // Step labels (13 steps now with buffering)
   protected readonly stepLabels = [
-    $localize`:@@dspArchStep1:Devices`,
+    $localize`:@@dspArchStep1:Shopfloor Devices`,
     $localize`:@@dspArchStep2:Shopfloor Systems`,
-    $localize`:@@dspArchStep3:DSP EDGE`,
-    $localize`:@@dspArchStep4:EDGE Functions`,
-    $localize`:@@dspArchStep5:Shopfloor Connections`,
-    $localize`:@@dspArchStep6:SAP Integration`,
-    $localize`:@@dspArchStep7:Business Processes`,
-    $localize`:@@dspArchStep8:Management Cockpit`,
-    $localize`:@@dspArchStep9:SmartFactory Dashboard`,
+    $localize`:@@dspArchStep3:DSP Edge Core`,
+    $localize`:@@dspArchStep4:Connectivity`,
+    $localize`:@@dspArchStep5:Digital Twin`,
+    $localize`:@@dspArchStep6:Process Logic`,
+    $localize`:@@dspArchStep7:Edge Analytics`,
+    $localize`:@@dspArchStep7a:Buffering`,
+    $localize`:@@dspArchStep8:Shopfloor ↔ Edge`,
+    $localize`:@@dspArchStep9:Management Cockpit`,
+    $localize`:@@dspArchStep10:Business Integration`,
+    $localize`:@@dspArchStep11:SmartFactory Dashboard`,
+    $localize`:@@dspArchStep12:Autonomous & Adaptive Enterprise`,
+    $localize`:@@dspArchStep13:Complete DSP Architecture`,
   ];
 
   // Container labels from view
@@ -154,8 +159,8 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
     // Load saved zoom from localStorage
     this.loadSavedZoom();
     
-    // Apply initial step (step 9/9 - final state)
-    this.applyStepInternal(this.steps.length - 1);
+    // Apply initial step (start from step 1 to show overlay immediately)
+    this.applyStepInternal(0);
   }
 
   /**
@@ -167,10 +172,15 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
       this.containerLabels[layer.id] = layer.title;
     });
 
-    // Map business processes
+    // Map business processes - map IDs for configuration tab compatibility
     this.view.businessProcesses.forEach((bp) => {
+      // Use ID directly for labels
+      this.containerLabels[bp.id] = bp.label;
+      // Also map backwards for configuration tab compatibility
       const mappedId = this.mapBusinessProcessId(bp.id);
-      this.containerLabels[mappedId] = bp.label;
+      if (mappedId !== bp.id) {
+        this.containerLabels[mappedId] = bp.label;
+      }
     });
 
     // Set static labels for layer backgrounds (multiline)
@@ -212,7 +222,7 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
    */
   private mapBusinessProcessId(viewId: string): string {
     const mapping: Record<string, string> = {
-      'shopfloor': 'bp-sap-shopfloor',
+      'shopfloor': 'erp-application',
       'cloud-apps': 'bp-cloud-apps',
       'analytics': 'bp-analytics',
       'data-lake': 'bp-data-lake',
@@ -399,6 +409,14 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
     const step = this.steps[this.currentStepIndex];
     // Default to true unless explicitly set to false
     return step?.showFunctionIcons !== false;
+  }
+
+  /**
+   * Check if a specific function icon should be highlighted in the current step.
+   */
+  protected isFunctionIconHighlighted(iconKey: string): boolean {
+    const step = this.steps[this.currentStepIndex];
+    return step?.highlightedFunctionIcons?.includes(iconKey) ?? false;
   }
 
   /**

@@ -1,0 +1,264 @@
+
+.dsp-methodology {
+  padding: 2rem 0;
+
+  &__title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--orbis-blue-strong);
+    margin: 0 0 0.75rem;
+    text-align: center;
+  }
+
+  &__subtitle {
+    font-size: 1.125rem;
+    color: var(--orbis-darkgrey);
+    margin: 0 0 2rem;
+    text-align: center;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  &__phases {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+}
+
+.dsp-phase {
+  position: relative;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  &--ai-excellence {
+    border: 2px solid var(--solution-petrol-strong);
+    background: linear-gradient(135deg, rgba(var(--solution-petrol-strong), 0.05) 0%, white 100%);
+
+    .dsp-phase__header {
+      background: linear-gradient(90deg, rgba(var(--solution-petrol-strong), 0.1) 0%, transparent 100%);
+    }
+
+    .dsp-phase__number {
+      background: var(--solution-petrol-strong);
+    }
+
+    .dsp-phase__title {
+      color: var(--solution-petrol-strong);
+    }
+  }
+
+  &--active {
+    .dsp-phase__toggle svg {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: rgba(var(--orbis-blue-strong), 0.05);
+    }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  &__header-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__number {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--orbis-blue-strong);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 12px;
+    margin-bottom: 0.5rem;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--orbis-blue-strong);
+    margin: 0 0 0.5rem;
+  }
+
+  &__summary {
+    font-size: 1rem;
+    color: var(--orbis-darkgrey);
+    margin: 0;
+  }
+
+  &__toggle {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    color: var(--orbis-blue-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      transition: transform 0.3s ease;
+    }
+  }
+
+  &__content {
+    padding: 0 1.5rem 1.5rem;
+    animation: slideDown 0.3s ease-out;
+  }
+
+  &__section {
+    margin-bottom: 1.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--orbis-blue-strong);
+    margin: 0 0 0.75rem;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__item {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--orbis-nightblue);
+    font-size: 0.95rem;
+    line-height: 1.6;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--solution-petrol-strong);
+      font-weight: bold;
+    }
+  }
+
+  &__outcome {
+    color: var(--orbis-nightblue);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+    padding: 1rem;
+    background: rgba(var(--solution-petrol-strong), 0.05);
+    border-left: 4px solid var(--solution-petrol-strong);
+    border-radius: 4px;
+  }
+
+  &__badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    background: var(--solution-petrol-strong);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .dsp-methodology {
+    padding: 1.5rem 0;
+
+    &__title {
+      font-size: 1.5rem;
+    }
+
+    &__subtitle {
+      font-size: 1rem;
+    }
+
+    &__phases {
+      gap: 1rem;
+    }
+  }
+
+  .dsp-phase {
+    &__header {
+      padding: 1.25rem;
+      gap: 1rem;
+    }
+
+    &__icon {
+      width: 60px;
+      height: 60px;
+    }
+
+    &__title {
+      font-size: 1.25rem;
+    }
+
+    &__content {
+      padding: 0 1.25rem 1.25rem;
+    }
+
+    &__badge {
+      position: static;
+      display: block;
+      margin: 0 1.25rem 1.25rem;
+      width: fit-content;
+    }
+  }
+}

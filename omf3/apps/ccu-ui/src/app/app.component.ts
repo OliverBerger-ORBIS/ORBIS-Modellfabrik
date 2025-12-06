@@ -21,6 +21,11 @@ interface NavigationItem {
 
 const NAVIGATION_ITEMS: Omit<NavigationItem, 'label'>[] = [
   {
+    id: 'dsp',
+    route: '/dsp',
+    roles: ['operator', 'admin'],
+  },
+  {
     id: 'overview',
     route: '/overview',
     roles: ['operator', 'admin'],
@@ -102,6 +107,7 @@ export class AppComponent implements OnDestroy {
   readonly locales;
   get navigation(): NavigationItem[] {
     const labelMap: Record<string, string> = {
+      'dsp': $localize`:@@navDsp:DSP`,
       'overview': $localize`:@@navOverview:Overview`,
       'order': $localize`:@@navOrder:Orders`,
       'process': $localize`:@@navProcess:Processes`,

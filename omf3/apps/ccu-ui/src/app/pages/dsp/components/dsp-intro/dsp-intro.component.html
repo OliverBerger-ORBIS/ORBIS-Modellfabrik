@@ -1,0 +1,19 @@
+<div class="dsp-intro">
+  <h2 class="dsp-intro__title">{{ sectionTitle }}</h2>
+  <p class="dsp-intro__subtitle">{{ sectionSubtitle }}</p>
+
+  <div class="dsp-intro__cards">
+    <div
+      *ngFor="let card of introCards; trackBy: trackByTitle"
+      class="dsp-intro__card"
+    >
+      <div class="dsp-intro__card-icon">
+        <img [src]="card.icon" [alt]="card.title" />
+      </div>
+      <div class="dsp-intro__card-content">
+        <h3 class="dsp-intro__card-title">{{ card.title }}</h3>
+        <p class="dsp-intro__card-description">{{ card.description }}</p>
+      </div>
+    </div>
+  </div>
+</div>

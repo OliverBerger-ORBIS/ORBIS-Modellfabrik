@@ -9,6 +9,7 @@ export type IconKey =
   | 'logo-sap'
   | 'logo-azure'
   | 'logo-dsp'
+  | 'logo-grafana'
   | 'logo-distributed'
   | 'edge-connectivity'
   | 'edge-digital-twin'
@@ -37,7 +38,7 @@ export type IconKey =
   | 'shopfloor-it'
   | 'ux-dashboard'
   | 'ux-monitor'
-  | 'bp-sap-shopfloor'
+  | 'erp-application'
   | 'bp-cloud-apps'
   | 'bp-analytics'
   | 'bp-data-lake'
@@ -57,6 +58,7 @@ export const ICON_MAP: Record<IconKey, string> = {
   'logo-sap': ICONS.brand.sap,
   'logo-azure': ICONS.brand.azure,
   'logo-dsp': ICONS.brand.orbis,
+  'logo-grafana': ICONS.brand.grafana,
   'logo-distributed': ICONS.dsp.architecture.edgeBox,
 
   'edge-connectivity': ICONS.dsp.functions.connectivity,
@@ -90,7 +92,7 @@ export const ICON_MAP: Record<IconKey, string> = {
   'ux-dashboard': ICONS.dsp.architecture.smartFactoryDashboard,
   'ux-monitor': ICONS.dsp.architecture.cockpitBox,
 
-  'bp-sap-shopfloor': ICONS.brand.sap,
+  'erp-application': ICONS.business.erp,
   'bp-cloud-apps': ICONS.business.cloud,
   'bp-analytics': ICONS.business.analytics,
   'bp-data-lake': ICONS.business.dataLake,

@@ -1,0 +1,67 @@
+<div class="dsp-methodology">
+  <h2 class="dsp-methodology__title">{{ sectionTitle }}</h2>
+  <p class="dsp-methodology__subtitle">{{ sectionSubtitle }}</p>
+
+  <div class="dsp-methodology__phases">
+    <div
+      *ngFor="let phase of phases; trackBy: trackById"
+      class="dsp-phase"
+      [class.dsp-phase--active]="phase.active"
+      [class.dsp-phase--autonomous-adaptive]="phase.isAutonomousAdaptive"
+    >
+      <div class="dsp-phase__header" 
+           (click)="togglePhase(phase.id)"
+           (keydown.enter)="togglePhase(phase.id)"
+           (keydown.space)="togglePhase(phase.id)"
+           tabindex="0"
+           role="button"
+           [attr.aria-expanded]="phase.active"
+           [attr.aria-controls]="'phase-content-' + phase.id">
+        <div class="dsp-phase__icon">
+          <img [src]="phase.icon" [alt]="phase.title" />
+        </div>
+        <div class="dsp-phase__header-content">
+          <div class="dsp-phase__number">Phase {{ phase.number }}</div>
+          <h3 class="dsp-phase__title">{{ phase.title }}</h3>
+          <p class="dsp-phase__summary">{{ phase.summary }}</p>
+        </div>
+        <div class="dsp-phase__toggle">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <div class="dsp-phase__content" 
+           *ngIf="phase.active"
+           [attr.id]="'phase-content-' + phase.id">
+        <div class="dsp-phase__section">
+          <h4 class="dsp-phase__section-title" i18n="@@dspPhaseActivities">Activities</h4>
+          <ul class="dsp-phase__list">
+            <li *ngFor="let activity of phase.activities" class="dsp-phase__item">
+              {{ activity }}
+            </li>
+          </ul>
+        </div>
+
+        <div class="dsp-phase__section">
+          <h4 class="dsp-phase__section-title" i18n="@@dspPhaseOutcome">Outcome</h4>
+          <p class="dsp-phase__outcome">{{ phase.outcome }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="phase.isAutonomousAdaptive" class="dsp-phase__badge">
+        <span i18n="@@dspPhaseAutonomousAdaptiveBadge">🚀 Autonomous & Adaptive Enterprise</span>
+      </div>
+    </div>
+  </div>
+</div>
