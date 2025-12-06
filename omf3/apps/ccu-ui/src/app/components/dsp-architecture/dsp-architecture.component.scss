@@ -355,7 +355,7 @@
 
   &__function-icon--highlighted {
     pointer-events: none;
-    filter: drop-shadow(0 0 8px #00C04D) brightness(1.2);
+    filter: drop-shadow(0 0 8px #64a70b) brightness(1.2);
     
     // Add a pulsing animation
     animation: pulse-green 2s ease-in-out infinite;
@@ -363,10 +363,10 @@
 
   @keyframes pulse-green {
     0%, 100% {
-      filter: drop-shadow(0 0 8px #00C04D) brightness(1.2);
+      filter: drop-shadow(0 0 8px #64a70b) brightness(1.2);
     }
     50% {
-      filter: drop-shadow(0 0 16px #00C04D) brightness(1.4);
+      filter: drop-shadow(0 0 16px #64a70b) brightness(1.4);
     }
   }
 
