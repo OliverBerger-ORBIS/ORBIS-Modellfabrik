@@ -242,7 +242,8 @@
                   [attr.y]="(container.height / 2) - (icon.size / 2) + 5"
                   [attr.width]="icon.size"
                   [attr.height]="icon.size"
-                  class="container__function-icon"
+                  [class.container__function-icon]="!isFunctionIconHighlighted(icon.iconKey)"
+                  [class.container__function-icon--highlighted]="isFunctionIconHighlighted(icon.iconKey)"
                 />
               </ng-container>
             </g>
@@ -337,6 +338,9 @@
     <div class="controls__step-indicator">
       <span class="step-label">{{ steps[currentStepIndex].label }}</span>
       <span class="step-count">({{ currentStepIndex + 1 }} / {{ steps.length }})</span>
+      <p *ngIf="steps[currentStepIndex].description" class="step-description">
+        {{ steps[currentStepIndex].description }}
+      </p>
     </div>
     <div class="controls__buttons">
       <button

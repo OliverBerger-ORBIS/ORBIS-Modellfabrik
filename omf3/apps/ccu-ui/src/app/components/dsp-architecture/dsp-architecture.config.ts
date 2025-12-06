@@ -646,10 +646,11 @@ export function createDefaultSteps(): StepConfig[] {
       showFunctionIcons: false,
     },
 
-    // Step 4: Edge Connectivity - OPC UA, MQTT, REST (with shopfloor connections)
+    // Step 4: Edge Connectivity - OPC UA, MQTT, REST
     {
       id: 'step-4',
       label: '',
+      description: $localize`:@@dspArchStep4Desc:Connect any machine via OPC UA, MQTT, REST, and custom protocols.`,
       visibleContainerIds: [
         'layer-dsp',
         'dsp-label-onpremise',
@@ -660,12 +661,14 @@ export function createDefaultSteps(): StepConfig[] {
       visibleConnectionIds: baseShopfloorConnections,
       highlightedConnectionIds: baseShopfloorConnections,
       showFunctionIcons: true,
+      highlightedFunctionIcons: ['edge-network'],
     },
 
-    // Step 5: Digital Twin & Data Modeling - Edge normalisiert Datenströme (with shopfloor connections)
+    // Step 5: Digital Twin - Real-time state modeling
     {
       id: 'step-5',
       label: '',
+      description: $localize`:@@dspArchStep5Desc:Real-time machine and workpiece state modelling at the edge.`,
       visibleContainerIds: [
         'layer-dsp',
         'dsp-label-onpremise',
@@ -674,14 +677,16 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedContainerIds: ['edge'],
       visibleConnectionIds: baseShopfloorConnections,
-      highlightedConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
       showFunctionIcons: true,
+      highlightedFunctionIcons: ['edge-digital-twin'],
     },
 
-    // Step 6: Process Logic / Choreography - Prozessobjekte, dezentral (with shopfloor connections)
+    // Step 6: Process Logic / Choreography - Event-driven processes
     {
       id: 'step-6',
       label: '',
+      description: $localize`:@@dspArchStep6Desc:Model event-driven shopfloor processes with decentralized orchestration.`,
       visibleContainerIds: [
         'layer-dsp',
         'dsp-label-onpremise',
@@ -690,14 +695,16 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedContainerIds: ['edge'],
       visibleConnectionIds: baseShopfloorConnections,
-      highlightedConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
       showFunctionIcons: true,
+      highlightedFunctionIcons: ['edge-workflow'],
     },
 
-    // Step 7: Analytics / AI Preparation - Edge verdichtet Daten für KPIs, ML (with shopfloor connections)
+    // Step 7: Edge Analytics - KPIs, OEE, quality metrics
     {
       id: 'step-7',
       label: '',
+      description: $localize`:@@dspArchStep7Desc:Edge analytics for cycle time, vibrations, quality, utilization.`,
       visibleContainerIds: [
         'layer-dsp',
         'dsp-label-onpremise',
@@ -706,8 +713,27 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedContainerIds: ['edge'],
       visibleConnectionIds: baseShopfloorConnections,
-      highlightedConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
       showFunctionIcons: true,
+      highlightedFunctionIcons: ['edge-analytics'],
+    },
+
+    // Step 7a: Edge Buffering - Guaranteed delivery
+    {
+      id: 'step-7a',
+      label: '',
+      description: $localize`:@@dspArchStep7aDesc:Guaranteed event delivery with local buffering during connection loss.`,
+      visibleContainerIds: [
+        'layer-dsp',
+        'dsp-label-onpremise',
+        'edge',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: ['edge'],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
+      showFunctionIcons: true,
+      highlightedFunctionIcons: ['edge-data-storage'],
     },
 
     // Step 8: Connections Shopfloor ↔ Edge - bidirektionale Kommunikation

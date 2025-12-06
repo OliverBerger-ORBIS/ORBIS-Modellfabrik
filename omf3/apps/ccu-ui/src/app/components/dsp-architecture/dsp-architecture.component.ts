@@ -63,8 +63,8 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
 
   // Zoom state
   protected zoom = 1;
-  protected readonly minZoom = 0.5;
-  protected readonly maxZoom = 2;
+  protected readonly minZoom = 0.6;
+  protected readonly maxZoom = 1.6;
   protected readonly zoomStep = 0.1;
   private readonly zoomStorageKey = 'dsp-architecture-zoom';
 
@@ -94,16 +94,17 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   protected readonly zoomInLabel = $localize`:@@shopfloorPreviewZoomIn:Zoom in`;
   protected readonly resetZoomLabel = $localize`:@@shopfloorPreviewResetZoom:Reset zoom`;
 
-  // Step labels (12 steps)
+  // Step labels (13 steps now with buffering)
   protected readonly stepLabels = [
     $localize`:@@dspArchStep1:Shopfloor Devices`,
     $localize`:@@dspArchStep2:Shopfloor Systems`,
     $localize`:@@dspArchStep3:DSP Edge Core`,
-    $localize`:@@dspArchStep4:Edge Connectivity`,
-    $localize`:@@dspArchStep5:Digital Twin & Data Modeling`,
-    $localize`:@@dspArchStep6:Process Logic / Choreography`,
-    $localize`:@@dspArchStep7:Analytics / AI Preparation`,
-    $localize`:@@dspArchStep8:Shopfloor Connections`,
+    $localize`:@@dspArchStep4:Connectivity`,
+    $localize`:@@dspArchStep5:Digital Twin`,
+    $localize`:@@dspArchStep6:Process Logic`,
+    $localize`:@@dspArchStep7:Edge Analytics`,
+    $localize`:@@dspArchStep7a:Buffering`,
+    $localize`:@@dspArchStep8:Shopfloor ↔ Edge`,
     $localize`:@@dspArchStep9:Management Cockpit`,
     $localize`:@@dspArchStep10:Business Integration`,
     $localize`:@@dspArchStep11:SmartFactory Dashboard`,
@@ -402,6 +403,14 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
     const step = this.steps[this.currentStepIndex];
     // Default to true unless explicitly set to false
     return step?.showFunctionIcons !== false;
+  }
+
+  /**
+   * Check if a specific function icon should be highlighted in the current step.
+   */
+  protected isFunctionIconHighlighted(iconKey: string): boolean {
+    const step = this.steps[this.currentStepIndex];
+    return step?.highlightedFunctionIcons?.includes(iconKey) ?? false;
   }
 
   /**
