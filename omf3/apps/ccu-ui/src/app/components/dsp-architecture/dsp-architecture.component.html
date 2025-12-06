@@ -300,6 +300,20 @@
               {{ getContainerLabel(container.id) }}
             </text>
 
+            <!-- Business process labels at bottom center -->
+            <text
+              *ngIf="container.type === 'business' && container.labelPosition === 'bottom-center' && getContainerLabel(container.id)"
+              [attr.x]="container.width / 2"
+              [attr.y]="container.height - 12"
+              text-anchor="middle"
+              [attr.font-size]="container.fontSize || 14"
+              font-weight="600"
+              fill="#1e2d3d"
+              class="container__group-label"
+            >
+              {{ getContainerLabel(container.id) }}
+            </text>
+
             <!-- Business process icon (centered, below label) - larger icons like Shopfloor -->
             <image
               *ngIf="container.type === 'business' && container.logoIconKey && !container.logoPosition"
@@ -314,8 +328,46 @@
         </ng-container>
       </g>
 
+      <!-- Step Description Overlay (displayed prominently in the diagram) -->
+      <g *ngIf="steps[currentStepIndex].description" class="step-overlay">
+        <!-- Semi-transparent background box -->
+        <rect
+          [attr.x]="20"
+          [attr.y]="20"
+          [attr.width]="viewBoxWidth - 40"
+          [attr.height]="80"
+          fill="rgba(0, 192, 77, 0.95)"
+          rx="8"
+          ry="8"
+          class="step-overlay__bg"
+        />
+        <!-- Step title -->
+        <text
+          [attr.x]="viewBoxWidth / 2"
+          [attr.y]="45"
+          text-anchor="middle"
+          font-size="20"
+          font-weight="700"
+          fill="#ffffff"
+          class="step-overlay__title"
+        >
+          {{ steps[currentStepIndex].label }}
+        </text>
+        <!-- Step description -->
+        <text
+          [attr.x]="viewBoxWidth / 2"
+          [attr.y]="72"
+          text-anchor="middle"
+          font-size="14"
+          font-weight="400"
+          fill="#ffffff"
+          class="step-overlay__description"
+        >
+          {{ steps[currentStepIndex].description }}
+        </text>
+      </g>
+
       <!-- Connections (drawn last, on top of everything) -->
-      <g class="connections">
         <ng-container *ngFor="let conn of connections; trackBy: connectionTrackBy">
           <path
             *ngIf="isConnectionVisible(conn)"
