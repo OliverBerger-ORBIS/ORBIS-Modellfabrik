@@ -112,74 +112,75 @@
       
       <!-- External zones (Business and Shopfloor) -->
       <g class="external-zones">
-        <rect
-          *ngFor="let container of containers"
-          [attr.x]="container.x"
-          [attr.y]="container.y"
-          [attr.width]="container.width"
-          [attr.height]="container.height"
-          [attr.class]="'zone zone--' + container.state"
-          *ngIf="(container.id === 'business-zone' || container.id === 'shopfloor-zone') && container.state !== 'hidden'"
-          rx="8"
-        />
-        <text
-          *ngFor="let container of containers"
-          [attr.x]="container.x + container.width / 2"
-          [attr.y]="container.y + container.height / 2"
-          class="zone-label"
-          text-anchor="middle"
-          dominant-baseline="middle"
-          *ngIf="(container.id === 'business-zone' || container.id === 'shopfloor-zone') && container.state !== 'hidden'"
-        >
-          {{ container.label }}
-        </text>
+        <ng-container *ngFor="let container of containers">
+          <rect
+            *ngIf="(container.id === 'business-zone' || container.id === 'shopfloor-zone') && container.state !== 'hidden'"
+            [attr.x]="container.x"
+            [attr.y]="container.y"
+            [attr.width]="container.width"
+            [attr.height]="container.height"
+            [attr.class]="'zone zone--' + container.state"
+            rx="8"
+          />
+          <text
+            *ngIf="(container.id === 'business-zone' || container.id === 'shopfloor-zone') && container.state !== 'hidden'"
+            [attr.x]="container.x + container.width / 2"
+            [attr.y]="container.y + container.height / 2"
+            class="zone-label"
+            text-anchor="middle"
+            dominant-baseline="middle"
+          >
+            {{ container.label }}
+          </text>
+        </ng-container>
       </g>
       
       <!-- Main EDGE container -->
       <g class="edge-main-container">
-        <rect
-          *ngFor="let container of containers"
-          [attr.x]="container.x"
-          [attr.y]="container.y"
-          [attr.width]="container.width"
-          [attr.height]="container.height"
-          [attr.class]="'edge-container-box edge-container-box--' + container.state"
-          *ngIf="container.id === 'edge-container'"
-          rx="12"
-        />
-        <text
-          *ngFor="let container of containers"
-          [attr.x]="container.x + 30"
-          [attr.y]="container.y + 35"
-          class="edge-container-label"
-          *ngIf="container.id === 'edge-container' && container.state !== 'hidden'"
-        >
-          {{ container.label }}
-        </text>
+        <ng-container *ngFor="let container of containers">
+          <rect
+            *ngIf="container.id === 'edge-container'"
+            [attr.x]="container.x"
+            [attr.y]="container.y"
+            [attr.width]="container.width"
+            [attr.height]="container.height"
+            [attr.class]="'edge-container-box edge-container-box--' + container.state"
+            rx="12"
+          />
+          <text
+            *ngIf="container.id === 'edge-container' && container.state !== 'hidden'"
+            [attr.x]="container.x + 30"
+            [attr.y]="container.y + 35"
+            class="edge-container-label"
+          >
+            {{ container.label }}
+          </text>
+        </ng-container>
       </g>
       
       <!-- Connection lines (drawn before boxes) -->
       <g class="connections">
-        <line
-          *ngFor="let conn of connections"
-          [attr.x1]="getConnectionLine(conn).x1"
-          [attr.y1]="getConnectionLine(conn).y1"
-          [attr.x2]="getConnectionLine(conn).x2"
-          [attr.y2]="getConnectionLine(conn).y2"
-          [attr.class]="'connection-line connection-line--' + conn.state"
-          [attr.marker-end]="conn.state === 'highlight' ? 'url(#arrowhead-edge-anim-highlight)' : 'url(#arrowhead-edge-anim)'"
-          [attr.marker-start]="conn.bidirectional ? (conn.state === 'highlight' ? 'url(#arrowhead-edge-anim-highlight-reverse)' : 'url(#arrowhead-edge-anim-reverse)') : null"
-          *ngIf="conn.state !== 'hidden'"
-        />
+        <ng-container *ngFor="let conn of connections">
+          <line
+            *ngIf="conn.state !== 'hidden'"
+            [attr.x1]="getConnectionLine(conn).x1"
+            [attr.y1]="getConnectionLine(conn).y1"
+            [attr.x2]="getConnectionLine(conn).x2"
+            [attr.y2]="getConnectionLine(conn).y2"
+            [attr.class]="'connection-line connection-line--' + conn.state"
+            [attr.marker-end]="conn.state === 'highlight' ? 'url(#arrowhead-edge-anim-highlight)' : 'url(#arrowhead-edge-anim)'"
+            [attr.marker-start]="conn.bidirectional ? (conn.state === 'highlight' ? 'url(#arrowhead-edge-anim-highlight-reverse)' : 'url(#arrowhead-edge-anim-reverse)') : null"
+          />
+        </ng-container>
       </g>
       
       <!-- Component boxes -->
       <g class="component-boxes">
-        <g
-          *ngFor="let container of containers"
-          [attr.class]="'component-box component-box--' + container.state"
-          *ngIf="container.id !== 'edge-container' && container.id !== 'business-zone' && container.id !== 'shopfloor-zone' && container.state !== 'hidden'"
-        >
+        <ng-container *ngFor="let container of containers">
+          <g
+            *ngIf="container.id !== 'edge-container' && container.id !== 'business-zone' && container.id !== 'shopfloor-zone' && container.state !== 'hidden'"
+            [attr.class]="'component-box component-box--' + container.state"
+          >
           <rect
             [attr.x]="container.x"
             [attr.y]="container.y"
@@ -188,18 +189,23 @@
             [attr.class]="'component-box__rect component-box__rect--' + container.state"
             rx="6"
           />
-          <!-- Icon (if present) -->
-          <image
+          <!-- Icon (if present) using foreignObject to embed HTML img -->
+          <foreignObject
             *ngIf="container.icon"
             [attr.x]="container.x + container.width - 36"
             [attr.y]="container.y + 8"
             [attr.width]="28"
             [attr.height]="28"
-            [attr.href]="container.icon"
-            [attr.xlink:href]="container.icon"
-            class="component-box__icon"
-            preserveAspectRatio="xMidYMid meet"
-          />
+            class="component-box__icon-container"
+          >
+            <div xmlns="http://www.w3.org/1999/xhtml" class="component-box__icon-wrapper">
+              <img
+                [src]="container.icon"
+                [alt]="container.label + ' icon'"
+                class="component-box__icon"
+              />
+            </div>
+          </foreignObject>
           <text
             [attr.x]="container.x + container.width / 2"
             [attr.y]="container.y + container.height / 2 + 8"
@@ -210,6 +216,7 @@
             {{ container.label }}
           </text>
         </g>
+        </ng-container>
       </g>
     </svg>
   </div>
