@@ -844,11 +844,61 @@ export function createDefaultSteps(): StepConfig[] {
       showFunctionIcons: true,
     },
 
-    // Step 12: Autonomous & Adaptive Enterprise (Phase 5) - Overview without highlighting
+    // Step 12: Autonomous & Adaptive Enterprise (Phase 5) - With highlighting
     {
       id: 'step-12',
       label: $localize`:@@dspArchStep12:Autonomous & Adaptive Enterprise`,
       description: $localize`:@@dspArchStep12Desc:Data from shopfloor, Edge, ERP, analytics, and data lakes enable autonomous workflows, predictive decisions, and continuous process optimization.`,
+      visibleContainerIds: [
+        'layer-business',
+        'layer-dsp',
+        'dsp-label-onpremise',
+        'dsp-label-cloud',
+        'erp-application',
+        'bp-cloud-apps',
+        'bp-analytics',
+        'bp-data-lake',
+        'ux',
+        'edge',
+        'management',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: [
+        'layer-business',
+        'layer-dsp',
+        'ux',
+        'edge',
+        'management',
+        'erp-application',
+        'bp-cloud-apps',
+        'bp-analytics',
+        'bp-data-lake',
+      ],
+      visibleConnectionIds: [
+        'conn-ux-edge',
+        'conn-edge-management',
+        'conn-erp-edge',
+        'conn-cloud-edge',
+        'conn-analytics-edge',
+        'conn-datalake-edge',
+        ...baseShopfloorConnections,
+      ],
+      highlightedConnectionIds: [
+        'conn-ux-edge',
+        'conn-edge-management',
+        'conn-erp-edge',
+        'conn-cloud-edge',
+        'conn-analytics-edge',
+        'conn-datalake-edge',
+      ],
+      showFunctionIcons: true,
+    },
+
+    // Step 13: Complete Overview - All icons visible, no highlighting (final clean state)
+    {
+      id: 'step-13',
+      label: $localize`:@@dspArchStep13:Complete DSP Architecture`,
+      description: $localize`:@@dspArchStep13Desc:The complete Distributed Shopfloor Processing architecture integrating all components from shopfloor to business processes.`,
       visibleContainerIds: [
         'layer-business',
         'layer-dsp',

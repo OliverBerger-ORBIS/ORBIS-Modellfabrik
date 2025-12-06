@@ -109,6 +109,7 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
     $localize`:@@dspArchStep10:Business Integration`,
     $localize`:@@dspArchStep11:SmartFactory Dashboard`,
     $localize`:@@dspArchStep12:Autonomous & Adaptive Enterprise`,
+    $localize`:@@dspArchStep13:Complete DSP Architecture`,
   ];
 
   // Container labels from view
