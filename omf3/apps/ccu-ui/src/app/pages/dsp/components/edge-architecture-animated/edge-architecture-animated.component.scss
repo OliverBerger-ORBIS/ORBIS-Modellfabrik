@@ -222,6 +222,15 @@
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         pointer-events: none;
       }
+      
+      &__icon {
+        opacity: 0.8;
+        transition: opacity 0.3s ease;
+      }
+      
+      &--highlight &__icon {
+        opacity: 1;
+      }
     }
     
     // Connection lines

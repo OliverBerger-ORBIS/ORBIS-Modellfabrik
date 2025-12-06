@@ -11,6 +11,7 @@ export interface EdgeContainerConfig {
   width: number;
   height: number;
   state?: 'normal' | 'highlight' | 'dimmed' | 'hidden';
+  icon?: string;  // Path to SVG icon
 }
 
 export interface EdgeConnectionConfig {
@@ -88,6 +89,7 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
     state: 'hidden',
+    icon: 'assets/svg/dsp/edge-components/edge-disc.svg',
   });
   
   // Row 2: App Server, Router, Agent
@@ -99,6 +101,7 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
     state: 'hidden',
+    icon: 'assets/svg/dsp/edge-components/edge-app-server.svg',
   });
   
   containers.push({
@@ -109,6 +112,7 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
     state: 'hidden',
+    icon: 'assets/svg/dsp/edge-components/edge-router.svg',
   });
   
   containers.push({
@@ -119,6 +123,7 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
     state: 'hidden',
+    icon: 'assets/svg/dsp/edge-components/edge-agent.svg',
   });
   
   // Row 3: Log Server, DISI, Edge DB, Event Bus
@@ -130,6 +135,7 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
     width: 140,
     height: EDGE_LAYOUT.BOX_HEIGHT,
     state: 'hidden',
+    icon: 'assets/svg/dsp/edge-components/edge-log-server.svg',
   });
   
   containers.push({
@@ -140,6 +146,7 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
     width: 140,
     height: EDGE_LAYOUT.BOX_HEIGHT,
     state: 'hidden',
+    icon: 'assets/svg/dsp/edge-components/edge-disi.svg',
   });
   
   containers.push({
@@ -150,6 +157,7 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
     width: 140,
     height: EDGE_LAYOUT.BOX_HEIGHT,
     state: 'hidden',
+    icon: 'assets/svg/dsp/edge-components/edge-database.svg',
   });
   
   containers.push({
@@ -160,6 +168,7 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
     width: 140,
     height: EDGE_LAYOUT.BOX_HEIGHT,
     state: 'hidden',
+    icon: 'assets/svg/dsp/edge-components/edge-event-bus.svg',
   });
   
   // External zones (for Step 3 & 4)
