@@ -80,22 +80,22 @@ export class DspArchitectureWrapperComponent implements OnInit {
     resources: [],
     businessProcesses: [
       {
-        id: 'erp-application',
+        id: 'shopfloor',  // Maps to 'erp-application' container via mapBusinessProcessId
         label: $localize`:@@dspBusinessErp:ERP Applications`,
         iconKey: 'erp-application',
       },
       {
-        id: 'bp-cloud-apps',
+        id: 'cloud-apps',  // Maps to 'bp-cloud-apps' container
         label: $localize`:@@dspBusinessCloud:Cloud Applications`,
         iconKey: 'bp-cloud-apps',
       },
       {
-        id: 'bp-analytics',
+        id: 'analytics',  // Maps to 'bp-analytics' container
         label: $localize`:@@dspBusinessAnalytics:Analytics Applications`,
         iconKey: 'bp-analytics',
       },
       {
-        id: 'bp-data-lake',
+        id: 'data-lake',  // Maps to 'bp-data-lake' container
         label: $localize`:@@dspBusinessDataLake:Data Lake`,
         iconKey: 'bp-data-lake',
       },

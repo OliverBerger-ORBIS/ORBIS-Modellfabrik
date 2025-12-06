@@ -158,8 +158,8 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
     // Load saved zoom from localStorage
     this.loadSavedZoom();
     
-    // Apply initial step (step 9/9 - final state)
-    this.applyStepInternal(this.steps.length - 1);
+    // Apply initial step (start from step 1 to show overlay immediately)
+    this.applyStepInternal(0);
   }
 
   /**

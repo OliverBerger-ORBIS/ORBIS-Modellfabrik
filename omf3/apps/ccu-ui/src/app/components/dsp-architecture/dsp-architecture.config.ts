@@ -607,6 +607,7 @@ export function createDefaultSteps(): StepConfig[] {
     {
       id: 'step-1',
       label: $localize`:@@dspArchStep1:Shopfloor Devices`,
+      description: $localize`:@@dspArchStep1Desc:DSP connects heterogeneous devices in the shopfloor without interfering with machine logic.`,
       visibleContainerIds: [
         'layer-shopfloor',
         'shopfloor-devices-group',
@@ -626,6 +627,7 @@ export function createDefaultSteps(): StepConfig[] {
     {
       id: 'step-2',
       label: $localize`:@@dspArchStep2:Shopfloor Systems`,
+      description: $localize`:@@dspArchStep2Desc:DSP integrates complete systems like AGVs, warehouses, and custom controls.`,
       visibleContainerIds: baseShopfloorContainers,
       highlightedContainerIds: ['shopfloor-systems-group', 'shopfloor-system-bp', 'shopfloor-system-fts'],
       visibleConnectionIds: [],
@@ -636,6 +638,7 @@ export function createDefaultSteps(): StepConfig[] {
     {
       id: 'step-3',
       label: $localize`:@@dspArchStep3:DSP Edge Core`,
+      description: $localize`:@@dspArchStep3Desc:The DSP Edge is the local runtime for connectivity, process logic, digital twin and data processing.`,
       visibleContainerIds: [
         'layer-dsp',
         'dsp-label-onpremise',
@@ -742,6 +745,7 @@ export function createDefaultSteps(): StepConfig[] {
     {
       id: 'step-8',
       label: $localize`:@@dspArchStep8:Shopfloor ↔ Edge`,
+      description: $localize`:@@dspArchStep8Desc:DSP enables bidirectional, real-time communication between machines, systems, and Edge.`,
       visibleContainerIds: [
         'layer-dsp',
         'dsp-label-onpremise',
@@ -758,6 +762,7 @@ export function createDefaultSteps(): StepConfig[] {
     {
       id: 'step-9',
       label: $localize`:@@dspArchStep9:Management Cockpit`,
+      description: $localize`:@@dspArchStep9Desc:Model processes, manage organization, and orchestrate all Edge nodes from the cloud.`,
       visibleContainerIds: [
         'layer-dsp',
         'dsp-label-onpremise',
@@ -779,6 +784,7 @@ export function createDefaultSteps(): StepConfig[] {
     {
       id: 'step-10',
       label: $localize`:@@dspArchStep10:Business Integration`,
+      description: $localize`:@@dspArchStep10Desc:DSP connects shopfloor events with ERP processes, cloud analytics, and data lakes.`,
       visibleContainerIds: [
         'layer-business',
         'layer-dsp',
@@ -809,6 +815,7 @@ export function createDefaultSteps(): StepConfig[] {
     {
       id: 'step-11',
       label: $localize`:@@dspArchStep11:SmartFactory Dashboard`,
+      description: $localize`:@@dspArchStep11Desc:Visualization of the digital twin, real-time processes, and track & trace in the shopfloor.`,
       visibleContainerIds: [
         'layer-business',
         'layer-dsp',
@@ -841,6 +848,7 @@ export function createDefaultSteps(): StepConfig[] {
     {
       id: 'step-12',
       label: $localize`:@@dspArchStep12:Autonomous & Adaptive Enterprise`,
+      description: $localize`:@@dspArchStep12Desc:Data from shopfloor, Edge, ERP, analytics, and data lakes enable autonomous workflows, predictive decisions, and continuous process optimization.`,
       visibleContainerIds: [
         'layer-business',
         'layer-dsp',
