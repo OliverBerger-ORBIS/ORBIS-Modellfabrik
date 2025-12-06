@@ -894,11 +894,11 @@ export function createDefaultSteps(): StepConfig[] {
       showFunctionIcons: true,
     },
 
-    // Step 13: Complete Overview - All icons visible, no highlighting (final clean state)
+    // Step 13: Complete Overview - All icons visible, no highlighting, no overlay (final clean state)
     {
       id: 'step-13',
       label: $localize`:@@dspArchStep13:Complete DSP Architecture`,
-      description: $localize`:@@dspArchStep13Desc:The complete Distributed Shopfloor Processing architecture integrating all components from shopfloor to business processes.`,
+      description: '',  // Empty description - no overlay shown in final step
       visibleContainerIds: [
         'layer-business',
         'layer-dsp',
