@@ -60,6 +60,7 @@
       [attr.viewBox]="viewBox"
       preserveAspectRatio="xMidYMid meet"
       xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
     >
       <!-- Define arrow markers -->
       <defs>
@@ -192,10 +193,12 @@
             *ngIf="container.icon"
             [attr.x]="container.x + container.width - 36"
             [attr.y]="container.y + 8"
-            width="28"
-            height="28"
+            [attr.width]="28"
+            [attr.height]="28"
             [attr.href]="container.icon"
+            [attr.xlink:href]="container.icon"
             class="component-box__icon"
+            preserveAspectRatio="xMidYMid meet"
           />
           <text
             [attr.x]="container.x + container.width / 2"
