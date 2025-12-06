@@ -479,6 +479,9 @@
     "@@pipelineConsolidationTitle": "Consolidation",
     "@@pipelineConsolidationDesc": "Combine les données de plusieurs sources en modèles cohérents.",
     "@@pipelineProvisioningTitle": "Approvisionnement",
-    "@@pipelineProvisioningDesc": "Fournit des données préparées et des événements aux plateformes ERP, MES, cloud et analytiques."
+    "@@pipelineProvisioningDesc": "Fournit des données préparées et des événements aux plateformes ERP, MES, cloud et analytiques.",
+    "@@edgeArchitectureTitle": "Architecture DSP Edge",
+    "@@edgeArchitectureSubtitle": "Comment DISC, DISI, le routeur, les agents et les services interagissent à l'intérieur de l'Edge.",
+    "@@edgeArchitectureCaption": "Edge traite et route les événements entre les dispositifs d'atelier et les systèmes métier en utilisant DISC, DISI, le routeur, les agents, la journalisation et le stockage local."
   }
 }

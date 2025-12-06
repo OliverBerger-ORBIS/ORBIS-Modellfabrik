@@ -479,6 +479,9 @@
     "@@pipelineConsolidationTitle": "Konsolidierung",
     "@@pipelineConsolidationDesc": "Kombiniert Daten aus mehreren Quellen zu konsistenten Modellen.",
     "@@pipelineProvisioningTitle": "Bereitstellung",
-    "@@pipelineProvisioningDesc": "Liefert aufbereitete Daten und Events an ERP, MES, Cloud und Analytics-Plattformen."
+    "@@pipelineProvisioningDesc": "Liefert aufbereitete Daten und Events an ERP, MES, Cloud und Analytics-Plattformen.",
+    "@@edgeArchitectureTitle": "DSP-Edge-Architektur",
+    "@@edgeArchitectureSubtitle": "Wie DISC, DISI, Router, Agents und Services innerhalb des Edge interagieren.",
+    "@@edgeArchitectureCaption": "Edge verarbeitet und routet Events zwischen Shopfloor-Geräten und Business-Systemen unter Verwendung von DISC, DISI, Router, Agents, Logging und lokalem Speicher."
   }
 }
