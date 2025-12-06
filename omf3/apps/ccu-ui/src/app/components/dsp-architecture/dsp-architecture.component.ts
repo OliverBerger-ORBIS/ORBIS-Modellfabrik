@@ -171,10 +171,9 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
       this.containerLabels[layer.id] = layer.title;
     });
 
-    // Map business processes
+    // Map business processes - use IDs directly (no mapping needed)
     this.view.businessProcesses.forEach((bp) => {
-      const mappedId = this.mapBusinessProcessId(bp.id);
-      this.containerLabels[mappedId] = bp.label;
+      this.containerLabels[bp.id] = bp.label;
     });
 
     // Set static labels for layer backgrounds (multiline)
