@@ -368,6 +368,7 @@
       </g>
 
       <!-- Connections (drawn last, on top of everything) -->
+      <g class="connections">
         <ng-container *ngFor="let conn of connections; trackBy: connectionTrackBy">
           <path
             *ngIf="isConnectionVisible(conn)"
