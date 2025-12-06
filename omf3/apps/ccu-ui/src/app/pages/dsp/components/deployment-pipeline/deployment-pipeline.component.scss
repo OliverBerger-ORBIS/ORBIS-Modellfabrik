@@ -103,7 +103,7 @@
   }
 }
 
-// Tablet adjustments - 2 steps per row
+// Tablet adjustments - horizontal flow with wrapping
 @media (min-width: 769px) and (max-width: 1024px) {
   .deployment-pipeline {
     &__flow {
@@ -112,16 +112,8 @@
     }
 
     &__step {
-      flex: 0 0 calc(50% - 2rem);
-    }
-
-    &__arrow {
-      &:nth-of-type(2) {
-        // Arrow after second step should break to new row
-        flex-basis: 100%;
-        transform: rotate(90deg);
-        text-align: center;
-      }
+      flex: 0 1 auto;
+      min-width: 220px;
     }
   }
 }
