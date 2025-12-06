@@ -874,7 +874,7 @@ export function createDefaultSteps(): StepConfig[] {
         ...baseShopfloorConnections,
       ],
       highlightedConnectionIds: [],  // No connection highlighting in final overview
-      showFunctionIcons: false,  // No function icon highlighting in final overview
+      showFunctionIcons: true,  // Show all function icons without highlighting in final overview
     },
   ];
 }
