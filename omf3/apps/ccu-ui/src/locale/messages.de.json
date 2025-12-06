@@ -482,6 +482,20 @@
     "@@pipelineProvisioningDesc": "Liefert aufbereitete Daten und Events an ERP, MES, Cloud und Analytics-Plattformen.",
     "@@edgeArchitectureTitle": "DSP-Edge-Architektur",
     "@@edgeArchitectureSubtitle": "Wie DISC, DISI, Router, Agents und Services innerhalb des Edge interagieren.",
-    "@@edgeArchitectureCaption": "Edge verarbeitet und routet Events zwischen Shopfloor-Geräten und Business-Systemen unter Verwendung von DISC, DISI, Router, Agents, Logging und lokalem Speicher."
+    "@@edgeArchitectureCaption": "Edge verarbeitet und routet Events zwischen Shopfloor-Geräten und Business-Systemen unter Verwendung von DISC, DISI, Router, Agents, Logging und lokalem Speicher.",
+    "@@edgeAnimTitle": "DSP-Edge-Architektur (Animiert)",
+    "@@edgeAnimSubtitle": "Schrittweise Darstellung der Edge-Komponenten, internes Routing und Integration mit Business- und Shopfloor-Ebenen.",
+    "@@edgeAnimPrev": "Zurück",
+    "@@edgeAnimNext": "Weiter",
+    "@@edgeAnimAutoPlay": "Auto-Wiedergabe",
+    "@@edgeAnimStopPlay": "Stopp",
+    "@@edgeAnimStep1": "Edge-Komponenten Übersicht",
+    "@@edgeAnimStep1Desc": "DSP Edge besteht aus Controller, Integration, Router, Agents, Logging und lokalem Speicher.",
+    "@@edgeAnimStep2": "Internes Event-Routing",
+    "@@edgeAnimStep2Desc": "Router verteilt Events zwischen DISC, DISI, Agents, Services und Speicher innerhalb des Edge.",
+    "@@edgeAnimStep3": "Business ↔ Edge ↔ Shopfloor",
+    "@@edgeAnimStep3Desc": "Edge fungiert als Echtzeit-Brücke zwischen Shopfloor-Geräten und Business-Systemen.",
+    "@@edgeAnimStep4": "Integration in vollständige Architektur",
+    "@@edgeAnimStep4Desc": "Edge-Komponenten verbinden SmartFactory-Dashboards, Management-Cockpit, Shopfloor-Assets und Analytics-Plattformen."
   }
 }

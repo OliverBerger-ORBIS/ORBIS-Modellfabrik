@@ -1,0 +1,203 @@
+<div class="edge-architecture-animated">
+  <div class="edge-architecture-animated__header">
+    <div class="header__title">
+      <h2>{{ sectionTitle }}</h2>
+      <p class="subtitle">{{ sectionSubtitle }}</p>
+    </div>
+    
+    <!-- Step Navigation -->
+    <div class="header__controls">
+      <div class="step-navigation">
+        <button
+          *ngFor="let step of steps; let i = index"
+          class="step-button"
+          [class.step-button--active]="i === currentStepIndex"
+          (click)="goToStep(i)"
+          [attr.aria-label]="'Step ' + (i + 1)"
+        >
+          {{ i + 1 }}
+        </button>
+      </div>
+      
+      <div class="playback-controls">
+        <button
+          class="control-btn"
+          [disabled]="isFirstStep"
+          (click)="prevStep()"
+          [attr.aria-label]="btnPrev"
+        >
+          ‹
+        </button>
+        <button
+          class="control-btn control-btn--autoplay"
+          (click)="toggleAutoPlay()"
+          [class.control-btn--active]="isAutoPlaying"
+        >
+          {{ isAutoPlaying ? btnStopPlay : btnAutoPlay }}
+        </button>
+        <button
+          class="control-btn"
+          [disabled]="isLastStep"
+          (click)="nextStep()"
+          [attr.aria-label]="btnNext"
+        >
+          ›
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Step Description -->
+  <div class="edge-architecture-animated__step-info" *ngIf="currentStep">
+    <div class="step-info__label">{{ currentStep.label }}</div>
+    <div class="step-info__description">{{ currentStep.description }}</div>
+  </div>
+  
+  <!-- SVG Diagram -->
+  <div class="edge-architecture-animated__diagram-wrapper">
+    <svg
+      class="edge-architecture-animated__diagram"
+      [attr.viewBox]="viewBox"
+      preserveAspectRatio="xMidYMid meet"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <!-- Define arrow markers -->
+      <defs>
+        <marker
+          id="arrowhead-edge-anim"
+          markerWidth="10"
+          markerHeight="10"
+          refX="9"
+          refY="3"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="0 0, 10 3, 0 6" fill="var(--orbis-blue-strong, #164194)" />
+        </marker>
+        <marker
+          id="arrowhead-edge-anim-reverse"
+          markerWidth="10"
+          markerHeight="10"
+          refX="1"
+          refY="3"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="10 0, 0 3, 10 6" fill="var(--orbis-blue-strong, #164194)" />
+        </marker>
+        <marker
+          id="arrowhead-edge-anim-highlight"
+          markerWidth="10"
+          markerHeight="10"
+          refX="9"
+          refY="3"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="0 0, 10 3, 0 6" fill="#00a896" />
+        </marker>
+        <marker
+          id="arrowhead-edge-anim-highlight-reverse"
+          markerWidth="10"
+          markerHeight="10"
+          refX="1"
+          refY="3"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="10 0, 0 3, 10 6" fill="#00a896" />
+        </marker>
+      </defs>
+      
+      <!-- External zones (Business and Shopfloor) -->
+      <g class="external-zones">
+        <rect
+          *ngFor="let container of containers"
+          [attr.x]="container.x"
+          [attr.y]="container.y"
+          [attr.width]="container.width"
+          [attr.height]="container.height"
+          [attr.class]="'zone zone--' + container.state"
+          *ngIf="(container.id === 'business-zone' || container.id === 'shopfloor-zone') && container.state !== 'hidden'"
+          rx="8"
+        />
+        <text
+          *ngFor="let container of containers"
+          [attr.x]="container.x + container.width / 2"
+          [attr.y]="container.y + container.height / 2"
+          class="zone-label"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          *ngIf="(container.id === 'business-zone' || container.id === 'shopfloor-zone') && container.state !== 'hidden'"
+        >
+          {{ container.label }}
+        </text>
+      </g>
+      
+      <!-- Main EDGE container -->
+      <g class="edge-main-container">
+        <rect
+          *ngFor="let container of containers"
+          [attr.x]="container.x"
+          [attr.y]="container.y"
+          [attr.width]="container.width"
+          [attr.height]="container.height"
+          [attr.class]="'edge-container-box edge-container-box--' + container.state"
+          *ngIf="container.id === 'edge-container'"
+          rx="12"
+        />
+        <text
+          *ngFor="let container of containers"
+          [attr.x]="container.x + 30"
+          [attr.y]="container.y + 35"
+          class="edge-container-label"
+          *ngIf="container.id === 'edge-container' && container.state !== 'hidden'"
+        >
+          {{ container.label }}
+        </text>
+      </g>
+      
+      <!-- Connection lines (drawn before boxes) -->
+      <g class="connections">
+        <line
+          *ngFor="let conn of connections"
+          [attr.x1]="getConnectionLine(conn).x1"
+          [attr.y1]="getConnectionLine(conn).y1"
+          [attr.x2]="getConnectionLine(conn).x2"
+          [attr.y2]="getConnectionLine(conn).y2"
+          [attr.class]="'connection-line connection-line--' + conn.state"
+          [attr.marker-end]="conn.state === 'highlight' ? 'url(#arrowhead-edge-anim-highlight)' : 'url(#arrowhead-edge-anim)'"
+          [attr.marker-start]="conn.bidirectional ? (conn.state === 'highlight' ? 'url(#arrowhead-edge-anim-highlight-reverse)' : 'url(#arrowhead-edge-anim-reverse)') : null"
+          *ngIf="conn.state !== 'hidden'"
+        />
+      </g>
+      
+      <!-- Component boxes -->
+      <g class="component-boxes">
+        <g
+          *ngFor="let container of containers"
+          [attr.class]="'component-box component-box--' + container.state"
+          *ngIf="container.id !== 'edge-container' && container.id !== 'business-zone' && container.id !== 'shopfloor-zone' && container.state !== 'hidden'"
+        >
+          <rect
+            [attr.x]="container.x"
+            [attr.y]="container.y"
+            [attr.width]="container.width"
+            [attr.height]="container.height"
+            [attr.class]="'component-box__rect component-box__rect--' + container.state"
+            rx="6"
+          />
+          <text
+            [attr.x]="container.x + container.width / 2"
+            [attr.y]="container.y + container.height / 2"
+            class="component-box__label"
+            text-anchor="middle"
+            dominant-baseline="middle"
+          >
+            {{ container.label }}
+          </text>
+        </g>
+      </g>
+    </svg>
+  </div>
+</div>

@@ -482,6 +482,20 @@
     "@@pipelineProvisioningDesc": "Fournit des données préparées et des événements aux plateformes ERP, MES, cloud et analytiques.",
     "@@edgeArchitectureTitle": "Architecture DSP Edge",
     "@@edgeArchitectureSubtitle": "Comment DISC, DISI, le routeur, les agents et les services interagissent à l'intérieur de l'Edge.",
-    "@@edgeArchitectureCaption": "Edge traite et route les événements entre les dispositifs d'atelier et les systèmes métier en utilisant DISC, DISI, le routeur, les agents, la journalisation et le stockage local."
+    "@@edgeArchitectureCaption": "Edge traite et route les événements entre les dispositifs d'atelier et les systèmes métier en utilisant DISC, DISI, le routeur, les agents, la journalisation et le stockage local.",
+    "@@edgeAnimTitle": "Architecture DSP Edge (Animée)",
+    "@@edgeAnimSubtitle": "Vue étape par étape des composants Edge, du routage interne et de l'intégration avec les couches Business et Shopfloor.",
+    "@@edgeAnimPrev": "Précédent",
+    "@@edgeAnimNext": "Suivant",
+    "@@edgeAnimAutoPlay": "Lecture auto",
+    "@@edgeAnimStopPlay": "Arrêter",
+    "@@edgeAnimStep1": "Vue d'ensemble des composants Edge",
+    "@@edgeAnimStep1Desc": "DSP Edge se compose de contrôleur, intégration, routeur, agents, journalisation et stockage local.",
+    "@@edgeAnimStep2": "Routage d'événements interne",
+    "@@edgeAnimStep2Desc": "Le routeur distribue les événements entre DISC, DISI, les agents, les services et le stockage à l'intérieur de l'Edge.",
+    "@@edgeAnimStep3": "Business ↔ Edge ↔ Shopfloor",
+    "@@edgeAnimStep3Desc": "Edge agit comme pont temps réel entre les dispositifs d'atelier et les systèmes métier.",
+    "@@edgeAnimStep4": "Intégration dans l'architecture complète",
+    "@@edgeAnimStep4Desc": "Les composants Edge connectent les tableaux de bord SmartFactory, le cockpit de gestion, les actifs d'atelier et les plateformes analytiques."
   }
 }
