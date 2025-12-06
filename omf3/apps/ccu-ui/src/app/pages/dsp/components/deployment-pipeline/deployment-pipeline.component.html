@@ -1,0 +1,16 @@
+<div class="deployment-pipeline">
+  <h2 class="deployment-pipeline__title">{{ sectionTitle }}</h2>
+  <p class="deployment-pipeline__subtitle">{{ sectionSubtitle }}</p>
+
+  <div class="deployment-pipeline__flow">
+    <ng-container *ngFor="let step of pipelineSteps; let i = index; trackBy: trackByTitle">
+      <div class="deployment-pipeline__step">
+        <div class="deployment-pipeline__step-title">{{ step.title }}</div>
+        <div class="deployment-pipeline__step-description">{{ step.description }}</div>
+      </div>
+      <div *ngIf="i < pipelineSteps.length - 1" class="deployment-pipeline__arrow">
+        →
+      </div>
+    </ng-container>
+  </div>
+</div>

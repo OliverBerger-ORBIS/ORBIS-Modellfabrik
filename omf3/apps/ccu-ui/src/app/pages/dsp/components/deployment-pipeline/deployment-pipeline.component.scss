@@ -1,0 +1,140 @@
+.deployment-pipeline {
+  padding: 2rem 0;
+
+  &__title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--orbis-blue-strong);
+    margin: 0 0 0.75rem;
+    text-align: center;
+  }
+
+  &__subtitle {
+    font-size: 1.125rem;
+    color: var(--orbis-darkgrey);
+    margin: 0 0 2rem;
+    text-align: center;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  &__flow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  &__step {
+    flex: 1;
+    min-width: 200px;
+    max-width: 280px;
+    padding: 1.5rem;
+    background: white;
+    border: 2px solid var(--orbis-blue-strong);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  &__step-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--orbis-blue-strong);
+    margin: 0 0 0.75rem;
+    text-align: center;
+  }
+
+  &__step-description {
+    font-size: 0.95rem;
+    color: var(--orbis-darkgrey);
+    line-height: 1.5;
+    text-align: center;
+    margin: 0;
+  }
+
+  &__arrow {
+    font-size: 2rem;
+    color: var(--orbis-blue-strong);
+    font-weight: bold;
+    margin: 0 1rem;
+    flex-shrink: 0;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .deployment-pipeline {
+    padding: 1.5rem 0;
+
+    &__title {
+      font-size: 1.5rem;
+    }
+
+    &__subtitle {
+      font-size: 1rem;
+    }
+
+    &__flow {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+    }
+
+    &__step {
+      max-width: 100%;
+      padding: 1.25rem;
+    }
+
+    &__arrow {
+      transform: rotate(90deg);
+      margin: 0;
+      text-align: center;
+    }
+  }
+}
+
+// Tablet adjustments - 2 steps per row
+@media (min-width: 769px) and (max-width: 1024px) {
+  .deployment-pipeline {
+    &__flow {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    &__step {
+      flex: 0 0 calc(50% - 2rem);
+    }
+
+    &__arrow {
+      &:nth-of-type(2) {
+        // Arrow after second step should break to new row
+        flex-basis: 100%;
+        transform: rotate(90deg);
+        text-align: center;
+      }
+    }
+  }
+}
+
+// Large screens - horizontal flow
+@media (min-width: 1025px) {
+  .deployment-pipeline {
+    &__flow {
+      flex-wrap: nowrap;
+    }
+
+    &__step {
+      flex: 1;
+    }
+  }
+}
