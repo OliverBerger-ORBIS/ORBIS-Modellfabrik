@@ -69,6 +69,12 @@ export const EDGE_LAYOUT = {
   COL_LEFT_X: 365,      // EDGE_X + 15px margin
   COL_CENTER_X: 545,    // EDGE_X + (EDGE_WIDTH / 2) - (BOX_WIDTH / 2) - centered
   COL_RIGHT_X: 725,     // EDGE_X + EDGE_WIDTH - BOX_WIDTH - 15px margin
+  
+  // External zone positions (fallback for when shared config is not available)
+  BUSINESS_ZONE_Y: 120,
+  BUSINESS_ZONE_HEIGHT: 60,
+  SHOPFLOOR_ZONE_Y: 620,
+  SHOPFLOOR_ZONE_HEIGHT: 60,
 };
 
 // Scaled layout for Steps 3-4 (integrated in full architecture)
