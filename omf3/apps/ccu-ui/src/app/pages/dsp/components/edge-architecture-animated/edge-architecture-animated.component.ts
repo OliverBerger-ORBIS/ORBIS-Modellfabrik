@@ -18,6 +18,7 @@ import {
   EDGE_VIEWBOX_WIDTH,
   EDGE_VIEWBOX_HEIGHT,
 } from './edge-architecture-animated.config';
+import { DspArchitectureConfigService } from '../../../../services/dsp-architecture-config.service';
 
 /**
  * DSP Edge Architecture Animated Component
@@ -62,10 +63,16 @@ export class EdgeArchitectureAnimatedComponent implements OnInit, OnDestroy {
   protected readonly btnAutoPlay = $localize`:@@edgeAnimAutoPlay:Auto Play`;
   protected readonly btnStopPlay = $localize`:@@edgeAnimStopPlay:Stop`;
   
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private architectureConfigService: DspArchitectureConfigService
+  ) {}
   
   ngOnInit(): void {
-    this.containers = createEdgeContainers();
+    // Get shared architecture configuration from service
+    const sharedConfig = this.architectureConfigService.createCustomerConfiguration();
+    
+    this.containers = createEdgeContainers(sharedConfig);
     this.connections = createEdgeConnections();
     this.steps = createEdgeSteps();
     

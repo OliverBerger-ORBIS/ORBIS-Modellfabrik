@@ -3,6 +3,8 @@
  * Defines containers, connections, and 4-step animation sequence.
  */
 
+import type { ContainerConfig } from '../../../../components/dsp-architecture/dsp-architecture.types';
+
 export interface EdgeContainerConfig {
   id: string;
   label: string;
@@ -65,8 +67,14 @@ export const EDGE_LAYOUT = {
 
 /**
  * Create edge component containers
+ * @param sharedConfig Optional shared architecture configuration from service
  */
-export function createEdgeContainers(): EdgeContainerConfig[] {
+export function createEdgeContainers(sharedConfig?: {
+  layers: ContainerConfig[];
+  business: any;
+  shopfloor: any;
+  cloud: any;
+}): EdgeContainerConfig[] {
   const containers: EdgeContainerConfig[] = [];
   
   // Main EDGE container box
@@ -172,25 +180,95 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
   });
   
   // External zones (for Step 3 & 4)
-  containers.push({
-    id: 'business-zone',
-    label: 'Business',
-    x: 200,
-    y: EDGE_LAYOUT.BUSINESS_ZONE_Y,
-    width: 800,
-    height: EDGE_LAYOUT.BUSINESS_ZONE_HEIGHT,
-    state: 'hidden',
-  });
-  
-  containers.push({
-    id: 'shopfloor-zone',
-    label: 'Shopfloor',
-    x: 200,
-    y: EDGE_LAYOUT.SHOPFLOOR_ZONE_Y,
-    width: 800,
-    height: EDGE_LAYOUT.SHOPFLOOR_ZONE_HEIGHT,
-    state: 'hidden',
-  });
+  // Use shared configuration if provided, otherwise use simplified zones
+  if (sharedConfig) {
+    // Add Business layer containers from shared config
+    const businessContainers = [
+      sharedConfig.business.erp,
+      sharedConfig.business.cloud,
+      sharedConfig.business.analytics,
+      sharedConfig.business.dataLake,
+    ];
+    
+    businessContainers.forEach((container: ContainerConfig) => {
+      containers.push({
+        id: container.id,
+        label: container.label || '',
+        x: container.x,
+        y: container.y,
+        width: container.width,
+        height: container.height,
+        state: 'hidden',
+      });
+    });
+    
+    // Add Shopfloor layer containers from shared config
+    const shopfloorContainers = [
+      sharedConfig.shopfloor.systems,
+      sharedConfig.shopfloor.devices,
+    ];
+    
+    shopfloorContainers.forEach((container: ContainerConfig) => {
+      containers.push({
+        id: container.id,
+        label: container.label || '',
+        x: container.x,
+        y: container.y,
+        width: container.width,
+        height: container.height,
+        state: 'hidden',
+      });
+    });
+    
+    // Add Cloud layer containers (Management Cockpit)
+    const cloudContainers = [sharedConfig.cloud.managementCockpit];
+    
+    cloudContainers.forEach((container: ContainerConfig) => {
+      containers.push({
+        id: container.id,
+        label: container.label || '',
+        x: container.x,
+        y: container.y,
+        width: container.width,
+        height: container.height,
+        state: 'hidden',
+      });
+    });
+    
+    // Add SmartFactory Dashboard if available
+    if (sharedConfig.business.dashboard) {
+      containers.push({
+        id: sharedConfig.business.dashboard.id,
+        label: sharedConfig.business.dashboard.label || '',
+        x: sharedConfig.business.dashboard.x,
+        y: sharedConfig.business.dashboard.y,
+        width: sharedConfig.business.dashboard.width,
+        height: sharedConfig.business.dashboard.height,
+        state: 'hidden',
+      });
+    }
+  } else {
+    // Fallback: simplified zones for Steps 1-3
+    containers.push({
+      id: 'business-zone',
+      label: 'Business',
+      x: 200,
+      y: EDGE_LAYOUT.BUSINESS_ZONE_Y,
+      width: 800,
+      height: EDGE_LAYOUT.BUSINESS_ZONE_HEIGHT,
+      state: 'hidden',
+    });
+    
+    containers.push({
+      id: 'shopfloor-zone',
+      label: 'Shopfloor',
+      x: 200,
+      y: EDGE_LAYOUT.SHOPFLOOR_ZONE_Y,
+      width: 800,
+      height: EDGE_LAYOUT.SHOPFLOOR_ZONE_HEIGHT,
+      state: 'hidden',
+    });
+  }
   
   return containers;
 }
@@ -209,10 +287,17 @@ export function createEdgeConnections(): EdgeConnectionConfig[] {
     { id: 'router-db', from: 'router', to: 'db', bidirectional: true, state: 'hidden' },
     { id: 'router-event-bus', from: 'router', to: 'event-bus', bidirectional: true, state: 'hidden' },
     
-    // External connections (Step 3)
-    // Agent connects only to Management Cockpit, App Server only to SmartFactory Dashboard
-    { id: 'app-server-business', from: 'app-server', to: 'business-zone', state: 'hidden' },
-    { id: 'disi-shopfloor', from: 'disi', to: 'shopfloor-zone', state: 'hidden' },
+    // External connections (Steps 3-4) - using shared container IDs
+    // Agent connects only to Management Cockpit
+    { id: 'agent-cockpit', from: 'agent', to: 'cloud-management-cockpit', state: 'hidden' },
+    // App Server only to SmartFactory Dashboard
+    { id: 'app-server-dashboard', from: 'app-server', to: 'business-dashboard', state: 'hidden' },
+    // DISI to Shopfloor Systems/Devices
+    { id: 'disi-shopfloor', from: 'disi', to: 'shopfloor-systems', state: 'hidden' },
+    // Event Bus to Data Lake
+    { id: 'event-bus-datalake', from: 'event-bus', to: 'business-data-lake', state: 'hidden' },
+    // Edge Database to Data Lake
+    { id: 'db-datalake', from: 'db', to: 'business-data-lake', state: 'hidden' },
   ];
 }
 
@@ -225,6 +310,11 @@ export function createEdgeSteps(): EdgeStepConfig[] {
     'disc-router', 'router-agent', 'app-server-router', 
     'log-server-router', 'disi-router', 'router-db', 'router-event-bus'
   ];
+  
+  // Shared container IDs from DspArchitectureConfigService
+  const sharedBusinessIds = ['business-erp', 'business-cloud', 'business-analytics', 'business-data-lake', 'business-dashboard'];
+  const sharedShopfloorIds = ['shopfloor-systems', 'shopfloor-devices'];
+  const sharedCloudIds = ['cloud-management-cockpit'];
   
   return [
     // Step 1: Edge Components Overview
@@ -249,29 +339,58 @@ export function createEdgeSteps(): EdgeStepConfig[] {
       highlightedConnectionIds: allInternalConnectionIds,
     },
     
-    // Step 3: Vertical Context
+    // Step 3: Vertical Context (now with shared containers)
     {
       id: 'step-3',
       label: $localize`:@@edgeAnimStep3:Business ↔ Edge ↔ Shopfloor`,
       description: $localize`:@@edgeAnimStep3Desc:Edge acts as the real-time bridge between shopfloor devices and business systems.`,
-      visibleContainerIds: ['edge-container', ...allComponentIds, 'business-zone', 'shopfloor-zone'],
-      highlightedContainerIds: ['app-server', 'disi'],
-      visibleConnectionIds: [...allInternalConnectionIds, 'app-server-business', 'disi-shopfloor'],
-      highlightedConnectionIds: ['app-server-business', 'disi-shopfloor'],
+      visibleContainerIds: [
+        'edge-container', 
+        ...allComponentIds, 
+        'business-dashboard',
+        ...sharedShopfloorIds
+      ],
+      highlightedContainerIds: ['app-server', 'disi', 'agent'],
+      visibleConnectionIds: [
+        ...allInternalConnectionIds, 
+        'app-server-dashboard', 
+        'disi-shopfloor',
+        'agent-cockpit'
+      ],
+      highlightedConnectionIds: ['app-server-dashboard', 'disi-shopfloor'],
       showBusinessZone: true,
       showShopfloorZone: true,
       showExternalConnections: true,
     },
     
-    // Step 4: Integration into Full Architecture
+    // Step 4: Integration into Full Architecture (now with all shared containers)
     {
       id: 'step-4',
       label: $localize`:@@edgeAnimStep4:Integration into Full Architecture`,
       description: $localize`:@@edgeAnimStep4Desc:Edge components connect SmartFactory dashboards, management cockpit, shopfloor assets and analytics platforms.`,
-      visibleContainerIds: ['edge-container', ...allComponentIds, 'business-zone', 'shopfloor-zone'],
+      visibleContainerIds: [
+        'edge-container', 
+        ...allComponentIds, 
+        ...sharedBusinessIds,
+        ...sharedShopfloorIds,
+        ...sharedCloudIds
+      ],
       highlightedContainerIds: ['app-server', 'agent', 'disi', 'db', 'event-bus'],
-      visibleConnectionIds: [...allInternalConnectionIds, 'app-server-business', 'disi-shopfloor'],
-      highlightedConnectionIds: ['app-server-business', 'router-db', 'router-event-bus'],
+      visibleConnectionIds: [
+        ...allInternalConnectionIds, 
+        'app-server-dashboard', 
+        'agent-cockpit',
+        'disi-shopfloor',
+        'db-datalake',
+        'event-bus-datalake'
+      ],
+      highlightedConnectionIds: [
+        'app-server-dashboard', 
+        'agent-cockpit',
+        'disi-shopfloor',
+        'db-datalake',
+        'event-bus-datalake'
+      ],
       showBusinessZone: true,
       showShopfloorZone: true,
       showExternalConnections: true,
