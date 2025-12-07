@@ -370,6 +370,19 @@
       .component-box__label {
         font-size: 12px;
       }
+      
+      .architecture-container-label {
+        font-size: 14px;
+      }
     }
+  }
+}
+
+// Architecture containers (Business, Shopfloor, Cloud) for full view in Steps 3-4
+.architecture-containers {
+  .architecture-container-label {
+    font-size: 16px;
+    font-weight: 600;
+    fill: var(--orbis-blue-strong, #164194);
   }
 }

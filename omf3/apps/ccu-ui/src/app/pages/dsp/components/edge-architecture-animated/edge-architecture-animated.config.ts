@@ -35,6 +35,7 @@ export interface EdgeStepConfig {
   showBusinessZone?: boolean;
   showShopfloorZone?: boolean;
   showExternalConnections?: boolean;
+  showFullArchitecture?: boolean;  // Show full DSP Reference Architecture from Step 3+
 }
 
 // SVG viewBox dimensions
@@ -182,6 +183,19 @@ export function createEdgeContainers(sharedConfig?: {
   // External zones (for Step 3 & 4)
   // Use shared configuration if provided, otherwise use simplified zones
   if (sharedConfig) {
+    // Add layer backgrounds from shared config (for full architecture view)
+    sharedConfig.layers.forEach((layer: ContainerConfig) => {
+      containers.push({
+        id: layer.id,
+        label: layer.label || '',
+        x: layer.x,
+        y: layer.y,
+        width: layer.width,
+        height: layer.height,
+        state: 'hidden',
+      });
+    });
+    
     // Add Business layer containers from shared config
     const businessContainers = [
       sharedConfig.business.erp,
@@ -294,6 +308,8 @@ export function createEdgeConnections(): EdgeConnectionConfig[] {
     { id: 'app-server-dashboard', from: 'app-server', to: 'business-dashboard', state: 'hidden' },
     // DISI to Shopfloor Systems/Devices
     { id: 'disi-shopfloor', from: 'disi', to: 'shopfloor-systems', state: 'hidden' },
+    // DISC to ERP Application (Business Process Layer)
+    { id: 'disc-erp', from: 'disc', to: 'business-erp', state: 'hidden' },
     // Event Bus to Data Lake
     { id: 'event-bus-datalake', from: 'event-bus', to: 'business-data-lake', state: 'hidden' },
     // Edge Database to Data Lake
@@ -339,7 +355,7 @@ export function createEdgeSteps(): EdgeStepConfig[] {
       highlightedConnectionIds: allInternalConnectionIds,
     },
     
-    // Step 3: Vertical Context (now with shared containers)
+    // Step 3: Vertical Context (now with FULL architecture)
     {
       id: 'step-3',
       label: $localize`:@@edgeAnimStep3:Business ↔ Edge ↔ Shopfloor`,
@@ -347,23 +363,23 @@ export function createEdgeSteps(): EdgeStepConfig[] {
       visibleContainerIds: [
         'edge-container', 
         ...allComponentIds, 
-        'business-dashboard',
-        ...sharedShopfloorIds
+        ...sharedBusinessIds,
+        ...sharedShopfloorIds,
+        ...sharedCloudIds
       ],
-      highlightedContainerIds: ['app-server', 'disi', 'agent'],
+      highlightedContainerIds: ['app-server', 'disi', 'agent', 'disc'],
       visibleConnectionIds: [
         ...allInternalConnectionIds, 
         'app-server-dashboard', 
         'disi-shopfloor',
-        'agent-cockpit'
+        'agent-cockpit',
+        'disc-erp'
       ],
-      highlightedConnectionIds: ['app-server-dashboard', 'disi-shopfloor'],
-      showBusinessZone: true,
-      showShopfloorZone: true,
-      showExternalConnections: true,
+      highlightedConnectionIds: ['app-server-dashboard', 'disi-shopfloor', 'agent-cockpit', 'disc-erp'],
+      showFullArchitecture: true,
     },
     
-    // Step 4: Integration into Full Architecture (now with all shared containers)
+    // Step 4: Integration into Full Architecture (now with all shared containers and all connections)
     {
       id: 'step-4',
       label: $localize`:@@edgeAnimStep4:Integration into Full Architecture`,
@@ -375,12 +391,13 @@ export function createEdgeSteps(): EdgeStepConfig[] {
         ...sharedShopfloorIds,
         ...sharedCloudIds
       ],
-      highlightedContainerIds: ['app-server', 'agent', 'disi', 'db', 'event-bus'],
+      highlightedContainerIds: ['app-server', 'agent', 'disi', 'disc', 'db', 'event-bus'],
       visibleConnectionIds: [
         ...allInternalConnectionIds, 
         'app-server-dashboard', 
         'agent-cockpit',
         'disi-shopfloor',
+        'disc-erp',
         'db-datalake',
         'event-bus-datalake'
       ],
@@ -388,12 +405,11 @@ export function createEdgeSteps(): EdgeStepConfig[] {
         'app-server-dashboard', 
         'agent-cockpit',
         'disi-shopfloor',
+        'disc-erp',
         'db-datalake',
         'event-bus-datalake'
       ],
-      showBusinessZone: true,
-      showShopfloorZone: true,
-      showExternalConnections: true,
+      showFullArchitecture: true,
     },
   ];
 }

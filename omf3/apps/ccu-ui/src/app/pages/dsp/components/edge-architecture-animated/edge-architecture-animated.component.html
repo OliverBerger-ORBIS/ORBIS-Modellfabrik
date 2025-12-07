@@ -110,8 +110,25 @@
         </marker>
       </defs>
       
-      <!-- External zones (Business and Shopfloor) -->
-      <g class="external-zones">
+      <!-- Layer backgrounds (from shared architecture - full view in Steps 3-4) -->
+      <g class="layer-backgrounds" *ngIf="currentStep?.showFullArchitecture">
+        <ng-container *ngFor="let container of containers">
+          <rect
+            *ngIf="container.id === 'layer-business' || container.id === 'layer-dsp' || container.id === 'layer-shopfloor'"
+            [attr.x]="container.x"
+            [attr.y]="container.y"
+            [attr.width]="container.width"
+            [attr.height]="container.height"
+            [attr.fill]="getLayerFill(container.id)"
+            [attr.stroke]="getLayerStroke(container.id)"
+            stroke-width="1"
+            rx="4"
+          />
+        </ng-container>
+      </g>
+      
+      <!-- External zones (Business and Shopfloor) - simplified zones for Steps 1-2 -->
+      <g class="external-zones" *ngIf="!currentStep?.showFullArchitecture">
         <ng-container *ngFor="let container of containers">
           <rect
             *ngIf="(container.id === 'business-zone' || container.id === 'shopfloor-zone') && container.state !== 'hidden'"
@@ -174,11 +191,37 @@
         </ng-container>
       </g>
       
-      <!-- Component boxes -->
+      <!-- Architecture containers (Business, Shopfloor, Cloud - from full architecture view in Steps 3-4) -->
+      <g class="architecture-containers" *ngIf="currentStep?.showFullArchitecture">
+        <ng-container *ngFor="let container of containers">
+          <g *ngIf="isArchitectureContainer(container.id) && container.state !== 'hidden'">
+            <rect
+              [attr.x]="container.x"
+              [attr.y]="container.y"
+              [attr.width]="container.width"
+              [attr.height]="container.height"
+              fill="white"
+              [attr.stroke]="getContainerStroke(container.id)"
+              stroke-width="2"
+              rx="8"
+            />
+            <text
+              [attr.x]="container.x + container.width / 2"
+              [attr.y]="container.y + 30"
+              text-anchor="middle"
+              class="architecture-container-label"
+            >
+              {{ getContainerDisplayName(container.id) }}
+            </text>
+          </g>
+        </ng-container>
+      </g>
+      
+      <!-- Component boxes (Edge components) -->
       <g class="component-boxes">
         <ng-container *ngFor="let container of containers">
           <g
-            *ngIf="container.id !== 'edge-container' && container.id !== 'business-zone' && container.id !== 'shopfloor-zone' && container.state !== 'hidden'"
+            *ngIf="isEdgeComponent(container.id) && container.state !== 'hidden'"
             [attr.class]="'component-box component-box--' + container.state"
           >
           <rect

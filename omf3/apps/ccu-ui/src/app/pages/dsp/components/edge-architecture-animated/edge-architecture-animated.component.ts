@@ -298,4 +298,85 @@ export class EdgeArchitectureAnimatedComponent implements OnInit, OnDestroy {
     
     return { x: borderX, y: borderY };
   }
+  
+  /**
+   * Check if a container is an Edge component (not layer, zone, or architecture container)
+   */
+  protected isEdgeComponent(containerId: string): boolean {
+    const edgeComponentIds = ['disc', 'router', 'agent', 'app-server', 'log-server', 'disi', 'db', 'event-bus'];
+    return edgeComponentIds.includes(containerId);
+  }
+  
+  /**
+   * Check if a container is an architecture container (Business, Shopfloor, Cloud)
+   */
+  protected isArchitectureContainer(containerId: string): boolean {
+    return containerId.startsWith('business-') || 
+           containerId.startsWith('shopfloor-') || 
+           containerId.startsWith('cloud-') && 
+           containerId !== 'edge-container';
+  }
+  
+  /**
+   * Get layer background fill color
+   */
+  protected getLayerFill(layerId: string): string {
+    switch (layerId) {
+      case 'layer-business':
+        return '#ffffff';
+      case 'layer-dsp':
+        return 'rgba(207, 230, 255, 0.5)';
+      case 'layer-shopfloor':
+        return 'rgba(241, 243, 247, 0.8)';
+      default:
+        return 'transparent';
+    }
+  }
+  
+  /**
+   * Get layer border stroke color
+   */
+  protected getLayerStroke(layerId: string): string {
+    switch (layerId) {
+      case 'layer-business':
+        return 'rgba(22, 65, 148, 0.1)';
+      case 'layer-dsp':
+        return 'rgba(22, 65, 148, 0.15)';
+      case 'layer-shopfloor':
+        return 'rgba(31, 54, 91, 0.12)';
+      default:
+        return '#ccc';
+    }
+  }
+  
+  /**
+   * Get container stroke color based on type
+   */
+  protected getContainerStroke(containerId: string): string {
+    if (containerId.startsWith('business-')) {
+      return 'rgba(22, 65, 148, 0.25)';
+    } else if (containerId.startsWith('cloud-')) {
+      return '#009681';
+    } else if (containerId.startsWith('shopfloor-')) {
+      return 'rgba(31, 54, 91, 0.2)';
+    }
+    return '#164194';
+  }
+  
+  /**
+   * Get display name for architecture containers
+   */
+  protected getContainerDisplayName(containerId: string): string {
+    const names: Record<string, string> = {
+      'business-erp': $localize`:@@businessErp:ERP Applications`,
+      'business-cloud': $localize`:@@businessCloud:Cloud Applications`,
+      'business-analytics': $localize`:@@businessAnalytics:Analytics Applications`,
+      'business-data-lake': $localize`:@@businessDataLake:Data Lake`,
+      'business-dashboard': $localize`:@@businessDashboard:SmartFactory Dashboard`,
+      'cloud-management-cockpit': $localize`:@@cloudManagementCockpit:Management Cockpit`,
+      'shopfloor-systems': $localize`:@@shopfloorSystems:Shopfloor Systems`,
+      'shopfloor-devices': $localize`:@@shopfloorDevices:Devices`,
+    };
+    return names[containerId] || containerId;
+  }
 }
