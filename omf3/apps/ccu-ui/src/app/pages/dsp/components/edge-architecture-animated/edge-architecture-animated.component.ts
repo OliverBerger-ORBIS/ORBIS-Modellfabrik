@@ -411,56 +411,88 @@ export class EdgeArchitectureAnimatedComponent implements OnInit, OnDestroy {
   
   /**
    * Get scaled X coordinate for edge components in full architecture view (Steps 3-4)
+   * Since components are now properly sized for the EDGE box, no scaling needed
    */
   protected getScaledX(container: EdgeContainerConfig): number {
-    const currentStep = this.steps[this.currentStepIndex];
-    if (currentStep?.showFullArchitecture && this.isEdgeComponent(container.id)) {
-      return EDGE_LAYOUT_SCALED.OFFSET_X + (container.x * EDGE_LAYOUT_SCALED.SCALE);
-    }
     return container.x;
   }
   
   /**
    * Get scaled Y coordinate for edge components in full architecture view (Steps 3-4)
+   * Since components are now properly sized for the EDGE box, no scaling needed
    */
   protected getScaledY(container: EdgeContainerConfig): number {
-    const currentStep = this.steps[this.currentStepIndex];
-    if (currentStep?.showFullArchitecture && this.isEdgeComponent(container.id)) {
-      return EDGE_LAYOUT_SCALED.OFFSET_Y + (container.y * EDGE_LAYOUT_SCALED.SCALE);
-    }
     return container.y;
   }
   
   /**
    * Get scaled width for edge components in full architecture view (Steps 3-4)
+   * Since components are now properly sized for the EDGE box, no scaling needed
    */
   protected getScaledWidth(container: EdgeContainerConfig): number {
-    const currentStep = this.steps[this.currentStepIndex];
-    if (currentStep?.showFullArchitecture && this.isEdgeComponent(container.id)) {
-      return EDGE_LAYOUT_SCALED.BOX_WIDTH;
-    }
     return container.width;
   }
   
   /**
    * Get scaled height for edge components in full architecture view (Steps 3-4)
+   * Since components are now properly sized for the EDGE box, no scaling needed
    */
   protected getScaledHeight(container: EdgeContainerConfig): number {
-    const currentStep = this.steps[this.currentStepIndex];
-    if (currentStep?.showFullArchitecture && this.isEdgeComponent(container.id)) {
-      return EDGE_LAYOUT_SCALED.BOX_HEIGHT;
-    }
     return container.height;
   }
   
   /**
    * Get scaled icon size for edge components in full architecture view (Steps 3-4)
+   * Use smaller icons in full architecture view for better readability
    */
   protected getScaledIconSize(container: EdgeContainerConfig): number {
     const currentStep = this.steps[this.currentStepIndex];
     if (currentStep?.showFullArchitecture && this.isEdgeComponent(container.id)) {
-      return EDGE_LAYOUT_SCALED.ICON_SIZE;
+      return EDGE_LAYOUT_SCALED.ICON_SIZE;  // 32px for full architecture view
     }
-    return 38; // Default icon size
+    return 38; // Default icon size for detail view
+  }
+  
+  /**
+   * Get connection line for external connections (edge components to architecture containers)
+   * These connections use horizontal/vertical routing only (no diagonals)
+   */
+  protected getExternalConnectionLine(fromId: string, toId: string): string {
+    const fromContainer = this.containers.find(c => c.id === fromId);
+    const toContainer = this.containers.find(c => c.id === toId);
+    
+    if (!fromContainer || !toContainer) {
+      return '';
+    }
+    
+    // Get container centers
+    const fromCenterX = fromContainer.x + fromContainer.width / 2;
+    const fromCenterY = fromContainer.y + fromContainer.height / 2;
+    const toCenterX = toContainer.x + toContainer.width / 2;
+    const toCenterY = toContainer.y + toContainer.height / 2;
+    
+    // For horizontal connections (App Server → Dashboard, Agent → Management Cockpit)
+    // Route: horizontal from edge of source, then vertical, then horizontal to target
+    if (Math.abs(fromCenterY - toCenterY) < 50) {
+      // Primarily horizontal connection
+      const startX = fromContainer.x + (fromCenterX < toCenterX ? fromContainer.width : 0);
+      const startY = fromCenterY;
+      const endX = toContainer.x + (toCenterX > fromCenterX ? 0 : toContainer.width);
+      const endY = toCenterY;
+      
+      return `M ${startX},${startY} L ${endX},${endY}`;
+    }
+    
+    // For vertical connections (DISC → ERP, DISI → Shopfloor, Event Bus/DB → Data Lake)
+    // Route: vertical from edge of source, then horizontal, then vertical to target
+    const startX = fromCenterX;
+    const startY = fromContainer.y + (fromCenterY < toCenterY ? fromContainer.height : 0);
+    const endX = toCenterX;
+    const endY = toContainer.y + (toCenterY > fromCenterY ? 0 : toContainer.height);
+    
+    // Create L-shaped path: vertical then horizontal
+    const midY = startY + (endY - startY) / 2;
+    
+    return `M ${startX},${startY} L ${startX},${midY} L ${endX},${midY} L ${endX},${endY}`;
   }
 }

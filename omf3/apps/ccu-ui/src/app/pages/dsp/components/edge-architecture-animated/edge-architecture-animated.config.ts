@@ -38,48 +38,53 @@ export interface EdgeStepConfig {
   showFullArchitecture?: boolean;  // Show full DSP Reference Architecture from Step 3+
 }
 
-// SVG viewBox dimensions
+// SVG viewBox dimensions - matches full DSP Reference Architecture (3 layers)
 export const EDGE_VIEWBOX_WIDTH = 1200;
-export const EDGE_VIEWBOX_HEIGHT = 600;
+export const EDGE_VIEWBOX_HEIGHT = 860;  // Increased to show all 3 layers (Business 80-340, DSP 340-600, Shopfloor 600-860)
 
 // Layout constants for Steps 1-2 (detail view)
+// Canvas matches full architecture size, components spread maximally within EDGE box
 export const EDGE_LAYOUT = {
-  // Main EDGE container
-  EDGE_X: 100,
-  EDGE_Y: 120,
-  EDGE_WIDTH: 1000,
-  EDGE_HEIGHT: 380,
+  // Main EDGE container - positioned to match DSP layer in full architecture
+  EDGE_X: 350,    // Centered horizontally in DSP layer
+  EDGE_Y: 360,    // In DSP layer (340 + 20px margin)
+  EDGE_WIDTH: 500, // Matches DSP-Function-Box width from reference architecture
+  EDGE_HEIGHT: 220, // Matches DSP-Function-Box height
   
-  // Component boxes inside EDGE - taller boxes for icon above label
-  BOX_WIDTH: 150,
-  BOX_HEIGHT: 80,  // Increased height for icon on top, label below
+  // Component boxes inside EDGE - smaller to fit, maximally spread apart
+  BOX_WIDTH: 110,
+  BOX_HEIGHT: 60,
   
-  // Spacing - 3 rows with equal vertical distribution, closer to edges
-  ROW_1_Y: 140,  // DISC, Event Bus (closer to top)
-  ROW_2_Y: 270,  // App Server, Router, Agent (center)
-  ROW_3_Y: 400,  // Log Server, DISI, Edge Database (closer to bottom)
+  // Spacing - 3 rows, components maximally spread within EDGE bounds
+  // Row 1: DISC (left), Event Bus (right) - y at top of EDGE box
+  ROW_1_Y: 375,   // EDGE_Y + 15px margin
   
-  // External zones
-  BUSINESS_ZONE_Y: 40,
-  BUSINESS_ZONE_HEIGHT: 50,
-  SHOPFLOOR_ZONE_Y: 530,
-  SHOPFLOOR_ZONE_HEIGHT: 50,
+  // Row 2: App Server (left), Router (center), Agent (right) - same height for horizontal arrows
+  ROW_2_Y: 465,   // EDGE_Y + (EDGE_HEIGHT / 2) - vertically centered
+  
+  // Row 3: Log Server (left), DISI (center), Edge Database (right) - y near bottom
+  ROW_3_Y: 505,   // EDGE_Y + EDGE_HEIGHT - BOX_HEIGHT - 15px margin
+  
+  // Horizontal positions - spread maximally within EDGE box
+  COL_LEFT_X: 365,      // EDGE_X + 15px margin
+  COL_CENTER_X: 545,    // EDGE_X + (EDGE_WIDTH / 2) - (BOX_WIDTH / 2) - centered
+  COL_RIGHT_X: 725,     // EDGE_X + EDGE_WIDTH - BOX_WIDTH - 15px margin
 };
 
 // Scaled layout for Steps 3-4 (integrated in full architecture)
-// Components scaled to ~40% to fit in DSP Edge box (approximately 500x200px)
+// No scaling needed - components already sized for DSP-Function-Box
 export const EDGE_LAYOUT_SCALED = {
-  // Scaling factor to fit within full architecture EDGE box
-  SCALE: 0.4,
+  // No scaling - components already fit properly
+  SCALE: 1.0,
   
-  // Offset to center scaled components within the EDGE box in full architecture
-  OFFSET_X: 375,   // Center horizontally in the DSP layer
-  OFFSET_Y: 330,   // Position in DSP layer
+  // No offset needed - components already positioned correctly
+  OFFSET_X: 0,
+  OFFSET_Y: 0,
   
-  // Scaled dimensions
-  BOX_WIDTH: 60,   // 40% of 150
-  BOX_HEIGHT: 32,  // 40% of 80
-  ICON_SIZE: 15,   // Scaled down from 38px
+  // Same dimensions as detail view
+  BOX_WIDTH: 110,
+  BOX_HEIGHT: 60,
+  ICON_SIZE: 32,   // Slightly smaller icons for compact view
 };
 
 /**
@@ -105,11 +110,11 @@ export function createEdgeContainers(sharedConfig?: {
     state: 'hidden',
   });
   
-  // Row 1: DISC and Event Bus (evenly distributed)
+  // Row 1: DISC (left) and Event Bus (right) - maximally spread apart
   containers.push({
     id: 'disc',
     label: 'DISC',
-    x: EDGE_LAYOUT.EDGE_X + 200,  // Left position in row 1
+    x: EDGE_LAYOUT.COL_LEFT_X,
     y: EDGE_LAYOUT.ROW_1_Y,
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
@@ -120,7 +125,7 @@ export function createEdgeContainers(sharedConfig?: {
   containers.push({
     id: 'event-bus',
     label: 'Event Bus',
-    x: EDGE_LAYOUT.EDGE_X + 650,  // Right position in row 1
+    x: EDGE_LAYOUT.COL_RIGHT_X,
     y: EDGE_LAYOUT.ROW_1_Y,
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
@@ -128,11 +133,12 @@ export function createEdgeContainers(sharedConfig?: {
     icon: 'assets/svg/dsp/edge-components/edge-event-bus.svg',
   });
   
-  // Row 2: App Server, Router, Agent (evenly distributed)
+  // Row 2: App Server (left), Router (center), Agent (right)
+  // App Server and Agent at same vertical position for horizontal arrows
   containers.push({
     id: 'app-server',
     label: 'App Server',
-    x: EDGE_LAYOUT.EDGE_X + 100,  // Left position in row 2
+    x: EDGE_LAYOUT.COL_LEFT_X,
     y: EDGE_LAYOUT.ROW_2_Y,
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
@@ -143,7 +149,7 @@ export function createEdgeContainers(sharedConfig?: {
   containers.push({
     id: 'router',
     label: 'Router',
-    x: EDGE_LAYOUT.EDGE_X + 425,  // Center position in row 2
+    x: EDGE_LAYOUT.COL_CENTER_X,
     y: EDGE_LAYOUT.ROW_2_Y,
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
@@ -154,19 +160,19 @@ export function createEdgeContainers(sharedConfig?: {
   containers.push({
     id: 'agent',
     label: 'Agent',
-    x: EDGE_LAYOUT.EDGE_X + 750,  // Right position in row 2
+    x: EDGE_LAYOUT.COL_RIGHT_X,
     y: EDGE_LAYOUT.ROW_2_Y,
-    width: EDGE_LAYOUT.BOX_WIDTH,
+    width: EDGE_LAYOUT.BOX_HEIGHT,
     height: EDGE_LAYOUT.BOX_HEIGHT,
     state: 'hidden',
     icon: 'assets/svg/dsp/edge-components/edge-agent.svg',
   });
   
-  // Row 3: Log Server, DISI, Edge Database (evenly distributed, same as Row 2)
+  // Row 3: Log Server (left), DISI (center), Edge Database (right) - same column positions
   containers.push({
     id: 'log-server',
     label: 'Log Server',
-    x: EDGE_LAYOUT.EDGE_X + 100,  // Left position in row 3 (same as App Server)
+    x: EDGE_LAYOUT.COL_LEFT_X,
     y: EDGE_LAYOUT.ROW_3_Y,
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
@@ -177,7 +183,7 @@ export function createEdgeContainers(sharedConfig?: {
   containers.push({
     id: 'disi',
     label: 'DISI',
-    x: EDGE_LAYOUT.EDGE_X + 425,  // Center position in row 3 (same as Router)
+    x: EDGE_LAYOUT.COL_CENTER_X,
     y: EDGE_LAYOUT.ROW_3_Y,
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
@@ -188,7 +194,7 @@ export function createEdgeContainers(sharedConfig?: {
   containers.push({
     id: 'db',
     label: 'Edge Database',
-    x: EDGE_LAYOUT.EDGE_X + 750,  // Right position in row 3 (same as Agent)
+    x: EDGE_LAYOUT.COL_RIGHT_X,
     y: EDGE_LAYOUT.ROW_3_Y,
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
