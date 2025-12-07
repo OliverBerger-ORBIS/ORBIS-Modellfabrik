@@ -9,6 +9,7 @@
  */
 import { Injectable } from '@angular/core';
 import type { ContainerConfig } from '../components/dsp-architecture/dsp-architecture.types';
+import type { IconKey } from '../assets/icon-registry';
 
 /** Standard layer heights used across DSP diagrams */
 export const STANDARD_LAYER_HEIGHT = 260;
@@ -137,7 +138,7 @@ export class DspArchitectureConfigService {
         height: boxHeight,
         type: 'business',
         state: 'normal',
-        logoIconKey: 'sap',
+        logoIconKey: 'logo-sap' as IconKey,
         logoPosition: 'top-right',
         labelPosition: 'top-center',
       },
@@ -234,7 +235,7 @@ export class DspArchitectureConfigService {
         height: 180,
         type: 'dsp-cloud',
         state: 'normal',
-        logoIconKey: 'azure',
+        logoIconKey: 'logo-azure' as IconKey,
         logoPosition: 'top-right',
         labelPosition: 'top-center',
         backgroundColor: 'rgba(207, 230, 255, 0.3)',
