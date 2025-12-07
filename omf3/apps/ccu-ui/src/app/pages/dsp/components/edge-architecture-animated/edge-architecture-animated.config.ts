@@ -51,24 +51,24 @@ export const EDGE_LAYOUT = {
   EDGE_WIDTH: 500, // Matches DSP-Function-Box width from reference architecture
   EDGE_HEIGHT: 260, // Increased to accommodate 3 rows without overlap (60px boxes + margins)
   
-  // Component boxes inside EDGE - smaller to fit, maximally spread apart
-  BOX_WIDTH: 110,
-  BOX_HEIGHT: 60,
+  // Component boxes inside EDGE - optimized for visibility and arrow space
+  BOX_WIDTH: 105,
+  BOX_HEIGHT: 65,
   
-  // Spacing - 3 rows, components maximally spread within EDGE bounds with NO OVERLAP
-  // Row 1: DISC (left), Event Bus (right) - y at top of EDGE box
-  ROW_1_Y: 375,   // EDGE_Y + 15px margin
+  // Spacing - 3 rows, smaller border margins, larger inter-row gaps for arrow visibility
+  // Row 1: DISC (left), Event Bus (right) - close to top border
+  ROW_1_Y: 370,   // EDGE_Y + 10px margin (small border margin)
   
-  // Row 2: App Server (left), Router (center), Agent (right) - same height for horizontal arrows
-  ROW_2_Y: 465,   // EDGE_Y + 90px (Row 1 + 60px box + 15px gap)
+  // Row 2: App Server (left), Router (center), Agent (right) - vertically centered for horizontal arrows
+  ROW_2_Y: 475,   // EDGE_Y + 115px - positioned for horizontal arrows to Dashboard/Cockpit
   
-  // Row 3: Log Server (left), DISI (center), Edge Database (right) - y near bottom
-  ROW_3_Y: 545,   // EDGE_Y + 170px (Row 2 + 60px box + 15px gap) - NO OVERLAP
+  // Row 3: Log Server (left), DISI (center), Edge Database (right) - close to bottom border
+  ROW_3_Y: 565,   // EDGE_Y + 205px - 10px margin from bottom (EDGE_Y + EDGE_HEIGHT - BOX_HEIGHT - 10)
   
-  // Horizontal positions - spread maximally within EDGE box
-  COL_LEFT_X: 365,      // EDGE_X + 15px margin
+  // Horizontal positions - evenly distributed with adequate space for bidirectional arrows
+  COL_LEFT_X: 370,      // EDGE_X + 20px margin
   COL_CENTER_X: 545,    // EDGE_X + (EDGE_WIDTH / 2) - (BOX_WIDTH / 2) - centered
-  COL_RIGHT_X: 725,     // EDGE_X + EDGE_WIDTH - BOX_WIDTH - 15px margin
+  COL_RIGHT_X: 725,     // EDGE_X + EDGE_WIDTH - BOX_WIDTH - 20px margin
   
   // External zone positions (fallback for when shared config is not available)
   BUSINESS_ZONE_Y: 120,
@@ -88,9 +88,9 @@ export const EDGE_LAYOUT_SCALED = {
   OFFSET_Y: 0,
   
   // Same dimensions as detail view
-  BOX_WIDTH: 110,
-  BOX_HEIGHT: 60,
-  ICON_SIZE: 32,   // Slightly smaller icons for compact view
+  BOX_WIDTH: 105,
+  BOX_HEIGHT: 65,
+  ICON_SIZE: 34,   // Slightly smaller icons for compact view, but still visible
 };
 
 /**
@@ -168,7 +168,7 @@ export function createEdgeContainers(sharedConfig?: {
     label: 'Agent',
     x: EDGE_LAYOUT.COL_RIGHT_X,
     y: EDGE_LAYOUT.ROW_2_Y,
-    width: EDGE_LAYOUT.BOX_HEIGHT,
+    width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
     state: 'hidden',
     icon: 'assets/svg/dsp/edge-components/edge-agent.svg',
@@ -241,6 +241,7 @@ export function createEdgeContainers(sharedConfig?: {
         width: container.width,
         height: container.height,
         state: 'hidden',
+        icon: container.logoIconKey ? `assets/svg/icons/${container.logoIconKey}.svg` : undefined,
       });
     });
     
@@ -259,6 +260,7 @@ export function createEdgeContainers(sharedConfig?: {
         width: container.width,
         height: container.height,
         state: 'hidden',
+        icon: container.logoIconKey ? `assets/svg/icons/${container.logoIconKey}.svg` : undefined,
       });
     });
     
@@ -274,6 +276,7 @@ export function createEdgeContainers(sharedConfig?: {
         width: container.width,
         height: container.height,
         state: 'hidden',
+        icon: container.logoIconKey ? `assets/svg/icons/${container.logoIconKey}.svg` : undefined,
       });
     });
     
@@ -287,6 +290,7 @@ export function createEdgeContainers(sharedConfig?: {
         width: sharedConfig.business.dashboard.width,
         height: sharedConfig.business.dashboard.height,
         state: 'hidden',
+        icon: sharedConfig.business.dashboard.logoIconKey ? `assets/svg/icons/${sharedConfig.business.dashboard.logoIconKey}.svg` : undefined,
       });
     }
   } else {
