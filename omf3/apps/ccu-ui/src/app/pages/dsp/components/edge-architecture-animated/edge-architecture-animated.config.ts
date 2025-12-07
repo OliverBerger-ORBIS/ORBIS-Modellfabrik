@@ -52,9 +52,9 @@ export const EDGE_LAYOUT = {
   BOX_HEIGHT: 60,
   
   // Spacing
-  ROW_1_Y: 160,  // DISC
+  ROW_1_Y: 160,  // DISC, Event Bus (Event Bus in top-right)
   ROW_2_Y: 260,  // App Server, Router, Agent
-  ROW_3_Y: 360,  // Log Server, DISI, Edge DB, Event Bus
+  ROW_3_Y: 360,  // Log Server, DISI, Edge DB
   
   // External zones
   BUSINESS_ZONE_Y: 40,
@@ -163,8 +163,8 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
   containers.push({
     id: 'event-bus',
     label: 'Event Bus',
-    x: EDGE_LAYOUT.EDGE_X + 730,
-    y: EDGE_LAYOUT.ROW_3_Y,
+    x: EDGE_LAYOUT.EDGE_X + 820,  // Moved to top-right corner
+    y: EDGE_LAYOUT.ROW_1_Y,
     width: 140,
     height: EDGE_LAYOUT.BOX_HEIGHT,
     state: 'hidden',

@@ -218,15 +218,77 @@ export class EdgeArchitectureAnimatedComponent implements OnInit, OnDestroy {
   
   /**
    * Get connection line coordinates
+   * Calculates lines that stop at the border of component boxes
    */
   protected getConnectionLine(connection: EdgeConnectionConfig): { x1: number; y1: number; x2: number; y2: number } {
-    const from = this.getContainerCenter(connection.from);
-    const to = this.getContainerCenter(connection.to);
-    return {
-      x1: from.x,
-      y1: from.y,
-      x2: to.x,
-      y2: to.y,
+    const fromContainer = this.containers.find(c => c.id === connection.from);
+    const toContainer = this.containers.find(c => c.id === connection.to);
+    
+    if (!fromContainer || !toContainer) {
+      return { x1: 0, y1: 0, x2: 0, y2: 0 };
+    }
+    
+    // Get centers
+    const fromCenter = {
+      x: fromContainer.x + fromContainer.width / 2,
+      y: fromContainer.y + fromContainer.height / 2,
     };
+    const toCenter = {
+      x: toContainer.x + toContainer.width / 2,
+      y: toContainer.y + toContainer.height / 2,
+    };
+    
+    // Calculate border intersection points
+    const fromPoint = this.getBoxBorderPoint(fromContainer, fromCenter, toCenter);
+    const toPoint = this.getBoxBorderPoint(toContainer, toCenter, fromCenter);
+    
+    return {
+      x1: fromPoint.x,
+      y1: fromPoint.y,
+      x2: toPoint.x,
+      y2: toPoint.y,
+    };
+  }
+  
+  /**
+   * Calculate the intersection point of a line from box center to external point
+   * on the box border
+   */
+  private getBoxBorderPoint(
+    box: EdgeContainerConfig,
+    boxCenter: { x: number; y: number },
+    externalPoint: { x: number; y: number }
+  ): { x: number; y: number } {
+    const dx = externalPoint.x - boxCenter.x;
+    const dy = externalPoint.y - boxCenter.y;
+    
+    if (dx === 0 && dy === 0) {
+      return boxCenter;
+    }
+    
+    // Box boundaries
+    const halfWidth = box.width / 2;
+    const halfHeight = box.height / 2;
+    
+    // Normalize direction
+    const angle = Math.atan2(dy, dx);
+    
+    // Determine which edge the line intersects
+    const tanAngle = Math.abs(Math.tan(angle));
+    const threshold = halfHeight / halfWidth;
+    
+    let borderX: number, borderY: number;
+    
+    if (tanAngle < threshold) {
+      // Intersects left or right edge
+      borderX = boxCenter.x + (dx > 0 ? halfWidth : -halfWidth);
+      borderY = boxCenter.y + (borderX - boxCenter.x) * (dy / dx);
+    } else {
+      // Intersects top or bottom edge
+      borderY = boxCenter.y + (dy > 0 ? halfHeight : -halfHeight);
+      borderX = boxCenter.x + (borderY - boxCenter.y) * (dx / dy);
+    }
+    
+    return { x: borderX, y: borderY };
   }
 }
