@@ -111,7 +111,7 @@
       </defs>
       
       <!-- Layer backgrounds (from shared architecture - full view in Steps 3-4) -->
-      <g class="layer-backgrounds" *ngIf="currentStep?.showFullArchitecture">
+      <g class="layer-backgrounds" *ngIf="currentStep.showFullArchitecture">
         <ng-container *ngFor="let container of containers">
           <rect
             *ngIf="container.id === 'layer-business' || container.id === 'layer-dsp' || container.id === 'layer-shopfloor'"
@@ -128,7 +128,7 @@
       </g>
       
       <!-- External zones (Business and Shopfloor) - simplified zones for Steps 1-2 -->
-      <g class="external-zones" *ngIf="!currentStep?.showFullArchitecture">
+      <g class="external-zones" *ngIf="!currentStep.showFullArchitecture">
         <ng-container *ngFor="let container of containers">
           <rect
             *ngIf="(container.id === 'business-zone' || container.id === 'shopfloor-zone') && container.state !== 'hidden'"
@@ -192,7 +192,7 @@
       </g>
       
       <!-- Architecture containers (Business, Shopfloor, Cloud - from full architecture view in Steps 3-4) -->
-      <g class="architecture-containers" *ngIf="currentStep?.showFullArchitecture">
+      <g class="architecture-containers" *ngIf="currentStep.showFullArchitecture">
         <ng-container *ngFor="let container of containers">
           <g *ngIf="isArchitectureContainer(container.id) && container.state !== 'hidden'">
             <rect
@@ -236,7 +236,7 @@
           <foreignObject
             *ngIf="container.icon"
             [attr.x]="getScaledX(container) + (getScaledWidth(container) - getScaledIconSize(container)) / 2"
-            [attr.y]="getScaledY(container) + (currentStep?.showFullArchitecture ? 3 : 10)"
+            [attr.y]="getScaledY(container) + (currentStep.showFullArchitecture ? 3 : 10)"
             [attr.width]="getScaledIconSize(container)"
             [attr.height]="getScaledIconSize(container)"
             class="component-box__icon-container"
@@ -252,9 +252,9 @@
           <!-- Label (center-bottom, below icon) -->
           <text
             [attr.x]="getScaledX(container) + getScaledWidth(container) / 2"
-            [attr.y]="getScaledY(container) + getScaledHeight(container) - (currentStep?.showFullArchitecture ? 6 : 15)"
+            [attr.y]="getScaledY(container) + getScaledHeight(container) - (currentStep.showFullArchitecture ? 6 : 15)"
             class="component-box__label"
-            [attr.font-size]="currentStep?.showFullArchitecture ? '8' : '11'"
+            [attr.font-size]="currentStep.showFullArchitecture ? '8' : '11'"
             text-anchor="middle"
             dominant-baseline="middle"
           >
