@@ -225,20 +225,20 @@
             [attr.class]="'component-box component-box--' + container.state"
           >
           <rect
-            [attr.x]="container.x"
-            [attr.y]="container.y"
-            [attr.width]="container.width"
-            [attr.height]="container.height"
+            [attr.x]="getScaledX(container)"
+            [attr.y]="getScaledY(container)"
+            [attr.width]="getScaledWidth(container)"
+            [attr.height]="getScaledHeight(container)"
             [attr.class]="'component-box__rect component-box__rect--' + container.state"
             rx="6"
           />
           <!-- Icon (center-top) using foreignObject to embed HTML img -->
           <foreignObject
             *ngIf="container.icon"
-            [attr.x]="container.x + (container.width - 38) / 2"
-            [attr.y]="container.y + 10"
-            [attr.width]="38"
-            [attr.height]="38"
+            [attr.x]="getScaledX(container) + (getScaledWidth(container) - getScaledIconSize(container)) / 2"
+            [attr.y]="getScaledY(container) + (currentStep?.showFullArchitecture ? 3 : 10)"
+            [attr.width]="getScaledIconSize(container)"
+            [attr.height]="getScaledIconSize(container)"
             class="component-box__icon-container"
           >
             <div xmlns="http://www.w3.org/1999/xhtml" class="component-box__icon-wrapper">
@@ -251,9 +251,10 @@
           </foreignObject>
           <!-- Label (center-bottom, below icon) -->
           <text
-            [attr.x]="container.x + container.width / 2"
-            [attr.y]="container.y + container.height - 15"
+            [attr.x]="getScaledX(container) + getScaledWidth(container) / 2"
+            [attr.y]="getScaledY(container) + getScaledHeight(container) - (currentStep?.showFullArchitecture ? 6 : 15)"
             class="component-box__label"
+            [attr.font-size]="currentStep?.showFullArchitecture ? '8' : '11'"
             text-anchor="middle"
             dominant-baseline="middle"
           >

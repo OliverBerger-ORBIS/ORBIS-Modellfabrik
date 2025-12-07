@@ -42,7 +42,7 @@ export interface EdgeStepConfig {
 export const EDGE_VIEWBOX_WIDTH = 1200;
 export const EDGE_VIEWBOX_HEIGHT = 600;
 
-// Layout constants
+// Layout constants for Steps 1-2 (detail view)
 export const EDGE_LAYOUT = {
   // Main EDGE container
   EDGE_X: 100,
@@ -64,6 +64,22 @@ export const EDGE_LAYOUT = {
   BUSINESS_ZONE_HEIGHT: 50,
   SHOPFLOOR_ZONE_Y: 530,
   SHOPFLOOR_ZONE_HEIGHT: 50,
+};
+
+// Scaled layout for Steps 3-4 (integrated in full architecture)
+// Components scaled to ~40% to fit in DSP Edge box (approximately 500x200px)
+export const EDGE_LAYOUT_SCALED = {
+  // Scaling factor to fit within full architecture EDGE box
+  SCALE: 0.4,
+  
+  // Offset to center scaled components within the EDGE box in full architecture
+  OFFSET_X: 375,   // Center horizontally in the DSP layer
+  OFFSET_Y: 330,   // Position in DSP layer
+  
+  // Scaled dimensions
+  BOX_WIDTH: 60,   // 40% of 150
+  BOX_HEIGHT: 32,  // 40% of 80
+  ICON_SIZE: 15,   // Scaled down from 38px
 };
 
 /**

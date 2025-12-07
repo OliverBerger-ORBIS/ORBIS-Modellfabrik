@@ -17,6 +17,7 @@ import {
   createEdgeSteps,
   EDGE_VIEWBOX_WIDTH,
   EDGE_VIEWBOX_HEIGHT,
+  EDGE_LAYOUT_SCALED,
 } from './edge-architecture-animated.config';
 import { DspArchitectureConfigService } from '../../../../services/dsp-architecture-config.service';
 
@@ -226,6 +227,7 @@ export class EdgeArchitectureAnimatedComponent implements OnInit, OnDestroy {
   /**
    * Get connection line coordinates
    * Calculates lines that stop at the border of component boxes
+   * Uses scaled positions when in full architecture view
    */
   protected getConnectionLine(connection: EdgeConnectionConfig): { x1: number; y1: number; x2: number; y2: number } {
     const fromContainer = this.containers.find(c => c.id === connection.from);
@@ -235,19 +237,46 @@ export class EdgeArchitectureAnimatedComponent implements OnInit, OnDestroy {
       return { x1: 0, y1: 0, x2: 0, y2: 0 };
     }
     
-    // Get centers
+    // Get scaled positions and dimensions
+    const fromX = this.getScaledX(fromContainer);
+    const fromY = this.getScaledY(fromContainer);
+    const fromWidth = this.getScaledWidth(fromContainer);
+    const fromHeight = this.getScaledHeight(fromContainer);
+    
+    const toX = this.getScaledX(toContainer);
+    const toY = this.getScaledY(toContainer);
+    const toWidth = this.getScaledWidth(toContainer);
+    const toHeight = this.getScaledHeight(toContainer);
+    
+    // Get centers using scaled dimensions
     const fromCenter = {
-      x: fromContainer.x + fromContainer.width / 2,
-      y: fromContainer.y + fromContainer.height / 2,
+      x: fromX + fromWidth / 2,
+      y: fromY + fromHeight / 2,
     };
     const toCenter = {
-      x: toContainer.x + toContainer.width / 2,
-      y: toContainer.y + toContainer.height / 2,
+      x: toX + toWidth / 2,
+      y: toY + toHeight / 2,
+    };
+    
+    // Create scaled container objects for border calculation
+    const scaledFromContainer = {
+      ...fromContainer,
+      x: fromX,
+      y: fromY,
+      width: fromWidth,
+      height: fromHeight,
+    };
+    const scaledToContainer = {
+      ...toContainer,
+      x: toX,
+      y: toY,
+      width: toWidth,
+      height: toHeight,
     };
     
     // Calculate border intersection points
-    const fromPoint = this.getBoxBorderPoint(fromContainer, fromCenter, toCenter);
-    const toPoint = this.getBoxBorderPoint(toContainer, toCenter, fromCenter);
+    const fromPoint = this.getBoxBorderPoint(scaledFromContainer, fromCenter, toCenter);
+    const toPoint = this.getBoxBorderPoint(scaledToContainer, toCenter, fromCenter);
     
     return {
       x1: fromPoint.x,
@@ -378,5 +407,60 @@ export class EdgeArchitectureAnimatedComponent implements OnInit, OnDestroy {
       'shopfloor-devices': $localize`:@@shopfloorDevices:Devices`,
     };
     return names[containerId] || containerId;
+  }
+  
+  /**
+   * Get scaled X coordinate for edge components in full architecture view (Steps 3-4)
+   */
+  protected getScaledX(container: EdgeContainerConfig): number {
+    const currentStep = this.steps[this.currentStepIndex];
+    if (currentStep?.showFullArchitecture && this.isEdgeComponent(container.id)) {
+      return EDGE_LAYOUT_SCALED.OFFSET_X + (container.x * EDGE_LAYOUT_SCALED.SCALE);
+    }
+    return container.x;
+  }
+  
+  /**
+   * Get scaled Y coordinate for edge components in full architecture view (Steps 3-4)
+   */
+  protected getScaledY(container: EdgeContainerConfig): number {
+    const currentStep = this.steps[this.currentStepIndex];
+    if (currentStep?.showFullArchitecture && this.isEdgeComponent(container.id)) {
+      return EDGE_LAYOUT_SCALED.OFFSET_Y + (container.y * EDGE_LAYOUT_SCALED.SCALE);
+    }
+    return container.y;
+  }
+  
+  /**
+   * Get scaled width for edge components in full architecture view (Steps 3-4)
+   */
+  protected getScaledWidth(container: EdgeContainerConfig): number {
+    const currentStep = this.steps[this.currentStepIndex];
+    if (currentStep?.showFullArchitecture && this.isEdgeComponent(container.id)) {
+      return EDGE_LAYOUT_SCALED.BOX_WIDTH;
+    }
+    return container.width;
+  }
+  
+  /**
+   * Get scaled height for edge components in full architecture view (Steps 3-4)
+   */
+  protected getScaledHeight(container: EdgeContainerConfig): number {
+    const currentStep = this.steps[this.currentStepIndex];
+    if (currentStep?.showFullArchitecture && this.isEdgeComponent(container.id)) {
+      return EDGE_LAYOUT_SCALED.BOX_HEIGHT;
+    }
+    return container.height;
+  }
+  
+  /**
+   * Get scaled icon size for edge components in full architecture view (Steps 3-4)
+   */
+  protected getScaledIconSize(container: EdgeContainerConfig): number {
+    const currentStep = this.steps[this.currentStepIndex];
+    if (currentStep?.showFullArchitecture && this.isEdgeComponent(container.id)) {
+      return EDGE_LAYOUT_SCALED.ICON_SIZE;
+    }
+    return 38; // Default icon size
   }
 }
