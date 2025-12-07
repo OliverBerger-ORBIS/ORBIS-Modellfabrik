@@ -1,14 +1,9 @@
 /**
- * Generate a markdown inventory of SVG assets with optional usage references.
- * Outputs to docs/svg-inventory.md.
+ * Generate a markdown inventory of SVG assets with inline previews.
+ * Outputs to docs/svg-inventory.md and docs/svg-inventory.html (print-friendly).
  *
  * Sources scanned:
- * - omf3/apps/ccu-ui/public/assets/svg
- * - omf3/apps/ccu-ui/src/assets/svg
- *
- * Usage detection: searches for the asset path (`assets/svg/...`) in
- * `omf3/apps/ccu-ui/src` via ripgrep. This is best-effort and may miss
- * dynamic usages.
+ * - omf3/apps/ccu-ui/public/assets/svg (only)
  */
 
 const fs = require('fs');
@@ -17,20 +12,18 @@ const { execSync } = require('child_process');
 
 const repoRoot = path.resolve(__dirname, '..');
 
+// Scan only the served assets to avoid duplicates (public is copied verbatim).
 const SOURCES = [
   {
     label: 'public/assets/svg',
     root: path.join(repoRoot, 'omf3/apps/ccu-ui/public/assets/svg'),
     assetPrefix: 'assets/svg',
   },
-  {
-    label: 'src/assets/svg',
-    root: path.join(repoRoot, 'omf3/apps/ccu-ui/src/assets/svg'),
-    assetPrefix: 'assets/svg',
-  },
 ];
 
 const OUTPUT_FILE = path.join(repoRoot, 'docs/svg-inventory.md');
+const OUTPUT_HTML_FILE = path.join(repoRoot, 'docs/svg-inventory.html');
+const PREVIEW_SIZE = 32;
 
 function readDirSafe(dir) {
   try {
@@ -59,6 +52,7 @@ function buildTree(rootDir, assetPrefix) {
           type: 'file',
           name: entry.name,
           relPath,
+          absPath: abs,
         });
       }
     }
@@ -76,29 +70,16 @@ function buildTree(rootDir, assetPrefix) {
   };
 }
 
-function findUsage(relAssetPath) {
-  // Search in src/ for the asset path string
-  const searchRoot = path.join(repoRoot, 'omf3/apps/ccu-ui/src');
-  try {
-    const cmd = `rg --no-heading --line-number --fixed-strings "${relAssetPath}" "${searchRoot}"`;
-    const output = execSync(cmd, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
-    return output
-      .trim()
-      .split('\n')
-      .filter(Boolean)
-      .map((line) => line.trim());
-  } catch {
-    return [];
-  }
-}
-
 function renderTree(node, prefix = '') {
   if (node.type === 'file') {
-    const usage = findUsage(node.relPath);
-    const usageText = usage.length
-      ? ` _(uses: ${usage.join('; ')})_`
-      : ' _(uses: none found)_';
-    return [`${prefix}- ${node.name} — \`${node.relPath}\`${usageText}`];
+    // Inline preview (relative path from docs/svg-inventory.md)
+    const relFromDoc = path
+      .relative(path.dirname(OUTPUT_FILE), node.absPath)
+      .split(path.sep)
+      .join('/');
+    const preview = `<img src="${relFromDoc}" alt="${node.name}" width="${PREVIEW_SIZE}" height="${PREVIEW_SIZE}" />`;
+
+    return [`${prefix}- ${node.name} — \`${node.relPath}\`<br>${prefix}  ${preview}`];
   }
 
   const lines = [`${prefix}- ${node.name}`];
@@ -114,17 +95,89 @@ function generate() {
   const now = new Date().toISOString();
   sections.push('# SVG Inventory', '', `_Generated: ${now}_`, '');
 
+  const htmlSections = [];
+  htmlSections.push(
+    '<!doctype html>',
+    '<html>',
+    '<head>',
+    '<meta charset="utf-8" />',
+    '<title>SVG Inventory</title>',
+    '<style>',
+    'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 24px; color: #1f2937; }',
+    'details { margin-bottom: 16px; }',
+    'summary { font-weight: 600; cursor: pointer; }',
+    'ul { list-style: none; padding-left: 16px; }',
+    'li { margin: 6px 0; }',
+    '.file { display: flex; align-items: center; gap: 8px; }',
+    '.file img { border: 1px solid #e5e7eb; padding: 2px; background: #fff; }',
+    '.path { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; color: #4b5563; }',
+    '</style>',
+    '</head>',
+    '<body>',
+    `<h1>SVG Inventory</h1>`,
+    `<p><em>Generated: ${now}</em></p>`
+  );
+
   for (const source of SOURCES) {
     if (!fs.existsSync(source.root)) {
       sections.push(`## ${source.label}`, '_not found_', '');
       continue;
     }
     const tree = buildTree(source.root, source.assetPrefix);
-    sections.push(`## ${source.label}`, '', ...renderTree(tree), '');
+    const rendered = renderTree(tree);
+    sections.push(
+      `## ${source.label}`,
+      '',
+      '<details open>',
+      `<summary>${source.label}</summary>`,
+      '',
+      ...rendered,
+      '',
+      '</details>',
+      ''
+    );
+
+    htmlSections.push(
+      `<h2>${source.label}</h2>`,
+      '<details open>',
+      `<summary>${source.label}</summary>`,
+      renderHtmlList(tree.children),
+      '</details>'
+    );
   }
 
   fs.writeFileSync(OUTPUT_FILE, sections.join('\n'));
+  htmlSections.push('</body>', '</html>');
+  fs.writeFileSync(OUTPUT_HTML_FILE, htmlSections.join('\n'));
   console.log(`Wrote ${OUTPUT_FILE}`);
+  console.log(`Wrote ${OUTPUT_HTML_FILE}`);
+}
+
+function renderHtmlList(children) {
+  const items = children.map((child) => renderHtml(child)).join('\n');
+  return `<ul>\n${items}\n</ul>`;
+}
+
+function renderHtml(node) {
+  if (node.type === 'file') {
+    const relFromDoc = path
+      .relative(path.dirname(OUTPUT_FILE), node.absPath)
+      .split(path.sep)
+      .join('/');
+    const preview = `<img src="${relFromDoc}" alt="${escapeHtml(node.name)}" width="${PREVIEW_SIZE}" height="${PREVIEW_SIZE}" />`;
+    return `<li class="file"><span>${escapeHtml(node.name)}</span><span class="path">\`${escapeHtml(node.relPath)}\`</span>${preview}</li>`;
+  }
+  const childrenHtml = renderHtmlList(node.children);
+  return `<li><details open><summary>${escapeHtml(node.name)}</summary>${childrenHtml}</details></li>`;
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 generate();

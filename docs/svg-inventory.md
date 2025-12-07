@@ -1,6 +1,6 @@
 # SVG Inventory
 
-_Generated: 2025-12-06T14:04:20.262Z_
+_Generated: 2025-12-07T20:01:31.569Z_
 
 ## public/assets/svg
 
@@ -57,8 +57,10 @@ _Generated: 2025-12-06T14:04:20.262Z_
       - edge-connectivity.svg — `assets/svg/dsp/functions/edge-connectivity.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-connectivity.svg" alt="edge-connectivity.svg" width="32" height="32" />
       - edge-data-storage.svg — `assets/svg/dsp/functions/edge-data-storage.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-data-storage.svg" alt="edge-data-storage.svg" width="32" height="32" />
       - edge-digital-twin.svg — `assets/svg/dsp/functions/edge-digital-twin.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-digital-twin.svg" alt="edge-digital-twin.svg" width="32" height="32" />
+      - edge-interoperability.svg — `assets/svg/dsp/functions/edge-interoperability.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-interoperability.svg" alt="edge-interoperability.svg" width="32" height="32" />
       - edge-process-logic.svg — `assets/svg/dsp/functions/edge-process-logic.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-process-logic.svg" alt="edge-process-logic.svg" width="32" height="32" />
       - edge-workflow.svg — `assets/svg/dsp/functions/edge-workflow.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-workflow.svg" alt="edge-workflow.svg" width="32" height="32" />
+      - interoperability-hub-fixed4.svg — `assets/svg/dsp/functions/interoperability-hub-fixed4.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/interoperability-hub-fixed4.svg" alt="interoperability-hub-fixed4.svg" width="32" height="32" />
     - use-cases
       - use-case-data-aggregation.svg — `assets/svg/dsp/use-cases/use-case-data-aggregation.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/use-cases/use-case-data-aggregation.svg" alt="use-case-data-aggregation.svg" width="32" height="32" />
       - use-case-predictive-maintenance.svg — `assets/svg/dsp/use-cases/use-case-predictive-maintenance.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/use-cases/use-case-predictive-maintenance.svg" alt="use-case-predictive-maintenance.svg" width="32" height="32" />

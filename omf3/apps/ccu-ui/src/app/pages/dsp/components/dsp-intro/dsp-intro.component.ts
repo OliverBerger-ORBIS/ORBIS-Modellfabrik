@@ -29,7 +29,7 @@ export class DspIntroComponent {
     {
       title: $localize`:@@dspIntroInteroperabilityTitle:Interoperability`,
       description: $localize`:@@dspIntroInteroperabilityDesc:DSP enables manufacturer-independent communication between machines, systems, and IT platforms – the foundation for the connected Smart Factory.`,
-      icon: 'assets/svg/dsp/functions/connectivity.svg',
+      icon: 'assets/svg/dsp/functions/edge-interoperability.svg',
     },
     {
       title: $localize`:@@dspIntroEdgeRuntimeTitle:Edge Runtime`,
@@ -44,7 +44,7 @@ export class DspIntroComponent {
     {
       title: $localize`:@@dspIntroDigitalTwinTitle:Digital Twin`,
       description: $localize`:@@dspIntroDigitalTwinDesc:Maps machine states, process parameters, and workpiece status in real-time for complete visibility.`,
-      icon: 'assets/svg/dsp/functions/digital-twin.svg',
+      icon: 'assets/svg/dsp/functions/edge-digital-twin.svg',
     },
     {
       title: $localize`:@@dspIntroItOtConvergenceTitle:IT/OT Convergence`,
