@@ -189,11 +189,11 @@
             [attr.class]="'component-box__rect component-box__rect--' + container.state"
             rx="6"
           />
-          <!-- Icon (left side, vertically centered) using foreignObject to embed HTML img -->
+          <!-- Icon (center-top) using foreignObject to embed HTML img -->
           <foreignObject
             *ngIf="container.icon"
-            [attr.x]="container.x + 8"
-            [attr.y]="container.y + (container.height - 38) / 2"
+            [attr.x]="container.x + (container.width - 38) / 2"
+            [attr.y]="container.y + 10"
             [attr.width]="38"
             [attr.height]="38"
             class="component-box__icon-container"
@@ -206,12 +206,12 @@
               />
             </div>
           </foreignObject>
-          <!-- Label (right side, vertically centered) -->
+          <!-- Label (center-bottom, below icon) -->
           <text
-            [attr.x]="container.x + container.width - 8"
-            [attr.y]="container.y + container.height / 2"
+            [attr.x]="container.x + container.width / 2"
+            [attr.y]="container.y + container.height - 15"
             class="component-box__label"
-            text-anchor="end"
+            text-anchor="middle"
             dominant-baseline="middle"
           >
             {{ container.label }}

@@ -47,14 +47,14 @@ export const EDGE_LAYOUT = {
   EDGE_WIDTH: 1000,
   EDGE_HEIGHT: 380,
   
-  // Component boxes inside EDGE
+  // Component boxes inside EDGE - taller boxes for icon above label
   BOX_WIDTH: 150,
-  BOX_HEIGHT: 60,
+  BOX_HEIGHT: 80,  // Increased height for icon on top, label below
   
-  // Spacing - 3 rows with equal vertical distribution
-  ROW_1_Y: 160,  // DISC, Event Bus
-  ROW_2_Y: 270,  // App Server, Router, Agent
-  ROW_3_Y: 380,  // Log Server, DISI, Edge Database
+  // Spacing - 3 rows with equal vertical distribution, closer to edges
+  ROW_1_Y: 140,  // DISC, Event Bus (closer to top)
+  ROW_2_Y: 270,  // App Server, Router, Agent (center)
+  ROW_3_Y: 400,  // Log Server, DISI, Edge Database (closer to bottom)
   
   // External zones
   BUSINESS_ZONE_Y: 40,
@@ -137,11 +137,11 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
     icon: 'assets/svg/dsp/edge-components/edge-agent.svg',
   });
   
-  // Row 3: Log Server, DISI, Edge Database (evenly distributed)
+  // Row 3: Log Server, DISI, Edge Database (evenly distributed, same as Row 2)
   containers.push({
     id: 'log-server',
     label: 'Log Server',
-    x: EDGE_LAYOUT.EDGE_X + 100,  // Left position in row 3
+    x: EDGE_LAYOUT.EDGE_X + 100,  // Left position in row 3 (same as App Server)
     y: EDGE_LAYOUT.ROW_3_Y,
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
@@ -152,7 +152,7 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
   containers.push({
     id: 'disi',
     label: 'DISI',
-    x: EDGE_LAYOUT.EDGE_X + 325,  // Center-left position in row 3
+    x: EDGE_LAYOUT.EDGE_X + 425,  // Center position in row 3 (same as Router)
     y: EDGE_LAYOUT.ROW_3_Y,
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
@@ -163,7 +163,7 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
   containers.push({
     id: 'db',
     label: 'Edge Database',
-    x: EDGE_LAYOUT.EDGE_X + 550,  // Center-right position in row 3
+    x: EDGE_LAYOUT.EDGE_X + 750,  // Right position in row 3 (same as Agent)
     y: EDGE_LAYOUT.ROW_3_Y,
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
