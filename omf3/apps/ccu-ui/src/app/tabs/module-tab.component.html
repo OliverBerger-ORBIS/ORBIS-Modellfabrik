@@ -122,25 +122,171 @@
     <span i18n="@@moduleTabShopfloorPreviewTitle">Shopfloor Layout</span>
   </button>
 
-  <div class="module-tab__shopfloor-content" *ngIf="shopfloorPreviewExpanded">
+    <div class="module-tab__shopfloor-content" *ngIf="shopfloorPreviewExpanded">
     <p class="module-tab__shopfloor-description" i18n="@@moduleTabShopfloorPreviewDescription">
       Visual representation of module status on the shopfloor. Connected modules show a connection indicator, and availability is indicated by colored borders (green: Available, orange: Busy, red: Blocked).
     </p>
-    <div class="module-tab__shopfloor-preview-wrapper">
-      <app-shopfloor-preview
-        [order]="null"
-        [scale]="0.6"
-        [highlightModulesOverride]="null"
-        [highlightFixedOverride]="null"
-        [selectionEnabled]="true"
-        [showBaseRoads]="true"
-        [showZoomControls]="true"
-        [moduleStatusMap]="currentModuleStatusMap"
-        [badgeText]="'Modules Status'"
-        [infoText]="''"
-        [ftsPosition]="ftsPosition"
-        (cellSelected)="onModuleCellSelected($event)"
-      ></app-shopfloor-preview>
+    <div class="module-tab__legend">
+      <span class="legend__item">
+        <span class="legend__dot legend__dot--ready"></span>
+        <span i18n="@@legendAvailable">Available</span>
+      </span>
+      <span class="legend__item">
+        <span class="legend__dot legend__dot--busy"></span>
+        <span i18n="@@legendBusy">Busy</span>
+      </span>
+      <span class="legend__item">
+        <span class="legend__dot legend__dot--blocked"></span>
+        <span i18n="@@legendBlocked">Blocked</span>
+      </span>
+      <span class="legend__item">
+        <span class="legend__dot legend__dot--unknown"></span>
+        <span i18n="@@legendUnknown">Unknown</span>
+      </span>
+    </div>
+
+    <div class="module-tab__shopfloor-grid">
+      <div class="module-tab__shopfloor-preview-wrapper">
+        <app-shopfloor-preview
+          [order]="null"
+          [scale]="0.6"
+          [highlightModulesOverride]="null"
+          [highlightFixedOverride]="null"
+          [selectionEnabled]="true"
+          [showBaseRoads]="true"
+          [showZoomControls]="true"
+          [moduleStatusMap]="currentModuleStatusMap"
+          [badgeText]="'Modules Status'"
+          [infoText]="''"
+          [ftsPosition]="ftsPosition"
+          (cellSelected)="onModuleCellSelected($event)"
+          (cellDoubleClicked)="onModuleCellDoubleClicked($event)"
+        ></app-shopfloor-preview>
+      </div>
+
+      <div *ngIf="selectedModuleSerialId" class="module-tab__selection-card">
+        <div class="selection-card__header">
+          <div>
+            <p class="selection-card__label" i18n="@@moduleTabSelectedModule">Selected module</p>
+            <h3 class="selection-card__title">{{ selectedModuleName || selectedModuleSerialId }}</h3>
+            <p class="selection-card__meta">{{ selectedModuleSerialId }}</p>
+          </div>
+          <button type="button" class="selection-card__cta" (click)="openSidebarForSelected()" i18n="@@moduleTabOpenSidebar">
+            Open sidebar
+          </button>
+        </div>
+        <div class="selection-card__body">
+          <div class="selection-card__icon" *ngIf="selectedModuleIcon">
+            <img [src]="selectedModuleIcon" alt="" />
+          </div>
+          <div class="selection-card__details">
+            <div class="detail-row">
+              <span class="detail-label" i18n="@@moduleTabDetailSerial">Serial</span>
+              <span class="detail-value">{{ selectedModuleSerialId }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label" i18n="@@moduleTabDetailAvailability">Availability</span>
+              <span class="detail-value">
+                <span
+                  class="availability"
+                  [ngClass]="selectedModuleMeta?.availabilityClass"
+                >
+                  <span class="availability__icon">{{ selectedModuleMeta?.availabilityIcon }}</span>
+                  <span>{{ selectedModuleMeta?.availabilityLabel }}</span>
+                </span>
+              </span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label" i18n="@@moduleTabDetailConnected">Connection</span>
+              <span class="detail-value">
+                <span
+                  class="status-indicator"
+                  [class.status-indicator--online]="selectedModuleMeta?.connected === true"
+                >
+                  <span class="status-indicator__icon">{{ selectedModuleMeta?.connectionIcon }}</span>
+                  <span>{{ selectedModuleMeta?.connectionLabel }}</span>
+                </span>
+              </span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label" i18n="@@moduleTabDetailConfigured">Configured</span>
+              <span class="detail-value">
+                <ng-container *ngIf="selectedModuleMeta?.configured === true" i18n="@@moduleTabYes">Yes</ng-container>
+                <ng-container *ngIf="selectedModuleMeta?.configured === false" i18n="@@moduleTabNo">No</ng-container>
+                <ng-container *ngIf="selectedModuleMeta?.configured === undefined" i18n="@@moduleTabUnknown">Unknown</ng-container>
+              </span>
+            </div>
+            <div class="detail-row" *ngIf="selectedModuleMeta?.ipAddress">
+              <span class="detail-label" i18n="@@moduleTabDetailIp">IP</span>
+              <span class="detail-value">{{ selectedModuleMeta?.ipAddress }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label" i18n="@@moduleTabDetailLastUpdate">Last update</span>
+              <span class="detail-value">{{ selectedModuleMeta?.lastUpdate || 'Unknown' }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label" i18n="@@moduleTabDetailPosition">Position</span>
+              <span class="detail-value">{{ selectedModuleMeta?.position ?? '—' }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="drill-section" *ngIf="selectedModuleMeta?.moduleType === 'DRILL'">
+          <div class="drill-section__header">
+            <h4 i18n="@@moduleTabDrillDspAction">DSP Action – changeLight</h4>
+          </div>
+          <div class="drill-section__lights">
+            <div class="drill-light">
+              <span class="detail-label" i18n="@@moduleTabDrillCurrentLight">Current</span>
+              <div
+                class="drill-light__block drill-light__block--current"
+                [style.background-color]="selectedModuleMeta?.drillAction?.currentLight || '#cccccc'"
+                [attr.aria-label]="'Current color: ' + (selectedModuleMeta?.drillAction?.currentLight || 'none')"
+              >
+                <span *ngIf="!selectedModuleMeta?.drillAction?.currentLight" class="drill-light__no-value">—</span>
+              </div>
+              <div *ngIf="selectedModuleMeta?.drillAction?.currentLight" class="drill-light__value">
+                {{ selectedModuleMeta?.drillAction?.currentLight }}
+              </div>
+            </div>
+            <div class="drill-light">
+              <span class="detail-label" i18n="@@moduleTabDrillPreviousLight">Previous</span>
+              <div
+                class="drill-light__block drill-light__block--previous"
+                [style.background-color]="selectedModuleMeta?.drillAction?.previousLight || '#cccccc'"
+                [attr.aria-label]="'Previous color: ' + (selectedModuleMeta?.drillAction?.previousLight || 'none')"
+              >
+                <span *ngIf="!selectedModuleMeta?.drillAction?.previousLight" class="drill-light__no-value">—</span>
+              </div>
+              <div *ngIf="selectedModuleMeta?.drillAction?.previousLight" class="drill-light__value">
+                {{ selectedModuleMeta?.drillAction?.previousLight }}
+              </div>
+            </div>
+          </div>
+
+          <details class="drill-section__dev">
+            <summary class="drill-section__dev-toggle" i18n="@@moduleTabDrillShowDeveloper">Developer (last 2 dsp/drill/action)</summary>
+            <ng-container *ngIf="selectedModuleMeta?.drillAction?.messages?.length; else noDrillMessages">
+              <div class="drill-msg" *ngFor="let msg of selectedModuleMeta?.drillAction?.messages">
+                <div class="drill-msg__row">
+                  <span class="detail-label">Topic</span>
+                  <span class="detail-value mono">{{ msg.topic }}</span>
+                </div>
+                <div class="drill-msg__row">
+                  <span class="detail-label">Timestamp</span>
+                  <span class="detail-value mono">{{ msg.timestamp }}</span>
+                </div>
+                <div class="drill-msg__row">
+                  <span class="detail-label">Payload</span>
+                  <span class="detail-value mono">{{ msg.payload | json }}</span>
+                </div>
+              </div>
+            </ng-container>
+            <ng-template #noDrillMessages>
+              <p class="detail-value" i18n="@@moduleTabDrillNoMessages">No dsp/drill/action messages yet.</p>
+            </ng-template>
+          </details>
+        </div>
+      </div>
     </div>
   </div>
 </div>

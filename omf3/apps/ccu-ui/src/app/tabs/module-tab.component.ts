@@ -1,4 +1,4 @@
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, NgFor, NgIf, NgClass, JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import type {
   ModuleOverviewState,
@@ -17,7 +17,7 @@ import { ModuleNameService } from '../services/module-name.service';
 import { ConnectionService, type ConnectionState } from '../services/connection.service';
 import { ModuleOverviewStateService } from '../services/module-overview-state.service';
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
-import { MessageMonitorService } from '../services/message-monitor.service';
+import { MessageMonitorService, type MonitoredMessage } from '../services/message-monitor.service';
 import { ModuleDetailsSidebarComponent } from '../components/module-details-sidebar/module-details-sidebar.component';
 import { HttpClient } from '@angular/common/http';
 import type { ShopfloorLayoutConfig, ShopfloorCellConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
@@ -87,7 +87,7 @@ const STATUS_ICONS = {
 @Component({
   standalone: true,
   selector: 'app-module-tab',
-  imports: [NgIf, NgFor, AsyncPipe, ShopfloorPreviewComponent, ModuleDetailsSidebarComponent],
+  imports: [NgIf, NgFor, NgClass, AsyncPipe, JsonPipe, ShopfloorPreviewComponent, ModuleDetailsSidebarComponent],
   templateUrl: './module-tab.component.html',
   styleUrls: ['./module-tab.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -154,6 +154,26 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
   sidebarOpen = false;
   selectedModuleSerialId: string | null = null;
   selectedModuleName: string | null = null;
+  selectedModuleIcon: string | null = null;
+  selectedModuleMeta: {
+    availability?: ModuleAvailabilityStatus | string;
+    availabilityLabel?: string;
+    availabilityIcon?: string;
+    availabilityClass?: string;
+    connected?: boolean;
+    connectionIcon?: string;
+    connectionLabel?: string;
+    configured?: boolean;
+    lastUpdate?: string;
+    position?: string;
+    ipAddress?: string;
+    moduleType?: string;
+    drillAction?: {
+      currentLight: string | null;
+      previousLight: string | null;
+      messages: MonitoredMessage[];
+    };
+  } | null = null;
 
   // Shopfloor layout config for serial number lookup
   private layoutConfig: ShopfloorLayoutConfig | null = null;
@@ -670,6 +690,86 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
+  onModuleCellDoubleClicked(event: { id: string; kind: 'module' | 'fixed' }): void {
+    if (event.kind !== 'module') {
+      return;
+    }
+    // Reuse selection lookup and open sidebar
+    this.onModuleCellSelected(event);
+    this.openSidebarForSelected();
+  }
+
+  private updateSelectedMeta(cell: ShopfloorCellConfig | null): void {
+    const snapshot = this.moduleOverviewState.getSnapshot(this.currentEnvironmentKey);
+    const moduleId = this.selectedModuleSerialId ?? cell?.id ?? null;
+    const moduleDetails =
+      moduleId ? snapshot?.modules?.[moduleId] ?? snapshot?.modules?.[cell?.id ?? ''] : null;
+
+    const availabilityStatus = (moduleDetails?.availability ?? 'Unknown') as ModuleAvailabilityStatus;
+    const availabilityLabel = this.getAvailabilityLabel(availabilityStatus);
+    const availabilityIcon = this.getAvailabilityIcon(availabilityStatus);
+    const availabilityClass = this.getAvailabilityClass(availabilityStatus);
+
+    const connectionLabel =
+      moduleDetails?.connected === true
+        ? $localize`:@@moduleTabConnected:Connected`
+        : moduleDetails?.connected === false
+        ? $localize`:@@moduleTabDisconnected:Disconnected`
+        : $localize`:@@moduleTabUnknown:Unknown`;
+    const connectionIcon =
+      moduleDetails?.connected === true
+        ? STATUS_ICONS.connection.connected
+        : moduleDetails?.connected === false
+        ? STATUS_ICONS.connection.disconnected
+        : STATUS_ICONS.availability.unknown;
+
+    const moduleType = moduleDetails?.subType ?? cell?.name ?? 'UNKNOWN';
+
+    this.selectedModuleMeta = {
+      availability: availabilityStatus,
+      availabilityLabel,
+      availabilityIcon,
+      availabilityClass,
+      connected: moduleDetails?.connected,
+      connectionIcon,
+      connectionLabel,
+      configured: moduleDetails?.configured,
+      lastUpdate: moduleDetails?.lastUpdate,
+      position: cell ? this.formatPosition(cell) : undefined,
+      ipAddress: (moduleDetails as any)?.ipAddress ?? undefined,
+      moduleType,
+      drillAction: moduleType === 'DRILL' ? this.getDrillActionData() : undefined,
+    };
+
+    const iconKey = cell?.icon ?? cell?.name ?? moduleDetails?.subType ?? moduleDetails?.id ?? 'QUESTION';
+    this.selectedModuleIcon = this.resolveIconPath(iconKey);
+  }
+
+  openSidebarForSelected(): void {
+    if (!this.selectedModuleSerialId) {
+      return;
+    }
+    this.sidebarOpen = true;
+    this.cdr.markForCheck();
+  }
+
+  get selectedStatus(): { connected: boolean; availability: ModuleAvailabilityStatus } | null {
+    if (!this.selectedModuleSerialId || !this.currentModuleStatusMap) {
+      return null;
+    }
+    return this.currentModuleStatusMap.get(this.selectedModuleSerialId) ?? null;
+  }
+
+  get selectedAvailabilityLabel(): string {
+    const availability = this.selectedStatus?.availability;
+    if (!availability) return 'Unknown';
+    const normalized = availability.toString().toLowerCase();
+    if (normalized === 'ready') return 'Ready';
+    if (normalized === 'busy') return 'Busy';
+    if (normalized === 'blocked') return 'Blocked';
+    return 'Unknown';
+  }
+
   private loadShopfloorPreviewState(): void {
     try {
       const saved = localStorage.getItem(this.shopfloorPreviewStorageKey);
@@ -694,39 +794,29 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Get layout config to find serial number
-    if (this.layoutConfig) {
-      const cell = this.layoutConfig.cells.find((c: ShopfloorCellConfig) => c.id === event.id);
+    const cell = this.layoutConfig?.cells.find((c: ShopfloorCellConfig) => c.id === event.id) ?? null;
+    const snapshot = this.moduleOverviewState.getSnapshot(this.currentEnvironmentKey);
+    const moduleStates = snapshot?.modules ?? {};
+    const moduleDetails =
+      Object.values(moduleStates).find((m) => m.id === (cell?.serial_number ?? event.id)) ??
+      moduleStates[event.id];
 
-      if (cell && cell.serial_number) {
-        this.selectedModuleSerialId = cell.serial_number;
-        this.selectedModuleName = this.moduleNameService.getModuleDisplayText(cell.name ?? cell.id, 'id-full');
-        this.sidebarOpen = true;
-        this.cdr.markForCheck();
-        return;
-      }
-    }
+    const moduleType = moduleDetails?.subType ?? cell?.name ?? 'UNKNOWN';
+    const display = this.moduleNameService.getModuleDisplayName(moduleType);
 
-    // Fallback: Try to find by module overview state (use id as serial)
-    this.subscriptions.add(
-      this.moduleOverview$.pipe(
-        map((state) => {
-          const module = Object.values(state.modules).find((m) => m.id === event.id);
-          if (module) {
-            this.selectedModuleSerialId = module.id; // Use id as serial number
-            this.selectedModuleName = this.moduleNameService.getModuleDisplayText(module.subType ?? 'UNKNOWN', 'id-full');
-            this.sidebarOpen = true;
-            this.cdr.markForCheck();
-          }
-        })
-      ).subscribe()
-    );
+    this.selectedModuleSerialId = moduleDetails?.id ?? cell?.serial_number ?? event.id;
+    this.selectedModuleName = display.fullName;
+
+    this.updateSelectedMeta(cell);
+    this.cdr.markForCheck();
   }
 
   closeSidebar(): void {
     this.sidebarOpen = false;
     this.selectedModuleSerialId = null;
     this.selectedModuleName = null;
+    this.selectedModuleIcon = null;
+    this.selectedModuleMeta = null;
     this.cdr.markForCheck();
   }
 
@@ -786,6 +876,58 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.warn(`[ModuleTab] Failed to get message count for ${serialId}:`, error);
       return 0;
+    }
+  }
+
+  private formatPosition(cell: ShopfloorCellConfig): string {
+    const { position, size } = cell;
+    return `x:${position.x}, y:${position.y} (w:${size.w}, h:${size.h})`;
+  }
+
+  private getDrillActionData(): {
+    currentLight: string | null;
+    previousLight: string | null;
+    messages: MonitoredMessage[];
+  } {
+    try {
+      const history = this.messageMonitor.getHistory('dsp/drill/action');
+      const lastTwo = history.slice(-2).reverse();
+
+      // Determine current/previous changeLight values
+      let currentLight: string | null = null;
+      let previousLight: string | null = null;
+      for (let i = history.length - 1; i >= 0; i -= 1) {
+        const msg = history[i];
+        const payload = this.parseDspActionPayload(msg);
+        if (payload?.command === 'changeLight' && payload.value) {
+          if (!currentLight) {
+            currentLight = payload.value;
+          } else if (!previousLight) {
+            previousLight = payload.value;
+            break;
+          }
+        }
+      }
+
+      return {
+        currentLight,
+        previousLight,
+        messages: lastTwo,
+      };
+    } catch (error) {
+      console.warn('[ModuleTab] Failed to read dsp/drill/action history', error);
+      return { currentLight: null, previousLight: null, messages: [] };
+    }
+  }
+
+  private parseDspActionPayload(msg: MonitoredMessage): { command?: string; value?: string } | null {
+    try {
+      if (typeof msg.payload === 'object' && msg.payload !== null) {
+        return msg.payload as { command?: string; value?: string };
+      }
+      return JSON.parse(String(msg.payload)) as { command?: string; value?: string };
+    } catch {
+      return null;
     }
   }
 }

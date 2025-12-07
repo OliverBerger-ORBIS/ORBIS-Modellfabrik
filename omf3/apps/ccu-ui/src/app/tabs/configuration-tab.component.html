@@ -40,12 +40,13 @@
         [infoText]="vm.infoText"
         [highlightModulesOverride]="vm.highlightModules"
         [highlightFixedOverride]="vm.highlightFixed"
-        [selectionEnabled]="true"
+        [selectionEnabled]="false"
         [showBaseRoads]="false"
         [showZoomControls]="true"
-        (cellSelected)="onCellSelected($event)"
-        (cellDoubleClicked)="onCellDoubleClick($event)"
       ></app-shopfloor-preview>
+      <p class="shopfloor-hint" i18n="@@configurationShopfloorHint">
+        Shopfloor Interaktion ist im Module-Tab verfügbar (Doppelklick öffnet Details). DSP-spezifische Inhalte findest du im DSP-Tab.
+      </p>
     </div>
 
     <section class="detail-panel" *ngIf="vm.detailPanel as panel">
