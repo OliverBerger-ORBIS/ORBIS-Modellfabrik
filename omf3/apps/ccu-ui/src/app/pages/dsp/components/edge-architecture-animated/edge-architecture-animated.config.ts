@@ -51,10 +51,10 @@ export const EDGE_LAYOUT = {
   BOX_WIDTH: 150,
   BOX_HEIGHT: 60,
   
-  // Spacing
-  ROW_1_Y: 160,  // DISC, Event Bus (Event Bus in top-right)
-  ROW_2_Y: 260,  // App Server, Router, Agent
-  ROW_3_Y: 360,  // Log Server, DISI, Edge DB
+  // Spacing - 3 rows with equal vertical distribution
+  ROW_1_Y: 160,  // DISC, Event Bus
+  ROW_2_Y: 270,  // App Server, Router, Agent
+  ROW_3_Y: 380,  // Log Server, DISI, Edge Database
   
   // External zones
   BUSINESS_ZONE_Y: 40,
@@ -80,11 +80,11 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
     state: 'hidden',
   });
   
-  // Row 1: DISC (centered)
+  // Row 1: DISC and Event Bus (evenly distributed)
   containers.push({
     id: 'disc',
     label: 'DISC',
-    x: EDGE_LAYOUT.EDGE_X + 425,
+    x: EDGE_LAYOUT.EDGE_X + 200,  // Left position in row 1
     y: EDGE_LAYOUT.ROW_1_Y,
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
@@ -92,11 +92,22 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
     icon: 'assets/svg/dsp/edge-components/edge-disc.svg',
   });
   
-  // Row 2: App Server, Router, Agent
+  containers.push({
+    id: 'event-bus',
+    label: 'Event Bus',
+    x: EDGE_LAYOUT.EDGE_X + 650,  // Right position in row 1
+    y: EDGE_LAYOUT.ROW_1_Y,
+    width: EDGE_LAYOUT.BOX_WIDTH,
+    height: EDGE_LAYOUT.BOX_HEIGHT,
+    state: 'hidden',
+    icon: 'assets/svg/dsp/edge-components/edge-event-bus.svg',
+  });
+  
+  // Row 2: App Server, Router, Agent (evenly distributed)
   containers.push({
     id: 'app-server',
     label: 'App Server',
-    x: EDGE_LAYOUT.EDGE_X + 150,
+    x: EDGE_LAYOUT.EDGE_X + 100,  // Left position in row 2
     y: EDGE_LAYOUT.ROW_2_Y,
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
@@ -107,7 +118,7 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
   containers.push({
     id: 'router',
     label: 'Router',
-    x: EDGE_LAYOUT.EDGE_X + 425,
+    x: EDGE_LAYOUT.EDGE_X + 425,  // Center position in row 2
     y: EDGE_LAYOUT.ROW_2_Y,
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
@@ -118,7 +129,7 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
   containers.push({
     id: 'agent',
     label: 'Agent',
-    x: EDGE_LAYOUT.EDGE_X + 700,
+    x: EDGE_LAYOUT.EDGE_X + 750,  // Right position in row 2
     y: EDGE_LAYOUT.ROW_2_Y,
     width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
@@ -126,13 +137,13 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
     icon: 'assets/svg/dsp/edge-components/edge-agent.svg',
   });
   
-  // Row 3: Log Server, DISI, Edge DB, Event Bus
+  // Row 3: Log Server, DISI, Edge Database (evenly distributed)
   containers.push({
     id: 'log-server',
     label: 'Log Server',
-    x: EDGE_LAYOUT.EDGE_X + 70,
+    x: EDGE_LAYOUT.EDGE_X + 100,  // Left position in row 3
     y: EDGE_LAYOUT.ROW_3_Y,
-    width: 140,
+    width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
     state: 'hidden',
     icon: 'assets/svg/dsp/edge-components/edge-log-server.svg',
@@ -141,9 +152,9 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
   containers.push({
     id: 'disi',
     label: 'DISI',
-    x: EDGE_LAYOUT.EDGE_X + 290,
+    x: EDGE_LAYOUT.EDGE_X + 325,  // Center-left position in row 3
     y: EDGE_LAYOUT.ROW_3_Y,
-    width: 140,
+    width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
     state: 'hidden',
     icon: 'assets/svg/dsp/edge-components/edge-disi.svg',
@@ -152,23 +163,12 @@ export function createEdgeContainers(): EdgeContainerConfig[] {
   containers.push({
     id: 'db',
     label: 'Edge Database',
-    x: EDGE_LAYOUT.EDGE_X + 510,
+    x: EDGE_LAYOUT.EDGE_X + 550,  // Center-right position in row 3
     y: EDGE_LAYOUT.ROW_3_Y,
-    width: 140,
+    width: EDGE_LAYOUT.BOX_WIDTH,
     height: EDGE_LAYOUT.BOX_HEIGHT,
     state: 'hidden',
     icon: 'assets/svg/dsp/edge-components/edge-database.svg',
-  });
-  
-  containers.push({
-    id: 'event-bus',
-    label: 'Event Bus',
-    x: EDGE_LAYOUT.EDGE_X + 820,  // Moved to top-right corner
-    y: EDGE_LAYOUT.ROW_1_Y,
-    width: 140,
-    height: EDGE_LAYOUT.BOX_HEIGHT,
-    state: 'hidden',
-    icon: 'assets/svg/dsp/edge-components/edge-event-bus.svg',
   });
   
   // External zones (for Step 3 & 4)
@@ -210,10 +210,9 @@ export function createEdgeConnections(): EdgeConnectionConfig[] {
     { id: 'router-event-bus', from: 'router', to: 'event-bus', bidirectional: true, state: 'hidden' },
     
     // External connections (Step 3)
-    { id: 'disc-business', from: 'disc', to: 'business-zone', state: 'hidden' },
+    // Agent connects only to Management Cockpit, App Server only to SmartFactory Dashboard
     { id: 'app-server-business', from: 'app-server', to: 'business-zone', state: 'hidden' },
     { id: 'disi-shopfloor', from: 'disi', to: 'shopfloor-zone', state: 'hidden' },
-    { id: 'agent-shopfloor', from: 'agent', to: 'shopfloor-zone', state: 'hidden' },
   ];
 }
 
@@ -256,9 +255,9 @@ export function createEdgeSteps(): EdgeStepConfig[] {
       label: $localize`:@@edgeAnimStep3:Business ↔ Edge ↔ Shopfloor`,
       description: $localize`:@@edgeAnimStep3Desc:Edge acts as the real-time bridge between shopfloor devices and business systems.`,
       visibleContainerIds: ['edge-container', ...allComponentIds, 'business-zone', 'shopfloor-zone'],
-      highlightedContainerIds: ['disc', 'app-server', 'disi', 'agent'],
-      visibleConnectionIds: [...allInternalConnectionIds, 'disc-business', 'app-server-business', 'disi-shopfloor', 'agent-shopfloor'],
-      highlightedConnectionIds: ['disc-business', 'app-server-business', 'disi-shopfloor', 'agent-shopfloor'],
+      highlightedContainerIds: ['app-server', 'disi'],
+      visibleConnectionIds: [...allInternalConnectionIds, 'app-server-business', 'disi-shopfloor'],
+      highlightedConnectionIds: ['app-server-business', 'disi-shopfloor'],
       showBusinessZone: true,
       showShopfloorZone: true,
       showExternalConnections: true,
@@ -271,8 +270,8 @@ export function createEdgeSteps(): EdgeStepConfig[] {
       description: $localize`:@@edgeAnimStep4Desc:Edge components connect SmartFactory dashboards, management cockpit, shopfloor assets and analytics platforms.`,
       visibleContainerIds: ['edge-container', ...allComponentIds, 'business-zone', 'shopfloor-zone'],
       highlightedContainerIds: ['app-server', 'agent', 'disi', 'db', 'event-bus'],
-      visibleConnectionIds: [...allInternalConnectionIds, 'disc-business', 'app-server-business', 'disi-shopfloor', 'agent-shopfloor'],
-      highlightedConnectionIds: ['app-server-business', 'agent-shopfloor', 'router-db', 'router-event-bus'],
+      visibleConnectionIds: [...allInternalConnectionIds, 'app-server-business', 'disi-shopfloor'],
+      highlightedConnectionIds: ['app-server-business', 'router-db', 'router-event-bus'],
       showBusinessZone: true,
       showShopfloorZone: true,
       showExternalConnections: true,
