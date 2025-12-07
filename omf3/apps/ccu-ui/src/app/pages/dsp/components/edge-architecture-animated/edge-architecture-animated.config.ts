@@ -38,9 +38,9 @@ export interface EdgeStepConfig {
   showFullArchitecture?: boolean;  // Show full DSP Reference Architecture from Step 3+
 }
 
-// SVG viewBox dimensions - matches full DSP Reference Architecture (3 layers)
+// SVG viewBox dimensions - matches full DSP Reference Architecture with extended DSP layer
 export const EDGE_VIEWBOX_WIDTH = 1200;
-export const EDGE_VIEWBOX_HEIGHT = 860;  // Increased to show all 3 layers (Business 80-340, DSP 340-600, Shopfloor 600-860)
+export const EDGE_VIEWBOX_HEIGHT = 900;  // Increased for extended DSP layer (Business 80-340, DSP 340-640, Shopfloor 640-900)
 
 // Layout constants for Steps 1-2 (detail view)
 // Canvas matches full architecture size, components spread maximally within EDGE box
@@ -49,21 +49,21 @@ export const EDGE_LAYOUT = {
   EDGE_X: 350,    // Centered horizontally in DSP layer
   EDGE_Y: 360,    // In DSP layer (340 + 20px margin)
   EDGE_WIDTH: 500, // Matches DSP-Function-Box width from reference architecture
-  EDGE_HEIGHT: 220, // Matches DSP-Function-Box height
+  EDGE_HEIGHT: 260, // Increased to accommodate 3 rows without overlap (60px boxes + margins)
   
   // Component boxes inside EDGE - smaller to fit, maximally spread apart
   BOX_WIDTH: 110,
   BOX_HEIGHT: 60,
   
-  // Spacing - 3 rows, components maximally spread within EDGE bounds
+  // Spacing - 3 rows, components maximally spread within EDGE bounds with NO OVERLAP
   // Row 1: DISC (left), Event Bus (right) - y at top of EDGE box
   ROW_1_Y: 375,   // EDGE_Y + 15px margin
   
   // Row 2: App Server (left), Router (center), Agent (right) - same height for horizontal arrows
-  ROW_2_Y: 465,   // EDGE_Y + (EDGE_HEIGHT / 2) - vertically centered
+  ROW_2_Y: 465,   // EDGE_Y + 90px (Row 1 + 60px box + 15px gap)
   
   // Row 3: Log Server (left), DISI (center), Edge Database (right) - y near bottom
-  ROW_3_Y: 505,   // EDGE_Y + EDGE_HEIGHT - BOX_HEIGHT - 15px margin
+  ROW_3_Y: 545,   // EDGE_Y + 170px (Row 2 + 60px box + 15px gap) - NO OVERLAP
   
   // Horizontal positions - spread maximally within EDGE box
   COL_LEFT_X: 365,      // EDGE_X + 15px margin
@@ -73,7 +73,7 @@ export const EDGE_LAYOUT = {
   // External zone positions (fallback for when shared config is not available)
   BUSINESS_ZONE_Y: 120,
   BUSINESS_ZONE_HEIGHT: 60,
-  SHOPFLOOR_ZONE_Y: 620,
+  SHOPFLOOR_ZONE_Y: 660,  // Updated for extended DSP layer
   SHOPFLOOR_ZONE_HEIGHT: 60,
 };
 

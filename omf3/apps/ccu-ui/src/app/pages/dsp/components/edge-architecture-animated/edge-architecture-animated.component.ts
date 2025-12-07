@@ -70,8 +70,8 @@ export class EdgeArchitectureAnimatedComponent implements OnInit, OnDestroy {
   ) {}
   
   ngOnInit(): void {
-    // Get shared architecture configuration from service
-    const sharedConfig = this.architectureConfigService.createCustomerConfiguration();
+    // Get shared architecture configuration from service (with extended DSP layer)
+    const sharedConfig = this.architectureConfigService.createExtendedCustomerConfiguration();
     
     this.containers = createEdgeContainers(sharedConfig);
     this.connections = createEdgeConnections();

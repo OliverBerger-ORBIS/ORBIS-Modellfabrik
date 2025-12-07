@@ -13,12 +13,21 @@ import type { IconKey } from '../assets/icon-registry';
 
 /** Standard layer heights used across DSP diagrams */
 export const STANDARD_LAYER_HEIGHT = 260;
+/** Extended DSP layer height to accommodate edge component details (3 rows without overlap) */
+export const EXTENDED_DSP_LAYER_HEIGHT = 300;
 
 /** Y-positions for standard 3-layer architecture */
 export const STANDARD_LAYER_POSITIONS = {
   BUSINESS_Y: 80,
   DSP_Y: 340,     // 80 + 260
   SHOPFLOOR_Y: 600 // 80 + 260 + 260
+};
+
+/** Y-positions for extended DSP layer architecture (with taller DSP layer for edge components) */
+export const EXTENDED_LAYER_POSITIONS = {
+  BUSINESS_Y: 80,
+  DSP_Y: 340,     // 80 + 260
+  SHOPFLOOR_Y: 640 // 80 + 260 + 300 (extended DSP layer)
 };
 
 /** Business layer container configuration */
@@ -99,6 +108,27 @@ export class DspArchitectureConfigService {
   }
 
   /**
+   * Get extended DSP layer background container configuration.
+   * Used in Edge Architecture animation to provide enough space for 3 rows of components.
+   */
+  getExtendedDspLayerBackground(): ContainerConfig {
+    return {
+      id: 'layer-dsp',
+      label: '',  // Set via i18n
+      x: 0,
+      y: EXTENDED_LAYER_POSITIONS.DSP_Y,
+      width: 1200,
+      height: EXTENDED_DSP_LAYER_HEIGHT,
+      type: 'layer',
+      state: 'normal',
+      backgroundColor: 'rgba(207, 230, 255, 0.5)',
+      borderColor: 'rgba(22, 65, 148, 0.15)',
+      isGroup: true,
+      labelPosition: 'left',
+    };
+  }
+
+  /**
    * Get Shopfloor layer background container configuration.
    */
   getShopfloorLayerBackground(): ContainerConfig {
@@ -107,6 +137,27 @@ export class DspArchitectureConfigService {
       label: '',  // Set via i18n
       x: 0,
       y: STANDARD_LAYER_POSITIONS.SHOPFLOOR_Y,
+      width: 1200,
+      height: STANDARD_LAYER_HEIGHT,
+      type: 'layer',
+      state: 'normal',
+      backgroundColor: 'rgba(241, 243, 247, 0.8)',
+      borderColor: 'rgba(31, 54, 91, 0.12)',
+      isGroup: true,
+      labelPosition: 'left',
+    };
+  }
+
+  /**
+   * Get extended Shopfloor layer background container configuration.
+   * Used in Edge Architecture animation with extended DSP layer.
+   */
+  getExtendedShopfloorLayerBackground(): ContainerConfig {
+    return {
+      id: 'layer-shopfloor',
+      label: '',  // Set via i18n
+      x: 0,
+      y: EXTENDED_LAYER_POSITIONS.SHOPFLOOR_Y,
       width: 1200,
       height: STANDARD_LAYER_HEIGHT,
       type: 'layer',
@@ -256,6 +307,18 @@ export class DspArchitectureConfigService {
   }
 
   /**
+   * Get all layer backgrounds with extended DSP layer height.
+   * Used in Edge Architecture animation to provide enough space for edge components.
+   */
+  getAllExtendedLayerBackgrounds(): ContainerConfig[] {
+    return [
+      this.getBusinessLayerBackground(),
+      this.getExtendedDspLayerBackground(),
+      this.getExtendedShopfloorLayerBackground(),
+    ];
+  }
+
+  /**
    * Get all business layer containers as a flat array.
    */
   getAllBusinessContainers(): ContainerConfig[] {
@@ -323,6 +386,41 @@ export class DspArchitectureConfigService {
 
     return {
       layers: this.getAllLayerBackgrounds(),
+      business: {
+        ...defaultBusiness,
+        ...customerConfig?.businessContainers,
+      },
+      shopfloor: {
+        ...defaultShopfloor,
+        ...customerConfig?.shopfloorContainers,
+      },
+      cloud: {
+        ...defaultCloud,
+        ...customerConfig?.cloudContainers,
+      },
+    };
+  }
+
+  /**
+   * Create customer configuration with extended DSP layer.
+   * Used for Edge Architecture animation that needs more vertical space.
+   */
+  createExtendedCustomerConfiguration(customerConfig?: {
+    businessContainers?: Partial<BusinessLayerConfig>;
+    shopfloorContainers?: Partial<ShopfloorLayerConfig>;
+    cloudContainers?: Partial<CloudLayerConfig>;
+  }): {
+    layers: ContainerConfig[];
+    business: BusinessLayerConfig;
+    shopfloor: ShopfloorLayerConfig;
+    cloud: CloudLayerConfig;
+  } {
+    const defaultBusiness = this.getBusinessLayerContainers();
+    const defaultShopfloor = this.getShopfloorLayerContainers();
+    const defaultCloud = this.getCloudLayerContainers();
+
+    return {
+      layers: this.getAllExtendedLayerBackgrounds(),
       business: {
         ...defaultBusiness,
         ...customerConfig?.businessContainers,
