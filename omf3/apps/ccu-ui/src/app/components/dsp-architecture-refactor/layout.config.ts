@@ -1,47 +1,44 @@
 /**
- * Layout configurations for DSP Architecture views.
- * 
- * Uses the exact layout from the existing DSP architecture component
- * with continuous layer backgrounds and grid-based box positioning.
+ * Layout configuration for refactored DSP Architecture component.
+ * Based on existing dsp-architecture.config.ts with taller DSP layer for component view.
  */
+import type { ContainerConfig, ConnectionConfig, StepConfig } from './types';
+import type { IconKey } from '../../assets/icon-registry';
 
-import type { Layer, Box, Arrow, ArchitectureConfig } from './types';
-import { ORBIS_COLORS } from '../../assets/color-palette';
-
-/**
- * SVG viewBox dimensions - matching existing DSP architecture
- */
+/** SVG viewBox dimensions - increased height for taller DSP layer */
 export const VIEWBOX_WIDTH = 1200;
-export const VIEWBOX_HEIGHT = 860;
+export const VIEWBOX_HEIGHT = 1060; // Increased to accommodate taller DSP layer
 
-/**
- * Layout constants - matching existing DSP architecture
- */
+/** Layout constants */
 export const LAYOUT = {
+  // Title area
+  TITLE_Y: 30,
+  SUBTITLE_Y: 55,
+
   // Layer dimensions
   LAYER_HEIGHT: 260,
   LAYER_START_Y: 80,
-  
-  // Label area
+
+  // Labels inside layers (left edge)
   LABEL_X: 10,
   LABEL_WIDTH: 90,
-  
+
   // Business Process layer (top - white)
   BUSINESS_Y: 80,
-  
-  // DSP layer (middle - blue) - TALLER for component view
+
+  // DSP layer (middle - blue) - MUCH TALLER for component view
   DSP_LAYER_Y: 340,
-  DSP_LAYER_HEIGHT: 360, // Increased to fit Edge component view
-  
+  DSP_LAYER_HEIGHT: 460, // Increased from 260 to 460 for Edge component icons
+
   // Shopfloor layer (bottom - gray)
-  SHOPFLOOR_Y: 700,
-  
+  SHOPFLOOR_Y: 800, // Adjusted: 80 + 260 + 460
+
   // Box dimensions
   BUSINESS_BOX_WIDTH: 200,
   BUSINESS_BOX_HEIGHT: 140,
-  DSP_BOX_HEIGHT: 165,
-  
-  // Content area
+  DSP_BOX_HEIGHT: 300, // Much taller for component icons
+
+  // Margins and spacing
   CONTENT_START_X: 100,
   MARGIN_RIGHT: 30,
   CONTENT_WIDTH: 1090,
@@ -49,693 +46,652 @@ export const LAYOUT = {
 };
 
 /**
- * Layer color definitions matching existing architecture
+ * Create default containers matching existing DSP architecture
  */
-const LAYER_COLORS = {
-  business: '#ffffff',
-  dsp: 'rgba(207, 230, 255, 0.5)', // Blue tint
-  shopfloor: 'rgba(241, 243, 247, 0.8)', // Gray tint
-};
+export function createDefaultContainers(): ContainerConfig[] {
+  const containers: ContainerConfig[] = [];
 
-/**
- * Functional View Configuration
- * Shows high-level functional capabilities across layers
- */
-const FUNCTIONAL_LAYERS: Layer[] = [
-  {
-    id: 'business-layer',
+  // ========== LAYER BACKGROUNDS ==========
+
+  // Business Process layer background (white)
+  containers.push({
+    id: 'layer-business',
+    label: '',
+    x: 0,
+    y: LAYOUT.BUSINESS_Y,
+    width: VIEWBOX_WIDTH,
+    height: LAYOUT.LAYER_HEIGHT,
+    type: 'layer',
+    state: 'hidden',
+    backgroundColor: '#ffffff',
+    borderColor: 'rgba(22, 65, 148, 0.1)',
+    isGroup: true,
+    labelPosition: 'left',
+  });
+
+  // DSP layer background (blue) - TALLER
+  containers.push({
+    id: 'layer-dsp',
+    label: '',
+    x: 0,
+    y: LAYOUT.DSP_LAYER_Y,
+    width: VIEWBOX_WIDTH,
+    height: LAYOUT.DSP_LAYER_HEIGHT,
+    type: 'layer',
+    state: 'hidden',
+    backgroundColor: 'rgba(207, 230, 255, 0.5)',
+    borderColor: 'rgba(22, 65, 148, 0.15)',
+    isGroup: true,
+    labelPosition: 'left',
+  });
+
+  // Shopfloor layer background (gray)
+  containers.push({
+    id: 'layer-shopfloor',
+    label: '',
+    x: 0,
+    y: LAYOUT.SHOPFLOOR_Y,
+    width: VIEWBOX_WIDTH,
+    height: LAYOUT.LAYER_HEIGHT,
+    type: 'layer',
+    state: 'normal',
+    backgroundColor: 'rgba(241, 243, 247, 0.8)',
+    borderColor: 'rgba(31, 54, 91, 0.12)',
+    isGroup: true,
+    labelPosition: 'left',
+  });
+
+  // ========== DSP LAYER LABELS ==========
+  containers.push({
+    id: 'dsp-label-onpremise',
+    label: '',
+    x: LAYOUT.CONTENT_START_X + 200,
+    y: LAYOUT.DSP_LAYER_Y + 32,
+    width: 100,
+    height: 20,
+    type: 'label',
+    state: 'hidden',
+    fontSize: 14,
+  });
+
+  containers.push({
+    id: 'dsp-label-cloud',
+    label: '',
+    x: LAYOUT.CONTENT_START_X + 850,
+    y: LAYOUT.DSP_LAYER_Y + 32,
+    width: 60,
+    height: 20,
+    type: 'label',
+    state: 'hidden',
+    fontSize: 14,
+  });
+
+  // ========== DSP BOXES ==========
+  const dspAvailableWidth = VIEWBOX_WIDTH - LAYOUT.CONTENT_START_X - LAYOUT.MARGIN_RIGHT;
+  const dspBoxGap = 50;
+  const uxBoxWidth = 175;
+  const edgeBoxWidth = 480;
+  const managementBoxWidth = dspAvailableWidth - uxBoxWidth - edgeBoxWidth - (dspBoxGap * 2);
+
+  // SmartFactory Dashboard (UX)
+  containers.push({
+    id: 'ux',
+    label: '',
+    x: LAYOUT.CONTENT_START_X,
+    y: LAYOUT.DSP_LAYER_Y + 55,
+    width: uxBoxWidth,
+    height: LAYOUT.DSP_BOX_HEIGHT,
+    type: 'ux',
+    state: 'hidden',
+    logoIconKey: 'ux-dashboard' as IconKey,
+    borderColor: '#009681',
+    backgroundColor: '#ffffff',
+    labelPosition: 'top-center',
+    fontSize: 20,
+    url: '/dashboard',
+  });
+
+  // DSP Edge
+  containers.push({
+    id: 'edge',
+    label: '',
+    x: LAYOUT.CONTENT_START_X + uxBoxWidth + dspBoxGap,
+    y: LAYOUT.DSP_LAYER_Y + 55,
+    width: edgeBoxWidth,
+    height: LAYOUT.DSP_BOX_HEIGHT,
+    type: 'dsp-edge',
+    state: 'hidden',
+    logoIconKey: 'logo-dsp' as IconKey,
+    logoPosition: 'top-left',
+    borderColor: '#009681',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    labelPosition: 'top-center',
+    fontSize: 20,
+    functionIcons: [
+      { iconKey: 'edge-data-storage' as IconKey, size: 60 },
+      { iconKey: 'edge-network' as IconKey, size: 60 },
+      { iconKey: 'edge-digital-twin' as IconKey, size: 60 },
+      { iconKey: 'edge-workflow' as IconKey, size: 60 },
+      { iconKey: 'edge-analytics' as IconKey, size: 60 },
+    ],
+    url: '/edge',
+  });
+
+  // Management Cockpit
+  containers.push({
+    id: 'management',
+    label: '',
+    x: LAYOUT.CONTENT_START_X + uxBoxWidth + dspBoxGap + edgeBoxWidth + dspBoxGap,
+    y: LAYOUT.DSP_LAYER_Y + 55,
+    width: managementBoxWidth,
+    height: LAYOUT.DSP_BOX_HEIGHT,
+    type: 'dsp-cloud',
+    state: 'hidden',
+    logoIconKey: 'logo-dsp' as IconKey,
+    logoPosition: 'top-left',
+    secondaryLogoIconKey: 'logo-azure' as IconKey,
+    secondaryLogoPosition: 'top-right',
+    borderColor: '#009681',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    labelPosition: 'top-center',
+    fontSize: 20,
+    functionIcons: [
+      { iconKey: 'logo-distributed' as IconKey, size: 60 },
+      { iconKey: 'shopfloor-it' as IconKey, size: 60 },
+    ],
+    url: '/management-cockpit',
+  });
+
+  // ========== BUSINESS BOXES ==========
+  const businessAvailableWidth = VIEWBOX_WIDTH - LAYOUT.CONTENT_START_X - LAYOUT.MARGIN_RIGHT;
+  const businessBoxCount = 4;
+  const businessGap = 30;
+  const businessBoxWidth = (businessAvailableWidth - (businessBoxCount - 1) * businessGap) / businessBoxCount;
+  const businessBoxY = LAYOUT.BUSINESS_Y + 65;
+  const businessStartX = LAYOUT.CONTENT_START_X;
+
+  containers.push({
+    id: 'erp-application',
+    label: '',
+    x: businessStartX,
+    y: businessBoxY,
+    width: businessBoxWidth,
+    height: LAYOUT.BUSINESS_BOX_HEIGHT,
     type: 'business',
-    label: 'Business Processes',
-    backgroundColor: LAYER_COLORS.business,
-    heightRatio: 1,
-    boxes: [
-      {
-        id: 'bp-1',
-        label: 'ERP',
-        widthRatio: 1/3,
-        layer: 'business',
-        position: 0,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'bp-2',
-        label: 'SCM',
-        widthRatio: 1/3,
-        layer: 'business',
-        position: 1,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'bp-3',
-        label: 'Analytics',
-        widthRatio: 1/3,
-        layer: 'business',
-        position: 2,
-        clickable: true,
-        hoverEffect: true,
-      },
-    ],
-  },
-  {
-    id: 'dsp-layer',
-    type: 'dsp',
-    label: 'Distributed Shopfloor Processing (DSP)',
-    backgroundColor: LAYER_COLORS.dsp,
-    heightRatio: 1.5,
-    boxes: [
-      {
-        id: 'dsp-smartfactory-dashboard',
-        label: 'SmartFactory\nDashboard',
-        widthRatio: 1/3,
-        layer: 'dsp',
-        position: 0,
-        clickable: true,
-        hoverEffect: true,
-        borderColor: ORBIS_COLORS.orbisBlue.strong,
-      },
-      {
-        id: 'dsp-edge',
-        label: 'Edge',
-        widthRatio: 1,
-        layer: 'dsp',
-        position: 1,
-        clickable: true,
-        hoverEffect: true,
-        borderColor: ORBIS_COLORS.orbisBlue.medium,
-      },
-      {
-        id: 'dsp-management-cockpit',
-        label: 'Management\nCockpit',
-        widthRatio: 2/3,
-        layer: 'dsp',
-        position: 2,
-        clickable: true,
-        hoverEffect: true,
-        borderColor: ORBIS_COLORS.orbisBlue.strong,
-      },
-    ],
-  },
-  {
-    id: 'shopfloor-systems-layer',
-    type: 'shopfloor-systems',
-    label: 'Shopfloor - Systems',
-    backgroundColor: LAYER_COLORS.shopfloor,
-    heightRatio: 0.8,
-    boxes: [
-      {
-        id: 'sf-system-1',
-        label: 'MES',
-        widthRatio: 1/4,
-        layer: 'shopfloor-systems',
-        position: 0,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-system-2',
-        label: 'Warehouse\nSystem',
-        widthRatio: 1/4,
-        layer: 'shopfloor-systems',
-        position: 1,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-system-3',
-        label: 'AGV\nSystem',
-        widthRatio: 1/4,
-        layer: 'shopfloor-systems',
-        position: 2,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-system-4',
-        label: 'SCADA',
-        widthRatio: 1/4,
-        layer: 'shopfloor-systems',
-        position: 3,
-        clickable: true,
-        hoverEffect: true,
-      },
-    ],
-  },
-  {
-    id: 'shopfloor-devices-layer',
-    type: 'shopfloor-devices',
-    label: 'Shopfloor - Devices',
-    backgroundColor: LAYER_COLORS.shopfloor,
-    heightRatio: 0.7,
-    boxes: [
-      {
-        id: 'sf-device-mill',
-        label: 'Mill',
-        widthRatio: 1/6,
-        layer: 'shopfloor-devices',
-        position: 0,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-device-drill',
-        label: 'Drill',
-        widthRatio: 1/6,
-        layer: 'shopfloor-devices',
-        position: 1,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-device-aiqs',
-        label: 'AIQS',
-        widthRatio: 1/6,
-        layer: 'shopfloor-devices',
-        position: 2,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-device-hbw',
-        label: 'HBW',
-        widthRatio: 1/6,
-        layer: 'shopfloor-devices',
-        position: 3,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-device-dps',
-        label: 'DPS',
-        widthRatio: 1/6,
-        layer: 'shopfloor-devices',
-        position: 4,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-device-chrg',
-        label: 'Charger',
-        widthRatio: 1/6,
-        layer: 'shopfloor-devices',
-        position: 5,
-        clickable: true,
-        hoverEffect: true,
-      },
-    ],
-  },
-];
+    state: 'hidden',
+    logoIconKey: 'erp-application' as IconKey,
+    secondaryLogoIconKey: 'logo-sap' as IconKey,
+    secondaryLogoPosition: 'top-right',
+    borderColor: 'rgba(22, 65, 148, 0.25)',
+    backgroundColor: '#ffffff',
+    labelPosition: 'bottom-center',
+    fontSize: 16,
+  });
 
-const FUNCTIONAL_ARROWS: Arrow[] = [
-  // Business to DSP connections
-  {
-    id: 'arrow-bp1-to-dsp-edge',
-    from: 'bp-1',
-    to: 'dsp-edge',
-    type: 'l-shaped',
-    color: ORBIS_COLORS.orbisBlue.medium,
-    strokeWidth: 2,
-    visible: true,
-  },
-  {
-    id: 'arrow-bp2-to-dsp-edge',
-    from: 'bp-2',
-    to: 'dsp-edge',
-    type: 'l-shaped',
-    color: ORBIS_COLORS.orbisBlue.medium,
-    strokeWidth: 2,
-    visible: true,
-  },
-  {
-    id: 'arrow-bp3-to-dsp-cockpit',
-    from: 'bp-3',
-    to: 'dsp-management-cockpit',
-    type: 'l-shaped',
-    color: ORBIS_COLORS.orbisBlue.medium,
-    strokeWidth: 2,
-    visible: true,
-  },
-  // DSP to Shopfloor Systems
-  {
-    id: 'arrow-dsp-edge-to-systems',
-    from: 'dsp-edge',
-    to: 'sf-system-1',
-    type: 'l-shaped',
-    color: ORBIS_COLORS.solutionPetrol.medium,
-    strokeWidth: 2,
-    visible: true,
-  },
-  // Systems to Devices
-  {
-    id: 'arrow-system1-to-mill',
-    from: 'sf-system-1',
-    to: 'sf-device-mill',
-    type: 'straight',
-    color: ORBIS_COLORS.shopfloorHighlight.medium,
-    strokeWidth: 2,
-    visible: true,
-  },
-  {
-    id: 'arrow-system2-to-hbw',
-    from: 'sf-system-2',
-    to: 'sf-device-hbw',
-    type: 'straight',
-    color: ORBIS_COLORS.shopfloorHighlight.medium,
-    strokeWidth: 2,
-    visible: true,
-  },
-];
-
-/**
- * Component View Configuration
- * Shows detailed component architecture with internal DSP components
- */
-const COMPONENT_LAYERS: Layer[] = [
-  {
-    id: 'business-layer',
+  containers.push({
+    id: 'bp-cloud-apps',
+    label: '',
+    x: businessStartX + (businessBoxWidth + businessGap),
+    y: businessBoxY,
+    width: businessBoxWidth,
+    height: LAYOUT.BUSINESS_BOX_HEIGHT,
     type: 'business',
-    label: 'Business Processes',
-    backgroundColor: LAYER_COLORS.business,
-    heightRatio: 1,
-    boxes: [
-      {
-        id: 'bp-1',
-        label: 'ERP System',
-        widthRatio: 1/2,
-        layer: 'business',
-        position: 0,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'bp-2',
-        label: 'Cloud Applications',
-        widthRatio: 1/2,
-        layer: 'business',
-        position: 1,
-        clickable: true,
-        hoverEffect: true,
-      },
-    ],
-  },
-  {
-    id: 'dsp-layer',
-    type: 'dsp',
-    label: 'DSP Components',
-    backgroundColor: LAYER_COLORS.dsp,
-    heightRatio: 2,
-    boxes: [
-      {
-        id: 'dsp-smartfactory-dashboard',
-        label: 'SmartFactory\nDashboard',
-        widthRatio: 1/3,
-        layer: 'dsp',
-        position: 0,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'edge-connectivity',
-        label: 'Connectivity',
-        widthRatio: 1/4,
-        layer: 'dsp',
-        position: 1,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'edge-digital-twin',
-        label: 'Digital Twin',
-        widthRatio: 1/4,
-        layer: 'dsp',
-        position: 2,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'edge-analytics',
-        label: 'Analytics',
-        widthRatio: 1/4,
-        layer: 'dsp',
-        position: 3,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'edge-workflow',
-        label: 'Workflow',
-        widthRatio: 1/4,
-        layer: 'dsp',
-        position: 4,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'dsp-management-cockpit',
-        label: 'Management\nCockpit',
-        widthRatio: 2/3,
-        layer: 'dsp',
-        position: 5,
-        clickable: true,
-        hoverEffect: true,
-      },
-    ],
-  },
-  {
-    id: 'shopfloor-systems-layer',
-    type: 'shopfloor-systems',
-    label: 'Shopfloor - Systems',
-    backgroundColor: LAYER_COLORS.shopfloor,
-    heightRatio: 0.8,
-    boxes: [
-      {
-        id: 'sf-system-1',
-        label: 'Factory\nSystem',
-        widthRatio: 1/3,
-        layer: 'shopfloor-systems',
-        position: 0,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-system-2',
-        label: 'Warehouse\nSystem',
-        widthRatio: 1/3,
-        layer: 'shopfloor-systems',
-        position: 1,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-system-3',
-        label: 'AGV\nSystem',
-        widthRatio: 1/3,
-        layer: 'shopfloor-systems',
-        position: 2,
-        clickable: true,
-        hoverEffect: true,
-      },
-    ],
-  },
-  {
-    id: 'shopfloor-devices-layer',
-    type: 'shopfloor-devices',
-    label: 'Shopfloor - Devices',
-    backgroundColor: LAYER_COLORS.shopfloor,
-    heightRatio: 0.7,
-    boxes: [
-      {
-        id: 'sf-device-mill',
-        label: 'Mill',
-        widthRatio: 1/5,
-        layer: 'shopfloor-devices',
-        position: 0,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-device-drill',
-        label: 'Drill',
-        widthRatio: 1/5,
-        layer: 'shopfloor-devices',
-        position: 1,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-device-aiqs',
-        label: 'AIQS',
-        widthRatio: 1/5,
-        layer: 'shopfloor-devices',
-        position: 2,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-device-hbw',
-        label: 'HBW',
-        widthRatio: 1/5,
-        layer: 'shopfloor-devices',
-        position: 3,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-device-dps',
-        label: 'DPS',
-        widthRatio: 1/5,
-        layer: 'shopfloor-devices',
-        position: 4,
-        clickable: true,
-        hoverEffect: true,
-      },
-    ],
-  },
-];
+    state: 'hidden',
+    logoIconKey: 'bp-cloud-apps' as IconKey,
+    borderColor: 'rgba(22, 65, 148, 0.25)',
+    backgroundColor: '#ffffff',
+    labelPosition: 'bottom-center',
+    fontSize: 16,
+  });
 
-const COMPONENT_ARROWS: Arrow[] = [
-  {
-    id: 'arrow-bp1-to-connectivity',
-    from: 'bp-1',
-    to: 'edge-connectivity',
-    type: 'l-shaped',
-    color: ORBIS_COLORS.orbisBlue.medium,
-    strokeWidth: 2,
-    visible: true,
-  },
-  {
-    id: 'arrow-connectivity-to-system1',
-    from: 'edge-connectivity',
-    to: 'sf-system-1',
-    type: 'l-shaped',
-    color: ORBIS_COLORS.solutionPetrol.medium,
-    strokeWidth: 2,
-    visible: true,
-  },
-];
-
-/**
- * Deployment View Configuration
- * Shows infrastructure and deployment architecture
- */
-const DEPLOYMENT_LAYERS: Layer[] = [
-  {
-    id: 'business-layer',
+  containers.push({
+    id: 'bp-analytics',
+    label: '',
+    x: businessStartX + (businessBoxWidth + businessGap) * 2,
+    y: businessBoxY,
+    width: businessBoxWidth,
+    height: LAYOUT.BUSINESS_BOX_HEIGHT,
     type: 'business',
-    label: 'Cloud / On-Premise',
-    backgroundColor: LAYER_COLORS.business,
-    heightRatio: 1,
-    boxes: [
-      {
-        id: 'bp-1',
-        label: 'SAP S/4HANA',
-        widthRatio: 1/3,
-        layer: 'business',
-        position: 0,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'bp-2',
-        label: 'Azure Cloud',
-        widthRatio: 1/3,
-        layer: 'business',
-        position: 1,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'bp-3',
-        label: 'Data Lake',
-        widthRatio: 1/3,
-        layer: 'business',
-        position: 2,
-        clickable: true,
-        hoverEffect: true,
-      },
-    ],
-  },
-  {
-    id: 'dsp-layer',
-    type: 'dsp',
-    label: 'DSP Platform (Edge)',
-    backgroundColor: LAYER_COLORS.dsp,
-    heightRatio: 1.5,
-    boxes: [
-      {
-        id: 'dsp-smartfactory-dashboard',
-        label: 'Dashboard\nContainer',
-        widthRatio: 1/3,
-        layer: 'dsp',
-        position: 0,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'dsp-edge',
-        label: 'Edge Runtime\n(Docker/K8s)',
-        widthRatio: 1,
-        layer: 'dsp',
-        position: 1,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'dsp-management-cockpit',
-        label: 'Cockpit\nContainer',
-        widthRatio: 2/3,
-        layer: 'dsp',
-        position: 2,
-        clickable: true,
-        hoverEffect: true,
-      },
-    ],
-  },
-  {
-    id: 'shopfloor-systems-layer',
-    type: 'shopfloor-systems',
-    label: 'Shopfloor IT',
-    backgroundColor: LAYER_COLORS.shopfloor,
-    heightRatio: 0.8,
-    boxes: [
-      {
-        id: 'sf-system-1',
-        label: 'MES Server',
-        widthRatio: 1/2,
-        layer: 'shopfloor-systems',
-        position: 0,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-system-2',
-        label: 'PLC Network',
-        widthRatio: 1/2,
-        layer: 'shopfloor-systems',
-        position: 1,
-        clickable: true,
-        hoverEffect: true,
-      },
-    ],
-  },
-  {
-    id: 'shopfloor-devices-layer',
-    type: 'shopfloor-devices',
-    label: 'Devices / Hardware',
-    backgroundColor: LAYER_COLORS.shopfloor,
-    heightRatio: 0.7,
-    boxes: [
-      {
-        id: 'sf-device-mill',
-        label: 'Mill PLC',
-        widthRatio: 1/4,
-        layer: 'shopfloor-devices',
-        position: 0,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-device-drill',
-        label: 'Drill PLC',
-        widthRatio: 1/4,
-        layer: 'shopfloor-devices',
-        position: 1,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-device-hbw',
-        label: 'HBW PLC',
-        widthRatio: 1/4,
-        layer: 'shopfloor-devices',
-        position: 2,
-        clickable: true,
-        hoverEffect: true,
-      },
-      {
-        id: 'sf-device-dps',
-        label: 'DPS PLC',
-        widthRatio: 1/4,
-        layer: 'shopfloor-devices',
-        position: 3,
-        clickable: true,
-        hoverEffect: true,
-      },
-    ],
-  },
-];
+    state: 'hidden',
+    logoIconKey: 'bp-analytics' as IconKey,
+    secondaryLogoIconKey: 'logo-grafana' as IconKey,
+    secondaryLogoPosition: 'top-right',
+    borderColor: 'rgba(22, 65, 148, 0.25)',
+    backgroundColor: '#ffffff',
+    labelPosition: 'bottom-center',
+    fontSize: 16,
+  });
 
-const DEPLOYMENT_ARROWS: Arrow[] = [
-  {
-    id: 'arrow-bp1-to-edge',
-    from: 'bp-1',
-    to: 'dsp-edge',
-    type: 'l-shaped',
-    color: ORBIS_COLORS.orbisBlue.medium,
-    strokeWidth: 2,
-    visible: true,
-    bidirectional: true,
-  },
-  {
-    id: 'arrow-edge-to-mes',
-    from: 'dsp-edge',
-    to: 'sf-system-1',
-    type: 'l-shaped',
-    color: ORBIS_COLORS.solutionPetrol.medium,
-    strokeWidth: 2,
-    visible: true,
-    bidirectional: true,
-  },
-];
+  containers.push({
+    id: 'bp-data-lake',
+    label: '',
+    x: businessStartX + (businessBoxWidth + businessGap) * 3,
+    y: businessBoxY,
+    width: businessBoxWidth,
+    height: LAYOUT.BUSINESS_BOX_HEIGHT,
+    type: 'business',
+    state: 'hidden',
+    logoIconKey: 'bp-data-lake' as IconKey,
+    borderColor: 'rgba(22, 65, 148, 0.25)',
+    backgroundColor: '#ffffff',
+    labelPosition: 'bottom-center',
+    fontSize: 16,
+  });
 
-/**
- * Get architecture configuration for a specific view mode
- */
-export function getArchitectureConfig(viewMode: 'functional' | 'component' | 'deployment'): ArchitectureConfig {
-  switch (viewMode) {
-    case 'functional':
-      return {
-        viewMode: 'functional',
-        layers: FUNCTIONAL_LAYERS,
-        arrows: FUNCTIONAL_ARROWS,
-      };
-    case 'component':
-      return {
-        viewMode: 'component',
-        layers: COMPONENT_LAYERS,
-        arrows: COMPONENT_ARROWS,
-      };
-    case 'deployment':
-      return {
-        viewMode: 'deployment',
-        layers: DEPLOYMENT_LAYERS,
-        arrows: DEPLOYMENT_ARROWS,
-      };
-    default:
-      return {
-        viewMode: 'functional',
-        layers: FUNCTIONAL_LAYERS,
-        arrows: FUNCTIONAL_ARROWS,
-      };
+  // ========== SHOPFLOOR CONTENT ==========
+  const shopfloorAvailableWidth = VIEWBOX_WIDTH - LAYOUT.CONTENT_START_X - LAYOUT.MARGIN_RIGHT;
+  const shopfloorGap = 40;
+  const shopfloorGroupHeight = 175;
+  const shopfloorGroupY = LAYOUT.SHOPFLOOR_Y + 48;
+
+  const systemsGroupWidth = 300;
+  const devicesGroupWidth = shopfloorAvailableWidth - systemsGroupWidth - shopfloorGap;
+
+  // Systems group
+  containers.push({
+    id: 'shopfloor-systems-group',
+    label: '',
+    x: LAYOUT.CONTENT_START_X,
+    y: shopfloorGroupY,
+    width: systemsGroupWidth,
+    height: shopfloorGroupHeight,
+    type: 'box',
+    state: 'hidden',
+    backgroundColor: 'transparent',
+    borderColor: 'rgba(0, 0, 0, 0.08)',
+    labelPosition: 'bottom-center',
+    fontSize: 14,
+    isGroup: true,
+  });
+
+  // Systems - 2 boxes vertically stacked
+  const systemBoxWidth = systemsGroupWidth - 20;
+  const systemBoxHeight = 65;
+  const systemBoxGap = 15;
+
+  containers.push({
+    id: 'shopfloor-system-bp',
+    label: '',
+    x: LAYOUT.CONTENT_START_X + 10,
+    y: shopfloorGroupY + 10,
+    width: systemBoxWidth,
+    height: systemBoxHeight,
+    type: 'shopfloor',
+    state: 'hidden',
+    logoIconKey: 'shopfloor-systems' as IconKey,
+    borderColor: 'rgba(0, 0, 0, 0.12)',
+    backgroundColor: '#ffffff',
+    labelPosition: 'bottom-center',
+    fontSize: 13,
+  });
+
+  containers.push({
+    id: 'shopfloor-system-fts',
+    label: '',
+    x: LAYOUT.CONTENT_START_X + 10,
+    y: shopfloorGroupY + 10 + systemBoxHeight + systemBoxGap,
+    width: systemBoxWidth,
+    height: systemBoxHeight,
+    type: 'shopfloor',
+    state: 'hidden',
+    logoIconKey: 'shopfloor-fts' as IconKey,
+    borderColor: 'rgba(0, 0, 0, 0.12)',
+    backgroundColor: '#ffffff',
+    labelPosition: 'bottom-center',
+    fontSize: 13,
+  });
+
+  // Devices group
+  containers.push({
+    id: 'shopfloor-devices-group',
+    label: '',
+    x: LAYOUT.CONTENT_START_X + systemsGroupWidth + shopfloorGap,
+    y: shopfloorGroupY,
+    width: devicesGroupWidth,
+    height: shopfloorGroupHeight,
+    type: 'box',
+    state: 'normal',
+    backgroundColor: 'transparent',
+    borderColor: 'rgba(0, 0, 0, 0.08)',
+    labelPosition: 'bottom-center',
+    fontSize: 14,
+    isGroup: true,
+  });
+
+  // Devices - 6 boxes in 2 rows
+  const deviceBoxWidth = (devicesGroupWidth - 20 - 5 * 15) / 3; // 3 columns
+  const deviceBoxHeight = 65;
+  const deviceBoxGap = 15;
+  const devicesStartX = LAYOUT.CONTENT_START_X + systemsGroupWidth + shopfloorGap + 10;
+
+  const deviceIcons: IconKey[] = [
+    'device-mill' as IconKey,
+    'device-drill' as IconKey,
+    'device-aiqs' as IconKey,
+    'device-hbw' as IconKey,
+    'device-dps' as IconKey,
+    'device-chrg' as IconKey,
+  ];
+
+  for (let i = 0; i < 6; i++) {
+    const row = Math.floor(i / 3);
+    const col = i % 3;
+
+    containers.push({
+      id: `shopfloor-device-${i + 1}`,
+      label: '',
+      x: devicesStartX + col * (deviceBoxWidth + deviceBoxGap),
+      y: shopfloorGroupY + 10 + row * (deviceBoxHeight + deviceBoxGap),
+      width: deviceBoxWidth,
+      height: deviceBoxHeight,
+      type: 'device',
+      state: 'normal',
+      logoIconKey: deviceIcons[i],
+      borderColor: 'rgba(0, 0, 0, 0.12)',
+      backgroundColor: '#ffffff',
+      labelPosition: 'bottom-center',
+      fontSize: 12,
+    });
   }
+
+  return containers;
 }
 
 /**
- * Apply customer-specific layer overrides to the configuration
+ * Create default connections
  */
-export function applyLayerOverrides(
-  config: ArchitectureConfig,
-  overrides?: Partial<ArchitectureConfig>
-): ArchitectureConfig {
-  if (!overrides) {
-    return config;
-  }
+export function createDefaultConnections(): ConnectionConfig[] {
+  return [
+    // UX to Edge
+    {
+      id: 'conn-ux-edge',
+      fromId: 'ux',
+      toId: 'edge',
+      fromSide: 'right',
+      toSide: 'left',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+    },
+    // Edge to Management
+    {
+      id: 'conn-edge-management',
+      fromId: 'edge',
+      toId: 'management',
+      fromSide: 'right',
+      toSide: 'left',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+    },
+    // Edge to Shopfloor Systems
+    {
+      id: 'conn-edge-system-bp',
+      fromId: 'edge',
+      toId: 'shopfloor-system-bp',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+    },
+    {
+      id: 'conn-edge-system-fts',
+      fromId: 'edge',
+      toId: 'shopfloor-system-fts',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+    },
+    // Edge to Shopfloor Devices
+    ...Array.from({ length: 6 }, (_, i) => ({
+      id: `conn-edge-device-${i + 1}`,
+      fromId: 'edge',
+      toId: `shopfloor-device-${i + 1}`,
+      fromSide: 'bottom' as const,
+      toSide: 'top' as const,
+      state: 'hidden' as const,
+      hasArrow: true,
+      bidirectional: true,
+    })),
+    // Business to Edge
+    {
+      id: 'conn-erp-edge',
+      fromId: 'erp-application',
+      toId: 'edge',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+    },
+    {
+      id: 'conn-cloud-edge',
+      fromId: 'bp-cloud-apps',
+      toId: 'edge',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+    },
+    {
+      id: 'conn-analytics-edge',
+      fromId: 'bp-analytics',
+      toId: 'edge',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+    },
+    {
+      id: 'conn-datalake-edge',
+      fromId: 'bp-data-lake',
+      toId: 'edge',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+    },
+  ];
+}
 
+/**
+ * Create animation steps as requested: 1, 2, 3, 7, 10, and final step 4 (complete overview)
+ */
+export function createDefaultSteps(): StepConfig[] {
+  const baseShopfloorContainers = [
+    'layer-shopfloor',
+    'shopfloor-systems-group',
+    'shopfloor-system-bp',
+    'shopfloor-system-fts',
+    'shopfloor-devices-group',
+    'shopfloor-device-1',
+    'shopfloor-device-2',
+    'shopfloor-device-3',
+    'shopfloor-device-4',
+    'shopfloor-device-5',
+    'shopfloor-device-6',
+  ];
+
+  const baseShopfloorConnections = [
+    'conn-edge-system-bp',
+    'conn-edge-system-fts',
+    'conn-edge-device-1',
+    'conn-edge-device-2',
+    'conn-edge-device-3',
+    'conn-edge-device-4',
+    'conn-edge-device-5',
+    'conn-edge-device-6',
+  ];
+
+  return [
+    // Step 1: Shopfloor Devices only
+    {
+      id: 'step-1',
+      label: $localize`:@@dspArchStep1:Shopfloor Devices`,
+      description: $localize`:@@dspArchStep1Desc:DSP connects heterogeneous devices in the shopfloor without interfering with machine logic.`,
+      visibleContainerIds: [
+        'layer-shopfloor',
+        'shopfloor-devices-group',
+        'shopfloor-device-1',
+        'shopfloor-device-2',
+        'shopfloor-device-3',
+        'shopfloor-device-4',
+        'shopfloor-device-5',
+        'shopfloor-device-6',
+      ],
+      highlightedContainerIds: [
+        'shopfloor-devices-group',
+        'shopfloor-device-1',
+        'shopfloor-device-2',
+        'shopfloor-device-3',
+        'shopfloor-device-4',
+        'shopfloor-device-5',
+        'shopfloor-device-6',
+      ],
+      visibleConnectionIds: [],
+      highlightedConnectionIds: [],
+    },
+
+    // Step 2: Shopfloor Systems + Devices
+    {
+      id: 'step-2',
+      label: $localize`:@@dspArchStep2:Shopfloor Systems`,
+      description: $localize`:@@dspArchStep2Desc:DSP integrates complete systems like AGVs, warehouses, and custom controls.`,
+      visibleContainerIds: baseShopfloorContainers,
+      highlightedContainerIds: [
+        'shopfloor-systems-group',
+        'shopfloor-system-bp',
+        'shopfloor-system-fts',
+      ],
+      visibleConnectionIds: [],
+      highlightedConnectionIds: [],
+    },
+
+    // Step 3: DSP Edge Core appears
+    {
+      id: 'step-3',
+      label: $localize`:@@dspArchStep3:DSP Edge Core`,
+      description: $localize`:@@dspArchStep3Desc:The DSP Edge is the local runtime for connectivity, process logic, digital twin and data processing.`,
+      visibleContainerIds: [
+        'layer-dsp',
+        'dsp-label-onpremise',
+        'edge',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: ['layer-dsp', 'edge'],
+      visibleConnectionIds: [],
+      highlightedConnectionIds: [],
+      showFunctionIcons: false,
+    },
+
+    // Step 7: Analytics / AI Preparation (from original sequence)
+    {
+      id: 'step-7',
+      label: $localize`:@@dspArchStep7:Analytics & AI`,
+      description: $localize`:@@dspArchStep7Desc:Real-time KPIs, OEE calculation, and ML preparation at the edge.`,
+      visibleContainerIds: [
+        'layer-dsp',
+        'dsp-label-onpremise',
+        'edge',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: ['edge'],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
+      showFunctionIcons: true,
+      highlightedFunctionIcons: ['edge-analytics'],
+    },
+
+    // Step 10: Business Integration (from original sequence)
+    {
+      id: 'step-10',
+      label: $localize`:@@dspArchStep10:Business Integration`,
+      description: $localize`:@@dspArchStep10Desc:DSP connects shopfloor events with ERP processes, cloud analytics, and data lakes.`,
+      visibleContainerIds: [
+        'layer-business',
+        'layer-dsp',
+        'dsp-label-onpremise',
+        'dsp-label-cloud',
+        'erp-application',
+        'bp-cloud-apps',
+        'bp-analytics',
+        'bp-data-lake',
+        'edge',
+        'management',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: [
+        'layer-business',
+        'erp-application',
+        'bp-cloud-apps',
+        'bp-analytics',
+        'bp-data-lake',
+      ],
+      visibleConnectionIds: [
+        'conn-edge-management',
+        'conn-erp-edge',
+        'conn-cloud-edge',
+        'conn-analytics-edge',
+        'conn-datalake-edge',
+        ...baseShopfloorConnections,
+      ],
+      highlightedConnectionIds: [
+        'conn-erp-edge',
+        'conn-cloud-edge',
+        'conn-analytics-edge',
+        'conn-datalake-edge',
+      ],
+      showFunctionIcons: true,
+    },
+
+    // Step 4: Complete Overview - everything visible, nothing highlighted
+    {
+      id: 'step-4',
+      label: $localize`:@@dspArchStep4Complete:Complete DSP Architecture`,
+      description: $localize`:@@dspArchStep4CompleteDesc:Complete overview of the DSP architecture with all layers, connections, and components.`,
+      visibleContainerIds: [
+        'layer-business',
+        'layer-dsp',
+        'dsp-label-onpremise',
+        'dsp-label-cloud',
+        'erp-application',
+        'bp-cloud-apps',
+        'bp-analytics',
+        'bp-data-lake',
+        'ux',
+        'edge',
+        'management',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: [], // Nothing highlighted as requested
+      visibleConnectionIds: [
+        'conn-ux-edge',
+        'conn-edge-management',
+        'conn-erp-edge',
+        'conn-cloud-edge',
+        'conn-analytics-edge',
+        'conn-datalake-edge',
+        ...baseShopfloorConnections,
+      ],
+      highlightedConnectionIds: [], // No connections highlighted
+      showFunctionIcons: true,
+    },
+  ];
+}
+
+/**
+ * Create complete diagram configuration
+ */
+export function createDiagramConfig(): { containers: ContainerConfig[]; connections: ConnectionConfig[]; steps: StepConfig[] } {
   return {
-    ...config,
-    layers: overrides.layers || config.layers,
-    arrows: overrides.arrows || config.arrows,
-    scenes: overrides.scenes || config.scenes,
+    containers: createDefaultContainers(),
+    connections: createDefaultConnections(),
+    steps: createDefaultSteps(),
   };
 }
