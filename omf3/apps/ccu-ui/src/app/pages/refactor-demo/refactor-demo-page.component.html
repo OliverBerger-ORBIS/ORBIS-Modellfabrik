@@ -8,7 +8,7 @@
   <!-- Controls Panel -->
   <div class="controls-panel">
     <div class="control-group">
-      <label class="control-label">{{ labelViewMode }}</label>
+      <div class="control-label">{{ labelViewMode }}</div>
       <div class="view-buttons">
         <button
           class="view-btn"
@@ -35,10 +35,11 @@
       <label class="control-label">
         <input
           type="checkbox"
+          id="animation-toggle"
           [checked]="animationEnabled"
           (change)="toggleAnimations()"
         />
-        {{ labelAnimations }}
+        <span>{{ labelAnimations }}</span>
       </label>
     </div>
   </div>
