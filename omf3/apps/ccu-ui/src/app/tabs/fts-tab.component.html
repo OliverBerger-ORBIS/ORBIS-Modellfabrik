@@ -158,6 +158,21 @@
             <img [src]="routeIcon" alt="Route" class="section-icon-img" width="24" height="24" />
             <span i18n="@@ftsRouteTitle">Route & Position</span>
           </h2>
+
+          <div class="fts-legend">
+            <span class="legend__item">
+              <span class="legend__dot legend__dot--route"></span>
+              <span i18n="@@ftsLegendRoute">Route</span>
+            </span>
+            <span class="legend__item">
+              <span class="legend__dot legend__dot--motion"></span>
+              <span i18n="@@ftsLegendMotion">In Motion</span>
+            </span>
+            <span class="legend__item">
+              <span class="legend__dot legend__dot--current"></span>
+              <span i18n="@@ftsLegendCurrentPosition">Current Position</span>
+            </span>
+          </div>
           
           <div class="shopfloor-wrapper">
             <app-shopfloor-preview
@@ -193,6 +208,24 @@
           <!-- Action Timeline -->
           <div class="action-timeline" *ngIf="getActionStates(ftsState).length > 0">
             <h4 i18n="@@ftsActionTimeline">Action Timeline</h4>
+            <div class="fts-legend fts-legend--timeline">
+              <span class="legend__item">
+                <span class="legend__dot legend__dot--timeline-finished"></span>
+                <span i18n="@@ftsLegendFinished">Finished</span>
+              </span>
+              <span class="legend__item">
+                <span class="legend__dot legend__dot--timeline-running"></span>
+                <span i18n="@@ftsLegendRunning">Running</span>
+              </span>
+              <span class="legend__item">
+                <span class="legend__dot legend__dot--timeline-initializing"></span>
+                <span i18n="@@ftsLegendInitializing">Initializing</span>
+              </span>
+              <span class="legend__item">
+                <span class="legend__dot legend__dot--timeline-waiting"></span>
+                <span i18n="@@ftsLegendWaiting">Waiting</span>
+              </span>
+            </div>
             <div class="timeline-container">
               <div class="timeline">
                 <div 

@@ -124,6 +124,68 @@
   }
 }
 
+.fts-legend {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin: 0.5rem 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: var(--color-text, #000);
+
+  &--timeline {
+    margin: 0 0 0.75rem 0;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .legend__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .legend__dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+
+    &--route {
+      background: rgba(249, 115, 22, 0.95); // Orange
+    }
+
+    &--motion {
+      background: var(--orbis-blue-medium); // Blue for in-motion
+      box-shadow: 0 0 0 2px rgba(var(--orbis-blue-medium-rgb), 0.2);
+    }
+
+    &--current {
+      background: var(--status-success-strong); // Green for current position
+      box-shadow: 0 0 0 2px rgba(var(--status-success-strong-rgb), 0.25);
+    }
+
+    &--timeline-finished {
+      background: var(--status-success-strong);
+      box-shadow: 0 0 0 2px rgba(var(--status-success-strong-rgb), 0.2);
+    }
+
+    &--timeline-running {
+      background: rgba(249, 115, 22, 0.95); // Route orange
+      box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.25);
+    }
+
+    &--timeline-initializing {
+      background: var(--orbis-blue-medium);
+      box-shadow: 0 0 0 2px rgba(var(--orbis-blue-medium-rgb), 0.2);
+    }
+
+    &--timeline-waiting {
+      background: rgba(var(--status-warning-medium-rgb), 1);
+      box-shadow: 0 0 0 2px rgba(var(--status-warning-medium-rgb), 0.25);
+    }
+  }
+}
+
 .status-card {
   .status-overview {
     display: grid;
@@ -815,43 +877,33 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--color-surface, #fff);
-      border: 2px solid var(--color-border, #e0e0e0);
       border-radius: 50%;
       z-index: 1;
     }
 
-    &.dock .timeline-point {
-      border-color: #4caf50;
-      background: #4caf50;
-      .timeline-time { color: white; }
+    &.finished .timeline-point {
+      background: var(--status-success-strong);
+      border: 2px solid var(--status-success-strong);
+      box-shadow: 0 0 0 2px rgba(var(--status-success-strong-rgb), 0.25);
     }
-    
-    &.turn .timeline-point {
-      border-color: #ff9800;
-      background: #ff9800;
-      .timeline-time { color: white; }
+
+    &.running .timeline-point {
+      background: rgba(249, 115, 22, 0.95); // Orange
+      border: 2px solid rgba(249, 115, 22, 0.95);
+      box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.25);
     }
-    
-    &.pass .timeline-point {
-      border-color: #2196f3;
-      background: #2196f3;
-      .timeline-time { color: white; }
+
+    &.initializing .timeline-point {
+      background: var(--orbis-blue-medium);
+      border: 2px solid var(--orbis-blue-medium);
+      box-shadow: 0 0 0 2px rgba(var(--orbis-blue-medium-rgb), 0.2);
     }
-    
-    &.pick .timeline-point {
-      border-color: #9c27b0;
-      background: #9c27b0;
-      .timeline-time { color: white; }
+
+    &.waiting .timeline-point {
+      background: rgba(var(--status-warning-medium-rgb), 1);
+      border: 2px solid rgba(var(--status-warning-medium-rgb), 1);
+      box-shadow: 0 0 0 2px rgba(var(--status-warning-medium-rgb), 0.25);
     }
-    
-    &.drop .timeline-point {
-      border-color: #e91e63;
-      background: #e91e63;
-      .timeline-time { color: white; }
-    }
-    
-    // Command-specific colors are applied to timeline-point only
 
     .timeline-content {
       margin-left: 2rem;

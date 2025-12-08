@@ -201,10 +201,11 @@
   background-color: rgba(249, 115, 22, 0.12);
 }
 
-// Current position highlighting (ORBIS-blue-medium) - for FTS tab
+// Current position highlighting (use success/ORBiS highlight green) - for FTS tab
 .preview__element--current-position {
-  border: 3px solid var(--orbis-blue-medium) !important;
-  box-shadow: 0 0 0 1px rgba(var(--orbis-blue-medium-rgb), 0.3);
+  border: 3px solid var(--status-success-strong) !important;
+  box-shadow: 0 0 0 2px rgba(var(--status-success-strong-rgb), 0.25);
+  background-color: rgba(var(--status-success-strong-rgb), 0.08);
 }
 
 // Module status highlighting (availability-based border colors)
@@ -234,10 +235,6 @@
   &--unknown {
     border: 1px solid rgba(var(--orbis-grey-medium-rgb), 0.5) !important;
     background-color: rgba(var(--orbis-grey-light-rgb), 0.3) !important;
-  }
-
-  &--connected {
-    // Additional visual indicator for connected state
   }
 
   &--disconnected {
