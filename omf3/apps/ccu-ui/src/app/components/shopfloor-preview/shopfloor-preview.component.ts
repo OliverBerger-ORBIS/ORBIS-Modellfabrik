@@ -536,9 +536,9 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
           width: 62,
           height: 62,
         };
-        // Load SVG with orange fill color for FTS
+        // Load SVG with green fill color for FTS (current position)
         const svgPath = ftsIcon.startsWith('/') ? ftsIcon : `/${ftsIcon}`;
-        this.loadSvgWithOrangeFill(svgPath).then((content) => {
+        this.loadSvgWithGreenFill(svgPath).then((content) => {
           if (content && this.viewModel?.ftsOverlay) {
             this.viewModel.ftsOverlay.svgContent = content;
             this.cdr.markForCheck();
@@ -881,33 +881,33 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   }
 
   /**
-   * Load SVG and change fill color from #154194 to orange (#f97316)
+   * Load SVG and change fill color from #154194 to highlight green (#16a34a)
    * Returns SafeHtml for inline rendering
    */
-  private async loadSvgWithOrangeFill(svgPath: string): Promise<SafeHtml | undefined> {
+  private async loadSvgWithGreenFill(svgPath: string): Promise<SafeHtml | undefined> {
     try {
       const response = await firstValueFrom(this.http.get(svgPath, { responseType: 'text' }));
       if (!response) {
         return undefined;
       }
-      // Replace all occurrences of #154194 (blue) with shopfloor highlight orange in SVG
+      // Replace all occurrences of #154194 (blue) with highlight green in SVG
       // Also replace RGB equivalent rgb(21, 65, 148) and any stroke/fill attributes
-      const shopfloorOrange = ORBIS_COLORS.shopfloorHighlight.strong;
-      const shopfloorOrangeRgb = '249, 115, 22'; // RGB for shopfloor-highlight-strong
-      let orangeSvg = response.replace(/#154194/g, shopfloorOrange);
-      orangeSvg = orangeSvg.replace(/rgb\(21,\s*65,\s*148\)/gi, `rgb(${shopfloorOrangeRgb})`);
-      orangeSvg = orangeSvg.replace(/fill="#154194"/g, `fill="${shopfloorOrange}"`);
-      orangeSvg = orangeSvg.replace(/stroke="#154194"/g, `stroke="${shopfloorOrange}"`);
-      orangeSvg = orangeSvg.replace(/fill:#154194/g, `fill:${shopfloorOrange}`);
-      orangeSvg = orangeSvg.replace(/stroke:#154194/g, `stroke:${shopfloorOrange}`);
+      const highlightGreen = ORBIS_COLORS.highlightGreen.strong;
+      const highlightGreenRgb = '22, 163, 74';
+      let greenSvg = response.replace(/#154194/g, highlightGreen);
+      greenSvg = greenSvg.replace(/rgb\(21,\s*65,\s*148\)/gi, `rgb(${highlightGreenRgb})`);
+      greenSvg = greenSvg.replace(/fill="#154194"/g, `fill="${highlightGreen}"`);
+      greenSvg = greenSvg.replace(/stroke="#154194"/g, `stroke="${highlightGreen}"`);
+      greenSvg = greenSvg.replace(/fill:#154194/g, `fill:${highlightGreen}`);
+      greenSvg = greenSvg.replace(/stroke:#154194/g, `stroke:${highlightGreen}`);
       
       // Debug: Check if replacement worked
-      if (orangeSvg.includes('#154194')) {
+      if (greenSvg.includes('#154194')) {
         console.warn('[ShopfloorPreview] SVG color replacement may have failed, still contains #154194');
       }
       
       // Use bypassSecurityTrustHtml to preserve SVG content (SVG is safe)
-      return this.sanitizer.bypassSecurityTrustHtml(orangeSvg);
+      return this.sanitizer.bypassSecurityTrustHtml(greenSvg);
     } catch (error) {
       console.error('Failed to load SVG:', error);
       return undefined;
@@ -960,13 +960,13 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     const overlayPoint = this.computeRouteMidpoint(segments);
     const overlayIcon = this.getAssetPath('FTS');
 
-    // Load SVG with orange fill color for FTS
+    // Load SVG with green fill color for FTS overlay (route)
     let svgContent: SafeHtml | undefined;
     if (overlayIcon) {
       // Ensure path starts with / for HttpClient
       const svgPath = overlayIcon.startsWith('/') ? overlayIcon : `/${overlayIcon}`;
       // Load SVG asynchronously - we'll handle this in updateViewModel
-      this.loadSvgWithOrangeFill(svgPath).then((content) => {
+      this.loadSvgWithGreenFill(svgPath).then((content) => {
         if (content && this.viewModel?.routeOverlay) {
           this.viewModel.routeOverlay.svgContent = content;
           this.cdr.markForCheck();
