@@ -1,22 +1,60 @@
 /**
  * Layout configurations for DSP Architecture views.
  * 
- * Defines the structure and layout for each view mode:
- * - Functional: High-level functional capabilities
- * - Component: Detailed component architecture
- * - Deployment: Infrastructure and deployment view
+ * Uses the exact layout from the existing DSP architecture component
+ * with continuous layer backgrounds and grid-based box positioning.
  */
 
 import type { Layer, Box, Arrow, ArchitectureConfig } from './types';
 import { ORBIS_COLORS } from '../../assets/color-palette';
 
 /**
- * Common layer definitions
+ * SVG viewBox dimensions - matching existing DSP architecture
+ */
+export const VIEWBOX_WIDTH = 1200;
+export const VIEWBOX_HEIGHT = 860;
+
+/**
+ * Layout constants - matching existing DSP architecture
+ */
+export const LAYOUT = {
+  // Layer dimensions
+  LAYER_HEIGHT: 260,
+  LAYER_START_Y: 80,
+  
+  // Label area
+  LABEL_X: 10,
+  LABEL_WIDTH: 90,
+  
+  // Business Process layer (top - white)
+  BUSINESS_Y: 80,
+  
+  // DSP layer (middle - blue) - TALLER for component view
+  DSP_LAYER_Y: 340,
+  DSP_LAYER_HEIGHT: 360, // Increased to fit Edge component view
+  
+  // Shopfloor layer (bottom - gray)
+  SHOPFLOOR_Y: 700,
+  
+  // Box dimensions
+  BUSINESS_BOX_WIDTH: 200,
+  BUSINESS_BOX_HEIGHT: 140,
+  DSP_BOX_HEIGHT: 165,
+  
+  // Content area
+  CONTENT_START_X: 100,
+  MARGIN_RIGHT: 30,
+  CONTENT_WIDTH: 1090,
+  BOX_GAP: 25,
+};
+
+/**
+ * Layer color definitions matching existing architecture
  */
 const LAYER_COLORS = {
-  business: '#FFFFFF',
-  dsp: '#E6F0FA',
-  shopfloor: '#F3F3F3',
+  business: '#ffffff',
+  dsp: 'rgba(207, 230, 255, 0.5)', // Blue tint
+  shopfloor: 'rgba(241, 243, 247, 0.8)', // Gray tint
 };
 
 /**
