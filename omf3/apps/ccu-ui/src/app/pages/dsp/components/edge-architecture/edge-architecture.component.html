@@ -1,0 +1,141 @@
+<div class="edge-architecture">
+  <h2 class="edge-architecture__title">{{ sectionTitle }}</h2>
+  <p class="edge-architecture__subtitle">{{ sectionSubtitle }}</p>
+
+  <div class="edge-architecture__diagram-wrapper">
+    <svg
+      class="edge-architecture__diagram"
+      [attr.viewBox]="viewBox"
+      preserveAspectRatio="xMidYMid meet"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <!-- Define arrow markers for connections -->
+      <defs>
+        <marker
+          id="arrowhead"
+          markerWidth="10"
+          markerHeight="10"
+          refX="9"
+          refY="3"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="0 0, 10 3, 0 6" fill="var(--edge-arrow-color, #164194)" />
+        </marker>
+        <marker
+          id="arrowhead-reverse"
+          markerWidth="10"
+          markerHeight="10"
+          refX="1"
+          refY="3"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="10 0, 0 3, 10 6" fill="var(--edge-arrow-color, #164194)" />
+        </marker>
+      </defs>
+
+      <!-- Main EDGE container box -->
+      <g class="edge-container">
+        <rect
+          [attr.x]="edgeContainer.x"
+          [attr.y]="edgeContainer.y"
+          [attr.width]="edgeContainer.width"
+          [attr.height]="edgeContainer.height"
+          class="edge-container__box"
+          rx="12"
+        />
+        <text
+          [attr.x]="edgeContainer.x + 20"
+          [attr.y]="edgeContainer.y + 30"
+          class="edge-container__label"
+        >
+          EDGE
+        </text>
+      </g>
+
+      <!-- Connection lines (drawn first, behind boxes) -->
+      <g class="connections">
+        <line
+          *ngFor="let conn of connections"
+          [attr.x1]="getConnectionPoints(conn).x1"
+          [attr.y1]="getConnectionPoints(conn).y1"
+          [attr.x2]="getConnectionPoints(conn).x2"
+          [attr.y2]="getConnectionPoints(conn).y2"
+          class="connection-line"
+          [class.bidirectional]="conn.bidirectional"
+          marker-end="url(#arrowhead)"
+          [attr.marker-start]="conn.bidirectional ? 'url(#arrowhead-reverse)' : null"
+        />
+      </g>
+
+      <!-- Component boxes -->
+      <g class="edge-boxes">
+        <g
+          *ngFor="let box of edgeBoxes"
+          class="edge-box"
+          [attr.data-component]="box.id"
+        >
+          <rect
+            [attr.x]="box.x"
+            [attr.y]="box.y"
+            [attr.width]="box.width"
+            [attr.height]="box.height"
+            class="edge-box__rect"
+            rx="6"
+          />
+          <text
+            [attr.x]="box.x + box.width / 2"
+            [attr.y]="box.y + box.height / 2"
+            class="edge-box__label"
+            text-anchor="middle"
+            dominant-baseline="middle"
+          >
+            {{ box.label }}
+          </text>
+        </g>
+      </g>
+
+      <!-- Optional: Arrows showing connections to Business layer (above) and Shopfloor (below) -->
+      <g class="external-connections">
+        <!-- Arrow up to Business -->
+        <line
+          [attr.x1]="edgeContainer.x + edgeContainer.width / 2"
+          [attr.y1]="edgeContainer.y"
+          [attr.x2]="edgeContainer.x + edgeContainer.width / 2"
+          [attr.y2]="20"
+          class="external-connection"
+          marker-end="url(#arrowhead)"
+        />
+        <text
+          [attr.x]="edgeContainer.x + edgeContainer.width / 2 + 10"
+          [attr.y]="35"
+          class="external-label"
+          font-size="12"
+        >
+          Business
+        </text>
+
+        <!-- Arrow down to Shopfloor -->
+        <line
+          [attr.x1]="edgeContainer.x + edgeContainer.width / 2"
+          [attr.y1]="edgeContainer.y + edgeContainer.height"
+          [attr.x2]="edgeContainer.x + edgeContainer.width / 2"
+          [attr.y2]="480"
+          class="external-connection"
+          marker-end="url(#arrowhead)"
+        />
+        <text
+          [attr.x]="edgeContainer.x + edgeContainer.width / 2 + 10"
+          [attr.y]="470"
+          class="external-label"
+          font-size="12"
+        >
+          Shopfloor
+        </text>
+      </g>
+    </svg>
+  </div>
+
+  <p class="edge-architecture__caption">{{ caption }}</p>
+</div>

@@ -1,0 +1,19 @@
+<div class="edge-components">
+  <h2 class="edge-components__title">{{ sectionTitle }}</h2>
+  <p class="edge-components__subtitle">{{ sectionSubtitle }}</p>
+
+  <div class="edge-components__grid">
+    <div
+      *ngFor="let component of edgeComponents; trackBy: trackByTitle"
+      class="edge-components__card"
+    >
+      <div class="edge-components__card-icon">
+        <img [src]="component.icon" [alt]="component.title + ' icon'" />
+      </div>
+      <div class="edge-components__card-content">
+        <h3 class="edge-components__card-title">{{ component.title }}</h3>
+        <p class="edge-components__card-description">{{ component.description }}</p>
+      </div>
+    </div>
+  </div>
+</div>

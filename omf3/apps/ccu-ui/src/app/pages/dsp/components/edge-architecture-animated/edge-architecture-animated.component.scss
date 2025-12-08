@@ -1,0 +1,388 @@
+.edge-architecture-animated {
+  padding: 2rem 0;
+  
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    
+    .header__title {
+      flex: 1;
+      min-width: 300px;
+      
+      h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--orbis-blue-strong);
+        margin: 0 0 0.5rem;
+      }
+      
+      .subtitle {
+        font-size: 1.125rem;
+        color: var(--orbis-darkgrey);
+        margin: 0;
+        line-height: 1.5;
+      }
+    }
+    
+    .header__controls {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: flex-end;
+    }
+  }
+  
+  // Step navigation dots
+  .step-navigation {
+    display: flex;
+    gap: 0.5rem;
+    
+    .step-button {
+      width: 36px;
+      height: 36px;
+      border: 2px solid var(--orbis-blue-strong);
+      border-radius: 50%;
+      background: white;
+      color: var(--orbis-blue-strong);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: rgba(207, 230, 255, 0.3);
+      }
+      
+      &--active {
+        background: var(--orbis-blue-strong);
+        color: white;
+      }
+    }
+  }
+  
+  // Playback controls
+  .playback-controls {
+    display: flex;
+    gap: 0.5rem;
+    
+    .control-btn {
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--orbis-blue-strong);
+      border-radius: 6px;
+      background: white;
+      color: var(--orbis-blue-strong);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:hover:not(:disabled) {
+        background: rgba(207, 230, 255, 0.3);
+      }
+      
+      &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      
+      &--autoplay {
+        min-width: 100px;
+      }
+      
+      &--active {
+        background: var(--orbis-blue-strong);
+        color: white;
+      }
+    }
+  }
+  
+  // Step info display
+  &__step-info {
+    background: rgba(207, 230, 255, 0.2);
+    border-left: 4px solid var(--orbis-blue-strong);
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+    
+    .step-info__label {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--orbis-blue-strong);
+      margin-bottom: 0.5rem;
+    }
+    
+    .step-info__description {
+      font-size: 1rem;
+      color: var(--orbis-darkgrey);
+      line-height: 1.6;
+    }
+  }
+  
+  // Diagram wrapper
+  &__diagram-wrapper {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    overflow: hidden;
+  }
+  
+  &__diagram {
+    width: 100%;
+    height: auto;
+    display: block;
+    
+    // External zones (Business/Shopfloor)
+    .zone {
+      fill: rgba(241, 243, 247, 0.4);
+      stroke: #7f8da5;
+      stroke-width: 2;
+      stroke-dasharray: 5, 5;
+      
+      &--normal {
+        opacity: 1;
+      }
+      
+      &--highlight {
+        fill: rgba(207, 230, 255, 0.3);
+        stroke: var(--orbis-blue-strong);
+        stroke-width: 3;
+      }
+      
+      &--dimmed {
+        opacity: 0.3;
+      }
+    }
+    
+    .zone-label {
+      font-size: 16px;
+      font-weight: 600;
+      fill: #7f8da5;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    // Main EDGE container
+    .edge-container-box {
+      fill: rgba(207, 230, 255, 0.2);
+      stroke: #00a896;
+      stroke-width: 3;
+      
+      &--normal {
+        opacity: 1;
+      }
+      
+      &--highlight {
+        fill: rgba(207, 230, 255, 0.3);
+        stroke-width: 4;
+      }
+      
+      &--dimmed {
+        opacity: 0.4;
+      }
+    }
+    
+    .edge-container-label {
+      font-size: 22px;
+      font-weight: 700;
+      fill: #00a896;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    // Component boxes
+    .component-box {
+      &__rect {
+        fill: white;
+        stroke: var(--orbis-blue-strong);
+        stroke-width: 2;
+        transition: all 0.3s ease;
+        
+        &--normal {
+          opacity: 1;
+        }
+        
+        &--highlight {
+          fill: rgba(207, 230, 255, 0.3);
+          stroke-width: 3;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+        }
+        
+        &--dimmed {
+          opacity: 0.3;
+        }
+      }
+      
+      &__label {
+        font-size: 14px;
+        font-weight: 600;
+        fill: var(--orbis-blue-strong);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        pointer-events: none;
+      }
+      
+      &__icon-container {
+        overflow: visible;
+      }
+      
+      &__icon-wrapper {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      &__icon {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        opacity: 0.8;
+        transition: opacity 0.3s ease;
+      }
+      
+      &--highlight &__icon {
+        opacity: 1;
+      }
+    }
+    
+    // Connection lines
+    .connection-line {
+      stroke: var(--orbis-blue-strong);
+      stroke-width: 2;
+      fill: none;
+      transition: all 0.3s ease;
+      
+      &--normal {
+        opacity: 0.5;
+      }
+      
+      &--highlight {
+        stroke: #00a896;
+        stroke-width: 3;
+        opacity: 1;
+      }
+      
+      &--dimmed {
+        opacity: 0.2;
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .edge-architecture-animated {
+    padding: 1.5rem 0;
+    
+    &__header {
+      flex-direction: column;
+      align-items: stretch;
+      
+      .header__title {
+        h2 {
+          font-size: 1.5rem;
+        }
+        
+        .subtitle {
+          font-size: 1rem;
+        }
+      }
+      
+      .header__controls {
+        align-items: stretch;
+      }
+    }
+    
+    .step-navigation {
+      justify-content: center;
+      
+      .step-button {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+      }
+    }
+    
+    .playback-controls {
+      justify-content: center;
+      flex-wrap: wrap;
+      
+      .control-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.875rem;
+        
+        &--autoplay {
+          min-width: 80px;
+        }
+      }
+    }
+    
+    &__step-info {
+      padding: 0.875rem 1rem;
+      
+      .step-info__label {
+        font-size: 1rem;
+      }
+      
+      .step-info__description {
+        font-size: 0.875rem;
+      }
+    }
+    
+    &__diagram-wrapper {
+      padding: 1rem;
+    }
+    
+    &__diagram {
+      .edge-container-label {
+        font-size: 18px;
+      }
+      
+      .zone-label {
+        font-size: 14px;
+      }
+      
+      .component-box__label {
+        font-size: 11px;
+      }
+    }
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .edge-architecture-animated {
+    &__header {
+      .header__title {
+        h2 {
+          font-size: 1.75rem;
+        }
+      }
+    }
+    
+    &__diagram {
+      .edge-container-label {
+        font-size: 20px;
+      }
+      
+      .component-box__label {
+        font-size: 12px;
+      }
+      
+      .architecture-container-label {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+// Architecture containers (Business, Shopfloor, Cloud) for full view in Steps 3-4
+.architecture-containers {
+  .architecture-container-label {
+    font-size: 16px;
+    font-weight: 600;
+    fill: var(--orbis-blue-strong, #164194);
+  }
+}
