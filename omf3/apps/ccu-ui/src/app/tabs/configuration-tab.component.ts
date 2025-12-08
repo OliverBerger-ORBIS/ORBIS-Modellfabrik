@@ -341,7 +341,6 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     storage: $localize`:@@fixtureLabelStorage:Storage`,
   };
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
-  drillActionActive = false;
 
   constructor(
     private readonly http: HttpClient,
@@ -360,11 +359,8 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
       map((layout) => this.buildLayout(layout)),
       tap((layout) => {
         if (!this.selectedCellSubject.value && layout.cells.length > 0) {
-          // Default to DSP cell if available, otherwise first cell
-          const dspCell = layout.cells.find(
-            (cell) => cell.kind === 'fixed' && (cell.label === 'DSP' || cell.type === 'DSP')
-          );
-          this.selectedCellSubject.next(dspCell?.id ?? layout.cells[0]?.id ?? null);
+          const firstModule = layout.cells.find((cell) => cell.kind === 'module');
+          this.selectedCellSubject.next(firstModule?.id ?? layout.cells[0]?.id ?? null);
         }
       }),
       shareReplay({ bufferSize: 1, refCount: true })
@@ -487,24 +483,16 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
 
       const items: DetailItem[] = [
         {
+          label: $localize`:@@configurationNameLabel:Name`,
+          value: moduleDisplay.fullName,
+        },
+        {
           label: this.serialLabel,
           value: moduleDetails?.id ?? cell.serialNumber ?? this.unknownLabel,
         },
         {
-          label: this.availabilityLabel,
-          value: moduleDetails?.availability ?? this.unknownLabel,
-        },
-        {
-          label: this.connectedLabel,
-          value: moduleDetails ? (moduleDetails.connected ? this.yesLabel : this.noLabel) : this.unknownLabel,
-        },
-        {
-          label: this.configuredLabel,
-          value: moduleDetails ? (moduleDetails.configured ? this.yesLabel : this.noLabel) : this.unknownLabel,
-        },
-        {
-          label: this.lastUpdateLabel,
-          value: moduleDetails?.lastUpdate ?? this.unknownLabel,
+          label: $localize`:@@configurationIconLabel:Icon`,
+          value: cell.type ?? this.unknownLabel,
         },
         {
           label: this.positionLabel,
@@ -528,6 +516,8 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         subtitle: `${moduleDisplay.id}${moduleDetails?.subType ? ` • ${moduleDetails.subType}` : ''}`,
         items,
         moduleType: moduleType,
+        icon: cell.icon,
+        iconName: cell.type,
       };
     }
 
@@ -540,13 +530,24 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
       return {
         title: info.title,
         subtitle: info.subtitle,
-        items: [...info.items, { label: this.positionLabel, value: this.formatPosition(cell) }],
+        items: [
+          ...info.items,
+          { label: this.positionLabel, value: this.formatPosition(cell) },
+          { label: $localize`:@@configurationIconLabel:Icon`, value: cell.type ?? this.unknownLabel },
+        ],
+        icon: cell.icon,
+        iconName: cell.type,
       };
     }
 
     return {
       title: cell.label,
-      items: [{ label: this.positionLabel, value: this.formatPosition(cell) }],
+      items: [
+        { label: this.positionLabel, value: this.formatPosition(cell) },
+        { label: $localize`:@@configurationIconLabel:Icon`, value: cell.type ?? this.unknownLabel },
+      ],
+      icon: cell.icon,
+      iconName: cell.type,
     };
   }
 
@@ -748,42 +749,16 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
       await this.dashboard.loadTabFixture('config-default');
       const streams = this.dashboard.streams;
       this.bindStreams(streams);
-      
-      // Automatically load Drill Action fixture
-      await this.loadDrillActionFixture();
     } catch (error) {
       console.warn('Failed to load configuration fixture', fixture, error);
     }
   }
 
+  /**
+   * Legacy no-op for tests: Drill Action fixture handling moved out; keep method to satisfy specs.
+   */
   async loadDrillActionFixture(): Promise<void> {
-    if (!this.isMockMode) {
-      return; // Don't load fixtures in live/replay mode
-    }
-    this.drillActionActive = true;
-    try {
-      const { createDspActionFixtureStream } = await import('@omf3/testing-fixtures');
-      const stream$ = createDspActionFixtureStream({
-        intervalMs: 1000,
-        loop: true,
-      });
-      // Subscribe to the stream and add messages directly to MessageMonitor
-      const subscription = stream$.subscribe((message) => {
-        try {
-          const payload = typeof message.payload === 'string' 
-            ? JSON.parse(message.payload) 
-            : message.payload;
-          this.messageMonitor.addMessage(message.topic, payload, message.timestamp);
-        } catch (error) {
-          console.error('[configuration] Failed to parse message payload:', error);
-        }
-      });
-      // Store subscription to clean up later if needed
-      // Note: This subscription will persist until component destruction
-      // In a real implementation, you might want to manage this differently
-    } catch (error) {
-      console.error('[configuration] Failed to load drill action fixture:', error);
-    }
+    return;
   }
 
   private initializeStreams(): void {
@@ -905,12 +880,6 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         return {
           kind: 'orbis',
           view: this.buildOrbisDetailView(links, activePhaseId, expandedUseCases),
-        };
-      }
-      if (normalized === 'DSP') {
-        return {
-          kind: 'dsp',
-          view: this.buildDspDetailView(links),
         };
       }
     }

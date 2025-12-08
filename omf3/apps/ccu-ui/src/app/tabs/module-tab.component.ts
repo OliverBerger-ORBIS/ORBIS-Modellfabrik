@@ -126,8 +126,18 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     return this.environmentService.current.key === 'mock';
   }
 
-  readonly fixtureOptions: (OrderFixtureName | 'shopfloor-status')[] = ['startup', 'white', 'white_step3', 'blue', 'red', 'mixed', 'storage', 'shopfloor-status'];
-  readonly fixtureLabels: Partial<Record<OrderFixtureName | 'shopfloor-status', string>> = {
+  readonly fixtureOptions: (OrderFixtureName | 'shopfloor-status' | 'drill-action')[] = [
+    'startup',
+    'white',
+    'white_step3',
+    'blue',
+    'red',
+    'mixed',
+    'storage',
+    'shopfloor-status',
+    'drill-action',
+  ];
+  readonly fixtureLabels: Partial<Record<OrderFixtureName | 'shopfloor-status' | 'drill-action', string>> = {
     startup: $localize`:@@fixtureLabelStartup:Startup`,
     white: $localize`:@@fixtureLabelWhite:White`,
     white_step3: $localize`:@@fixtureLabelWhiteStep3:White • Step 3`,
@@ -137,9 +147,10 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     storage: $localize`:@@fixtureLabelStorage:Storage`,
     'track-trace': $localize`:@@fixtureLabelTrackTrace:Track & Trace`,
     'shopfloor-status': $localize`:@@fixtureLabelShopfloorStatus:Shopfloor Status`,
+    'drill-action': $localize`:@@dspActionFixtureLabel:Drill Action`,
   };
 
-  activeFixture: OrderFixtureName | 'shopfloor-status' = 'startup';
+  activeFixture: OrderFixtureName | 'shopfloor-status' | 'drill-action' = 'startup';
   moduleOverview$!: Observable<ModuleOverviewState>;
   rows$!: Observable<ModuleRow[]>;
   moduleStatusMap$!: Observable<Map<string, { connected: boolean; availability: ModuleAvailabilityStatus }>>;
@@ -267,7 +278,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     }
   }
 
-  async loadFixture(fixture: OrderFixtureName | 'shopfloor-status'): Promise<void> {
+  async loadFixture(fixture: OrderFixtureName | 'shopfloor-status' | 'drill-action'): Promise<void> {
     if (!this.isMockMode) {
       return; // Don't load fixtures in live/replay mode
     }
@@ -287,6 +298,13 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
         await new Promise(resolve => setTimeout(resolve, 300));
         
         // Force change detection
+        this.cdr.markForCheck();
+      } else if (fixture === 'drill-action') {
+        // Clear previous and load status + drill action fixture
+        this.moduleOverviewState.clear(this.currentEnvironmentKey);
+        await this.loadModuleStatusFixture();
+        await this.loadDrillActionFixture();
+        await new Promise((resolve) => setTimeout(resolve, 300));
         this.cdr.markForCheck();
       } else {
         // Map OrderFixtureName to tab-specific preset
@@ -377,6 +395,27 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error('[module-tab] Failed to load module status fixture:', error);
       // Don't throw - let loadFixture handle the error state
+    }
+  }
+
+  private async loadDrillActionFixture(): Promise<void> {
+    try {
+      const { createDspActionFixtureStream } = await import('@omf3/testing-fixtures');
+      const stream$ = createDspActionFixtureStream({
+        intervalMs: 1000,
+        loop: true,
+      });
+      const sub = stream$.subscribe((message) => {
+        try {
+          const payload = typeof message.payload === 'string' ? JSON.parse(message.payload) : message.payload;
+          this.messageMonitor.addMessage(message.topic, payload, message.timestamp);
+        } catch (error) {
+          console.error('[module-tab] Failed to parse drill action payload:', error);
+        }
+      });
+      this.fixtureSubscriptions.add(sub);
+    } catch (error) {
+      console.error('[module-tab] Failed to load drill action fixture:', error);
     }
   }
 

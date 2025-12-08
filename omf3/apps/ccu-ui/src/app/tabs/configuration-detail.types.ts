@@ -15,6 +15,10 @@ export interface SelectedDetailView {
   items: DetailItem[];
   /** Module type for conditional rendering (e.g., DRILL for DSP-Edge section) */
   moduleType?: string;
+  /** Optional icon path for the selected cell/module */
+  icon?: string;
+  /** Optional icon name/key for the selected cell/module */
+  iconName?: string;
 }
 
 export interface OrbisPhaseDefinition {

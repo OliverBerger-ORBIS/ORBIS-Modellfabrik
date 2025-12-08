@@ -8,28 +8,6 @@
           Factory layout configuration and module positioning
         </p>
       </div>
-      <div class="configuration-tab__fixtures" *ngIf="isMockMode">
-        <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
-        <div class="fixture-switch">
-          <button
-            *ngFor="let fixture of fixtureOptions"
-            type="button"
-            [class.active]="fixture === activeFixture"
-            (click)="loadFixture(fixture)"
-          >
-            {{ fixtureLabels[fixture] }}
-          </button>
-          <button
-            type="button"
-            class="fixture-switch__button fixture-switch__button--drill-action"
-            [class.active]="drillActionActive"
-            (click)="loadDrillActionFixture()"
-            i18n="@@dspActionFixtureLabel"
-          >
-            Drill Action
-          </button>
-        </div>
-      </div>
     </header>
 
     <div class="shopfloor-wrapper">
@@ -40,21 +18,25 @@
         [infoText]="vm.infoText"
         [highlightModulesOverride]="vm.highlightModules"
         [highlightFixedOverride]="vm.highlightFixed"
-        [selectionEnabled]="false"
+        [selectionEnabled]="true"
         [showBaseRoads]="false"
         [showZoomControls]="true"
+        (cellSelected)="onCellSelected($event)"
       ></app-shopfloor-preview>
-      <p class="shopfloor-hint" i18n="@@configurationShopfloorHint">
-        Shopfloor Interaktion ist im Module-Tab verfügbar (Doppelklick öffnet Details). DSP-spezifische Inhalte findest du im DSP-Tab.
-      </p>
     </div>
 
     <section class="detail-panel" *ngIf="vm.detailPanel as panel">
       <ng-container *ngIf="panel.kind === 'default'">
         <section class="selection-panel">
-          <header>
-            <h3>{{ panel.selection.title }}</h3>
-            <p *ngIf="panel.selection.subtitle">{{ panel.selection.subtitle }}</p>
+          <header class="selection-panel__header">
+            <div class="selection-panel__icon" *ngIf="panel.selection.icon">
+              <img [src]="panel.selection.icon" [alt]="panel.selection.iconName || panel.selection.title" width="64" height="64" />
+            </div>
+            <div>
+              <h3>{{ panel.selection.title }}</h3>
+              <p *ngIf="panel.selection.subtitle">{{ panel.selection.subtitle }}</p>
+              <p *ngIf="panel.selection.iconName" class="selection-panel__icon-name">{{ panel.selection.iconName }}</p>
+            </div>
           </header>
           <ul>
             <li *ngFor="let item of panel.selection.items">
@@ -102,21 +84,6 @@
         (phaseSelected)="selectOrbisPhase($event)"
         (useCaseToggled)="toggleOrbisUseCase($event)"
       ></app-orbis-detail>
-
-      <!-- New animated SVG-based architecture component (default) -->
-      <app-dsp-architecture
-        *ngIf="panel.kind === 'dsp'"
-        [view]="panel.view"
-        (actionTriggered)="openExternalLink($event.url)"
-      ></app-dsp-architecture>
-
-      <!-- Legacy component (kept as fallback, uncomment to use):
-      <app-dsp-detail
-        *ngIf="panel.kind === 'dsp'"
-        [view]="panel.view"
-        (actionTriggered)="openExternalLink($event.url)"
-      ></app-dsp-detail>
-      -->
     </section>
   </section>
 
