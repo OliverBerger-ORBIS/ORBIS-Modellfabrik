@@ -1,0 +1,204 @@
+<div class="architecture-container">
+  <!-- Zoom Controls Toolbar -->
+  <div class="zoom-controls">
+    <button
+      class="zoom-btn"
+      [attr.aria-label]="labelZoomOut"
+      [disabled]="state.zoom <= minZoom"
+      (click)="zoomOut()"
+      title="{{ labelZoomOut }}">
+      <span class="zoom-icon">−</span>
+    </button>
+    <button
+      class="zoom-btn"
+      [attr.aria-label]="labelResetZoom"
+      (click)="resetZoom()"
+      title="{{ labelResetZoom }}">
+      <span class="zoom-icon">⊙</span>
+    </button>
+    <button
+      class="zoom-btn"
+      [attr.aria-label]="labelZoomIn"
+      [disabled]="state.zoom >= maxZoom"
+      (click)="zoomIn()"
+      title="{{ labelZoomIn }}">
+      <span class="zoom-icon">+</span>
+    </button>
+  </div>
+
+  <!-- Animation Controls -->
+  <div class="animation-controls" *ngIf="animationEnabled && currentScene">
+    <button
+      class="anim-btn"
+      [attr.aria-label]="labelPrev"
+      [disabled]="!hasPrevStep()"
+      (click)="prevStep()"
+      title="{{ labelPrev }}">
+      ◀
+    </button>
+    <button
+      class="anim-btn"
+      *ngIf="!state.isPlaying"
+      [attr.aria-label]="labelPlay"
+      (click)="playAnimation()"
+      title="{{ labelPlay }}">
+      ▶
+    </button>
+    <button
+      class="anim-btn"
+      *ngIf="state.isPlaying"
+      [attr.aria-label]="labelPause"
+      (click)="pauseAnimation()"
+      title="{{ labelPause }}">
+      ⏸
+    </button>
+    <button
+      class="anim-btn"
+      [attr.aria-label]="labelNext"
+      [disabled]="!hasNextStep()"
+      (click)="nextStep()"
+      title="{{ labelNext }}">
+      ▶▶
+    </button>
+    <button
+      class="anim-btn"
+      [attr.aria-label]="labelReset"
+      (click)="resetAnimation()"
+      title="{{ labelReset }}">
+      ⟲
+    </button>
+    <div class="step-indicator" *ngIf="currentScene">
+      {{ state.currentStepIndex + 1 }} / {{ currentScene.steps.length }}
+      <span class="step-label">{{ getCurrentStepLabel() }}</span>
+    </div>
+  </div>
+
+  <!-- Text Overlay -->
+  <div class="text-overlay" *ngIf="state.overlayText">
+    <div class="overlay-content">
+      {{ state.overlayText }}
+    </div>
+  </div>
+
+  <!-- SVG Architecture Diagram -->
+  <svg
+    #svgContainer
+    class="architecture-svg"
+    [attr.viewBox]="getViewBox()"
+    preserveAspectRatio="xMidYMid meet"
+    xmlns="http://www.w3.org/2000/svg">
+    
+    <!-- Layers -->
+    <g *ngFor="let layer of config?.layers; let i = index" class="layer-group">
+      <!-- Layer Background -->
+      <rect
+        [attr.x]="padding"
+        [attr.y]="getLayerY(i)"
+        [attr.width]="viewBoxWidth - padding * 2"
+        [attr.height]="getLayerHeight(layer)"
+        [attr.fill]="layer.backgroundColor"
+        [attr.stroke]="'#cccccc'"
+        [attr.stroke-width]="1"
+        class="layer-background"
+      />
+
+      <!-- Layer Label -->
+      <text
+        [attr.x]="padding + 10"
+        [attr.y]="getLayerY(i) + 20"
+        class="layer-label"
+        font-size="14"
+        font-weight="600"
+        fill="#333333">
+        {{ layer.label }}
+      </text>
+
+      <!-- Boxes in Layer -->
+      <g *ngFor="let box of layer.boxes" class="box-group">
+        <g
+          [attr.data-box-id]="box.id"
+          [class.box-highlighted]="isBoxHighlighted(box.id)"
+          [class.box-hidden]="isBoxHidden(box.id)"
+          [class.box-clickable]="box.clickable"
+          [class.box-hoverable]="box.hoverEffect"
+          (click)="onBoxClick(box)">
+          
+          <!-- Box Rectangle -->
+          <rect
+            [attr.x]="getBoxX(box, layer)"
+            [attr.y]="getLayerY(i) + 40"
+            [attr.width]="getBoxWidth(box)"
+            [attr.height]="getLayerHeight(layer) - 50"
+            [attr.fill]="box.backgroundColor || '#ffffff'"
+            [attr.stroke]="box.borderColor || '#999999'"
+            [attr.stroke-width]="2"
+            [attr.rx]="4"
+            class="box-rect"
+          />
+
+          <!-- Box Icon -->
+          <image
+            *ngIf="getIconPath(box.id)"
+            [attr.x]="getBoxX(box, layer) + getBoxWidth(box) / 2 - 24"
+            [attr.y]="getLayerY(i) + 50"
+            [attr.width]="48"
+            [attr.height]="48"
+            [attr.href]="getIconPath(box.id)"
+            class="box-icon"
+          />
+
+          <!-- Box Label -->
+          <text
+            [attr.x]="getBoxX(box, layer) + getBoxWidth(box) / 2"
+            [attr.y]="getLayerY(i) + getLayerHeight(layer) - 20"
+            class="box-label"
+            text-anchor="middle"
+            font-size="12"
+            font-weight="500"
+            [attr.fill]="box.textColor || '#333333'">
+            <tspan
+              *ngFor="let line of box.label.split('\n'); let lineIndex = index"
+              [attr.x]="getBoxX(box, layer) + getBoxWidth(box) / 2"
+              [attr.dy]="lineIndex === 0 ? 0 : 14">
+              {{ line }}
+            </tspan>
+          </text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Arrows -->
+    <g class="arrows-group">
+      <g *ngFor="let arrow of config?.arrows" class="arrow-group">
+        <path
+          *ngIf="isArrowVisible(arrow.id)"
+          [attr.d]="getArrowPath(arrow)"
+          [attr.stroke]="arrow.color"
+          [attr.stroke-width]="arrow.strokeWidth || 2"
+          [attr.stroke-dasharray]="arrow.dashed ? '5,5' : ''"
+          [attr.fill]="'none'"
+          [attr.marker-end]="'url(#arrowhead-' + arrow.id + ')'"
+          [class.arrow-animated]="arrow.animated"
+          class="arrow-path"
+        />
+        
+        <!-- Arrow marker definition -->
+        <defs *ngIf="isArrowVisible(arrow.id)">
+          <marker
+            [attr.id]="'arrowhead-' + arrow.id"
+            markerWidth="10"
+            markerHeight="10"
+            refX="9"
+            refY="3"
+            orient="auto"
+            markerUnits="strokeWidth">
+            <path
+              d="M0,0 L0,6 L9,3 z"
+              [attr.fill]="arrow.color"
+            />
+          </marker>
+        </defs>
+      </g>
+    </g>
+  </svg>
+</div>

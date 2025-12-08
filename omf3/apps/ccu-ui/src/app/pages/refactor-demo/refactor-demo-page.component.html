@@ -1,0 +1,71 @@
+<div class="demo-page">
+  <!-- Page Header -->
+  <header class="demo-header">
+    <h1 class="demo-title">{{ pageTitle }}</h1>
+    <p class="demo-description">{{ pageDescription }}</p>
+  </header>
+
+  <!-- Controls Panel -->
+  <div class="controls-panel">
+    <div class="control-group">
+      <label class="control-label">{{ labelViewMode }}</label>
+      <div class="view-buttons">
+        <button
+          class="view-btn"
+          [class.active]="currentView === 'functional'"
+          (click)="onViewChange('functional')">
+          {{ labelFunctional }}
+        </button>
+        <button
+          class="view-btn"
+          [class.active]="currentView === 'component'"
+          (click)="onViewChange('component')">
+          {{ labelComponent }}
+        </button>
+        <button
+          class="view-btn"
+          [class.active]="currentView === 'deployment'"
+          (click)="onViewChange('deployment')">
+          {{ labelDeployment }}
+        </button>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label">
+        <input
+          type="checkbox"
+          [checked]="animationEnabled"
+          (change)="toggleAnimations()"
+        />
+        {{ labelAnimations }}
+      </label>
+    </div>
+  </div>
+
+  <!-- Architecture Component -->
+  <div class="architecture-wrapper">
+    <app-dsp-architecture-refactor
+      [viewMode]="currentView"
+      [animationEnabled]="animationEnabled"
+      (boxClick)="onBoxClick($event)"
+      (stepChange)="onStepChange($event)">
+    </app-dsp-architecture-refactor>
+  </div>
+
+  <!-- Event Log -->
+  <div class="event-log-panel">
+    <div class="log-header">
+      <h3 class="log-title">{{ labelEventLog }}</h3>
+      <button class="clear-btn" (click)="clearLog()">Clear</button>
+    </div>
+    <div class="log-content">
+      <div *ngIf="eventLog.length === 0" class="log-empty">
+        No events yet. Interact with the architecture to see events here.
+      </div>
+      <div *ngFor="let entry of eventLog" class="log-entry">
+        {{ entry }}
+      </div>
+    </div>
+  </div>
+</div>

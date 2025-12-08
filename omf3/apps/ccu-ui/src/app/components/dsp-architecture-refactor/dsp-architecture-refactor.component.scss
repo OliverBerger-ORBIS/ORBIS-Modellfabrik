@@ -1,0 +1,352 @@
+/**
+ * Styles for Refactored DSP Architecture Component
+ */
+
+.architecture-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  background-color: #fafafa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+// ========== Zoom Controls ==========
+
+.zoom-controls {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 4px;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 4px;
+  z-index: 10;
+}
+
+.zoom-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #333;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: #f0f0f0;
+  }
+
+  &:active:not(:disabled) {
+    background-color: #e0e0e0;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .zoom-icon {
+    font-weight: 600;
+    font-size: 20px;
+  }
+}
+
+// ========== Animation Controls ==========
+
+.animation-controls {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  padding: 8px 16px;
+  z-index: 10;
+}
+
+.anim-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #154194;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: #f5f5f5;
+    border-color: #154194;
+    transform: scale(1.05);
+  }
+
+  &:active:not(:disabled) {
+    background-color: #e8f0fa;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}
+
+.step-indicator {
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid #ddd;
+  font-size: 14px;
+  color: #555;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .step-label {
+    font-size: 12px;
+    color: #777;
+    font-style: italic;
+  }
+}
+
+// ========== Text Overlay ==========
+
+.text-overlay {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 600px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.overlay-content {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid #154194;
+  border-radius: 8px;
+  padding: 16px 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ========== SVG Styles ==========
+
+.architecture-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.layer-group {
+  .layer-background {
+    transition: fill 0.3s ease;
+  }
+
+  .layer-label {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.box-group {
+  .box-rect {
+    transition: all 0.3s ease;
+  }
+
+  .box-icon {
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+  }
+
+  .box-label {
+    pointer-events: none;
+  }
+
+  // Clickable boxes
+  &.box-clickable {
+    cursor: pointer;
+  }
+
+  // Hover effect
+  &.box-hoverable:hover .box-rect {
+    filter: brightness(0.95);
+    stroke-width: 3;
+  }
+
+  &.box-hoverable:hover .box-icon {
+    opacity: 1;
+  }
+
+  // Highlighted state
+  &.box-highlighted .box-rect {
+    stroke-width: 4;
+    filter: drop-shadow(0 0 8px currentColor);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  &.box-highlighted .box-icon {
+    opacity: 1;
+  }
+
+  // Hidden state
+  &.box-hidden {
+    opacity: 0.2;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.arrows-group {
+  .arrow-path {
+    transition: opacity 0.3s ease, stroke 0.3s ease;
+  }
+
+  // Animated arrows (pulse effect)
+  .arrow-animated {
+    animation: arrowPulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes arrowPulse {
+  0%, 100% {
+    stroke-opacity: 1;
+    stroke-width: 2;
+  }
+  50% {
+    stroke-opacity: 0.6;
+    stroke-width: 3;
+  }
+}
+
+// ========== Responsive Design ==========
+
+@media (max-width: 768px) {
+  .zoom-controls {
+    top: 8px;
+    right: 8px;
+  }
+
+  .zoom-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  .animation-controls {
+    bottom: 8px;
+    padding: 6px 12px;
+    gap: 6px;
+  }
+
+  .anim-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .step-indicator {
+    font-size: 12px;
+    
+    .step-label {
+      font-size: 10px;
+    }
+  }
+
+  .text-overlay {
+    max-width: 90%;
+    top: 60px;
+  }
+
+  .overlay-content {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .architecture-container {
+    min-height: 400px;
+  }
+
+  .step-indicator {
+    display: none;
+  }
+}
+
+// ========== Dark Mode Support ==========
+
+@media (prefers-color-scheme: dark) {
+  .architecture-container {
+    background-color: #1a1a1a;
+    border-color: #333;
+  }
+
+  .zoom-controls,
+  .animation-controls {
+    background: #2a2a2a;
+  }
+
+  .zoom-btn,
+  .anim-btn {
+    background: #2a2a2a;
+    color: #e0e0e0;
+    border-color: #444;
+
+    &:hover:not(:disabled) {
+      background-color: #3a3a3a;
+    }
+  }
+
+  .overlay-content {
+    background: rgba(42, 42, 42, 0.95);
+    border-color: #5071af;
+    color: #e0e0e0;
+  }
+
+  .layer-label {
+    fill: #e0e0e0 !important;
+  }
+
+  .box-label {
+    fill: #e0e0e0 !important;
+  }
+}
