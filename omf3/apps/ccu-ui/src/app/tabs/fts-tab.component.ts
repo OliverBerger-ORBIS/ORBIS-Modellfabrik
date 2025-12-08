@@ -11,6 +11,7 @@ import { FtsRouteService } from '../services/fts-route.service';
 import { FtsAnimationService, type AnimationState } from '../services/fts-animation.service';
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
 import { getDashboardController } from '../mock-dashboard';
+import { LanguageService, type LocaleKey } from '../services/language.service';
 import type { OrderFixtureName } from '@omf3/testing-fixtures';
 import type { ShopfloorLayoutConfig, ShopfloorPoint, ParsedRoad, ShopfloorCellConfig, ShopfloorRoadEndpoint } from '../components/shopfloor-preview/shopfloor-layout.types';
 import { ICONS } from '../shared/icons/icon.registry';
@@ -64,6 +65,18 @@ interface FtsState {
 // FTS Serial Number (from message-monitor-tab.component.ts)
 const FTS_SERIAL = '5iO4';
 const FTS_STATE_TOPIC = `fts/v1/ff/${FTS_SERIAL}/state`;
+const FTS_ORDER_TOPIC = `fts/v1/ff/${FTS_SERIAL}/order`;
+const FTS_INSTANT_ACTION_TOPIC = `fts/v1/ff/${FTS_SERIAL}/instantAction`;
+const CCU_SET_CHARGE_TOPIC = 'ccu/set/charge';
+const DOCK_NODE_DPS = 'SVR4H73275'; // DPS serial (from fixtures/tests)
+const START_NODE_MAP: Record<string, string> = {
+  MILL: 'SVR3QA2098',
+  DRILL: 'SVR4H76449',
+  HBW: 'SVR3QA0022',
+  DPS: 'SVR4H73275',
+  AIQS: 'SVR4H76530',
+  CHRG: 'CHRG0',
+};
 
 // Serial number to module type mapping (from message-monitor-tab.component.ts)
 const SERIAL_TO_MODULE_TYPE: Record<string, string> = {
@@ -90,6 +103,8 @@ export class FtsTabComponent implements OnInit, OnDestroy {
   // Route animation state (from Example-App)
   private previousNodeId: string | null = null;
   private layoutConfig: ShopfloorLayoutConfig | null = null;
+  private turnDirectionByActionId = new Map<string, 'LEFT' | 'RIGHT' | string>();
+  private lastFtsState: FtsState | null = null;
 
   // Icons - neue SVGs aus assets/svg/ui & shopfloor
   readonly headingIcon = 'assets/svg/shopfloor/shared/agv-vehicle.svg'; // FTS/AGV Icon
@@ -97,6 +112,30 @@ export class FtsTabComponent implements OnInit, OnDestroy {
   readonly batteryIcon = 'assets/svg/shopfloor/shared/battery.svg';
   readonly loadIcon = 'assets/svg/ui/heading-purchase-orders.svg';
   readonly routeIcon = 'assets/svg/ui/heading-route.svg';
+  readonly turnLeftIcon = 'assets/svg/shopfloor/shared/turn-left.svg';
+  readonly turnRightIcon = 'assets/svg/shopfloor/shared/turn-right.svg';
+  readonly ftsOrderTopic = FTS_ORDER_TOPIC;
+  readonly ftsInstantActionTopic = FTS_INSTANT_ACTION_TOPIC;
+  readonly ccuSetChargeTopic = CCU_SET_CHARGE_TOPIC;
+  readonly startNodeOptions = ['auto', 'MILL', 'DRILL', 'HBW', 'DPS', 'AIQS', 'CHRG'] as const;
+  selectedStartNode: (typeof this.startNodeOptions)[number] = 'auto';
+  // Labels aligned to Module-Tab naming; default EN text, ready for translation (DE/FR)
+  readonly labelChargeOn = $localize`:@@ftsCommandChargeOn:Charge`;
+  readonly labelChargeOff = $localize`:@@ftsCommandChargeOff:Stop Charging`;
+  readonly labelDockInitial = $localize`:@@ftsCommandDockInitial:Dock`;
+  readonly labelDriveInstant = $localize`:@@ftsCommandDriveInstant:Drive to Intersection 2 (instant)`;
+  readonly labelDriveOrder = $localize`:@@ftsCommandDriveOrder:Drive to Intersection 2 (order)`;
+  readonly labelStartSelect = $localize`:@@ftsCommandStartSelect:Start`;
+  readonly labelStartAuto = $localize`:@@ftsCommandStartAuto:Auto (current position)`;
+  readonly badgeTextFtsPosition = $localize`:@@ftsBadgePosition:Position`;
+  readonly devModeTitle = $localize`:@@ftsDevModeTitle:Developer Mode (Topics & Payload)`;
+  readonly devChargeTitle = $localize`:@@ftsDevChargeTitle:Charge ON/OFF`;
+  readonly devDockTitle = $localize`:@@ftsDevDockTitle:Dock to Initial`;
+  readonly devDriveOrderTitle = $localize`:@@ftsDevDriveOrderTitle:Drive to Intersection 2`;
+  readonly devDriveInstantTitle = $localize`:@@ftsDevDriveInstantTitle:Drive to Intersection 2 (instant)`;
+  readonly vehicleLabelEn = 'AGV';
+  readonly vehicleLabelFr = 'AGV';
+  readonly vehicleLabelDe = 'FTS';
 
   // Status icons - verwende neue SVGs
   readonly drivingIcon = 'assets/svg/shopfloor/shared/driving-status.svg';
@@ -134,6 +173,7 @@ export class FtsTabComponent implements OnInit, OnDestroy {
   ftsState$!: Observable<FtsState | null>;
   batteryState$!: Observable<FtsBatteryState | null>;
   loads$!: Observable<FtsLoadInfo[]>;
+  ftsOrder$!: Observable<any | null>;
   
   // FTS position for shopfloor preview
   ftsPosition$!: Observable<{ x: number; y: number } | null>;
@@ -156,6 +196,7 @@ export class FtsTabComponent implements OnInit, OnDestroy {
     private readonly moduleNameService: ModuleNameService,
     private readonly ftsRouteService: FtsRouteService,
     private readonly ftsAnimationService: FtsAnimationService,
+    private readonly languageService: LanguageService,
     private readonly cdr: ChangeDetectorRef,
     private readonly http: HttpClient
   ) {
@@ -179,6 +220,15 @@ export class FtsTabComponent implements OnInit, OnDestroy {
         }
       })
     );
+  }
+
+  private uuid(): string {
+    // Simple RFC4122-ish generator sufficient for client-side IDs
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
   }
   
   private parseLayout(config: ShopfloorLayoutConfig): void {
@@ -231,6 +281,7 @@ export class FtsTabComponent implements OnInit, OnDestroy {
   }
   
   private handleFtsStateChange(state: FtsState): void {
+    this.lastFtsState = state;
     const newNodeId = state.lastNodeId ?? '';
     const isDriving = state.driving ?? false;
     
@@ -391,6 +442,28 @@ export class FtsTabComponent implements OnInit, OnDestroy {
       map((state) => state?.load ?? []),
       shareReplay({ bufferSize: 1, refCount: false })
     );
+
+    // Order stream (for TURN direction etc.)
+    this.ftsOrder$ = this.messageMonitor.getLastMessage<any>(FTS_ORDER_TOPIC).pipe(
+      map((msg) => msg?.payload ?? null),
+      tap((order) => {
+        if (!order) return;
+        // Build actionId -> direction map for TURN actions
+        // Order schema: nodes[].action.id / type / metadata.direction
+        if (Array.isArray(order.nodes)) {
+          order.nodes.forEach((node: any) => {
+            const action = node?.action;
+            if (action?.type === 'TURN' && action?.id && action?.metadata?.direction) {
+              this.turnDirectionByActionId.set(action.id, action.metadata.direction);
+            }
+          });
+        }
+      }),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+
+    // Warm up order stream so direction map is populated
+    this.subscriptions.add(this.ftsOrder$.subscribe());
 
     // FTS position for shopfloor preview - calculated from lastNodeId using shopfloor layout
     // Use combineLatest to react to both state changes and animation updates
@@ -699,6 +772,168 @@ export class FtsTabComponent implements OnInit, OnDestroy {
     return positions;
   }
 
+  // TURN direction lookup (from order stream)
+  getActionDirection(action: FtsActionState): string | undefined {
+    if (action.command !== 'TURN') return undefined;
+    return this.turnDirectionByActionId.get(action.id);
+  }
+
+  onStartNodeChange(value: string): void {
+    if (this.startNodeOptions.includes(value as any)) {
+      this.selectedStartNode = value as (typeof this.startNodeOptions)[number];
+    } else {
+      this.selectedStartNode = 'auto';
+    }
+  }
+
+  get isCharging(): boolean {
+    return this.lastFtsState?.batteryState?.charging ?? false;
+  }
+
+  get chargeButtonLabel(): string {
+    return this.isCharging ? this.labelChargeOff : this.labelChargeOn;
+  }
+
+  get showDockInitial(): boolean {
+    const node = this.lastFtsState?.lastNodeId;
+    return !node || node === 'UNKNOWN';
+  }
+
+  getStartOptionLabel(option: (typeof this.startNodeOptions)[number]): string {
+    switch (option) {
+      case 'auto':
+        return this.labelStartAuto;
+      case 'MILL':
+        return $localize`:@@ftsStartOptionMill:MILL`;
+      case 'DRILL':
+        return $localize`:@@ftsStartOptionDrill:DRILL`;
+      case 'HBW':
+        return $localize`:@@ftsStartOptionHbw:HBW`;
+      case 'DPS':
+        return $localize`:@@ftsStartOptionDps:DPS`;
+      case 'AIQS':
+        return $localize`:@@ftsStartOptionAiqs:AIQS`;
+      case 'CHRG':
+        return $localize`:@@ftsStartOptionChrg:CHRG`;
+      default:
+        return option;
+    }
+  }
+
+  get locale(): LocaleKey {
+    return this.languageService.current ?? 'en';
+  }
+
+  get vehicleLabelShort(): string {
+    if (this.locale === 'de') return this.vehicleLabelDe;
+    if (this.locale === 'fr') return this.vehicleLabelFr;
+    return this.vehicleLabelEn;
+  }
+
+  get vehicleLabelLong(): string {
+    if (this.locale === 'de') return 'Fahrerloses Transportsystem (FTS)';
+    if (this.locale === 'fr') return 'Véhicule autoguidé (AGV)';
+    return 'Automated Guided Vehicle (AGV)';
+  }
+
+  get statusSubtitle(): string {
+    if (this.locale === 'de') {
+      return 'Echtzeit-Status, Batterie- und Routeninformationen für das Fahrerlose Transportsystem.';
+    }
+    if (this.locale === 'fr') {
+      return 'Statut en temps réel, batterie et informations de route pour l’AGV.';
+    }
+    return 'Real-time status, battery, and route information for the AGV.';
+  }
+
+  get badgeTextVehiclePosition(): string {
+    if (this.locale === 'de') return 'FTS-Position';
+    if (this.locale === 'fr') return 'Position AGV';
+    return 'AGV Position';
+  }
+
+  // Example payloads for developer view
+  get chargeExamplePayload() {
+    return {
+      topic: CCU_SET_CHARGE_TOPIC,
+      payload: {
+        serialNumber: FTS_SERIAL,
+        charge: true,
+      },
+      options: { qos: 1, retain: false },
+    };
+  }
+
+  get dockExamplePayload() {
+    return {
+      topic: FTS_INSTANT_ACTION_TOPIC,
+      payload: {
+        serialNumber: FTS_SERIAL,
+        timestamp: '2025-01-01T12:00:00.000Z',
+        actions: [
+          {
+            actionId: 'dock-xxxx',
+            actionType: 'findInitialDockPosition',
+            metadata: { nodeId: DOCK_NODE_DPS },
+          },
+        ],
+      },
+      options: { qos: 1, retain: false },
+    };
+  }
+
+  get driveExamplePayload() {
+    return {
+      topic: FTS_ORDER_TOPIC,
+      payload: {
+        timestamp: '2025-01-01T12:00:00.000Z',
+        orderId: 'example-order-id',
+        orderUpdateId: 0,
+        nodes: [
+          {
+            id: '2',
+            linkedEdges: ['1-2'],
+            action: {
+              type: 'STOP',
+              id: 'example-stop-id',
+              metadata: {},
+            },
+          },
+        ],
+        edges: [
+          {
+            id: '1-2',
+            length: 360,
+            linkedNodes: ['1', '2'],
+          },
+        ],
+        serialNumber: FTS_SERIAL,
+        metadata: {
+          requestedFrom: '1',
+        },
+      },
+      options: { qos: 1, retain: false },
+    };
+  }
+
+  get driveInstantExamplePayload() {
+    return {
+      topic: FTS_INSTANT_ACTION_TOPIC,
+      payload: {
+        serialNumber: FTS_SERIAL,
+        timestamp: '2025-01-01T12:00:00.000Z',
+        actions: [
+          {
+            actionId: 'drive-xxxx',
+            actionType: 'findPosition',
+            metadata: { nodeId: '2' },
+          },
+        ],
+      },
+      options: { qos: 1, retain: false },
+    };
+  }
+
   getStateClass(state: string): string {
     const stateUpper = state.toUpperCase();
     if (stateUpper === 'WAITING') return 'waiting';
@@ -715,6 +950,125 @@ export class FtsTabComponent implements OnInit, OnDestroy {
     } catch {
       return timestamp;
     }
+  }
+
+  // --- Command publishing (AGV controls) ---
+
+  async sendCharge(enable: boolean): Promise<void> {
+    // Reuse business command to ensure exact payload/topic as Module-Tab tests
+    await this.dashboard.commands.setFtsCharge(FTS_SERIAL, enable);
+  }
+
+  async sendDockInitial(): Promise<void> {
+    // Use the same command as Module-Tab (instantAction findInitialDockPosition with nodeId DPS)
+    await this.dashboard.commands.dockFts(FTS_SERIAL, DOCK_NODE_DPS);
+  }
+
+  async sendDriveToIntersection2Instant(): Promise<void> {
+    const actionId = `drive-${this.uuid()}`;
+    const payload = {
+      serialNumber: FTS_SERIAL,
+      timestamp: new Date().toISOString(),
+      actions: [
+        {
+          actionId,
+          actionType: 'findPosition',
+          metadata: { nodeId: '2' },
+        },
+      ],
+    };
+    await this.connectionService.publish(FTS_INSTANT_ACTION_TOPIC, payload, { qos: 1 });
+  }
+
+  private buildOrderToIntersection2(): {
+    payload: any;
+    pathUsed: string[] | null;
+  } {
+    const target = '2';
+    const start =
+      this.selectedStartNode === 'auto'
+        ? this.lastFtsState?.lastNodeId ?? null
+        : START_NODE_MAP[this.selectedStartNode] ?? null;
+    const path = start ? this.findRoutePath(start, target) : null;
+
+    // Build nodes and edges from path if available
+    const nodes: any[] = [];
+    const edges: any[] = [];
+
+    if (path && path.length >= 1) {
+      // Build edge list from consecutive nodes
+      for (let i = 0; i < path.length - 1; i++) {
+        const a = path[i];
+        const b = path[i + 1];
+        const road = this.findRoadBetween(a, b);
+        if (road) {
+          edges.push({
+            id: road.id,
+            length: road.length,
+            linkedNodes: [road.from.ref, road.to.ref],
+          });
+        }
+      }
+
+      // Build nodes with linkedEdges
+      const linkedEdgesMap = new Map<string, Set<string>>();
+      edges.forEach((e) => {
+        const from = e.linkedNodes[0];
+        const to = e.linkedNodes[1];
+        if (!linkedEdgesMap.has(from)) linkedEdgesMap.set(from, new Set());
+        if (!linkedEdgesMap.has(to)) linkedEdgesMap.set(to, new Set());
+        linkedEdgesMap.get(from)!.add(e.id);
+        linkedEdgesMap.get(to)!.add(e.id);
+      });
+
+      path.forEach((nodeId, idx) => {
+        const edgeSet = linkedEdgesMap.get(nodeId) ?? new Set<string>();
+        const isTarget = idx === path.length - 1;
+        nodes.push({
+          id: nodeId,
+          linkedEdges: Array.from(edgeSet),
+          ...(isTarget
+            ? {
+                action: {
+                  id: `stop-${this.uuid()}`,
+                  type: 'STOP',
+                  metadata: {},
+                },
+              }
+            : {}),
+        });
+      });
+    } else {
+      // Fallback minimal order: target node only
+      nodes.push({
+        id: target,
+        linkedEdges: [],
+        action: {
+          id: `stop-${this.uuid()}`,
+          type: 'STOP',
+          metadata: {},
+        },
+      });
+    }
+
+    const payload = {
+      timestamp: new Date().toISOString(),
+      orderId: this.uuid(),
+      orderUpdateId: 0,
+      nodes,
+      edges,
+      serialNumber: FTS_SERIAL,
+      metadata: {
+        requestedFrom: start ?? undefined,
+      },
+    };
+
+    return { payload, pathUsed: path };
+  }
+
+  async sendDriveToIntersection2Order(): Promise<void> {
+    const { payload } = this.buildOrderToIntersection2();
+    await this.connectionService.publish(FTS_ORDER_TOPIC, payload, { qos: 1 });
   }
 
   trackByActionId(_index: number, action: FtsActionState): string {

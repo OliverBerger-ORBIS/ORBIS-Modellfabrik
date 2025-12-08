@@ -3,9 +3,9 @@
     <div class="fts-tab__title">
       <img [src]="headingIcon" alt="FTS" class="fts-tab__icon" width="32" height="32" />
       <div>
-        <h1 i18n="@@ftsTabHeadline">AGV Status</h1>
-        <p class="fts-tab__subtitle" i18n="@@ftsTabDescription">
-          Real-time status, battery, and route information for the Automated Guided Vehicle.
+        <h1>{{ vehicleLabelShort }} Status</h1>
+        <p class="fts-tab__subtitle">
+          {{ statusSubtitle }}
         </p>
       </div>
     </div>
@@ -35,7 +35,7 @@
         <section class="fts-tab__section status-section">
           <h2>
             <img [src]="statusIcon" alt="Status" class="section-icon-img" width="24" height="24" />
-            <span i18n="@@ftsStatusTitle">AGV Status</span>
+            <span>{{ vehicleLabelShort }} Status</span>
             <span class="serial-badge">{{ ftsState.serialNumber }}</span>
           </h2>
           
@@ -82,7 +82,12 @@
             <h4 i18n="@@ftsCurrentAction">Current Action</h4>
             <div class="action-display">
               <img [src]="getActionIcon(getCurrentAction(ftsState)!.command)" alt="" width="20" height="20" class="action-icon" />
-              <span class="action-command">{{ getCurrentAction(ftsState)!.command }}</span>
+              <span class="action-command">
+                {{ getCurrentAction(ftsState)!.command }}
+                <span class="action-direction" *ngIf="getActionDirection(getCurrentAction(ftsState)!)">
+                  ({{ getActionDirection(getCurrentAction(ftsState)!) }})
+                </span>
+              </span>
               <span class="status-badge" [class]="getStateClass(getCurrentAction(ftsState)!.state)">
                 {{ getCurrentAction(ftsState)!.state }}
               </span>
@@ -95,7 +100,12 @@
             <ul class="action-list">
               <li *ngFor="let action of getRecentActions(ftsState); trackBy: trackByActionId" [class]="getStateClass(action.state)">
                 <img [src]="getActionIcon(action.command)" alt="" width="20" height="20" class="action-icon" />
-                <span class="action-command">{{ action.command }}</span>
+                <span class="action-command">
+                  {{ action.command }}
+                  <span class="action-direction" *ngIf="getActionDirection(action)">
+                    ({{ getActionDirection(action) }})
+                  </span>
+                </span>
                 <span class="status-badge small" [class]="getStateClass(action.state)">
                   {{ action.state }}
                 </span>
@@ -179,6 +189,7 @@
               [order]="null"
               [scale]="0.8"
               [badgeText]="'FTS Position'"
+              [badgeText]="badgeTextVehiclePosition"
               [infoText]="getLocationName(ftsState.lastNodeId)"
               [highlightModulesOverride]="null"
               [highlightFixedOverride]="null"
@@ -239,6 +250,9 @@
                     <span class="timeline-time-display">{{ action.timestamp | date:'HH:mm:ss' }}</span>
                     <img [src]="getActionIcon(action.command)" alt="" width="20" height="20" class="action-icon" />
                     <strong>{{ action.command }}</strong>
+                    <span class="action-direction" *ngIf="getActionDirection(action)">
+                      ({{ getActionDirection(action) }})
+                    </span>
                     <span class="status-badge small" [class]="getStateClass(action.state)">
                       {{ action.state }}
                     </span>
@@ -289,6 +303,65 @@
               </div>
             </div>
           </div>
+        </section>
+
+        <!-- Commands Section -->
+        <section class="fts-tab__section commands-section">
+          <h2>
+            <img [src]="routeIcon" alt="Commands" class="section-icon-img" width="24" height="24" />
+            <span i18n="@@ftsCommandsTitle">Commands</span>
+          </h2>
+          <div class="command-start-select">
+            <label for="startNodeSelect">{{ labelStartSelect }}</label>
+            <select
+              id="startNodeSelect"
+              (change)="onStartNodeChange($any($event.target).value || 'auto')"
+            >
+              <option *ngFor="let opt of startNodeOptions" [value]="opt" [selected]="opt === selectedStartNode">
+                {{ getStartOptionLabel(opt) }}
+              </option>
+            </select>
+          </div>
+          <div class="command-button-group command-buttons--stacked">
+            <button type="button" class="command-button" (click)="sendCharge(!isCharging)">
+              {{ chargeButtonLabel }}
+            </button>
+            <button type="button" class="command-button" *ngIf="showDockInitial" (click)="sendDockInitial()">
+              {{ labelDockInitial }}
+            </button>
+            <button type="button" class="command-button" (click)="sendDriveToIntersection2Instant()">
+              {{ labelDriveInstant }}
+            </button>
+            <button type="button" class="command-button" (click)="sendDriveToIntersection2Order()">
+              {{ labelDriveOrder }}
+            </button>
+          </div>
+
+          <details class="commands-dev">
+            <summary class="commands-dev__toggle">{{ devModeTitle }}</summary>
+            <div class="commands-dev__content">
+              <div class="commands-dev__item">
+                <div class="detail-label">{{ devChargeTitle }}</div>
+                <div class="mono">{{ ftsInstantActionTopic }}</div>
+                <pre class="mono">{{ chargeExamplePayload | json }}</pre>
+              </div>
+              <div class="commands-dev__item">
+                <div class="detail-label">{{ devDockTitle }}</div>
+                <div class="mono">{{ ftsOrderTopic }}</div>
+                <pre class="mono">{{ dockExamplePayload | json }}</pre>
+              </div>
+              <div class="commands-dev__item">
+                <div class="detail-label">{{ devDriveOrderTitle }}</div>
+                <div class="mono">{{ ftsOrderTopic }}</div>
+                <pre class="mono">{{ driveExamplePayload | json }}</pre>
+              </div>
+              <div class="commands-dev__item">
+                <div class="detail-label">{{ devDriveInstantTitle }}</div>
+                <div class="mono">{{ ftsInstantActionTopic }}</div>
+                <pre class="mono">{{ driveInstantExamplePayload | json }}</pre>
+              </div>
+            </div>
+          </details>
         </section>
       </div>
     </div>

@@ -985,3 +985,80 @@
   }
 }
 
+// Command buttons (align to Modules-Tab style)
+.command-button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.command-buttons--stacked {
+  width: 100%;
+}
+
+.command-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.9rem;
+  border-radius: 0.6rem;
+  border: none;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  width: fit-content;
+
+  &:hover {
+    background: #1d4ed8;
+  }
+}
+
+.commands-dev {
+  margin-top: 1rem;
+
+  &__toggle {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--orbis-nightblue);
+  }
+
+  &__content {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  &__item {
+    background: #f7f9fc;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+  }
+}
+
+.mono {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.command-start-select {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+
+  select {
+    padding: 0.3rem 0.5rem;
+    border-radius: 0.4rem;
+    border: 1px solid var(--color-border, #e0e0e0);
+    background: #fff;
+  }
+}
+
