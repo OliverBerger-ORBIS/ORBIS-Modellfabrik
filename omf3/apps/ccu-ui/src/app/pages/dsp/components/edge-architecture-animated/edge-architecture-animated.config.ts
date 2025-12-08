@@ -51,24 +51,24 @@ export const EDGE_LAYOUT = {
   EDGE_WIDTH: 500, // Matches DSP-Function-Box width from reference architecture
   EDGE_HEIGHT: 260, // Increased to accommodate 3 rows without overlap (60px boxes + margins)
   
-  // Component boxes inside EDGE - optimized for visibility and arrow space
-  BOX_WIDTH: 105,
-  BOX_HEIGHT: 65,
+  // Component boxes inside EDGE - sized to fit properly without overflow
+  BOX_WIDTH: 85,  // Reduced from 105 to fit within 500px width with proper margins
+  BOX_HEIGHT: 55, // Reduced from 65 to fit within 260px height with 3 rows
   
-  // Spacing - 3 rows, smaller border margins, larger inter-row gaps for arrow visibility
+  // Spacing - 3 rows, smaller border margins (10-15px), larger inter-row gaps (35-45px) for arrow visibility
   // Row 1: DISC (left), Event Bus (right) - close to top border
-  ROW_1_Y: 370,   // EDGE_Y + 10px margin (small border margin)
+  ROW_1_Y: 375,   // EDGE_Y + 15px margin
   
   // Row 2: App Server (left), Router (center), Agent (right) - vertically centered for horizontal arrows
   ROW_2_Y: 475,   // EDGE_Y + 115px - positioned for horizontal arrows to Dashboard/Cockpit
   
   // Row 3: Log Server (left), DISI (center), Edge Database (right) - close to bottom border
-  ROW_3_Y: 565,   // EDGE_Y + 205px - 10px margin from bottom (EDGE_Y + EDGE_HEIGHT - BOX_HEIGHT - 10)
+  ROW_3_Y: 555,   // EDGE_Y + 195px - leaves 10px bottom margin (EDGE_Y + EDGE_HEIGHT - BOX_HEIGHT - 10)
   
   // Horizontal positions - evenly distributed with adequate space for bidirectional arrows
-  COL_LEFT_X: 370,      // EDGE_X + 20px margin
-  COL_CENTER_X: 545,    // EDGE_X + (EDGE_WIDTH / 2) - (BOX_WIDTH / 2) - centered
-  COL_RIGHT_X: 725,     // EDGE_X + EDGE_WIDTH - BOX_WIDTH - 20px margin
+  COL_LEFT_X: 375,      // EDGE_X + 25px margin (more space from edge)
+  COL_CENTER_X: 557,    // EDGE_X + (EDGE_WIDTH / 2) - (BOX_WIDTH / 2) - centered
+  COL_RIGHT_X: 740,     // EDGE_X + EDGE_WIDTH - BOX_WIDTH - 25px margin
   
   // External zone positions (fallback for when shared config is not available)
   BUSINESS_ZONE_Y: 120,
@@ -88,9 +88,9 @@ export const EDGE_LAYOUT_SCALED = {
   OFFSET_Y: 0,
   
   // Same dimensions as detail view
-  BOX_WIDTH: 105,
-  BOX_HEIGHT: 65,
-  ICON_SIZE: 34,   // Slightly smaller icons for compact view, but still visible
+  BOX_WIDTH: 85,
+  BOX_HEIGHT: 55,
+  ICON_SIZE: 30,   // Smaller icons for compact view, but still visible
 };
 
 /**

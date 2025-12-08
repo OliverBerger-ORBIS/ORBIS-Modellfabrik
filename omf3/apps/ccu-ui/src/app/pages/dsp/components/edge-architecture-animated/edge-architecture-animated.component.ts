@@ -347,6 +347,17 @@ export class EdgeArchitectureAnimatedComponent implements OnInit, OnDestroy {
   }
   
   /**
+   * Check if a connection is an external connection (connects edge component to architecture container)
+   */
+  protected isExternalConnection(connection: EdgeConnectionConfig): boolean {
+    const externalConnectionIds = [
+      'agent-cockpit', 'app-server-dashboard', 'disi-shopfloor', 
+      'disc-erp', 'event-bus-datalake', 'db-datalake'
+    ];
+    return externalConnectionIds.includes(connection.id);
+  }
+  
+  /**
    * Get layer background fill color
    */
   protected getLayerFill(layerId: string): string {
@@ -451,6 +462,22 @@ export class EdgeArchitectureAnimatedComponent implements OnInit, OnDestroy {
       return EDGE_LAYOUT_SCALED.ICON_SIZE;  // 32px for full architecture view
     }
     return 38; // Default icon size for detail view
+  }
+  
+  /**
+   * Get icon path for architecture containers from logoIconKey
+   */
+  protected getContainerIconPath(container: any): string | undefined {
+    if (!container.logoIconKey) return undefined;
+    
+    // Map IconKey enum values to actual SVG paths
+    const iconKeyToPath: Record<string, string> = {
+      'logo-sap': 'assets/svg/icons/logo-sap.svg',
+      'logo-azure': 'assets/svg/icons/logo-azure.svg',
+      // Add more mappings as needed
+    };
+    
+    return iconKeyToPath[container.logoIconKey] || undefined;
   }
   
   /**
