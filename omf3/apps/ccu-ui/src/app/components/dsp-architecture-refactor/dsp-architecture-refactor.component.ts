@@ -1,564 +1,473 @@
-/**
- * Refactored DSP Architecture Component
- * 
- * A new implementation of the DSP architecture visualization with:
- * - Three-layer rendering (Business, DSP, Shopfloor)
- * - Multiple view modes (Functional, Component, Deployment)
- * - Animation engine with scene-based storytelling
- * - Interactive arrows with pulse animations
- * - Zoom controls
- * - Customer-configurable layers
- */
-
 import { CommonModule } from '@angular/common';
 import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  OnInit,
-  OnDestroy,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  AfterViewInit,
-  ElementRef,
-  ViewChild,
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
 } from '@angular/core';
+import { getIconPath, type IconKey } from '../../assets/icon-registry';
 import type {
-  ViewMode,
-  ArchitectureConfig,
-  Layer,
-  Box,
-  Arrow,
-  BoxBounds,
+  ContainerConfig,
+  ConnectionConfig,
+  StepConfig,
   Point,
-  ComponentState,
-  BoxClickEvent,
-  StepChangeEvent,
-  AnimationScene,
-  SceneStep,
-  SceneAction,
+  AnchorSide,
 } from './types';
-import { getArchitectureConfig, applyLayerOverrides } from './layout.config';
-import { getAnimationScene } from './animation.config';
-import { getIconForBox } from './icons.config';
+import {
+  createDiagramConfig,
+  VIEWBOX_WIDTH,
+  VIEWBOX_HEIGHT,
+} from './layout.config';
 
+/**
+ * DspArchitectureRefactorComponent - Refactored animated SVG-based architecture diagram.
+ *
+ * Matches the existing DSP architecture component with continuous layer backgrounds,
+ * grid-based positioning, and animation steps 1, 2, 3, 7, 10, and final.
+ */
 @Component({
-  selector: 'app-dsp-architecture-refactor',
   standalone: true,
+  selector: 'app-dsp-architecture-refactor',
   imports: [CommonModule],
   templateUrl: './dsp-architecture-refactor.component.html',
-  styleUrls: ['./dsp-architecture-refactor.component.scss'],
+  styleUrl: './dsp-architecture-refactor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DspArchitectureRefactorComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('svgContainer', { static: false }) svgContainer?: ElementRef<SVGSVGElement>;
+export class DspArchitectureRefactorComponent implements OnInit, OnDestroy {
+  @Output() actionTriggered = new EventEmitter<{ id: string; url: string }>();
 
-  // Inputs
-  @Input() viewMode: ViewMode = 'functional';
-  @Input() animationEnabled = true;
-  @Input() customConfig?: Partial<ArchitectureConfig>;
+  // Diagram configuration
+  protected containers: ContainerConfig[] = [];
+  protected connections: ConnectionConfig[] = [];
+  protected steps: StepConfig[] = [];
 
-  // Outputs
-  @Output() boxClick = new EventEmitter<BoxClickEvent>();
-  @Output() stepChange = new EventEmitter<StepChangeEvent>();
+  // Animation state
+  protected currentStepIndex = 0;
+  protected isAutoPlaying = false;
+  private autoPlayInterval: ReturnType<typeof setInterval> | null = null;
 
-  // Component state
-  protected state: ComponentState = {
-    currentView: 'functional',
-    currentSceneIndex: 0,
-    currentStepIndex: 0,
-    isPlaying: false,
-    zoom: 1,
-    highlightedBoxes: new Set<string>(),
-    visibleArrows: new Set<string>(),
-    hiddenBoxes: new Set<string>(),
-    overlayText: null,
-  };
-
-  // Configuration
-  protected config: ArchitectureConfig | null = null;
-  protected currentScene: AnimationScene | undefined;
-
-  // Layout calculations
-  protected boxBounds: Map<string, BoxBounds> = new Map();
-  protected readonly viewBoxWidth = 1200;
-  protected readonly viewBoxHeight = 800;
-  protected readonly padding = 40;
-  protected readonly layerSpacing = 10;
-  protected readonly boxSpacing = 20;
-
-  // Animation
-  private animationTimer: ReturnType<typeof setTimeout> | null = null;
-
-  // Zoom
-  protected readonly minZoom = 0.5;
-  protected readonly maxZoom = 2.0;
+  // Zoom state
+  protected zoom = 1;
+  protected readonly minZoom = 0.6;
+  protected readonly maxZoom = 1.6;
   protected readonly zoomStep = 0.1;
 
-  // i18n labels
-  protected readonly labelZoomIn = $localize`:@@refactorZoomIn:Zoom In`;
-  protected readonly labelZoomOut = $localize`:@@refactorZoomOut:Zoom Out`;
-  protected readonly labelResetZoom = $localize`:@@refactorResetZoom:Reset Zoom`;
-  protected readonly labelPlay = $localize`:@@refactorPlay:Play`;
-  protected readonly labelPause = $localize`:@@refactorPause:Pause`;
-  protected readonly labelNext = $localize`:@@refactorNext:Next`;
-  protected readonly labelPrev = $localize`:@@refactorPrev:Previous`;
-  protected readonly labelReset = $localize`:@@refactorReset:Reset`;
+  // ViewBox dimensions
+  protected readonly viewBoxWidth = VIEWBOX_WIDTH;
+  protected readonly viewBoxHeight = VIEWBOX_HEIGHT;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  // i18n labels
+  protected readonly title = $localize`:@@dspArchRefactorTitle:DSP Architecture - Refactored`;
+  protected readonly subtitle = $localize`:@@dspArchRefactorSubtitle:Reference Architecture`;
+  protected readonly labelBusinessProcesses = $localize`:@@dspArchLabelBusiness:Business Processes`;
+  protected readonly labelDsp = $localize`:@@dspArchLabelDsp:DSP`;
+  protected readonly labelShopfloor = $localize`:@@dspArchLabelShopfloor:Shopfloor`;
+  protected readonly labelOnPremise = $localize`:@@dspArchLabelOnPremise:On Premise`;
+  protected readonly labelCloud = $localize`:@@dspArchLabelCloud:Cloud`;
+  protected readonly labelDevices = $localize`:@@dspArchLabelDevices:Devices`;
+  protected readonly labelSystems = $localize`:@@dspArchLabelSystems:Systems`;
+  protected readonly labelSmartfactoryDashboard = $localize`:@@dspArchLabelUX:SmartFactory\nDashboard`;
+  protected readonly labelEdge = $localize`:@@dspArchLabelEdge:EDGE`;
+  protected readonly labelManagementCockpit = $localize`:@@dspArchLabelManagement:Management Cockpit`;
+  protected readonly btnPrev = $localize`:@@dspArchPrev:Previous`;
+  protected readonly btnNext = $localize`:@@dspArchNext:Next`;
+  protected readonly btnAutoPlay = $localize`:@@dspArchAutoPlay:Auto Play`;
+  protected readonly btnStopPlay = $localize`:@@dspArchStopPlay:Stop`;
+  protected readonly zoomOutLabel = $localize`:@@shopfloorPreviewZoomOut:Zoom out`;
+  protected readonly zoomInLabel = $localize`:@@shopfloorPreviewZoomIn:Zoom in`;
+  protected readonly resetZoomLabel = $localize`:@@shopfloorPreviewResetZoom:Reset zoom`;
+
+  // Container labels
+  protected readonly containerLabels: Record<string, string> = {
+    'erp-application': $localize`:@@dspArchLabelERP:ERP Applications`,
+    'bp-cloud-apps': $localize`:@@dspArchLabelCloudApps:Cloud\nApplications`,
+    'bp-analytics': $localize`:@@dspArchLabelAnalytics:Analytical\nApplications`,
+    'bp-data-lake': $localize`:@@dspArchLabelDataLake:Data Lake`,
+    'shopfloor-system-bp': $localize`:@@dspArchLabelMES:MES`,
+    'shopfloor-system-fts': $localize`:@@dspArchLabelFTS:AGV\nSystem`,
+    'shopfloor-device-1': $localize`:@@deviceMILL:Mill`,
+    'shopfloor-device-2': $localize`:@@deviceDRILL:Drill`,
+    'shopfloor-device-3': $localize`:@@deviceAIQS:AIQS`,
+    'shopfloor-device-4': $localize`:@@deviceHBW:HBW`,
+    'shopfloor-device-5': $localize`:@@deviceDPS:DPS`,
+    'shopfloor-device-6': $localize`:@@deviceCHRG:Charger`,
+  };
+
+  constructor(private readonly cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    this.initializeConfiguration();
-    this.loadAnimationScene();
-    this.initializeArrowVisibility();
-  }
-
-  ngAfterViewInit(): void {
-    // Calculate box bounds after view is initialized
-    setTimeout(() => {
-      this.calculateBoxBounds();
-      this.cdr.markForCheck();
-    }, 100);
+    this.initializeDiagram();
+    this.applyStep(0);
   }
 
   ngOnDestroy(): void {
-    this.stopAnimation();
+    this.stopAutoPlay();
   }
 
   /**
-   * Initialize architecture configuration
+   * Initialize diagram configuration
    */
-  private initializeConfiguration(): void {
-    this.state.currentView = this.viewMode;
-    const baseConfig = getArchitectureConfig(this.viewMode);
-    this.config = applyLayerOverrides(baseConfig, this.customConfig);
+  private initializeDiagram(): void {
+    const config = createDiagramConfig();
+    this.containers = config.containers;
+    this.connections = config.connections;
+    this.steps = config.steps;
   }
 
   /**
-   * Load animation scene for current view mode
+   * Check if container should be visible
    */
-  private loadAnimationScene(): void {
-    if (this.animationEnabled) {
-      this.currentScene = getAnimationScene(this.viewMode);
+  protected isContainerVisible(container: ContainerConfig): boolean {
+    const step = this.steps[this.currentStepIndex];
+    if (!step) return true;
+    return step.visibleContainerIds.includes(container.id);
+  }
+
+  /**
+   * Check if container should be highlighted
+   */
+  protected isContainerHighlighted(container: ContainerConfig): boolean {
+    const step = this.steps[this.currentStepIndex];
+    if (!step) return false;
+    return step.highlightedContainerIds.includes(container.id);
+  }
+
+  /**
+   * Check if connection should be visible
+   */
+  protected isConnectionVisible(connection: ConnectionConfig): boolean {
+    const step = this.steps[this.currentStepIndex];
+    if (!step) return true;
+    return step.visibleConnectionIds.includes(connection.id);
+  }
+
+  /**
+   * Check if connection should be highlighted
+   */
+  protected isConnectionHighlighted(connection: ConnectionConfig): boolean {
+    const step = this.steps[this.currentStepIndex];
+    if (!step) return false;
+    return step.highlightedConnectionIds.includes(connection.id);
+  }
+
+  /**
+   * Check if function icons should be shown
+   */
+  protected shouldShowFunctionIcons(): boolean {
+    const step = this.steps[this.currentStepIndex];
+    return step?.showFunctionIcons !== false;
+  }
+
+  /**
+   * Check if a specific function icon is highlighted
+   */
+  protected isFunctionIconHighlighted(iconKey: string): boolean {
+    const step = this.steps[this.currentStepIndex];
+    if (!step?.highlightedFunctionIcons) return false;
+    return step.highlightedFunctionIcons.includes(iconKey);
+  }
+
+  /**
+   * Get container fill color
+   */
+  protected getContainerFill(container: ContainerConfig): string {
+    return container.backgroundColor || '#ffffff';
+  }
+
+  /**
+   * Get container stroke color
+   */
+  protected getContainerStroke(container: ContainerConfig): string {
+    if (this.isContainerHighlighted(container)) {
+      return '#ff9900'; // Highlight color
     }
+    return container.borderColor || '#cccccc';
   }
 
   /**
-   * Initialize arrow visibility based on configuration
+   * Get container stroke width
    */
-  private initializeArrowVisibility(): void {
-    if (!this.config) return;
-    
-    this.state.visibleArrows.clear();
-    this.config.arrows
-      .filter(arrow => arrow.visible !== false)
-      .forEach(arrow => this.state.visibleArrows.add(arrow.id));
-  }
-
-  /**
-   * Calculate bounds for all boxes for arrow rendering
-   */
-  private calculateBoxBounds(): void {
-    if (!this.svgContainer) return;
-
-    const svg = this.svgContainer.nativeElement;
-    const boxes = svg.querySelectorAll('[data-box-id]');
-
-    boxes.forEach((element) => {
-      const boxId = element.getAttribute('data-box-id');
-      if (!boxId) return;
-
-      const rect = element.getBoundingClientRect();
-      const svgRect = svg.getBoundingClientRect();
-      const CTM = svg.getScreenCTM();
-      if (!CTM) return;
-
-      const bounds: BoxBounds = {
-        id: boxId,
-        x: (rect.left - svgRect.left) / CTM.a,
-        y: (rect.top - svgRect.top) / CTM.d,
-        width: rect.width / CTM.a,
-        height: rect.height / CTM.d,
-        centerX: 0,
-        centerY: 0,
-      };
-
-      bounds.centerX = bounds.x + bounds.width / 2;
-      bounds.centerY = bounds.y + bounds.height / 2;
-
-      this.boxBounds.set(boxId, bounds);
-    });
-  }
-
-  /**
-   * Get layer height based on height ratio
-   */
-  protected getLayerHeight(layer: Layer): number {
-    if (!this.config) return 0;
-    
-    const totalRatio = this.config.layers.reduce((sum, l) => sum + l.heightRatio, 0);
-    const availableHeight = this.viewBoxHeight - this.padding * 2 - this.layerSpacing * (this.config.layers.length - 1);
-    return (availableHeight * layer.heightRatio) / totalRatio;
-  }
-
-  /**
-   * Get layer Y position
-   */
-  protected getLayerY(layerIndex: number): number {
-    if (!this.config) return 0;
-    
-    let y = this.padding;
-    for (let i = 0; i < layerIndex; i++) {
-      y += this.getLayerHeight(this.config.layers[i]) + this.layerSpacing;
+  protected getContainerStrokeWidth(container: ContainerConfig): number {
+    if (this.isContainerHighlighted(container)) {
+      return 3;
     }
-    return y;
+    return 2;
   }
 
   /**
-   * Get box X position within layer
+   * Get container class
    */
-  protected getBoxX(box: Box, layer: Layer): number {
-    const layerWidth = this.viewBoxWidth - this.padding * 2;
-    const boxesBeforeThis = layer.boxes.filter(b => (b.position || 0) < (box.position || 0));
-    const widthBeforeThis = boxesBeforeThis.reduce((sum, b) => sum + b.widthRatio, 0);
-    
-    const x = this.padding + layerWidth * widthBeforeThis + this.boxSpacing * (box.position || 0);
-    return x;
-  }
-
-  /**
-   * Get box width
-   */
-  protected getBoxWidth(box: Box): number {
-    const layerWidth = this.viewBoxWidth - this.padding * 2;
-    const boxCount = this.getBoxCountInLayer(box.layer);
-    const totalSpacing = this.boxSpacing * (boxCount - 1);
-    return (layerWidth - totalSpacing) * box.widthRatio;
-  }
-
-  /**
-   * Get number of boxes in a layer
-   */
-  private getBoxCountInLayer(layerType: string): number {
-    if (!this.config) return 0;
-    const layer = this.config.layers.find(l => l.type === layerType);
-    return layer ? layer.boxes.length : 0;
-  }
-
-  /**
-   * Get icon path for a box
-   */
-  protected getIconPath(boxId: string): string {
-    return getIconForBox(boxId);
-  }
-
-  /**
-   * Check if box is highlighted
-   */
-  protected isBoxHighlighted(boxId: string): boolean {
-    return this.state.highlightedBoxes.has(boxId);
-  }
-
-  /**
-   * Check if box is hidden
-   */
-  protected isBoxHidden(boxId: string): boolean {
-    return this.state.hiddenBoxes.has(boxId);
-  }
-
-  /**
-   * Check if arrow is visible
-   */
-  protected isArrowVisible(arrowId: string): boolean {
-    return this.state.visibleArrows.has(arrowId);
-  }
-
-  /**
-   * Handle box click
-   */
-  protected onBoxClick(box: Box): void {
-    if (!box.clickable) return;
-
-    const event: BoxClickEvent = {
-      boxId: box.id,
-      layer: box.layer,
-      label: box.label,
-    };
-    this.boxClick.emit(event);
-  }
-
-  /**
-   * Calculate arrow path between two boxes
-   */
-  protected getArrowPath(arrow: Arrow): string {
-    const fromBounds = this.boxBounds.get(arrow.from);
-    const toBounds = this.boxBounds.get(arrow.to);
-
-    if (!fromBounds || !toBounds) {
-      return '';
+  protected getContainerClass(container: ContainerConfig): string {
+    const classes = ['container'];
+    classes.push(`container--${container.type}`);
+    if (this.isContainerHighlighted(container)) {
+      classes.push('container--highlighted');
     }
-
-    const start: Point = { x: fromBounds.centerX, y: fromBounds.y + fromBounds.height };
-    const end: Point = { x: toBounds.centerX, y: toBounds.y };
-
-    switch (arrow.type) {
-      case 'straight':
-        return `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
-      case 'l-shaped':
-        return this.getLShapedPath(start, end);
-      case 'curved':
-        return this.getCurvedPath(start, end);
-      default:
-        return `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
+    if (container.url) {
+      classes.push('container--clickable');
     }
+    return classes.join(' ');
   }
 
   /**
-   * Generate L-shaped arrow path
+   * Get label for container
    */
-  private getLShapedPath(start: Point, end: Point): string {
-    const midY = start.y + (end.y - start.y) / 2;
-    return `M ${start.x} ${start.y} L ${start.x} ${midY} L ${end.x} ${midY} L ${end.x} ${end.y}`;
+  protected getContainerLabel(containerId: string): string {
+    return this.containerLabels[containerId] || '';
   }
 
   /**
-   * Generate curved arrow path
+   * Get multi-line label
    */
-  private getCurvedPath(start: Point, end: Point): string {
-    const controlY = start.y + (end.y - start.y) / 2;
-    return `M ${start.x} ${start.y} Q ${start.x} ${controlY} ${end.x} ${end.y}`;
-  }
-
-  // ========== Animation Controls ==========
-
-  /**
-   * Play animation
-   */
-  protected playAnimation(): void {
-    if (!this.currentScene) return;
-
-    this.state.isPlaying = true;
-    this.executeNextStep();
-  }
-
-  /**
-   * Pause animation
-   */
-  protected pauseAnimation(): void {
-    this.state.isPlaying = false;
-    this.stopAnimationTimer();
+  protected getMultilineLabel(containerId: string): string[] {
+    const label = this.getContainerLabel(containerId);
+    if (containerId === 'layer-business') return [this.labelBusinessProcesses];
+    if (containerId === 'layer-dsp') return [this.labelDsp];
+    if (containerId === 'layer-shopfloor') return [this.labelShopfloor];
+    if (containerId === 'dsp-label-onpremise') return [this.labelOnPremise];
+    if (containerId === 'dsp-label-cloud') return [this.labelCloud];
+    if (containerId === 'shopfloor-devices-group') return [this.labelDevices];
+    if (containerId === 'shopfloor-systems-group') return [this.labelSystems];
+    if (containerId === 'ux') return this.labelSmartfactoryDashboard.split('\\n');
+    if (containerId === 'edge') return [this.labelEdge];
+    if (containerId === 'management') return [this.labelManagementCockpit];
+    return label.split('\\n');
   }
 
   /**
-   * Execute next animation step
+   * Check if label is multiline
    */
-  private executeNextStep(): void {
-    if (!this.state.isPlaying || !this.currentScene) return;
+  protected isMultilineLabel(containerId: string): boolean {
+    return this.getMultilineLabel(containerId).length > 1;
+  }
 
-    const step = this.currentScene.steps[this.state.currentStepIndex];
-    if (!step) {
-      // End of animation
-      this.pauseAnimation();
-      return;
+  /**
+   * Check if label should wrap
+   */
+  protected shouldWrapLabel(container: ContainerConfig): boolean {
+    // Device and system labels can wrap
+    return container.type === 'device' || container.type === 'shopfloor';
+  }
+
+  /**
+   * Get label X position
+   */
+  protected getLabelX(container: ContainerConfig): number {
+    // Center label
+    return container.width / 2;
+  }
+
+  /**
+   * Get label Y position
+   */
+  protected getLabelY(container: ContainerConfig): number {
+    // Position at bottom center for most containers
+    if (container.labelPosition === 'bottom-center') {
+      return container.height - 8;
     }
+    if (container.labelPosition === 'top-center') {
+      return 20;
+    }
+    return container.height / 2;
+  }
 
-    this.executeStep(step);
-    this.emitStepChange();
+  /**
+   * Get label anchor
+   */
+  protected getLabelAnchor(container: ContainerConfig): string {
+    // Most labels are centered
+    return 'middle';
+  }
 
-    // Auto-advance to next step
-    this.animationTimer = setTimeout(() => {
-      this.nextStep();
-      if (this.state.isPlaying) {
-        this.executeNextStep();
+  /**
+   * Get wrapped label lines
+   */
+  protected getWrappedLabelLines(container: ContainerConfig): string[] {
+    const label = this.getContainerLabel(container.id);
+    // Simple word wrap - split on spaces if needed
+    if (label.length > 15 && container.width < 100) {
+      const words = label.split(' ');
+      if (words.length > 1) {
+        return words;
       }
-    }, step.duration || 3000);
+    }
+    return [label];
   }
 
   /**
-   * Execute a single animation step
+   * Get layer font size
    */
-  private executeStep(step: SceneStep): void {
-    step.actions.forEach(action => this.executeAction(action));
-    this.cdr.markForCheck();
+  protected getLayerFontSize(containerId: string): number {
+    if (containerId === 'layer-dsp') return 18;
+    return 16;
   }
 
   /**
-   * Execute a single action
+   * Resolve icon path
    */
-  private executeAction(action: SceneAction): void {
-    switch (action.type) {
-      case 'highlight':
-        if (action.reset) {
-          this.state.highlightedBoxes.clear();
-        } else if (action.targets) {
-          action.targets.forEach(id => this.state.highlightedBoxes.add(id));
-        }
-        break;
-      case 'fadeothers':
-        // Handled via CSS classes
-        break;
-      case 'connect':
-        if (action.targets) {
-          action.targets.forEach(id => this.state.visibleArrows.add(id));
-        }
-        break;
-      case 'disconnect':
-        if (action.targets) {
-          action.targets.forEach(id => this.state.visibleArrows.delete(id));
-        }
-        break;
-      case 'show':
-        if (action.targets) {
-          action.targets.forEach(id => this.state.hiddenBoxes.delete(id));
-        }
-        break;
-      case 'hide':
-        if (action.targets) {
-          action.targets.forEach(id => this.state.hiddenBoxes.add(id));
-        }
-        break;
-      case 'text':
-        this.state.overlayText = action.text || null;
-        break;
+  protected resolveIconPath(iconKey: IconKey | string): string {
+    return getIconPath(iconKey as IconKey);
+  }
+
+  /**
+   * Get connection path (alias for calculateConnectionPath)
+   */
+  protected getConnectionPath(connection: ConnectionConfig): string {
+    return this.calculateConnectionPath(connection);
+  }
+
+  /**
+   * Calculate connection path
+   */
+  protected calculateConnectionPath(connection: ConnectionConfig): string {
+    const fromContainer = this.containers.find(c => c.id === connection.fromId);
+    const toContainer = this.containers.find(c => c.id === connection.toId);
+    
+    if (!fromContainer || !toContainer) return '';
+
+    const from = this.getAnchorPoint(fromContainer, connection.fromSide || 'bottom');
+    const to = this.getAnchorPoint(toContainer, connection.toSide || 'top');
+
+    // Simple L-shaped path
+    const midY = (from.y + to.y) / 2;
+    return `M ${from.x} ${from.y} L ${from.x} ${midY} L ${to.x} ${midY} L ${to.x} ${to.y}`;
+  }
+
+  /**
+   * Get connection class
+   */
+  protected getConnectionClass(connection: ConnectionConfig): string {
+    const classes = ['connection'];
+    if (this.isConnectionHighlighted(connection)) {
+      classes.push('connection--highlighted');
+    }
+    return classes.join(' ');
+  }
+
+  /**
+   * Get anchor point for a container side
+   */
+  private getAnchorPoint(container: ContainerConfig, side: AnchorSide): Point {
+    const { x, y, width, height } = container;
+    
+    switch (side) {
+      case 'top':
+        return { x: x + width / 2, y };
+      case 'bottom':
+        return { x: x + width / 2, y: y + height };
+      case 'left':
+        return { x, y: y + height / 2 };
+      case 'right':
+        return { x: x + width, y: y + height / 2 };
     }
   }
 
   /**
-   * Go to next step
+   * Handle container click
    */
-  protected nextStep(): void {
-    if (!this.currentScene) return;
-
-    if (this.state.currentStepIndex < this.currentScene.steps.length - 1) {
-      this.state.currentStepIndex++;
-      this.emitStepChange();
-      this.cdr.markForCheck();
+  protected onContainerClick(container: ContainerConfig): void {
+    if (container.url) {
+      this.actionTriggered.emit({ id: container.id, url: container.url });
     }
   }
 
   /**
-   * Go to previous step
+   * Handle container keydown
    */
+  protected onContainerKeydown(event: KeyboardEvent, container: ContainerConfig): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.onContainerClick(container);
+    }
+  }
+
+  // Navigation methods
   protected prevStep(): void {
-    if (this.state.currentStepIndex > 0) {
-      this.state.currentStepIndex--;
-      this.emitStepChange();
-      this.cdr.markForCheck();
+    if (this.currentStepIndex > 0) {
+      this.applyStep(this.currentStepIndex - 1);
     }
   }
 
-  /**
-   * Reset animation to first step
-   */
-  protected resetAnimation(): void {
-    this.stopAnimation();
-    this.state.currentStepIndex = 0;
-    this.state.highlightedBoxes.clear();
-    this.state.hiddenBoxes.clear();
-    this.state.overlayText = null;
-    this.initializeArrowVisibility();
+  protected nextStep(): void {
+    if (this.currentStepIndex < this.steps.length - 1) {
+      this.applyStep(this.currentStepIndex + 1);
+    }
+  }
+
+  protected goToStep(index: number): void {
+    if (index >= 0 && index < this.steps.length) {
+      this.applyStep(index);
+    }
+  }
+
+  protected toggleAutoPlay(): void {
+    if (this.isAutoPlaying) {
+      this.stopAutoPlay();
+    } else {
+      this.startAutoPlay();
+    }
+  }
+
+  private startAutoPlay(): void {
+    this.isAutoPlaying = true;
+    this.autoPlayInterval = setInterval(() => {
+      if (this.currentStepIndex < this.steps.length - 1) {
+        this.nextStep();
+      } else {
+        this.stopAutoPlay();
+        this.applyStep(0);
+      }
+    }, 3000);
     this.cdr.markForCheck();
   }
 
-  /**
-   * Stop animation timer
-   */
-  private stopAnimationTimer(): void {
-    if (this.animationTimer) {
-      clearTimeout(this.animationTimer);
-      this.animationTimer = null;
+  private stopAutoPlay(): void {
+    this.isAutoPlaying = false;
+    if (this.autoPlayInterval) {
+      clearInterval(this.autoPlayInterval);
+      this.autoPlayInterval = null;
     }
+    this.cdr.markForCheck();
   }
 
-  /**
-   * Stop animation completely
-   */
-  private stopAnimation(): void {
-    this.state.isPlaying = false;
-    this.stopAnimationTimer();
+  private applyStep(index: number): void {
+    this.currentStepIndex = index;
+    this.cdr.markForCheck();
   }
 
-  /**
-   * Emit step change event
-   */
-  private emitStepChange(): void {
-    if (!this.currentScene) return;
-
-    const step = this.currentScene.steps[this.state.currentStepIndex];
-    if (!step) return;
-
-    const event: StepChangeEvent = {
-      sceneId: this.currentScene.id,
-      stepId: step.id,
-      stepIndex: this.state.currentStepIndex,
-      totalSteps: this.currentScene.steps.length,
-    };
-    this.stepChange.emit(event);
-  }
-
-  // ========== Zoom Controls ==========
-
-  /**
-   * Zoom in
-   */
+  // Zoom methods
   protected zoomIn(): void {
-    if (this.state.zoom < this.maxZoom) {
-      this.state.zoom = Math.min(this.state.zoom + this.zoomStep, this.maxZoom);
+    if (this.zoom < this.maxZoom) {
+      this.zoom = Math.min(this.zoom + this.zoomStep, this.maxZoom);
       this.cdr.markForCheck();
     }
   }
 
-  /**
-   * Zoom out
-   */
   protected zoomOut(): void {
-    if (this.state.zoom > this.minZoom) {
-      this.state.zoom = Math.max(this.state.zoom - this.zoomStep, this.minZoom);
+    if (this.zoom > this.minZoom) {
+      this.zoom = Math.max(this.zoom - this.zoomStep, this.minZoom);
       this.cdr.markForCheck();
     }
   }
 
-  /**
-   * Reset zoom to default
-   */
   protected resetZoom(): void {
-    this.state.zoom = 1;
+    this.zoom = 1;
     this.cdr.markForCheck();
   }
 
-  /**
-   * Get viewBox adjusted for zoom
-   */
-  protected getViewBox(): string {
-    const width = this.viewBoxWidth / this.state.zoom;
-    const height = this.viewBoxHeight / this.state.zoom;
-    const x = (this.viewBoxWidth - width) / 2;
-    const y = (this.viewBoxHeight - height) / 2;
-    return `${x} ${y} ${width} ${height}`;
+  // Trackby functions
+  protected containerTrackBy(index: number, item: ContainerConfig): string {
+    return item.id;
   }
 
-  /**
-   * Get current step label
-   */
-  protected getCurrentStepLabel(): string {
-    if (!this.currentScene) return '';
-    const step = this.currentScene.steps[this.state.currentStepIndex];
-    return step ? step.label : '';
+  protected connectionTrackBy(index: number, item: ConnectionConfig): string {
+    return item.id;
   }
 
-  /**
-   * Check if has previous step
-   */
-  protected hasPrevStep(): boolean {
-    return this.state.currentStepIndex > 0;
-  }
-
-  /**
-   * Check if has next step
-   */
-  protected hasNextStep(): boolean {
-    if (!this.currentScene) return false;
-    return this.state.currentStepIndex < this.currentScene.steps.length - 1;
+  protected iconTrackBy(index: number, item: { iconKey: IconKey; size: number }): string {
+    return item.iconKey;
   }
 }

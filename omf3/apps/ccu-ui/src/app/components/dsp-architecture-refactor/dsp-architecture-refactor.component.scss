@@ -1,156 +1,328 @@
-/**
- * Styles for Refactored DSP Architecture Component
- */
-
-.architecture-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 600px;
-  background-color: #fafafa;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-// ========== Zoom Controls ==========
-
-.zoom-controls {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  display: flex;
-  gap: 4px;
-  background: white;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  padding: 4px;
-  z-index: 10;
-}
-
-.zoom-btn {
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: transparent;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: #333;
-  transition: all 0.2s ease;
-
-  &:hover:not(:disabled) {
-    background-color: #f0f0f0;
-  }
-
-  &:active:not(:disabled) {
-    background-color: #e0e0e0;
-  }
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-
-  .zoom-icon {
-    font-weight: 600;
-    font-size: 20px;
-  }
-}
-
-// ========== Animation Controls ==========
-
-.animation-controls {
-  position: absolute;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
-  padding: 8px 16px;
-  z-index: 10;
-}
-
-.anim-btn {
-  width: 40px;
-  height: 40px;
-  border: 1px solid #ddd;
-  background: white;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  color: #154194;
-  transition: all 0.2s ease;
-
-  &:hover:not(:disabled) {
-    background-color: #f5f5f5;
-    border-color: #154194;
-    transform: scale(1.05);
-  }
-
-  &:active:not(:disabled) {
-    background-color: #e8f0fa;
-  }
-
-  &:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
-}
-
-.step-indicator {
-  margin-left: 12px;
-  padding-left: 12px;
-  border-left: 1px solid #ddd;
-  font-size: 14px;
-  color: #555;
+.dsp-architecture {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1.5rem;
+  background: #fff;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 18px 40px -32px rgba(15, 35, 66, 0.25);
+  position: relative;
 
-  .step-label {
-    font-size: 12px;
-    color: #777;
-    font-style: italic;
+  // Header
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #fff;
+    padding-bottom: 0.5rem;
+    margin-bottom: -0.5rem;
+
+    .header__title {
+      h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: var(--orbis-blue-strong);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        margin: 0.25rem 0 0;
+        font-size: 0.875rem;
+        color: #7f8da5;
+        font-weight: 500;
+      }
+    }
+
+    .header__zoom {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #f4f7fb;
+      border-radius: 999px;
+      padding: 0.25rem;
+
+      .zoom-btn {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 50%;
+        background: #fff;
+        color: var(--orbis-blue-strong);
+        font-size: 1.25rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background: #e8eef8;
+        }
+
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+
+        &--reset {
+          font-size: 1rem;
+        }
+      }
+
+      .zoom-level {
+        min-width: 50px;
+        text-align: center;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #1e2d3d;
+      }
+    }
+  }
+
+  // Diagram wrapper - contains scrollable zoom area
+  &__diagram-wrapper {
+    position: relative;
+    overflow: auto;
+    max-height: 70vh;
+    border: 1px solid rgba(23, 43, 77, 0.08);
+    border-radius: 1.25rem;
+    background: linear-gradient(135deg, #fafbfd 0%, #f4f7fb 100%);
+  }
+
+  // Diagram area
+  &__diagram {
+    padding: 1rem;
+    transform-origin: top left;
+    transition: transform 0.3s ease;
+
+    .diagram-svg {
+      width: 100%;
+      height: auto;
+      min-height: 400px;
+      max-height: none;  // Allow full height when zoomed
+    }
+  }
+
+  // Controls - sticky at bottom so they don't get covered by zoom
+  &__controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    background: #fff;
+    padding-top: 1rem;
+    margin-top: -0.5rem;
+
+    .controls__step-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      text-align: center;
+      padding: 0.5rem 1rem;
+      background: #f4f7fb;
+      border-radius: 0.5rem;
+      max-width: 800px;
+
+      .step-label {
+        font-weight: 600;
+        color: #1e2d3d;
+      }
+
+      .step-count {
+        font-size: 0.875rem;
+        color: #7f8da5;
+      }
+
+      .step-description {
+        margin: 0.5rem 0 0;
+        font-size: 0.875rem;
+        color: #5a6d8c;
+        line-height: 1.5;
+        font-style: italic;
+      }
+    }
+
+    .controls__buttons {
+      display: flex;
+      gap: 0.75rem;
+
+      .nav-btn {
+        padding: 0.6rem 1.25rem;
+        border-radius: 999px;
+        border: 1px solid rgba(var(--orbis-blue-strong-rgb), 0.35);
+        background: transparent;
+        color: var(--orbis-blue-strong);
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background: rgba(var(--orbis-blue-strong-rgb), 0.08);
+        }
+
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+
+        &--primary {
+          background: var(--orbis-blue-strong);
+          color: #fff;
+          border-color: var(--orbis-blue-strong);
+
+          &:hover:not(:disabled) {
+            background: #163d8a;
+          }
+        }
+      }
+    }
+
+    .controls__step-dots {
+      display: flex;
+      gap: 0.5rem;
+
+      .step-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid rgba(var(--orbis-blue-strong-rgb), 0.3);
+        background: transparent;
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: var(--orbis-blue-strong);
+        }
+
+        &--active {
+          background: var(--orbis-blue-strong);
+          border-color: var(--orbis-blue-strong);
+          transform: scale(1.2);
+        }
+
+        &--completed {
+          background: rgba(var(--orbis-blue-strong-rgb), 0.3);
+          border-color: rgba(var(--orbis-blue-strong-rgb), 0.3);
+        }
+      }
+    }
+  }
+
+  // Accordion section (DSP Edge and Management Cockpit details)
+  &__accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+
+    .accordion-item {
+      border: 1px solid rgba(var(--orbis-blue-strong-rgb), 0.15);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      background: #fff;
+
+      &.is-open {
+        border-color: rgba(var(--orbis-blue-strong-rgb), 0.3);
+
+        .accordion-trigger .chevron {
+          transform: rotate(180deg);
+        }
+      }
+    }
+
+    .accordion-trigger {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      border: none;
+      background: transparent;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1e2d3d;
+      cursor: pointer;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: rgba(var(--orbis-blue-strong-rgb), 0.04);
+      }
+
+      .chevron {
+        width: 20px;
+        height: 20px;
+        transition: transform 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        // CSS-based chevron icon for better accessibility
+        &::before {
+          content: '';
+          width: 8px;
+          height: 8px;
+          border: solid #7f8da5;
+          border-width: 0 2px 2px 0;
+          transform: rotate(45deg);
+          margin-top: -2px;
+        }
+      }
+    }
+
+    .accordion-panel {
+      padding: 0 1.25rem 1.25rem;
+      animation: slideDown 0.3s ease;
+
+      p {
+        margin: 0 0 1rem;
+        color: #5a6a7d;
+        line-height: 1.6;
+      }
+
+      ul {
+        margin: 0 0 1rem;
+        padding-left: 1.5rem;
+
+        li {
+          color: #5a6a7d;
+          line-height: 1.6;
+          margin-bottom: 0.5rem;
+        }
+      }
+
+      .cta {
+        padding: 0.6rem 1.25rem;
+        border-radius: 999px;
+        border: 1px solid var(--orbis-blue-strong);
+        background: var(--orbis-blue-strong);
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #163d8a;
+        }
+      }
+    }
   }
 }
 
-// ========== Text Overlay ==========
-
-.text-overlay {
-  position: absolute;
-  top: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: 600px;
-  z-index: 5;
-  pointer-events: none;
-}
-
-.overlay-content {
-  background: rgba(255, 255, 255, 0.95);
-  border: 2px solid #154194;
-  border-radius: 8px;
-  padding: 16px 24px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  font-size: 14px;
-  line-height: 1.6;
-  color: #333;
-  text-align: center;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
+@keyframes slideDown {
   from {
     opacity: 0;
     transform: translateY(-10px);
@@ -161,192 +333,247 @@
   }
 }
 
-// ========== SVG Styles ==========
+// SVG Elements styling
+.container {
+  cursor: default;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 
-.architecture-svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.layer-group {
-  .layer-background {
-    transition: fill 0.3s ease;
+  &__bg {
+    transition: fill 0.3s ease, stroke 0.3s ease, stroke-width 0.3s ease;
   }
 
-  .layer-label {
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-}
-
-.box-group {
-  .box-rect {
-    transition: all 0.3s ease;
+  &__label {
+    pointer-events: none;
+    user-select: none;
   }
 
-  .box-icon {
-    opacity: 0.9;
-    transition: opacity 0.3s ease;
-  }
-
-  .box-label {
+  &__logo,
+  &__function-icon,
+  &__ux-icon {
     pointer-events: none;
   }
 
-  // Clickable boxes
-  &.box-clickable {
-    cursor: pointer;
-  }
-
-  // Hover effect
-  &.box-hoverable:hover .box-rect {
-    filter: brightness(0.95);
-    stroke-width: 3;
-  }
-
-  &.box-hoverable:hover .box-icon {
-    opacity: 1;
-  }
-
-  // Highlighted state
-  &.box-highlighted .box-rect {
-    stroke-width: 4;
-    filter: drop-shadow(0 0 8px currentColor);
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  &.box-highlighted .box-icon {
-    opacity: 1;
-  }
-
-  // Hidden state
-  &.box-hidden {
-    opacity: 0.2;
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-.arrows-group {
-  .arrow-path {
-    transition: opacity 0.3s ease, stroke 0.3s ease;
-  }
-
-  // Animated arrows (pulse effect)
-  .arrow-animated {
-    animation: arrowPulse 2s ease-in-out infinite;
-  }
-}
-
-@keyframes arrowPulse {
-  0%, 100% {
-    stroke-opacity: 1;
-    stroke-width: 2;
-  }
-  50% {
-    stroke-opacity: 0.6;
-    stroke-width: 3;
-  }
-}
-
-// ========== Responsive Design ==========
-
-@media (max-width: 768px) {
-  .zoom-controls {
-    top: 8px;
-    right: 8px;
-  }
-
-  .zoom-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 16px;
-  }
-
-  .animation-controls {
-    bottom: 8px;
-    padding: 6px 12px;
-    gap: 6px;
-  }
-
-  .anim-btn {
-    width: 36px;
-    height: 36px;
-    font-size: 14px;
-  }
-
-  .step-indicator {
-    font-size: 12px;
+  &__function-icon--highlighted {
+    pointer-events: none;
+    filter: drop-shadow(0 0 8px #64a70b) brightness(1.2);
     
-    .step-label {
-      font-size: 10px;
+    // Add a pulsing animation
+    animation: pulse-green 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-green {
+    0%, 100% {
+      filter: drop-shadow(0 0 8px #64a70b) brightness(1.2);
+    }
+    50% {
+      filter: drop-shadow(0 0 16px #64a70b) brightness(1.4);
     }
   }
 
-  .text-overlay {
-    max-width: 90%;
-    top: 60px;
-  }
+  &--box,
+  &--business,
+  &--dsp-edge,
+  &--dsp-cloud,
+  &--ux {
+    cursor: pointer;
 
-  .overlay-content {
-    padding: 12px 16px;
-    font-size: 13px;
-  }
-}
+    &:hover .container__bg {
+      filter: brightness(0.98);
+    }
 
-@media (max-width: 480px) {
-  .architecture-container {
-    min-height: 400px;
-  }
+    &:focus {
+      outline: none;
 
-  .step-indicator {
-    display: none;
-  }
-}
-
-// ========== Dark Mode Support ==========
-
-@media (prefers-color-scheme: dark) {
-  .architecture-container {
-    background-color: #1a1a1a;
-    border-color: #333;
-  }
-
-  .zoom-controls,
-  .animation-controls {
-    background: #2a2a2a;
-  }
-
-  .zoom-btn,
-  .anim-btn {
-    background: #2a2a2a;
-    color: #e0e0e0;
-    border-color: #444;
-
-    &:hover:not(:disabled) {
-      background-color: #3a3a3a;
+      .container__bg {
+        stroke-width: 3;
+      }
     }
   }
 
-  .overlay-content {
-    background: rgba(42, 42, 42, 0.95);
-    border-color: #5071af;
-    color: #e0e0e0;
+  // Clickable containers with URL
+  &--clickable {
+    cursor: pointer;
+
+    &:hover .container__bg {
+      stroke: var(--solution-petrol-strong);
+      stroke-width: 3;
+      fill: var(--solution-petrol-light);
+    }
+
+    &:focus {
+      outline: none;
+
+      .container__bg {
+        stroke-width: 3;
+      }
+    }
+
+    &:focus-visible {
+      outline: none;
+
+      .container__bg {
+        stroke: var(--orbis-blue-strong);
+        stroke-width: 3;
+        filter: drop-shadow(0 0 6px rgba(var(--orbis-blue-strong-rgb), 0.4));
+      }
+    }
   }
 
-  .layer-label {
-    fill: #e0e0e0 !important;
+  &--highlight {
+    .container__bg {
+      filter: drop-shadow(0 4px 12px rgba(var(--orbis-blue-strong-rgb), 0.2));
+    }
   }
 
-  .box-label {
-    fill: #e0e0e0 !important;
+  &--dimmed {
+    opacity: 0.5;
+  }
+
+  &--group {
+    pointer-events: none;
+  }
+}
+
+.connection {
+  transition: stroke 0.3s ease, stroke-width 0.3s ease, opacity 0.3s ease;
+  pointer-events: none;
+
+  &--highlight {
+    filter: drop-shadow(0 0 4px rgba(255, 153, 0, 0.4));
+  }
+
+  &--dimmed {
+    opacity: 0.3;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .dsp-architecture {
+    padding: 1rem;
+
+    &__header {
+      .header__title h2 {
+        font-size: 1.25rem;
+      }
+    }
+
+    &__diagram {
+      // Auto-scale down on small screens
+      transform: scale(0.7) !important;
+    }
+
+    &__controls {
+      .controls__buttons {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .nav-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+      }
+    }
+  }
+}
+
+// Large screen / 4K optimization
+@media (min-width: 2560px) {
+  .dsp-architecture {
+    &__diagram-wrapper {
+      max-height: 85vh;
+    }
+
+    &__diagram {
+      // Allow larger zoom on 4K screens
+      .diagram-svg {
+        min-height: 600px;
+      }
+    }
+
+    &__controls {
+      .controls__step-indicator {
+        max-width: 1200px;
+        
+        .step-label {
+          font-size: 1.125rem;
+        }
+
+        .step-description {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+}
+
+// Medium laptop screens
+@media (min-width: 1024px) and (max-width: 1440px) {
+  .dsp-architecture {
+    &__diagram-wrapper {
+      max-height: 65vh;
+    }
+  }
+}
+
+// Step overlay styles with enhanced animations
+.step-overlay {
+  &__bg {
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+    animation: fadeInDown 0.4s ease-out, pulseGlow 3s ease-in-out infinite;
+  }
+
+  &__title {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    animation: fadeInDown 0.5s ease-out, shimmerText 4s ease-in-out infinite;
+  }
+
+  &__description {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    animation: fadeInDown 0.6s ease-out;
+  }
+}
+
+// Animation for step overlay entry
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Prominent pulsing glow animation for overlay background to catch viewer's eye
+@keyframes pulseGlow {
+  0%, 100% {
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+    opacity: 0.92;
+  }
+  50% {
+    filter: drop-shadow(0 6px 24px rgba(100, 167, 11, 0.6));
+    opacity: 1;
+  }
+}
+
+// Prominent shimmer effect for title text to catch the viewer's eye
+@keyframes shimmerText {
+  0%, 100% {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    filter: brightness(1);
+  }
+  25% {
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.5), 0 2px 6px rgba(0, 0, 0, 0.2);
+    filter: brightness(1.15);
+  }
+  50% {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    filter: brightness(1);
+  }
+  75% {
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.5), 0 2px 6px rgba(0, 0, 0, 0.2);
+    filter: brightness(1.15);
   }
 }

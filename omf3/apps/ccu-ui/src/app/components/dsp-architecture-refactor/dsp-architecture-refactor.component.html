@@ -1,204 +1,437 @@
-<div class="architecture-container">
-  <!-- Zoom Controls Toolbar -->
-  <div class="zoom-controls">
-    <button
-      class="zoom-btn"
-      [attr.aria-label]="labelZoomOut"
-      [disabled]="state.zoom <= minZoom"
-      (click)="zoomOut()"
-      title="{{ labelZoomOut }}">
-      <span class="zoom-icon">−</span>
-    </button>
-    <button
-      class="zoom-btn"
-      [attr.aria-label]="labelResetZoom"
-      (click)="resetZoom()"
-      title="{{ labelResetZoom }}">
-      <span class="zoom-icon">⊙</span>
-    </button>
-    <button
-      class="zoom-btn"
-      [attr.aria-label]="labelZoomIn"
-      [disabled]="state.zoom >= maxZoom"
-      (click)="zoomIn()"
-      title="{{ labelZoomIn }}">
-      <span class="zoom-icon">+</span>
-    </button>
-  </div>
-
-  <!-- Animation Controls -->
-  <div class="animation-controls" *ngIf="animationEnabled && currentScene">
-    <button
-      class="anim-btn"
-      [attr.aria-label]="labelPrev"
-      [disabled]="!hasPrevStep()"
-      (click)="prevStep()"
-      title="{{ labelPrev }}">
-      ◀
-    </button>
-    <button
-      class="anim-btn"
-      *ngIf="!state.isPlaying"
-      [attr.aria-label]="labelPlay"
-      (click)="playAnimation()"
-      title="{{ labelPlay }}">
-      ▶
-    </button>
-    <button
-      class="anim-btn"
-      *ngIf="state.isPlaying"
-      [attr.aria-label]="labelPause"
-      (click)="pauseAnimation()"
-      title="{{ labelPause }}">
-      ⏸
-    </button>
-    <button
-      class="anim-btn"
-      [attr.aria-label]="labelNext"
-      [disabled]="!hasNextStep()"
-      (click)="nextStep()"
-      title="{{ labelNext }}">
-      ▶▶
-    </button>
-    <button
-      class="anim-btn"
-      [attr.aria-label]="labelReset"
-      (click)="resetAnimation()"
-      title="{{ labelReset }}">
-      ⟲
-    </button>
-    <div class="step-indicator" *ngIf="currentScene">
-      {{ state.currentStepIndex + 1 }} / {{ currentScene.steps.length }}
-      <span class="step-label">{{ getCurrentStepLabel() }}</span>
+<div class="dsp-architecture">
+  <!-- Header with title and zoom controls -->
+  <header class="dsp-architecture__header">
+    <div class="header__title">
+      <h2>{{ title }}</h2>
+      <p class="subtitle">{{ subtitle }}</p>
     </div>
-  </div>
-
-  <!-- Text Overlay -->
-  <div class="text-overlay" *ngIf="state.overlayText">
-    <div class="overlay-content">
-      {{ state.overlayText }}
+    <div class="header__zoom">
+      <button
+        type="button"
+        class="zoom-btn"
+        (click)="zoomOut()"
+        [disabled]="zoom <= minZoom"
+        [attr.title]="zoomOutLabel"
+        [attr.aria-label]="zoomOutLabel"
+      >
+        −
+      </button>
+      <span class="zoom-level">{{ (zoom * 100) | number:'1.0-0' }}%</span>
+      <button
+        type="button"
+        class="zoom-btn"
+        (click)="zoomIn()"
+        [disabled]="zoom >= maxZoom"
+        [attr.title]="zoomInLabel"
+        [attr.aria-label]="zoomInLabel"
+      >
+        +
+      </button>
+      <button
+        type="button"
+        class="zoom-btn zoom-btn--reset"
+        (click)="resetZoom()"
+        [attr.title]="resetZoomLabel"
+        [attr.aria-label]="resetZoomLabel"
+      >
+        ↺
+      </button>
     </div>
-  </div>
+  </header>
 
-  <!-- SVG Architecture Diagram -->
-  <svg
-    #svgContainer
-    class="architecture-svg"
-    [attr.viewBox]="getViewBox()"
-    preserveAspectRatio="xMidYMid meet"
-    xmlns="http://www.w3.org/2000/svg">
-    
-    <!-- Layers -->
-    <g *ngFor="let layer of config?.layers; let i = index" class="layer-group">
-      <!-- Layer Background -->
-      <rect
-        [attr.x]="padding"
-        [attr.y]="getLayerY(i)"
-        [attr.width]="viewBoxWidth - padding * 2"
-        [attr.height]="getLayerHeight(layer)"
-        [attr.fill]="layer.backgroundColor"
-        [attr.stroke]="'#cccccc'"
-        [attr.stroke-width]="1"
-        class="layer-background"
-      />
+  <!-- SVG Diagram - wrapped in scrollable container -->
+  <div class="dsp-architecture__diagram-wrapper">
+    <div class="dsp-architecture__diagram" [style.transform]="'scale(' + zoom + ')'">
+    <svg
+      [attr.viewBox]="'0 0 ' + viewBoxWidth + ' ' + viewBoxHeight"
+      preserveAspectRatio="xMidYMid meet"
+      class="diagram-svg"
+      role="img"
+      [attr.aria-label]="title"
+    >
+      <!-- Defs for markers (arrows) and gradients -->
+      <defs>
+        <!-- Gradient for shopfloor device containers -->
+        <linearGradient id="shopfloor-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#e9ecef;stop-opacity:1" />
+        </linearGradient>
+        <marker
+          id="arrow-head"
+          markerWidth="10"
+          markerHeight="7"
+          refX="9"
+          refY="3.5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="0 0, 10 3.5, 0 7" fill="#7f8da5" />
+        </marker>
+        <marker
+          id="arrow-head-highlight"
+          markerWidth="10"
+          markerHeight="7"
+          refX="9"
+          refY="3.5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="0 0, 10 3.5, 0 7" fill="#ff9900" />
+        </marker>
+        <marker
+          id="arrow-head-reverse"
+          markerWidth="10"
+          markerHeight="7"
+          refX="1"
+          refY="3.5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="10 0, 0 3.5, 10 7" fill="#7f8da5" />
+        </marker>
+        <marker
+          id="arrow-head-reverse-highlight"
+          markerWidth="10"
+          markerHeight="7"
+          refX="1"
+          refY="3.5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="10 0, 0 3.5, 10 7" fill="#ff9900" />
+        </marker>
+      </defs>
 
-      <!-- Layer Label -->
-      <text
-        [attr.x]="padding + 10"
-        [attr.y]="getLayerY(i) + 20"
-        class="layer-label"
-        font-size="14"
-        font-weight="600"
-        fill="#333333">
-        {{ layer.label }}
-      </text>
-
-      <!-- Boxes in Layer -->
-      <g *ngFor="let box of layer.boxes" class="box-group">
-        <g
-          [attr.data-box-id]="box.id"
-          [class.box-highlighted]="isBoxHighlighted(box.id)"
-          [class.box-hidden]="isBoxHidden(box.id)"
-          [class.box-clickable]="box.clickable"
-          [class.box-hoverable]="box.hoverEffect"
-          (click)="onBoxClick(box)">
-          
-          <!-- Box Rectangle -->
-          <rect
-            [attr.x]="getBoxX(box, layer)"
-            [attr.y]="getLayerY(i) + 40"
-            [attr.width]="getBoxWidth(box)"
-            [attr.height]="getLayerHeight(layer) - 50"
-            [attr.fill]="box.backgroundColor || '#ffffff'"
-            [attr.stroke]="box.borderColor || '#999999'"
-            [attr.stroke-width]="2"
-            [attr.rx]="4"
-            class="box-rect"
-          />
-
-          <!-- Box Icon -->
-          <image
-            *ngIf="getIconPath(box.id)"
-            [attr.x]="getBoxX(box, layer) + getBoxWidth(box) / 2 - 24"
-            [attr.y]="getLayerY(i) + 50"
-            [attr.width]="48"
-            [attr.height]="48"
-            [attr.href]="getIconPath(box.id)"
-            class="box-icon"
-          />
-
-          <!-- Box Label -->
-          <text
-            [attr.x]="getBoxX(box, layer) + getBoxWidth(box) / 2"
-            [attr.y]="getLayerY(i) + getLayerHeight(layer) - 20"
-            class="box-label"
-            text-anchor="middle"
-            font-size="12"
-            font-weight="500"
-            [attr.fill]="box.textColor || '#333333'">
-            <tspan
-              *ngFor="let line of box.label.split('\n'); let lineIndex = index"
-              [attr.x]="getBoxX(box, layer) + getBoxWidth(box) / 2"
-              [attr.dy]="lineIndex === 0 ? 0 : 14">
-              {{ line }}
-            </tspan>
-          </text>
-        </g>
-      </g>
-    </g>
-
-    <!-- Arrows -->
-    <g class="arrows-group">
-      <g *ngFor="let arrow of config?.arrows" class="arrow-group">
-        <path
-          *ngIf="isArrowVisible(arrow.id)"
-          [attr.d]="getArrowPath(arrow)"
-          [attr.stroke]="arrow.color"
-          [attr.stroke-width]="arrow.strokeWidth || 2"
-          [attr.stroke-dasharray]="arrow.dashed ? '5,5' : ''"
-          [attr.fill]="'none'"
-          [attr.marker-end]="'url(#arrowhead-' + arrow.id + ')'"
-          [class.arrow-animated]="arrow.animated"
-          class="arrow-path"
-        />
-        
-        <!-- Arrow marker definition -->
-        <defs *ngIf="isArrowVisible(arrow.id)">
-          <marker
-            [attr.id]="'arrowhead-' + arrow.id"
-            markerWidth="10"
-            markerHeight="10"
-            refX="9"
-            refY="3"
-            orient="auto"
-            markerUnits="strokeWidth">
-            <path
-              d="M0,0 L0,6 L9,3 z"
-              [attr.fill]="arrow.color"
+      <!-- Layer backgrounds (drawn first, at bottom z-level) -->
+      <g class="layer-backgrounds">
+        <ng-container *ngFor="let container of containers; trackBy: containerTrackBy">
+          <g
+            *ngIf="isContainerVisible(container) && container.type === 'layer'"
+            [attr.transform]="'translate(' + container.x + ',' + container.y + ')'"
+          >
+            <!-- Layer background rect -->
+            <rect
+              [attr.width]="container.width"
+              [attr.height]="container.height"
+              [attr.fill]="getContainerFill(container)"
+              [attr.stroke]="getContainerStroke(container)"
+              [attr.stroke-width]="1"
+              rx="0"
+              ry="0"
+              class="layer__bg"
             />
-          </marker>
-        </defs>
+            <!-- ORBIS Logo for DSP layer (before label) -->
+            <image
+              *ngIf="container.id === 'layer-dsp'"
+              [attr.href]="resolveIconPath('logo-orbis')"
+              [attr.x]="20"
+              [attr.y]="-5"
+              width="72"
+              height="72"
+              class="layer__logo"
+            />
+            <!-- Layer label (left side, top-aligned, multi-line support) - uses helper method for font size -->
+            <text
+              *ngIf="getContainerLabel(container.id)"
+              [attr.x]="container.id === 'layer-dsp' ? 100 : 20"
+              [attr.y]="25"
+              text-anchor="start"
+              dominant-baseline="hanging"
+              [attr.font-size]="getLayerFontSize(container.id)"
+              font-weight="600"
+              fill="#1e2d3d"
+              class="layer__label"
+            >
+              <ng-container *ngFor="let line of getMultilineLabel(container.id); let i = index">
+                <tspan [attr.x]="container.id === 'layer-dsp' ? 100 : 20" [attr.dy]="i === 0 ? '0' : '1.2em'">{{ line }}</tspan>
+              </ng-container>
+            </text>
+          </g>
+        </ng-container>
       </g>
-    </g>
-  </svg>
+
+      <!-- Containers (middle z-level) -->
+      <g class="containers">
+        <ng-container *ngFor="let container of containers; trackBy: containerTrackBy">
+          <g
+            *ngIf="isContainerVisible(container) && container.type !== 'layer'"
+            [class]="getContainerClass(container)"
+            [attr.transform]="'translate(' + container.x + ',' + container.y + ')'"
+            (click)="onContainerClick(container)"
+            (keydown)="onContainerKeydown($event, container)"
+            [attr.tabindex]="container.type !== 'label' ? 0 : null"
+            [attr.role]="container.type !== 'label' ? 'button' : null"
+          >
+            <!-- Container background -->
+            <rect
+              *ngIf="container.type !== 'label'"
+              [attr.width]="container.width"
+              [attr.height]="container.height"
+              [attr.fill]="getContainerFill(container)"
+              [attr.stroke]="getContainerStroke(container)"
+              [attr.stroke-width]="getContainerStrokeWidth(container)"
+              [attr.rx]="container.isGroup ? 16 : 8"
+              [attr.ry]="container.isGroup ? 16 : 8"
+              class="container__bg"
+            />
+
+            <!-- Logo (top-left) for DSP containers - original size (48px) -->
+            <image
+              *ngIf="container.logoIconKey && container.logoPosition === 'top-left' && (container.type === 'dsp-edge' || container.type === 'dsp-cloud')"
+              [attr.href]="resolveIconPath(container.logoIconKey)"
+              [attr.x]="8"
+              [attr.y]="-4"
+              width="48"
+              height="48"
+              class="container__logo container__logo--large"
+            />
+
+            <!-- Logo (top-left) for non-DSP, non-device containers -->
+            <image
+              *ngIf="container.logoIconKey && container.logoPosition === 'top-left' && container.type !== 'device' && container.type !== 'ux' && container.type !== 'dsp-edge' && container.type !== 'dsp-cloud'"
+              [attr.href]="resolveIconPath(container.logoIconKey)"
+              [attr.x]="8"
+              [attr.y]="8"
+              width="28"
+              height="28"
+              class="container__logo"
+            />
+
+            <!-- Secondary Logo (top-right) for dsp-cloud - Azure logo -->
+            <image
+              *ngIf="container.secondaryLogoIconKey && container.type === 'dsp-cloud'"
+              [attr.href]="resolveIconPath(container.secondaryLogoIconKey)"
+              [attr.x]="container.width - 44"
+              [attr.y]="8"
+              width="36"
+              height="36"
+              class="container__logo container__logo--secondary"
+            />
+
+            <!-- Secondary Logo (top-right) for other containers -->
+            <image
+              *ngIf="container.secondaryLogoIconKey && container.type !== 'dsp-cloud'"
+              [attr.href]="resolveIconPath(container.secondaryLogoIconKey)"
+              [attr.x]="container.width - 36"
+              [attr.y]="8"
+              width="28"
+              height="28"
+              class="container__logo container__logo--secondary"
+            />
+
+            <!-- Device/System Icon (centered, with label below) - larger icons -->
+            <image
+              *ngIf="container.type === 'device' && container.logoIconKey"
+              [attr.href]="resolveIconPath(container.logoIconKey)"
+              [attr.x]="(container.width - 70) / 2"
+              [attr.y]="8"
+              width="70"
+              height="70"
+              class="container__device-icon"
+            />
+
+            <!-- Function Icons (centered in row) - only shown when step allows -->
+            <g
+              *ngIf="container.functionIcons && container.functionIcons.length > 0 && shouldShowFunctionIcons()"
+              class="container__icons"
+            >
+              <ng-container *ngFor="let icon of container.functionIcons; let i = index; trackBy: iconTrackBy">
+                <image
+                  [attr.href]="resolveIconPath(icon.iconKey)"
+                  [attr.x]="(container.width / 2) - ((container.functionIcons!.length * (icon.size + 8)) / 2) + (i * (icon.size + 8)) + 4"
+                  [attr.y]="(container.height / 2) - (icon.size / 2) + 5"
+                  [attr.width]="icon.size"
+                  [attr.height]="icon.size"
+                  [class.container__function-icon]="!isFunctionIconHighlighted(icon.iconKey)"
+                  [class.container__function-icon--highlighted]="isFunctionIconHighlighted(icon.iconKey)"
+                />
+              </ng-container>
+            </g>
+
+            <!-- UX Icon (for ux type containers) - centered, larger like Shopfloor icons -->
+            <image
+              *ngIf="container.type === 'ux' && container.logoIconKey"
+              [attr.href]="resolveIconPath(container.logoIconKey)"
+              [attr.x]="(container.width - 70) / 2"
+              [attr.y]="(container.height / 2) - 20"
+              width="70"
+              height="70"
+              class="container__ux-icon"
+            />
+
+            <!-- Label - positioned based on labelPosition -->
+            <!-- Exclude shopfloor and business containers with bottom-center as they have a separate label element -->
+            <text
+              *ngIf="getContainerLabel(container.id) && !((container.type === 'shopfloor' || container.type === 'business') && container.labelPosition === 'bottom-center')"
+              [attr.x]="getLabelX(container)"
+              [attr.y]="getLabelY(container)"
+              [attr.text-anchor]="getLabelAnchor(container)"
+              [attr.font-size]="container.fontSize || 12"
+              [attr.fill]="container.textColor || '#1e2d3d'"
+              [attr.font-weight]="container.type === 'label' ? 600 : 500"
+              class="container__label"
+            >
+              <ng-container *ngIf="isMultilineLabel(container.id)">
+                <ng-container *ngFor="let line of getMultilineLabel(container.id); let i = index">
+                  <tspan [attr.x]="getLabelX(container)" [attr.dy]="i === 0 ? '0' : '1.2em'">{{ line }}</tspan>
+                </ng-container>
+              </ng-container>
+              <ng-container *ngIf="!isMultilineLabel(container.id) && shouldWrapLabel(container)">
+                <ng-container *ngFor="let line of getWrappedLabelLines(container); let i = index">
+                  <tspan [attr.x]="getLabelX(container)" [attr.dy]="i === 0 ? '0' : '1.2em'">{{ line }}</tspan>
+                </ng-container>
+              </ng-container>
+              <ng-container *ngIf="!isMultilineLabel(container.id) && !shouldWrapLabel(container)">
+                {{ getContainerLabel(container.id) }}
+              </ng-container>
+            </text>
+
+            <!-- Shopfloor group labels at bottom center -->
+            <text
+              *ngIf="container.type === 'shopfloor' && container.labelPosition === 'bottom-center'"
+              [attr.x]="container.width / 2"
+              [attr.y]="container.height - 12"
+              text-anchor="middle"
+              [attr.font-size]="container.fontSize || 14"
+              font-weight="600"
+              fill="#1e2d3d"
+              class="container__group-label"
+            >
+              {{ getContainerLabel(container.id) }}
+            </text>
+
+            <!-- Business process labels at bottom center -->
+            <text
+              *ngIf="container.type === 'business' && container.labelPosition === 'bottom-center' && getContainerLabel(container.id)"
+              [attr.x]="container.width / 2"
+              [attr.y]="container.height - 12"
+              text-anchor="middle"
+              [attr.font-size]="container.fontSize || 14"
+              font-weight="600"
+              fill="#1e2d3d"
+              class="container__group-label"
+            >
+              {{ getContainerLabel(container.id) }}
+            </text>
+
+            <!-- Business process icon (centered, below label) - larger icons like Shopfloor -->
+            <image
+              *ngIf="container.type === 'business' && container.logoIconKey && !container.logoPosition"
+              [attr.href]="resolveIconPath(container.logoIconKey)"
+              [attr.x]="(container.width - 70) / 2"
+              [attr.y]="35"
+              width="70"
+              height="70"
+              class="container__bp-icon"
+            />
+          </g>
+        </ng-container>
+      </g>
+
+      <!-- Step Description Overlay (displayed prominently in the diagram) -->
+      <g *ngIf="steps[currentStepIndex].description" class="step-overlay">
+        <!-- Semi-transparent background box -->
+        <rect
+          [attr.x]="20"
+          [attr.y]="20"
+          [attr.width]="viewBoxWidth - 40"
+          [attr.height]="80"
+          fill="rgba(100, 167, 11, 0.95)"
+          rx="8"
+          ry="8"
+          class="step-overlay__bg"
+        />
+        <!-- Step title -->
+        <text
+          [attr.x]="viewBoxWidth / 2"
+          [attr.y]="45"
+          text-anchor="middle"
+          font-size="20"
+          font-weight="700"
+          fill="#ffffff"
+          class="step-overlay__title"
+        >
+          {{ steps[currentStepIndex].label }}
+        </text>
+        <!-- Step description -->
+        <text
+          [attr.x]="viewBoxWidth / 2"
+          [attr.y]="72"
+          text-anchor="middle"
+          font-size="14"
+          font-weight="400"
+          fill="#ffffff"
+          class="step-overlay__description"
+        >
+          {{ steps[currentStepIndex].description }}
+        </text>
+      </g>
+
+      <!-- Connections (drawn last, on top of everything) -->
+      <g class="connections">
+        <ng-container *ngFor="let conn of connections; trackBy: connectionTrackBy">
+          <path
+            *ngIf="isConnectionVisible(conn)"
+            [attr.d]="getConnectionPath(conn)"
+            [class]="getConnectionClass(conn)"
+            fill="none"
+            [attr.stroke]="conn.state === 'highlight' ? '#ff9900' : '#7f8da5'"
+            [attr.stroke-width]="conn.state === 'highlight' ? 2.5 : 2"
+            [attr.marker-end]="conn.hasArrow ? (conn.state === 'highlight' ? 'url(#arrow-head-highlight)' : 'url(#arrow-head)') : null"
+            [attr.marker-start]="conn.bidirectional ? (conn.state === 'highlight' ? 'url(#arrow-head-reverse-highlight)' : 'url(#arrow-head-reverse)') : null"
+          />
+        </ng-container>
+      </g>
+    </svg>
+  </div>
+  </div>
+
+  <!-- Navigation Controls -->
+  <footer class="dsp-architecture__controls">
+    <div class="controls__step-indicator">
+      <span class="step-label">{{ steps[currentStepIndex].label }}</span>
+      <span class="step-count">({{ currentStepIndex + 1 }} / {{ steps.length }})</span>
+      <p *ngIf="steps[currentStepIndex].description" class="step-description">
+        {{ steps[currentStepIndex].description }}
+      </p>
+    </div>
+    <div class="controls__buttons">
+      <button
+        type="button"
+        class="nav-btn"
+        (click)="prevStep()"
+        [disabled]="currentStepIndex === 0"
+      >
+        {{ btnPrev }}
+      </button>
+      <button
+        type="button"
+        class="nav-btn nav-btn--primary"
+        (click)="toggleAutoPlay()"
+      >
+        {{ isAutoPlaying ? btnStopPlay : btnAutoPlay }}
+      </button>
+      <button
+        type="button"
+        class="nav-btn"
+        (click)="nextStep()"
+        [disabled]="currentStepIndex === steps.length - 1"
+      >
+        {{ btnNext }}
+      </button>
+    </div>
+    <div class="controls__step-dots">
+      <button
+        *ngFor="let step of steps; let i = index"
+        type="button"
+        class="step-dot"
+        [class.step-dot--active]="i === currentStepIndex"
+        [class.step-dot--completed]="i < currentStepIndex"
+        (click)="goToStep(i)"
+        [attr.aria-label]="step.label"
+        [attr.title]="step.label"
+      ></button>
+    </div>
+  </footer>
+
 </div>
