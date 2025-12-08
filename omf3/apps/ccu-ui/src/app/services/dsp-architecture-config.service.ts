@@ -230,7 +230,7 @@ export class DspArchitectureConfigService {
         id: 'business-dashboard',
         label: '',  // "SmartFactory Dashboard" via i18n
         x: 120,
-        y: STANDARD_LAYER_POSITIONS.DSP_Y + 70,
+        y: STANDARD_LAYER_POSITIONS.DSP_Y + 80,  // Vertically centered in DSP layer (260px / 2 - 60px / 2 = 70, adjusted to 80 for better alignment)
         width: 100,
         height: 120,
         type: 'ux',
@@ -281,7 +281,7 @@ export class DspArchitectureConfigService {
         id: 'cloud-management-cockpit',
         label: '',  // "Management Cockpit" via i18n
         x: 880,
-        y: STANDARD_LAYER_POSITIONS.DSP_Y + 30,
+        y: STANDARD_LAYER_POSITIONS.DSP_Y + 50,  // Vertically centered in DSP layer (260px / 2 - 90px / 2 = 40, adjusted to 50 for better alignment)
         width: 280,
         height: 180,
         type: 'dsp-cloud',

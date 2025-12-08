@@ -56,19 +56,21 @@ export const EDGE_LAYOUT = {
   BOX_HEIGHT: 55, // Reduced from 65 to fit within 260px height with 3 rows
   
   // Spacing - 3 rows, smaller border margins (10-15px), larger inter-row gaps (35-45px) for arrow visibility
-  // Row 1: DISC (left), Event Bus (right) - close to top border
+  // Row 1: DISC (left), Event Bus (right) - horizontally distributed to avoid covering EDGE label
   ROW_1_Y: 375,   // EDGE_Y + 15px margin
   
   // Row 2: App Server (left), Router (center), Agent (right) - vertically centered for horizontal arrows
-  ROW_2_Y: 475,   // EDGE_Y + 115px - positioned for horizontal arrows to Dashboard/Cockpit
+  // Positioned to align with SmartFactory Dashboard and Management Cockpit for horizontal-only arrows
+  ROW_2_Y: 460,   // EDGE_Y + 100px - moved up slightly, centered for horizontal arrows to Dashboard/Cockpit
   
   // Row 3: Log Server (left), DISI (center), Edge Database (right) - close to bottom border
-  ROW_3_Y: 555,   // EDGE_Y + 195px - leaves 10px bottom margin (EDGE_Y + EDGE_HEIGHT - BOX_HEIGHT - 10)
+  ROW_3_Y: 545,   // EDGE_Y + 185px - adjusted to maintain proper spacing
   
   // Horizontal positions - evenly distributed with adequate space for bidirectional arrows
-  COL_LEFT_X: 375,      // EDGE_X + 25px margin (more space from edge)
+  // Row 1 uses wider distribution to avoid covering EDGE label (left) with DISC
+  COL_LEFT_X: 390,      // EDGE_X + 40px margin (more space from left edge to avoid EDGE label)
   COL_CENTER_X: 557,    // EDGE_X + (EDGE_WIDTH / 2) - (BOX_WIDTH / 2) - centered
-  COL_RIGHT_X: 740,     // EDGE_X + EDGE_WIDTH - BOX_WIDTH - 25px margin
+  COL_RIGHT_X: 725,     // EDGE_X + EDGE_WIDTH - BOX_WIDTH - 40px margin (symmetric with left)
   
   // External zone positions (fallback for when shared config is not available)
   BUSINESS_ZONE_Y: 120,
@@ -338,14 +340,16 @@ export function createEdgeConnections(): EdgeConnectionConfig[] {
     { id: 'agent-cockpit', from: 'agent', to: 'cloud-management-cockpit', state: 'hidden' },
     // App Server only to SmartFactory Dashboard
     { id: 'app-server-dashboard', from: 'app-server', to: 'business-dashboard', state: 'hidden' },
-    // DISI to Shopfloor Systems/Devices
-    { id: 'disi-shopfloor', from: 'disi', to: 'shopfloor-systems', state: 'hidden' },
+    // DISI to Shopfloor Systems
+    { id: 'disi-shopfloor-systems', from: 'disi', to: 'shopfloor-systems', state: 'hidden' },
+    // DISI to Shopfloor Devices
+    { id: 'disi-shopfloor-devices', from: 'disi', to: 'shopfloor-devices', state: 'hidden' },
     // DISC to ERP Application (Business Process Layer)
     { id: 'disc-erp', from: 'disc', to: 'business-erp', state: 'hidden' },
     // Event Bus to Data Lake
     { id: 'event-bus-datalake', from: 'event-bus', to: 'business-data-lake', state: 'hidden' },
-    // Edge Database to Data Lake
-    { id: 'db-datalake', from: 'db', to: 'business-data-lake', state: 'hidden' },
+    // Edge Database to Data Lake - REMOVED per user request
+    // { id: 'db-datalake', from: 'db', to: 'business-data-lake', state: 'hidden' },
   ];
 }
 
@@ -387,58 +391,54 @@ export function createEdgeSteps(): EdgeStepConfig[] {
       highlightedConnectionIds: allInternalConnectionIds,
     },
     
-    // Step 3: Vertical Context (now with FULL architecture)
+    // Step 3: DSP Layer Integration - show only DSP containers with Dashboard and Cockpit connections
     {
       id: 'step-3',
-      label: $localize`:@@edgeAnimStep3:Business ↔ Edge ↔ Shopfloor`,
-      description: $localize`:@@edgeAnimStep3Desc:Edge acts as the real-time bridge between shopfloor devices and business systems.`,
+      label: $localize`:@@edgeAnimStep3:DSP Layer Integration`,
+      description: $localize`:@@edgeAnimStep3Desc:Edge components connect to SmartFactory Dashboard and Management Cockpit in the DSP layer.`,
       visibleContainerIds: [
         'edge-container', 
         ...allComponentIds, 
-        ...sharedBusinessIds,
-        ...sharedShopfloorIds,
-        ...sharedCloudIds
+        'business-dashboard',  // Only Dashboard in DSP layer
+        ...sharedCloudIds      // Management Cockpit in Cloud layer (part of DSP)
       ],
-      highlightedContainerIds: ['app-server', 'disi', 'agent', 'disc'],
+      highlightedContainerIds: ['app-server', 'agent'],
       visibleConnectionIds: [
         ...allInternalConnectionIds, 
-        'app-server-dashboard', 
-        'disi-shopfloor',
-        'agent-cockpit',
-        'disc-erp'
+        'app-server-dashboard',   // App Server → SmartFactory Dashboard (horizontal)
+        'agent-cockpit'           // Agent → Management Cockpit (horizontal)
       ],
-      highlightedConnectionIds: ['app-server-dashboard', 'disi-shopfloor', 'agent-cockpit', 'disc-erp'],
+      highlightedConnectionIds: ['app-server-dashboard', 'agent-cockpit'],
       showFullArchitecture: true,
     },
     
-    // Step 4: Integration into Full Architecture (now with all shared containers and all connections)
+    // Step 4: Full Architecture Integration - add Business and Shopfloor layers with connections
+    // Note: No Edge Database → Data Lake connection as requested
     {
       id: 'step-4',
-      label: $localize`:@@edgeAnimStep4:Integration into Full Architecture`,
-      description: $localize`:@@edgeAnimStep4Desc:Edge components connect SmartFactory dashboards, management cockpit, shopfloor assets and analytics platforms.`,
+      label: $localize`:@@edgeAnimStep4:Full Architecture Integration`,
+      description: $localize`:@@edgeAnimStep4Desc:Edge bridges business systems and shopfloor devices with ERP, Data Lake and shopfloor assets.`,
       visibleContainerIds: [
         'edge-container', 
         ...allComponentIds, 
-        ...sharedBusinessIds,
-        ...sharedShopfloorIds,
-        ...sharedCloudIds
+        ...sharedBusinessIds,  // Add Business layer containers (ERP, Cloud Apps, Analytics, Data Lake)
+        ...sharedShopfloorIds, // Add Shopfloor layer containers (Systems, Devices)
+        ...sharedCloudIds      // Management Cockpit
       ],
-      highlightedContainerIds: ['app-server', 'agent', 'disi', 'disc', 'db', 'event-bus'],
+      highlightedContainerIds: ['app-server', 'agent', 'disi', 'disc', 'event-bus'],  // Removed 'db' from highlights
       visibleConnectionIds: [
         ...allInternalConnectionIds, 
-        'app-server-dashboard', 
-        'agent-cockpit',
-        'disi-shopfloor',
-        'disc-erp',
-        'db-datalake',
-        'event-bus-datalake'
+        'app-server-dashboard',        // App Server → SmartFactory Dashboard
+        'agent-cockpit',               // Agent → Management Cockpit
+        'disi-shopfloor-systems',      // DISI → Shopfloor Systems
+        'disi-shopfloor-devices',      // DISI → Shopfloor Devices
+        'disc-erp',                    // DISC → ERP Application
+        'event-bus-datalake'           // Event Bus → Data Lake (NO db-datalake connection)
       ],
       highlightedConnectionIds: [
-        'app-server-dashboard', 
-        'agent-cockpit',
-        'disi-shopfloor',
+        'disi-shopfloor-systems',      // Highlight new connections in Step 4
+        'disi-shopfloor-devices',
         'disc-erp',
-        'db-datalake',
         'event-bus-datalake'
       ],
       showFullArchitecture: true,
