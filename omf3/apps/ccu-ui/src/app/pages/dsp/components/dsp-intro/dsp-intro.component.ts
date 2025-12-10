@@ -23,37 +23,37 @@ interface IntroCard {
 })
 export class DspIntroComponent {
   readonly sectionTitle = $localize`:@@dspIntroTitle:What is DSP?`;
-  readonly sectionSubtitle = $localize`:@@dspIntroSubtitle:Distributed Shopfloor Processing enables manufacturer-independent communication between machines, systems, and IT platforms – the foundation for the connected Smart Factory.`;
+  readonly sectionSubtitle = $localize`:@@dspIntroSubtitle:Distributed Shopfloor Processing (DSP) enables manufacturer-independent, event-driven communication between machines, systems and IT platforms — creating a fully interoperable Smart Factory.`;
 
   readonly introCards: IntroCard[] = [
     {
       title: $localize`:@@dspIntroInteroperabilityTitle:Interoperability`,
-      description: $localize`:@@dspIntroInteroperabilityDesc:DSP enables manufacturer-independent communication between machines, systems, and IT platforms – the foundation for the connected Smart Factory.`,
+      description: $localize`:@@dspIntroInteroperabilityDesc:DSP enables manufacturer-independent, event-driven communication between machines, shopfloor systems and IT platforms — the core foundation of an interoperable Smart Factory.`,
       icon: 'assets/svg/dsp/functions/edge-interoperability.svg',
     },
     {
       title: $localize`:@@dspIntroEdgeRuntimeTitle:Edge Runtime`,
-      description: $localize`:@@dspIntroEdgeRuntimeDesc:The DSP Edge enables local, real-time capable process logic, data buffering, and Digital Twin mapping independent of cloud connections.`,
+      description: $localize`:@@dspIntroEdgeRuntimeDesc:The DSP Edge provides local, real-time process execution, data buffering, semantic preprocessing and Digital Twin synchronization — independent from cloud availability.`,
       icon: 'assets/svg/dsp/architecture/dsp-edge-box.svg',
     },
     {
       title: $localize`:@@dspIntroManagementCockpitTitle:Management Cockpit`,
-      description: $localize`:@@dspIntroManagementCockpitDesc:Models processes, manages organization, orchestrates all Edge nodes centrally in the cloud.`,
+      description: $localize`:@@dspIntroManagementCockpitDesc:The cloud-based Management Cockpit models processes, manages shopfloor organization, and orchestrates all Edge nodes centrally across sites.`,
       icon: 'assets/svg/dsp/architecture/dsp-cockpit-box.svg',
     },
     {
       title: $localize`:@@dspIntroDigitalTwinTitle:Digital Twin`,
-      description: $localize`:@@dspIntroDigitalTwinDesc:Maps machine states, process parameters, and workpiece status in real-time for complete visibility.`,
+      description: $localize`:@@dspIntroDigitalTwinDesc:DSP creates a unified Digital Twin capturing machine states, process parameters and workpiece lifecycle data in real time.`,
       icon: 'assets/svg/dsp/functions/edge-digital-twin.svg',
     },
     {
       title: $localize`:@@dspIntroItOtConvergenceTitle:IT/OT Convergence`,
-      description: $localize`:@@dspIntroItOtConvergenceDesc:DSP connects shopfloor events with ERP, MES, Data Lakes, and Cloud Analytics for seamless integration.`,
+      description: $localize`:@@dspIntroItOtConvergenceDesc:DSP connects shopfloor events with ERP, MES, IoT platforms, data lakes and analytics services — enabling true IT/OT convergence.`,
       icon: 'assets/svg/orbis/integration.svg',
     },
     {
       title: $localize`:@@dspIntroBestOfBreedTitle:Best-of-Breed Integration`,
-      description: $localize`:@@dspIntroBestOfBreedDesc:Connection to SAP Digital Manufacturing, SAP S/4HANA, Azure IoT, Power BI, SAC, and more.`,
+      description: $localize`:@@dspIntroBestOfBreedDesc:DSP integrates seamlessly with SAP Digital Manufacturing, SAP S/4HANA, SAP BTP, Azure IoT, Power BI, SAC and other best-of-breed systems.`,
       icon: 'assets/svg/orbis/consolidate.svg',
     },
     {

@@ -22,7 +22,8 @@ export type OrderFixtureName =
   | 'track-trace'
   | 'production_bwr'
   | 'production_white'
-  | 'storage_blue';
+  | 'storage_blue'
+  | 'track-trace-production-bwr';
 
 export type ModuleFixtureName =
   | 'default'

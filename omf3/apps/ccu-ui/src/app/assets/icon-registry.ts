@@ -50,7 +50,8 @@ export type IconKey =
   | 'bp-cloud-apps'
   | 'bp-analytics'
   | 'bp-data-lake'
-  | 'bp-business-process';
+  | 'bp-business-process'
+  | 'mes-application';
 
 export interface FunctionIconConfig {
   iconKey: IconKey;
@@ -114,6 +115,7 @@ export const ICON_MAP: Record<IconKey, string> = {
   'bp-analytics': ICONS.business.analytics,
   'bp-data-lake': ICONS.business.dataLake,
   'bp-business-process': ICONS.dsp.functions.workflow,
+  'mes-application': ICONS.business.mes,
 };
 
 export function getIconPath(key: IconKey | undefined | null): string {

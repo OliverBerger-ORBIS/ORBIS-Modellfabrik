@@ -19,7 +19,7 @@ import { ExternalLinksService } from '../../../../services/external-links.servic
 })
 export class DspArchitectureWrapperComponent implements OnInit {
   readonly sectionTitle = $localize`:@@dspArchSectionTitle:DSP Reference Architecture`;
-  readonly sectionDescription = $localize`:@@dspArchSectionDesc:Interactive 12-step animation showing the complete DSP architecture from shopfloor devices to AI excellence.`;
+  readonly sectionDescription = $localize`:@@dspArchSectionDesc:Interactive multi-step animation showing the complete DSP reference architecture from shopfloor devices to AI-enabled operations.`;
 
   // Create a view configuration for the DSP Architecture component
   dspView: DspDetailView = {

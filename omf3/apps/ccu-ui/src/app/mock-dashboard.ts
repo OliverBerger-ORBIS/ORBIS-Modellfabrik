@@ -507,6 +507,12 @@ export const createMockDashboardController = (options?: {
       'order-red': 'red',
       'order-mixed': 'mixed',
       'order-storage': 'storage',
+      'track-trace': 'track-trace',
+      'track-trace-production-bwr': 'track-trace-production-bwr',
+      'order-production-bwr': 'production_bwr',
+      'order-production-white': 'production_white',
+      'order-storage-blue': 'storage_blue',
+      'order-white-step3': 'white_step3',
     };
     currentFixture = presetToFixture[presetName] || 'startup';
 

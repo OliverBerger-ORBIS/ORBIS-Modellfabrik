@@ -28,12 +28,12 @@ export class EdgeComponentsComponent {
   readonly edgeComponents: EdgeComponent[] = [
     {
       title: $localize`:@@edgeDiscTitle:DISC – Distributed Shopfloor Controller`,
-      description: $localize`:@@edgeDiscDesc:Executes decentralized process logic, event handling and orchestration at the shopfloor.`,
+      description: $localize`:@@edgeDiscDesc:Executes decentralized process logic, manages process objects and interacts with shopfloor devices in real time.`,
       icon: 'assets/svg/dsp/edge-components/edge-disc.svg',
     },
     {
       title: $localize`:@@edgeDisiTitle:DISI – Distributed Shopfloor Integration`,
-      description: $localize`:@@edgeDisiDesc:Provides connectivity and integration between shopfloor assets, back-end systems and platforms.`,
+      description: $localize`:@@edgeDisiDesc:Handles connectivity, protocol translation and communication with heterogeneous machines and systems.`,
       icon: 'assets/svg/dsp/edge-components/edge-disi.svg',
     },
     {

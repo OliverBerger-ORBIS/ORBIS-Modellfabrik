@@ -384,7 +384,7 @@ export function createEdgeSteps(): EdgeStepConfig[] {
     {
       id: 'step-2',
       label: $localize`:@@edgeAnimStep2:Internal Event Routing`,
-      description: $localize`:@@edgeAnimStep2Desc:Router distributes events between DISC, DISI, agents, services and storage inside the Edge.`,
+      description: $localize`:@@edgeAnimStep2Desc:The Router distributes events between DISC, DISI, agents, services and local storage, enabling event-driven orchestration inside the Edge.`,
       visibleContainerIds: ['edge-container', ...allComponentIds],
       highlightedContainerIds: ['router'],
       visibleConnectionIds: allInternalConnectionIds,
@@ -395,7 +395,7 @@ export function createEdgeSteps(): EdgeStepConfig[] {
     {
       id: 'step-3',
       label: $localize`:@@edgeAnimStep3:DSP Layer Integration`,
-      description: $localize`:@@edgeAnimStep3Desc:Edge components connect to SmartFactory Dashboard and Management Cockpit in the DSP layer.`,
+      description: $localize`:@@edgeAnimStep3Desc:Edge components communicate with the SmartFactory Dashboard and Management Cockpit using secure, bidirectional channels.`,
       visibleContainerIds: [
         'edge-container', 
         ...allComponentIds, 
@@ -417,7 +417,7 @@ export function createEdgeSteps(): EdgeStepConfig[] {
     {
       id: 'step-4',
       label: $localize`:@@edgeAnimStep4:Full Architecture Integration`,
-      description: $localize`:@@edgeAnimStep4Desc:Edge bridges business systems and shopfloor devices with ERP, Data Lake and shopfloor assets.`,
+      description: $localize`:@@edgeAnimStep4Desc:The Edge bridges shopfloor assets and business systems by synchronizing events, Digital Twin updates and process data with ERP, MES, data lakes and analytics platforms.`,
       visibleContainerIds: [
         'edge-container', 
         ...allComponentIds, 

@@ -57,6 +57,20 @@
     }
   }
 
+  &--presentation {
+    padding: 1rem;
+
+    .fts-tab__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .route-section {
+      h2 {
+        display: none;
+      }
+    }
+  }
+
   &__column {
     display: flex;
     flex-direction: column;

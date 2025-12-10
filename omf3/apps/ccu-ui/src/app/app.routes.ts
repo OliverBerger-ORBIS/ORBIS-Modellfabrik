@@ -84,6 +84,11 @@ export const appRoutes: Routes = [
         loadComponent: () =>
           import('./pages/refactor-demo/refactor-demo-page.component').then((m) => m.RefactorDemoPageComponent),
       },
+      {
+        path: 'presentation',
+        loadComponent: () =>
+          import('./pages/presentation/presentation-page.component').then((m) => m.PresentationPageComponent),
+      },
     ],
   },
   {

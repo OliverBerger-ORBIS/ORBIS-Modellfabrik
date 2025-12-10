@@ -103,6 +103,7 @@ export const ICONS = {
     cloud: 'assets/svg/business/cloud-application.svg',
     analytics: 'assets/svg/business/analytics-application.svg',
     dataLake: 'assets/svg/business/data-lake.svg',
+    mes: 'assets/svg/business/mes-application.svg',
   },
   methodology: {
     // Incremental development phases (use ORBIS detail icons)

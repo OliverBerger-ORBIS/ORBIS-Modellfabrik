@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { filter, map, shareReplay, startWith, switchMap, catchError, tap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Observable, Subscription, of, combineLatest, BehaviorSubject } from 'rxjs';
@@ -33,6 +33,7 @@ interface FtsActionState {
   command: ActionCommandType;
   state: ActionStateType;
   timestamp: string;
+  metadata?: Record<string, unknown>;
 }
 
 interface FtsLoadInfo {
@@ -97,6 +98,7 @@ const SERIAL_TO_MODULE_TYPE: Record<string, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FtsTabComponent implements OnInit, OnDestroy {
+  @Input() presentationMode = false;
   private dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
   
@@ -112,8 +114,9 @@ export class FtsTabComponent implements OnInit, OnDestroy {
   readonly batteryIcon = 'assets/svg/shopfloor/shared/battery.svg';
   readonly loadIcon = 'assets/svg/ui/heading-purchase-orders.svg';
   readonly routeIcon = 'assets/svg/ui/heading-route.svg';
-  readonly turnLeftIcon = 'assets/svg/shopfloor/shared/turn-left.svg';
-  readonly turnRightIcon = 'assets/svg/shopfloor/shared/turn-right.svg';
+  readonly turnLeftIcon = 'assets/svg/shopfloor/shared/turn-left-event.svg';
+  readonly turnRightIcon = 'assets/svg/shopfloor/shared/turn-right-event.svg';
+  readonly turnDefaultIcon = 'assets/svg/shopfloor/shared/turn-right-event.svg';
   readonly ftsOrderTopic = FTS_ORDER_TOPIC;
   readonly ftsInstantActionTopic = FTS_INSTANT_ACTION_TOPIC;
   readonly ccuSetChargeTopic = CCU_SET_CHARGE_TOPIC;
@@ -155,6 +158,7 @@ export class FtsTabComponent implements OnInit, OnDestroy {
     'production_bwr',
     'production_white',
     'storage_blue',
+    'track-trace-production-bwr',
   ];
   readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
     startup: $localize`:@@fixtureLabelStartup:Startup`,
@@ -166,6 +170,7 @@ export class FtsTabComponent implements OnInit, OnDestroy {
     production_bwr: $localize`:@@fixtureLabelProductionBwr:Production BWR`,
     production_white: $localize`:@@fixtureLabelProductionWhite:Production White`,
     storage_blue: $localize`:@@fixtureLabelStorageBlue:Storage Blue`,
+    'track-trace-production-bwr': $localize`:@@fixtureLabelTrackTraceBwr:TrackTrace Production BWR`,
   };
   activeFixture: OrderFixtureName | null = this.dashboard.getCurrentFixture();
 
@@ -735,15 +740,32 @@ export class FtsTabComponent implements OnInit, OnDestroy {
   }
   
   getActionIcon(command: string): string {
-    const iconMap: Record<string, string> = {
-      TURN: ICONS.shopfloor.shared.turnEvent,
-      DOCK: ICONS.shopfloor.shared.dockEvent,
-      PASS: ICONS.shopfloor.shared.passEvent,
-      PICK: ICONS.shopfloor.shared.pickEvent,
-      DROP: ICONS.shopfloor.shared.dropEvent,
-      PROCESS: ICONS.shopfloor.shared.processEvent,
-    };
-    return iconMap[command.toUpperCase()] || ICONS.shopfloor.shared.processEvent;
+    const cmd = command.toUpperCase();
+    if (cmd === 'TURN') return this.turnDefaultIcon;
+    if (cmd === 'DOCK') return ICONS.shopfloor.shared.dockEvent;
+    if (cmd === 'PASS') return ICONS.shopfloor.shared.passEvent;
+    if (cmd === 'PICK') return ICONS.shopfloor.shared.pickEvent;
+    if (cmd === 'DROP') return ICONS.shopfloor.shared.dropEvent;
+    if (cmd === 'PROCESS') return ICONS.shopfloor.shared.processEvent;
+    return ICONS.shopfloor.shared.processEvent;
+  }
+
+  getActionIconFor(action: FtsActionState): string {
+    const dir = this.getActionDirection(action)?.toUpperCase();
+    if (action.command === 'TURN' && dir === 'LEFT') return this.turnLeftIcon;
+    if (action.command === 'TURN' && dir === 'RIGHT') return this.turnRightIcon;
+    return this.getActionIcon(action.command);
+  }
+
+  getActionLabel(action: FtsActionState): string {
+    const cmd = action.command.toUpperCase();
+    if (cmd === 'TURN') {
+      const dir = this.getActionDirection(action)?.toUpperCase();
+      if (dir === 'LEFT') return 'TURN LEFT';
+      if (dir === 'RIGHT') return 'TURN RIGHT';
+      return 'TURN';
+    }
+    return action.command;
   }
   
   getLoadIcon(load: FtsLoadInfo): string {
@@ -775,6 +797,12 @@ export class FtsTabComponent implements OnInit, OnDestroy {
   // TURN direction lookup (from order stream)
   getActionDirection(action: FtsActionState): string | undefined {
     if (action.command !== 'TURN') return undefined;
+    // Prefer direction from action metadata if present
+    const metaDir = (action as any)?.metadata?.direction;
+    if (typeof metaDir === 'string' && metaDir.trim().length > 0) {
+      return metaDir;
+    }
+    // Fallback to order-derived map
     return this.turnDirectionByActionId.get(action.id);
   }
 
