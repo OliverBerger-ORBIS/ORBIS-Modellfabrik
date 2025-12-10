@@ -821,12 +821,366 @@ export function createDefaultSteps(): StepConfig[] {
 }
 
 /**
- * Create complete diagram configuration
+ * View mode types for multi-view system
  */
-export function createDiagramConfig(): { containers: ContainerConfig[]; connections: ConnectionConfig[]; steps: StepConfig[] } {
+export type ViewMode = 'functional' | 'component' | 'deployment';
+
+/**
+ * Create Functional View - Standard three-layer architecture
+ */
+function createFunctionalView(): { containers: ContainerConfig[]; connections: ConnectionConfig[]; steps: StepConfig[] } {
   return {
     containers: createDefaultContainers(),
     connections: createDefaultConnections(),
     steps: createDefaultSteps(),
   };
+}
+
+/**
+ * Create Component View - DSP Edge internal component architecture
+ * Shows 8 edge components in 3-row grid with step-by-step interaction animation
+ */
+function createComponentView(): { containers: ContainerConfig[]; connections: ConnectionConfig[]; steps: StepConfig[] } {
+  const containers = createDefaultContainers();
+  const connections = createDefaultConnections();
+  
+  // Component View Animation Steps - Based on existing DSP Tab reference
+  const baseShopfloorContainers = [
+    'layer-shopfloor',
+    'shopfloor-systems-group',
+    'shopfloor-system-bp',
+    'shopfloor-system-fts',
+    'shopfloor-devices-group',
+    'shopfloor-device-1',
+    'shopfloor-device-2',
+    'shopfloor-device-3',
+    'shopfloor-device-4',
+    'shopfloor-device-5',
+    'shopfloor-device-6',
+  ];
+
+  const baseShopfloorConnections = [
+    'conn-edge-system-bp',
+    'conn-edge-system-fts',
+    'conn-edge-device-1',
+    'conn-edge-device-2',
+    'conn-edge-device-3',
+    'conn-edge-device-4',
+    'conn-edge-device-5',
+    'conn-edge-device-6',
+  ];
+  
+  const steps: StepConfig[] = [
+    // Step 1: Edge Container + Shopfloor
+    {
+      id: 'component-step-1',
+      label: $localize`:@@componentStep1:Edge Container`,
+      description: $localize`:@@componentStep1Desc:DSP Edge provides the foundation for distributed shopfloor processing.`,
+      visibleContainerIds: [
+        'layer-dsp',
+        'edge',
+        'layer-shopfloor',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: ['edge'],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
+      showFunctionIcons: false,
+    },
+    
+    // Step 2: DISC Component
+    {
+      id: 'component-step-2',
+      label: $localize`:@@componentStep2:DISC`,
+      description: $localize`:@@componentStep2Desc:Data Integration and Synchronization Component handles data flow.`,
+      visibleContainerIds: [
+        'layer-dsp',
+        'edge',
+        'edge-component-disc',
+        'layer-shopfloor',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: ['edge-component-disc'],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
+      showFunctionIcons: false,
+    },
+    
+    // Step 3: Event Bus Component
+    {
+      id: 'component-step-3',
+      label: $localize`:@@componentStep3:Event Bus`,
+      description: $localize`:@@componentStep3Desc:Event Bus enables real-time event-driven communication.`,
+      visibleContainerIds: [
+        'layer-dsp',
+        'edge',
+        'edge-component-disc',
+        'edge-component-event-bus',
+        'layer-shopfloor',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: ['edge-component-event-bus'],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
+      showFunctionIcons: false,
+    },
+    
+    // Step 4: App Server, Router, Agent
+    {
+      id: 'component-step-4',
+      label: $localize`:@@componentStep4:Core Services`,
+      description: $localize`:@@componentStep4Desc:App Server, Router, and Agent provide core processing capabilities.`,
+      visibleContainerIds: [
+        'layer-dsp',
+        'edge',
+        'edge-component-disc',
+        'edge-component-event-bus',
+        'edge-component-app-server',
+        'edge-component-router',
+        'edge-component-agent',
+        'layer-shopfloor',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: ['edge-component-app-server', 'edge-component-router', 'edge-component-agent'],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
+      showFunctionIcons: false,
+    },
+    
+    // Step 5: Log Server, DISI, Database
+    {
+      id: 'component-step-5',
+      label: $localize`:@@componentStep5:Data Services`,
+      description: $localize`:@@componentStep5Desc:Log Server, DISI, and Database manage persistence and data integration.`,
+      visibleContainerIds: [
+        'layer-dsp',
+        'edge',
+        'edge-component-disc',
+        'edge-component-event-bus',
+        'edge-component-app-server',
+        'edge-component-router',
+        'edge-component-agent',
+        'edge-component-log-server',
+        'edge-component-disi',
+        'edge-component-database',
+        'layer-shopfloor',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: ['edge-component-log-server', 'edge-component-disi', 'edge-component-database'],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
+      showFunctionIcons: false,
+    },
+    
+    // Step 6: Complete Component Architecture
+    {
+      id: 'component-step-6',
+      label: $localize`:@@componentStep6:Complete Architecture`,
+      description: $localize`:@@componentStep6Desc:All 8 edge components working together provide comprehensive shopfloor intelligence.`,
+      visibleContainerIds: [
+        'layer-business',
+        'bp-erp',
+        'bp-cloud-apps',
+        'bp-analytics',
+        'bp-data-lake',
+        'layer-dsp',
+        'ux',
+        'edge',
+        'edge-component-disc',
+        'edge-component-event-bus',
+        'edge-component-app-server',
+        'edge-component-router',
+        'edge-component-agent',
+        'edge-component-log-server',
+        'edge-component-disi',
+        'edge-component-database',
+        'management',
+        'layer-shopfloor',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: [],
+      visibleConnectionIds: [
+        'conn-ux-edge',
+        'conn-edge-management',
+        'conn-erp-edge',
+        'conn-cloud-edge',
+        'conn-analytics-edge',
+        'conn-datalake-edge',
+        ...baseShopfloorConnections,
+      ],
+      highlightedConnectionIds: [],
+      showFunctionIcons: false,
+    },
+  ];
+  
+  return {
+    containers,
+    connections,
+    steps,
+  };
+}
+
+/**
+ * Create Deployment View - DSP Edge deployment pipeline
+ * Shows 4-step deployment pipeline with processing flow
+ */
+function createDeploymentView(): { containers: ContainerConfig[]; connections: ConnectionConfig[]; steps: StepConfig[] } {
+  const containers = createDefaultContainers();
+  const connections = createDefaultConnections();
+  
+  // TODO: Add 4 deployment pipeline step containers inside Edge box
+  // Step 1: Source/Input
+  // Step 2: Build/Transform  
+  // Step 3: Deploy/Process
+  // Step 4: Monitor/Output
+  
+  // Deployment View Animation Steps - 4-step pipeline
+  const baseShopfloorContainers = [
+    'layer-shopfloor',
+    'shopfloor-systems-group',
+    'shopfloor-system-bp',
+    'shopfloor-system-fts',
+    'shopfloor-devices-group',
+    'shopfloor-device-1',
+    'shopfloor-device-2',
+    'shopfloor-device-3',
+    'shopfloor-device-4',
+    'shopfloor-device-5',
+    'shopfloor-device-6',
+  ];
+
+  const baseShopfloorConnections = [
+    'conn-edge-system-bp',
+    'conn-edge-system-fts',
+    'conn-edge-device-1',
+    'conn-edge-device-2',
+    'conn-edge-device-3',
+    'conn-edge-device-4',
+    'conn-edge-device-5',
+    'conn-edge-device-6',
+  ];
+  
+  const steps: StepConfig[] = [
+    // Step 1: Edge Container
+    {
+      id: 'deployment-step-1',
+      label: $localize`:@@deploymentStep1:Edge Container`,
+      description: $localize`:@@deploymentStep1Desc:DSP Edge deployment pipeline foundation.`,
+      visibleContainerIds: [
+        'layer-dsp',
+        'edge',
+        'layer-shopfloor',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: ['edge'],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
+      showFunctionIcons: false,
+    },
+    
+    // Step 2: Source Pipeline Step
+    {
+      id: 'deployment-step-2',
+      label: $localize`:@@deploymentStep2:Source`,
+      description: $localize`:@@deploymentStep2Desc:Pipeline Step 1: Source code and configuration input.`,
+      visibleContainerIds: [
+        'layer-dsp',
+        'edge',
+        'layer-shopfloor',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: [],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
+      showFunctionIcons: false,
+    },
+    
+    // Step 3: Build Pipeline Step  
+    {
+      id: 'deployment-step-3',
+      label: $localize`:@@deploymentStep3:Build`,
+      description: $localize`:@@deploymentStep3Desc:Pipeline Step 2: Build and transformation process.`,
+      visibleContainerIds: [
+        'layer-dsp',
+        'edge',
+        'layer-shopfloor',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: [],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
+      showFunctionIcons: false,
+    },
+    
+    // Step 4: Deploy Pipeline Step
+    {
+      id: 'deployment-step-4',
+      label: $localize`:@@deploymentStep4:Deploy`,
+      description: $localize`:@@deploymentStep4Desc:Pipeline Step 3: Deployment to target environment.`,
+      visibleContainerIds: [
+        'layer-dsp',
+        'edge',
+        'layer-shopfloor',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: [],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
+      showFunctionIcons: false,
+    },
+    
+    // Step 5: Monitor Pipeline Step + Complete Flow
+    {
+      id: 'deployment-step-5',
+      label: $localize`:@@deploymentStep5:Monitor`,
+      description: $localize`:@@deploymentStep5Desc:Pipeline Step 4: Monitoring and validation - complete deployment flow.`,
+      visibleContainerIds: [
+        'layer-business',
+        'bp-erp',
+        'bp-cloud-apps',
+        'bp-analytics',
+        'bp-data-lake',
+        'layer-dsp',
+        'ux',
+        'edge',
+        'management',
+        'layer-shopfloor',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: [],
+      visibleConnectionIds: [
+        'conn-ux-edge',
+        'conn-edge-management',
+        'conn-erp-edge',
+        'conn-cloud-edge',
+        'conn-analytics-edge',
+        'conn-datalake-edge',
+        ...baseShopfloorConnections,
+      ],
+      highlightedConnectionIds: [],
+      showFunctionIcons: false,
+    },
+  ];
+  
+  return {
+    containers,
+    connections,
+    steps,
+  };
+}
+
+/**
+ * Create complete diagram configuration based on view mode
+ */
+export function createDiagramConfig(viewMode: ViewMode = 'functional'): { containers: ContainerConfig[]; connections: ConnectionConfig[]; steps: StepConfig[] } {
+  switch (viewMode) {
+    case 'functional':
+      return createFunctionalView();
+    case 'component':
+      return createComponentView();
+    case 'deployment':
+      return createDeploymentView();
+    default:
+      return createFunctionalView();
+  }
 }

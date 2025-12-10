@@ -4,6 +4,9 @@
  */
 import type { IconKey } from '../../assets/icon-registry';
 
+/** View mode for multi-view system */
+export type ViewMode = 'functional' | 'component' | 'deployment';
+
 /** Position for logo icons within a container */
 export type LogoPosition = 'top-left' | 'top-right';
 

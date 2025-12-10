@@ -4,9 +4,12 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
+  Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
 } from '@angular/core';
 import { getIconPath, type IconKey } from '../../assets/icon-registry';
 import type {
@@ -15,6 +18,7 @@ import type {
   StepConfig,
   Point,
   AnchorSide,
+  ViewMode,
 } from './types';
 import {
   createDiagramConfig,
@@ -26,7 +30,8 @@ import {
  * DspArchitectureRefactorComponent - Refactored animated SVG-based architecture diagram.
  *
  * Matches the existing DSP architecture component with continuous layer backgrounds,
- * grid-based positioning, and animation steps 1, 2, 3, 7, 10, and final.
+ * grid-based positioning, multi-view mode support (Functional, Component, Deployment),
+ * and animation steps for each view.
  */
 @Component({
   standalone: true,
@@ -36,7 +41,8 @@ import {
   styleUrl: './dsp-architecture-refactor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DspArchitectureRefactorComponent implements OnInit, OnDestroy {
+export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() viewMode: ViewMode = 'functional';
   @Output() actionTriggered = new EventEmitter<{ id: string; url: string }>();
 
   // Diagram configuration
@@ -116,8 +122,13 @@ export class DspArchitectureRefactorComponent implements OnInit, OnDestroy {
   constructor(private readonly cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    this.initializeDiagram();
-    this.applyStep(0);
+    this.loadConfiguration();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['viewMode'] && !changes['viewMode'].isFirstChange()) {
+      this.loadConfiguration();
+    }
   }
 
   ngOnDestroy(): void {
@@ -125,13 +136,16 @@ export class DspArchitectureRefactorComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Initialize diagram configuration
+   * Load diagram configuration based on current view mode
    */
-  private initializeDiagram(): void {
-    const config = createDiagramConfig();
+  private loadConfiguration(): void {
+    const config = createDiagramConfig(this.viewMode);
     this.containers = config.containers;
     this.connections = config.connections;
     this.steps = config.steps;
+    this.currentStepIndex = 0; // Reset to first step on configuration change
+    this.applyStep(0);
+    this.cdr.markForCheck();
   }
 
   /**
