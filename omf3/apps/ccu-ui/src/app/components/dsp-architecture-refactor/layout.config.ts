@@ -108,36 +108,11 @@ export function createDefaultContainers(): ContainerConfig[] {
   const edgeBoxWidth = 480;
   const managementBoxWidth = dspAvailableWidth - uxBoxWidth - edgeBoxWidth - (dspBoxGap * 2);
 
-  // ========== DSP ENVIRONMENT LABELS (above containers) ==========
-  // Position above Edge container
-  containers.push({
-    id: 'dsp-label-onpremise',
-    label: '',
-    x: LAYOUT.CONTENT_START_X + uxBoxWidth + dspBoxGap,
-    y: LAYOUT.DSP_LAYER_Y + 32,
-    width: edgeBoxWidth,
-    height: 20,
-    type: 'environment-label',
-    state: 'hidden',
-    fontSize: 14,
-  });
 
-  // Position above Management Cockpit container
-  containers.push({
-    id: 'dsp-label-cloud',
-    label: '',
-    x: LAYOUT.CONTENT_START_X + uxBoxWidth + dspBoxGap + edgeBoxWidth + dspBoxGap,
-    y: LAYOUT.DSP_LAYER_Y + 32,
-    width: managementBoxWidth,
-    height: 20,
-    type: 'environment-label',
-    state: 'hidden',
-    fontSize: 14,
-  });
 
   // ========== DSP BOXES ==========
 
-  // SmartFactory Dashboard (UX)
+  // SmartFactory Dashboard (UX) - No ORBIS logo, only dashboard icon
   containers.push({
     id: 'ux',
     label: '',
@@ -147,8 +122,6 @@ export function createDefaultContainers(): ContainerConfig[] {
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'ux',
     state: 'hidden',
-    logoIconKey: 'logo-orbis' as IconKey,
-    logoPosition: 'top-left',
     centerIconKey: 'ux-dashboard' as IconKey,
     borderColor: '#009681',
     backgroundColor: '#ffffff',
@@ -157,7 +130,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     url: '/dashboard',
   });
 
-  // DSP Edge
+  // DSP Edge - Environment label as property
   containers.push({
     id: 'edge',
     label: '',
@@ -181,9 +154,10 @@ export function createDefaultContainers(): ContainerConfig[] {
       { iconKey: 'edge-analytics' as IconKey, size: 60 },
     ],
     url: '/edge',
+    environmentLabel: 'On Premise',
   });
 
-  // Management Cockpit
+  // Management Cockpit - Environment label as property
   containers.push({
     id: 'management',
     label: '',
@@ -206,6 +180,7 @@ export function createDefaultContainers(): ContainerConfig[] {
       { iconKey: 'shopfloor-it' as IconKey, size: 60 },
     ],
     url: '/management-cockpit',
+    environmentLabel: 'Cloud',
   });
 
   // ========== BUSINESS BOXES ==========
@@ -294,7 +269,7 @@ export function createDefaultContainers(): ContainerConfig[] {
   const systemsGroupWidth = 260;
   const devicesGroupWidth = shopfloorAvailableWidth - systemsGroupWidth - shopfloorGap;
 
-  // Systems group
+  // Systems group - label inside container at bottom
   containers.push({
     id: 'shopfloor-systems-group',
     label: '',
@@ -306,7 +281,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     state: 'hidden',
     backgroundColor: 'transparent',
     borderColor: 'rgba(0, 0, 0, 0.08)',
-    labelPosition: 'bottom-center',
+    labelPosition: 'bottom',  // Changed from 'bottom-center' to 'bottom' for inside positioning
     fontSize: 14,
     isGroup: true,
   });
@@ -323,7 +298,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     y: shopfloorGroupY + 10,
     width: systemBoxWidth,
     height: systemBoxHeight,
-    type: 'shopfloor',
+    type: 'device',  // Changed from 'shopfloor' to 'device' for proper icon display
     state: 'hidden',
     logoIconKey: 'shopfloor-systems' as IconKey,
     borderColor: 'rgba(0, 0, 0, 0.12)',
@@ -339,7 +314,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     y: shopfloorGroupY + 10,
     width: systemBoxWidth,
     height: systemBoxHeight,
-    type: 'shopfloor',
+    type: 'device',  // Changed from 'shopfloor' to 'device' for proper icon display
     state: 'hidden',
     logoIconKey: 'shopfloor-fts' as IconKey,
     borderColor: 'rgba(0, 0, 0, 0.12)',
@@ -348,7 +323,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     fontSize: 13,
   });
 
-  // Devices group
+  // Devices group - label inside container at bottom
   containers.push({
     id: 'shopfloor-devices-group',
     label: '',
@@ -360,7 +335,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     state: 'normal',
     backgroundColor: 'transparent',
     borderColor: 'rgba(0, 0, 0, 0.08)',
-    labelPosition: 'bottom-center',
+    labelPosition: 'bottom',  // Changed from 'bottom-center' to 'bottom' for inside positioning
     fontSize: 14,
     isGroup: true,
   });

@@ -247,18 +247,18 @@
               class="container__ux-icon"
             />
 
-            <!-- Environment labels (above DSP containers) - simple text, no rect -->
+            <!-- Environment labels (above DSP containers) - displayed as property, not separate container -->
             <text
-              *ngIf="container.type === 'environment-label' && getContainerLabel(container.id)"
+              *ngIf="container.environmentLabel && (container.type === 'dsp-edge' || container.type === 'dsp-cloud')"
               [attr.x]="0"
-              [attr.y]="0"
+              [attr.y]="-20"
               text-anchor="start"
-              [attr.font-size]="container.fontSize || 14"
+              font-size="14"
               font-weight="600"
               fill="#1e2d3d"
               class="environment__label"
             >
-              {{ getContainerLabel(container.id) }}
+              {{ container.environmentLabel }}
             </text>
 
             <!-- DSP Container labels at top center (aligned with logo height) -->
@@ -310,13 +310,13 @@
               </ng-container>
             </text>
 
-            <!-- Shopfloor group labels at bottom center -->
+            <!-- Shopfloor group labels inside container at bottom -->
             <text
-              *ngIf="(container.type === 'shopfloor' || container.type === 'shopfloor-group') && container.labelPosition === 'bottom-center' && getContainerLabel(container.id)"
+              *ngIf="container.type === 'shopfloor-group' && container.labelPosition === 'bottom' && getContainerLabel(container.id)"
               [attr.x]="container.width / 2"
-              [attr.y]="container.height + 5"
+              [attr.y]="container.height - 10"
               text-anchor="middle"
-              dominant-baseline="hanging"
+              dominant-baseline="baseline"
               [attr.font-size]="container.fontSize || 14"
               font-weight="600"
               fill="#1e2d3d"

@@ -85,8 +85,6 @@ export class DspArchitectureRefactorComponent implements OnInit, OnDestroy {
     'layer-business': this.labelBusinessProcesses,
     'layer-dsp': this.labelDsp,
     'layer-shopfloor': this.labelShopfloor,
-    'dsp-label-onpremise': this.labelOnPremise,
-    'dsp-label-cloud': this.labelCloud,
     'shopfloor-systems-group': this.labelSystems,
     'shopfloor-devices-group': this.labelDevices,
     'ux': this.labelSmartfactoryDashboard,

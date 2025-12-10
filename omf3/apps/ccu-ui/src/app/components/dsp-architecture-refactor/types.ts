@@ -74,6 +74,8 @@ export interface ContainerConfig {
   labelPosition?: LabelPosition;
   /** Clickable URL for navigation when container is clicked */
   url?: string;
+  /** Environment label to display above the container (e.g., "On Premise", "Cloud") */
+  environmentLabel?: string;
 }
 
 /**
