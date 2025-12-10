@@ -286,7 +286,7 @@
             <!-- Label - positioned based on labelPosition -->
             <!-- Exclude DSP, shopfloor-group, business, and device containers with bottom-center as they have separate label elements -->
             <text
-              *ngIf="getContainerLabel(container.id) && container.type !== 'environment-label' && container.type !== 'device' && !(container.type === 'ux' || container.type === 'dsp-edge' || container.type === 'dsp-cloud') && !((container.type === 'shopfloor' || container.type === 'business' || container.type === 'shopfloor-group') && container.labelPosition === 'bottom-center')"
+              *ngIf="getContainerLabel(container.id) && container.type !== 'environment-label' && container.type !== 'device' && container.type !== 'shopfloor-group' && !(container.type === 'ux' || container.type === 'dsp-edge' || container.type === 'dsp-cloud') && !((container.type === 'shopfloor' || container.type === 'business') && container.labelPosition === 'bottom-center')"
               [attr.x]="getLabelX(container)"
               [attr.y]="getLabelY(container)"
               [attr.text-anchor]="getLabelAnchor(container)"
