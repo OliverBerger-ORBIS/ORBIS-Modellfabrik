@@ -207,12 +207,12 @@
               class="container__logo container__logo--secondary"
             />
 
-            <!-- Device/System Icon (centered, with label below) - larger icons -->
+            <!-- Device/System Icon (centered at top, with label below) - larger icons -->
             <image
               *ngIf="container.type === 'device' && container.logoIconKey"
               [attr.href]="resolveIconPath(container.logoIconKey)"
               [attr.x]="(container.width - 70) / 2"
-              [attr.y]="8"
+              [attr.y]="12"
               width="70"
               height="70"
               class="container__device-icon"
@@ -251,7 +251,7 @@
             <text
               *ngIf="container.environmentLabel && (container.type === 'dsp-edge' || container.type === 'dsp-cloud')"
               [attr.x]="0"
-              [attr.y]="-20"
+              [attr.y]="-7"
               text-anchor="start"
               font-size="14"
               font-weight="600"
@@ -284,9 +284,9 @@
             </text>
 
             <!-- Label - positioned based on labelPosition -->
-            <!-- Exclude DSP, shopfloor-group, and business containers with bottom-center as they have separate label elements -->
+            <!-- Exclude DSP, shopfloor-group, business, and device containers with bottom-center as they have separate label elements -->
             <text
-              *ngIf="getContainerLabel(container.id) && container.type !== 'environment-label' && !(container.type === 'ux' || container.type === 'dsp-edge' || container.type === 'dsp-cloud') && !((container.type === 'shopfloor' || container.type === 'business' || container.type === 'shopfloor-group') && container.labelPosition === 'bottom-center')"
+              *ngIf="getContainerLabel(container.id) && container.type !== 'environment-label' && container.type !== 'device' && !(container.type === 'ux' || container.type === 'dsp-edge' || container.type === 'dsp-cloud') && !((container.type === 'shopfloor' || container.type === 'business' || container.type === 'shopfloor-group') && container.labelPosition === 'bottom-center')"
               [attr.x]="getLabelX(container)"
               [attr.y]="getLabelY(container)"
               [attr.text-anchor]="getLabelAnchor(container)"
@@ -306,6 +306,28 @@
                 </ng-container>
               </ng-container>
               <ng-container *ngIf="!isMultilineLabel(container.id) && !shouldWrapLabel(container)">
+                {{ getContainerLabel(container.id) }}
+              </ng-container>
+            </text>
+
+            <!-- Device/System labels at bottom - allow multi-line if needed -->
+            <text
+              *ngIf="container.type === 'device' && getContainerLabel(container.id)"
+              [attr.x]="container.width / 2"
+              [attr.y]="container.height - 8"
+              text-anchor="middle"
+              dominant-baseline="baseline"
+              [attr.font-size]="container.fontSize || 12"
+              font-weight="500"
+              fill="#1e2d3d"
+              class="container__device-label"
+            >
+              <ng-container *ngIf="shouldWrapLabel(container)">
+                <ng-container *ngFor="let line of getWrappedLabelLines(container); let i = index">
+                  <tspan [attr.x]="container.width / 2" [attr.dy]="i === 0 ? (-(getWrappedLabelLines(container).length - 1) * container.fontSize!) + 'px' : '1.2em'">{{ line }}</tspan>
+                </ng-container>
+              </ng-container>
+              <ng-container *ngIf="!shouldWrapLabel(container)">
                 {{ getContainerLabel(container.id) }}
               </ng-container>
             </text>

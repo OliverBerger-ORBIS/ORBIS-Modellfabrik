@@ -7,7 +7,7 @@ import type { IconKey } from '../../assets/icon-registry';
 
 /** SVG viewBox dimensions - increased height for taller DSP layer */
 export const VIEWBOX_WIDTH = 1200;
-export const VIEWBOX_HEIGHT = 1060; // Increased to accommodate taller DSP layer
+export const VIEWBOX_HEIGHT = 1120; // Increased to accommodate taller DSP layer (860 + 260)
 
 /** Layout constants */
 export const LAYOUT = {
@@ -28,15 +28,15 @@ export const LAYOUT = {
 
   // DSP layer (middle - blue) - MUCH TALLER for component view
   DSP_LAYER_Y: 340,
-  DSP_LAYER_HEIGHT: 460, // Increased from 260 to 460 for Edge component icons
+  DSP_LAYER_HEIGHT: 520, // Increased from 460 to 520 for more space
 
   // Shopfloor layer (bottom - gray)
-  SHOPFLOOR_Y: 800, // Adjusted: 80 + 260 + 460
+  SHOPFLOOR_Y: 860, // Adjusted: 80 + 260 + 520
 
   // Box dimensions
   BUSINESS_BOX_WIDTH: 200,
   BUSINESS_BOX_HEIGHT: 140,
-  DSP_BOX_HEIGHT: 300, // Much taller for component icons
+  DSP_BOX_HEIGHT: 360, // Much taller for component icons (increased from 300)
 
   // Margins and spacing
   CONTENT_START_X: 100,
@@ -117,7 +117,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     id: 'ux',
     label: '',
     x: LAYOUT.CONTENT_START_X,
-    y: LAYOUT.DSP_LAYER_Y + 55,
+    y: LAYOUT.DSP_LAYER_Y + 80,
     width: uxBoxWidth,
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'ux',
@@ -135,7 +135,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     id: 'edge',
     label: '',
     x: LAYOUT.CONTENT_START_X + uxBoxWidth + dspBoxGap,
-    y: LAYOUT.DSP_LAYER_Y + 55,
+    y: LAYOUT.DSP_LAYER_Y + 80,
     width: edgeBoxWidth,
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-edge',
@@ -162,7 +162,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     id: 'management',
     label: '',
     x: LAYOUT.CONTENT_START_X + uxBoxWidth + dspBoxGap + edgeBoxWidth + dspBoxGap,
-    y: LAYOUT.DSP_LAYER_Y + 55,
+    y: LAYOUT.DSP_LAYER_Y + 80,
     width: managementBoxWidth,
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-cloud',
