@@ -102,6 +102,15 @@ export class DspArchitectureRefactorComponent implements OnInit, OnDestroy {
     'shopfloor-device-4': $localize`:@@deviceHBW:HBW`,
     'shopfloor-device-5': $localize`:@@deviceDPS:DPS`,
     'shopfloor-device-6': $localize`:@@deviceCHRG:Charger`,
+    // DSP Edge Components
+    'edge-component-disc': $localize`:@@edgeComponentDisc:DISC`,
+    'edge-component-event-bus': $localize`:@@edgeComponentEventBus:Event Bus`,
+    'edge-component-app-server': $localize`:@@edgeComponentAppServer:App Server`,
+    'edge-component-router': $localize`:@@edgeComponentRouter:Router`,
+    'edge-component-agent': $localize`:@@edgeComponentAgent:Agent`,
+    'edge-component-log-server': $localize`:@@edgeComponentLogServer:Log Server`,
+    'edge-component-disi': $localize`:@@edgeComponentDisi:DISI`,
+    'edge-component-database': $localize`:@@edgeComponentDatabase:Database`,
   };
 
   constructor(private readonly cdr: ChangeDetectorRef) {}

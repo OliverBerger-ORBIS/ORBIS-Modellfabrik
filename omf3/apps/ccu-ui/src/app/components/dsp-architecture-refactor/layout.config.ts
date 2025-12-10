@@ -131,11 +131,13 @@ export function createDefaultContainers(): ContainerConfig[] {
   });
 
   // DSP Edge - Environment label as property
+  const edgeX = LAYOUT.CONTENT_START_X + uxBoxWidth + dspBoxGap;
+  const edgeY = LAYOUT.DSP_LAYER_Y + 70;
   containers.push({
     id: 'edge',
     label: '',
-    x: LAYOUT.CONTENT_START_X + uxBoxWidth + dspBoxGap,
-    y: LAYOUT.DSP_LAYER_Y + 70,
+    x: edgeX,
+    y: edgeY,
     width: edgeBoxWidth,
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-edge',
@@ -155,6 +157,159 @@ export function createDefaultContainers(): ContainerConfig[] {
     ],
     url: '/edge',
     environmentLabel: 'On Premise',
+  });
+
+  // ========== DSP EDGE COMPONENTS (inside Edge container) ==========
+  // Layout: 3 rows - Row 1: 2 components, Row 2: 3 components, Row 3: 3 components
+  const edgeComponentPadding = 15; // Padding inside edge box
+  const edgeComponentGap = 12; // Gap between components
+  const edgeInnerWidth = edgeBoxWidth - 2 * edgeComponentPadding;
+  const edgeInnerHeight = LAYOUT.DSP_BOX_HEIGHT - 60 - 2 * edgeComponentPadding; // Reserve 60px for title/logo
+  
+  // Row 1: 2 components (DISC, Event Bus)
+  const row1Count = 2;
+  const row1Width = (edgeInnerWidth - edgeComponentGap * (row1Count - 1)) / row1Count;
+  const row1Height = (edgeInnerHeight - edgeComponentGap * 2) / 3; // 3 rows total
+  const row1Y = edgeY + 60 + edgeComponentPadding;
+  
+  containers.push({
+    id: 'edge-component-disc',
+    label: '',
+    x: edgeX + edgeComponentPadding,
+    y: row1Y,
+    width: row1Width,
+    height: row1Height,
+    type: 'device',
+    state: 'hidden',
+    logoIconKey: 'edge-component-disc' as IconKey,
+    borderColor: '#009681',
+    backgroundColor: '#ffffff',
+    labelPosition: 'bottom-center',
+    fontSize: 12,
+  });
+  
+  containers.push({
+    id: 'edge-component-event-bus',
+    label: '',
+    x: edgeX + edgeComponentPadding + row1Width + edgeComponentGap,
+    y: row1Y,
+    width: row1Width,
+    height: row1Height,
+    type: 'device',
+    state: 'hidden',
+    logoIconKey: 'edge-component-event-bus' as IconKey,
+    borderColor: '#009681',
+    backgroundColor: '#ffffff',
+    labelPosition: 'bottom-center',
+    fontSize: 12,
+  });
+  
+  // Row 2: 3 components (App Server, Router, Agent)
+  const row2Count = 3;
+  const row2Width = (edgeInnerWidth - edgeComponentGap * (row2Count - 1)) / row2Count;
+  const row2Height = row1Height;
+  const row2Y = row1Y + row1Height + edgeComponentGap;
+  
+  containers.push({
+    id: 'edge-component-app-server',
+    label: '',
+    x: edgeX + edgeComponentPadding,
+    y: row2Y,
+    width: row2Width,
+    height: row2Height,
+    type: 'device',
+    state: 'hidden',
+    logoIconKey: 'edge-component-app-server' as IconKey,
+    borderColor: '#009681',
+    backgroundColor: '#ffffff',
+    labelPosition: 'bottom-center',
+    fontSize: 12,
+  });
+  
+  containers.push({
+    id: 'edge-component-router',
+    label: '',
+    x: edgeX + edgeComponentPadding + row2Width + edgeComponentGap,
+    y: row2Y,
+    width: row2Width,
+    height: row2Height,
+    type: 'device',
+    state: 'hidden',
+    logoIconKey: 'edge-component-router' as IconKey,
+    borderColor: '#009681',
+    backgroundColor: '#ffffff',
+    labelPosition: 'bottom-center',
+    fontSize: 12,
+  });
+  
+  containers.push({
+    id: 'edge-component-agent',
+    label: '',
+    x: edgeX + edgeComponentPadding + (row2Width + edgeComponentGap) * 2,
+    y: row2Y,
+    width: row2Width,
+    height: row2Height,
+    type: 'device',
+    state: 'hidden',
+    logoIconKey: 'edge-component-agent' as IconKey,
+    borderColor: '#009681',
+    backgroundColor: '#ffffff',
+    labelPosition: 'bottom-center',
+    fontSize: 12,
+  });
+  
+  // Row 3: 3 components (Log Server, DISI, Database)
+  const row3Count = 3;
+  const row3Width = row2Width;
+  const row3Height = row1Height;
+  const row3Y = row2Y + row2Height + edgeComponentGap;
+  
+  containers.push({
+    id: 'edge-component-log-server',
+    label: '',
+    x: edgeX + edgeComponentPadding,
+    y: row3Y,
+    width: row3Width,
+    height: row3Height,
+    type: 'device',
+    state: 'hidden',
+    logoIconKey: 'edge-component-log-server' as IconKey,
+    borderColor: '#009681',
+    backgroundColor: '#ffffff',
+    labelPosition: 'bottom-center',
+    fontSize: 12,
+  });
+  
+  containers.push({
+    id: 'edge-component-disi',
+    label: '',
+    x: edgeX + edgeComponentPadding + row3Width + edgeComponentGap,
+    y: row3Y,
+    width: row3Width,
+    height: row3Height,
+    type: 'device',
+    state: 'hidden',
+    logoIconKey: 'edge-component-disi' as IconKey,
+    borderColor: '#009681',
+    backgroundColor: '#ffffff',
+    labelPosition: 'bottom-center',
+    fontSize: 12,
+  });
+  
+  containers.push({
+    id: 'edge-component-database',
+    label: '',
+    x: edgeX + edgeComponentPadding + (row3Width + edgeComponentGap) * 2,
+    y: row3Y,
+    width: row3Width,
+    height: row3Height,
+    type: 'device',
+    state: 'hidden',
+    logoIconKey: 'edge-component-database' as IconKey,
+    borderColor: '#009681',
+    backgroundColor: '#ffffff',
+    labelPosition: 'bottom-center',
+    fontSize: 12,
   });
 
   // Management Cockpit - Environment label as property
