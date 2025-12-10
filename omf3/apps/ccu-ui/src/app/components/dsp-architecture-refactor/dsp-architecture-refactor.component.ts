@@ -70,8 +70,8 @@ export class DspArchitectureRefactorComponent implements OnInit, OnDestroy {
   protected readonly labelDevices = $localize`:@@dspArchLabelDevices:Devices`;
   protected readonly labelSystems = $localize`:@@dspArchLabelSystems:Systems`;
   protected readonly labelSmartfactoryDashboard = $localize`:@@dspArchLabelUX:SmartFactory\nDashboard`;
-  protected readonly labelEdge = $localize`:@@dspArchLabelEdge:EDGE`;
-  protected readonly labelManagementCockpit = $localize`:@@dspArchLabelManagement:Management Cockpit`;
+  protected readonly labelEdge = $localize`:@@dspArchLabelEdge:Edge`;
+  protected readonly labelManagementCockpit = $localize`:@@dspArchLabelManagement:Management\nCockpit`;
   protected readonly btnPrev = $localize`:@@dspArchPrev:Previous`;
   protected readonly btnNext = $localize`:@@dspArchNext:Next`;
   protected readonly btnAutoPlay = $localize`:@@dspArchAutoPlay:Auto Play`;
@@ -85,6 +85,13 @@ export class DspArchitectureRefactorComponent implements OnInit, OnDestroy {
     'layer-business': this.labelBusinessProcesses,
     'layer-dsp': this.labelDsp,
     'layer-shopfloor': this.labelShopfloor,
+    'dsp-label-onpremise': this.labelOnPremise,
+    'dsp-label-cloud': this.labelCloud,
+    'shopfloor-systems-group': this.labelSystems,
+    'shopfloor-devices-group': this.labelDevices,
+    'ux': this.labelSmartfactoryDashboard,
+    'edge': this.labelEdge,
+    'management': this.labelManagementCockpit,
     'erp-application': $localize`:@@dspArchLabelERP:ERP Applications`,
     'bp-cloud-apps': $localize`:@@dspArchLabelCloudApps:Cloud\nApplications`,
     'bp-analytics': $localize`:@@dspArchLabelAnalytics:Analytical\nApplications`,
@@ -234,10 +241,10 @@ export class DspArchitectureRefactorComponent implements OnInit, OnDestroy {
     if (containerId === 'dsp-label-cloud') return [this.labelCloud];
     if (containerId === 'shopfloor-devices-group') return [this.labelDevices];
     if (containerId === 'shopfloor-systems-group') return [this.labelSystems];
-    if (containerId === 'ux') return this.labelSmartfactoryDashboard.split('\\n');
+    if (containerId === 'ux') return this.labelSmartfactoryDashboard.split('\n');
     if (containerId === 'edge') return [this.labelEdge];
-    if (containerId === 'management') return [this.labelManagementCockpit];
-    return label.split('\\n');
+    if (containerId === 'management') return this.labelManagementCockpit.split('\n');
+    return label.split('\n');
   }
 
   /**
@@ -272,6 +279,10 @@ export class DspArchitectureRefactorComponent implements OnInit, OnDestroy {
       return container.height - 8;
     }
     if (container.labelPosition === 'top-center') {
+      // For DSP containers, align with logo (at same height as 48px logo center)
+      if (container.type === 'ux' || container.type === 'dsp-edge' || container.type === 'dsp-cloud') {
+        return 36; // Logo is at y=12, height=48, so center is at 12+24=36
+      }
       return 20;
     }
     return container.height / 2;

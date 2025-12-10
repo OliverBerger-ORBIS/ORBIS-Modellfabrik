@@ -101,27 +101,29 @@ export function createDefaultContainers(): ContainerConfig[] {
     labelPosition: 'left',
   });
 
-  // ========== DSP LAYER LABELS ==========
+  // ========== DSP ENVIRONMENT LABELS (above containers) ==========
+  // Position above Edge container
   containers.push({
     id: 'dsp-label-onpremise',
     label: '',
-    x: LAYOUT.CONTENT_START_X + 200,
+    x: LAYOUT.CONTENT_START_X + uxBoxWidth + dspBoxGap,
     y: LAYOUT.DSP_LAYER_Y + 32,
-    width: 100,
+    width: edgeBoxWidth,
     height: 20,
-    type: 'label',
+    type: 'environment-label',
     state: 'hidden',
     fontSize: 14,
   });
 
+  // Position above Management Cockpit container
   containers.push({
     id: 'dsp-label-cloud',
     label: '',
-    x: LAYOUT.CONTENT_START_X + 850,
+    x: LAYOUT.CONTENT_START_X + uxBoxWidth + dspBoxGap + edgeBoxWidth + dspBoxGap,
     y: LAYOUT.DSP_LAYER_Y + 32,
-    width: 60,
+    width: managementBoxWidth,
     height: 20,
-    type: 'label',
+    type: 'environment-label',
     state: 'hidden',
     fontSize: 14,
   });
@@ -143,11 +145,13 @@ export function createDefaultContainers(): ContainerConfig[] {
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'ux',
     state: 'hidden',
-    logoIconKey: 'ux-dashboard' as IconKey,
+    logoIconKey: 'logo-orbis' as IconKey,
+    logoPosition: 'top-left',
+    centerIconKey: 'ux-dashboard' as IconKey,
     borderColor: '#009681',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
-    fontSize: 20,
+    fontSize: 16,
     url: '/dashboard',
   });
 
@@ -166,7 +170,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: '#009681',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     labelPosition: 'top-center',
-    fontSize: 20,
+    fontSize: 16,
     functionIcons: [
       { iconKey: 'edge-data-storage' as IconKey, size: 60 },
       { iconKey: 'edge-network' as IconKey, size: 60 },
@@ -194,7 +198,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: '#009681',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     labelPosition: 'top-center',
-    fontSize: 20,
+    fontSize: 16,
     functionIcons: [
       { iconKey: 'logo-distributed' as IconKey, size: 60 },
       { iconKey: 'shopfloor-it' as IconKey, size: 60 },
@@ -296,7 +300,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     y: shopfloorGroupY,
     width: systemsGroupWidth,
     height: shopfloorGroupHeight,
-    type: 'box',
+    type: 'shopfloor-group',
     state: 'hidden',
     backgroundColor: 'transparent',
     borderColor: 'rgba(0, 0, 0, 0.08)',
@@ -350,7 +354,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     y: shopfloorGroupY,
     width: devicesGroupWidth,
     height: shopfloorGroupHeight,
-    type: 'box',
+    type: 'shopfloor-group',
     state: 'normal',
     backgroundColor: 'transparent',
     borderColor: 'rgba(0, 0, 0, 0.08)',

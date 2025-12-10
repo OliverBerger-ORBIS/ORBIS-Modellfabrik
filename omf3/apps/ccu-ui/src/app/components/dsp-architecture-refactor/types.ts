@@ -20,7 +20,7 @@ export type ConnectionState = 'normal' | 'highlight' | 'dimmed' | 'hidden';
 export type AnchorSide = 'top' | 'bottom' | 'left' | 'right';
 
 /** Container type classification */
-export type ContainerType = 'layer' | 'box' | 'device' | 'ux' | 'business' | 'shopfloor' | 'dsp-edge' | 'dsp-cloud' | 'label';
+export type ContainerType = 'layer' | 'box' | 'device' | 'ux' | 'business' | 'shopfloor' | 'shopfloor-group' | 'dsp-edge' | 'dsp-cloud' | 'label' | 'environment-label';
 
 /**
  * Configuration for function icons displayed inside containers.
@@ -46,6 +46,8 @@ export interface ContainerConfig {
   logoIconKey?: IconKey;
   /** Position of the logo within the container */
   logoPosition?: LogoPosition;
+  /** Optional center icon key (e.g., for UX dashboard center icon) */
+  centerIconKey?: IconKey;
   /** Optional secondary logo (e.g., Azure logo) from icon-registry */
   secondaryLogoIconKey?: IconKey;
   /** Position of the secondary logo */

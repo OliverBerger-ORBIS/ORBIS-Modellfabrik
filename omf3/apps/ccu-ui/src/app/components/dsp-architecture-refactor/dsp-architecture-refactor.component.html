@@ -120,14 +120,14 @@
               ry="0"
               class="layer__bg"
             />
-            <!-- Layer label (upper left corner) -->
+            <!-- Layer label (upper left corner) - increased font size -->
             <text
               *ngIf="getContainerLabel(container.id)"
               [attr.x]="20"
               [attr.y]="20"
               text-anchor="start"
               dominant-baseline="hanging"
-              [attr.font-size]="14"
+              [attr.font-size]="18"
               font-weight="600"
               fill="#1e2d3d"
               class="layer__label"
@@ -163,26 +163,15 @@
               class="container__bg"
             />
 
-            <!-- ORBIS Logo for SmartFactory Dashboard (UX) - top-left position, same size as other DSP logos -->
+            <!-- Logo (top-left) for ALL DSP containers (ux, dsp-edge, dsp-cloud) - same position and size (48px) -->
             <image
-              *ngIf="container.id === 'ux'"
-              [attr.href]="resolveIconPath('logo-orbis')"
-              x="12"
-              y="12"
-              width="48"
-              height="48"
-              class="container__logo container__logo--orbis"
-            />
-
-            <!-- Logo (top-left) for DSP containers - original size (48px) -->
-            <image
-              *ngIf="container.logoIconKey && container.logoPosition === 'top-left' && (container.type === 'dsp-edge' || container.type === 'dsp-cloud')"
+              *ngIf="container.logoIconKey && container.logoPosition === 'top-left' && (container.type === 'ux' || container.type === 'dsp-edge' || container.type === 'dsp-cloud')"
               [attr.href]="resolveIconPath(container.logoIconKey)"
-              [attr.x]="8"
-              [attr.y]="-4"
+              [attr.x]="12"
+              [attr.y]="12"
               width="48"
               height="48"
-              class="container__logo container__logo--large"
+              class="container__logo container__logo--dsp"
             />
 
             <!-- Logo (top-left) for non-DSP, non-device containers -->
@@ -247,10 +236,10 @@
               </ng-container>
             </g>
 
-            <!-- UX Icon (for ux type containers) - centered, larger like Shopfloor icons -->
+            <!-- Center Icon (for ux type containers) - using centerIconKey -->
             <image
-              *ngIf="container.type === 'ux' && container.logoIconKey"
-              [attr.href]="resolveIconPath(container.logoIconKey)"
+              *ngIf="container.type === 'ux' && container.centerIconKey"
+              [attr.href]="resolveIconPath(container.centerIconKey)"
               [attr.x]="(container.width - 70) / 2"
               [attr.y]="(container.height / 2) - 20"
               width="70"
@@ -258,10 +247,46 @@
               class="container__ux-icon"
             />
 
-            <!-- Label - positioned based on labelPosition -->
-            <!-- Exclude shopfloor and business containers with bottom-center as they have a separate label element -->
+            <!-- Environment labels (above DSP containers) - simple text, no rect -->
             <text
-              *ngIf="getContainerLabel(container.id) && !((container.type === 'shopfloor' || container.type === 'business') && container.labelPosition === 'bottom-center')"
+              *ngIf="container.type === 'environment-label' && getContainerLabel(container.id)"
+              [attr.x]="0"
+              [attr.y]="0"
+              text-anchor="start"
+              [attr.font-size]="container.fontSize || 14"
+              font-weight="600"
+              fill="#1e2d3d"
+              class="environment__label"
+            >
+              {{ getContainerLabel(container.id) }}
+            </text>
+
+            <!-- DSP Container labels at top center (aligned with logo height) -->
+            <text
+              *ngIf="getContainerLabel(container.id) && (container.type === 'ux' || container.type === 'dsp-edge' || container.type === 'dsp-cloud') && container.labelPosition === 'top-center'"
+              [attr.x]="getLabelX(container)"
+              [attr.y]="getLabelY(container)"
+              [attr.text-anchor]="getLabelAnchor(container)"
+              [attr.font-size]="container.fontSize || 16"
+              [attr.fill]="container.textColor || '#1e2d3d'"
+              font-weight="600"
+              dominant-baseline="middle"
+              class="container__label container__label--dsp"
+            >
+              <ng-container *ngIf="isMultilineLabel(container.id)">
+                <ng-container *ngFor="let line of getMultilineLabel(container.id); let i = index">
+                  <tspan [attr.x]="getLabelX(container)" [attr.dy]="i === 0 ? '0' : '1.2em'">{{ line }}</tspan>
+                </ng-container>
+              </ng-container>
+              <ng-container *ngIf="!isMultilineLabel(container.id)">
+                {{ getContainerLabel(container.id) }}
+              </ng-container>
+            </text>
+
+            <!-- Label - positioned based on labelPosition -->
+            <!-- Exclude DSP, shopfloor-group, and business containers with bottom-center as they have separate label elements -->
+            <text
+              *ngIf="getContainerLabel(container.id) && container.type !== 'environment-label' && !(container.type === 'ux' || container.type === 'dsp-edge' || container.type === 'dsp-cloud') && !((container.type === 'shopfloor' || container.type === 'business' || container.type === 'shopfloor-group') && container.labelPosition === 'bottom-center')"
               [attr.x]="getLabelX(container)"
               [attr.y]="getLabelY(container)"
               [attr.text-anchor]="getLabelAnchor(container)"
@@ -287,10 +312,11 @@
 
             <!-- Shopfloor group labels at bottom center -->
             <text
-              *ngIf="container.type === 'shopfloor' && container.labelPosition === 'bottom-center'"
+              *ngIf="(container.type === 'shopfloor' || container.type === 'shopfloor-group') && container.labelPosition === 'bottom-center' && getContainerLabel(container.id)"
               [attr.x]="container.width / 2"
-              [attr.y]="container.height - 12"
+              [attr.y]="container.height + 5"
               text-anchor="middle"
+              dominant-baseline="hanging"
               [attr.font-size]="container.fontSize || 14"
               font-weight="600"
               fill="#1e2d3d"
