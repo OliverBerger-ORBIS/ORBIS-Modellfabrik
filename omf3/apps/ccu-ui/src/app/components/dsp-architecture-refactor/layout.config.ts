@@ -280,11 +280,11 @@ export function createDefaultContainers(): ContainerConfig[] {
 
   // ========== SHOPFLOOR CONTENT ==========
   const shopfloorAvailableWidth = VIEWBOX_WIDTH - LAYOUT.CONTENT_START_X - LAYOUT.MARGIN_RIGHT;
-  const shopfloorGap = 40;
-  const shopfloorGroupHeight = 175;
+  const shopfloorGap = 30;
+  const shopfloorGroupHeight = 140; // Taller for icon + label
   const shopfloorGroupY = LAYOUT.SHOPFLOOR_Y + 48;
 
-  const systemsGroupWidth = 300;
+  const systemsGroupWidth = 260;
   const devicesGroupWidth = shopfloorAvailableWidth - systemsGroupWidth - shopfloorGap;
 
   // Systems group
@@ -304,9 +304,9 @@ export function createDefaultContainers(): ContainerConfig[] {
     isGroup: true,
   });
 
-  // Systems - 2 boxes vertically stacked
-  const systemBoxWidth = systemsGroupWidth - 20;
-  const systemBoxHeight = 65;
+  // Systems - 2 boxes horizontally in ONE row
+  const systemBoxWidth = (systemsGroupWidth - 20 - 15) / 2; // 2 boxes side by side
+  const systemBoxHeight = 120; // Taller for square icon + label
   const systemBoxGap = 15;
 
   containers.push({
@@ -328,8 +328,8 @@ export function createDefaultContainers(): ContainerConfig[] {
   containers.push({
     id: 'shopfloor-system-fts',
     label: '',
-    x: LAYOUT.CONTENT_START_X + 10,
-    y: shopfloorGroupY + 10 + systemBoxHeight + systemBoxGap,
+    x: LAYOUT.CONTENT_START_X + 10 + systemBoxWidth + systemBoxGap,
+    y: shopfloorGroupY + 10,
     width: systemBoxWidth,
     height: systemBoxHeight,
     type: 'shopfloor',
@@ -358,10 +358,10 @@ export function createDefaultContainers(): ContainerConfig[] {
     isGroup: true,
   });
 
-  // Devices - 6 boxes in 2 rows
-  const deviceBoxWidth = (devicesGroupWidth - 20 - 5 * 15) / 3; // 3 columns
-  const deviceBoxHeight = 65;
-  const deviceBoxGap = 15;
+  // Devices - 6 boxes in ONE row
+  const deviceBoxWidth = (devicesGroupWidth - 20 - 5 * 12) / 6; // 6 boxes in 1 row
+  const deviceBoxHeight = 120; // Taller for square icon + label
+  const deviceBoxGap = 12;
   const devicesStartX = LAYOUT.CONTENT_START_X + systemsGroupWidth + shopfloorGap + 10;
 
   const deviceIcons: IconKey[] = [
@@ -373,15 +373,13 @@ export function createDefaultContainers(): ContainerConfig[] {
     'device-chrg' as IconKey,
   ];
 
+  // Single row of 6 devices
   for (let i = 0; i < 6; i++) {
-    const row = Math.floor(i / 3);
-    const col = i % 3;
-
     containers.push({
       id: `shopfloor-device-${i + 1}`,
       label: '',
-      x: devicesStartX + col * (deviceBoxWidth + deviceBoxGap),
-      y: shopfloorGroupY + 10 + row * (deviceBoxHeight + deviceBoxGap),
+      x: devicesStartX + i * (deviceBoxWidth + deviceBoxGap),
+      y: shopfloorGroupY + 10,
       width: deviceBoxWidth,
       height: deviceBoxHeight,
       type: 'device',

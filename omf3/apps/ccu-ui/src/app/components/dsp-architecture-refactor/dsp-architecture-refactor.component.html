@@ -120,31 +120,19 @@
               ry="0"
               class="layer__bg"
             />
-            <!-- ORBIS Logo for DSP layer (before label) -->
-            <image
-              *ngIf="container.id === 'layer-dsp'"
-              [attr.href]="resolveIconPath('logo-orbis')"
-              [attr.x]="20"
-              [attr.y]="-5"
-              width="72"
-              height="72"
-              class="layer__logo"
-            />
-            <!-- Layer label (left side, top-aligned, multi-line support) - uses helper method for font size -->
+            <!-- Layer label (upper left corner) -->
             <text
               *ngIf="getContainerLabel(container.id)"
-              [attr.x]="container.id === 'layer-dsp' ? 100 : 20"
-              [attr.y]="25"
+              [attr.x]="20"
+              [attr.y]="20"
               text-anchor="start"
               dominant-baseline="hanging"
-              [attr.font-size]="getLayerFontSize(container.id)"
+              [attr.font-size]="14"
               font-weight="600"
               fill="#1e2d3d"
               class="layer__label"
             >
-              <ng-container *ngFor="let line of getMultilineLabel(container.id); let i = index">
-                <tspan [attr.x]="container.id === 'layer-dsp' ? 100 : 20" [attr.dy]="i === 0 ? '0' : '1.2em'">{{ line }}</tspan>
-              </ng-container>
+              {{ getContainerLabel(container.id) }}
             </text>
           </g>
         </ng-container>
@@ -173,6 +161,17 @@
               [attr.rx]="container.isGroup ? 16 : 8"
               [attr.ry]="container.isGroup ? 16 : 8"
               class="container__bg"
+            />
+
+            <!-- ORBIS Logo for SmartFactory Dashboard (UX) - centered large logo -->
+            <image
+              *ngIf="container.id === 'ux'"
+              [attr.href]="resolveIconPath('logo-orbis')"
+              [attr.x]="(container.width - 80) / 2"
+              [attr.y]="(container.height - 80) / 2"
+              width="80"
+              height="80"
+              class="container__logo container__logo--orbis"
             />
 
             <!-- Logo (top-left) for DSP containers - original size (48px) -->
