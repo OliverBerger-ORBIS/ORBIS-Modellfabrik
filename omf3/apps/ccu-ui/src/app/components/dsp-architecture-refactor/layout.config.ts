@@ -101,6 +101,13 @@ export function createDefaultContainers(): ContainerConfig[] {
     labelPosition: 'left',
   });
 
+  // ========== DSP BOXES - Calculate dimensions first ==========
+  const dspAvailableWidth = VIEWBOX_WIDTH - LAYOUT.CONTENT_START_X - LAYOUT.MARGIN_RIGHT;
+  const dspBoxGap = 50;
+  const uxBoxWidth = 175;
+  const edgeBoxWidth = 480;
+  const managementBoxWidth = dspAvailableWidth - uxBoxWidth - edgeBoxWidth - (dspBoxGap * 2);
+
   // ========== DSP ENVIRONMENT LABELS (above containers) ==========
   // Position above Edge container
   containers.push({
@@ -129,11 +136,6 @@ export function createDefaultContainers(): ContainerConfig[] {
   });
 
   // ========== DSP BOXES ==========
-  const dspAvailableWidth = VIEWBOX_WIDTH - LAYOUT.CONTENT_START_X - LAYOUT.MARGIN_RIGHT;
-  const dspBoxGap = 50;
-  const uxBoxWidth = 175;
-  const edgeBoxWidth = 480;
-  const managementBoxWidth = dspAvailableWidth - uxBoxWidth - edgeBoxWidth - (dspBoxGap * 2);
 
   // SmartFactory Dashboard (UX)
   containers.push({
