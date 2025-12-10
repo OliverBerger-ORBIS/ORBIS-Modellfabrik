@@ -82,6 +82,9 @@ export class DspArchitectureRefactorComponent implements OnInit, OnDestroy {
 
   // Container labels
   protected readonly containerLabels: Record<string, string> = {
+    'layer-business': this.labelBusinessProcesses,
+    'layer-dsp': this.labelDsp,
+    'layer-shopfloor': this.labelShopfloor,
     'erp-application': $localize`:@@dspArchLabelERP:ERP Applications`,
     'bp-cloud-apps': $localize`:@@dspArchLabelCloudApps:Cloud\nApplications`,
     'bp-analytics': $localize`:@@dspArchLabelAnalytics:Analytical\nApplications`,

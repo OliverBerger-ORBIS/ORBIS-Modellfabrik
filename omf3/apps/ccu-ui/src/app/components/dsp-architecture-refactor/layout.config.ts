@@ -281,8 +281,9 @@ export function createDefaultContainers(): ContainerConfig[] {
   // ========== SHOPFLOOR CONTENT ==========
   const shopfloorAvailableWidth = VIEWBOX_WIDTH - LAYOUT.CONTENT_START_X - LAYOUT.MARGIN_RIGHT;
   const shopfloorGap = 30;
-  const shopfloorGroupHeight = 140; // Taller for icon + label
-  const shopfloorGroupY = LAYOUT.SHOPFLOOR_Y + 48;
+  const shopfloorGroupHeight = 165; // Increased for icon + label + group label below
+  // Vertically center in shopfloor layer: equal spacing top and bottom
+  const shopfloorGroupY = LAYOUT.SHOPFLOOR_Y + (LAYOUT.LAYER_HEIGHT - shopfloorGroupHeight) / 2;
 
   const systemsGroupWidth = 260;
   const devicesGroupWidth = shopfloorAvailableWidth - systemsGroupWidth - shopfloorGap;
