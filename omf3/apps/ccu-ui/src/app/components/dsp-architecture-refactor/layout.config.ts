@@ -166,7 +166,7 @@ export function createDefaultContainers(): ContainerConfig[] {
   // Row 3: Log Server, DISI, Database (3 components)
   
   const edgeComponentPadding = 15; // Padding inside edge box
-  const edgeComponentGap = 12; // Gap between components
+  const edgeComponentGap = 50; // Gap between components (increased from 12 to 50 for better spacing)
   const edgeInnerWidth = edgeBoxWidth - 2 * edgeComponentPadding;
   const edgeInnerHeight = LAYOUT.DSP_BOX_HEIGHT - 60 - 2 * edgeComponentPadding; // Reserve 60px for title/logo
   
@@ -980,6 +980,30 @@ function createComponentView(): { containers: ContainerConfig[]; connections: Co
       bidirectional: true,
       arrowSize: 6,
     },
+    // App Server to SmartFactory Dashboard
+    {
+      id: 'conn-ec-appserver-ux',
+      fromId: 'edge-component-app-server',
+      toId: 'ux',
+      fromSide: 'left',
+      toSide: 'right',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+      arrowSize: 6,
+    },
+    // Agent to Management Cockpit
+    {
+      id: 'conn-ec-agent-management',
+      fromId: 'edge-component-agent',
+      toId: 'management',
+      fromSide: 'right',
+      toSide: 'left',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+      arrowSize: 6,
+    },
   ];
   
   connections.push(...edgeComponentConnections);
@@ -1091,11 +1115,11 @@ function createComponentView(): { containers: ContainerConfig[]; connections: Co
       showFunctionIcons: false,
     },
     
-    // Step 4: Connections from edge components to shopfloor and business layers
+    // Step 4: DISC connection to Business layer ERP
     {
       id: 'component-step-4',
-      label: $localize`:@@componentStep4:External Integration`,
-      description: $localize`:@@componentStep4Desc:DISI connects to shopfloor devices and systems. DISC integrates with business ERP.`,
+      label: $localize`:@@componentStep4:Business Integration`,
+      description: $localize`:@@componentStep4Desc:DISC integrates with business ERP for data synchronization.`,
       visibleContainerIds: [
         'layer-business',
         'bp-erp',
@@ -1109,19 +1133,110 @@ function createComponentView(): { containers: ContainerConfig[]; connections: Co
         'edge-component-log-server',
         'edge-component-disi',
         'edge-component-database',
+      ],
+      highlightedContainerIds: ['edge-component-disc', 'bp-erp'],
+      visibleConnectionIds: [
+        ...allEdgeComponentConnections,
+        'conn-ec-disc-bp-erp',
+      ],
+      highlightedConnectionIds: ['conn-ec-disc-bp-erp'],
+      showFunctionIcons: false,
+    },
+    
+    // Step 5: App Server connection to SmartFactory Dashboard
+    {
+      id: 'component-step-5',
+      label: $localize`:@@componentStep5:Dashboard Integration`,
+      description: $localize`:@@componentStep5Desc:App Server connects to SmartFactory Dashboard for UI services.`,
+      visibleContainerIds: [
+        'layer-business',
+        'bp-erp',
+        'layer-dsp',
+        'ux',
+        'edge',
+        'edge-component-disc',
+        'edge-component-event-bus',
+        'edge-component-app-server',
+        'edge-component-router',
+        'edge-component-agent',
+        'edge-component-log-server',
+        'edge-component-disi',
+        'edge-component-database',
+      ],
+      highlightedContainerIds: ['edge-component-app-server', 'ux'],
+      visibleConnectionIds: [
+        ...allEdgeComponentConnections,
+        'conn-ec-disc-bp-erp',
+        'conn-ec-appserver-ux',
+      ],
+      highlightedConnectionIds: ['conn-ec-appserver-ux'],
+      showFunctionIcons: false,
+    },
+    
+    // Step 6: Agent connection to Management Cockpit
+    {
+      id: 'component-step-6',
+      label: $localize`:@@componentStep6:Management Integration`,
+      description: $localize`:@@componentStep6Desc:Agent connects to Management Cockpit for monitoring and control.`,
+      visibleContainerIds: [
+        'layer-business',
+        'bp-erp',
+        'layer-dsp',
+        'ux',
+        'edge',
+        'management',
+        'edge-component-disc',
+        'edge-component-event-bus',
+        'edge-component-app-server',
+        'edge-component-router',
+        'edge-component-agent',
+        'edge-component-log-server',
+        'edge-component-disi',
+        'edge-component-database',
+      ],
+      highlightedContainerIds: ['edge-component-agent', 'management'],
+      visibleConnectionIds: [
+        ...allEdgeComponentConnections,
+        'conn-ec-disc-bp-erp',
+        'conn-ec-appserver-ux',
+        'conn-ec-agent-management',
+      ],
+      highlightedConnectionIds: ['conn-ec-agent-management'],
+      showFunctionIcons: false,
+    },
+    
+    // Step 7: DISI connections to shopfloor devices and systems
+    {
+      id: 'component-step-7',
+      label: $localize`:@@componentStep7:Shopfloor Integration`,
+      description: $localize`:@@componentStep7Desc:DISI connects to all shopfloor devices and systems for data collection.`,
+      visibleContainerIds: [
+        'layer-business',
+        'bp-erp',
+        'layer-dsp',
+        'ux',
+        'edge',
+        'management',
+        'edge-component-disc',
+        'edge-component-event-bus',
+        'edge-component-app-server',
+        'edge-component-router',
+        'edge-component-agent',
+        'edge-component-log-server',
+        'edge-component-disi',
+        'edge-component-database',
         'layer-shopfloor',
         ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: ['edge-component-disi', 'edge-component-disc'],
+      highlightedContainerIds: ['edge-component-disi'],
       visibleConnectionIds: [
         ...allEdgeComponentConnections,
-        ...disiShopfloorConnections,
         'conn-ec-disc-bp-erp',
-      ],
-      highlightedConnectionIds: [
+        'conn-ec-appserver-ux',
+        'conn-ec-agent-management',
         ...disiShopfloorConnections,
-        'conn-ec-disc-bp-erp',
       ],
+      highlightedConnectionIds: disiShopfloorConnections,
       showFunctionIcons: false,
     },
   ];
@@ -1141,13 +1256,125 @@ function createDeploymentView(): { containers: ContainerConfig[]; connections: C
   const containers = createDefaultContainers();
   const connections = createDefaultConnections();
   
-  // TODO: Add 4 deployment pipeline step containers inside Edge box
-  // Step 1: Source/Input
-  // Step 2: Build/Transform  
-  // Step 3: Deploy/Process
-  // Step 4: Monitor/Output
+  // Add 4 deployment pipeline step containers inside Edge box
+  // Pipeline containers visualized as boxes with arrow-head styling (no SVG icons)
+  const edgeContainer = containers.find(c => c.id === 'edge');
+  if (!edgeContainer) throw new Error('Edge container not found');
   
-  // Deployment View Animation Steps - 4-step pipeline
+  const edgeX = edgeContainer.x;
+  const edgeY = edgeContainer.y;
+  const edgeWidth = edgeContainer.width;
+  const edgeHeight = edgeContainer.height;
+  
+  const pipelinePadding = 30;
+  const pipelineGap = 20;
+  const pipelineInnerWidth = edgeWidth - 2 * pipelinePadding;
+  const pipelineInnerHeight = edgeHeight - 80 - 2 * pipelinePadding; // Reserve 80px for title
+  
+  // 4 pipeline steps arranged horizontally
+  const pipelineStepWidth = (pipelineInnerWidth - pipelineGap * 3) / 4;
+  const pipelineStepHeight = pipelineInnerHeight;
+  const pipelineY = edgeY + 80 + pipelinePadding;
+  
+  // Step 1: Source/Input
+  containers.push({
+    id: 'pipeline-step-source',
+    label: 'Source',
+    x: edgeX + pipelinePadding,
+    y: pipelineY,
+    width: pipelineStepWidth,
+    height: pipelineStepHeight,
+    type: 'device',
+    state: 'hidden',
+    borderColor: '#009681',
+    backgroundColor: '#e0f7f4',
+    labelPosition: 'center',
+    fontSize: 14,
+  });
+  
+  // Step 2: Build/Transform
+  containers.push({
+    id: 'pipeline-step-build',
+    label: 'Build',
+    x: edgeX + pipelinePadding + pipelineStepWidth + pipelineGap,
+    y: pipelineY,
+    width: pipelineStepWidth,
+    height: pipelineStepHeight,
+    type: 'device',
+    state: 'hidden',
+    borderColor: '#009681',
+    backgroundColor: '#c7f0e8',
+    labelPosition: 'center',
+    fontSize: 14,
+  });
+  
+  // Step 3: Deploy/Process
+  containers.push({
+    id: 'pipeline-step-deploy',
+    label: 'Deploy',
+    x: edgeX + pipelinePadding + (pipelineStepWidth + pipelineGap) * 2,
+    y: pipelineY,
+    width: pipelineStepWidth,
+    height: pipelineStepHeight,
+    type: 'device',
+    state: 'hidden',
+    borderColor: '#009681',
+    backgroundColor: '#a8e8dc',
+    labelPosition: 'center',
+    fontSize: 14,
+  });
+  
+  // Step 4: Monitor/Output
+  containers.push({
+    id: 'pipeline-step-monitor',
+    label: 'Monitor',
+    x: edgeX + pipelinePadding + (pipelineStepWidth + pipelineGap) * 3,
+    y: pipelineY,
+    width: pipelineStepWidth,
+    height: pipelineStepHeight,
+    type: 'device',
+    state: 'hidden',
+    borderColor: '#009681',
+    backgroundColor: '#89e1d0',
+    labelPosition: 'center',
+    fontSize: 14,
+  });
+  
+  // Add pipeline flow connections (arrows between steps)
+  connections.push({
+    id: 'pipeline-conn-source-build',
+    fromId: 'pipeline-step-source',
+    toId: 'pipeline-step-build',
+    fromSide: 'right',
+    toSide: 'left',
+    state: 'hidden',
+    hasArrow: true,
+    arrowSize: 10, // Larger arrows for pipeline flow
+  });
+  
+  connections.push({
+    id: 'pipeline-conn-build-deploy',
+    fromId: 'pipeline-step-build',
+    toId: 'pipeline-step-deploy',
+    fromSide: 'right',
+    toSide: 'left',
+    state: 'hidden',
+    hasArrow: true,
+    arrowSize: 10,
+  });
+  
+  connections.push({
+    id: 'pipeline-conn-deploy-monitor',
+    fromId: 'pipeline-step-deploy',
+    toId: 'pipeline-step-monitor',
+    fromSide: 'right',
+    toSide: 'left',
+    state: 'hidden',
+    hasArrow: true,
+    arrowSize: 10,
+  });
+  
+  // Deployment View Animation Steps - 5-step pipeline reveal
   const baseShopfloorContainers = [
     'layer-shopfloor',
     'shopfloor-systems-group',
@@ -1174,7 +1401,7 @@ function createDeploymentView(): { containers: ContainerConfig[]; connections: C
   ];
   
   const steps: StepConfig[] = [
-    // Step 1: Edge Container
+    // Step 1: Edge Container (empty)
     {
       id: 'deployment-step-1',
       label: $localize`:@@deploymentStep1:Edge Container`,
@@ -1182,11 +1409,9 @@ function createDeploymentView(): { containers: ContainerConfig[]; connections: C
       visibleContainerIds: [
         'layer-dsp',
         'edge',
-        'layer-shopfloor',
-        ...baseShopfloorContainers,
       ],
       highlightedContainerIds: ['edge'],
-      visibleConnectionIds: baseShopfloorConnections,
+      visibleConnectionIds: [],
       highlightedConnectionIds: [],
       showFunctionIcons: false,
     },
@@ -1199,11 +1424,10 @@ function createDeploymentView(): { containers: ContainerConfig[]; connections: C
       visibleContainerIds: [
         'layer-dsp',
         'edge',
-        'layer-shopfloor',
-        ...baseShopfloorContainers,
+        'pipeline-step-source',
       ],
-      highlightedContainerIds: [],
-      visibleConnectionIds: baseShopfloorConnections,
+      highlightedContainerIds: ['pipeline-step-source'],
+      visibleConnectionIds: [],
       highlightedConnectionIds: [],
       showFunctionIcons: false,
     },
@@ -1216,12 +1440,12 @@ function createDeploymentView(): { containers: ContainerConfig[]; connections: C
       visibleContainerIds: [
         'layer-dsp',
         'edge',
-        'layer-shopfloor',
-        ...baseShopfloorContainers,
+        'pipeline-step-source',
+        'pipeline-step-build',
       ],
-      highlightedContainerIds: [],
-      visibleConnectionIds: baseShopfloorConnections,
-      highlightedConnectionIds: [],
+      highlightedContainerIds: ['pipeline-step-build'],
+      visibleConnectionIds: ['pipeline-conn-source-build'],
+      highlightedConnectionIds: ['pipeline-conn-source-build'],
       showFunctionIcons: false,
     },
     
@@ -1233,12 +1457,16 @@ function createDeploymentView(): { containers: ContainerConfig[]; connections: C
       visibleContainerIds: [
         'layer-dsp',
         'edge',
-        'layer-shopfloor',
-        ...baseShopfloorContainers,
+        'pipeline-step-source',
+        'pipeline-step-build',
+        'pipeline-step-deploy',
       ],
-      highlightedContainerIds: [],
-      visibleConnectionIds: baseShopfloorConnections,
-      highlightedConnectionIds: [],
+      highlightedContainerIds: ['pipeline-step-deploy'],
+      visibleConnectionIds: [
+        'pipeline-conn-source-build',
+        'pipeline-conn-build-deploy',
+      ],
+      highlightedConnectionIds: ['pipeline-conn-build-deploy'],
       showFunctionIcons: false,
     },
     
@@ -1257,11 +1485,18 @@ function createDeploymentView(): { containers: ContainerConfig[]; connections: C
         'ux',
         'edge',
         'management',
+        'pipeline-step-source',
+        'pipeline-step-build',
+        'pipeline-step-deploy',
+        'pipeline-step-monitor',
         'layer-shopfloor',
         ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: [],
+      highlightedContainerIds: ['pipeline-step-monitor'],
       visibleConnectionIds: [
+        'pipeline-conn-source-build',
+        'pipeline-conn-build-deploy',
+        'pipeline-conn-deploy-monitor',
         'conn-ux-edge',
         'conn-edge-management',
         'conn-erp-edge',
@@ -1270,7 +1505,7 @@ function createDeploymentView(): { containers: ContainerConfig[]; connections: C
         'conn-datalake-edge',
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: [],
+      highlightedConnectionIds: ['pipeline-conn-deploy-monitor'],
       showFunctionIcons: false,
     },
   ];
