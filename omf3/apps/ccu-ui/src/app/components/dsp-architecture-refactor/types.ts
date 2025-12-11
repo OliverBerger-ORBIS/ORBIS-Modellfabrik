@@ -95,6 +95,8 @@ export interface ConnectionConfig {
   hasArrow?: boolean;
   /** Whether connection is bidirectional */
   bidirectional?: boolean;
+  /** Size of arrow tips (default: 8) */
+  arrowSize?: number;
 }
 
 /**

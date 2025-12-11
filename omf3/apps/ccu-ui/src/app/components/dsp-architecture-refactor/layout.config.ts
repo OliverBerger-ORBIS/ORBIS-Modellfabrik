@@ -160,25 +160,32 @@ export function createDefaultContainers(): ContainerConfig[] {
   });
 
   // ========== DSP EDGE COMPONENTS (inside Edge container) ==========
-  // Layout: 3 rows - Row 1: 2 components, Row 2: 3 components, Row 3: 3 components
+  // Layout: 3 rows with 8 components - all same size, evenly spaced
+  // Row 1: DISC, Event Bus (2 components - centered with gaps)
+  // Row 2: App Server, Router, Agent (3 components)
+  // Row 3: Log Server, DISI, Database (3 components)
+  
   const edgeComponentPadding = 15; // Padding inside edge box
   const edgeComponentGap = 12; // Gap between components
   const edgeInnerWidth = edgeBoxWidth - 2 * edgeComponentPadding;
   const edgeInnerHeight = LAYOUT.DSP_BOX_HEIGHT - 60 - 2 * edgeComponentPadding; // Reserve 60px for title/logo
   
-  // Row 1: 2 components (DISC, Event Bus)
-  const row1Count = 2;
-  const row1Width = (edgeInnerWidth - edgeComponentGap * (row1Count - 1)) / row1Count;
-  const row1Height = (edgeInnerHeight - edgeComponentGap * 2) / 3; // 3 rows total
+  // All components same size based on 3-column grid (widest row)
+  const componentColumns = 3;
+  const componentWidth = (edgeInnerWidth - edgeComponentGap * (componentColumns - 1)) / componentColumns;
+  const componentHeight = (edgeInnerHeight - edgeComponentGap * 2) / 3; // 3 rows total
+  
+  // Row 1: 2 components (DISC, Event Bus) - centered with gaps
   const row1Y = edgeY + 60 + edgeComponentPadding;
+  const row1Offset = (componentWidth + edgeComponentGap) / 2; // Center 2 components in 3-column grid
   
   containers.push({
     id: 'edge-component-disc',
     label: '',
-    x: edgeX + edgeComponentPadding,
+    x: edgeX + edgeComponentPadding + row1Offset,
     y: row1Y,
-    width: row1Width,
-    height: row1Height,
+    width: componentWidth,
+    height: componentHeight,
     type: 'device',
     state: 'hidden',
     logoIconKey: 'edge-component-disc' as IconKey,
@@ -191,10 +198,10 @@ export function createDefaultContainers(): ContainerConfig[] {
   containers.push({
     id: 'edge-component-event-bus',
     label: '',
-    x: edgeX + edgeComponentPadding + row1Width + edgeComponentGap,
+    x: edgeX + edgeComponentPadding + row1Offset + componentWidth + edgeComponentGap,
     y: row1Y,
-    width: row1Width,
-    height: row1Height,
+    width: componentWidth,
+    height: componentHeight,
     type: 'device',
     state: 'hidden',
     logoIconKey: 'edge-component-event-bus' as IconKey,
@@ -205,18 +212,15 @@ export function createDefaultContainers(): ContainerConfig[] {
   });
   
   // Row 2: 3 components (App Server, Router, Agent)
-  const row2Count = 3;
-  const row2Width = (edgeInnerWidth - edgeComponentGap * (row2Count - 1)) / row2Count;
-  const row2Height = row1Height;
-  const row2Y = row1Y + row1Height + edgeComponentGap;
+  const row2Y = row1Y + componentHeight + edgeComponentGap;
   
   containers.push({
     id: 'edge-component-app-server',
     label: '',
     x: edgeX + edgeComponentPadding,
     y: row2Y,
-    width: row2Width,
-    height: row2Height,
+    width: componentWidth,
+    height: componentHeight,
     type: 'device',
     state: 'hidden',
     logoIconKey: 'edge-component-app-server' as IconKey,
@@ -229,10 +233,10 @@ export function createDefaultContainers(): ContainerConfig[] {
   containers.push({
     id: 'edge-component-router',
     label: '',
-    x: edgeX + edgeComponentPadding + row2Width + edgeComponentGap,
+    x: edgeX + edgeComponentPadding + componentWidth + edgeComponentGap,
     y: row2Y,
-    width: row2Width,
-    height: row2Height,
+    width: componentWidth,
+    height: componentHeight,
     type: 'device',
     state: 'hidden',
     logoIconKey: 'edge-component-router' as IconKey,
@@ -245,10 +249,10 @@ export function createDefaultContainers(): ContainerConfig[] {
   containers.push({
     id: 'edge-component-agent',
     label: '',
-    x: edgeX + edgeComponentPadding + (row2Width + edgeComponentGap) * 2,
+    x: edgeX + edgeComponentPadding + (componentWidth + edgeComponentGap) * 2,
     y: row2Y,
-    width: row2Width,
-    height: row2Height,
+    width: componentWidth,
+    height: componentHeight,
     type: 'device',
     state: 'hidden',
     logoIconKey: 'edge-component-agent' as IconKey,
@@ -259,18 +263,15 @@ export function createDefaultContainers(): ContainerConfig[] {
   });
   
   // Row 3: 3 components (Log Server, DISI, Database)
-  const row3Count = 3;
-  const row3Width = row2Width;
-  const row3Height = row1Height;
-  const row3Y = row2Y + row2Height + edgeComponentGap;
+  const row3Y = row2Y + componentHeight + edgeComponentGap;
   
   containers.push({
     id: 'edge-component-log-server',
     label: '',
     x: edgeX + edgeComponentPadding,
     y: row3Y,
-    width: row3Width,
-    height: row3Height,
+    width: componentWidth,
+    height: componentHeight,
     type: 'device',
     state: 'hidden',
     logoIconKey: 'edge-component-log-server' as IconKey,
@@ -283,10 +284,10 @@ export function createDefaultContainers(): ContainerConfig[] {
   containers.push({
     id: 'edge-component-disi',
     label: '',
-    x: edgeX + edgeComponentPadding + row3Width + edgeComponentGap,
+    x: edgeX + edgeComponentPadding + componentWidth + edgeComponentGap,
     y: row3Y,
-    width: row3Width,
-    height: row3Height,
+    width: componentWidth,
+    height: componentHeight,
     type: 'device',
     state: 'hidden',
     logoIconKey: 'edge-component-disi' as IconKey,
@@ -299,10 +300,10 @@ export function createDefaultContainers(): ContainerConfig[] {
   containers.push({
     id: 'edge-component-database',
     label: '',
-    x: edgeX + edgeComponentPadding + (row3Width + edgeComponentGap) * 2,
+    x: edgeX + edgeComponentPadding + (componentWidth + edgeComponentGap) * 2,
     y: row3Y,
-    width: row3Width,
-    height: row3Height,
+    width: componentWidth,
+    height: componentHeight,
     type: 'device',
     state: 'hidden',
     logoIconKey: 'edge-component-database' as IconKey,
@@ -844,9 +845,146 @@ function createComponentView(): { containers: ContainerConfig[]; connections: Co
   const containers = createDefaultContainers();
   const connections = createDefaultConnections();
   
-  // Component View Animation Steps - Based on existing DSP Tab reference
+  // Add bidirectional connections between edge components
+  // All components connect to Router as the central hub
+  const edgeComponentConnections: ConnectionConfig[] = [
+    // DISC <-> Router
+    {
+      id: 'conn-ec-disc-router',
+      fromId: 'edge-component-disc',
+      toId: 'edge-component-router',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+      arrowSize: 6, // Shorter arrow tips
+    },
+    // Event Bus <-> Router
+    {
+      id: 'conn-ec-eventbus-router',
+      fromId: 'edge-component-event-bus',
+      toId: 'edge-component-router',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+      arrowSize: 6,
+    },
+    // App Server <-> Router
+    {
+      id: 'conn-ec-appserver-router',
+      fromId: 'edge-component-app-server',
+      toId: 'edge-component-router',
+      fromSide: 'right',
+      toSide: 'left',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+      arrowSize: 6,
+    },
+    // Agent <-> Router
+    {
+      id: 'conn-ec-agent-router',
+      fromId: 'edge-component-agent',
+      toId: 'edge-component-router',
+      fromSide: 'left',
+      toSide: 'right',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+      arrowSize: 6,
+    },
+    // Log Server <-> Router
+    {
+      id: 'conn-ec-logserver-router',
+      fromId: 'edge-component-log-server',
+      toId: 'edge-component-router',
+      fromSide: 'top',
+      toSide: 'bottom',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+      arrowSize: 6,
+    },
+    // DISI <-> Router
+    {
+      id: 'conn-ec-disi-router',
+      fromId: 'edge-component-disi',
+      toId: 'edge-component-router',
+      fromSide: 'top',
+      toSide: 'bottom',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+      arrowSize: 6,
+    },
+    // Database <-> Router
+    {
+      id: 'conn-ec-database-router',
+      fromId: 'edge-component-database',
+      toId: 'edge-component-router',
+      fromSide: 'top',
+      toSide: 'bottom',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+      arrowSize: 6,
+    },
+    // External connections from edge components
+    // DISI to Shopfloor Systems (using L-shaped arrows)
+    {
+      id: 'conn-ec-disi-sf-system-bp',
+      fromId: 'edge-component-disi',
+      toId: 'shopfloor-system-bp',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+      arrowSize: 6,
+    },
+    {
+      id: 'conn-ec-disi-sf-system-fts',
+      fromId: 'edge-component-disi',
+      toId: 'shopfloor-system-fts',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+      arrowSize: 6,
+    },
+    // DISI to Shopfloor Devices
+    ...Array.from({ length: 6 }, (_, i) => ({
+      id: `conn-ec-disi-sf-device-${i + 1}`,
+      fromId: 'edge-component-disi',
+      toId: `shopfloor-device-${i + 1}`,
+      fromSide: 'bottom' as const,
+      toSide: 'top' as const,
+      state: 'hidden' as const,
+      hasArrow: true,
+      bidirectional: true,
+      arrowSize: 6,
+    })),
+    // DISC to Business ERP
+    {
+      id: 'conn-ec-disc-bp-erp',
+      fromId: 'edge-component-disc',
+      toId: 'bp-erp',
+      fromSide: 'top',
+      toSide: 'bottom',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+      arrowSize: 6,
+    },
+  ];
+  
+  connections.push(...edgeComponentConnections);
+  
   const baseShopfloorContainers = [
-    'layer-shopfloor',
     'shopfloor-systems-group',
     'shopfloor-system-bp',
     'shopfloor-system-fts',
@@ -858,100 +996,51 @@ function createComponentView(): { containers: ContainerConfig[]; connections: Co
     'shopfloor-device-5',
     'shopfloor-device-6',
   ];
-
-  const baseShopfloorConnections = [
-    'conn-edge-system-bp',
-    'conn-edge-system-fts',
-    'conn-edge-device-1',
-    'conn-edge-device-2',
-    'conn-edge-device-3',
-    'conn-edge-device-4',
-    'conn-edge-device-5',
-    'conn-edge-device-6',
+  
+  // Edge component connection IDs for internal routing
+  const allEdgeComponentConnections = [
+    'conn-ec-disc-router',
+    'conn-ec-eventbus-router',
+    'conn-ec-appserver-router',
+    'conn-ec-agent-router',
+    'conn-ec-logserver-router',
+    'conn-ec-disi-router',
+    'conn-ec-database-router',
+  ];
+  
+  // External connections from edge components to shopfloor
+  const disiShopfloorConnections = [
+    'conn-ec-disi-sf-system-bp',
+    'conn-ec-disi-sf-system-fts',
+    'conn-ec-disi-sf-device-1',
+    'conn-ec-disi-sf-device-2',
+    'conn-ec-disi-sf-device-3',
+    'conn-ec-disi-sf-device-4',
+    'conn-ec-disi-sf-device-5',
+    'conn-ec-disi-sf-device-6',
   ];
   
   const steps: StepConfig[] = [
-    // Step 1: Edge Container + Shopfloor
+    // Step 1: Empty DSP layer with Edge container only
     {
       id: 'component-step-1',
       label: $localize`:@@componentStep1:Edge Container`,
-      description: $localize`:@@componentStep1Desc:DSP Edge provides the foundation for distributed shopfloor processing.`,
+      description: $localize`:@@componentStep1Desc:DSP Edge container ready for component deployment.`,
       visibleContainerIds: [
         'layer-dsp',
         'edge',
-        'layer-shopfloor',
-        ...baseShopfloorContainers,
       ],
       highlightedContainerIds: ['edge'],
-      visibleConnectionIds: baseShopfloorConnections,
+      visibleConnectionIds: [],
       highlightedConnectionIds: [],
       showFunctionIcons: false,
     },
     
-    // Step 2: DISC Component
+    // Step 2: All edge components added
     {
       id: 'component-step-2',
-      label: $localize`:@@componentStep2:DISC`,
-      description: $localize`:@@componentStep2Desc:Data Integration and Synchronization Component handles data flow.`,
-      visibleContainerIds: [
-        'layer-dsp',
-        'edge',
-        'edge-component-disc',
-        'layer-shopfloor',
-        ...baseShopfloorContainers,
-      ],
-      highlightedContainerIds: ['edge-component-disc'],
-      visibleConnectionIds: baseShopfloorConnections,
-      highlightedConnectionIds: [],
-      showFunctionIcons: false,
-    },
-    
-    // Step 3: Event Bus Component
-    {
-      id: 'component-step-3',
-      label: $localize`:@@componentStep3:Event Bus`,
-      description: $localize`:@@componentStep3Desc:Event Bus enables real-time event-driven communication.`,
-      visibleContainerIds: [
-        'layer-dsp',
-        'edge',
-        'edge-component-disc',
-        'edge-component-event-bus',
-        'layer-shopfloor',
-        ...baseShopfloorContainers,
-      ],
-      highlightedContainerIds: ['edge-component-event-bus'],
-      visibleConnectionIds: baseShopfloorConnections,
-      highlightedConnectionIds: [],
-      showFunctionIcons: false,
-    },
-    
-    // Step 4: App Server, Router, Agent
-    {
-      id: 'component-step-4',
-      label: $localize`:@@componentStep4:Core Services`,
-      description: $localize`:@@componentStep4Desc:App Server, Router, and Agent provide core processing capabilities.`,
-      visibleContainerIds: [
-        'layer-dsp',
-        'edge',
-        'edge-component-disc',
-        'edge-component-event-bus',
-        'edge-component-app-server',
-        'edge-component-router',
-        'edge-component-agent',
-        'layer-shopfloor',
-        ...baseShopfloorContainers,
-      ],
-      highlightedContainerIds: ['edge-component-app-server', 'edge-component-router', 'edge-component-agent'],
-      visibleConnectionIds: baseShopfloorConnections,
-      highlightedConnectionIds: [],
-      showFunctionIcons: false,
-    },
-    
-    // Step 5: Log Server, DISI, Database
-    {
-      id: 'component-step-5',
-      label: $localize`:@@componentStep5:Data Services`,
-      description: $localize`:@@componentStep5Desc:Log Server, DISI, and Database manage persistence and data integration.`,
+      label: $localize`:@@componentStep2:Edge Components`,
+      description: $localize`:@@componentStep2Desc:Eight internal edge components provide distributed processing capabilities.`,
       visibleContainerIds: [
         'layer-dsp',
         'edge',
@@ -963,28 +1052,54 @@ function createComponentView(): { containers: ContainerConfig[]; connections: Co
         'edge-component-log-server',
         'edge-component-disi',
         'edge-component-database',
-        'layer-shopfloor',
-        ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: ['edge-component-log-server', 'edge-component-disi', 'edge-component-database'],
-      visibleConnectionIds: baseShopfloorConnections,
+      highlightedContainerIds: [
+        'edge-component-disc',
+        'edge-component-event-bus',
+        'edge-component-app-server',
+        'edge-component-router',
+        'edge-component-agent',
+        'edge-component-log-server',
+        'edge-component-disi',
+        'edge-component-database',
+      ],
+      visibleConnectionIds: [],
       highlightedConnectionIds: [],
       showFunctionIcons: false,
     },
     
-    // Step 6: Complete Component Architecture
+    // Step 3: Internal connections between components and router
     {
-      id: 'component-step-6',
-      label: $localize`:@@componentStep6:Complete Architecture`,
-      description: $localize`:@@componentStep6Desc:All 8 edge components working together provide comprehensive shopfloor intelligence.`,
+      id: 'component-step-3',
+      label: $localize`:@@componentStep3:Internal Routing`,
+      description: $localize`:@@componentStep3Desc:Router connects all edge components for internal communication.`,
+      visibleContainerIds: [
+        'layer-dsp',
+        'edge',
+        'edge-component-disc',
+        'edge-component-event-bus',
+        'edge-component-app-server',
+        'edge-component-router',
+        'edge-component-agent',
+        'edge-component-log-server',
+        'edge-component-disi',
+        'edge-component-database',
+      ],
+      highlightedContainerIds: ['edge-component-router'],
+      visibleConnectionIds: allEdgeComponentConnections,
+      highlightedConnectionIds: allEdgeComponentConnections,
+      showFunctionIcons: false,
+    },
+    
+    // Step 4: Connections from edge components to shopfloor and business layers
+    {
+      id: 'component-step-4',
+      label: $localize`:@@componentStep4:External Integration`,
+      description: $localize`:@@componentStep4Desc:DISI connects to shopfloor devices and systems. DISC integrates with business ERP.`,
       visibleContainerIds: [
         'layer-business',
         'bp-erp',
-        'bp-cloud-apps',
-        'bp-analytics',
-        'bp-data-lake',
         'layer-dsp',
-        'ux',
         'edge',
         'edge-component-disc',
         'edge-component-event-bus',
@@ -994,21 +1109,19 @@ function createComponentView(): { containers: ContainerConfig[]; connections: Co
         'edge-component-log-server',
         'edge-component-disi',
         'edge-component-database',
-        'management',
         'layer-shopfloor',
         ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: [],
+      highlightedContainerIds: ['edge-component-disi', 'edge-component-disc'],
       visibleConnectionIds: [
-        'conn-ux-edge',
-        'conn-edge-management',
-        'conn-erp-edge',
-        'conn-cloud-edge',
-        'conn-analytics-edge',
-        'conn-datalake-edge',
-        ...baseShopfloorConnections,
+        ...allEdgeComponentConnections,
+        ...disiShopfloorConnections,
+        'conn-ec-disc-bp-erp',
       ],
-      highlightedConnectionIds: [],
+      highlightedConnectionIds: [
+        ...disiShopfloorConnections,
+        'conn-ec-disc-bp-erp',
+      ],
       showFunctionIcons: false,
     },
   ];
