@@ -1,0 +1,52 @@
+<div class="demo-page">
+  <!-- Page Header -->
+  <header class="demo-header">
+    <h1 class="demo-title">{{ pageTitle }}</h1>
+    <p class="demo-description">{{ pageDescription }}</p>
+    
+    <!-- View Mode Controls -->
+    <div class="demo-controls">
+      <div class="control-group">
+        <label class="control-label">{{ labelViewMode }}</label>
+        <div class="view-mode-buttons">
+          <button
+            class="view-mode-btn"
+            [class.active]="viewMode === 'functional'"
+            (click)="selectViewMode('functional')"
+            type="button">
+            {{ labelFunctional }}
+          </button>
+          <button
+            class="view-mode-btn"
+            [class.active]="viewMode === 'component'"
+            (click)="selectViewMode('component')"
+            type="button">
+            {{ labelComponent }}
+          </button>
+          <button
+            class="view-mode-btn"
+            [class.active]="viewMode === 'deployment'"
+            (click)="selectViewMode('deployment')"
+            type="button">
+            {{ labelDeployment }}
+          </button>
+        </div>
+      </div>
+      
+      <div class="control-group">
+        <label class="checkbox-label">
+          <input type="checkbox" checked />
+          <span>{{ labelEnableAnimations }}</span>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <!-- Architecture Component -->
+  <div class="architecture-wrapper">
+    <app-dsp-architecture-refactor
+      [viewMode]="viewMode"
+      (actionTriggered)="onActionTriggered($event)">
+    </app-dsp-architecture-refactor>
+  </div>
+</div>

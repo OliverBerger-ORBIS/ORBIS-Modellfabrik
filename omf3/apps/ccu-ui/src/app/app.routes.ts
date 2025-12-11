@@ -74,6 +74,16 @@ export const appRoutes: Routes = [
         loadComponent: () =>
           import('./tabs/track-trace-tab.component').then((m) => m.TrackTraceTabComponent),
       },
+      {
+        path: 'refactor-demo',
+        loadComponent: () =>
+          import('./pages/refactor-demo/refactor-demo-page.component').then((m) => m.RefactorDemoPageComponent),
+      },
+      {
+        path: 'refactor',
+        loadComponent: () =>
+          import('./pages/refactor-demo/refactor-demo-page.component').then((m) => m.RefactorDemoPageComponent),
+      },
     ],
   },
   {

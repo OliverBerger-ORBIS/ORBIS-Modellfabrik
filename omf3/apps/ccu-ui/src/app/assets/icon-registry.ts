@@ -17,6 +17,14 @@ export type IconKey =
   | 'edge-analytics'
   | 'edge-workflow'
   | 'edge-network'
+  | 'edge-component-disc'
+  | 'edge-component-event-bus'
+  | 'edge-component-app-server'
+  | 'edge-component-router'
+  | 'edge-component-agent'
+  | 'edge-component-log-server'
+  | 'edge-component-disi'
+  | 'edge-component-database'
   | 'device-drill'
   | 'device-hbw'
   | 'device-mill'
@@ -67,6 +75,15 @@ export const ICON_MAP: Record<IconKey, string> = {
   'edge-analytics': ICONS.dsp.functions.analytics,
   'edge-workflow': ICONS.dsp.functions.workflow,
   'edge-network': ICONS.dsp.functions.connectivity,
+
+  'edge-component-disc': ICONS.dsp.edgeComponents.disc,
+  'edge-component-event-bus': ICONS.dsp.edgeComponents.eventBus,
+  'edge-component-app-server': ICONS.dsp.edgeComponents.appServer,
+  'edge-component-router': ICONS.dsp.edgeComponents.router,
+  'edge-component-agent': ICONS.dsp.edgeComponents.agent,
+  'edge-component-log-server': ICONS.dsp.edgeComponents.logServer,
+  'edge-component-disi': ICONS.dsp.edgeComponents.disi,
+  'edge-component-database': ICONS.dsp.edgeComponents.database,
 
   'device-drill': ICONS.shopfloor.stations.drill,
   'device-hbw': ICONS.shopfloor.stations.hbw,

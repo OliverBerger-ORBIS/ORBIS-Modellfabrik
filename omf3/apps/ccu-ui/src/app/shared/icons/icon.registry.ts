@@ -85,6 +85,16 @@ export const ICONS = {
       dataStorage: 'assets/svg/dsp/functions/edge-data-storage.svg',
       workflow: 'assets/svg/dsp/functions/edge-workflow.svg',
     },
+    edgeComponents: {
+      disc: 'assets/svg/dsp/edge-components/edge-disc.svg',
+      eventBus: 'assets/svg/dsp/edge-components/edge-event-bus.svg',
+      appServer: 'assets/svg/dsp/edge-components/edge-app-server.svg',
+      router: 'assets/svg/dsp/edge-components/edge-router.svg',
+      agent: 'assets/svg/dsp/edge-components/edge-agent.svg',
+      logServer: 'assets/svg/dsp/edge-components/edge-log-server.svg',
+      disi: 'assets/svg/dsp/edge-components/edge-disi.svg',
+      database: 'assets/svg/dsp/edge-components/edge-database.svg',
+    },
   },
   business: {
     erp: 'assets/svg/business/erp-application.svg',
