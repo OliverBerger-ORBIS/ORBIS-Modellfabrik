@@ -23,7 +23,7 @@ export type ConnectionState = 'normal' | 'highlight' | 'dimmed' | 'hidden';
 export type AnchorSide = 'top' | 'bottom' | 'left' | 'right';
 
 /** Container type classification */
-export type ContainerType = 'layer' | 'box' | 'device' | 'ux' | 'business' | 'shopfloor' | 'shopfloor-group' | 'dsp-edge' | 'dsp-cloud' | 'label' | 'environment-label';
+export type ContainerType = 'layer' | 'box' | 'device' | 'ux' | 'business' | 'shopfloor' | 'shopfloor-group' | 'dsp-edge' | 'dsp-cloud' | 'label' | 'environment-label' | 'pipeline';
 
 /**
  * Configuration for function icons displayed inside containers.

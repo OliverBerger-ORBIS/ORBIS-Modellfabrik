@@ -79,6 +79,28 @@
           <polygon points="0 0, 10 3.5, 0 7" fill="#ff9900" />
         </marker>
         <marker
+          id="arrow-head-small"
+          markerWidth="7.5"
+          markerHeight="5.25"
+          refX="6.75"
+          refY="2.625"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="0 0, 7.5 2.625, 0 5.25" fill="#7f8da5" />
+        </marker>
+        <marker
+          id="arrow-head-small-highlight"
+          markerWidth="7.5"
+          markerHeight="5.25"
+          refX="6.75"
+          refY="2.625"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="0 0, 7.5 2.625, 0 5.25" fill="#ff9900" />
+        </marker>
+        <marker
           id="arrow-head-reverse"
           markerWidth="10"
           markerHeight="7"
@@ -99,6 +121,28 @@
           markerUnits="strokeWidth"
         >
           <polygon points="10 0, 0 3.5, 10 7" fill="#ff9900" />
+        </marker>
+        <marker
+          id="arrow-head-reverse-small"
+          markerWidth="7.5"
+          markerHeight="5.25"
+          refX="0.75"
+          refY="2.625"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="7.5 0, 0 2.625, 7.5 5.25" fill="#7f8da5" />
+        </marker>
+        <marker
+          id="arrow-head-reverse-small-highlight"
+          markerWidth="7.5"
+          markerHeight="5.25"
+          refX="0.75"
+          refY="2.625"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="7.5 0, 0 2.625, 7.5 5.25" fill="#ff9900" />
         </marker>
       </defs>
 
@@ -151,17 +195,27 @@
             [attr.role]="container.type !== 'label' ? 'button' : null"
           >
             <!-- Container background -->
-            <rect
-              *ngIf="container.type !== 'label'"
-              [attr.width]="container.width"
-              [attr.height]="container.height"
-              [attr.fill]="getContainerFill(container)"
-              [attr.stroke]="getContainerStroke(container)"
-              [attr.stroke-width]="getContainerStrokeWidth(container)"
-              [attr.rx]="container.isGroup ? 16 : 8"
-              [attr.ry]="container.isGroup ? 16 : 8"
-              class="container__bg"
-            />
+            <ng-container [ngSwitch]="container.type">
+              <polygon
+                *ngSwitchCase="'pipeline'"
+                [attr.points]="getPipelinePoints(container)"
+                [attr.fill]="getContainerFill(container)"
+                [attr.stroke]="getContainerStroke(container)"
+                [attr.stroke-width]="getContainerStrokeWidth(container)"
+                class="container__bg"
+              />
+              <rect
+                *ngSwitchDefault
+                [attr.width]="container.width"
+                [attr.height]="container.height"
+                [attr.fill]="getContainerFill(container)"
+                [attr.stroke]="getContainerStroke(container)"
+                [attr.stroke-width]="getContainerStrokeWidth(container)"
+                [attr.rx]="container.isGroup ? 16 : 8"
+                [attr.ry]="container.isGroup ? 16 : 8"
+                class="container__bg"
+              />
+            </ng-container>
 
             <!-- Logo (top-left) for ALL DSP containers (ux, dsp-edge, dsp-cloud) - same position and size (48px) -->
             <image
@@ -211,10 +265,10 @@
             <image
               *ngIf="container.type === 'device' && container.logoIconKey"
               [attr.href]="resolveIconPath(container.logoIconKey)"
-              [attr.x]="(container.width - 70) / 2"
+              [attr.x]="(container.width - getDeviceIconSize(container)) / 2"
               [attr.y]="12"
-              width="70"
-              height="70"
+              [attr.width]="getDeviceIconSize(container)"
+              [attr.height]="getDeviceIconSize(container)"
               class="container__device-icon"
             />
 
@@ -293,6 +347,7 @@
               [attr.font-size]="container.fontSize || 12"
               [attr.fill]="container.textColor || '#1e2d3d'"
               [attr.font-weight]="container.type === 'label' ? 600 : 500"
+              [attr.dominant-baseline]="container.type === 'pipeline' ? 'middle' : 'auto'"
               class="container__label"
             >
               <ng-container *ngIf="isMultilineLabel(container.id)">
@@ -380,7 +435,7 @@
         <!-- Semi-transparent background box -->
         <rect
           [attr.x]="20"
-          [attr.y]="20"
+          [attr.y]="0"
           [attr.width]="viewBoxWidth - 40"
           [attr.height]="80"
           fill="rgba(100, 167, 11, 0.95)"
@@ -391,7 +446,7 @@
         <!-- Step title -->
         <text
           [attr.x]="viewBoxWidth / 2"
-          [attr.y]="45"
+          [attr.y]="25"
           text-anchor="middle"
           font-size="20"
           font-weight="700"
@@ -403,7 +458,7 @@
         <!-- Step description -->
         <text
           [attr.x]="viewBoxWidth / 2"
-          [attr.y]="72"
+          [attr.y]="52"
           text-anchor="middle"
           font-size="14"
           font-weight="400"
@@ -424,8 +479,12 @@
             fill="none"
             [attr.stroke]="conn.state === 'highlight' ? '#ff9900' : '#7f8da5'"
             [attr.stroke-width]="conn.state === 'highlight' ? 2.5 : 2"
-            [attr.marker-end]="conn.hasArrow ? (conn.state === 'highlight' ? 'url(#arrow-head-highlight)' : 'url(#arrow-head)') : null"
-            [attr.marker-start]="conn.bidirectional ? (conn.state === 'highlight' ? 'url(#arrow-head-reverse-highlight)' : 'url(#arrow-head-reverse)') : null"
+            [attr.marker-end]="conn.hasArrow ? (conn.state === 'highlight'
+              ? (isEcConnection(conn) ? 'url(#arrow-head-small-highlight)' : 'url(#arrow-head-highlight)')
+              : (isEcConnection(conn) ? 'url(#arrow-head-small)' : 'url(#arrow-head)')) : null"
+            [attr.marker-start]="conn.bidirectional ? (conn.state === 'highlight'
+              ? (isEcConnection(conn) ? 'url(#arrow-head-reverse-small-highlight)' : 'url(#arrow-head-reverse-highlight)')
+              : (isEcConnection(conn) ? 'url(#arrow-head-reverse-small)' : 'url(#arrow-head-reverse)')) : null"
           />
         </ng-container>
       </g>
@@ -436,11 +495,9 @@
   <!-- Navigation Controls -->
   <footer class="dsp-architecture__controls">
     <div class="controls__step-indicator">
-      <span class="step-label">{{ steps[currentStepIndex].label }}</span>
-      <span class="step-count">({{ currentStepIndex + 1 }} / {{ steps.length }})</span>
-      <p *ngIf="steps[currentStepIndex].description" class="step-description">
-        {{ steps[currentStepIndex].description }}
-      </p>
+      <span class="step-label">
+        {{ steps[currentStepIndex].label }} ({{ currentStepIndex + 1 }} / {{ steps.length }})
+      </span>
     </div>
     <div class="controls__buttons">
       <button
@@ -457,6 +514,15 @@
         (click)="toggleAutoPlay()"
       >
         {{ isAutoPlaying ? btnStopPlay : btnAutoPlay }}
+      </button>
+      <button
+        type="button"
+        class="nav-btn"
+        (click)="toggleLoop()"
+        [class.nav-btn--primary]="loopToStart"
+        [attr.aria-pressed]="loopToStart"
+      >
+        Loop {{ loopToStart ? 'On' : 'Off' }}
       </button>
       <button
         type="button"

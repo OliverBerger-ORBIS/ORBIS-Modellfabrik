@@ -75,14 +75,9 @@ export const appRoutes: Routes = [
           import('./tabs/track-trace-tab.component').then((m) => m.TrackTraceTabComponent),
       },
       {
-        path: 'refactor-demo',
+        path: 'dsp-architecture',
         loadComponent: () =>
-          import('./pages/refactor-demo/refactor-demo-page.component').then((m) => m.RefactorDemoPageComponent),
-      },
-      {
-        path: 'refactor',
-        loadComponent: () =>
-          import('./pages/refactor-demo/refactor-demo-page.component').then((m) => m.RefactorDemoPageComponent),
+          import('./pages/refactor-demo/dsp-architecture.component').then((m) => m.DspArchitecturePageComponent),
       },
       {
         path: 'presentation',

@@ -6,18 +6,18 @@
 
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { DspArchitectureRefactorComponent } from '../../components/dsp-architecture-refactor/dsp-architecture-refactor.component';
+import { DspArchitectureRefactorComponent } from '../../components/dsp-architecture-refactor/dsp-architecture.component';
 import type { ViewMode } from '../../components/dsp-architecture-refactor/types';
 
 @Component({
-  selector: 'app-refactor-demo-page',
+  selector: 'app-dsp-architecture-page',
   standalone: true,
   imports: [CommonModule, DspArchitectureRefactorComponent],
-  templateUrl: './refactor-demo-page.component.html',
-  styleUrls: ['./refactor-demo-page.component.scss'],
+  templateUrl: './dsp-architecture.component.html',
+  styleUrls: ['./dsp-architecture.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RefactorDemoPageComponent {
+export class DspArchitecturePageComponent {
   // View mode state
   protected viewMode: ViewMode = 'functional';
   

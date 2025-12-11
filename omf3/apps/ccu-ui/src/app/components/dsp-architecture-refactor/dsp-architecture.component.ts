@@ -25,6 +25,7 @@ import {
   VIEWBOX_WIDTH,
   VIEWBOX_HEIGHT,
 } from './layout.config';
+import { ModuleNameService } from '../../services/module-name.service';
 
 /**
  * DspArchitectureRefactorComponent - Refactored animated SVG-based architecture diagram.
@@ -37,8 +38,8 @@ import {
   standalone: true,
   selector: 'app-dsp-architecture-refactor',
   imports: [CommonModule],
-  templateUrl: './dsp-architecture-refactor.component.html',
-  styleUrl: './dsp-architecture-refactor.component.scss',
+  templateUrl: './dsp-architecture.component.html',
+  styleUrl: './dsp-architecture.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDestroy {
@@ -54,6 +55,7 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
   protected currentStepIndex = 0;
   protected isAutoPlaying = false;
   private autoPlayInterval: ReturnType<typeof setInterval> | null = null;
+  protected loopToStart = true;
 
   // Zoom state
   protected zoom = 1;
@@ -88,38 +90,43 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
 
   // Container labels
   protected readonly containerLabels: Record<string, string> = {
-    'layer-business': this.labelBusinessProcesses,
+    'layer-bp': this.labelBusinessProcesses,
     'layer-dsp': this.labelDsp,
-    'layer-shopfloor': this.labelShopfloor,
-    'shopfloor-systems-group': this.labelSystems,
-    'shopfloor-devices-group': this.labelDevices,
-    'ux': this.labelSmartfactoryDashboard,
-    'edge': this.labelEdge,
-    'management': this.labelManagementCockpit,
-    'erp-application': $localize`:@@dspArchLabelERP:ERP Applications`,
-    'bp-cloud-apps': $localize`:@@dspArchLabelCloudApps:Cloud\nApplications`,
+    'layer-sf': this.labelShopfloor,
+    'sf-systems-group': this.labelSystems,
+    'sf-devices-group': this.labelDevices,
+    'dsp-label-onpremise': this.labelOnPremise,
+    'dsp-label-cloud': this.labelCloud,
+    'dsp-ux': this.labelSmartfactoryDashboard,
+    'dsp-edge': this.labelEdge,
+    'dsp-mc': this.labelManagementCockpit,
+    'bp-erp': $localize`:@@dspArchLabelERP:ERP Applications`,
+    'bp-cloud': $localize`:@@dspArchLabelCloudApps:Cloud\nApplications`,
     'bp-analytics': $localize`:@@dspArchLabelAnalytics:Analytical\nApplications`,
     'bp-data-lake': $localize`:@@dspArchLabelDataLake:Data Lake`,
-    'shopfloor-system-bp': $localize`:@@dspArchLabelMES:MES`,
-    'shopfloor-system-fts': $localize`:@@dspArchLabelFTS:AGV\nSystem`,
-    'shopfloor-device-1': $localize`:@@deviceMILL:Mill`,
-    'shopfloor-device-2': $localize`:@@deviceDRILL:Drill`,
-    'shopfloor-device-3': $localize`:@@deviceAIQS:AIQS`,
-    'shopfloor-device-4': $localize`:@@deviceHBW:HBW`,
-    'shopfloor-device-5': $localize`:@@deviceDPS:DPS`,
-    'shopfloor-device-6': $localize`:@@deviceCHRG:Charger`,
+    'sf-system-bp': $localize`:@@dspArchLabelMES:MES`,
+    'sf-system-fts': $localize`:@@dspArchLabelFTS:AGV\nSystem`,
+    'sf-device-mill': $localize`:@@deviceMILL:Mill`,
+    'sf-device-drill': $localize`:@@deviceDRILL:Drill`,
+    'sf-device-aiqs': $localize`:@@deviceAIQS:AIQS`,
+    'sf-device-hbw': $localize`:@@deviceHBW:HBW`,
+    'sf-device-dps': $localize`:@@deviceDPS:DPS`,
+    'sf-device-chrg': $localize`:@@deviceCHRG:Charger`,
     // DSP Edge Components
-    'edge-component-disc': $localize`:@@edgeComponentDisc:DISC`,
-    'edge-component-event-bus': $localize`:@@edgeComponentEventBus:Event Bus`,
-    'edge-component-app-server': $localize`:@@edgeComponentAppServer:App Server`,
-    'edge-component-router': $localize`:@@edgeComponentRouter:Router`,
-    'edge-component-agent': $localize`:@@edgeComponentAgent:Agent`,
-    'edge-component-log-server': $localize`:@@edgeComponentLogServer:Log Server`,
-    'edge-component-disi': $localize`:@@edgeComponentDisi:DISI`,
-    'edge-component-database': $localize`:@@edgeComponentDatabase:Database`,
+    'edge-comp-disc': $localize`:@@edgeComponentDisc:DISC`,
+    'edge-comp-event-bus': $localize`:@@edgeComponentEventBus:Event Bus`,
+    'edge-comp-app-server': $localize`:@@edgeComponentAppServer:App Server`,
+    'edge-comp-router': $localize`:@@edgeComponentRouter:Router`,
+    'edge-comp-agent': $localize`:@@edgeComponentAgent:Agent`,
+    'edge-comp-log-server': $localize`:@@edgeComponentLogServer:Log Server`,
+    'edge-comp-disi': $localize`:@@edgeComponentDisi:DISI`,
+    'edge-comp-database': $localize`:@@edgeComponentDatabase:Database`,
   };
 
-  constructor(private readonly cdr: ChangeDetectorRef) {}
+  constructor(
+    private readonly cdr: ChangeDetectorRef,
+    private readonly moduleNameService: ModuleNameService
+  ) {}
 
   ngOnInit(): void {
     this.loadConfiguration();
@@ -143,45 +150,66 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
     this.containers = config.containers;
     this.connections = config.connections;
     this.steps = config.steps;
+    this.initializeModuleLabels();
     this.currentStepIndex = 0; // Reset to first step on configuration change
     this.applyStep(0);
     this.cdr.markForCheck();
   }
 
   /**
+   * Replace shopfloor device labels with injected module names.
+   */
+  private initializeModuleLabels(): void {
+    const moduleMap: Record<string, string> = {
+      'sf-device-mill': 'MILL',
+      'sf-device-drill': 'DRILL',
+      'sf-device-aiqs': 'AIQS',
+      'sf-device-hbw': 'HBW',
+      'sf-device-dps': 'DPS',
+      'sf-device-chrg': 'CHRG',
+    };
+
+    Object.entries(moduleMap).forEach(([id, moduleId]) => {
+      const name = this.moduleNameService.getModuleFullName(moduleId);
+      if (name) {
+        this.containerLabels[id] = name;
+      }
+    });
+  }
+
+  /**
    * Check if container should be visible
    */
   protected isContainerVisible(container: ContainerConfig): boolean {
-    const step = this.steps[this.currentStepIndex];
-    if (!step) return true;
-    return step.visibleContainerIds.includes(container.id);
+    return container.state !== 'hidden';
   }
 
   /**
    * Check if container should be highlighted
    */
   protected isContainerHighlighted(container: ContainerConfig): boolean {
-    const step = this.steps[this.currentStepIndex];
-    if (!step) return false;
-    return step.highlightedContainerIds.includes(container.id);
+    return container.state === 'highlight';
   }
 
   /**
    * Check if connection should be visible
    */
   protected isConnectionVisible(connection: ConnectionConfig): boolean {
-    const step = this.steps[this.currentStepIndex];
-    if (!step) return true;
-    return step.visibleConnectionIds.includes(connection.id);
+    return connection.state !== 'hidden';
   }
 
   /**
    * Check if connection should be highlighted
    */
   protected isConnectionHighlighted(connection: ConnectionConfig): boolean {
-    const step = this.steps[this.currentStepIndex];
-    if (!step) return false;
-    return step.highlightedConnectionIds.includes(connection.id);
+    return connection.state === 'highlight';
+  }
+
+  /**
+   * Detect edge-component connections (short arrows, straight lines)
+   */
+  protected isEcConnection(connection: ConnectionConfig): boolean {
+    return connection.id.startsWith('conn-ec-');
   }
 
   /**
@@ -205,6 +233,12 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
    * Get container fill color
    */
   protected getContainerFill(container: ContainerConfig): string {
+    if (container.type === 'label') return 'transparent';
+    if (container.type === 'pipeline' && container.backgroundColor) return container.backgroundColor;
+    // Use gradient for shopfloor devices
+    if (container.type === 'device' && container.id?.startsWith('sf-')) {
+      return 'url(#shopfloor-gradient)';
+    }
     return container.backgroundColor || '#ffffff';
   }
 
@@ -212,6 +246,8 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
    * Get container stroke color
    */
   protected getContainerStroke(container: ContainerConfig): string {
+    if (container.type === 'label') return 'transparent';
+    if (container.type === 'pipeline') return container.borderColor || '#7f8da5';
     if (this.isContainerHighlighted(container)) {
       return '#ff9900'; // Highlight color
     }
@@ -222,6 +258,8 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
    * Get container stroke width
    */
   protected getContainerStrokeWidth(container: ContainerConfig): number {
+    if (container.type === 'label') return 0;
+    if (container.type === 'pipeline') return container.state === 'highlight' ? 2.5 : 2;
     if (this.isContainerHighlighted(container)) {
       return 3;
     }
@@ -247,7 +285,10 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
    * Get label for container
    */
   protected getContainerLabel(containerId: string): string {
-    return this.containerLabels[containerId] || '';
+    const fromConfig = this.containerLabels[containerId];
+    if (fromConfig) return fromConfig;
+    const container = this.containers.find((c) => c.id === containerId);
+    return container?.label || '';
   }
 
   /**
@@ -255,16 +296,16 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
    */
   protected getMultilineLabel(containerId: string): string[] {
     const label = this.getContainerLabel(containerId);
-    if (containerId === 'layer-business') return [this.labelBusinessProcesses];
+    if (containerId === 'layer-bp') return [this.labelBusinessProcesses];
     if (containerId === 'layer-dsp') return [this.labelDsp];
-    if (containerId === 'layer-shopfloor') return [this.labelShopfloor];
+    if (containerId === 'layer-sf') return [this.labelShopfloor];
     if (containerId === 'dsp-label-onpremise') return [this.labelOnPremise];
     if (containerId === 'dsp-label-cloud') return [this.labelCloud];
-    if (containerId === 'shopfloor-devices-group') return [this.labelDevices];
-    if (containerId === 'shopfloor-systems-group') return [this.labelSystems];
-    if (containerId === 'ux') return this.labelSmartfactoryDashboard.split('\n');
-    if (containerId === 'edge') return [this.labelEdge];
-    if (containerId === 'management') return this.labelManagementCockpit.split('\n');
+    if (containerId === 'sf-devices-group') return [this.labelDevices];
+    if (containerId === 'sf-systems-group') return [this.labelSystems];
+    if (containerId === 'dsp-ux') return this.labelSmartfactoryDashboard.split('\n');
+    if (containerId === 'dsp-edge') return [this.labelEdge];
+    if (containerId === 'dsp-mc') return this.labelManagementCockpit.split('\n');
     return label.split('\n');
   }
 
@@ -295,6 +336,10 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
    * Get label Y position
    */
   protected getLabelY(container: ContainerConfig): number {
+    // Special: pipeline labels centered vertically
+    if (container.type === 'pipeline') {
+      return container.height / 2;
+    }
     // Position at bottom center for most containers
     if (container.labelPosition === 'bottom-center') {
       return container.height - 8;
@@ -322,14 +367,52 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
    */
   protected getWrappedLabelLines(container: ContainerConfig): string[] {
     const label = this.getContainerLabel(container.id);
-    // Simple word wrap - split on spaces if needed
-    if (label.length > 15 && container.width < 100) {
-      const words = label.split(' ');
-      if (words.length > 1) {
-        return words;
+    if (!label) return [];
+
+    // Approximate character capacity based on width and font size
+    const fontSize = container.fontSize || 12;
+    const maxCharsPerLine = Math.max(8, Math.floor((container.width - 12) / (fontSize * 0.6)));
+
+    // Allow wrapping also at hyphens by splitting dash-containing tokens
+    const dashExpanded: string[] = [];
+    label.split(/\s+/).forEach((token) => {
+      if (token.includes('-')) {
+        const parts = token.split('-').filter(Boolean);
+        parts.forEach((p, idx) => {
+          dashExpanded.push(p);
+          if (idx < parts.length - 1) {
+            dashExpanded.push('-');
+          }
+        });
+      } else {
+        dashExpanded.push(token);
+      }
+    });
+
+    const words = dashExpanded;
+    const lines: string[] = [];
+    let current = '';
+
+    for (const word of words) {
+      const tentative = current ? `${current} ${word}` : word;
+      if (tentative.length > maxCharsPerLine && current) {
+        lines.push(current);
+        current = word;
+      } else {
+        current = tentative;
       }
     }
-    return [label];
+    if (current) lines.push(current);
+
+    // If still too long and only one token (no spaces), hard-wrap
+    if (lines.length === 1 && lines[0].length > maxCharsPerLine) {
+      const first = lines[0].slice(0, maxCharsPerLine);
+      const second = lines[0].slice(maxCharsPerLine);
+      lines.splice(0, 1, first, second);
+    }
+
+    // Limit to two lines to keep layout stable
+    return lines.slice(0, 2);
   }
 
   /**
@@ -363,10 +446,23 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
     
     if (!fromContainer || !toContainer) return '';
 
+    const isEc = connection.id.startsWith('conn-ec-');
+    const isInternalEc = isEc && fromContainer.id?.startsWith('edge-comp-') && toContainer.id?.startsWith('edge-comp-');
+
+    // Use center anchors for internal edge-comp connections, otherwise side anchors
+    const fromCenter = { x: fromContainer.x + fromContainer.width / 2, y: fromContainer.y + fromContainer.height / 2 };
+    const toCenter = { x: toContainer.x + toContainer.width / 2, y: toContainer.y + toContainer.height / 2 };
+
+    if (isInternalEc) {
+      const from = this.getRectEdgePoint(fromCenter, toCenter, fromContainer);
+      const to = this.getRectEdgePoint(toCenter, fromCenter, toContainer);
+      return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
+    }
+
     const from = this.getAnchorPoint(fromContainer, connection.fromSide || 'bottom');
     const to = this.getAnchorPoint(toContainer, connection.toSide || 'top');
 
-    // Simple L-shaped path
+    // Default L-shaped path
     const midY = (from.y + to.y) / 2;
     return `M ${from.x} ${from.y} L ${from.x} ${midY} L ${to.x} ${midY} L ${to.x} ${to.y}`;
   }
@@ -379,7 +475,20 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
     if (this.isConnectionHighlighted(connection)) {
       classes.push('connection--highlighted');
     }
+    if (this.isEcConnection(connection)) {
+      classes.push('connection--ec');
+    }
     return classes.join(' ');
+  }
+
+  /**
+   * Device icon size helper (shrink edge-comp icons)
+   */
+  protected getDeviceIconSize(container: ContainerConfig): number {
+    if (container.id?.startsWith('edge-comp-')) {
+      return 56; // ~20% kleiner als 70
+    }
+    return 70;
   }
 
   /**
@@ -387,7 +496,6 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
    */
   private getAnchorPoint(container: ContainerConfig, side: AnchorSide): Point {
     const { x, y, width, height } = container;
-    
     switch (side) {
       case 'top':
         return { x: x + width / 2, y };
@@ -397,7 +505,43 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
         return { x, y: y + height / 2 };
       case 'right':
         return { x: x + width, y: y + height / 2 };
+      default:
+        // Center fallback
+        return { x: x + width / 2, y: y + height / 2 };
     }
+  }
+
+  /**
+   * Get point on rectangle edge from center towards target point.
+   */
+  private getRectEdgePoint(fromCenter: Point, toCenter: Point, container: ContainerConfig): Point {
+    const dx = toCenter.x - fromCenter.x;
+    const dy = toCenter.y - fromCenter.y;
+    const halfW = container.width / 2;
+    const halfH = container.height / 2;
+
+    if (dx === 0 && dy === 0) {
+      return fromCenter;
+    }
+
+    const tx = dx !== 0 ? halfW / Math.abs(dx) : Number.POSITIVE_INFINITY;
+    const ty = dy !== 0 ? halfH / Math.abs(dy) : Number.POSITIVE_INFINITY;
+    const t = Math.min(tx, ty);
+
+    return {
+      x: fromCenter.x + dx * t,
+      y: fromCenter.y + dy * t,
+    };
+  }
+
+  /**
+   * Build polygon points for pipeline arrow.
+   */
+  protected getPipelinePoints(container: ContainerConfig): string {
+    const w = container.width;
+    const h = container.height;
+    const tip = Math.max(12, Math.min(28, w * 0.15));
+    return `0,0 ${w - tip},0 ${w},${h / 2} ${w - tip},${h} 0,${h} ${tip},${h / 2}`;
   }
 
   /**
@@ -452,10 +596,18 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
       if (this.currentStepIndex < this.steps.length - 1) {
         this.nextStep();
       } else {
-        this.stopAutoPlay();
-        this.applyStep(0);
+        if (this.loopToStart) {
+          this.applyStep(0);
+        } else {
+          this.stopAutoPlay();
+        }
       }
     }, 3000);
+    this.cdr.markForCheck();
+  }
+
+  protected toggleLoop(): void {
+    this.loopToStart = !this.loopToStart;
     this.cdr.markForCheck();
   }
 
@@ -469,6 +621,29 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
   }
 
   private applyStep(index: number): void {
+    const step = this.steps[index];
+    if (!step) {
+      return;
+    }
+
+    // Update container states for visibility/highlight
+    this.containers.forEach((container) => {
+      if (step.visibleContainerIds.includes(container.id)) {
+        container.state = step.highlightedContainerIds.includes(container.id) ? 'highlight' : 'normal';
+      } else {
+        container.state = 'hidden';
+      }
+    });
+
+    // Update connection states for visibility/highlight
+    this.connections.forEach((connection) => {
+      if (step.visibleConnectionIds.includes(connection.id)) {
+        connection.state = step.highlightedConnectionIds.includes(connection.id) ? 'highlight' : 'normal';
+      } else {
+        connection.state = 'hidden';
+      }
+    });
+
     this.currentStepIndex = index;
     this.cdr.markForCheck();
   }
