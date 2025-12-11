@@ -1288,7 +1288,7 @@ function createDeploymentView(): { containers: ContainerConfig[]; connections: C
     state: 'hidden',
     borderColor: '#009681',
     backgroundColor: '#e0f7f4',
-    labelPosition: 'center',
+    labelPosition: 'bottom-center',
     fontSize: 14,
   });
   
@@ -1304,7 +1304,7 @@ function createDeploymentView(): { containers: ContainerConfig[]; connections: C
     state: 'hidden',
     borderColor: '#009681',
     backgroundColor: '#c7f0e8',
-    labelPosition: 'center',
+    labelPosition: 'bottom-center',
     fontSize: 14,
   });
   
@@ -1320,7 +1320,7 @@ function createDeploymentView(): { containers: ContainerConfig[]; connections: C
     state: 'hidden',
     borderColor: '#009681',
     backgroundColor: '#a8e8dc',
-    labelPosition: 'center',
+    labelPosition: 'bottom-center',
     fontSize: 14,
   });
   
@@ -1336,7 +1336,7 @@ function createDeploymentView(): { containers: ContainerConfig[]; connections: C
     state: 'hidden',
     borderColor: '#009681',
     backgroundColor: '#89e1d0',
-    labelPosition: 'center',
+    labelPosition: 'bottom-center',
     fontSize: 14,
   });
   
