@@ -23,6 +23,12 @@ export type IconKey =
   | 'edge-best-of-breed'
   | 'edge-ai-enablement'
   | 'edge-autonomous-enterprise'
+  | 'edge-hierarchical-structure'
+  | 'edge-orchestration'
+  | 'edge-governance'
+  | 'logo-edge-a'
+  | 'logo-edge-b'
+  | 'logo-edge-c'
   | 'edge-component-disc'
   | 'edge-component-event-bus'
   | 'edge-component-app-server'
@@ -94,6 +100,12 @@ export const ICON_MAP: Record<IconKey, string> = {
   'edge-best-of-breed': 'assets/svg/dsp/functions/edge-best-of-breed.svg',
   'edge-ai-enablement': 'assets/svg/dsp/functions/edge-ai-enablement.svg',
   'edge-autonomous-enterprise': 'assets/svg/dsp/functions/edge-autonomous-enterprise.svg',
+  'edge-hierarchical-structure': 'assets/svg/dsp/functions/edge-hierarchical-structure.svg',
+  'edge-orchestration': 'assets/svg/dsp/functions/edge-orchestration.svg',
+  'edge-governance': 'assets/svg/dsp/functions/edge-governance.svg',
+  'logo-edge-a': 'assets/svg/dsp/architecture/dsp-edge-box.svg',
+  'logo-edge-b': 'assets/svg/dsp/architecture/dsp-edge-box.svg',
+  'logo-edge-c': 'assets/svg/dsp/architecture/dsp-edge-box.svg',
 
   'edge-component-disc': ICONS.dsp.edgeComponents.disc,
   'edge-component-event-bus': ICONS.dsp.edgeComponents.eventBus,

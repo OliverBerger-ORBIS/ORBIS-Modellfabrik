@@ -230,6 +230,9 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
    */
   protected isFunctionIconHighlighted(iconKey: string): boolean {
     const step = this.steps[this.currentStepIndex];
+    if (step?.id === 'step-18' && iconKey.startsWith('logo-edge-')) {
+      return false; // special MC trio: visible but not highlighted
+    }
     if (!step?.highlightedFunctionIcons) return false;
     return step.highlightedFunctionIcons.includes(iconKey);
   }
@@ -753,12 +756,23 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
     index: number,
     icon: FunctionIconConfig
   ): { x: number; y: number } {
-    const total = container.functionIcons?.length ?? 0; // keep positions stable across reveal
+    const total = container.functionIcons?.length ?? 0; // keep positions stable (edge: full set)
     if (total === 0) {
       return { x: container.width / 2, y: container.height / 2 };
     }
-    const startDeg = 90; // start at 90° (clockwise)
-    const step = 360 / total;
+    const isMc = container.id === 'dsp-mc';
+    const currentStep = this.steps[this.currentStepIndex];
+    const startDeg = isMc
+      ? currentStep?.id === 'step-18'
+        ? 120 // step 18 segment rotated by 180°
+        : 300
+      : 90;
+    const spanDeg = isMc ? 120 : 360;
+    const step = isMc
+      ? total > 1
+        ? spanDeg / (total - 1)
+        : 0
+      : spanDeg / total; // edge: distribute evenly over full circle (9 icons -> 40°)
     const angleRad = ((startDeg + index * step) * Math.PI) / 180;
     const cx = container.width / 2;
     const cy = container.height / 2;
@@ -778,6 +792,16 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
     return base * factor;
   }
 
+  protected getFunctionIconCenter(
+    container: ContainerConfig,
+    index: number,
+    icon: FunctionIconConfig
+  ): { cx: number; cy: number } {
+    const pos = this.getFunctionIconPosition(container, index, icon);
+    const size = icon.size ?? this.getFunctionIconSize(icon.iconKey as IconKey);
+    return { cx: pos.x + size / 2, cy: pos.y + size / 2 };
+  }
+
   protected getVisibleFunctionIcons(container: ContainerConfig): FunctionIconConfig[] {
     if (!container.functionIcons || !this.shouldShowFunctionIcons()) {
       return [];
@@ -785,12 +809,17 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
     if (this.viewMode !== 'functional') {
       return container.functionIcons;
     }
+    const step = this.steps[this.currentStepIndex];
+    if (container.id === 'dsp-mc') {
+      if (step?.id === 'step-18') {
+        return container.functionIcons.filter((fi) => fi.iconKey.startsWith('logo-edge-'));
+      }
+      return container.functionIcons.filter((fi) => !fi.iconKey.startsWith('logo-edge-'));
+    }
     return container.functionIcons.filter((fi) => this.revealedFunctionIcons.has(fi.iconKey));
   }
 
   protected isFunctionIconVisible(iconKey: IconKey, container: ContainerConfig): boolean {
-    if (!container.functionIcons || !this.shouldShowFunctionIcons()) return false;
-    if (this.viewMode !== 'functional') return true;
-    return this.revealedFunctionIcons.has(iconKey);
+    return this.getVisibleFunctionIcons(container).some((fi) => fi.iconKey === iconKey);
   }
 }
