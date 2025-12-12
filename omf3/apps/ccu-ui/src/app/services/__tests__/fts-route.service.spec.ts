@@ -36,7 +36,7 @@ describe('FtsRouteService', () => {
       {
         id: 'cell-hbw',
         name: 'HBW',
-        icon: 'shopfloor/hbw.svg',
+        icon: 'assets/svg/shopfloor/stations/hbw-station.svg',
         position: { x: 100, y: 100 },
         size: { w: 80, h: 80 },
         center: { x: 140, y: 140 },
@@ -46,7 +46,7 @@ describe('FtsRouteService', () => {
       {
         id: 'cell-aiqs',
         name: 'AIQS',
-        icon: 'shopfloor/aiqs.svg',
+        icon: 'assets/svg/shopfloor/stations/aiqs-station.svg',
         position: { x: 300, y: 100 },
         size: { w: 80, h: 80 },
         center: { x: 340, y: 140 },
@@ -56,7 +56,7 @@ describe('FtsRouteService', () => {
       {
         id: 'cell-int1',
         name: 'Intersection 1',
-        icon: 'shopfloor/intersection.svg',
+        icon: 'assets/svg/shopfloor/shared/question.svg',
         position: { x: 200, y: 100 },
         size: { w: 40, h: 40 },
         center: { x: 220, y: 120 },

@@ -72,27 +72,27 @@ omf3/apps/ccu-ui/public/
 
 | Emoji | Verwendung | Aktueller OMF3 SVG | Vorschlag Umbenennung | Neuer Name |
 |-------|------------|-------------------|----------------------|------------|
-| 🚗 | FTS/AGV Icon | `shopfloor/robotic.svg` | ✅ **OK** | `shopfloor/fts.svg` oder `shopfloor/agv.svg` |
+| 🚗 | FTS/AGV Icon | `assets/svg/shopfloor/shared/agv-vehicle.svg` | ✅ **OK** | `shopfloor/fts.svg` oder `shopfloor/agv.svg` |
 | 🔍 | Track & Trace | ❌ **FEHLT** | ➕ **NEU** | `headings/track-trace.svg` oder `headings/search.svg` |
-| 🔋 | Battery | ✅ **VORHANDEN** | ✅ **VERWENDET** | `shopfloor/battery.svg` |
-| ⚡ | Charging | ✅ **VORHANDEN** | ✅ **VERWENDET** | `shopfloor/charging-active.svg` |
+| 🔋 | Battery | ✅ **VORHANDEN** | ✅ **VERWENDET** | `assets/svg/shopfloor/shared/battery.svg` |
+| ⚡ | Charging | ✅ **VORHANDEN** | ✅ **VERWENDET** | `assets/svg/shopfloor/shared/charging-active.svg` |
 | 📦 | Loads, DPS | ✅ **VORHANDEN** | ✅ **VERWENDET** | `headings/box.svg` (für Load Information) |
-| 📤 | PICK Event | ✅ **VORHANDEN** | ✅ **VERWENDET** | `shopfloor/pick-event.svg` |
-| 📥 | DROP Event, Storage Order | ✅ **VORHANDEN** | ✅ **VERWENDET** | `shopfloor/drop-event.svg` |
-| ⚙️ | PROCESS Event, MILL | ✅ **VORHANDEN** | ✅ **VERWENDET** | `shopfloor/process-event.svg` |
-| ↩️ | TURN Event | ✅ **VORHANDEN** | ✅ **VERWENDET** | `shopfloor/turn-event.svg` |
-| ➡️ | PASS Event | ✅ **VORHANDEN** | ✅ **VERWENDET** | `shopfloor/pass-event.svg` |
-| 🔗 | DOCK Event | ✅ **VORHANDEN** | ✅ **VERWENDET** | `shopfloor/dock-event.svg` |
-| 🚀 | Driving Status | ✅ **VORHANDEN** | ✅ **VERWENDET** | `shopfloor/driving-status.svg` |
-| 🛑 | Stopped Status | ✅ **VORHANDEN** | ✅ **VERWENDET** | `shopfloor/stopped-status.svg` |
-| ⏸️ | Paused Status | ✅ **VORHANDEN** | ✅ **VERWENDET** | `shopfloor/paused-status.svg` |
-| 📍 | Location Marker | ✅ **VORHANDEN** | ⏳ **NOCH NICHT VERWENDET** | `shopfloor/location-marker.svg` |
+| 📤 | PICK Event | ✅ **VORHANDEN** | ✅ **VERWENDET** | `assets/svg/shopfloor/shared/pick-event.svg` |
+| 📥 | DROP Event, Storage Order | ✅ **VORHANDEN** | ✅ **VERWENDET** | `assets/svg/shopfloor/shared/drop-event.svg` |
+| ⚙️ | PROCESS Event, MILL | ✅ **VORHANDEN** | ✅ **VERWENDET** | `assets/svg/shopfloor/shared/process-event.svg` |
+| ↩️ | TURN Event | ✅ **VORHANDEN** | ✅ **VERWENDET** | `assets/svg/shopfloor/shared/turn-event.svg` |
+| ➡️ | PASS Event | ✅ **VORHANDEN** | ✅ **VERWENDET** | `assets/svg/shopfloor/shared/pass-event.svg` |
+| 🔗 | DOCK Event | ✅ **VORHANDEN** | ✅ **VERWENDET** | `assets/svg/shopfloor/shared/dock-event.svg` |
+| 🚀 | Driving Status | ✅ **VORHANDEN** | ✅ **VERWENDET** | `assets/svg/shopfloor/shared/driving-status.svg` |
+| 🛑 | Stopped Status | ✅ **VORHANDEN** | ✅ **VERWENDET** | `assets/svg/shopfloor/shared/stopped-status.svg` |
+| ⏸️ | Paused Status | ✅ **VORHANDEN** | ✅ **VERWENDET** | `assets/svg/shopfloor/shared/paused-status.svg` |
+| 📍 | Location Marker | ✅ **VORHANDEN** | ⏳ **NOCH NICHT VERWENDET** | `assets/svg/shopfloor/shared/location-marker.svg` |
 | 📋 | Order Context | `headings/lieferung-bestellen.svg` | ✅ **OK** | (bereits vorhanden) |
 | 🏭 | Production Order | `headings/maschine.svg` | ✅ **OK** | (bereits vorhanden - korrigiert!) |
 | 📥 | Storage Order | `headings/ladung.svg` | ✅ **OK** | (bereits vorhanden - korrigiert!) |
-| 🏢 | HBW Station | `shopfloor/stock.svg` | ✅ **OK** | (bereits vorhanden) |
-| 🔩 | DRILL Station | `shopfloor/bohrer.svg` | ✅ **OK** | (bereits vorhanden) |
-| 🔍 | AIQS Station | `shopfloor/ai-assistant.svg` | ✅ **OK** | (bereits vorhanden) |
+| 🏢 | HBW Station | `assets/svg/shopfloor/stations/hbw-station.svg` | ✅ **OK** | (bereits vorhanden) |
+| 🔩 | DRILL Station | `assets/svg/shopfloor/stations/drill-station.svg` | ✅ **OK** | (bereits vorhanden) |
+| 🔍 | AIQS Station | `assets/svg/shopfloor/stations/aiqs-station.svg` | ✅ **OK** | (bereits vorhanden) |
 | 💡 | Info/Help | ❌ **FEHLT** | ➕ **NEU** | `headings/info.svg` oder `headings/help.svg` |
 | 🗺️ | Route/Map | ❌ **FEHLT** | ➕ **NEU** | `headings/route.svg` oder `headings/map.svg` |
 
@@ -106,19 +106,19 @@ omf3/apps/ccu-ui/public/
 
 | SVG Name | Status | Verwendung in FTS Tab |
 |----------|--------|----------------------|
-| `shopfloor/robotic.svg` | ✅ Vorhanden | FTS/AGV Icon (Heading, Status) |
-| `shopfloor/battery.svg` | ✅ Vorhanden | Battery Status Icon |
-| `shopfloor/charging-active.svg` | ✅ Vorhanden | Charging Active Icon |
-| `shopfloor/driving-status.svg` | ✅ Vorhanden | Driving Status Badge |
-| `shopfloor/stopped-status.svg` | ✅ Vorhanden | Stopped Status Badge |
-| `shopfloor/paused-status.svg` | ✅ Vorhanden | Paused Status Badge |
-| `shopfloor/turn-event.svg` | ✅ Vorhanden | TURN Action Icon |
-| `shopfloor/dock-event.svg` | ✅ Vorhanden | DOCK Action Icon |
-| `shopfloor/pick-event.svg` | ✅ Vorhanden | PICK Action Icon |
-| `shopfloor/drop-event.svg` | ✅ Vorhanden | DROP Action Icon |
-| `shopfloor/pass-event.svg` | ✅ Vorhanden | PASS Action Icon |
-| `shopfloor/process-event.svg` | ✅ Vorhanden | PROCESS Action Icon |
-| `shopfloor/location-marker.svg` | ✅ Vorhanden | Location Marker (noch nicht verwendet) |
+| `assets/svg/shopfloor/shared/agv-vehicle.svg` | ✅ Vorhanden | FTS/AGV Icon (Heading, Status) |
+| `assets/svg/shopfloor/shared/battery.svg` | ✅ Vorhanden | Battery Status Icon |
+| `assets/svg/shopfloor/shared/charging-active.svg` | ✅ Vorhanden | Charging Active Icon |
+| `assets/svg/shopfloor/shared/driving-status.svg` | ✅ Vorhanden | Driving Status Badge |
+| `assets/svg/shopfloor/shared/stopped-status.svg` | ✅ Vorhanden | Stopped Status Badge |
+| `assets/svg/shopfloor/shared/paused-status.svg` | ✅ Vorhanden | Paused Status Badge |
+| `assets/svg/shopfloor/shared/turn-event.svg` | ✅ Vorhanden | TURN Action Icon |
+| `assets/svg/shopfloor/shared/dock-event.svg` | ✅ Vorhanden | DOCK Action Icon |
+| `assets/svg/shopfloor/shared/pick-event.svg` | ✅ Vorhanden | PICK Action Icon |
+| `assets/svg/shopfloor/shared/drop-event.svg` | ✅ Vorhanden | DROP Action Icon |
+| `assets/svg/shopfloor/shared/pass-event.svg` | ✅ Vorhanden | PASS Action Icon |
+| `assets/svg/shopfloor/shared/process-event.svg` | ✅ Vorhanden | PROCESS Action Icon |
+| `assets/svg/shopfloor/shared/location-marker.svg` | ✅ Vorhanden | Location Marker (noch nicht verwendet) |
 
 #### Headings Icons
 
@@ -133,13 +133,13 @@ omf3/apps/ccu-ui/public/
 
 | Icon | Status | Verwendung |
 |------|--------|------------|
-| `shopfloor/bohrer.svg` | ✅ OK | DRILL Station |
-| `shopfloor/milling-machine.svg` | ✅ OK | MILL Station |
-| `shopfloor/ai-assistant.svg` | ✅ OK | AIQS Station |
-| `shopfloor/robot-arm.svg` | ✅ OK | DPS Station |
-| `shopfloor/stock.svg` | ✅ OK | HBW Station |
-| `shopfloor/factory.svg` | ✅ OK | Production Order |
-| `shopfloor/warehouse.svg` | ✅ OK | Storage Order |
+| `assets/svg/shopfloor/stations/drill-station.svg` | ✅ OK | DRILL Station |
+| `assets/svg/shopfloor/stations/mill-station.svg` | ✅ OK | MILL Station |
+| `assets/svg/shopfloor/stations/aiqs-station.svg` | ✅ OK | AIQS Station |
+| `assets/svg/shopfloor/stations/dps-station.svg` | ✅ OK | DPS Station |
+| `assets/svg/shopfloor/stations/hbw-station.svg` | ✅ OK | HBW Station |
+| `assets/svg/shopfloor/systems/factory-system.svg` | ✅ OK | Production Order |
+| `assets/svg/shopfloor/systems/warehouse-system.svg` | ✅ OK | Storage Order |
 | `shopfloor/intersection{1-4}.svg` | ✅ OK | Intersections |
 
 ### Kategorie 3: Workpiece Icons (BEREITS OK)
@@ -210,8 +210,8 @@ const STATUS_ICONS = {
 ### Phase 1: Neue SVGs erstellen (FEHLENDE) - ODER Platzhalter verwenden
 
 #### Priorität HOCH (für FTS Tab)
-1. `shopfloor/battery.svg` - Batteriestatus Icon
-2. `shopfloor/charging-active.svg` - Aktives Laden Icon
+1. `assets/svg/shopfloor/shared/battery.svg` - Batteriestatus Icon
+2. `assets/svg/shopfloor/shared/charging-active.svg` - Aktives Laden Icon
 3. `shopfloor/driving.svg` - Driving Status Icon
 4. `shopfloor/stopped.svg` - Stopped Status Icon
 5. `shopfloor/paused.svg` - Paused Status Icon
@@ -236,8 +236,8 @@ const STATUS_ICONS = {
 - **Nachteil:** Inkonsistente Namensgebung
 
 #### Option B: Umbenennungen (EMPFOHLEN)
-- 🔄 `shopfloor/robotic.svg` → `shopfloor/fts.svg`
-- 🔄 `shopfloor/fuel.svg` → `shopfloor/charging.svg`
+- 🔄 `assets/svg/shopfloor/shared/agv-vehicle.svg` → `shopfloor/fts.svg`
+- 🔄 `assets/svg/shopfloor/stations/chrg-station.svg` → `shopfloor/charging.svg`
 - **Vorteil:** Klarere Zuordnung, konsistente Namensgebung
 - **Nachteil:** Breaking Changes (alle Referenzen müssen aktualisiert werden)
 
@@ -266,9 +266,9 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 
 ### Beispiele
 - `shopfloor/fts.svg` - FTS/AGV Icon
-- `shopfloor/battery.svg` - Battery Icon
+- `assets/svg/shopfloor/shared/battery.svg` - Battery Icon
 - `shopfloor/charging.svg` - Charging Station
-- `shopfloor/charging-active.svg` - Active Charging
+- `assets/svg/shopfloor/shared/charging-active.svg` - Active Charging
 - `shopfloor/driving.svg` - Driving Status
 - `shopfloor/stopped.svg` - Stopped Status
 - `shopfloor/paused.svg` - Paused Status
@@ -296,23 +296,23 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 | Komponente | Icon-Verwendung | OMF3 SVG (Platzhalter) | OMF3 SVG (Final) |
 |------------|-----------------|------------------------|------------------|
 | **FtsStatusComponent** | | | |
-| | Heading Icon | `🚗` oder `shopfloor/robotic.svg` | `headings/fts.svg` (NEU) |
+| | Heading Icon | `🚗` oder `assets/svg/shopfloor/shared/agv-vehicle.svg` | `headings/fts.svg` (NEU) |
 | | AGV Status Icon | `🚗` | `shopfloor/fts.svg` (NEU) |
 | | Driving Status | `🚀` | `shopfloor/driving.svg` (NEU) |
 | | Stopped Status | `🛑` | `shopfloor/stopped.svg` (NEU) |
 | | Paused Status | `⏸️` | `shopfloor/paused.svg` (NEU) |
 | | Loading Status | `📦` | `shopfloor/load.svg` (NEU) |
 | **FtsBatteryComponent** | | | |
-| | Heading Icon | `🔋` oder `shopfloor/robotic.svg` | `headings/fts.svg` (NEU) |
-| | Battery Icon | `🔋` | `shopfloor/battery.svg` (NEU) |
-| | Charging Icon | `⚡` | `shopfloor/charging-active.svg` (NEU) |
+| | Heading Icon | `🔋` oder `assets/svg/shopfloor/shared/agv-vehicle.svg` | `headings/fts.svg` (NEU) |
+| | Battery Icon | `🔋` | `assets/svg/shopfloor/shared/battery.svg` (NEU) |
+| | Charging Icon | `⚡` | `assets/svg/shopfloor/shared/charging-active.svg` (NEU) |
 | **FtsLoadsComponent** | | | |
-| | Heading Icon | `📦` oder `shopfloor/robotic.svg` | `headings/fts.svg` (NEU) |
+| | Heading Icon | `📦` oder `assets/svg/shopfloor/shared/agv-vehicle.svg` | `headings/fts.svg` (NEU) |
 | | Load Icon | `📦` | `shopfloor/load.svg` (NEU) |
 | | Workpiece Icons | ✅ `workpieces/{color}_*.svg` | ✅ (bereits vorhanden) |
 | **ShopfloorPreviewComponent** | | | |
 | | Route/Map Icon | `🗺️` | `headings/route.svg` (NEU) |
-| | FTS Position | `shopfloor/robotic.svg` | `shopfloor/fts.svg` (NEU) |
+| | FTS Position | `assets/svg/shopfloor/shared/agv-vehicle.svg` | `shopfloor/fts.svg` (NEU) |
 | | Module Icons | ✅ `shopfloor/{module}.svg` | ✅ (bereits vorhanden) |
 
 ### Track&Trace Tab Komponenten
@@ -323,13 +323,13 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 | | Heading Icon | `🔍` | `headings/track-trace.svg` (NEU) |
 | | Search Icon | `🔍` | `headings/track-trace.svg` (NEU) |
 | | Info Icon | `💡` | `headings/info.svg` (NEU) |
-| | DOCK Event | `🔗` oder `shopfloor/robotic.svg` | `shopfloor/fts.svg` (NEU) |
+| | DOCK Event | `🔗` oder `assets/svg/shopfloor/shared/agv-vehicle.svg` | `shopfloor/fts.svg` (NEU) |
 | | PICK Event | ✅ `workpieces/{color}_instock_unprocessed.svg` | ✅ (bereits vorhanden) |
 | | DROP Event | ✅ `workpieces/{color}_product.svg` | ✅ (bereits vorhanden) |
 | | TURN Event | `↩️` | `shopfloor/turn.svg` (NEU) |
 | | PASS Event | `➡️` | `shopfloor/pass.svg` (NEU) |
-| | TRANSPORT Event | `🚗` oder `shopfloor/robotic.svg` | `shopfloor/fts.svg` (NEU) |
-| | PROCESS Event | ✅ `shopfloor/bohrer.svg` oder `shopfloor/milling-machine.svg` | ✅ (bereits vorhanden) |
+| | TRANSPORT Event | `🚗` oder `assets/svg/shopfloor/shared/agv-vehicle.svg` | `shopfloor/fts.svg` (NEU) |
+| | PROCESS Event | ✅ `assets/svg/shopfloor/stations/drill-station.svg` oder `assets/svg/shopfloor/stations/mill-station.svg` | ✅ (bereits vorhanden) |
 | | Storage Order | ✅ `headings/ladung.svg` | ✅ **KORRIGIERT - bereits vorhanden** |
 | | Production Order | ✅ `headings/maschine.svg` | ✅ **KORRIGIERT - bereits vorhanden** |
 | | Location Marker | `📍` | `shopfloor/location.svg` (NEU) |
@@ -345,8 +345,8 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 - [ ] Entscheide über Umbenennungs-Strategie (Option A oder B)
 
 ### 2. SVG-Umbenennungen durchführen (falls Option B)
-- [ ] `shopfloor/robotic.svg` → `shopfloor/fts.svg`
-- [ ] `shopfloor/fuel.svg` → `shopfloor/charging.svg`
+- [ ] `assets/svg/shopfloor/shared/agv-vehicle.svg` → `shopfloor/fts.svg`
+- [ ] `assets/svg/shopfloor/stations/chrg-station.svg` → `shopfloor/charging.svg`
 - [ ] Alle Referenzen aktualisieren
 
 ### 3. Neue SVGs erstellen
@@ -364,12 +364,12 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 
 ### Aktuelle Verwendung von `robotic.svg` und `fuel.svg`
 
-**`shopfloor/robotic.svg` wird verwendet in:**
+**`assets/svg/shopfloor/shared/agv-vehicle.svg` wird verwendet in:**
 - `omf3/apps/ccu-ui/src/app/tabs/message-monitor-tab.component.ts` (Zeile 35, 317)
-- `omf3/apps/ccu-ui/src/app/assets/icon-registry.ts` (Zeile 103: `'shopfloor-fts': 'shopfloor/robotic.svg'`)
+- `omf3/apps/ccu-ui/src/app/assets/icon-registry.ts` (Zeile 103: `'shopfloor-fts': 'assets/svg/shopfloor/shared/agv-vehicle.svg'`)
 
-**`shopfloor/fuel.svg` wird verwendet in:**
-- `omf3/apps/ccu-ui/src/app/assets/icon-registry.ts` (Zeile 93: `'device-chrg': 'shopfloor/fuel.svg'`)
+**`assets/svg/shopfloor/stations/chrg-station.svg` wird verwendet in:**
+- `omf3/apps/ccu-ui/src/app/assets/icon-registry.ts` (Zeile 93: `'device-chrg': 'assets/svg/shopfloor/stations/chrg-station.svg'`)
 
 ### Empfehlung: **Option A (Konservativ) - NEUE SVGs erstellen**
 
@@ -380,7 +380,7 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 4. ✅ **Einfachere Migration:** Keine Suche/Ersetze-Operationen nötig
 
 **Vorgehen:**
-- Neue SVGs mit klaren Namen erstellen (`shopfloor/fts.svg`, `shopfloor/battery.svg`, etc.)
+- Neue SVGs mit klaren Namen erstellen (`shopfloor/fts.svg`, `assets/svg/shopfloor/shared/battery.svg`, etc.)
 - Bestehende `robotic.svg` und `fuel.svg` bleiben unverändert
 - Neue FTS-Komponenten nutzen neue Icons
 - Optional: Alte Referenzen können später schrittweise migriert werden
@@ -388,8 +388,8 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 ### Alternative: **Option B (Umbenennungen) - NUR wenn Breaking Changes akzeptabel**
 
 **Vorgehen:**
-1. `shopfloor/robotic.svg` → `shopfloor/fts.svg` kopieren (nicht verschieben!)
-2. `shopfloor/fuel.svg` → `shopfloor/charging.svg` kopieren (nicht verschieben!)
+1. `assets/svg/shopfloor/shared/agv-vehicle.svg` → `shopfloor/fts.svg` kopieren (nicht verschieben!)
+2. `assets/svg/shopfloor/stations/chrg-station.svg` → `shopfloor/charging.svg` kopieren (nicht verschieben!)
 3. Alle Referenzen aktualisieren:
    - `message-monitor-tab.component.ts` (2 Stellen)
    - `icon-registry.ts` (2 Stellen)
@@ -416,24 +416,24 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 - ✅ `headings/ladung.svg` - Storage Order (bereits vorhanden)
 - ✅ `workpieces/{color}_*.svg` - Workpiece Icons (bereits vorhanden)
 - ✅ `shopfloor/{station}.svg` - Station Icons (bereits vorhanden)
-- ✅ `shopfloor/robotic.svg` - FTS Icon (als Fallback/Platzhalter)
+- ✅ `assets/svg/shopfloor/shared/agv-vehicle.svg` - FTS Icon (als Fallback/Platzhalter)
 
 ### ✅ Alle SVGs sind vorhanden (KEINE neuen SVGs nötig)
 
 **Shopfloor Icons (✅ ALLE VORHANDEN)**
-1. ✅ `shopfloor/robotic.svg` - FTS/AGV Icon (verwendet)
-2. ✅ `shopfloor/battery.svg` - Batteriestatus Icon (verwendet)
-3. ✅ `shopfloor/charging-active.svg` - Aktives Laden Icon (verwendet)
-4. ✅ `shopfloor/driving-status.svg` - Driving Status Icon (verwendet)
-5. ✅ `shopfloor/stopped-status.svg` - Stopped Status Icon (verwendet)
-6. ✅ `shopfloor/paused-status.svg` - Paused Status Icon (verwendet)
-7. ✅ `shopfloor/dock-event.svg` - DOCK Event (verwendet)
-8. ✅ `shopfloor/pick-event.svg` - PICK Event (verwendet)
-9. ✅ `shopfloor/drop-event.svg` - DROP Event (verwendet)
-10. ✅ `shopfloor/pass-event.svg` - PASS Event (verwendet)
-11. ✅ `shopfloor/process-event.svg` - PROCESS Event (verwendet)
-12. ✅ `shopfloor/turn-event.svg` - TURN Event (verwendet)
-13. ✅ `shopfloor/location-marker.svg` - Location Marker (vorhanden)
+1. ✅ `assets/svg/shopfloor/shared/agv-vehicle.svg` - FTS/AGV Icon (verwendet)
+2. ✅ `assets/svg/shopfloor/shared/battery.svg` - Batteriestatus Icon (verwendet)
+3. ✅ `assets/svg/shopfloor/shared/charging-active.svg` - Aktives Laden Icon (verwendet)
+4. ✅ `assets/svg/shopfloor/shared/driving-status.svg` - Driving Status Icon (verwendet)
+5. ✅ `assets/svg/shopfloor/shared/stopped-status.svg` - Stopped Status Icon (verwendet)
+6. ✅ `assets/svg/shopfloor/shared/paused-status.svg` - Paused Status Icon (verwendet)
+7. ✅ `assets/svg/shopfloor/shared/dock-event.svg` - DOCK Event (verwendet)
+8. ✅ `assets/svg/shopfloor/shared/pick-event.svg` - PICK Event (verwendet)
+9. ✅ `assets/svg/shopfloor/shared/drop-event.svg` - DROP Event (verwendet)
+10. ✅ `assets/svg/shopfloor/shared/pass-event.svg` - PASS Event (verwendet)
+11. ✅ `assets/svg/shopfloor/shared/process-event.svg` - PROCESS Event (verwendet)
+12. ✅ `assets/svg/shopfloor/shared/turn-event.svg` - TURN Event (verwendet)
+13. ✅ `assets/svg/shopfloor/shared/location-marker.svg` - Location Marker (vorhanden)
 
 **Headings Icons (✅ ALLE VORHANDEN)**
 14. ✅ `headings/track-trace.svg` - Track&Trace Tab Heading (vorhanden)
@@ -444,8 +444,8 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 
 ### Bestehende SVGs (unverändert)
 
-- ✅ `shopfloor/robotic.svg` - Bleibt für bestehende Komponenten
-- ✅ `shopfloor/fuel.svg` - Bleibt für bestehende Komponenten (`device-chrg`)
+- ✅ `assets/svg/shopfloor/shared/agv-vehicle.svg` - Bleibt für bestehende Komponenten
+- ✅ `assets/svg/shopfloor/stations/chrg-station.svg` - Bleibt für bestehende Komponenten (`device-chrg`)
 - ✅ Alle anderen bestehenden SVGs bleiben unverändert
 
 ---
@@ -491,26 +491,26 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 ### Alle benötigten SVGs sind vorhanden!
 
 #### Shopfloor Icons (✅ ALLE VORHANDEN)
-- ✅ `shopfloor/battery.svg` - Battery Status
-- ✅ `shopfloor/charging-active.svg` - Charging Active
-- ✅ `shopfloor/driving-status.svg` - Driving Status
-- ✅ `shopfloor/stopped-status.svg` - Stopped Status
-- ✅ `shopfloor/paused-status.svg` - Paused Status
-- ✅ `shopfloor/dock-event.svg` - DOCK Event
-- ✅ `shopfloor/pick-event.svg` - PICK Event
-- ✅ `shopfloor/drop-event.svg` - DROP Event
-- ✅ `shopfloor/pass-event.svg` - PASS Event
-- ✅ `shopfloor/process-event.svg` - PROCESS Event
-- ✅ `shopfloor/turn-event.svg` - TURN Event
-- ✅ `shopfloor/location-marker.svg` - Location Marker
-- ✅ `shopfloor/robotic.svg` - FTS/AGV Icon
-- ✅ `shopfloor/stock.svg` - HBW Station
-- ✅ `shopfloor/bohrer.svg` - DRILL Station
-- ✅ `shopfloor/milling-machine.svg` - MILL Station
-- ✅ `shopfloor/ai-assistant.svg` - AIQS Station
-- ✅ `shopfloor/robot-arm.svg` - DPS Station
-- ✅ `shopfloor/factory.svg` - Production Order
-- ✅ `shopfloor/warehouse.svg` - Storage Order
+- ✅ `assets/svg/shopfloor/shared/battery.svg` - Battery Status
+- ✅ `assets/svg/shopfloor/shared/charging-active.svg` - Charging Active
+- ✅ `assets/svg/shopfloor/shared/driving-status.svg` - Driving Status
+- ✅ `assets/svg/shopfloor/shared/stopped-status.svg` - Stopped Status
+- ✅ `assets/svg/shopfloor/shared/paused-status.svg` - Paused Status
+- ✅ `assets/svg/shopfloor/shared/dock-event.svg` - DOCK Event
+- ✅ `assets/svg/shopfloor/shared/pick-event.svg` - PICK Event
+- ✅ `assets/svg/shopfloor/shared/drop-event.svg` - DROP Event
+- ✅ `assets/svg/shopfloor/shared/pass-event.svg` - PASS Event
+- ✅ `assets/svg/shopfloor/shared/process-event.svg` - PROCESS Event
+- ✅ `assets/svg/shopfloor/shared/turn-event.svg` - TURN Event
+- ✅ `assets/svg/shopfloor/shared/location-marker.svg` - Location Marker
+- ✅ `assets/svg/shopfloor/shared/agv-vehicle.svg` - FTS/AGV Icon
+- ✅ `assets/svg/shopfloor/stations/hbw-station.svg` - HBW Station
+- ✅ `assets/svg/shopfloor/stations/drill-station.svg` - DRILL Station
+- ✅ `assets/svg/shopfloor/stations/mill-station.svg` - MILL Station
+- ✅ `assets/svg/shopfloor/stations/aiqs-station.svg` - AIQS Station
+- ✅ `assets/svg/shopfloor/stations/dps-station.svg` - DPS Station
+- ✅ `assets/svg/shopfloor/systems/factory-system.svg` - Production Order
+- ✅ `assets/svg/shopfloor/systems/warehouse-system.svg` - Storage Order
 
 #### Headings Icons (✅ ALLE VORHANDEN)
 - ✅ `headings/track-trace.svg` - Track&Trace Tab Heading
@@ -531,24 +531,24 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 
 | Event/Element | Emoji (Example App) | OMF3 SVG (Final) | Status |
 |---------------|---------------------|------------------|--------|
-| DOCK Event | 🔗 | `shopfloor/dock-event.svg` | ✅ Vorhanden |
+| DOCK Event | 🔗 | `assets/svg/shopfloor/shared/dock-event.svg` | ✅ Vorhanden |
 | PICK Event | 📤 | `workpieces/{color}_instock_unprocessed.svg` | ✅ Vorhanden |
 | DROP Event | 📥 | `workpieces/{color}_product.svg` | ✅ Vorhanden |
-| TURN Event | ↩️ | `shopfloor/turn-event.svg` | ✅ Vorhanden |
-| PASS Event | ➡️ | `shopfloor/pass-event.svg` | ✅ Vorhanden |
-| TRANSPORT Event | 🚗 | `shopfloor/robotic.svg` | ✅ Vorhanden |
-| PROCESS Event | ⚙️ | `shopfloor/process-event.svg` | ✅ Vorhanden |
+| TURN Event | ↩️ | `assets/svg/shopfloor/shared/turn-event.svg` | ✅ Vorhanden |
+| PASS Event | ➡️ | `assets/svg/shopfloor/shared/pass-event.svg` | ✅ Vorhanden |
+| TRANSPORT Event | 🚗 | `assets/svg/shopfloor/shared/agv-vehicle.svg` | ✅ Vorhanden |
+| PROCESS Event | ⚙️ | `assets/svg/shopfloor/shared/process-event.svg` | ✅ Vorhanden |
 | Storage Order | 📥 | `headings/ladung.svg` | ✅ Vorhanden |
 | Production Order | 🏭 | `headings/maschine.svg` | ✅ Vorhanden |
-| Location Marker | 📍 | `shopfloor/location-marker.svg` | ✅ Vorhanden |
+| Location Marker | 📍 | `assets/svg/shopfloor/shared/location-marker.svg` | ✅ Vorhanden |
 | Track&Trace Heading | 🔍 | `headings/track-trace.svg` | ✅ Vorhanden |
 | Route/Map | 🗺️ | `headings/route.svg` | ✅ Vorhanden |
 | Info/Help | 💡 | `headings/info-page.svg` | ✅ Vorhanden |
-| HBW Station | 🏢 | `shopfloor/stock.svg` | ✅ Vorhanden |
-| DRILL Station | 🔩 | `shopfloor/bohrer.svg` | ✅ Vorhanden |
-| MILL Station | ⚙️ | `shopfloor/milling-machine.svg` | ✅ Vorhanden |
-| AIQS Station | 🔍 | `shopfloor/ai-assistant.svg` | ✅ Vorhanden |
-| DPS Station | 📦 | `shopfloor/robot-arm.svg` | ✅ Vorhanden |
+| HBW Station | 🏢 | `assets/svg/shopfloor/stations/hbw-station.svg` | ✅ Vorhanden |
+| DRILL Station | 🔩 | `assets/svg/shopfloor/stations/drill-station.svg` | ✅ Vorhanden |
+| MILL Station | ⚙️ | `assets/svg/shopfloor/stations/mill-station.svg` | ✅ Vorhanden |
+| AIQS Station | 🔍 | `assets/svg/shopfloor/stations/aiqs-station.svg` | ✅ Vorhanden |
+| DPS Station | 📦 | `assets/svg/shopfloor/stations/dps-station.svg` | ✅ Vorhanden |
 
 **Fazit:** Alle benötigten SVGs sind vorhanden! Keine neuen SVGs müssen erstellt werden. Die Track&Trace Tab Implementierung kann direkt mit den vorhandenen SVGs starten.
 

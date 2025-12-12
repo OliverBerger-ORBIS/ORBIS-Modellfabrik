@@ -48,7 +48,7 @@ export class DspArchitectureWrapperComponent implements OnInit {
           { iconKey: 'edge-data-storage', size: 48 },
           { iconKey: 'edge-digital-twin', size: 48 },
           { iconKey: 'edge-connectivity', size: 48 },
-          { iconKey: 'edge-workflow', size: 48 },
+          { iconKey: 'edge-choreography', size: 48 },
           { iconKey: 'edge-analytics', size: 48 },
         ],
         position: 'center',

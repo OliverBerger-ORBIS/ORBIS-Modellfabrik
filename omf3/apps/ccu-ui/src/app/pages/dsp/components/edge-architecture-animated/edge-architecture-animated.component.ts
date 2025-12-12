@@ -472,8 +472,8 @@ export class EdgeArchitectureAnimatedComponent implements OnInit, OnDestroy {
     
     // Map IconKey enum values to actual SVG paths
     const iconKeyToPath: Record<string, string> = {
-      'logo-sap': 'assets/svg/icons/logo-sap.svg',
-      'logo-azure': 'assets/svg/icons/logo-azure.svg',
+    'logo-sap': 'assets/svg/brand/sap-logo.svg',
+    'logo-azure': 'assets/svg/brand/azure-logo.svg',
       // Add more mappings as needed
     };
     

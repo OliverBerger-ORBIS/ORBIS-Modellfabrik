@@ -33,7 +33,7 @@ const THREE_D_ICON_MAP: Record<'BLUE' | 'WHITE' | 'RED', string> = {
   RED: ICONS.shopfloor.workpieces.red.dim3,
 };
 
-const DEFAULT_SHOPFLOOR_ICON = resolveLegacyShopfloorPath('shopfloor/question.svg');
+const DEFAULT_SHOPFLOOR_ICON = resolveLegacyShopfloorPath('assets/svg/shopfloor/shared/question.svg');
 
 @Component({
   standalone: true,

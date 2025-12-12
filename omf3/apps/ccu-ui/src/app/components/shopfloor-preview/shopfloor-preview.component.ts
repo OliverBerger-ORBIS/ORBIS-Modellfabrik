@@ -109,7 +109,7 @@ interface RouteOverlay {
   height?: number;
 }
 
-const DEFAULT_SHOPFLOOR_ICON = resolveLegacyShopfloorPath('shopfloor/question.svg');
+const DEFAULT_SHOPFLOOR_ICON = resolveLegacyShopfloorPath('assets/svg/shopfloor/shared/question.svg');
 
 interface ShopfloorView {
   width: number;

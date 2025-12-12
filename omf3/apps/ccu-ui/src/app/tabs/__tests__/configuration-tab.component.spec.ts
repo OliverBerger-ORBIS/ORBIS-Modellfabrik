@@ -249,7 +249,7 @@ describe('ConfigurationTabComponent', () => {
   });
 
   it('should resolve asset path', () => {
-    const path = component['resolveAssetPath']('/shopfloor/test.svg');
+    const path = component['resolveAssetPath']('/assets/svg/shopfloor/shared/question.svg');
     expect(path).toBeDefined();
   });
 

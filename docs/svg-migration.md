@@ -2,15 +2,15 @@
 
 | Old Path | New Path | Notes |
 |----------|----------|-------|
-| shopfloor/bohrer.svg | assets/svg/shopfloor/stations/drill-station.svg | APS Drill |
-| shopfloor/milling-machine.svg | assets/svg/shopfloor/stations/mill-station.svg | APS Mill |
-| shopfloor/stock.svg | assets/svg/shopfloor/stations/hbw-station.svg | High Bay Warehouse |
-| shopfloor/ai-assistant.svg | assets/svg/shopfloor/stations/aiqs-station.svg | AIQS Station |
-| shopfloor/robot-arm.svg | assets/svg/shopfloor/stations/dps-station.svg | DPS Station |
-| shopfloor/fuel.svg | assets/svg/shopfloor/stations/chrg-station.svg | Charging |
-| shopfloor/robotic.svg | assets/svg/shopfloor/shared/agv-vehicle.svg | AGV/FTS vehicle |
-| shopfloor/question.svg | assets/svg/shopfloor/shared/question.svg | Fallback |
-| shopfloor/information-technology.svg | assets/svg/brand/dsp-logo.svg | DSP Logo |
+| assets/svg/shopfloor/stations/drill-station.svg | assets/svg/shopfloor/stations/drill-station.svg | APS Drill |
+| assets/svg/shopfloor/stations/mill-station.svg | assets/svg/shopfloor/stations/mill-station.svg | APS Mill |
+| assets/svg/shopfloor/stations/hbw-station.svg | assets/svg/shopfloor/stations/hbw-station.svg | High Bay Warehouse |
+| assets/svg/shopfloor/stations/aiqs-station.svg | assets/svg/shopfloor/stations/aiqs-station.svg | AIQS Station |
+| assets/svg/shopfloor/stations/dps-station.svg | assets/svg/shopfloor/stations/dps-station.svg | DPS Station |
+| assets/svg/shopfloor/stations/chrg-station.svg | assets/svg/shopfloor/stations/chrg-station.svg | Charging |
+| assets/svg/shopfloor/shared/agv-vehicle.svg | assets/svg/shopfloor/shared/agv-vehicle.svg | AGV/FTS vehicle |
+| assets/svg/shopfloor/shared/question.svg | assets/svg/shopfloor/shared/question.svg | Fallback |
+| assets/svg/brand/dsp-logo.svg | assets/svg/brand/dsp-logo.svg | DSP Logo |
 | workpieces/blue_product.svg | assets/svg/shopfloor/workpieces/wp-blue-product.svg | Workpiece blue |
 | workpieces/white_product.svg | assets/svg/shopfloor/workpieces/wp-white-product.svg | Workpiece white |
 | workpieces/red_product.svg | assets/svg/shopfloor/workpieces/wp-red-product.svg | Workpiece red |
@@ -43,7 +43,7 @@
 | details/dsp/erp.application.svg | assets/svg/business/erp-application.svg | ERP App |
 | details/dsp/crm-application.svg | assets/svg/business/crm-application.svg | CRM App |
 | details/dsp/scm-application.svg | assets/svg/business/scm-application.svg | SCM App |
-| shopfloor/ORBIS_logo_RGB.svg | assets/svg/brand/orbis-logo.svg | ORBIS Logo |
+| assets/svg/brand/orbis-logo.svg | assets/svg/brand/orbis-logo.svg | ORBIS Logo |
 | details/dsp/sap.svg | assets/svg/brand/sap-logo.svg | SAP Logo |
 | details/dsp/azure.svg | assets/svg/brand/azure-logo.svg | Azure Logo |
 | methodology/phase1-data-foundation.svg | assets/svg/orbis/data-lake.svg | Incremental Phase 1 |
@@ -67,29 +67,29 @@
 | headings/mehrere.svg | assets/svg/ui/heading-modules.svg | Modules |
 | headings/zentral.svg | assets/svg/ui/heading-message-monitor.svg | Message Monitor |
 | headings/dezentral_1.svg | assets/svg/ui/heading-ccu.svg | CCU |
-| shopfloor/turn-event.svg | assets/svg/shopfloor/shared/turn-event.svg | FTS action icon |
-| shopfloor/dock-event.svg | assets/svg/shopfloor/shared/dock-event.svg | FTS action icon |
-| shopfloor/pass-event.svg | assets/svg/shopfloor/shared/pass-event.svg | FTS action icon |
-| shopfloor/pick-event.svg | assets/svg/shopfloor/shared/pick-event.svg | FTS action icon |
-| shopfloor/drop-event.svg | assets/svg/shopfloor/shared/drop-event.svg | FTS action icon |
-| shopfloor/process-event.svg | assets/svg/shopfloor/shared/process-event.svg | FTS action icon |
-| shopfloor/battery.svg | assets/svg/shopfloor/shared/battery.svg | Battery |
-| shopfloor/driving-status.svg | assets/svg/shopfloor/shared/driving-status.svg | Driving status |
-| shopfloor/stopped-status.svg | assets/svg/shopfloor/shared/stopped-status.svg | Stopped status |
-| shopfloor/paused-status.svg | assets/svg/shopfloor/shared/paused-status.svg | Paused status |
-| shopfloor/charging-active.svg | assets/svg/shopfloor/shared/charging-active.svg | Charging |
-| shopfloor/location-marker.svg | assets/svg/shopfloor/shared/location-marker.svg | Marker |
-| shopfloor/order-tracking.svg | assets/svg/shopfloor/shared/order-tracking.svg | Order tracking |
+| assets/svg/shopfloor/shared/turn-event.svg | assets/svg/shopfloor/shared/turn-event.svg | FTS action icon |
+| assets/svg/shopfloor/shared/dock-event.svg | assets/svg/shopfloor/shared/dock-event.svg | FTS action icon |
+| assets/svg/shopfloor/shared/pass-event.svg | assets/svg/shopfloor/shared/pass-event.svg | FTS action icon |
+| assets/svg/shopfloor/shared/pick-event.svg | assets/svg/shopfloor/shared/pick-event.svg | FTS action icon |
+| assets/svg/shopfloor/shared/drop-event.svg | assets/svg/shopfloor/shared/drop-event.svg | FTS action icon |
+| assets/svg/shopfloor/shared/process-event.svg | assets/svg/shopfloor/shared/process-event.svg | FTS action icon |
+| assets/svg/shopfloor/shared/battery.svg | assets/svg/shopfloor/shared/battery.svg | Battery |
+| assets/svg/shopfloor/shared/driving-status.svg | assets/svg/shopfloor/shared/driving-status.svg | Driving status |
+| assets/svg/shopfloor/shared/stopped-status.svg | assets/svg/shopfloor/shared/stopped-status.svg | Stopped status |
+| assets/svg/shopfloor/shared/paused-status.svg | assets/svg/shopfloor/shared/paused-status.svg | Paused status |
+| assets/svg/shopfloor/shared/charging-active.svg | assets/svg/shopfloor/shared/charging-active.svg | Charging |
+| assets/svg/shopfloor/shared/location-marker.svg | assets/svg/shopfloor/shared/location-marker.svg | Marker |
+| assets/svg/shopfloor/shared/order-tracking.svg | assets/svg/shopfloor/shared/order-tracking.svg | Order tracking |
 | shopfloor/intersection1.svg | assets/svg/shopfloor/intersections/intersection-1.svg | Intersection 1 |
 | shopfloor/intersection2.svg | assets/svg/shopfloor/intersections/intersection-2.svg | Intersection 2 |
 | shopfloor/intersection3.svg | assets/svg/shopfloor/intersections/intersection-3.svg | Intersection 3 |
 | shopfloor/intersection4.svg | assets/svg/shopfloor/intersections/intersection-4.svg | Intersection 4 |
-| shopfloor/conveyor.svg | assets/svg/shopfloor/stations/conveyor.svg | Conveyor |
-| shopfloor/mixer.svg | assets/svg/shopfloor/stations/mixer.svg | Mixer |
-| shopfloor/stone-oven.svg | assets/svg/shopfloor/stations/stone-oven.svg | Stone oven |
-| shopfloor/factory.svg | assets/svg/shopfloor/systems/factory.svg | Factory |
-| shopfloor/warehouse.svg | assets/svg/shopfloor/systems/warehouse.svg | Warehouse |
-| shopfloor/ORBIS_logo_RGB.svg | assets/svg/brand/orbis-logo.svg | ORBIS Logo |
+| assets/svg/shopfloor/stations/conveyor-station.svg | assets/svg/shopfloor/stations/conveyor.svg | Conveyor |
+| assets/svg/shopfloor/stations/mixer.svg | assets/svg/shopfloor/stations/mixer.svg | Mixer |
+| assets/svg/shopfloor/stations/oven-station.svg | assets/svg/shopfloor/stations/stone-oven.svg | Stone oven |
+| assets/svg/shopfloor/systems/factory-system.svg | assets/svg/shopfloor/systems/factory.svg | Factory |
+| assets/svg/shopfloor/systems/warehouse-system.svg | assets/svg/shopfloor/systems/warehouse.svg | Warehouse |
+| assets/svg/brand/orbis-logo.svg | assets/svg/brand/orbis-logo.svg | ORBIS Logo |
 | headings/grundriss.svg | assets/svg/ui/heading-factory-configuration.svg | Factory configuration |
 | headings/grundriss.svg | assets/svg/ui/heading-shopfloor-layout.svg | Shopfloor layout |
 | details/orbis/data-lake.svg | assets/svg/orbis/data-lake.svg | ORBIS Phase |

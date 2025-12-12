@@ -59,7 +59,7 @@ _Generated: 2025-12-10T12:50:48.575Z_
       - edge-digital-twin.svg — `assets/svg/dsp/functions/edge-digital-twin.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-digital-twin.svg" alt="edge-digital-twin.svg" width="32" height="32" />
       - edge-interoperability.svg — `assets/svg/dsp/functions/edge-interoperability.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-interoperability.svg" alt="edge-interoperability.svg" width="32" height="32" />
       - edge-process-logic.svg — `assets/svg/dsp/functions/edge-process-logic.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-process-logic.svg" alt="edge-process-logic.svg" width="32" height="32" />
-      - edge-workflow.svg — `assets/svg/dsp/functions/edge-workflow.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-workflow.svg" alt="edge-workflow.svg" width="32" height="32" />
+      - edge-choreography.svg — `assets/svg/dsp/functions/edge-choreography.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-choreography.svg" alt="edge-choreography.svg" width="32" height="32" />
     - use-cases
       - use-case-data-aggregation.svg — `assets/svg/dsp/use-cases/use-case-data-aggregation.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/use-cases/use-case-data-aggregation.svg" alt="use-case-data-aggregation.svg" width="32" height="32" />
       - use-case-predictive-maintenance.svg — `assets/svg/dsp/use-cases/use-case-predictive-maintenance.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/use-cases/use-case-predictive-maintenance.svg" alt="use-case-predictive-maintenance.svg" width="32" height="32" />

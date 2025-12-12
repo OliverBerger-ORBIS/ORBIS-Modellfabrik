@@ -97,13 +97,13 @@ describe('ProcessTabComponent', () => {
   });
 
   it('should resolve asset path correctly', () => {
-    const path = component['resolveAssetPath']('/shopfloor/test.svg');
-    expect(path).toBe('shopfloor/test.svg');
+    const path = component['resolveAssetPath']('/assets/svg/shopfloor/shared/question.svg');
+    expect(path).toBe('assets/svg/shopfloor/shared/question.svg');
   });
 
   it('should normalize asset path without leading slash', () => {
-    const path = component['resolveAssetPath']('shopfloor/test.svg');
-    expect(path).toBe('shopfloor/test.svg');
+    const path = component['resolveAssetPath']('assets/svg/shopfloor/shared/question.svg');
+    expect(path).toBe('assets/svg/shopfloor/shared/question.svg');
   });
 
   it('should get module meta', () => {

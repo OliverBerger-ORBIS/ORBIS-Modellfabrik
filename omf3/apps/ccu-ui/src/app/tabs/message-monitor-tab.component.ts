@@ -290,7 +290,7 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
       .map((serial) => {
         const moduleType = this.mappingService.getModuleTypeFromSerial(serial) ?? serial;
         const displayName = this.moduleNameService.getModuleDisplayText(moduleType, 'id-full');
-        const icon = this.mappingService.getModuleIcon(serial) ?? resolveLegacyShopfloorPath('shopfloor/robot-arm.svg');
+        const icon = this.mappingService.getModuleIcon(serial) ?? resolveLegacyShopfloorPath('assets/svg/shopfloor/stations/dps-station.svg');
         return { serial, name: displayName, icon };
       })
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -304,7 +304,7 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
         moduleList.unshift({
           serial: 'AGV',
           name: this.moduleNameService.getModuleDisplayText('FTS', 'id-full'),
-          icon: resolveLegacyShopfloorPath('shopfloor/robotic.svg')
+          icon: resolveLegacyShopfloorPath('assets/svg/shopfloor/shared/agv-vehicle.svg')
         });
       }
     }
@@ -344,7 +344,7 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
       if (serial) {
         const moduleType = this.mappingService.getModuleTypeFromSerial(serial) ?? serial;
         const displayName = this.moduleNameService.getModuleDisplayText(moduleType, 'id-only');
-        const icon = this.mappingService.getModuleIcon(serial) ?? resolveLegacyShopfloorPath('shopfloor/robot-arm.svg');
+        const icon = this.mappingService.getModuleIcon(serial) ?? resolveLegacyShopfloorPath('assets/svg/shopfloor/stations/dps-station.svg');
         return { name: displayName, icon };
       }
     }
@@ -356,14 +356,14 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
         const serial = parts[3];
         const moduleType = this.mappingService.getModuleTypeFromSerial(serial) ?? 'FTS';
         const displayName = this.moduleNameService.getModuleDisplayText(moduleType, 'id-only');
-        const icon = this.mappingService.getModuleIcon(serial) ?? resolveLegacyShopfloorPath('shopfloor/robotic.svg');
+        const icon = this.mappingService.getModuleIcon(serial) ?? resolveLegacyShopfloorPath('assets/svg/shopfloor/shared/agv-vehicle.svg');
         return { name: displayName, icon };
       }
     }
 
     // Default: use first element of topic path
     const firstElement = topic.split('/')[0] || topic;
-    return { name: firstElement, icon: resolveLegacyShopfloorPath('shopfloor/robot-arm.svg') };
+    return { name: firstElement, icon: resolveLegacyShopfloorPath('assets/svg/shopfloor/stations/dps-station.svg') };
   }
 
   private loadFilterSettings(): void {

@@ -42,7 +42,7 @@ interface ProcessProductView {
 export class ProcessTabComponent implements OnInit, OnDestroy {
   private dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
-  private readonly defaultShopfloorIcon = resolveLegacyShopfloorPath('shopfloor/question.svg');
+  private readonly defaultShopfloorIcon = resolveLegacyShopfloorPath('assets/svg/shopfloor/shared/question.svg');
 
   readonly fixtureOptions: OrderFixtureName[] = ['startup', 'white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];
   readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
@@ -70,11 +70,11 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
   }
 
   readonly processIcon = ICONS.ui.processFlow;
-  readonly startIcon = this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['HBW'] ?? 'shopfloor/stock.svg');
+  readonly startIcon = this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['HBW'] ?? 'assets/svg/shopfloor/stations/hbw-station.svg');
   readonly endIcons = [
-    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS_SQUARE1'] ?? 'shopfloor/warehouse.svg'),
-    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS'] ?? 'shopfloor/robot-arm.svg'),
-    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS_SQUARE2'] ?? 'shopfloor/order-tracking.svg'),
+    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS_SQUARE1'] ?? 'assets/svg/shopfloor/systems/warehouse-system.svg'),
+    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS'] ?? 'assets/svg/shopfloor/stations/dps-station.svg'),
+    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS_SQUARE2'] ?? 'assets/svg/shopfloor/shared/order-tracking.svg'),
   ];
   readonly stepCountI18nMap: { [k: string]: string } = {
     '=0': $localize`:@@processNoSteps:No processing steps`,

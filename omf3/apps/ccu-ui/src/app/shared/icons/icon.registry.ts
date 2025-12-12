@@ -19,8 +19,8 @@ export const ICONS = {
       agv: 'assets/svg/shopfloor/shared/agv-vehicle.svg',
       fts: 'assets/svg/shopfloor/shared/agv-vehicle.svg', // alias for MQTT terminology
       any: 'assets/svg/shopfloor/systems/any-system.svg',
-      factory: 'assets/svg/shopfloor/systems/factory.svg',
-      warehouse: 'assets/svg/shopfloor/systems/warehouse.svg',
+      factory: 'assets/svg/shopfloor/systems/factory-system.svg',
+      warehouse: 'assets/svg/shopfloor/systems/warehouse-system.svg',
     },
     intersections: {
       1: 'assets/svg/shopfloor/intersections/intersection-1.svg',
@@ -83,7 +83,7 @@ export const ICONS = {
       analytics: 'assets/svg/dsp/functions/edge-analytics.svg',
       buffering: 'assets/svg/dsp/functions/edge-buffering.svg',
       dataStorage: 'assets/svg/dsp/functions/edge-data-storage.svg',
-      workflow: 'assets/svg/dsp/functions/edge-workflow.svg',
+      workflow: 'assets/svg/dsp/functions/edge-choreography.svg',
     },
     edgeComponents: {
       disc: 'assets/svg/dsp/edge-components/edge-disc.svg',

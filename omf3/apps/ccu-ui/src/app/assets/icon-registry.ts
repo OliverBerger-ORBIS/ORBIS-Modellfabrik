@@ -15,7 +15,6 @@ export type IconKey =
   | 'edge-digital-twin'
   | 'edge-data-storage'
   | 'edge-analytics'
-  | 'edge-workflow'
   | 'edge-network'
   | 'edge-interoperability'
   | 'edge-event-driven'
@@ -92,7 +91,6 @@ export const ICON_MAP: Record<IconKey, string> = {
   'edge-digital-twin': ICONS.dsp.functions.digitalTwin,
   'edge-data-storage': ICONS.dsp.functions.dataStorage,
   'edge-analytics': ICONS.dsp.functions.analytics,
-  'edge-workflow': ICONS.dsp.functions.workflow,
   'edge-network': ICONS.dsp.functions.connectivity,
   'edge-interoperability': 'assets/svg/dsp/functions/edge-interoperability.svg',
   'edge-event-driven': 'assets/svg/dsp/functions/edge-event-driven.svg',

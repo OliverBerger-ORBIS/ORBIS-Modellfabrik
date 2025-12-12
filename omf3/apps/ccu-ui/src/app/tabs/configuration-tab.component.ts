@@ -288,7 +288,7 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         { iconKey: 'edge-data-storage', size: 48 },
         { iconKey: 'edge-digital-twin', size: 48 },
         { iconKey: 'edge-connectivity', size: 48 },
-        { iconKey: 'edge-workflow', size: 48 },
+        { iconKey: 'edge-choreography', size: 48 },
         { iconKey: 'edge-analytics', size: 48 },
       ],
       position: 'center',

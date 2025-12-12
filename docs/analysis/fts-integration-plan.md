@@ -112,10 +112,10 @@
 - [ ] Kopiere `track-trace.component.ts` nach `omf3/apps/ccu-ui/src/app/components/track-trace/`
 - [ ] Ersetze `FtsMockService` durch `MessageMonitorService`
 - [ ] Ersetze Emoji-Icons durch OMF3-SVGs:
-  - DOCK: `shopfloor/robotic.svg`
+  - DOCK: `assets/svg/shopfloor/shared/agv-vehicle.svg`
   - PICK/DROP: `workpieces/*.svg`
-  - TRANSPORT: `shopfloor/robotic.svg`
-  - PROCESS: `shopfloor/bohrer.svg` oder `shopfloor/milling-machine.svg`
+  - TRANSPORT: `assets/svg/shopfloor/shared/agv-vehicle.svg`
+  - PROCESS: `assets/svg/shopfloor/stations/drill-station.svg` oder `assets/svg/shopfloor/stations/mill-station.svg`
 - [ ] Ersetze `MODULE_NAME_MAP` durch `ModuleNameService`
 - [ ] Ersetze Station-Icons durch `shopfloor/*.svg`
 - [ ] Füge i18n hinzu
@@ -180,13 +180,13 @@
 ### Module Icons
 | Beispiel-App | OMF3 |
 |--------------|------|
-| Emoji Icons | `shopfloor/bohrer.svg` (DRILL) |
-| | `shopfloor/milling-machine.svg` (MILL) |
-| | `shopfloor/ai-assistant.svg` (AIQS) |
-| | `shopfloor/robot-arm.svg` (DPS) |
-| | `shopfloor/stock.svg` (HBW) |
-| | `shopfloor/robotic.svg` (FTS) |
-| | `shopfloor/fuel.svg` (CHRG) |
+| Emoji Icons | `assets/svg/shopfloor/stations/drill-station.svg` (DRILL) |
+| | `assets/svg/shopfloor/stations/mill-station.svg` (MILL) |
+| | `assets/svg/shopfloor/stations/aiqs-station.svg` (AIQS) |
+| | `assets/svg/shopfloor/stations/dps-station.svg` (DPS) |
+| | `assets/svg/shopfloor/stations/hbw-station.svg` (HBW) |
+| | `assets/svg/shopfloor/shared/agv-vehicle.svg` (FTS) |
+| | `assets/svg/shopfloor/stations/chrg-station.svg` (CHRG) |
 | | `shopfloor/intersection{1-4}.svg` (Intersections) |
 
 ### Workpiece Icons
@@ -200,13 +200,13 @@
 ### Event Icons (Track & Trace)
 | Beispiel-App | OMF3 |
 |--------------|------|
-| 🔗 DOCK | `shopfloor/robotic.svg` |
+| 🔗 DOCK | `assets/svg/shopfloor/shared/agv-vehicle.svg` |
 | 📤 PICK | `workpieces/{color}_instock_unprocessed.svg` |
 | 📥 DROP | `workpieces/{color}_product.svg` |
-| ↩️ TURN | `shopfloor/robotic.svg` |
-| ➡️ PASS | `shopfloor/robotic.svg` |
-| 🚗 TRANSPORT | `shopfloor/robotic.svg` |
-| ⚙️ PROCESS | `shopfloor/bohrer.svg` oder `shopfloor/milling-machine.svg` |
+| ↩️ TURN | `assets/svg/shopfloor/shared/agv-vehicle.svg` |
+| ➡️ PASS | `assets/svg/shopfloor/shared/agv-vehicle.svg` |
+| 🚗 TRANSPORT | `assets/svg/shopfloor/shared/agv-vehicle.svg` |
+| ⚙️ PROCESS | `assets/svg/shopfloor/stations/drill-station.svg` oder `assets/svg/shopfloor/stations/mill-station.svg` |
 
 ---
 

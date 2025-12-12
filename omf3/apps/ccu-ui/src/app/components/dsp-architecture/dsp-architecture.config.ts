@@ -173,7 +173,7 @@ export function createDefaultContainers(): ContainerConfig[] {
       { iconKey: 'edge-data-storage' as IconKey, size: 60 },  // Larger icon size
       { iconKey: 'edge-network' as IconKey, size: 60 },
       { iconKey: 'edge-digital-twin' as IconKey, size: 60 },
-      { iconKey: 'edge-workflow' as IconKey, size: 60 },
+      { iconKey: 'edge-choreography' as IconKey, size: 60 },
       { iconKey: 'edge-analytics' as IconKey, size: 60 },
     ],
     url: '/edge',  // Default URL for DSP Edge
@@ -702,7 +702,7 @@ export function createDefaultSteps(): StepConfig[] {
       visibleConnectionIds: baseShopfloorConnections,
       highlightedConnectionIds: [],
       showFunctionIcons: true,
-      highlightedFunctionIcons: ['edge-workflow'],
+      highlightedFunctionIcons: ['edge-choreography'],
     },
 
     // Step 7: Edge Analytics - KPIs, OEE, quality metrics

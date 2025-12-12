@@ -22,12 +22,12 @@ export class DspMesTeaserComponent {
     {
       title: $localize`:@@dspMesTeaserErpTitle:ERP Integration`,
       description: $localize`:@@dspMesTeaserErpDesc:Direct connection to SAP S/4HANA for order management and material flow`,
-      icon: 'assets/svg/brand/sap.svg',
+      icon: 'assets/svg/brand/sap-logo.svg',
     },
     {
       title: $localize`:@@dspMesTeaserAnalyticsTitle:Analytics Platform`,
       description: $localize`:@@dspMesTeaserAnalyticsDesc:Integration with Power BI and SAP Analytics Cloud for advanced reporting`,
-      icon: 'assets/svg/business/analytics.svg',
+      icon: 'assets/svg/business/analytics-application.svg',
     },
     {
       title: $localize`:@@dspMesTeaserDataLakeTitle:Data Lake`,
