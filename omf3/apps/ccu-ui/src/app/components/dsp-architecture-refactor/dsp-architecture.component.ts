@@ -100,18 +100,24 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
     'dsp-ux': this.labelSmartfactoryDashboard,
     'dsp-edge': this.labelEdge,
     'dsp-mc': this.labelManagementCockpit,
+    'bp-mes': $localize`:@@dspArchLabelMESApp:MES Applications`,
     'bp-erp': $localize`:@@dspArchLabelERP:ERP Applications`,
     'bp-cloud': $localize`:@@dspArchLabelCloudApps:Cloud\nApplications`,
     'bp-analytics': $localize`:@@dspArchLabelAnalytics:Analytical\nApplications`,
     'bp-data-lake': $localize`:@@dspArchLabelDataLake:Data Lake`,
     'sf-system-bp': $localize`:@@dspArchLabelMES:MES`,
+    'sf-system-warehouse': $localize`:@@dspArchLabelWarehouse:Warehouse`,
+    'sf-system-factory': $localize`:@@dspArchLabelFactory:Factory`,
     'sf-system-fts': $localize`:@@dspArchLabelFTS:AGV\nSystem`,
-    'sf-device-mill': $localize`:@@deviceMILL:Mill`,
-    'sf-device-drill': $localize`:@@deviceDRILL:Drill`,
-    'sf-device-aiqs': $localize`:@@deviceAIQS:AIQS`,
-    'sf-device-hbw': $localize`:@@deviceHBW:HBW`,
-    'sf-device-dps': $localize`:@@deviceDPS:DPS`,
-    'sf-device-chrg': $localize`:@@deviceCHRG:Charger`,
+    // Device labels with manual break hints (" / ") for consistent wrapping
+    'sf-device-mill': $localize`:@@deviceMILL:Fräs / station`,
+    'sf-device-drill': $localize`:@@deviceDRILL:Bohr / station`,
+    'sf-device-aiqs': $localize`:@@deviceAIQS:KI- / Qualitäts / station`,
+    'sf-device-hbw': $localize`:@@deviceHBW:Hochregal / lager`,
+    'sf-device-dps': $localize`:@@deviceDPS:Waren Ein- / und Ausgang`,
+    'sf-device-chrg': $localize`:@@deviceCHRG:Lade- / station`,
+    'sf-device-conveyor': $localize`:@@deviceConveyor:Förder- / station`,
+    'sf-device-stone-oven': $localize`:@@deviceStoneOven:Ofen / station`,
     // DSP Edge Components
     'edge-comp-disc': $localize`:@@edgeComponentDisc:DISC`,
     'edge-comp-event-bus': $localize`:@@edgeComponentEventBus:Event Bus`,
@@ -355,6 +361,44 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
   }
 
   /**
+   * Resolve secondary logos list (supports single legacy key)
+   */
+  protected getSecondaryLogos(container: ContainerConfig): IconKey[] {
+    if (container.secondaryLogos && container.secondaryLogos.length > 0) {
+      return container.secondaryLogos;
+    }
+    if (container.secondaryLogoIconKey) {
+      return [container.secondaryLogoIconKey];
+    }
+    return [];
+  }
+
+  /**
+   * Secondary logo size (supporting larger ORBIS top-left case)
+   */
+  protected getSecondaryLogoSize(container: ContainerConfig): number {
+    const base = container.type === 'dsp-cloud' ? 36 : 28;
+    const isTopLeft = container.secondaryLogoPosition === 'top-left';
+    return isTopLeft ? base * 1.5 : base;
+  }
+
+  /**
+   * Secondary logo X position (supports left placement & horizontal stacking)
+   */
+  protected getSecondaryLogoX(container: ContainerConfig, index: number): number {
+    const size = this.getSecondaryLogoSize(container);
+    const gap = 6;
+    const margin = 8;
+    const isTopLeft = container.secondaryLogoPosition === 'top-left';
+    if (isTopLeft) {
+      // stack left-to-right starting at margin
+      return margin + index * (size + gap);
+    }
+    // right-aligned, stacking right-to-left
+    return container.width - margin - size - index * (size + gap);
+  }
+
+  /**
    * Get label anchor
    */
   protected getLabelAnchor(container: ContainerConfig): string {
@@ -371,19 +415,21 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
 
     // Approximate character capacity based on width and font size
     const fontSize = container.fontSize || 12;
-    const maxCharsPerLine = Math.max(8, Math.floor((container.width - 12) / (fontSize * 0.6)));
+    const maxCharsPerLine = Math.max(8, Math.floor((container.width - 12) / (fontSize * 0.58)));
+    const maxLines = 3;
 
-    // Allow wrapping also at hyphens by splitting dash-containing tokens
+    // Allow manual break hints using " / " (locale-safe) and hyphen-aware splitting
+    const hinted = label.split(' / ').join('\n');
     const dashExpanded: string[] = [];
-    label.split(/\s+/).forEach((token) => {
+    hinted.split(/\s+/).forEach((token) => {
       if (token.includes('-')) {
         const parts = token.split('-').filter(Boolean);
         parts.forEach((p, idx) => {
           dashExpanded.push(p);
-          if (idx < parts.length - 1) {
-            dashExpanded.push('-');
-          }
+          if (idx < parts.length - 1) dashExpanded.push('-');
         });
+      } else if (token.includes('\n')) {
+        token.split('\n').forEach((t) => dashExpanded.push(t));
       } else {
         dashExpanded.push(token);
       }
@@ -398,21 +444,33 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
       if (tentative.length > maxCharsPerLine && current) {
         lines.push(current);
         current = word;
+        if (lines.length >= maxLines - 1) {
+          break;
+        }
       } else {
         current = tentative;
       }
     }
-    if (current) lines.push(current);
+    if (current && lines.length < maxLines) lines.push(current);
 
     // If still too long and only one token (no spaces), hard-wrap
     if (lines.length === 1 && lines[0].length > maxCharsPerLine) {
-      const first = lines[0].slice(0, maxCharsPerLine);
-      const second = lines[0].slice(maxCharsPerLine);
-      lines.splice(0, 1, first, second);
+      const token = lines[0];
+      if (token.toLowerCase().endsWith('station') && token.length > maxCharsPerLine) {
+        const stem = token.slice(0, Math.max(3, token.length - 7));
+        const suffix = 'station';
+        lines.splice(0, 1, stem, suffix);
+        return lines.slice(0, maxLines);
+      }
+      const hard1 = token.slice(0, maxCharsPerLine);
+      const hard2 = token.slice(maxCharsPerLine, maxCharsPerLine * 2);
+      const hard3 = token.slice(maxCharsPerLine * 2);
+      const parts = [hard1, hard2, hard3].filter(Boolean);
+      lines.splice(0, 1, ...parts);
     }
 
-    // Limit to two lines to keep layout stable
-    return lines.slice(0, 2);
+    // Limit to maxLines to keep layout stable
+    return lines.slice(0, maxLines);
   }
 
   /**

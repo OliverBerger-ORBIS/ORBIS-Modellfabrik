@@ -53,6 +53,8 @@ export interface ContainerConfig {
   centerIconKey?: IconKey;
   /** Optional secondary logo (e.g., Azure logo) from icon-registry */
   secondaryLogoIconKey?: IconKey;
+  /** Optional list of secondary logos (rendered right-aligned, horizontal) */
+  secondaryLogos?: IconKey[];
   /** Position of the secondary logo */
   secondaryLogoPosition?: LogoPosition;
 

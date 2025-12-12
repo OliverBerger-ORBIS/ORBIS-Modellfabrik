@@ -37,12 +37,14 @@ export type IconKey =
   | 'device-camera'
   | 'device-sensor'
   | 'device-printer'
+  | 'device-stone-oven'
   | 'shopfloor-systems'
   | 'shopfloor-fts'
   | 'shopfloor-mes'
   | 'shopfloor-scada'
   | 'shopfloor-aps'
   | 'shopfloor-warehouse'
+  | 'shopfloor-factory'
   | 'shopfloor-it'
   | 'ux-dashboard'
   | 'ux-monitor'
@@ -51,7 +53,9 @@ export type IconKey =
   | 'bp-analytics'
   | 'bp-data-lake'
   | 'bp-business-process'
-  | 'mes-application';
+  | 'mes-application'
+  | 'aws-logo'
+  | 'google-cloud-logo';
 
 export interface FunctionIconConfig {
   iconKey: IconKey;
@@ -94,17 +98,19 @@ export const ICON_MAP: Record<IconKey, string> = {
   'device-chrg': ICONS.shopfloor.stations.chrg,
   'device-plc': ICONS.shopfloor.systems.any,
   'device-robot-arm': ICONS.shopfloor.stations.dps,
-  'device-conveyor': ICONS.shopfloor.systems.any,
+  'device-conveyor': 'assets/svg/shopfloor/stations/conveyor-station.svg',
   'device-camera': ICONS.shopfloor.stations.aiqs,
   'device-sensor': ICONS.shopfloor.systems.any,
   'device-printer': ICONS.shopfloor.systems.any,
+  'device-stone-oven': 'assets/svg/shopfloor/stations/oven-station.svg',
 
   'shopfloor-systems': ICONS.shopfloor.systems.any,
   'shopfloor-fts': ICONS.shopfloor.systems.fts,
   'shopfloor-mes': ICONS.shopfloor.shared.question,
   'shopfloor-scada': ICONS.shopfloor.systems.any,
   'shopfloor-aps': ICONS.shopfloor.stations.dps,
-  'shopfloor-warehouse': ICONS.shopfloor.stations.hbw,
+  'shopfloor-warehouse': 'assets/svg/shopfloor/systems/warehouse-system.svg',
+  'shopfloor-factory': 'assets/svg/shopfloor/systems/factory-system.svg',
   'shopfloor-it': ICONS.shopfloor.systems.any,
 
   'ux-dashboard': ICONS.dsp.architecture.smartFactoryDashboard,
@@ -116,6 +122,8 @@ export const ICON_MAP: Record<IconKey, string> = {
   'bp-data-lake': ICONS.business.dataLake,
   'bp-business-process': ICONS.dsp.functions.workflow,
   'mes-application': ICONS.business.mes,
+  'aws-logo': 'assets/svg/brand/aws-logo.svg',
+  'google-cloud-logo': 'assets/svg/brand/google-cloud-logo.svg',
 };
 
 export function getIconPath(key: IconKey | undefined | null): string {

@@ -239,27 +239,18 @@
               class="container__logo"
             />
 
-            <!-- Secondary Logo (top-right) for dsp-cloud - Azure logo -->
-            <image
-              *ngIf="container.secondaryLogoIconKey && container.type === 'dsp-cloud'"
-              [attr.href]="resolveIconPath(container.secondaryLogoIconKey)"
-              [attr.x]="container.width - 44"
-              [attr.y]="8"
-              width="36"
-              height="36"
-              class="container__logo container__logo--secondary"
-            />
-
-            <!-- Secondary Logo (top-right) for other containers -->
-            <image
-              *ngIf="container.secondaryLogoIconKey && container.type !== 'dsp-cloud'"
-              [attr.href]="resolveIconPath(container.secondaryLogoIconKey)"
-              [attr.x]="container.width - 36"
-              [attr.y]="8"
-              width="28"
-              height="28"
-              class="container__logo container__logo--secondary"
-            />
+            <!-- Secondary Logos (supports multiple, positional override) -->
+            <ng-container *ngIf="getSecondaryLogos(container).length > 0">
+              <image
+                *ngFor="let logo of getSecondaryLogos(container); let i = index"
+                [attr.href]="resolveIconPath(logo)"
+                [attr.x]="getSecondaryLogoX(container, i)"
+                [attr.y]="8"
+                [attr.width]="getSecondaryLogoSize(container)"
+                [attr.height]="getSecondaryLogoSize(container)"
+                class="container__logo container__logo--secondary"
+              />
+            </ng-container>
 
             <!-- Device/System Icon (centered at top, with label below) - larger icons -->
             <image
