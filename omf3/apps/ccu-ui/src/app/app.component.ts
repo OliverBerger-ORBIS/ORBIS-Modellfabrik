@@ -62,11 +62,6 @@ const NAVIGATION_ITEMS: Omit<NavigationItem, 'label'>[] = [
     icon: 'assets/svg/ui/heading-message-monitor.svg',
   },
   {
-    id: 'dsp-action',
-    route: '/dsp-action',
-    roles: ['admin'],
-  },
-  {
     id: 'fts',
     route: '/fts',
     roles: ['operator', 'admin'],
@@ -115,7 +110,6 @@ export class AppComponent implements OnDestroy {
       'module': $localize`:@@navModule:Modules`,
       'configuration': $localize`:@@navConfiguration:Configuration`,
       'message-monitor': $localize`:@@navMessageMonitor:Message Monitor`,
-      'dsp-action': $localize`:@@navDspAction:DSP Actions`,
       'fts': $localize`:@@navFts:AGV`,
       'track-trace': $localize`:@@navTrackTrace:Track & Trace`,
       'settings': $localize`:@@navSettings:Settings`,
