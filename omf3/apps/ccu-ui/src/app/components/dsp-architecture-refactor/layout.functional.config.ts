@@ -86,11 +86,24 @@ export function createDefaultSteps(): StepConfig[] {
       showFunctionIcons: false,
     },
 
-    // Step 4: Connectivity
+    // Step 4: Interoperability
     {
       id: 'step-4',
-      label: $localize`:@@dspArchStep4:Connectivity`,
-      description: $localize`:@@dspArchStep4Desc:Connect any machine via OPC UA, MQTT, REST, and custom protocols.`,
+      label: $localize`:@@dspArchStepInterop:Interoperability`,
+      description: $localize`:@@dspArchStepInteropDesc:DSP enables manufacturer-independent, event-driven communication between machines, shopfloor systems and IT platforms.`,
+      visibleContainerIds: ['layer-dsp', 'dsp-edge', ...baseShopfloorContainers],
+      highlightedContainerIds: ['dsp-edge'],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
+      showFunctionIcons: true,
+      highlightedFunctionIcons: ['edge-interoperability'],
+    },
+
+    // Step 5: Shopfloor Connectivity
+    {
+      id: 'step-5',
+      label: $localize`:@@dspArchStepConnectivity:Shopfloor Connectivity`,
+      description: $localize`:@@dspArchStepConnectivityDesc:DSP connects machines, sensors, logistics systems and shopfloor assets through direct, bidirectional communication without modifying existing control logic.`,
       visibleContainerIds: ['layer-dsp', 'dsp-edge', ...baseShopfloorContainers],
       highlightedContainerIds: ['dsp-edge'],
       visibleConnectionIds: baseShopfloorConnections,
@@ -99,11 +112,37 @@ export function createDefaultSteps(): StepConfig[] {
       highlightedFunctionIcons: ['edge-network'],
     },
 
-    // Step 5: Digital Twin
+    // Step 6: Event-Driven Processing
     {
-      id: 'step-5',
-      label: $localize`:@@dspArchStep5:Digital Twin`,
-      description: $localize`:@@dspArchStep5Desc:Real-time machine and workpiece state modelling at the edge.`,
+      id: 'step-6',
+      label: $localize`:@@dspArchStepEvent:Event-Driven Processing`,
+      description: $localize`:@@dspArchStepEventDesc:DSP processes shopfloor events in real time and transforms technical signals into meaningful process-relevant information.`,
+      visibleContainerIds: ['layer-dsp', 'dsp-edge', ...baseShopfloorContainers],
+      highlightedContainerIds: ['dsp-edge'],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
+      showFunctionIcons: true,
+      highlightedFunctionIcons: ['edge-event-driven'],
+    },
+
+    // Step 7: Decentralized Process Choreography
+    {
+      id: 'step-7',
+      label: $localize`:@@dspArchStepChoreo:Decentralized Process Choreography`,
+      description: $localize`:@@dspArchStepChoreoDesc:DSP enables decentralized, resilient process execution where autonomous process objects coordinate actions without central monolithic control.`,
+      visibleContainerIds: ['layer-dsp', 'dsp-edge', ...baseShopfloorContainers],
+      highlightedContainerIds: ['dsp-edge'],
+      visibleConnectionIds: baseShopfloorConnections,
+      highlightedConnectionIds: [],
+      showFunctionIcons: true,
+      highlightedFunctionIcons: ['edge-choreography'],
+    },
+
+    // Step 8: Digital Twin
+    {
+      id: 'step-8',
+      label: $localize`:@@dspArchStepDigitalTwin:Digital Twin`,
+      description: $localize`:@@dspArchStepDigitalTwinDesc:DSP creates a real-time digital representation of machines, processes and workpieces by consolidating data from multiple systems.`,
       visibleContainerIds: ['layer-dsp', 'dsp-edge', ...baseShopfloorContainers],
       highlightedContainerIds: ['dsp-edge'],
       visibleConnectionIds: baseShopfloorConnections,
@@ -112,60 +151,103 @@ export function createDefaultSteps(): StepConfig[] {
       highlightedFunctionIcons: ['edge-digital-twin'],
     },
 
-    // Step 6: Process Logic
+    // Step 9: Platform Independence / Best-of-Breed
     {
-      id: 'step-6',
-      label: $localize`:@@dspArchStep6:Process Logic`,
-      description: $localize`:@@dspArchStep6Desc:Model event-driven shopfloor processes with decentralized orchestration.`,
+      id: 'step-9',
+      label: $localize`:@@dspArchStepBestBreed:Platform Independence & Best-of-Breed Integration`,
+      description: $localize`:@@dspArchStepBestBreedDesc:DSP integrates heterogeneous ERP, MES, cloud and analytics systems while remaining independent of vendors, platforms and hyperscalers.`,
       visibleContainerIds: ['layer-dsp', 'dsp-edge', ...baseShopfloorContainers],
       highlightedContainerIds: ['dsp-edge'],
       visibleConnectionIds: baseShopfloorConnections,
       highlightedConnectionIds: [],
       showFunctionIcons: true,
-      highlightedFunctionIcons: ['edge-workflow'],
+      highlightedFunctionIcons: ['edge-best-of-breed'],
     },
 
-    // Step 7: Edge Analytics
+    // Step 10: Business & Analytics Integration
     {
-      id: 'step-7',
-      label: $localize`:@@dspArchStep7:Edge Analytics`,
-      description: $localize`:@@dspArchStep7Desc:Edge analytics for cycle time, vibrations, quality, utilization.`,
-      visibleContainerIds: ['layer-dsp', 'dsp-edge', ...baseShopfloorContainers],
-      highlightedContainerIds: ['dsp-edge'],
-      visibleConnectionIds: baseShopfloorConnections,
-      highlightedConnectionIds: [],
+      id: 'step-10',
+      label: $localize`:@@dspArchStepAnalytics:Business & Analytics Integration`,
+      description: $localize`:@@dspArchStepAnalyticsDesc:DSP synchronizes shopfloor events and digital twins with business systems, data lakes and analytics platforms to enable end-to-end visibility.`,
+      visibleContainerIds: [
+        'layer-bp',
+        'layer-dsp',
+        'bp-mes',
+        'bp-erp',
+        'bp-cloud',
+        'bp-analytics',
+        'bp-data-lake',
+        'dsp-edge',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: ['bp-analytics', 'bp-cloud'],
+      visibleConnectionIds: [
+        'conn-bp-mes-dsp-edge',
+        'conn-bp-erp-dsp-edge',
+        'conn-bp-cloud-dsp-edge',
+        'conn-bp-analytics-dsp-edge',
+        'conn-bp-data-lake-dsp-edge',
+        ...baseShopfloorConnections,
+      ],
+      highlightedConnectionIds: ['conn-bp-analytics-dsp-edge', 'conn-bp-cloud-dsp-edge'],
       showFunctionIcons: true,
       highlightedFunctionIcons: ['edge-analytics'],
     },
 
-    // Step 8: Buffering
+    // Step 11: AI Enablement
     {
-      id: 'step-8',
-      label: $localize`:@@dspArchStep7a:Buffering`,
-      description: $localize`:@@dspArchStep7aDesc:Guaranteed event delivery with local buffering during connection loss.`,
+      id: 'step-11',
+      label: $localize`:@@dspArchStepAI:AI & Analytics Enablement`,
+      description: $localize`:@@dspArchStepAIDesc:DSP provides structured, real-time data as the foundation for analytics, machine learning and predictive optimization use cases.`,
       visibleContainerIds: ['layer-dsp', 'dsp-edge', ...baseShopfloorContainers],
       highlightedContainerIds: ['dsp-edge'],
       visibleConnectionIds: baseShopfloorConnections,
       highlightedConnectionIds: [],
       showFunctionIcons: true,
-      highlightedFunctionIcons: ['edge-data-storage'],
+      highlightedFunctionIcons: ['edge-ai-enablement'],
     },
 
-    // Step 9: Shopfloor ↔ Edge
+    // Step 12: Autonomous & Adaptive Enterprise
     {
-      id: 'step-9',
-      label: $localize`:@@dspArchStep8:Shopfloor ↔ Edge`,
-      description: $localize`:@@dspArchStep8Desc:DSP enables bidirectional, real-time communication between machines, systems, and Edge.`,
-      visibleContainerIds: ['layer-dsp', 'dsp-edge', ...baseShopfloorContainers],
-      highlightedContainerIds: [],
-      visibleConnectionIds: baseShopfloorConnections,
-      highlightedConnectionIds: baseShopfloorConnections,
+      id: 'step-12',
+      label: $localize`:@@dspArchStepAuto:Autonomous & Adaptive Enterprise (Target State)`,
+      description: $localize`:@@dspArchStepAutoDesc:DSP enables the transition toward autonomous, adaptive manufacturing where processes continuously optimize themselves based on real-time data.`,
+      visibleContainerIds: [
+        'layer-bp',
+        'layer-dsp',
+        'bp-mes',
+        'bp-erp',
+        'bp-cloud',
+        'bp-analytics',
+        'bp-data-lake',
+        'dsp-ux',
+        'dsp-edge',
+        'dsp-mc',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: ['layer-bp', 'layer-dsp', 'dsp-edge', 'dsp-mc', 'bp-analytics'],
+      visibleConnectionIds: [
+        'conn-dsp-ux-dsp-edge',
+        'conn-dsp-edge-dsp-mc',
+        'conn-bp-mes-dsp-edge',
+        'conn-bp-erp-dsp-edge',
+        'conn-bp-cloud-dsp-edge',
+        'conn-bp-analytics-dsp-edge',
+        'conn-bp-data-lake-dsp-edge',
+        ...baseShopfloorConnections,
+      ],
+      highlightedConnectionIds: [
+        'conn-dsp-edge-dsp-mc',
+        'conn-bp-analytics-dsp-edge',
+        'conn-bp-cloud-dsp-edge',
+      ],
       showFunctionIcons: true,
+      highlightedFunctionIcons: ['edge-autonomous-enterprise'],
     },
 
-    // Step 10: Management Cockpit
+    // Step 13: Management Cockpit
     {
-      id: 'step-10',
+      id: 'step-13',
       label: $localize`:@@dspArchStep9:Management Cockpit`,
       description: $localize`:@@dspArchStep9Desc:Model processes, manage organization, and orchestrate all Edge nodes from the cloud.`,
       visibleContainerIds: [
@@ -180,46 +262,9 @@ export function createDefaultSteps(): StepConfig[] {
       showFunctionIcons: true,
     },
 
-    // Step 11: Business Integration
+    // Step 14: SmartFactory Dashboard
     {
-      id: 'step-11',
-      label: $localize`:@@dspArchStep10:Business Integration`,
-      description: $localize`:@@dspArchStep10Desc:DSP connects shopfloor events with ERP processes, cloud analytics, and data lakes.`,
-      visibleContainerIds: [
-        'layer-bp',
-        'layer-dsp',
-        'bp-mes',
-        'bp-erp',
-        'bp-cloud',
-        'bp-analytics',
-        'bp-data-lake',
-        'dsp-edge',
-        'dsp-mc',
-        ...baseShopfloorContainers,
-      ],
-      highlightedContainerIds: ['layer-bp', 'bp-mes', 'bp-erp', 'bp-cloud', 'bp-analytics', 'bp-data-lake'],
-      visibleConnectionIds: [
-        'conn-dsp-edge-dsp-mc',
-        'conn-bp-mes-dsp-edge',
-        'conn-bp-erp-dsp-edge',
-        'conn-bp-cloud-dsp-edge',
-        'conn-bp-analytics-dsp-edge',
-        'conn-bp-data-lake-dsp-edge',
-        ...baseShopfloorConnections,
-      ],
-      highlightedConnectionIds: [
-        'conn-bp-mes-dsp-edge',
-        'conn-bp-erp-dsp-edge',
-        'conn-bp-cloud-dsp-edge',
-        'conn-bp-analytics-dsp-edge',
-        'conn-bp-data-lake-dsp-edge',
-      ],
-      showFunctionIcons: true,
-    },
-
-    // Step 12: SmartFactory Dashboard
-    {
-      id: 'step-12',
+      id: 'step-14',
       label: $localize`:@@dspArchStep11:SmartFactory Dashboard`,
       description: $localize`:@@dspArchStep11Desc:Visualization of the digital twin, real-time processes, and track & trace in the shopfloor.`,
       visibleContainerIds: [
@@ -250,9 +295,9 @@ export function createDefaultSteps(): StepConfig[] {
       showFunctionIcons: true,
     },
 
-    // Step 13: Autonomous & Adaptive Enterprise
+    // Step 15: Autonomous & Adaptive Enterprise (Zielbild)
     {
-      id: 'step-13',
+      id: 'step-15',
       label: $localize`:@@dspArchStep12:Autonomous & Adaptive Enterprise`,
       description: $localize`:@@dspArchStep12Desc:Data from shopfloor, Edge, ERP, analytics, and data lakes enable autonomous workflows, predictive decisions, and continuous process optimization.`,
       visibleContainerIds: [
@@ -299,39 +344,6 @@ export function createDefaultSteps(): StepConfig[] {
         'conn-bp-analytics-dsp-edge',
         'conn-bp-data-lake-dsp-edge',
       ],
-      showFunctionIcons: true,
-    },
-
-    // Step 14: Complete Overview
-    {
-      id: 'step-14',
-      label: $localize`:@@dspArchStep13:Complete DSP Architecture`,
-      description: '',
-      visibleContainerIds: [
-        'layer-bp',
-        'layer-dsp',
-        'bp-mes',
-        'bp-erp',
-        'bp-cloud',
-        'bp-analytics',
-        'bp-data-lake',
-        'dsp-ux',
-        'dsp-edge',
-        'dsp-mc',
-        ...baseShopfloorContainers,
-      ],
-      highlightedContainerIds: [],
-      visibleConnectionIds: [
-        'conn-dsp-ux-dsp-edge',
-        'conn-dsp-edge-dsp-mc',
-        'conn-bp-mes-dsp-edge',
-        'conn-bp-erp-dsp-edge',
-        'conn-bp-cloud-dsp-edge',
-        'conn-bp-analytics-dsp-edge',
-        'conn-bp-data-lake-dsp-edge',
-        ...baseShopfloorConnections,
-      ],
-      highlightedConnectionIds: [],
       showFunctionIcons: true,
     },
   ];

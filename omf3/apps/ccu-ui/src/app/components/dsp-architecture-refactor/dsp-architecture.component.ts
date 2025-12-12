@@ -12,15 +12,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { getIconPath, type IconKey } from '../../assets/icon-registry';
-import type {
-  ContainerConfig,
-  ConnectionConfig,
-  StepConfig,
-  Point,
-  AnchorSide,
-  ViewMode,
-  FunctionIconConfig,
-} from './types';
+import type { ContainerConfig, ConnectionConfig, StepConfig, Point, AnchorSide, ViewMode, FunctionIconConfig } from './types';
 import {
   createDiagramConfig,
   VIEWBOX_WIDTH,
@@ -65,7 +57,8 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
   protected readonly zoomStep = 0.1;
   protected readonly functionIconRadius = 120; // base radius for circular layout
   protected readonly functionIconScale = 1.0;
-  protected readonly functionIconHighlightScale = 1.4;
+  protected readonly functionIconHighlightScale = 1.6;
+  private revealedFunctionIcons = new Set<IconKey>();
 
   // ViewBox dimensions
   protected readonly viewBoxWidth = VIEWBOX_WIDTH;
@@ -160,6 +153,7 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
     this.containers = config.containers;
     this.connections = config.connections;
     this.steps = config.steps;
+    this.revealedFunctionIcons = new Set<IconKey>();
     this.initializeModuleLabels();
     this.currentStepIndex = 0; // Reset to first step on configuration change
     this.applyStep(0);
@@ -688,6 +682,13 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
       return;
     }
 
+    // reset progressive reveal when we are before functional steps (steps 1-3)
+    if (index < 3) {
+      this.revealedFunctionIcons = new Set<IconKey>();
+    }
+
+    (step.highlightedFunctionIcons || []).forEach((key) => this.revealedFunctionIcons.add(key as IconKey));
+
     // Update container states for visibility/highlight
     this.containers.forEach((container) => {
       if (step.visibleContainerIds.includes(container.id)) {
@@ -751,11 +752,11 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
     index: number,
     icon: FunctionIconConfig
   ): { x: number; y: number } {
-    const total = container.functionIcons?.length ?? 0;
+    const total = container.functionIcons?.length ?? 0; // keep positions stable across reveal
     if (total === 0) {
       return { x: container.width / 2, y: container.height / 2 };
     }
-    const startDeg = 0; // start at 0°
+    const startDeg = 90; // start at 90° (clockwise)
     const step = 360 / total;
     const angleRad = ((startDeg + index * step) * Math.PI) / 180;
     const cx = container.width / 2;
@@ -774,5 +775,21 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
     const base = 48; // default size used in config (60 not needed here)
     const factor = this.isFunctionIconHighlighted(iconKey) ? this.functionIconHighlightScale : this.functionIconScale;
     return base * factor;
+  }
+
+  protected getVisibleFunctionIcons(container: ContainerConfig): FunctionIconConfig[] {
+    if (!container.functionIcons || !this.shouldShowFunctionIcons()) {
+      return [];
+    }
+    if (this.viewMode !== 'functional') {
+      return container.functionIcons;
+    }
+    return container.functionIcons.filter((fi) => this.revealedFunctionIcons.has(fi.iconKey));
+  }
+
+  protected isFunctionIconVisible(iconKey: IconKey, container: ContainerConfig): boolean {
+    if (!container.functionIcons || !this.shouldShowFunctionIcons()) return false;
+    if (this.viewMode !== 'functional') return true;
+    return this.revealedFunctionIcons.has(iconKey);
   }
 }

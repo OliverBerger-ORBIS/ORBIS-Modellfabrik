@@ -264,12 +264,10 @@
             />
 
             <!-- Function Icons (centered in row) - only shown when step allows -->
-            <g
-              *ngIf="container.functionIcons && container.functionIcons.length > 0 && shouldShowFunctionIcons()"
-              class="container__icons"
-            >
+            <g *ngIf="container.functionIcons && container.functionIcons.length > 0 && shouldShowFunctionIcons()" class="container__icons">
               <ng-container *ngFor="let icon of container.functionIcons; let i = index; trackBy: iconTrackBy">
                 <image
+                  *ngIf="isFunctionIconVisible(icon.iconKey, container)"
                   [attr.href]="resolveIconPath(icon.iconKey)"
                   [attr.x]="getFunctionIconPosition(container, i, { iconKey: icon.iconKey, size: getFunctionIconSize(icon.iconKey) }).x"
                   [attr.y]="getFunctionIconPosition(container, i, { iconKey: icon.iconKey, size: getFunctionIconSize(icon.iconKey) }).y"

@@ -17,6 +17,12 @@ export type IconKey =
   | 'edge-analytics'
   | 'edge-workflow'
   | 'edge-network'
+  | 'edge-interoperability'
+  | 'edge-event-driven'
+  | 'edge-choreography'
+  | 'edge-best-of-breed'
+  | 'edge-ai-enablement'
+  | 'edge-autonomous-enterprise'
   | 'edge-component-disc'
   | 'edge-component-event-bus'
   | 'edge-component-app-server'
@@ -82,6 +88,12 @@ export const ICON_MAP: Record<IconKey, string> = {
   'edge-analytics': ICONS.dsp.functions.analytics,
   'edge-workflow': ICONS.dsp.functions.workflow,
   'edge-network': ICONS.dsp.functions.connectivity,
+  'edge-interoperability': 'assets/svg/dsp/functions/edge-interoperability.svg',
+  'edge-event-driven': 'assets/svg/dsp/functions/edge-event-driven.svg',
+  'edge-choreography': 'assets/svg/dsp/functions/edge-choreography.svg',
+  'edge-best-of-breed': 'assets/svg/dsp/functions/edge-best-of-breed.svg',
+  'edge-ai-enablement': 'assets/svg/dsp/functions/edge-ai-enablement.svg',
+  'edge-autonomous-enterprise': 'assets/svg/dsp/functions/edge-autonomous-enterprise.svg',
 
   'edge-component-disc': ICONS.dsp.edgeComponents.disc,
   'edge-component-event-bus': ICONS.dsp.edgeComponents.eventBus,
