@@ -102,6 +102,8 @@ export function createDefaultContainers(): ContainerConfig[] {
   const dspAvailableWidth = VIEWBOX_WIDTH - LAYOUT.CONTENT_START_X - LAYOUT.MARGIN_RIGHT;
   const dspBoxGap = 50;
   const uxBoxWidth = 175;
+  const uxBoxHeight = LAYOUT.DSP_BOX_HEIGHT / 2; // reduce UX height to 50%
+  const uxCenterY = LAYOUT.DSP_LAYER_Y + 70 + LAYOUT.DSP_BOX_HEIGHT / 2; // keep center identical
   const edgeBoxWidth = 480;
   const managementBoxWidth = dspAvailableWidth - uxBoxWidth - edgeBoxWidth - (dspBoxGap * 2);
 
@@ -114,9 +116,9 @@ export function createDefaultContainers(): ContainerConfig[] {
     id: 'dsp-ux',
     label: '',
     x: LAYOUT.CONTENT_START_X,
-    y: LAYOUT.DSP_LAYER_Y + 70,
+    y: uxCenterY - uxBoxHeight / 2,
     width: uxBoxWidth,
-    height: LAYOUT.DSP_BOX_HEIGHT,
+    height: uxBoxHeight,
     type: 'ux',
     state: 'hidden',
     centerIconKey: 'ux-dashboard' as IconKey,
