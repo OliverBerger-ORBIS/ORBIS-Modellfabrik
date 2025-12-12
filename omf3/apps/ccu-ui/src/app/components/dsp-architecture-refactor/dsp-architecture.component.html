@@ -53,8 +53,8 @@
       <defs>
         <!-- Gradient for shopfloor device containers -->
         <linearGradient id="shopfloor-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
-          <stop offset="100%" style="stop-color:#e9ecef;stop-opacity:1" />
+          <stop offset="0%" style="stop-color:var(--neutral-lightgrey);stop-opacity:1" />
+          <stop offset="100%" style="stop-color:var(--orbis-grey-light);stop-opacity:1" />
         </linearGradient>
         <marker
           id="arrow-head"
@@ -65,7 +65,7 @@
           orient="auto"
           markerUnits="strokeWidth"
         >
-          <polygon points="0 0, 10 3.5, 0 7" fill="#7f8da5" />
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--orbis-blue-light)" />
         </marker>
         <marker
           id="arrow-head-highlight"
@@ -76,7 +76,7 @@
           orient="auto"
           markerUnits="strokeWidth"
         >
-          <polygon points="0 0, 10 3.5, 0 7" fill="#ff9900" />
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--microsoft-orange-medium)" />
         </marker>
         <marker
           id="arrow-head-small"
@@ -87,7 +87,7 @@
           orient="auto"
           markerUnits="strokeWidth"
         >
-          <polygon points="0 0, 7.5 2.625, 0 5.25" fill="#7f8da5" />
+          <polygon points="0 0, 7.5 2.625, 0 5.25" fill="var(--orbis-blue-light)" />
         </marker>
         <marker
           id="arrow-head-small-highlight"
@@ -98,7 +98,7 @@
           orient="auto"
           markerUnits="strokeWidth"
         >
-          <polygon points="0 0, 7.5 2.625, 0 5.25" fill="#ff9900" />
+          <polygon points="0 0, 7.5 2.625, 0 5.25" fill="var(--microsoft-orange-medium)" />
         </marker>
         <marker
           id="arrow-head-reverse"
@@ -109,7 +109,7 @@
           orient="auto"
           markerUnits="strokeWidth"
         >
-          <polygon points="10 0, 0 3.5, 10 7" fill="#7f8da5" />
+          <polygon points="10 0, 0 3.5, 10 7" fill="var(--orbis-blue-light)" />
         </marker>
         <marker
           id="arrow-head-reverse-highlight"
@@ -120,7 +120,7 @@
           orient="auto"
           markerUnits="strokeWidth"
         >
-          <polygon points="10 0, 0 3.5, 10 7" fill="#ff9900" />
+          <polygon points="10 0, 0 3.5, 10 7" fill="var(--microsoft-orange-medium)" />
         </marker>
         <marker
           id="arrow-head-reverse-small"
@@ -131,7 +131,7 @@
           orient="auto"
           markerUnits="strokeWidth"
         >
-          <polygon points="7.5 0, 0 2.625, 7.5 5.25" fill="#7f8da5" />
+          <polygon points="7.5 0, 0 2.625, 7.5 5.25" fill="var(--orbis-blue-light)" />
         </marker>
         <marker
           id="arrow-head-reverse-small-highlight"
@@ -142,7 +142,7 @@
           orient="auto"
           markerUnits="strokeWidth"
         >
-          <polygon points="7.5 0, 0 2.625, 7.5 5.25" fill="#ff9900" />
+          <polygon points="7.5 0, 0 2.625, 7.5 5.25" fill="var(--microsoft-orange-medium)" />
         </marker>
       </defs>
 
@@ -173,7 +173,7 @@
               dominant-baseline="hanging"
               [attr.font-size]="18"
               font-weight="600"
-              fill="#1e2d3d"
+              fill="var(--orbis-nightblue)"
               class="layer__label"
             >
               {{ getContainerLabel(container.id) }}
@@ -298,7 +298,7 @@
               text-anchor="start"
               font-size="14"
               font-weight="600"
-              fill="#1e2d3d"
+              fill="var(--orbis-nightblue)"
               class="environment__label"
             >
               {{ container.environmentLabel }}
@@ -311,7 +311,7 @@
               [attr.y]="getLabelY(container)"
               [attr.text-anchor]="getLabelAnchor(container)"
               [attr.font-size]="container.fontSize || 16"
-              [attr.fill]="container.textColor || '#1e2d3d'"
+              [attr.fill]="container.textColor || 'var(--orbis-nightblue)'"
               font-weight="600"
               dominant-baseline="middle"
               class="container__label container__label--dsp"
@@ -334,7 +334,7 @@
               [attr.y]="getLabelY(container)"
               [attr.text-anchor]="getLabelAnchor(container)"
               [attr.font-size]="container.fontSize || 12"
-              [attr.fill]="container.textColor || '#1e2d3d'"
+              [attr.fill]="container.textColor || 'var(--orbis-nightblue)'"
               [attr.font-weight]="container.type === 'label' ? 600 : 500"
               [attr.dominant-baseline]="container.type === 'pipeline' ? 'middle' : 'auto'"
               class="container__label"
@@ -363,7 +363,7 @@
               dominant-baseline="baseline"
               [attr.font-size]="container.fontSize || 12"
               font-weight="500"
-              fill="#1e2d3d"
+              fill="var(--orbis-nightblue)"
               class="container__device-label"
             >
               <ng-container *ngIf="shouldWrapLabel(container)">
@@ -385,7 +385,7 @@
               dominant-baseline="baseline"
               [attr.font-size]="container.fontSize || 14"
               font-weight="600"
-              fill="#1e2d3d"
+              fill="var(--orbis-nightblue)"
               class="container__group-label"
             >
               {{ getContainerLabel(container.id) }}
@@ -399,7 +399,7 @@
               text-anchor="middle"
               [attr.font-size]="container.fontSize || 14"
               font-weight="600"
-              fill="#1e2d3d"
+              fill="var(--orbis-nightblue)"
               class="container__group-label"
             >
               {{ getContainerLabel(container.id) }}
@@ -427,7 +427,7 @@
           [attr.y]="0"
           [attr.width]="viewBoxWidth - 40"
           [attr.height]="80"
-          fill="rgba(100, 167, 11, 0.95)"
+          fill="rgba(var(--highlight-green-strong-rgb), 0.95)"
           rx="8"
           ry="8"
           class="step-overlay__bg"
@@ -466,7 +466,7 @@
             [attr.d]="getConnectionPath(conn)"
             [class]="getConnectionClass(conn)"
             fill="none"
-            [attr.stroke]="conn.state === 'highlight' ? '#ff9900' : '#7f8da5'"
+            [attr.stroke]="conn.state === 'highlight' ? 'var(--microsoft-orange-medium)' : 'var(--orbis-blue-light)'"
             [attr.stroke-width]="conn.state === 'highlight' ? 2.5 : 2"
             [attr.marker-end]="conn.hasArrow ? (conn.state === 'highlight'
               ? (isEcConnection(conn) ? 'url(#arrow-head-small-highlight)' : 'url(#arrow-head-highlight)')

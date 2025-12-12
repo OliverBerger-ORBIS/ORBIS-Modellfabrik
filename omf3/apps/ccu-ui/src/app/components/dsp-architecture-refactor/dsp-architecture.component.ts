@@ -12,6 +12,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { getIconPath, type IconKey } from '../../assets/icon-registry';
+import { ORBIS_COLORS } from '../../assets/color-palette';
 import type { ContainerConfig, ConnectionConfig, StepConfig, Point, AnchorSide, ViewMode, FunctionIconConfig } from './types';
 import {
   createDiagramConfig,
@@ -251,11 +252,11 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
    */
   protected getContainerStroke(container: ContainerConfig): string {
     if (container.type === 'label') return 'transparent';
-    if (container.type === 'pipeline') return container.borderColor || '#7f8da5';
+    if (container.type === 'pipeline') return container.borderColor || ORBIS_COLORS.orbisBlue.light;
     if (this.isContainerHighlighted(container)) {
-      return '#ff9900'; // Highlight color
+      return ORBIS_COLORS.microsoftOrange.medium;
     }
-    return container.borderColor || '#cccccc';
+    return container.borderColor || ORBIS_COLORS.orbisGrey.light;
   }
 
   /**

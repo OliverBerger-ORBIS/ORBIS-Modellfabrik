@@ -4,6 +4,7 @@
  */
 import type { ContainerConfig, ConnectionConfig } from './types';
 import type { IconKey } from '../../assets/icon-registry';
+import { getOrbisColor } from '../../assets/color-palette';
 
 /** SVG viewBox dimensions - increased height for taller DSP layer */
 export const VIEWBOX_WIDTH = 1200;
@@ -44,6 +45,10 @@ export const LAYOUT = {
   CONTENT_WIDTH: 1090,
   BOX_GAP: 25,
 };
+
+const COLOR_PETROL_STRONG = getOrbisColor('solution-petrol-strong');
+const COLOR_BORDER_LIGHT = getOrbisColor('orbis-grey-light');
+const COLOR_TEXT_PRIMARY = getOrbisColor('orbis-nightblue');
 
 export function createDefaultContainers(): ContainerConfig[] {
   const containers: ContainerConfig[] = [];
@@ -122,7 +127,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     type: 'ux',
     state: 'hidden',
     centerIconKey: 'ux-dashboard' as IconKey,
-    borderColor: '#009681',
+    borderColor: COLOR_PETROL_STRONG,
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
     fontSize: 16,
@@ -144,7 +149,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     logoIconKey: 'logo-dsp' as IconKey,
     logoPosition: 'top-left',
     centerIconKey: 'logo-edge' as IconKey,
-    borderColor: '#009681',
+    borderColor: COLOR_PETROL_STRONG,
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     labelPosition: 'top-center',
     fontSize: 16,
@@ -205,7 +210,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     type: 'device',
     state: 'hidden',
     logoIconKey: 'edge-component-disc' as IconKey,
-    borderColor: '#009681',
+    borderColor: COLOR_PETROL_STRONG,
     backgroundColor: '#ffffff',
     labelPosition: 'bottom-center',
     fontSize: 12,
@@ -221,7 +226,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     type: 'device',
     state: 'hidden',
     logoIconKey: 'edge-component-event-bus' as IconKey,
-    borderColor: '#009681',
+    borderColor: COLOR_PETROL_STRONG,
     backgroundColor: '#ffffff',
     labelPosition: 'bottom-center',
     fontSize: 12,
@@ -238,7 +243,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     type: 'device',
     state: 'hidden',
     logoIconKey: 'edge-component-app-server' as IconKey,
-    borderColor: '#009681',
+    borderColor: COLOR_PETROL_STRONG,
     backgroundColor: '#ffffff',
     labelPosition: 'bottom-center',
     fontSize: 12,
@@ -254,7 +259,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     type: 'device',
     state: 'hidden',
     logoIconKey: 'edge-component-router' as IconKey,
-    borderColor: '#009681',
+    borderColor: COLOR_PETROL_STRONG,
     backgroundColor: '#ffffff',
     labelPosition: 'bottom-center',
     fontSize: 12,
@@ -270,7 +275,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     type: 'device',
     state: 'hidden',
     logoIconKey: 'edge-component-agent' as IconKey,
-    borderColor: '#009681',
+    borderColor: COLOR_PETROL_STRONG,
     backgroundColor: '#ffffff',
     labelPosition: 'bottom-center',
     fontSize: 12,
@@ -287,7 +292,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     type: 'device',
     state: 'hidden',
     logoIconKey: 'edge-component-log-server' as IconKey,
-    borderColor: '#009681',
+    borderColor: COLOR_PETROL_STRONG,
     backgroundColor: '#ffffff',
     labelPosition: 'bottom-center',
     fontSize: 12,
@@ -303,7 +308,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     type: 'device',
     state: 'hidden',
     logoIconKey: 'edge-component-disi' as IconKey,
-    borderColor: '#009681',
+    borderColor: COLOR_PETROL_STRONG,
     backgroundColor: '#ffffff',
     labelPosition: 'bottom-center',
     fontSize: 12,
@@ -319,7 +324,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     type: 'device',
     state: 'hidden',
     logoIconKey: 'edge-component-database' as IconKey,
-    borderColor: '#009681',
+    borderColor: COLOR_PETROL_STRONG,
     backgroundColor: '#ffffff',
     labelPosition: 'bottom-center',
     fontSize: 12,
@@ -340,7 +345,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     secondaryLogoIconKey: 'logo-azure' as IconKey,
     secondaryLogoPosition: 'top-right',
     centerIconKey: 'logo-mc' as IconKey,
-    borderColor: '#009681',
+    borderColor: COLOR_PETROL_STRONG,
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     labelPosition: 'top-center',
     fontSize: 16,

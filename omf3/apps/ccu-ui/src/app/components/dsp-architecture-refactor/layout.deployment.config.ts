@@ -5,10 +5,18 @@ import {
   VIEWBOX_WIDTH,
   VIEWBOX_HEIGHT,
 } from './layout.shared.config';
+import { getOrbisColor } from '../../assets/color-palette';
 
 export function createDeploymentView(): DiagramConfig {
   const containers = createDefaultContainers();
   const connections = createDefaultConnections();
+  const pipelineBorder = getOrbisColor('solution-petrol-strong');
+  const pipelineFills = [
+    getOrbisColor('solution-petrol-light'),
+    getOrbisColor('solution-petrol-medium'),
+    getOrbisColor('shopfloor-highlight-light'),
+    getOrbisColor('shopfloor-highlight-medium'),
+  ];
   
   // Add 4 deployment pipeline step containers inside Edge box
   // Pipeline containers visualized as boxes with arrow-head styling (no SVG icons)
@@ -29,10 +37,10 @@ export function createDeploymentView(): DiagramConfig {
   const pipelineStartY = edgeY + edgeHeight - pipelineStepHeight - 20;
 
   const pipelineShapes = [
-    { id: 'deployment-step-integration', label: $localize`:@@dspDeployIntegration:Integration`, fill: '#e0f7f4' },
-    { id: 'deployment-step-transformation', label: $localize`:@@dspDeployTransformation:Transformation`, fill: '#c7f0e8' },
-    { id: 'deployment-step-consolidation', label: $localize`:@@dspDeployConsolidation:Konsolidierung`, fill: '#a8e8dc' },
-    { id: 'deployment-step-provisioning', label: $localize`:@@dspDeployProvisioning:Bereitstellung`, fill: '#89e1d0' },
+    { id: 'deployment-step-integration', label: $localize`:@@dspDeployIntegration:Integration`, fill: pipelineFills[0] },
+    { id: 'deployment-step-transformation', label: $localize`:@@dspDeployTransformation:Transformation`, fill: pipelineFills[1] },
+    { id: 'deployment-step-consolidation', label: $localize`:@@dspDeployConsolidation:Konsolidierung`, fill: pipelineFills[2] },
+    { id: 'deployment-step-provisioning', label: $localize`:@@dspDeployProvisioning:Bereitstellung`, fill: pipelineFills[3] },
   ];
 
   pipelineShapes.forEach((shape, index) => {
@@ -45,7 +53,7 @@ export function createDeploymentView(): DiagramConfig {
       height: pipelineStepHeight,
       type: 'pipeline',
       state: 'hidden',
-      borderColor: '#009681',
+      borderColor: pipelineBorder,
       backgroundColor: shape.fill,
       fontSize: 14,
     });
