@@ -162,6 +162,30 @@ import { ExternalLinksService, ExternalLinksSettings } from '../services/externa
           </footer>
         </form>
       </section>
+
+      <section class="direct-pages">
+        <header>
+          <h3 i18n="@@settingsDirectPagesTitle">Direct-access pages (not in navigation)</h3>
+          <p i18n="@@settingsDirectPagesDescription">
+            These routes can be opened directly (e.g. for presentations/video mode) without adding extra tabs to the navigation.
+          </p>
+        </header>
+
+        <ul class="direct-page-list">
+          <li *ngFor="let page of directPages">
+            <div class="direct-page__header">
+              <strong>{{ page.label }}</strong>
+              <span class="badge" [class.badge--planned]="!page.available">
+                {{ page.available ? ('Available' | uppercase) : ('Planned' | uppercase) }}
+              </span>
+            </div>
+            <div class="direct-page__url">
+              <a [href]="page.path" target="_blank" rel="noreferrer noopener">{{ page.path }}</a>
+            </div>
+            <p class="direct-page__desc">{{ page.description }}</p>
+          </li>
+        </ul>
+      </section>
     </section>
   `,
   styleUrl: './settings-tab.component.scss',
@@ -172,6 +196,26 @@ export class SettingsTabComponent implements OnInit {
   readonly forms = new Map<EnvironmentDefinition['key'], FormGroup>();
   connectionForm!: FormGroup;
   linksForm!: FormGroup;
+  readonly directPages = [
+    {
+      label: 'Presentation (FTS Route & Shopfloor Layout)',
+      path: '/#/en/presentation',
+      description: 'Direct access for video/presentation mode; not part of the tab navigation.',
+      available: true,
+    },
+    {
+      label: 'DSP Architecture',
+      path: '/#/en/dsp-architecture',
+      description: 'Refactored DSP architecture view, reachable via direct URL only.',
+      available: true,
+    },
+    {
+      label: 'DSP Action (DE, upcoming)',
+      path: '/#/de/dsp-action',
+      description: 'Planned direct page for DSP Action (not in tab navigation).',
+      available: false,
+    },
+  ];
 
   constructor(
     private readonly environmentService: EnvironmentService,
