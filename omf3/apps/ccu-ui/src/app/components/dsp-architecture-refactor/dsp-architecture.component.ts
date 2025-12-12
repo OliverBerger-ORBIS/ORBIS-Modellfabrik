@@ -230,9 +230,6 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
    */
   protected isFunctionIconHighlighted(iconKey: string): boolean {
     const step = this.steps[this.currentStepIndex];
-    if (step?.id === 'step-18' && iconKey.startsWith('logo-edge-')) {
-      return false; // special MC trio: visible but not highlighted
-    }
     if (!step?.highlightedFunctionIcons) return false;
     return step.highlightedFunctionIcons.includes(iconKey);
   }
@@ -756,24 +753,32 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
     index: number,
     icon: FunctionIconConfig
   ): { x: number; y: number } {
-    const total = container.functionIcons?.length ?? 0; // keep positions stable (edge: full set)
+    const currentStep = this.steps[this.currentStepIndex];
+    const isMc = container.id === 'dsp-mc';
+    // layout set: all slots to keep angles stable
+    const layoutIcons = isMc
+      ? (container.functionIcons ?? []).filter((fi) =>
+          currentStep?.id === 'step-18' ? fi.iconKey.startsWith('logo-edge-') : !fi.iconKey.startsWith('logo-edge-')
+        )
+      : container.functionIcons ?? [];
+    const total = layoutIcons.length;
     if (total === 0) {
       return { x: container.width / 2, y: container.height / 2 };
     }
-    const isMc = container.id === 'dsp-mc';
-    const currentStep = this.steps[this.currentStepIndex];
     const startDeg = isMc
       ? currentStep?.id === 'step-18'
-        ? 120 // step 18 segment rotated by 180°
+        ? 120
         : 300
       : 90;
     const spanDeg = isMc ? 120 : 360;
+    const layoutIndex = layoutIcons.findIndex((fi) => fi.iconKey === icon.iconKey);
+    const slotIndex = layoutIndex >= 0 ? layoutIndex : index;
     const step = isMc
       ? total > 1
         ? spanDeg / (total - 1)
         : 0
       : spanDeg / total; // edge: distribute evenly over full circle (9 icons -> 40°)
-    const angleRad = ((startDeg + index * step) * Math.PI) / 180;
+    const angleRad = ((startDeg + slotIndex * step) * Math.PI) / 180;
     const cx = container.width / 2;
     const cy = container.height / 2;
     const maxRadius = Math.max(
@@ -814,7 +819,9 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
       if (step?.id === 'step-18') {
         return container.functionIcons.filter((fi) => fi.iconKey.startsWith('logo-edge-'));
       }
-      return container.functionIcons.filter((fi) => !fi.iconKey.startsWith('logo-edge-'));
+      return container.functionIcons.filter(
+        (fi) => !fi.iconKey.startsWith('logo-edge-') && this.revealedFunctionIcons.has(fi.iconKey)
+      );
     }
     return container.functionIcons.filter((fi) => this.revealedFunctionIcons.has(fi.iconKey));
   }

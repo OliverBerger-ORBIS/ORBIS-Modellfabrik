@@ -415,7 +415,7 @@ export function createDefaultSteps(): StepConfig[] {
         'dsp-mc',
         ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: ['dsp-mc'],
+      highlightedContainerIds: ['dsp-mc', 'dsp-edge'],
       visibleConnectionIds: [
         'conn-dsp-ux-dsp-edge',
         'conn-dsp-edge-dsp-mc',
