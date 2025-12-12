@@ -5,17 +5,17 @@ import {
   VIEWBOX_WIDTH,
   VIEWBOX_HEIGHT,
 } from './layout.shared.config';
-import { getOrbisColor } from '../../assets/color-palette';
+import { getOrbisColor, ORBIS_COLORS } from '../../assets/color-palette';
 
 export function createDeploymentView(): DiagramConfig {
   const containers = createDefaultContainers();
   const connections = createDefaultConnections();
   const pipelineBorder = getOrbisColor('solution-petrol-strong');
   const pipelineFills = [
-    getOrbisColor('solution-petrol-light'),
-    getOrbisColor('solution-petrol-medium'),
-    getOrbisColor('shopfloor-highlight-light'),
-    getOrbisColor('shopfloor-highlight-medium'),
+    'rgba(0, 150, 129, 0.18)', // very light
+    'rgba(0, 150, 129, 0.32)', // light
+    'rgba(0, 150, 129, 0.46)', // medium-light
+    'rgba(0, 150, 129, 0.60)', // medium
   ];
   
   // Add 4 deployment pipeline step containers inside Edge box

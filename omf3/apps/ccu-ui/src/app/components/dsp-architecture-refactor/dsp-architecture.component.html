@@ -291,8 +291,8 @@
 
             <!-- Center Icon (for ux, dsp-edge, dsp-mc) - using centerIconKey -->
             <image
-              *ngIf="(container.type === 'ux' || container.id === 'dsp-edge' || container.id === 'dsp-mc') && container.centerIconKey"
-              [attr.href]="resolveIconPath(container.centerIconKey)"
+              *ngIf="showCenterIcon(container) && container.centerIconKey"
+              [attr.href]="resolveIconPath(container.centerIconKey!)"
               [attr.x]="(container.width - 84) / 2"
               [attr.y]="(container.height - 84) / 2"
               width="84"

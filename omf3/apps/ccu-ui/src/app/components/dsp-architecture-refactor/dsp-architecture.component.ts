@@ -829,4 +829,12 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
   protected isFunctionIconVisible(iconKey: IconKey, container: ContainerConfig): boolean {
     return this.getVisibleFunctionIcons(container).some((fi) => fi.iconKey === iconKey);
   }
+
+  protected showCenterIcon(container: ContainerConfig): boolean {
+    if (!container.centerIconKey) return false;
+    if (container.id === 'dsp-edge' && this.viewMode !== 'functional') {
+      return this.currentStepIndex === 0;
+    }
+    return true;
+  }
 }
