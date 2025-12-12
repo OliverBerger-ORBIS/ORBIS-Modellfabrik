@@ -19,6 +19,7 @@ import type {
   Point,
   AnchorSide,
   ViewMode,
+  FunctionIconConfig,
 } from './types';
 import {
   createDiagramConfig,
@@ -62,6 +63,9 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
   protected readonly minZoom = 0.6;
   protected readonly maxZoom = 1.6;
   protected readonly zoomStep = 0.1;
+  protected readonly functionIconRadius = 120; // base radius for circular layout
+  protected readonly functionIconScale = 1.0;
+  protected readonly functionIconHighlightScale = 1.4;
 
   // ViewBox dimensions
   protected readonly viewBoxWidth = VIEWBOX_WIDTH;
@@ -737,5 +741,38 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
 
   protected iconTrackBy(index: number, item: { iconKey: IconKey; size: number }): string {
     return item.iconKey;
+  }
+
+  /**
+   * Position function icons on a circle (start at 180° = bottom)
+   */
+  protected getFunctionIconPosition(
+    container: ContainerConfig,
+    index: number,
+    icon: FunctionIconConfig
+  ): { x: number; y: number } {
+    const total = container.functionIcons?.length ?? 0;
+    if (total === 0) {
+      return { x: container.width / 2, y: container.height / 2 };
+    }
+    const startDeg = 0; // start at 0°
+    const step = 360 / total;
+    const angleRad = ((startDeg + index * step) * Math.PI) / 180;
+    const cx = container.width / 2;
+    const cy = container.height / 2;
+    const maxRadius = Math.max(
+      0,
+      Math.min(this.functionIconRadius, Math.min(container.width, container.height) / 2 - icon.size / 2 - 4)
+    );
+    return {
+      x: cx + maxRadius * Math.cos(angleRad) - icon.size / 2,
+      y: cy + maxRadius * Math.sin(angleRad) - icon.size / 2,
+    };
+  }
+
+  protected getFunctionIconSize(iconKey: IconKey): number {
+    const base = 48; // default size used in config (60 not needed here)
+    const factor = this.isFunctionIconHighlighted(iconKey) ? this.functionIconHighlightScale : this.functionIconScale;
+    return base * factor;
   }
 }

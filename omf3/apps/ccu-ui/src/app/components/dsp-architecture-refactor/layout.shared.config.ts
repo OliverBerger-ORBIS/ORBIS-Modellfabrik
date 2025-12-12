@@ -102,7 +102,7 @@ export function createDefaultContainers(): ContainerConfig[] {
   const dspAvailableWidth = VIEWBOX_WIDTH - LAYOUT.CONTENT_START_X - LAYOUT.MARGIN_RIGHT;
   const dspBoxGap = 50;
   const uxBoxWidth = 175;
-  const uxBoxHeight = LAYOUT.DSP_BOX_HEIGHT / 2; // reduce UX height to 50%
+  const uxBoxHeight = LAYOUT.DSP_BOX_HEIGHT / 2 + 60; // reduce to 50% then add 60px height
   const uxCenterY = LAYOUT.DSP_LAYER_Y + 70 + LAYOUT.DSP_BOX_HEIGHT / 2; // keep center identical
   const edgeBoxWidth = 480;
   const managementBoxWidth = dspAvailableWidth - uxBoxWidth - edgeBoxWidth - (dspBoxGap * 2);
@@ -143,6 +143,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     state: 'hidden',
     logoIconKey: 'logo-dsp' as IconKey,
     logoPosition: 'top-left',
+    centerIconKey: 'logo-edge' as IconKey,
     borderColor: '#009681',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     labelPosition: 'top-center',
@@ -334,6 +335,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     logoPosition: 'top-left',
     secondaryLogoIconKey: 'logo-azure' as IconKey,
     secondaryLogoPosition: 'top-right',
+    centerIconKey: 'logo-mc' as IconKey,
     borderColor: '#009681',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     labelPosition: 'top-center',

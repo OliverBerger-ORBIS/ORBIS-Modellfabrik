@@ -271,24 +271,24 @@
               <ng-container *ngFor="let icon of container.functionIcons; let i = index; trackBy: iconTrackBy">
                 <image
                   [attr.href]="resolveIconPath(icon.iconKey)"
-                  [attr.x]="(container.width / 2) - ((container.functionIcons!.length * (icon.size + 8)) / 2) + (i * (icon.size + 8)) + 4"
-                  [attr.y]="(container.height / 2) - (icon.size / 2) + 5"
-                  [attr.width]="icon.size"
-                  [attr.height]="icon.size"
+                  [attr.x]="getFunctionIconPosition(container, i, { iconKey: icon.iconKey, size: getFunctionIconSize(icon.iconKey) }).x"
+                  [attr.y]="getFunctionIconPosition(container, i, { iconKey: icon.iconKey, size: getFunctionIconSize(icon.iconKey) }).y"
+                  [attr.width]="getFunctionIconSize(icon.iconKey)"
+                  [attr.height]="getFunctionIconSize(icon.iconKey)"
                   [class.container__function-icon]="!isFunctionIconHighlighted(icon.iconKey)"
                   [class.container__function-icon--highlighted]="isFunctionIconHighlighted(icon.iconKey)"
                 />
               </ng-container>
             </g>
 
-            <!-- Center Icon (for ux type containers) - using centerIconKey -->
+            <!-- Center Icon (for ux, dsp-edge, dsp-mc) - using centerIconKey -->
             <image
-              *ngIf="container.type === 'ux' && container.centerIconKey"
+              *ngIf="(container.type === 'ux' || container.id === 'dsp-edge' || container.id === 'dsp-mc') && container.centerIconKey"
               [attr.href]="resolveIconPath(container.centerIconKey)"
-              [attr.x]="(container.width - 70) / 2"
-              [attr.y]="(container.height / 2) - 20"
-              width="70"
-              height="70"
+              [attr.x]="(container.width - 84) / 2"
+              [attr.y]="(container.height - 84) / 2"
+              width="84"
+              height="84"
               class="container__ux-icon"
             />
 

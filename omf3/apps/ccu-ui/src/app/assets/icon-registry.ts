@@ -55,7 +55,9 @@ export type IconKey =
   | 'bp-business-process'
   | 'mes-application'
   | 'aws-logo'
-  | 'google-cloud-logo';
+  | 'google-cloud-logo'
+  | 'logo-edge'
+  | 'logo-mc';
 
 export interface FunctionIconConfig {
   iconKey: IconKey;
@@ -124,6 +126,8 @@ export const ICON_MAP: Record<IconKey, string> = {
   'mes-application': ICONS.business.mes,
   'aws-logo': 'assets/svg/brand/aws-logo.svg',
   'google-cloud-logo': 'assets/svg/brand/google-cloud-logo.svg',
+  'logo-edge': 'assets/svg/dsp/architecture/dsp-edge-box.svg',
+  'logo-mc': 'assets/svg/dsp/architecture/dsp-cockpit-box.svg',
 };
 
 export function getIconPath(key: IconKey | undefined | null): string {
