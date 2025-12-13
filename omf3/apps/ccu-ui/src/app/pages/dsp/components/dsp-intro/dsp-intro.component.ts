@@ -39,7 +39,7 @@ export class DspIntroComponent {
     {
       title: $localize`:@@dspIntroManagementCockpitTitle:Management Cockpit`,
       description: $localize`:@@dspIntroManagementCockpitDesc:The cloud-based Management Cockpit models processes, manages shopfloor organization, and orchestrates all Edge nodes centrally across sites.`,
-      icon: 'assets/svg/dsp/architecture/dsp-cockpit-box.svg',
+      icon: 'assets/svg/dsp/architecture/dsp-mc-box.svg',
     },
     {
       title: $localize`:@@dspIntroDigitalTwinTitle:Digital Twin`,

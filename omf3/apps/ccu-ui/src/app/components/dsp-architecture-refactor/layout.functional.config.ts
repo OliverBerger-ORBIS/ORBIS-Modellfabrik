@@ -326,7 +326,7 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedConnectionIds: ['conn-dsp-edge-dsp-mc'],
       showFunctionIcons: true,
-      highlightedFunctionIcons: ['edge-hierarchical-structure'],
+      highlightedFunctionIcons: ['mc-hierarchical-structure'],
     },
 
     // Step 16: Process & Data Flow Configuration (MC)
@@ -360,7 +360,7 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedConnectionIds: ['conn-dsp-edge-dsp-mc'],
       showFunctionIcons: true,
-      highlightedFunctionIcons: ['edge-orchestration'],
+      highlightedFunctionIcons: ['mc-orchestration'],
     },
 
     // Step 17: Central Governance & Orchestration (MC)
@@ -394,7 +394,7 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedConnectionIds: ['conn-dsp-edge-dsp-mc'],
       showFunctionIcons: true,
-      highlightedFunctionIcons: ['edge-governance'],
+      highlightedFunctionIcons: ['mc-governance'],
     },
 
     // Step 18: MC Edge Segment (3x edge box)

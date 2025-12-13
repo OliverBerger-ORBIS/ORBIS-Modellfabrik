@@ -145,7 +145,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'ux',
     state: 'hidden',
-    logoIconKey: 'ux-dashboard' as IconKey,  // dsp/dashboard.svg - now centered like Edge
+    logoIconKey: 'ux-box' as IconKey,  // dsp-ux-box.svg - centered like Edge
     borderColor: '#009681',  // Solution Petrol (ORBIS CI)
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',

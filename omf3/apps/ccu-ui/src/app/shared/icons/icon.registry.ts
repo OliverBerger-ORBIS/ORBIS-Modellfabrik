@@ -72,9 +72,9 @@ export const ICONS = {
   },
   dsp: {
     architecture: {
-      smartFactoryDashboard: 'assets/svg/dsp/architecture/dsp-smartfactory-dashboard.svg',
+      uxBox: 'assets/svg/dsp/architecture/dsp-ux-box.svg',
       edgeBox: 'assets/svg/dsp/architecture/dsp-edge-box.svg',
-      cockpitBox: 'assets/svg/dsp/architecture/dsp-cockpit-box.svg',
+      mcBox: 'assets/svg/dsp/architecture/dsp-mc-box.svg',
     },
     functions: {
       connectivity: 'assets/svg/dsp/functions/edge-connectivity.svg',
@@ -106,11 +106,11 @@ export const ICONS = {
     mes: 'assets/svg/business/mes-application.svg',
   },
   methodology: {
-    // Incremental development phases (use ORBIS detail icons)
-    phase1: 'assets/svg/orbis/data-lake.svg',
-    phase2: 'assets/svg/orbis/integration.svg',
-    phase3: 'assets/svg/orbis/semantic.svg',
-    phase4: 'assets/svg/orbis/workflow-1.svg',
+    // Incremental development phases
+    phase1: 'assets/svg/methodology/phase1-data-foundation.svg',
+    phase2: 'assets/svg/methodology/phase2-data-integration.svg',
+    phase3: 'assets/svg/methodology/phase3-advanced-analytics.svg',
+    phase4: 'assets/svg/methodology/phase4-automation-orchestration.svg',
     phase5: 'assets/svg/methodology/phase5-autonomous-enterprise.svg',
   },
   ui: {

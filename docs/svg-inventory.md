@@ -27,9 +27,9 @@ _Generated: 2025-12-10T12:50:48.575Z_
     - scm-application.svg — `assets/svg/business/scm-application.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/business/scm-application.svg" alt="scm-application.svg" width="32" height="32" />
   - dsp
     - architecture
-      - dsp-cockpit-box.svg — `assets/svg/dsp/architecture/dsp-cockpit-box.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/architecture/dsp-cockpit-box.svg" alt="dsp-cockpit-box.svg" width="32" height="32" />
+      - dsp-mc-box.svg — `assets/svg/dsp/architecture/dsp-mc-box.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/architecture/dsp-mc-box.svg" alt="dsp-mc-box.svg" width="32" height="32" />
       - dsp-edge-box.svg — `assets/svg/dsp/architecture/dsp-edge-box.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/architecture/dsp-edge-box.svg" alt="dsp-edge-box.svg" width="32" height="32" />
-      - dsp-smartfactory-dashboard.svg — `assets/svg/dsp/architecture/dsp-smartfactory-dashboard.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/architecture/dsp-smartfactory-dashboard.svg" alt="dsp-smartfactory-dashboard.svg" width="32" height="32" />
+      - dsp-ux-box.svg — `assets/svg/dsp/architecture/dsp-ux-box.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/architecture/dsp-ux-box.svg" alt="dsp-ux-box.svg" width="32" height="32" />
     - edge-components
       - edge-agent.svg — `assets/svg/dsp/edge-components/edge-agent.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/edge-components/edge-agent.svg" alt="edge-agent.svg" width="32" height="32" />
       - edge-app-server.svg — `assets/svg/dsp/edge-components/edge-app-server.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/edge-components/edge-app-server.svg" alt="edge-app-server.svg" width="32" height="32" />

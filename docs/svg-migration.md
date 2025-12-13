@@ -33,10 +33,10 @@
 | details/dsp/data-visualization.svg | assets/svg/dsp/functions/edge-analytics.svg | DSP Analytics |
 | details/dsp/storage-device.svg | assets/svg/dsp/functions/edge-buffering.svg | DSP Buffering |
 | details/dsp/database-storage.svg | assets/svg/dsp/functions/edge-data-storage.svg | DSP Data Storage |
-| details/dsp/workflow.svg | assets/svg/dsp/functions/edge-workflow.svg | DSP Workflow |
+| details/dsp/workflow.svg | assets/svg/dsp/functions/edge-choreography.svg | DSP Workflow/Choreography |
 | details/dsp/technology-iot.svg | assets/svg/dsp/architecture/dsp-edge-box.svg | DSP Edge Box |
-| details/dsp/dashboard.svg | assets/svg/dsp/architecture/dsp-cockpit-box.svg | DSP Cockpit Box |
-| details/dsp/data-visualization.svg | assets/svg/dsp/architecture/dsp-smartfactory-dashboard.svg | DSP SmartFactory Dashboard |
+| details/dsp/dashboard.svg | assets/svg/dsp/architecture/dsp-mc-box.svg | DSP Management Cockpit Box |
+| details/dsp/data-visualization.svg | assets/svg/dsp/architecture/dsp-ux-box.svg | DSP SmartFactory Dashboard (UX) |
 | details/dsp/cloud-computing.svg | assets/svg/business/cloud-application.svg | Cloud App |
 | details/dsp/dashboard.svg | assets/svg/business/analytics-application.svg | Analytics App |
 | details/dsp/data-lake.svg | assets/svg/business/data-lake.svg | Data Lake |

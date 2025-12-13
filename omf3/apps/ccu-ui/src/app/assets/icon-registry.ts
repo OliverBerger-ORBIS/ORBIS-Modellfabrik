@@ -22,9 +22,9 @@ export type IconKey =
   | 'edge-best-of-breed'
   | 'edge-ai-enablement'
   | 'edge-autonomous-enterprise'
-  | 'edge-hierarchical-structure'
-  | 'edge-orchestration'
-  | 'edge-governance'
+  | 'mc-hierarchical-structure'
+  | 'mc-orchestration'
+  | 'mc-governance'
   | 'logo-edge-a'
   | 'logo-edge-b'
   | 'logo-edge-c'
@@ -57,8 +57,8 @@ export type IconKey =
   | 'shopfloor-warehouse'
   | 'shopfloor-factory'
   | 'shopfloor-it'
-  | 'ux-dashboard'
-  | 'ux-monitor'
+  | 'ux-box'
+  | 'mc-box'
   | 'erp-application'
   | 'bp-cloud-apps'
   | 'bp-analytics'
@@ -98,9 +98,9 @@ export const ICON_MAP: Record<IconKey, string> = {
   'edge-best-of-breed': 'assets/svg/dsp/functions/edge-best-of-breed.svg',
   'edge-ai-enablement': 'assets/svg/dsp/functions/edge-ai-enablement.svg',
   'edge-autonomous-enterprise': 'assets/svg/dsp/functions/edge-autonomous-enterprise.svg',
-  'edge-hierarchical-structure': 'assets/svg/dsp/functions/edge-hierarchical-structure.svg',
-  'edge-orchestration': 'assets/svg/dsp/functions/edge-orchestration.svg',
-  'edge-governance': 'assets/svg/dsp/functions/edge-governance.svg',
+  'mc-hierarchical-structure': 'assets/svg/dsp/functions/mc-hierarchical-structure.svg',
+  'mc-orchestration': 'assets/svg/dsp/functions/mc-orchestration.svg',
+  'mc-governance': 'assets/svg/dsp/functions/mc-governance.svg',
   'logo-edge-a': 'assets/svg/dsp/architecture/dsp-edge-box.svg',
   'logo-edge-b': 'assets/svg/dsp/architecture/dsp-edge-box.svg',
   'logo-edge-c': 'assets/svg/dsp/architecture/dsp-edge-box.svg',
@@ -137,8 +137,8 @@ export const ICON_MAP: Record<IconKey, string> = {
   'shopfloor-factory': 'assets/svg/shopfloor/systems/factory-system.svg',
   'shopfloor-it': ICONS.shopfloor.systems.any,
 
-  'ux-dashboard': ICONS.dsp.architecture.smartFactoryDashboard,
-  'ux-monitor': ICONS.dsp.architecture.cockpitBox,
+  'ux-box': ICONS.dsp.architecture.uxBox,
+  'mc-box': ICONS.dsp.architecture.mcBox,
 
   'erp-application': ICONS.business.erp,
   'bp-cloud-apps': ICONS.business.cloud,
@@ -149,7 +149,7 @@ export const ICON_MAP: Record<IconKey, string> = {
   'aws-logo': 'assets/svg/brand/aws-logo.svg',
   'google-cloud-logo': 'assets/svg/brand/google-cloud-logo.svg',
   'logo-edge': 'assets/svg/dsp/architecture/dsp-edge-box.svg',
-  'logo-mc': 'assets/svg/dsp/architecture/dsp-cockpit-box.svg',
+  'logo-mc': 'assets/svg/dsp/architecture/dsp-mc-box.svg',
 };
 
 export function getIconPath(key: IconKey | undefined | null): string {
