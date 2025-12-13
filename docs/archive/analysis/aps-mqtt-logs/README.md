@@ -11,27 +11,16 @@ Diese Dokumente beschreiben den **Analyse-Prozess**, wie wir zu unseren Erkenntn
 
 ## 📄 Archivierte Dokumente
 
-### 1. `log-analysis-2025-09-24.md`
-**Datum:** 24. September 2025  
-**Inhalt:** Initiale Mosquitto-Log-Analyse  
-**Erkenntnisse:** Client-IDs, Will Messages, Erste Topic-Zuordnungen
+**Status:** Alle Analyse-Dokumente wurden gelöscht (2025-11-17)  
+**Grund:** Enthalten Fehler (Serial-Number-Verwechslungen) und sind in der finalen Referenz konsolidiert.
 
-### 2. `startup-analysis-corrected-final-2025-09-28.md`
-**Datum:** 28. September 2025  
-**Inhalt:** Startup-Sequenz-Analyse (korrigierte Version)  
-**Erkenntnisse:** Module-Topic-Zuordnung, Publisher/Subscriber-Patterns
+**Gelöschte Dokumente:**
+- `log-analysis-2025-09-24.md` - Initiale Mosquitto-Log-Analyse
+- `startup-analysis-corrected-final-2025-09-28.md` - Startup-Sequenz-Analyse
+- `pub-sub-pattern-analysis-2025-09-28.md` - Pub/Sub-Pattern-Analyse
+- `component-mapping.md` - Client-ID Mapping
 
-### 3. `pub-sub-pattern-analysis-2025-09-28.md`
-**Datum:** 28. September 2025  
-**Inhalt:** Pub/Sub-Pattern-Analyse mit Mermaid-Diagrammen  
-**Erkenntnisse:** Kommunikations-Flows, QoS-Patterns
-
-### 4. `component-mapping.md`
-**Datum:** Verschiedene Updates  
-**Inhalt:** Client-ID Mapping und Komponenten-Rollen  
-**Erkenntnisse:** Client-ID → Komponenten-Zuordnung
-
-**Hinweis:** Diese Dokumente enthalten teilweise **Fehler** (Serial-Verwechslungen), die in der finalen Referenz korrigiert wurden.
+**Hinweis:** Diese Dokumente enthielten teilweise **Fehler** (Serial-Verwechslungen), die in der finalen Referenz korrigiert wurden.
 
 ---
 

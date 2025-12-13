@@ -46,6 +46,13 @@ Diese Sektion enthält die **konsolidierte, verifizierte Dokumentation** der APS
 - Published Topics des CCU-Backends
 - Code-Referenzen & Implementierung
 
+### 6. [**MQTT Message Examples**](mqtt-message-examples.md) ⭐
+**Verifizierte Message-Formate für Module Control**
+- Konkrete JSON-Beispiele für alle Module
+- PICK, DROP, STORE, CHECK_QUALITY Commands
+- Sequential Command Patterns
+- Message Format Requirements
+
 ---
 
 ## 🔗 Verwandte Dokumentation
@@ -73,10 +80,12 @@ Diese Sektion enthält die **konsolidierte, verifizierte Dokumentation** der APS
 1. [Component Overview](component-overview.md) - Was gibt es? (Alle 10 Komponenten)
 2. [Hardware-Architektur](hardware-architecture.md) - Was ist wo? (Netzwerk, IPs)
 3. [MQTT-Topic-Conventions](mqtt-topic-conventions.md) - Wie kommunizieren sie?
-4. [CCU-Backend Orchestration](ccu-backend-orchestration.md) - Wie funktioniert Order-Management?
+4. [MQTT Message Examples](mqtt-message-examples.md) - Welche Messages werden gesendet?
+5. [CCU-Backend Orchestration](ccu-backend-orchestration.md) - Wie funktioniert Order-Management?
 
 ### **Für Implementierung:**
 → [CCU-Backend Orchestration](ccu-backend-orchestration.md) - Code-Referenzen & Flows  
+→ [MQTT Message Examples](mqtt-message-examples.md) - Message-Formate & Beispiele  
 → [Component Overview](component-overview.md) - Komponenten-Matrix
 
 ---

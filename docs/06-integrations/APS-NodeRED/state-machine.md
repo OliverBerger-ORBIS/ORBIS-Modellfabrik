@@ -238,3 +238,64 @@ stateDiagram-v2
     IDLE -->|Calibration| CALIBRATION
     CALIBRATION -->|Complete| IDLE
 ```
+
+## FTS (Fahrerloses Transportsystem) - 5iO4
+
+### FTS State Machine Behavior
+
+#### findInitialDockPosition
+- **Verfügbarkeit**: Nur nach Initialisierung verfügbar
+- **Verhalten**: Wird nach Ausführung deaktiviert
+- **Zweck**: Initiale Positionsfindung für FTS
+- **Fischertechnik-Dashboard**: Button wird nach Initialisierung deaktiviert
+
+#### startCharging / stopCharging
+- **Verhalten**: Gegenseitig ausschließend
+- **Zustandsautomat**: 
+  - Wenn `startCharging` aktiv → `stopCharging` verfügbar, `startCharging` deaktiviert
+  - Wenn `stopCharging` aktiv → `startCharging` verfügbar, `stopCharging` deaktiviert
+- **Zweck**: Verhindert gleichzeitige Ladung und Ladestopp
+
+#### factsheetRequest
+- **Verfügbarkeit**: Immer verfügbar
+- **Zweck**: Status-Abfrage für dynamische Button-Aktivierung
+- **Zukunft**: Wird für Status-Verwaltung verwendet
+
+### FTS Implementation Notes
+
+#### Current Status
+- Alle FTS-Befehle sind immer verfügbar (einfache Implementierung)
+- Keine Status-Verwaltung implementiert
+
+#### Planned Extensions
+- **Status-Verwaltung**: Dynamische Button-Aktivierung basierend auf FTS-Status
+- **Zustandsautomat**: Implementierung der gegenseitigen Ausschließung
+- **Initialisierung**: Automatische Deaktivierung nach `findInitialDockPosition`
+
+## Module Control Patterns
+
+### Direct Control Commands (DRILL, MILL, AIQS, FTS)
+- **Standard-Sequenz**: PICK → PROCESS → DROP
+- **orderUpdateId**: Inkrementell pro Modul
+- **Verfügbarkeit**: Alle Befehle immer verfügbar
+- **MQTT Control**: ✅ Verfügbar
+
+### Event-triggered Modules (HBW, DPS)
+- **HBW**: Wird durch Bestellungen getriggert (nicht direkte Befehle)
+- **DPS**: Wird durch manuellen Wareneingang getriggert (nicht direkte Befehle)
+- **MQTT Control**: ❌ Nicht verfügbar (keine direkten Befehle)
+
+### Unsupported Modules (CHRG)
+- **CHRG**: Befehle machen keinen Sinn
+- **MQTT Control**: ❌ Entfernt
+
+## Factory Reset
+
+### Behavior
+- **Verfügbarkeit**: Immer verfügbar
+- **Optionen**: `withStorage` (HBW-Storage löschen/behalten)
+- **Warnung**: Bei `withStorage=true` wird HBW-Storage gelöscht
+
+### Implementation Notes
+- **Template-basiert**: Verwendet `message_template_manager`
+- **MQTT-Integration**: Über bewährte `send_mqtt_message_direct`
