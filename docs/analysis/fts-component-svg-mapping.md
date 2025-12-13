@@ -72,7 +72,7 @@ omf3/apps/ccu-ui/public/
 
 | Emoji | Verwendung | Aktueller OMF3 SVG | Vorschlag Umbenennung | Neuer Name |
 |-------|------------|-------------------|----------------------|------------|
-| 🚗 | FTS/AGV Icon | `assets/svg/shopfloor/shared/agv-vehicle.svg` | ✅ **OK** | `shopfloor/fts.svg` oder `shopfloor/agv.svg` |
+| 🚗 | FTS/AGV Icon | `assets/svg/shopfloor/shared/agv-vehicle.svg` | ✅ **OK** | `assets/svg/shopfloor/shared/agv-vehicle.svg` oder `assets/svg/shopfloor/shared/agv-vehicle.svg` |
 | 🔍 | Track & Trace | ❌ **FEHLT** | ➕ **NEU** | `headings/track-trace.svg` oder `headings/search.svg` |
 | 🔋 | Battery | ✅ **VORHANDEN** | ✅ **VERWENDET** | `assets/svg/shopfloor/shared/battery.svg` |
 | ⚡ | Charging | ✅ **VORHANDEN** | ✅ **VERWENDET** | `assets/svg/shopfloor/shared/charging-active.svg` |
@@ -177,7 +177,7 @@ const STATUS_ICONS = {
   driving: '🚀',
   stopped: '🛑',
   paused: '⏸️',
-  // Später: 'shopfloor/driving.svg'
+  // Später: 'assets/svg/shopfloor/shared/driving-status.svg'
 };
 ```
 
@@ -212,16 +212,16 @@ const STATUS_ICONS = {
 #### Priorität HOCH (für FTS Tab)
 1. `assets/svg/shopfloor/shared/battery.svg` - Batteriestatus Icon
 2. `assets/svg/shopfloor/shared/charging-active.svg` - Aktives Laden Icon
-3. `shopfloor/driving.svg` - Driving Status Icon
-4. `shopfloor/stopped.svg` - Stopped Status Icon
-5. `shopfloor/paused.svg` - Paused Status Icon
-6. `shopfloor/load.svg` - Load Information Icon
+3. `assets/svg/shopfloor/shared/driving-status.svg` - Driving Status Icon
+4. `assets/svg/shopfloor/shared/stopped-status.svg` - Stopped Status Icon
+5. `assets/svg/shopfloor/shared/paused-status.svg` - Paused Status Icon
+6. `assets/svg/shopfloor/shared/order-tracking.svg` - Load Information Icon
 7. `headings/fts.svg` - FTS Tab Heading
 
 #### Priorität MITTEL (für Track&Trace Tab)
-8. `shopfloor/location.svg` - Location Marker
-9. `shopfloor/turn.svg` - TURN Event Icon
-10. `shopfloor/pass.svg` - PASS Event Icon
+8. `assets/svg/shopfloor/shared/location-marker.svg` - Location Marker
+9. `assets/svg/shopfloor/shared/turn-event.svg` - TURN Event Icon
+10. `assets/svg/shopfloor/shared/pass-event.svg` - PASS Event Icon
 11. `headings/track-trace.svg` - Track&Trace Tab Heading
 12. `headings/info.svg` - Info/Help Icon
 13. `headings/route.svg` - Route/Map Icon
@@ -236,8 +236,8 @@ const STATUS_ICONS = {
 - **Nachteil:** Inkonsistente Namensgebung
 
 #### Option B: Umbenennungen (EMPFOHLEN)
-- 🔄 `assets/svg/shopfloor/shared/agv-vehicle.svg` → `shopfloor/fts.svg`
-- 🔄 `assets/svg/shopfloor/stations/chrg-station.svg` → `shopfloor/charging.svg`
+- 🔄 `assets/svg/shopfloor/shared/agv-vehicle.svg` → `assets/svg/shopfloor/shared/agv-vehicle.svg`
+- 🔄 `assets/svg/shopfloor/stations/chrg-station.svg` → `assets/svg/shopfloor/stations/chrg-station.svg`
 - **Vorteil:** Klarere Zuordnung, konsistente Namensgebung
 - **Nachteil:** Breaking Changes (alle Referenzen müssen aktualisiert werden)
 
@@ -265,17 +265,17 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 - `details/` - Detail-Icons (bereits vorhanden)
 
 ### Beispiele
-- `shopfloor/fts.svg` - FTS/AGV Icon
+- `assets/svg/shopfloor/shared/agv-vehicle.svg` - FTS/AGV Icon
 - `assets/svg/shopfloor/shared/battery.svg` - Battery Icon
-- `shopfloor/charging.svg` - Charging Station
+- `assets/svg/shopfloor/stations/chrg-station.svg` - Charging Station
 - `assets/svg/shopfloor/shared/charging-active.svg` - Active Charging
-- `shopfloor/driving.svg` - Driving Status
-- `shopfloor/stopped.svg` - Stopped Status
-- `shopfloor/paused.svg` - Paused Status
-- `shopfloor/load.svg` - Load Information
-- `shopfloor/location.svg` - Location Marker
-- `shopfloor/turn.svg` - TURN Event
-- `shopfloor/pass.svg` - PASS Event
+- `assets/svg/shopfloor/shared/driving-status.svg` - Driving Status
+- `assets/svg/shopfloor/shared/stopped-status.svg` - Stopped Status
+- `assets/svg/shopfloor/shared/paused-status.svg` - Paused Status
+- `assets/svg/shopfloor/shared/order-tracking.svg` - Load Information
+- `assets/svg/shopfloor/shared/location-marker.svg` - Location Marker
+- `assets/svg/shopfloor/shared/turn-event.svg` - TURN Event
+- `assets/svg/shopfloor/shared/pass-event.svg` - PASS Event
 - `headings/fts.svg` - FTS Tab Heading
 - `headings/track-trace.svg` - Track&Trace Tab Heading
 - `headings/route.svg` - Route/Map Heading
@@ -297,22 +297,22 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 |------------|-----------------|------------------------|------------------|
 | **FtsStatusComponent** | | | |
 | | Heading Icon | `🚗` oder `assets/svg/shopfloor/shared/agv-vehicle.svg` | `headings/fts.svg` (NEU) |
-| | AGV Status Icon | `🚗` | `shopfloor/fts.svg` (NEU) |
-| | Driving Status | `🚀` | `shopfloor/driving.svg` (NEU) |
-| | Stopped Status | `🛑` | `shopfloor/stopped.svg` (NEU) |
-| | Paused Status | `⏸️` | `shopfloor/paused.svg` (NEU) |
-| | Loading Status | `📦` | `shopfloor/load.svg` (NEU) |
+| | AGV Status Icon | `🚗` | `assets/svg/shopfloor/shared/agv-vehicle.svg` (NEU) |
+| | Driving Status | `🚀` | `assets/svg/shopfloor/shared/driving-status.svg` (NEU) |
+| | Stopped Status | `🛑` | `assets/svg/shopfloor/shared/stopped-status.svg` (NEU) |
+| | Paused Status | `⏸️` | `assets/svg/shopfloor/shared/paused-status.svg` (NEU) |
+| | Loading Status | `📦` | `assets/svg/shopfloor/shared/order-tracking.svg` (NEU) |
 | **FtsBatteryComponent** | | | |
 | | Heading Icon | `🔋` oder `assets/svg/shopfloor/shared/agv-vehicle.svg` | `headings/fts.svg` (NEU) |
 | | Battery Icon | `🔋` | `assets/svg/shopfloor/shared/battery.svg` (NEU) |
 | | Charging Icon | `⚡` | `assets/svg/shopfloor/shared/charging-active.svg` (NEU) |
 | **FtsLoadsComponent** | | | |
 | | Heading Icon | `📦` oder `assets/svg/shopfloor/shared/agv-vehicle.svg` | `headings/fts.svg` (NEU) |
-| | Load Icon | `📦` | `shopfloor/load.svg` (NEU) |
+| | Load Icon | `📦` | `assets/svg/shopfloor/shared/order-tracking.svg` (NEU) |
 | | Workpiece Icons | ✅ `workpieces/{color}_*.svg` | ✅ (bereits vorhanden) |
 | **ShopfloorPreviewComponent** | | | |
 | | Route/Map Icon | `🗺️` | `headings/route.svg` (NEU) |
-| | FTS Position | `assets/svg/shopfloor/shared/agv-vehicle.svg` | `shopfloor/fts.svg` (NEU) |
+| | FTS Position | `assets/svg/shopfloor/shared/agv-vehicle.svg` | `assets/svg/shopfloor/shared/agv-vehicle.svg` (NEU) |
 | | Module Icons | ✅ `shopfloor/{module}.svg` | ✅ (bereits vorhanden) |
 
 ### Track&Trace Tab Komponenten
@@ -323,16 +323,16 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 | | Heading Icon | `🔍` | `headings/track-trace.svg` (NEU) |
 | | Search Icon | `🔍` | `headings/track-trace.svg` (NEU) |
 | | Info Icon | `💡` | `headings/info.svg` (NEU) |
-| | DOCK Event | `🔗` oder `assets/svg/shopfloor/shared/agv-vehicle.svg` | `shopfloor/fts.svg` (NEU) |
+| | DOCK Event | `🔗` oder `assets/svg/shopfloor/shared/agv-vehicle.svg` | `assets/svg/shopfloor/shared/agv-vehicle.svg` (NEU) |
 | | PICK Event | ✅ `workpieces/{color}_instock_unprocessed.svg` | ✅ (bereits vorhanden) |
 | | DROP Event | ✅ `workpieces/{color}_product.svg` | ✅ (bereits vorhanden) |
-| | TURN Event | `↩️` | `shopfloor/turn.svg` (NEU) |
-| | PASS Event | `➡️` | `shopfloor/pass.svg` (NEU) |
-| | TRANSPORT Event | `🚗` oder `assets/svg/shopfloor/shared/agv-vehicle.svg` | `shopfloor/fts.svg` (NEU) |
+| | TURN Event | `↩️` | `assets/svg/shopfloor/shared/turn-event.svg` (NEU) |
+| | PASS Event | `➡️` | `assets/svg/shopfloor/shared/pass-event.svg` (NEU) |
+| | TRANSPORT Event | `🚗` oder `assets/svg/shopfloor/shared/agv-vehicle.svg` | `assets/svg/shopfloor/shared/agv-vehicle.svg` (NEU) |
 | | PROCESS Event | ✅ `assets/svg/shopfloor/stations/drill-station.svg` oder `assets/svg/shopfloor/stations/mill-station.svg` | ✅ (bereits vorhanden) |
 | | Storage Order | ✅ `headings/ladung.svg` | ✅ **KORRIGIERT - bereits vorhanden** |
 | | Production Order | ✅ `headings/maschine.svg` | ✅ **KORRIGIERT - bereits vorhanden** |
-| | Location Marker | `📍` | `shopfloor/location.svg` (NEU) |
+| | Location Marker | `📍` | `assets/svg/shopfloor/shared/location-marker.svg` (NEU) |
 | | Station Icons | ✅ `shopfloor/{station}.svg` | ✅ (bereits vorhanden) |
 
 ---
@@ -345,8 +345,8 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 - [ ] Entscheide über Umbenennungs-Strategie (Option A oder B)
 
 ### 2. SVG-Umbenennungen durchführen (falls Option B)
-- [ ] `assets/svg/shopfloor/shared/agv-vehicle.svg` → `shopfloor/fts.svg`
-- [ ] `assets/svg/shopfloor/stations/chrg-station.svg` → `shopfloor/charging.svg`
+- [ ] `assets/svg/shopfloor/shared/agv-vehicle.svg` → `assets/svg/shopfloor/shared/agv-vehicle.svg`
+- [ ] `assets/svg/shopfloor/stations/chrg-station.svg` → `assets/svg/shopfloor/stations/chrg-station.svg`
 - [ ] Alle Referenzen aktualisieren
 
 ### 3. Neue SVGs erstellen
@@ -380,7 +380,7 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 4. ✅ **Einfachere Migration:** Keine Suche/Ersetze-Operationen nötig
 
 **Vorgehen:**
-- Neue SVGs mit klaren Namen erstellen (`shopfloor/fts.svg`, `assets/svg/shopfloor/shared/battery.svg`, etc.)
+- Neue SVGs mit klaren Namen erstellen (`assets/svg/shopfloor/shared/agv-vehicle.svg`, `assets/svg/shopfloor/shared/battery.svg`, etc.)
 - Bestehende `robotic.svg` und `fuel.svg` bleiben unverändert
 - Neue FTS-Komponenten nutzen neue Icons
 - Optional: Alte Referenzen können später schrittweise migriert werden
@@ -388,8 +388,8 @@ Nach Umbenennungen müssen folgende Dateien aktualisiert werden:
 ### Alternative: **Option B (Umbenennungen) - NUR wenn Breaking Changes akzeptabel**
 
 **Vorgehen:**
-1. `assets/svg/shopfloor/shared/agv-vehicle.svg` → `shopfloor/fts.svg` kopieren (nicht verschieben!)
-2. `assets/svg/shopfloor/stations/chrg-station.svg` → `shopfloor/charging.svg` kopieren (nicht verschieben!)
+1. `assets/svg/shopfloor/shared/agv-vehicle.svg` → `assets/svg/shopfloor/shared/agv-vehicle.svg` kopieren (nicht verschieben!)
+2. `assets/svg/shopfloor/stations/chrg-station.svg` → `assets/svg/shopfloor/stations/chrg-station.svg` kopieren (nicht verschieben!)
 3. Alle Referenzen aktualisieren:
    - `message-monitor-tab.component.ts` (2 Stellen)
    - `icon-registry.ts` (2 Stellen)
