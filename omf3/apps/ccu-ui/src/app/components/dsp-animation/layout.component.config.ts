@@ -1,15 +1,8 @@
 import type { ContainerConfig, ConnectionConfig, StepConfig, DiagramConfig } from './types';
-import {
-  createDefaultContainers,
-  createDefaultConnections,
-  VIEWBOX_WIDTH,
-  VIEWBOX_HEIGHT,
-} from './layout.shared.config';
+import { DiagramConfigBuilder } from './layout.builder';
+import { getEdgeComponentIds } from './layout.shared.config';
 
 export function createComponentView(): DiagramConfig {
-  const containers = createDefaultContainers();
-  const connections = createDefaultConnections();
-  
   // Add bidirectional connections between edge components
   // All components connect to Router as the central hub
   const edgeComponentConnections: ConnectionConfig[] = [
@@ -114,25 +107,9 @@ export function createComponentView(): DiagramConfig {
       visibleContainerIds: [
         'layer-dsp',
         'dsp-edge',
-        'edge-comp-disc',
-        'edge-comp-event-bus',
-        'edge-comp-app-server',
-        'edge-comp-router',
-        'edge-comp-agent',
-        'edge-comp-log-server',
-        'edge-comp-disi',
-        'edge-comp-database',
+        ...getEdgeComponentIds(),
       ],
-      highlightedContainerIds: [
-        'edge-comp-disc',
-        'edge-comp-event-bus',
-        'edge-comp-app-server',
-        'edge-comp-router',
-        'edge-comp-agent',
-        'edge-comp-log-server',
-        'edge-comp-disi',
-        'edge-comp-database',
-      ],
+      highlightedContainerIds: getEdgeComponentIds(),
       visibleConnectionIds: [],
       highlightedConnectionIds: [],
       showFunctionIcons: false,
@@ -146,14 +123,7 @@ export function createComponentView(): DiagramConfig {
       visibleContainerIds: [
         'layer-dsp',
         'dsp-edge',
-        'edge-comp-disc',
-        'edge-comp-event-bus',
-        'edge-comp-app-server',
-        'edge-comp-router',
-        'edge-comp-agent',
-        'edge-comp-log-server',
-        'edge-comp-disi',
-        'edge-comp-database',
+        ...getEdgeComponentIds(),
       ],
       highlightedContainerIds: ['edge-comp-router'],
       visibleConnectionIds: allEdgeComponentConnections,
@@ -267,14 +237,7 @@ export function createComponentView(): DiagramConfig {
         'dsp-ux',
         'dsp-edge',
         'dsp-mc',
-        'edge-comp-disc',
-        'edge-comp-event-bus',
-        'edge-comp-app-server',
-        'edge-comp-router',
-        'edge-comp-agent',
-        'edge-comp-log-server',
-        'edge-comp-disi',
-        'edge-comp-database',
+        ...getEdgeComponentIds(),
         'layer-sf',
         ...baseShopfloorContainers,
       ],
@@ -291,13 +254,7 @@ export function createComponentView(): DiagramConfig {
     },
   ];
   
-  return {
-    containers,
-    connections,
-    steps,
-    viewBox: {
-      width: VIEWBOX_WIDTH,
-      height: VIEWBOX_HEIGHT,
-    },
-  };
+  return new DiagramConfigBuilder()
+    .withComponentView(steps, edgeComponentConnections)
+    .build();
 }

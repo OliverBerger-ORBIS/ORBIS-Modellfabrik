@@ -1,38 +1,18 @@
 import type { ContainerConfig, ConnectionConfig, StepConfig, DiagramConfig } from './types';
+import { DiagramConfigBuilder } from './layout.builder';
 import {
-  createDefaultContainers,
-  createDefaultConnections,
-  VIEWBOX_WIDTH,
-  VIEWBOX_HEIGHT,
+  getShopfloorContainerIds,
+  getShopfloorDeviceIds,
+  getShopfloorConnectionIds,
+  getDspContainerIds,
+  getBusinessContainerIds,
 } from './layout.shared.config';
 
 export { VIEWBOX_WIDTH, VIEWBOX_HEIGHT, LAYOUT } from './layout.shared.config';
 
 export function createDefaultSteps(): StepConfig[] {
-  const baseShopfloorContainers = [
-    'layer-sf',
-    'sf-systems-group',
-    'sf-system-bp',
-    'sf-system-fts',
-    'sf-devices-group',
-    'sf-device-mill',
-    'sf-device-drill',
-    'sf-device-aiqs',
-    'sf-device-hbw',
-    'sf-device-dps',
-    'sf-device-chrg',
-  ];
-
-  const baseShopfloorConnections = [
-    'conn-dsp-edge-sf-system-bp',
-    'conn-dsp-edge-sf-system-fts',
-    'conn-dsp-edge-sf-device-mill',
-    'conn-dsp-edge-sf-device-drill',
-    'conn-dsp-edge-sf-device-aiqs',
-    'conn-dsp-edge-sf-device-hbw',
-    'conn-dsp-edge-sf-device-dps',
-    'conn-dsp-edge-sf-device-chrg',
-  ];
+  const baseShopfloorContainers = getShopfloorContainerIds();
+  const baseShopfloorConnections = getShopfloorConnectionIds();
 
   return [
     // Step 1: Shopfloor Devices
@@ -43,21 +23,11 @@ export function createDefaultSteps(): StepConfig[] {
       visibleContainerIds: [
         'layer-sf',
         'sf-devices-group',
-        'sf-device-mill',
-        'sf-device-drill',
-        'sf-device-aiqs',
-        'sf-device-hbw',
-        'sf-device-dps',
-        'sf-device-chrg',
+        ...getShopfloorDeviceIds(),
       ],
       highlightedContainerIds: [
         'sf-devices-group',
-        'sf-device-mill',
-        'sf-device-drill',
-        'sf-device-aiqs',
-        'sf-device-hbw',
-        'sf-device-dps',
-        'sf-device-chrg',
+        ...getShopfloorDeviceIds(),
       ],
       visibleConnectionIds: [],
       highlightedConnectionIds: [],
@@ -437,29 +407,13 @@ export function createDefaultSteps(): StepConfig[] {
       label: $localize`:@@dspArchStep12:Autonomous & Adaptive Enterprise`,
       description: $localize`:@@dspArchStep12Desc:Data from shopfloor, Edge, ERP, analytics, and data lakes enable autonomous workflows, predictive decisions, and continuous process optimization.`,
       visibleContainerIds: [
-        'layer-bp',
-        'layer-dsp',
-        'bp-mes',
-        'bp-erp',
-        'bp-cloud',
-        'bp-analytics',
-        'bp-data-lake',
-        'dsp-ux',
-        'dsp-edge',
-        'dsp-mc',
+        ...getBusinessContainerIds(),
+        ...getDspContainerIds(),
         ...baseShopfloorContainers,
       ],
       highlightedContainerIds: [
-        'layer-bp',
-        'layer-dsp',
-        'dsp-ux',
-        'dsp-edge',
-        'dsp-mc',
-        'bp-mes',
-        'bp-erp',
-        'bp-cloud',
-        'bp-analytics',
-        'bp-data-lake',
+        ...getBusinessContainerIds(),
+        ...getDspContainerIds(),
       ],
       visibleConnectionIds: [
         'conn-dsp-ux-dsp-edge',
@@ -486,13 +440,7 @@ export function createDefaultSteps(): StepConfig[] {
 }
 
 export function createFunctionalView(): DiagramConfig {
-  return {
-    containers: createDefaultContainers(),
-    connections: createDefaultConnections(),
-    steps: createDefaultSteps(),
-    viewBox: {
-      width: VIEWBOX_WIDTH,
-      height: VIEWBOX_HEIGHT,
-    },
-  };
+  return new DiagramConfigBuilder()
+    .withFunctionalSteps(createDefaultSteps())
+    .build();
 }
