@@ -94,7 +94,7 @@ Beispiel:
 ### Build-Befehle
 ```yaml
 - name: Build for production
-  run: npm run build:netlify
+  run: npm run build:github-pages
 ```
 
 ## Checkliste für Workflow-Änderungen

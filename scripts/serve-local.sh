@@ -9,7 +9,7 @@ PORT=${1:-4200}
 BUILD_DIR="dist/apps/ccu-ui/browser"
 
 echo "🔨 Building OMF3 Dashboard for local testing..."
-npm run build:netlify
+npm run build:github-pages
 
 if [ ! -d "$BUILD_DIR" ]; then
     echo "❌ Build failed: $BUILD_DIR not found"

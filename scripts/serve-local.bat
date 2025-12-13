@@ -9,7 +9,7 @@ if "%PORT%"=="" set PORT=4200
 set BUILD_DIR=dist\apps\ccu-ui\browser
 
 echo Building OMF3 Dashboard for local testing...
-call npm run build:netlify
+call npm run build:github-pages
 
 if not exist "%BUILD_DIR%" (
     echo Build failed: %BUILD_DIR% not found

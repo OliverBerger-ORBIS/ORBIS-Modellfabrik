@@ -32,10 +32,10 @@ nx build ccu-ui
 nx build ccu-ui --configuration=production --localize=false
 ```
 
-**Oder:** Verwende `netlify` oder `github-pages` Konfiguration:
+**Oder:** Verwende `github-pages` Konfiguration:
 
 ```bash
-nx build ccu-ui --configuration=netlify
+nx build ccu-ui --configuration=github-pages
 ```
 
 ---
@@ -264,17 +264,6 @@ Nach dem Production Build:
 ---
 
 ## 🚀 Deployment-Konfigurationen
-
-### Netlify
-
-```bash
-nx build ccu-ui --configuration=netlify
-```
-
-**Eigenschaften:**
-- Optimiert
-- `baseHref: "/"`
-- Keine i18n (nur Englisch)
 
 ### GitHub Pages
 

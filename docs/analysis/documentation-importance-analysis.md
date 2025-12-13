@@ -113,7 +113,7 @@
 - ❌ `docs/credentials.md` - **Sollte nicht in Git**, sollte in `.gitignore`
 - ❌ `docs/deployment-alternatives.md` - **Veraltet**, wenn nicht mehr genutzt
 - ❌ `docs/github-pages-deployment.md` - **Veraltet**, wenn nicht mehr genutzt
-- ❌ `docs/netlify-deployment.md` - **Veraltet**, wenn nicht mehr genutzt
+- ✅ `docs/netlify-deployment.md` - **Gelöscht**, nicht mehr benötigt
 
 ### GitHub Issues (Veraltet)
 - ❌ `docs/github-issues/GITHUB-PAGES-DEPLOYMENT-REQUIREMENT.md` - **Veraltet**, wenn abgeschlossen

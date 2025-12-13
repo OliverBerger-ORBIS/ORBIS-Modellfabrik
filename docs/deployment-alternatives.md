@@ -1,6 +1,6 @@
-# Alternative Deployment Options for OMF3 Dashboard
+# Deployment Options for OMF3 Dashboard
 
-This guide provides alternatives to Netlify for hosting and testing the OMF3 Dashboard with mock fixtures.
+This guide provides options for hosting and testing the OMF3 Dashboard with mock fixtures.
 
 ## Option 1: Local Testing with Static Server (Empfohlen für Tests)
 
@@ -10,7 +10,7 @@ Der einfachste Weg, die Anwendung lokal zu testen, ohne externe Services:
 
 ```bash
 # Build erstellen
-npm run build:netlify
+npm run build:github-pages
 
 # Lokal hosten
 npx serve dist/apps/ccu-ui/browser -p 4200
@@ -22,7 +22,6 @@ Die Anwendung ist dann unter `http://localhost:4200` erreichbar.
 - ✅ Keine Firewall-Probleme
 - ✅ Keine Registrierung erforderlich
 - ✅ Sofort verfügbar
-- ✅ Gleiche Funktionalität wie Netlify
 
 **Nachteile:**
 - ❌ Nur lokal erreichbar (nicht für Remote-Kollegen)
@@ -32,7 +31,7 @@ Die Anwendung ist dann unter `http://localhost:4200` erreichbar.
 
 ```bash
 # Build erstellen
-npm run build:netlify
+npm run build:github-pages
 
 # Lokal hosten mit Python 3
 cd dist/apps/ccu-ui/browser
@@ -50,7 +49,7 @@ Lösung: Nutze Hash-basiertes Routing oder Methode A.
 
 ### Methode C: Mit Live Server (VSCode Extension)
 
-1. Build erstellen: `npm run build:netlify`
+1. Build erstellen: `npm run build:github-pages`
 2. VSCode öffnen im Verzeichnis `dist/apps/ccu-ui/browser`
 3. Rechtsklick auf `index.html` → "Open with Live Server"
 
@@ -98,7 +97,7 @@ Falls die URL erreichbar ist → GitHub Pages funktioniert! ✅
 
 1. Build erstellen:
 ```bash
-npm run build:netlify
+npm run build:github-pages
 ```
 
 2. GitHub Pages Branch erstellen:
@@ -135,36 +134,7 @@ Die Anwendung ist dann unter `https://oliverberger-orbis.github.io/ORBIS-Modellf
 - ❌ Repository muss öffentlich sein (oder GitHub Pro)
 - ❌ Erfordert GitHub-Zugriff zum Deployen
 
-## Option 3: Vercel
-
-Alternative zu Netlify mit ähnlicher Funktionalität:
-
-### Setup
-
-```bash
-# Vercel CLI installieren
-npm install -g vercel
-
-# Anmelden
-vercel login
-
-# Build erstellen
-npm run build:netlify
-
-# Deployen
-vercel --prod dist/apps/ccu-ui/browser
-```
-
-**Vorteile:**
-- ✅ Ähnlich wie Netlify
-- ✅ Kostenloser Free Tier
-- ✅ Einfaches Deployment
-
-**Nachteile:**
-- ❌ Könnte auch von Firewall blockiert sein
-- ❌ Benötigt Account-Registrierung
-
-## Option 4: Docker Container (Empfohlen für Intranet-Hosting)
+## Option 3: Docker Container (Empfohlen für Intranet-Hosting)
 
 Ideal für interne Server ohne Internet-Zugang:
 
@@ -193,7 +163,7 @@ EXPOSE 80
 
 ```bash
 # Build erstellen
-npm run build:netlify
+npm run build:github-pages
 
 # Docker Image erstellen
 docker build -t omf3-dashboard .
@@ -214,13 +184,13 @@ Die Anwendung ist dann unter `http://localhost:8080` erreichbar.
 - ❌ Benötigt Docker-Installation
 - ❌ Benötigt Server-Zugang
 
-## Option 5: Zip-Datei zum Teilen
+## Option 4: Zip-Datei zum Teilen
 
 Für einfaches Teilen mit Kollegen:
 
 ```bash
 # Build erstellen
-npm run build:netlify
+npm run build:github-pages
 
 # Zip erstellen
 cd dist/apps/ccu-ui/browser
@@ -237,7 +207,7 @@ npx serve -p 4200
 
 Oder als HTML-Datei direkt im Browser öffnen (funktioniert mit Einschränkungen beim Routing).
 
-## Option 6: Internes Server-Hosting
+## Option 5: Internes Server-Hosting
 
 Falls ein interner Webserver verfügbar ist (Apache, Nginx, IIS):
 
@@ -283,7 +253,7 @@ Für **Teilen mit Kollegen ohne Server**:
 → **Option 5** (Zip-Datei) zum manuellen Starten
 
 Für **permanente Hosting-Lösung**:
-→ **Option 6** (Interner Server) oder **Option 2** (GitHub Pages, falls erlaubt)
+→ **Option 5** (Interner Server) oder **Option 2** (GitHub Pages, falls erlaubt)
 
 ## Quick Start: Lokales Testen
 
@@ -291,7 +261,7 @@ Die einfachste Methode zum sofortigen Testen:
 
 ```bash
 # 1. Build erstellen
-npm run build:netlify
+npm run build:github-pages
 
 # 2. Lokal hosten
 npx serve dist/apps/ccu-ui/browser -p 4200
@@ -300,13 +270,12 @@ npx serve dist/apps/ccu-ui/browser -p 4200
 # → http://localhost:4200
 ```
 
-Die Anwendung läuft jetzt im Mock-Modus mit allen Fixtures und funktioniert genauso wie auf Netlify.
+Die Anwendung läuft jetzt im Mock-Modus mit allen Fixtures.
 
 ## Fehlerbehebung
 
 **Problem: SPA-Routing funktioniert nicht**
-- Lösung: Stelle sicher, dass der Server die `_redirects` Datei unterstützt (Netlify, Vercel)
-- Alternative: Nutze einen Server mit `try_files` Support (Nginx, Apache mit mod_rewrite)
+- Lösung: Nutze einen Server mit `try_files` Support (Nginx, Apache mit mod_rewrite)
 - Workaround: Nutze `npx serve` mit dem `--single` Flag
 
 **Problem: Assets laden nicht**
