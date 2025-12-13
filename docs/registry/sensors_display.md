@@ -235,24 +235,9 @@ brightness:
 
 ## Testing
 
-Unit tests for the sensor display utilities are in `tests/test_sensors_display_utils.py`:
+**Hinweis:** OMF2 Tests wurden entfernt. OMF3 verwendet Angular/Jest Tests in `omf3/apps/ccu-ui/src/app/.../__tests__/`.
 
-```bash
-# Run all sensor display tests
-pytest tests/test_sensors_display_utils.py -v
-
-# Run specific test class
-pytest tests/test_sensors_display_utils.py::TestNormalizeBrightness -v
-```
-
-**Test Coverage**:
-- ✅ Clamp function
-- ✅ Percent from range conversion
-- ✅ Lux to percent (never exceeds 100%)
-- ✅ IAQ level determination
-- ✅ IAQ color mapping
-- ✅ All normalization functions
-- ✅ Integration tests with realistic values
+Für Sensor-Display-Funktionalität siehe OMF3 Komponenten und deren Tests.
 
 ## QA Steps
 
@@ -354,7 +339,7 @@ If you need to integrate with a different state store (Redis, database, etc.), y
 - **Configuration**: `omf2/registry/sensors_display.yml`
 - **Utilities**: `omf2/ui/ccu/sensors_display_utils.py`
 - **UI Component**: `omf2/ui/ccu/ccu_overview/sensor_data_subtab.py`
-- **Tests**: `tests/test_sensors_display_utils.py`
+- **Tests**: OMF3 Tests in `omf3/apps/ccu-ui/src/app/.../__tests__/`
 - **Documentation**: `docs/registry/sensors_display.md` (this file)
 
 ## Version History
