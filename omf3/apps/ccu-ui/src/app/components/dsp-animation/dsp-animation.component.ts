@@ -22,7 +22,7 @@ import {
 import { ModuleNameService } from '../../services/module-name.service';
 
 /**
- * DspArchitectureRefactorComponent - Refactored animated SVG-based architecture diagram.
+ * DspAnimationComponent - Animated SVG-based architecture diagram.
  *
  * Matches the existing DSP architecture component with continuous layer backgrounds,
  * grid-based positioning, multi-view mode support (Functional, Component, Deployment),
@@ -30,14 +30,15 @@ import { ModuleNameService } from '../../services/module-name.service';
  */
 @Component({
   standalone: true,
-  selector: 'app-dsp-architecture-refactor',
+  selector: 'app-dsp-animation',
   imports: [CommonModule],
-  templateUrl: './dsp-architecture.component.html',
-  styleUrl: './dsp-architecture.component.scss',
+  templateUrl: './dsp-animation.component.html',
+  styleUrl: './dsp-animation.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDestroy {
+export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   @Input() viewMode: ViewMode = 'functional';
+  @Input() initialStep?: number; // Optional: Start step (0-based). If undefined, starts at 0. Use -1 for last step.
   @Output() actionTriggered = new EventEmitter<{ id: string; url: string }>();
 
   // Diagram configuration
@@ -66,8 +67,33 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
   protected readonly viewBoxHeight = VIEWBOX_HEIGHT;
 
   // i18n labels
-  protected readonly title = $localize`:@@dspArchRefactorTitle:DSP Architecture - Refactored`;
-  protected readonly subtitle = $localize`:@@dspArchRefactorSubtitle:Reference Architecture`;
+  protected readonly baseTitle = $localize`:@@dspAnimationBaseTitle:DSP Architecture, interactive demonstration of DSP architecture visualisation with multiple views and animation`;
+  protected readonly subtitle = $localize`:@@dspAnimationSubtitle:Reference Architecture`;
+  
+  /**
+   * Get dynamic title based on view mode
+   */
+  protected get title(): string {
+    const viewModeLabel = this.getViewModeLabel(this.viewMode);
+    // Use template literal for interpolation since $localize doesn't support dynamic interpolation
+    return `DSP Architecture ${viewModeLabel}`;
+  }
+  
+  /**
+   * Get view mode label for title
+   */
+  private getViewModeLabel(mode: ViewMode): string {
+    switch (mode) {
+      case 'functional':
+        return $localize`:@@dspAnimationViewModeFunctional:functional view`;
+      case 'component':
+        return $localize`:@@dspAnimationViewModeComponent:component view`;
+      case 'deployment':
+        return $localize`:@@dspAnimationViewModeDeployment:deployment view`;
+      default:
+        return '';
+    }
+  }
   protected readonly labelBusinessProcesses = $localize`:@@dspArchLabelBusiness:Business Processes`;
   protected readonly labelDsp = $localize`:@@dspArchLabelDsp:DSP`;
   protected readonly labelShopfloor = $localize`:@@dspArchLabelShopfloor:Shopfloor`;
@@ -137,7 +163,8 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['viewMode'] && !changes['viewMode'].isFirstChange()) {
+    if ((changes['viewMode'] && !changes['viewMode'].isFirstChange()) ||
+        (changes['initialStep'] && !changes['initialStep'].isFirstChange())) {
       this.loadConfiguration();
     }
   }
@@ -156,8 +183,20 @@ export class DspArchitectureRefactorComponent implements OnInit, OnChanges, OnDe
     this.steps = config.steps;
     this.revealedFunctionIcons = new Set<IconKey>();
     this.initializeModuleLabels();
-    this.currentStepIndex = 0; // Reset to first step on configuration change
-    this.applyStep(0);
+    
+    // Determine initial step index
+    let initialStepIndex = 0;
+    if (this.initialStep !== undefined) {
+      if (this.initialStep === -1) {
+        // -1 means last step
+        initialStepIndex = this.steps.length - 1;
+      } else if (this.initialStep >= 0 && this.initialStep < this.steps.length) {
+        initialStepIndex = this.initialStep;
+      }
+    }
+    
+    this.currentStepIndex = initialStepIndex;
+    this.applyStep(initialStepIndex);
     this.cdr.markForCheck();
   }
 

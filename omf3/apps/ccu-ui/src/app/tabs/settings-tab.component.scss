@@ -312,4 +312,48 @@
       color: #7f8da5;
     }
   }
+
+  .direct-page__languages {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(var(--orbis-blue-strong-rgb), 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+
+    .language-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--orbis-grey-strong);
+    }
+
+    .language-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .language-btn {
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(var(--orbis-blue-strong-rgb), 0.2);
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--orbis-blue-strong);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(var(--orbis-blue-strong-rgb), 0.08);
+        border-color: rgba(var(--orbis-blue-strong-rgb), 0.3);
+      }
+
+      &--active {
+        background: var(--orbis-blue-strong);
+        color: #fff;
+        border-color: var(--orbis-blue-strong);
+      }
+    }
+  }
 }

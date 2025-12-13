@@ -67,11 +67,6 @@ const NAVIGATION_ITEMS: Omit<NavigationItem, 'label'>[] = [
     roles: ['operator', 'admin'],
   },
   {
-    id: 'track-trace',
-    route: '/track-trace',
-    roles: ['operator', 'admin'],
-  },
-  {
     id: 'settings',
     route: '/settings',
     roles: ['admin'],

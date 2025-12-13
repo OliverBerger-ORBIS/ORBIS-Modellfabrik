@@ -20,6 +20,11 @@ export const appRoutes: Routes = [
           import('./pages/dsp/dsp-page.component').then((m) => m.DspPageComponent),
       },
       {
+        path: 'dsp/use-case/track-trace',
+        loadComponent: () =>
+          import('./tabs/track-trace-tab.component').then((m) => m.TrackTraceTabComponent),
+      },
+      {
         path: 'overview',
         loadComponent: () =>
           import('./tabs/overview-tab.component').then((m) => m.OverviewTabComponent),
@@ -70,12 +75,7 @@ export const appRoutes: Routes = [
           import('./tabs/fts-tab.component').then((m) => m.FtsTabComponent),
       },
       {
-        path: 'track-trace',
-        loadComponent: () =>
-          import('./tabs/track-trace-tab.component').then((m) => m.TrackTraceTabComponent),
-      },
-      {
-        path: 'dsp-architecture',
+        path: 'dsp-animation',
         loadComponent: () =>
           import('./pages/refactor-demo/dsp-architecture.component').then((m) => m.DspArchitecturePageComponent),
       },

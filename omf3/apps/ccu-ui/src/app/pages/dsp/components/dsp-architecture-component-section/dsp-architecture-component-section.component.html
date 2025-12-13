@@ -1,0 +1,11 @@
+<section class="dsp-section dsp-section--architecture-component">
+  <header class="dsp-section__header">
+    <h2 class="dsp-section__title">{{ sectionTitle }}</h2>
+    <p class="dsp-section__subtitle">{{ sectionSubtitle }}</p>
+  </header>
+  <app-dsp-animation
+    [viewMode]="viewMode"
+    [initialStep]="-1"
+    (actionTriggered)="onActionTriggered($event)">
+  </app-dsp-animation>
+</section>

@@ -5,44 +5,103 @@
   </div>
 
   <div class="dsp-page__content">
-    <!-- Introduction Section -->
-    <section class="dsp-page__section">
-      <app-dsp-intro></app-dsp-intro>
-    </section>
+    <!-- Accordion Sections -->
+    <div class="dsp-page__accordion">
+      <!-- Section 1: Overview -->
+      <article class="accordion-item" [class.is-open]="isSectionExpanded('overview')">
+        <button
+          type="button"
+          class="accordion-trigger"
+          (click)="toggleSection('overview')"
+          aria-expanded="isSectionExpanded('overview')"
+        >
+          <span i18n="@@dspSectionOverviewTitle">Overview</span>
+          <span class="chevron" aria-hidden="true"></span>
+        </button>
+        <div class="accordion-panel" *ngIf="isSectionExpanded('overview')">
+          <app-dsp-overview-section></app-dsp-overview-section>
+        </div>
+      </article>
 
-    <!-- Architecture Animation Section -->
-    <section class="dsp-page__section">
-      <app-dsp-architecture-wrapper></app-dsp-architecture-wrapper>
-    </section>
+      <!-- Section 2: Architecture (Functional View) -->
+      <article class="accordion-item" [class.is-open]="isSectionExpanded('architecture-functional')">
+        <button
+          type="button"
+          class="accordion-trigger"
+          (click)="toggleSection('architecture-functional')"
+          aria-expanded="isSectionExpanded('architecture-functional')"
+        >
+          <span i18n="@@dspSectionArchitectureTitle">Architecture</span>
+          <span class="chevron" aria-hidden="true"></span>
+        </button>
+        <div class="accordion-panel" *ngIf="isSectionExpanded('architecture-functional')">
+          <app-dsp-architecture-functional-section></app-dsp-architecture-functional-section>
+        </div>
+      </article>
 
-    <!-- Edge Components Section (Legend View) -->
-    <section class="dsp-page__section">
-      <app-edge-components></app-edge-components>
-    </section>
+      <!-- Section 3: Components -->
+      <article class="accordion-item" [class.is-open]="isSectionExpanded('components')">
+        <button
+          type="button"
+          class="accordion-trigger"
+          (click)="toggleSection('components')"
+          aria-expanded="isSectionExpanded('components')"
+        >
+          <span i18n="@@dspSectionComponentsTitle">Components</span>
+          <span class="chevron" aria-hidden="true"></span>
+        </button>
+        <div class="accordion-panel" *ngIf="isSectionExpanded('components')">
+          <app-dsp-architecture-component-section></app-dsp-architecture-component-section>
+        </div>
+      </article>
 
-    <!-- Edge Architecture Section (Animated) -->
-    <section class="dsp-page__section">
-      <app-edge-architecture-animated></app-edge-architecture-animated>
-    </section>
+      <!-- Section 4: Deployment -->
+      <article class="accordion-item" [class.is-open]="isSectionExpanded('deployment')">
+        <button
+          type="button"
+          class="accordion-trigger"
+          (click)="toggleSection('deployment')"
+          aria-expanded="isSectionExpanded('deployment')"
+        >
+          <span i18n="@@dspSectionDeploymentTitle">Deployment</span>
+          <span class="chevron" aria-hidden="true"></span>
+        </button>
+        <div class="accordion-panel" *ngIf="isSectionExpanded('deployment')">
+          <app-dsp-architecture-deployment-section></app-dsp-architecture-deployment-section>
+        </div>
+      </article>
 
-    <!-- Deployment Pipeline Section -->
-    <section class="dsp-page__section">
-      <app-deployment-pipeline></app-deployment-pipeline>
-    </section>
+      <!-- Section 5: Use Cases -->
+      <article class="accordion-item" [class.is-open]="isSectionExpanded('use-cases')">
+        <button
+          type="button"
+          class="accordion-trigger"
+          (click)="toggleSection('use-cases')"
+          aria-expanded="isSectionExpanded('use-cases')"
+        >
+          <span i18n="@@dspSectionUseCasesTitle">Use Cases</span>
+          <span class="chevron" aria-hidden="true"></span>
+        </button>
+        <div class="accordion-panel" *ngIf="isSectionExpanded('use-cases')">
+          <app-dsp-use-cases-section></app-dsp-use-cases-section>
+        </div>
+      </article>
 
-    <!-- Use Cases Section -->
-    <section class="dsp-page__section">
-      <app-dsp-use-cases></app-dsp-use-cases>
-    </section>
-
-    <!-- Methodology Section -->
-    <section class="dsp-page__section">
-      <app-dsp-methodology></app-dsp-methodology>
-    </section>
-
-    <!-- MES/ERP Teaser Section -->
-    <section class="dsp-page__section">
-      <app-dsp-mes-teaser></app-dsp-mes-teaser>
-    </section>
+      <!-- Section 6: Methodology -->
+      <article class="accordion-item" [class.is-open]="isSectionExpanded('methodology')">
+        <button
+          type="button"
+          class="accordion-trigger"
+          (click)="toggleSection('methodology')"
+          aria-expanded="isSectionExpanded('methodology')"
+        >
+          <span i18n="@@dspSectionMethodologyTitle">Methodology</span>
+          <span class="chevron" aria-hidden="true"></span>
+        </button>
+        <div class="accordion-panel" *ngIf="isSectionExpanded('methodology')">
+          <app-dsp-methodology-section></app-dsp-methodology-section>
+        </div>
+      </article>
+    </div>
   </div>
 </div>

@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { EnvironmentDefinition, EnvironmentService, EnvironmentKey } from '../services/environment.service';
 import { ConnectionService, ConnectionSettings } from '../services/connection.service';
 import { ExternalLinksService, ExternalLinksSettings } from '../services/external-links.service';
+import { LanguageService, LocaleKey } from '../services/language.service';
 
 @Component({
   standalone: true,
@@ -183,6 +185,22 @@ import { ExternalLinksService, ExternalLinksSettings } from '../services/externa
               <a [href]="page.path" target="_blank" rel="noreferrer noopener">{{ page.path }}</a>
             </div>
             <p class="direct-page__desc">{{ page.description }}</p>
+            <!-- Language links for each page -->
+            <div class="direct-page__languages" *ngIf="page.available">
+              <span class="language-label" i18n="@@settingsLanguageLinks">Languages:</span>
+              <div class="language-buttons">
+                <button
+                  *ngFor="let locale of supportedLocales"
+                  type="button"
+                  class="language-btn"
+                  [class.language-btn--active]="locale === currentLocale"
+                  (click)="navigateToLanguageForPage(locale, page.path)"
+                  [attr.aria-label]="getLanguageLabel(locale)"
+                >
+                  {{ locale.toUpperCase() }}
+                </button>
+              </div>
+            </div>
           </li>
         </ul>
       </section>
@@ -204,23 +222,93 @@ export class SettingsTabComponent implements OnInit {
       available: true,
     },
     {
-      label: 'DSP Architecture',
-      path: '/#/en/dsp-architecture',
-      description: 'Refactored DSP architecture view, reachable via direct URL only.',
+      label: 'DSP Animation',
+      path: '/#/en/dsp-animation',
+      description: 'DSP animation component with multiple view modes, reachable via direct URL only.',
       available: true,
     },
     {
-      label: 'DSP Action (DE, upcoming)',
-      path: '/#/de/dsp-action',
-      description: 'Planned direct page for DSP Action (not in tab navigation).',
-      available: false,
+      label: 'DSP Action',
+      path: '/#/en/dsp-action',
+      description: 'Direct access page for DSP Action (not in tab navigation).',
+      available: true,
+    },
+    {
+      label: 'Track & Trace (Use Case)',
+      path: '/#/en/dsp/use-case/track-trace',
+      description: 'Track & Trace use case page, accessible via direct URL (not in tab navigation). Fixtures available in mock mode.',
+      available: true,
     },
   ];
+
+  /**
+   * Get language-specific URL for a given path
+   */
+  getLanguageUrl(path: string, locale: LocaleKey): string {
+    // Replace locale in path
+    return path.replace(/\/#\/[a-z]{2}\//, `/#/${locale}/`);
+  }
+
+  /**
+   * Navigate to language-specific version of a page path
+   */
+  navigateToLanguageForPage(locale: LocaleKey, pagePath: string): void {
+    // Extract path without locale and hash
+    // pagePath format: /#/en/dsp-animation or /#/en/dsp/use-case/track-trace
+    let cleanPath = pagePath.replace(/^\/#\//, ''); // Remove /#/
+    
+    // Remove locale prefix if present (en/, de/, fr/)
+    const localeMatch = cleanPath.match(/^(en|de|fr)\/(.+)$/);
+    if (localeMatch) {
+      cleanPath = localeMatch[2]; // Get path after locale
+    }
+    
+    // Navigate using Angular Router (works with hash routing)
+    // Router expects array format: ['locale', 'route', 'parts']
+    const routeParts = cleanPath.split('/').filter(Boolean);
+    this.router.navigate([locale, ...routeParts]).then(() => {
+      // Reload to apply translations
+      window.location.reload();
+    }).catch((error) => {
+      console.error('Navigation error:', error);
+      // Fallback to window.location if router fails
+      const newPath = `/#/${locale}/${cleanPath}`;
+      window.location.href = newPath;
+    });
+  }
+
+  /**
+   * Get current locale
+   */
+  get currentLocale(): LocaleKey {
+    return this.languageService.current;
+  }
+
+  /**
+   * Get all supported locales
+   */
+  get supportedLocales(): LocaleKey[] {
+    return this.languageService.supportedLocales;
+  }
+
+  /**
+   * Get language label
+   */
+  getLanguageLabel(locale: LocaleKey): string {
+    const labels: Record<LocaleKey, string> = {
+      en: 'English',
+      de: 'Deutsch',
+      fr: 'Français',
+    };
+    return labels[locale];
+  }
 
   constructor(
     private readonly environmentService: EnvironmentService,
     private readonly connectionService: ConnectionService,
     private readonly externalLinksService: ExternalLinksService,
+    private readonly languageService: LanguageService,
+    private readonly router: Router,
     private readonly fb: FormBuilder
   ) {}
 

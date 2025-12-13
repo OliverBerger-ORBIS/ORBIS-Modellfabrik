@@ -1,0 +1,24 @@
+.dsp-section {
+  margin-bottom: 3rem;
+  padding: 2.5rem 0 2rem;
+
+  &__header {
+    margin-bottom: 2rem;
+  }
+
+  &__title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--orbis-blue-strong);
+    margin: 0 0 0.75rem;
+    text-align: center;
+  }
+
+  &__subtitle {
+    font-size: 1.125rem;
+    color: var(--orbis-darkgrey);
+    margin: 0 auto 2rem;
+    text-align: center;
+    max-width: 960px;
+  }
+}

@@ -58,6 +58,24 @@
     "@@dspMcStepGov": "Central Governance & Orchestration",
     "@@dspMcStepGovDesc": "The Management Cockpit centrally governs, configures and orchestrates all DSP Edge nodes across locations and environments.",
     "@@dspMcStepEdge": "Edge Node Visualization",
-    "@@dspMcStepEdgeDesc": "Management Cockpit displaying three DSP Edge nodes within a 120° segment."
+    "@@dspMcStepEdgeDesc": "Management Cockpit displaying three DSP Edge nodes within a 120° segment.",
+    "@@dspAnimationBaseTitle": "DSP Architecture, démonstration interactive de la visualisation de l'architecture DSP avec plusieurs vues et animations",
+    "@@dspAnimationSubtitle": "Architecture de référence",
+    "@@dspAnimationViewModeFunctional": "vue fonctionnelle",
+    "@@dspAnimationViewModeComponent": "vue composant",
+    "@@dspAnimationViewModeDeployment": "vue déploiement",
+    "@@dspArchFunctionalSectionTitle": "Architecture",
+    "@@dspArchFunctionalSectionSubtitle": "Vue fonctionnelle de l'architecture de référence DSP avec animation étape par étape.",
+    "@@dspArchComponentSectionTitle": "Composants",
+    "@@dspArchComponentSectionSubtitle": "Vue composant montrant les composants internes DSP Edge et leurs connexions.",
+    "@@dspArchDeploymentSectionTitle": "Déploiement",
+    "@@dspArchDeploymentSectionSubtitle": "Vue pipeline de déploiement montrant l'intégration, la transformation, la consolidation et la provision.",
+    "@@dspSectionOverviewTitle": "Vue d'ensemble",
+    "@@dspSectionArchitectureTitle": "Architecture",
+    "@@dspSectionComponentsTitle": "Composants",
+    "@@dspSectionDeploymentTitle": "Déploiement",
+    "@@dspSectionUseCasesTitle": "Cas d'usage",
+    "@@dspSectionMethodologyTitle": "Méthodologie",
+    "@@settingsLanguageLinks": "Langues:"
   }
 }

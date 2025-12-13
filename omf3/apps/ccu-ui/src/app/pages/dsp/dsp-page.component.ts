@@ -1,40 +1,34 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { DspIntroComponent } from './components/dsp-intro/dsp-intro.component';
-import { DspArchitectureWrapperComponent } from './components/dsp-architecture/dsp-architecture-wrapper.component';
-import { EdgeComponentsComponent } from './components/edge-components/edge-components.component';
-import { EdgeArchitectureAnimatedComponent } from './components/edge-architecture-animated/edge-architecture-animated.component';
-import { DeploymentPipelineComponent } from './components/deployment-pipeline/deployment-pipeline.component';
-import { DspUseCasesComponent } from './components/dsp-use-cases/dsp-use-cases.component';
-import { DspMethodologyComponent } from './components/dsp-methodology/dsp-methodology.component';
-import { DspMesTeaserComponent } from './components/dsp-mes-teaser/dsp-mes-teaser.component';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { DspOverviewSectionComponent } from './components/dsp-overview-section/dsp-overview-section.component';
+import { DspArchitectureFunctionalSectionComponent } from './components/dsp-architecture-functional-section/dsp-architecture-functional-section.component';
+import { DspArchitectureComponentSectionComponent } from './components/dsp-architecture-component-section/dsp-architecture-component-section.component';
+import { DspArchitectureDeploymentSectionComponent } from './components/dsp-architecture-deployment-section/dsp-architecture-deployment-section.component';
+import { DspUseCasesSectionComponent } from './components/dsp-use-cases-section/dsp-use-cases-section.component';
+import { DspMethodologySectionComponent } from './components/dsp-methodology-section/dsp-methodology-section.component';
 
 /**
  * Main DSP (Distributed Shopfloor Processing) page component.
  * 
  * This page provides a comprehensive view of DSP including:
- * - Introduction to DSP concepts
- * - Interactive architecture animation (12 steps)
- * - DSP Edge Components (Legend View - card-based component overview)
- * - DSP Edge Architecture (Animated - 4-step internal component flow)
- * - DSP Deployment Pipeline (integration → transformation → consolidation → provisioning)
+ * - Overview: What is DSP?
+ * - Architecture (Functional view): Interactive architecture animation
+ * - Components: Component view showing internal DSP Edge components
+ * - Deployment: Deployment pipeline view (integration → transformation → consolidation → provisioning)
  * - Use cases (Data Aggregation, Track & Trace, Predictive Maintenance, Process Optimization)
  * - Methodology (Phases 1-5 with Autonomous & Adaptive Enterprise)
- * - MES/ERP Integration teaser
  */
 @Component({
   standalone: true,
   selector: 'app-dsp-page',
   imports: [
     CommonModule,
-    DspIntroComponent,
-    DspArchitectureWrapperComponent,
-    EdgeComponentsComponent,
-    EdgeArchitectureAnimatedComponent,
-    DeploymentPipelineComponent,
-    DspUseCasesComponent,
-    DspMethodologyComponent,
-    DspMesTeaserComponent,
+    DspOverviewSectionComponent,
+    DspArchitectureFunctionalSectionComponent,
+    DspArchitectureComponentSectionComponent,
+    DspArchitectureDeploymentSectionComponent,
+    DspUseCasesSectionComponent,
+    DspMethodologySectionComponent,
   ],
   templateUrl: './dsp-page.component.html',
   styleUrl: './dsp-page.component.scss',
@@ -43,4 +37,31 @@ import { DspMesTeaserComponent } from './components/dsp-mes-teaser/dsp-mes-tease
 export class DspPageComponent {
   readonly pageTitle = $localize`:@@dspPageTitle:Distributed Shopfloor Processing`;
   readonly pageSubtitle = $localize`:@@dspPageSubtitle:Edge-to-Cloud Orchestration for Smart Manufacturing`;
+  
+  // Accordion state - track which sections are expanded
+  protected expandedSections = new Set<string>();
+  
+  constructor(private readonly cdr: ChangeDetectorRef) {
+    // Overview section is expanded by default
+    this.expandedSections.add('overview');
+  }
+  
+  /**
+   * Check if a section is expanded
+   */
+  protected isSectionExpanded(sectionId: string): boolean {
+    return this.expandedSections.has(sectionId);
+  }
+  
+  /**
+   * Toggle section expansion
+   */
+  protected toggleSection(sectionId: string): void {
+    if (this.expandedSections.has(sectionId)) {
+      this.expandedSections.delete(sectionId);
+    } else {
+      this.expandedSections.add(sectionId);
+    }
+    this.cdr.markForCheck();
+  }
 }
