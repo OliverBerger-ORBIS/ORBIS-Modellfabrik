@@ -19,13 +19,14 @@ export default {
     'jest-preset-angular/build/serializers/html-comment',
   ],
   // Coverage Monitoring Configuration
-  // Thresholds are set to current actual values and will be gradually increased
+  // Thresholds updated after Phase 1 test coverage improvements
+  // Significant progress made: +126 tests, major coverage improvements across all metrics
   coverageThreshold: {
     global: {
-      branches: 16, // Current: 16.34%, Target: 40% (gradual increase)
-      functions: 23, // Current: 23.65%, Target: 60% (gradual increase)
-      lines: 29, // Current: 29.09%, Target: 60% (gradual increase)
-      statements: 28, // Current: 28.39%, Target: 60% (gradual increase)
+      branches: 28, // Current: 28.73%, Previous: 16.34%, Target: 40% (gradual increase)
+      functions: 37, // Current: 37.66%, Previous: 23.65%, Target: 60% (gradual increase)
+      lines: 44, // Current: 44.61%, Previous: 29.09%, Target: 60% (gradual increase)
+      statements: 43, // Current: 43.56%, Previous: 28.39%, Target: 60% (gradual increase)
     },
   },
   collectCoverageFrom: [
