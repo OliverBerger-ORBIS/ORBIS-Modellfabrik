@@ -15,6 +15,9 @@ Dieses Verzeichnis enthält abgeschlossene Analysen und Planungsdokumente, die f
 ### **github-issues/**
 - GitHub Agent Instructions (historisch)
 
+### **examples-git-references.md**
+- Git-Referenzen für gelöschte Examples (Wiederherstellung möglich)
+
 ## 📋 Hinweise
 
 - **Bereinigt:** 2025-11-17 - Umgesetzte Analysen und Implementierungspläne wurden gelöscht

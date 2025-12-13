@@ -66,17 +66,14 @@ Falls GitHub zugelassen ist, kann GitHub Pages verwendet werden. Dies ist ideal 
    - https://docs.github.com (läuft auf GitHub Pages)
    - https://angular.io (läuft auf GitHub Pages)
 
-2. **Oder: Schnelltest mit Script erstellen:**
+2. **Oder: Build lokal erstellen und direkt in GitHub hochladen:**
 
 ```bash
-# Linux/Mac
-./scripts/deploy-gh-pages-test.sh
-
-# Windows
-scripts\deploy-gh-pages-test.bat
+# Build erstellen
+npm run build:github-pages
 ```
 
-Das Script erstellt automatisch einen `gh-pages-test` Branch mit dem Build.
+Dann die Dateien aus `dist/apps/ccu-ui/browser/` direkt in GitHub UI hochladen (siehe aktuelle Anleitung).
 
 3. **In GitHub aktivieren:**
    - Gehe zu: https://github.com/OliverBerger-ORBIS/ORBIS-Modellfabrik/settings/pages
@@ -91,7 +88,7 @@ Falls die URL erreichbar ist → GitHub Pages funktioniert! ✅
 
 ### Produktives Setup (nach erfolgreichem Test)
 
-**Detaillierte Anleitung:** Siehe `docs/github-pages-deployment.md`
+**Aktuelle Anleitung:** Siehe [docs/04-howto/deployment/github-pages-deployment.md](04-howto/deployment/github-pages-deployment.md)
 
 **Kurzversion:**
 

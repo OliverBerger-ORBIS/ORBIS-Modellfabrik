@@ -112,11 +112,11 @@
 - ❌ `docs/PROJECT_STATUS.md` - **Veraltet**, Info in README.md
 - ❌ `docs/credentials.md` - **Sollte nicht in Git**, sollte in `.gitignore`
 - ❌ `docs/deployment-alternatives.md` - **Veraltet**, wenn nicht mehr genutzt
-- ❌ `docs/github-pages-deployment.md` - **Veraltet**, wenn nicht mehr genutzt
+- ✅ `docs/github-pages-deployment.md` - **Gelöscht**, durch `docs/04-howto/deployment/github-pages-deployment.md` ersetzt
 - ✅ `docs/netlify-deployment.md` - **Gelöscht**, nicht mehr benötigt
 
 ### GitHub Issues (Veraltet)
-- ❌ `docs/github-issues/GITHUB-PAGES-DEPLOYMENT-REQUIREMENT.md` - **Veraltet**, wenn abgeschlossen
+- ✅ `docs/github-issues/GITHUB-PAGES-DEPLOYMENT-REQUIREMENT.md` - **Gelöscht**, Requirements abgeschlossen
 
 ---
 

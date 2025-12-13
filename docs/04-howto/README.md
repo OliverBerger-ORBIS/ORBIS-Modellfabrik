@@ -7,12 +7,15 @@
 - Setup
   - [Project Setup](setup/project-setup.md)
   - [Mosquitto Setup](setup/mosquitto/README.md)
+- Deployment
+  - [GitHub Pages Deployment](deployment/github-pages-deployment.md)
 - MQTT
   - [MQTT Client Connection](mqtt_client_connection.md)
 - Shopfloor
   - [Shopfloor Layout Guide](SHOPFLOOR_LAYOUT_GUIDE.md)
 - Testing
   - [Testing How-To](testing/README.md)
+  - [Coverage Monitoring](testing/coverage-monitoring.md) ⭐
   - [Integration Testing Workflow](testing/integration-testing-workflow.md)
 - Helper Apps
   - [Session Manager](helper_apps/session-manager/README.md)

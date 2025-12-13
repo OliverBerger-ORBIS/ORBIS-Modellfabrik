@@ -82,6 +82,23 @@ Analysis of which documentation files are critical vs. redundant:
 - Optional documentation (can consolidate)
 - Redundant/outdated documentation (can remove)
 
+### 9. ~~[fts-component-svg-mapping.md](./fts-component-svg-mapping.md)~~ **GELÖSCHT**
+**FTS Component & SVG Mapping** ✅ **IMPLEMENTED & REMOVED**
+
+~~Component mapping and SVG mapping analysis for FTS integration.~~  
+**Status:** Bereits umgesetzt, Dokumentation gelöscht (2025-12-13)
+- ✅ FTS Tab implementiert
+- ✅ Track & Trace Tab implementiert
+- ✅ Alle SVGs vorhanden und verwendet
+
+### 10. ~~[fts-i18n-status.md](./fts-i18n-status.md)~~ **GELÖSCHT**
+**FTS Tab I18n Status** ✅ **IMPLEMENTED & REMOVED**
+
+~~I18n translation status for FTS Tab.~~  
+**Status:** Bereits umgesetzt, Dokumentation gelöscht (2025-12-13)
+- ✅ i18n-Übersetzungen implementiert (`$localize` verwendet)
+- ✅ Deutsche und französische Übersetzungen vorhanden
+
 ---
 
 ## Quick Summary

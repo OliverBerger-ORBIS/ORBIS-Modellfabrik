@@ -43,6 +43,20 @@ jobs:
       run: |
         npm test
     
+    - name: Test Coverage Check
+      run: |
+        npm run test:coverage:check || echo "⚠️ Coverage thresholds not met - see coverage report"
+      continue-on-error: true
+    
+    - name: Upload Coverage Report
+      uses: codecov/codecov-action@v4
+      if: always()
+      with:
+        files: ./coverage/ccu-ui/coverage-final.json
+        flags: ccu-ui
+        name: ccu-ui-coverage
+        fail_ci_if_error: false
+    
     - name: Validate structure
       run: |
         if make -n validate-structure >/dev/null 2>&1; then

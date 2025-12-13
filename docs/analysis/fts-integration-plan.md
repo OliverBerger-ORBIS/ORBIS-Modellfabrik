@@ -28,7 +28,7 @@
 ### Phase 1: Vorbereitung & Analyse (2-3 Stunden)
 
 #### 1.1 Komponenten-Mapping
-- [ ] Analysiere alle Komponenten aus `examples/fts-analysis-angular/`
+- [x] Analysiere alle Komponenten aus `examples/fts-analysis-angular/` ✅ **ABGESCHLOSSEN** - Features integriert, Example gelöscht (siehe `docs/archive/examples-git-references.md`)
 - [ ] Identifiziere OMF3-Äquivalente (z.B. `ShopfloorPreviewComponent` statt `FtsRouteComponent`)
 - [ ] Liste alle verwendeten SVGs in Beispiel-App auf
 - [ ] Mappe SVGs zu OMF3-SVG-Pfaden

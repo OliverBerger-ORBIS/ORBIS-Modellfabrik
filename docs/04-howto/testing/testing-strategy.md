@@ -13,6 +13,10 @@ Begründung: Tests spiegeln das gewünschte Verhalten wider. Wenn sich die fachl
 **Zielgruppe:** Entwickler  
 **Letzte Aktualisierung:** 20.09.2025
 
+**Verwandte Dokumentation:**
+- [Coverage Monitoring](coverage-monitoring.md) - Test Coverage Monitoring Setup
+- [Integration Testing Workflow](integration-testing-workflow.md) - Integration Tests
+
 ## 🎯 Test-Philosophie
 
 ### **Test-First Development**

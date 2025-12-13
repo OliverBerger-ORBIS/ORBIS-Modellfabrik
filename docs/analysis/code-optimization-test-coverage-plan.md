@@ -1,8 +1,11 @@
 # Code-Optimierung & Test-Abdeckung Plan
 
 **Erstellt:** 2025-11-30  
+**Status Update:** 2025-12-13 - Viele Punkte bereits umgesetzt  
 **Fokus:** Code-Optimierung und Test-Abdeckung (Security Issues sekundär)  
-**Aktueller Stand:** 49% Test Coverage, 8/10 Code Quality
+**Aktueller Stand:** 49% Test Coverage (Original), 8/10 Code Quality
+
+**⚠️ WICHTIG:** Siehe [Status Update](code-optimization-test-coverage-plan-status.md) für aktuelle Umsetzung
 
 ---
 
@@ -529,32 +532,32 @@ describe('OrderTabComponent Integration', () => {
 ## 📋 Checkliste
 
 ### Phase 1: Code-Optimierung
-- [ ] Memory Leaks in AppComponent beheben
-- [ ] Gateway Library Build Issue beheben
-- [ ] ESLint Rules verschärfen
+- [x] Memory Leaks in AppComponent beheben ✅
+- [ ] Gateway Library Build Issue beheben ⚠️ Zu prüfen
+- [ ] ESLint Rules verschärfen ⚠️ Zu prüfen
 
 ### Phase 2: Test-Abdeckung Basis
-- [ ] ConnectionService Tests (4-6h)
-- [ ] EnvironmentService Tests (1-2h)
-- [ ] LanguageService Tests (1-2h)
-- [ ] RoleService Tests (1-2h)
-- [ ] OrdersViewComponent Tests (1.5-2h)
-- [ ] FtsViewComponent Tests (1.5-2h)
-- [ ] StockViewComponent Tests (1.5-2h)
-- [ ] ModuleMapComponent Tests (1.5-2h)
-- [ ] OrderTabComponent Tests (1-1.5h)
-- [ ] ProcessTabComponent Tests (1-1.5h)
-- [ ] SensorTabComponent Tests (1-1.5h)
-- [ ] ModuleTabComponent Tests (1-1.5h)
-- [ ] ConfigurationTabComponent Tests (1-1.5h)
-- [ ] MessageMonitorTabComponent Tests (1-1.5h)
-- [ ] SettingsTabComponent Tests (1-1.5h)
-- [ ] Coverage Monitoring Setup (1-2h)
+- [x] ConnectionService Tests (4-6h) ✅
+- [x] EnvironmentService Tests (1-2h) ✅
+- [x] LanguageService Tests (1-2h) ✅
+- [x] RoleService Tests (1-2h) ✅
+- [x] OrdersViewComponent Tests (1.5-2h) ✅
+- [x] FtsViewComponent Tests (1.5-2h) ✅
+- [x] StockViewComponent Tests (1.5-2h) ✅
+- [x] ModuleMapComponent Tests (1.5-2h) ✅
+- [x] OrderTabComponent Tests (1-1.5h) ✅
+- [x] ProcessTabComponent Tests (1-1.5h) ✅
+- [x] SensorTabComponent Tests (1-1.5h) ✅
+- [x] ModuleTabComponent Tests (1-1.5h) ✅
+- [x] ConfigurationTabComponent Tests (1-1.5h) ✅
+- [x] MessageMonitorTabComponent Tests (1-1.5h) ✅
+- [x] SettingsTabComponent Tests (1-1.5h) ✅
+- [x] Coverage Monitoring Setup (1-2h) ✅ **2025-12-13**
 
 ### Phase 3: Code-Optimierung
-- [ ] Lazy Loading implementieren
-- [ ] Test Fixtures aus Production entfernen
-- [ ] MessageMonitorService refactoring
+- [ ] Lazy Loading implementieren ⚠️ Zu prüfen
+- [ ] Test Fixtures aus Production entfernen ⚠️ Zu prüfen
+- [x] MessageMonitorService refactoring ✅
 
 ### Phase 4: Erweiterte Tests
 - [ ] Branch Coverage Tests
