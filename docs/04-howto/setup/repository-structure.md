@@ -34,7 +34,6 @@ ORBIS-Modellfabrik/
 │   ├── 04-howto/                 # Anleitungen
 │   └── sprints/                  # Sprint-Dokumentation
 └── tests/                        # Tests
-    ├── test_omf2/                # OMF2 Tests
     └── test_helper_apps/         # Helper Apps Tests
 ```
 
@@ -101,17 +100,16 @@ project_root / "data/omf-data/sessions"
 
 ## 🧪 Testing Structure
 
-### **tests_orbis/**
-- **test_omf/:** OMF-spezifische Tests
+### **tests/**
 - **test_helper_apps/:** Helper-App-Tests
-- **Mock-Objekte:** Für MQTT-Client-Tests
+- **OMF3 Tests:** In `omf3/apps/ccu-ui/src/app/.../__tests__/`
 
 ### **Test-Ausführung**
 ```bash
-# Alle Tests
-python -m pytest tests_orbis/
+# OMF3 Tests (Angular/Jest)
+nx test ccu-ui
 
-# Nur OMF-Tests
+# Helper Apps Tests
 python -m pytest tests_orbis/test_omf/
 
 # Mit Coverage

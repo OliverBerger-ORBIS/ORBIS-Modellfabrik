@@ -53,9 +53,9 @@
 #### **🔒 Test-First Development Regeln (NIEMALS IGNORIEREN):**
 1. **TESTS ZUERST:** Jede neue Funktion/Feature MUSS zuerst getestet werden
 2. **KEINE IMPLEMENTIERUNG ohne Tests:** Niemals Code schreiben ohne vorherige Tests
-3. **Test-Datei erstellen:** `tests/test_omf2/test_<component>.py` für neue Komponenten
+3. **Test-Datei erstellen:** `omf3/apps/ccu-ui/src/app/.../__tests__/<component>.spec.ts` für neue Komponenten
 4. **Test-Coverage:** Mindestens 80% Code-Coverage für neue Features
-5. **Test-Ausführung:** `python -m pytest tests/test_omf2/` vor jeder Implementierung
+5. **Test-Ausführung:** `nx test ccu-ui` vor jeder Implementierung
 
 #### **🎨 UI-Symbol Regeln (NIEMALS IGNORIEREN):**
 1. **UISymbols verwenden:** NIEMALS hardcodierte Icons (`🔌`, `🏗️`, etc.)

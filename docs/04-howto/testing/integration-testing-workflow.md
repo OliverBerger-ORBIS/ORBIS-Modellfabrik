@@ -50,11 +50,11 @@ def test_ccu_order_active_routing():
 ### **1. VOR JEDER ÄNDERUNG: BASELINE-TESTS**
 
 ```bash
-# Alle Tests ausführen und grün haben
-python -m pytest tests/test_omf2 -v
+# OMF3 Tests ausführen (Angular/Jest)
+nx test ccu-ui
 
-# Spezifische Integration-Tests
-python -m pytest tests/test_omf2/test_ccu_gateway_routing.py -v
+# Alle Tests
+nx run-many -t test
 ```
 
 ### **2. ECHTE INTEGRATION-TESTS SCHREIBEN**
@@ -223,13 +223,13 @@ with patch('omf2.ccu.order_manager.get_order_manager') as mock_order_manager:
 
 ```bash
 # VOR Änderung: Baseline
-python -m pytest tests/test_omf2/test_ccu_gateway_routing.py -v
+nx test ccu-ui
 
 # Änderung durchführen
 # ...
 
 # NACH Änderung: Verifizieren
-python -m pytest omf2/tests/test_ccu_gateway_routing.py -v
+nx test ccu-ui
 ```
 
 ### **4. INTEGRATION-TESTS FÜR JEDE KOMPONENTE**
@@ -249,9 +249,9 @@ python -m pytest omf2/tests/test_ccu_gateway_routing.py -v
 
 ## ✅ ERFOLGREICH IMPLEMENTIERT
 
-**Echte Integration-Tests in `tests/test_omf2/test_ccu_gateway_routing_integration.py`:**
-- ✅ **9/9 Tests bestanden** - Alle Routing-Pfade verifiziert
-- ✅ **Echte Message-Routing** - Keine Schein-Tests mehr
+**OMF3 Integration-Tests:**
+- ✅ **OMF3 Tests** - In `omf3/apps/ccu-ui/src/app/.../__tests__/`
+- ✅ **Angular/Jest Tests** - Vollständige Test-Coverage für OMF3 Komponenten
 - ✅ **Mocking korrekt** - Gateway-interne Methoden gemockt
 - ✅ **Funktionalität verifiziert** - Manager-Aufrufe getestet
 

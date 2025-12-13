@@ -511,8 +511,8 @@ else:
 - `omf2/ccu/sensor_manager.py` - Sensor Manager mit Registry
 
 ### **Tests:**
-- `tests/test_omf2/test_registry_manager_comprehensive.py` - Registry Manager Tests
-- `tests/test_omf2/test_schema_integration.py` - Schema Integration Tests
+- ⚠️ **OMF2 Tests entfernt** - OMF2 ist Legacy und wird durch OMF3 ersetzt
+- ✅ **OMF3 Tests** - In `omf3/apps/ccu-ui/src/app/.../__tests__/`
 
 ---
 

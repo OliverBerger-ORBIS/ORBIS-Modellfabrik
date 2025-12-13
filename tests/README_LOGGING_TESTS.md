@@ -9,7 +9,8 @@ This directory contains tests for the MultiLevelRingBufferHandler persistence fi
 Run automated unit tests:
 
 ```bash
-python tests/test_omf2/test_multilevel_handler_persistence.py
+# OMF2 Tests wurden entfernt (Legacy)
+# Für OMF3 Tests: nx test ccu-ui
 ```
 
 **Tests:**

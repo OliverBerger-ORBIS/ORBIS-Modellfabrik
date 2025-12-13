@@ -1,4 +1,4 @@
-.PHONY: help validate-registry validate-mapping check-mapping-collisions check-templates-no-topics render-template validate-development-rules validate-observations nodered-backup-ssh nodered-restore-ssh nodered-backup-api nodered-restore-api nodered-status nodered-logs test-streamlit-startup
+.PHONY: help validate-registry validate-mapping check-mapping-collisions check-templates-no-topics render-template validate-development-rules validate-observations nodered-backup-ssh nodered-restore-ssh nodered-backup-api nodered-restore-api nodered-status nodered-logs
 
 PY?=python3
 
@@ -11,7 +11,6 @@ help:
 	@echo "  make render-template TOPIC=...    # resolve a topic to template + vars (dry-run)"
 	@echo "  make validate-development-rules   # validate OMF Development Rules compliance"
 	@echo "  make validate-observations        # validate observations against schema"
-	@echo "  make test-streamlit-startup       # test Streamlit startup for errors/warnings"
 	@echo ""
 	@echo "Node-RED Integration:"
 	@echo "  make nodered-backup-ssh           # backup Node-RED via SSH (NR_HOST=pi@192.168.0.100)"
@@ -67,8 +66,3 @@ nodered-logs:
 
 validate-development-rules:
 	$(PY) omf/scripts/validate_development_rules.py
-
-test-streamlit-startup:
-	@echo "🧪 Testing Streamlit startup for errors and warnings..."
-	$(PY) -m pytest tests/test_omf2/test_streamlit_startup.py -v
-	@echo "✅ Streamlit startup test completed successfully"
