@@ -10,7 +10,6 @@ interface Phase {
   outcome: string;
   icon: string;
   isAutonomousAdaptive: boolean;
-  active: boolean;
 }
 
 /**
@@ -35,8 +34,8 @@ export class DspMethodologyComponent {
     {
       id: 'phase1',
       number: 1,
-      title: $localize`:@@dspPhase1Title:Data Foundation`,
-      summary: $localize`:@@dspPhase1Summary:Connectivity & Signal Acquisition`,
+      title: $localize`:@@dspPhase1TitleNew:Data Foundation & Connectivity`,
+      summary: $localize`:@@dspPhase1SummaryNew:Connectivity & Signal Acquisition`,
       activities: [
         $localize`:@@dspPhase1Activity1:Connect machines, sensors, ERP, MES, and quality systems`,
         $localize`:@@dspPhase1Activity2:Standardize data via OPC UA, MQTT, and ISA-95`,
@@ -44,15 +43,14 @@ export class DspMethodologyComponent {
         $localize`:@@dspPhase1Activity4:Ensure secure, scalable data ingestion pipelines`,
       ],
       outcome: $localize`:@@dspPhase1Outcome:End-to-end visibility and data availability`,
-      icon: 'assets/svg/orbis/data-lake.svg',
+      icon: 'assets/svg/dsp/methodology/phase1-data-foundation.svg',
       isAutonomousAdaptive: false,
-      active: false,
     },
     {
       id: 'phase2',
       number: 2,
-      title: $localize`:@@dspPhase2Title:Data Integration`,
-      summary: $localize`:@@dspPhase2Summary:Digital Twin & Semantic Data Model`,
+      title: $localize`:@@dspPhase2TitleNew:Data Integration & Modeling`,
+      summary: $localize`:@@dspPhase2SummaryNew:Digital Twin & Semantic Data Model`,
       activities: [
         $localize`:@@dspPhase2Activity1:Combine OT + IT data into a single semantic layer`,
         $localize`:@@dspPhase2Activity2:Establish master data management and governance`,
@@ -60,15 +58,14 @@ export class DspMethodologyComponent {
         $localize`:@@dspPhase2Activity4:Deploy SAP Datasphere, Azure Synapse, or Databricks for harmonization`,
       ],
       outcome: $localize`:@@dspPhase2Outcome:Trusted, consistent single source of truth`,
-      icon: 'assets/svg/orbis/semantic.svg',
+      icon: 'assets/svg/dsp/methodology/phase2-data-integration.svg',
       isAutonomousAdaptive: false,
-      active: false,
     },
     {
       id: 'phase3',
       number: 3,
-      title: $localize`:@@dspPhase3Title:Analytics`,
-      summary: $localize`:@@dspPhase3Summary:Real-time Dashboards & Predictive Analytics`,
+      title: $localize`:@@dspPhase3TitleNew:Advanced Analytics & Intelligence`,
+      summary: $localize`:@@dspPhase3SummaryNew:Real-time Dashboards & Predictive Analytics`,
       activities: [
         $localize`:@@dspPhase3Activity1:Implement real-time dashboards and KPI monitoring (e.g., Power BI, SAP Analytics Cloud).`,
         $localize`:@@dspPhase3Activity2:Develop predictive models for maintenance, quality, and demand forecasting.`,
@@ -76,15 +73,14 @@ export class DspMethodologyComponent {
         $localize`:@@dspPhase3Activity4:Apply Machine Learning algorithms to identify anomalies in production data.`,
       ],
       outcome: $localize`:@@dspPhase3Outcome:Data-driven decision making, predictive insights, and transparency.`,
-      icon: 'assets/svg/orbis/dashboard.svg',
+      icon: 'assets/svg/dsp/methodology/phase3-advanced-analytics.svg',
       isAutonomousAdaptive: false,
-      active: false,
     },
     {
       id: 'phase4',
       number: 4,
-      title: $localize`:@@dspPhase4Title:Choreography`,
-      summary: $localize`:@@dspPhase4Summary:Process Objects, Decentralized Orchestration`,
+      title: $localize`:@@dspPhase4TitleNew:Automation & Orchestration`,
+      summary: $localize`:@@dspPhase4SummaryNew:Process Objects, Decentralized Orchestration`,
       activities: [
         $localize`:@@dspPhase4Activity1:Connect analytics outputs to workflows and RPA bots`,
         $localize`:@@dspPhase4Activity2:Automate repetitive tasks across SAP and Azure ecosystems`,
@@ -92,9 +88,8 @@ export class DspMethodologyComponent {
         $localize`:@@dspPhase4Activity4:Deploy Power Automate, SAP Build Process Automation, Logic Apps`,
       ],
       outcome: $localize`:@@dspPhase4Outcome:Closed-loop automation, faster reaction time, reduced manual effort`,
-      icon: 'assets/svg/orbis/workflow-1.svg',
+      icon: 'assets/svg/dsp/methodology/phase4-automation-orchestration.svg',
       isAutonomousAdaptive: false,
-      active: false,
     },
     {
       id: 'phase5',
@@ -108,17 +103,19 @@ export class DspMethodologyComponent {
         $localize`:@@dspPhase5Activity4:Enable AI copilots for operators, planners, and engineers`,
       ],
       outcome: $localize`:@@dspPhase5Outcome:Self-learning, adaptive, intelligent manufacturing enterprise`,
-      icon: 'assets/svg/methodology/phase5-autonomous-enterprise.svg',
+      icon: 'assets/svg/dsp/methodology/phase5-autonomous-enterprise.svg',
       isAutonomousAdaptive: true,
-      active: false,
     },
   ];
 
-  togglePhase(id: string): void {
-    const phase = this.phases.find(p => p.id === id);
-    if (phase) {
-      phase.active = !phase.active;
-    }
+  activePhaseId = 'phase1';
+
+  setActive(phaseId: string): void {
+    this.activePhaseId = phaseId;
+  }
+
+  get activePhase(): Phase | undefined {
+    return this.phases.find((p) => p.id === this.activePhaseId);
   }
 
   trackById(_index: number, phase: Phase): string {

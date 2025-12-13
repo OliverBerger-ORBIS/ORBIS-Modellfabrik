@@ -52,15 +52,14 @@ export function getAssetPath(relativePath: string): string {
 // Relative paths (without leading '/') - Angular will combine with baseHref automatically
 // when used in [src] bindings. For runtime resolution, use getAssetPath().
 const ASSET_PATHS = {
-  ORBIS_PHASE_1: 'assets/svg/orbis/data-lake.svg',
-  ORBIS_PHASE_2: 'assets/svg/orbis/semantic.svg',
-  ORBIS_PHASE_3: 'assets/svg/orbis/dashboard.svg',
-  ORBIS_PHASE_4: 'assets/svg/orbis/workflow-1.svg',
-  ORBIS_PHASE_5: 'assets/svg/methodology/phase5-autonomous-enterprise.svg',
-  ORBIS_FALLBACK: 'assets/svg/orbis/stack.svg',
+  DSP_PHASE_1: 'assets/svg/dsp/methodology/phase1-data-foundation.svg',
+  DSP_PHASE_2: 'assets/svg/dsp/methodology/phase2-data-integration.svg',
+  DSP_PHASE_3: 'assets/svg/dsp/methodology/phase3-advanced-analytics.svg',
+  DSP_PHASE_4: 'assets/svg/dsp/methodology/phase4-automation-orchestration.svg',
+  DSP_PHASE_5: 'assets/svg/dsp/methodology/phase5-autonomous-enterprise.svg',
 
   DSP_LAYER_CLOUD: 'assets/svg/dsp/extra/database.svg',
-  DSP_LAYER_EDGE: 'assets/svg/orbis/stack.svg',
+  DSP_LAYER_EDGE: 'assets/svg/dsp/architecture/dsp-edge-box.svg',
   DSP_LAYER_SHOPFLOOR: 'assets/svg/shopfloor/shared/order-tracking.svg',
   DSP_FALLBACK: 'assets/svg/dsp/extra/workflow.svg',
   DSP_EDGE_DATABASE: 'assets/svg/dsp/extra/database.svg',
@@ -71,11 +70,6 @@ const ASSET_PATHS = {
   DSP_BUSINESS_CLOUD: 'assets/svg/dsp/extra/cloud-computing.svg',
   DSP_BUSINESS_ANALYTICS: 'assets/svg/dsp/extra/dashboard.svg',
   DSP_BUSINESS_DATA_LAKE: 'assets/svg/dsp/extra/data-lake.svg',
-
-  ORBIS_USECASE_AGGREGATION: 'assets/svg/orbis/consolidate.svg',
-  ORBIS_USECASE_TRACKTRACE: 'assets/svg/orbis/integration.svg',
-  ORBIS_USECASE_PREDICTIVE: 'assets/svg/orbis/ai-algorithm.svg',
-  ORBIS_USECASE_OPTIMIZATION: 'assets/svg/orbis/database-management.svg',
 
   DSP_USECASE_AGGREGATION: 'assets/svg/dsp/use-cases/use-case-data-aggregation.svg',
   DSP_USECASE_TRACKTRACE: 'assets/svg/dsp/use-cases/use-case-track-trace.svg',
@@ -89,12 +83,11 @@ const ASSET_PATHS = {
  * For runtime resolution, use getAssetPath() function.
  */
 export const DETAIL_ASSET_MAP: Record<keyof typeof ASSET_PATHS, string> = {
-  ORBIS_PHASE_1: getAssetPath(ASSET_PATHS.ORBIS_PHASE_1),
-  ORBIS_PHASE_2: getAssetPath(ASSET_PATHS.ORBIS_PHASE_2),
-  ORBIS_PHASE_3: getAssetPath(ASSET_PATHS.ORBIS_PHASE_3),
-  ORBIS_PHASE_4: getAssetPath(ASSET_PATHS.ORBIS_PHASE_4),
-  ORBIS_PHASE_5: getAssetPath(ASSET_PATHS.ORBIS_PHASE_5),
-  ORBIS_FALLBACK: getAssetPath(ASSET_PATHS.ORBIS_FALLBACK),
+  DSP_PHASE_1: getAssetPath(ASSET_PATHS.DSP_PHASE_1),
+  DSP_PHASE_2: getAssetPath(ASSET_PATHS.DSP_PHASE_2),
+  DSP_PHASE_3: getAssetPath(ASSET_PATHS.DSP_PHASE_3),
+  DSP_PHASE_4: getAssetPath(ASSET_PATHS.DSP_PHASE_4),
+  DSP_PHASE_5: getAssetPath(ASSET_PATHS.DSP_PHASE_5),
 
   DSP_LAYER_CLOUD: getAssetPath(ASSET_PATHS.DSP_LAYER_CLOUD),
   DSP_LAYER_EDGE: getAssetPath(ASSET_PATHS.DSP_LAYER_EDGE),
@@ -109,10 +102,6 @@ export const DETAIL_ASSET_MAP: Record<keyof typeof ASSET_PATHS, string> = {
   DSP_BUSINESS_ANALYTICS: getAssetPath(ASSET_PATHS.DSP_BUSINESS_ANALYTICS),
   DSP_BUSINESS_DATA_LAKE: getAssetPath(ASSET_PATHS.DSP_BUSINESS_DATA_LAKE),
 
-  ORBIS_USECASE_AGGREGATION: getAssetPath(ASSET_PATHS.ORBIS_USECASE_AGGREGATION),
-  ORBIS_USECASE_TRACKTRACE: getAssetPath(ASSET_PATHS.ORBIS_USECASE_TRACKTRACE),
-  ORBIS_USECASE_PREDICTIVE: getAssetPath(ASSET_PATHS.ORBIS_USECASE_PREDICTIVE),
-  ORBIS_USECASE_OPTIMIZATION: getAssetPath(ASSET_PATHS.ORBIS_USECASE_OPTIMIZATION),
   DSP_USECASE_AGGREGATION: getAssetPath(ASSET_PATHS.DSP_USECASE_AGGREGATION),
   DSP_USECASE_TRACKTRACE: getAssetPath(ASSET_PATHS.DSP_USECASE_TRACKTRACE),
   DSP_USECASE_PREDICTIVE: getAssetPath(ASSET_PATHS.DSP_USECASE_PREDICTIVE),

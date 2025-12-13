@@ -78,12 +78,6 @@
         </section>
       </ng-container>
 
-      <app-orbis-detail
-        *ngIf="panel.kind === 'orbis'"
-        [view]="panel.view"
-        (phaseSelected)="selectOrbisPhase($event)"
-        (useCaseToggled)="toggleOrbisUseCase($event)"
-      ></app-orbis-detail>
     </section>
   </section>
 

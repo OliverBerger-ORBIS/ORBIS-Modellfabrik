@@ -1,6 +1,6 @@
 # SVG Inventory
 
-_Generated: 2025-12-10T12:50:48.575Z_
+_Generated: 2025-12-13T14:25:00.000Z_
 
 ## public/assets/svg
 
@@ -52,36 +52,35 @@ _Generated: 2025-12-10T12:50:48.575Z_
       - technology-iot.svg — `assets/svg/dsp/extra/technology-iot.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/extra/technology-iot.svg" alt="technology-iot.svg" width="32" height="32" />
       - workflow.svg — `assets/svg/dsp/extra/workflow.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/extra/workflow.svg" alt="workflow.svg" width="32" height="32" />
     - functions
+      - edge-ai-enablement.svg — `assets/svg/dsp/functions/edge-ai-enablement.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-ai-enablement.svg" alt="edge-ai-enablement.svg" width="32" height="32" />
       - edge-analytics.svg — `assets/svg/dsp/functions/edge-analytics.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-analytics.svg" alt="edge-analytics.svg" width="32" height="32" />
+      - edge-autonomous-enterprise.svg — `assets/svg/dsp/functions/edge-autonomous-enterprise.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-autonomous-enterprise.svg" alt="edge-autonomous-enterprise.svg" width="32" height="32" />
+      - edge-best-of-breed.svg — `assets/svg/dsp/functions/edge-best-of-breed.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-best-of-breed.svg" alt="edge-best-of-breed.svg" width="32" height="32" />
       - edge-buffering.svg — `assets/svg/dsp/functions/edge-buffering.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-buffering.svg" alt="edge-buffering.svg" width="32" height="32" />
       - edge-connectivity.svg — `assets/svg/dsp/functions/edge-connectivity.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-connectivity.svg" alt="edge-connectivity.svg" width="32" height="32" />
       - edge-data-storage.svg — `assets/svg/dsp/functions/edge-data-storage.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-data-storage.svg" alt="edge-data-storage.svg" width="32" height="32" />
       - edge-digital-twin.svg — `assets/svg/dsp/functions/edge-digital-twin.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-digital-twin.svg" alt="edge-digital-twin.svg" width="32" height="32" />
+      - edge-event-driven.svg — `assets/svg/dsp/functions/edge-event-driven.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-event-driven.svg" alt="edge-event-driven.svg" width="32" height="32" />
       - edge-interoperability.svg — `assets/svg/dsp/functions/edge-interoperability.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-interoperability.svg" alt="edge-interoperability.svg" width="32" height="32" />
       - edge-process-logic.svg — `assets/svg/dsp/functions/edge-process-logic.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-process-logic.svg" alt="edge-process-logic.svg" width="32" height="32" />
       - edge-choreography.svg — `assets/svg/dsp/functions/edge-choreography.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/edge-choreography.svg" alt="edge-choreography.svg" width="32" height="32" />
+      - mc-hierarchical-structure.svg — `assets/svg/dsp/functions/mc-hierarchical-structure.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/mc-hierarchical-structure.svg" alt="mc-hierarchical-structure.svg" width="32" height="32" />
+      - mc-orchestration.svg — `assets/svg/dsp/functions/mc-orchestration.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/mc-orchestration.svg" alt="mc-orchestration.svg" width="32" height="32" />
+      - mc-governance.svg — `assets/svg/dsp/functions/mc-governance.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/mc-governance.svg" alt="mc-governance.svg" width="32" height="32" />
+    - mc-hierarchical-structure.svg — `assets/svg/dsp/functions/mc-hierarchical-structure.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/mc-hierarchical-structure.svg" alt="mc-hierarchical-structure.svg" width="32" height="32" />
+    - mc-orchestration.svg — `assets/svg/dsp/functions/mc-orchestration.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/mc-orchestration.svg" alt="mc-orchestration.svg" width="32" height="32" />
+    - mc-governance.svg — `assets/svg/dsp/functions/mc-governance.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/functions/mc-governance.svg" alt="mc-governance.svg" width="32" height="32" />
     - use-cases
       - use-case-data-aggregation.svg — `assets/svg/dsp/use-cases/use-case-data-aggregation.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/use-cases/use-case-data-aggregation.svg" alt="use-case-data-aggregation.svg" width="32" height="32" />
       - use-case-predictive-maintenance.svg — `assets/svg/dsp/use-cases/use-case-predictive-maintenance.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/use-cases/use-case-predictive-maintenance.svg" alt="use-case-predictive-maintenance.svg" width="32" height="32" />
       - use-case-process-optimization.svg — `assets/svg/dsp/use-cases/use-case-process-optimization.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/use-cases/use-case-process-optimization.svg" alt="use-case-process-optimization.svg" width="32" height="32" />
       - use-case-track-trace.svg — `assets/svg/dsp/use-cases/use-case-track-trace.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/use-cases/use-case-track-trace.svg" alt="use-case-track-trace.svg" width="32" height="32" />
   - methodology
-    - phase1-data-foundation.svg — `assets/svg/methodology/phase1-data-foundation.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/methodology/phase1-data-foundation.svg" alt="phase1-data-foundation.svg" width="32" height="32" />
-    - phase2-data-integration.svg — `assets/svg/methodology/phase2-data-integration.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/methodology/phase2-data-integration.svg" alt="phase2-data-integration.svg" width="32" height="32" />
-    - phase3-advanced-analytics.svg — `assets/svg/methodology/phase3-advanced-analytics.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/methodology/phase3-advanced-analytics.svg" alt="phase3-advanced-analytics.svg" width="32" height="32" />
-    - phase4-automation-orchestration.svg — `assets/svg/methodology/phase4-automation-orchestration.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/methodology/phase4-automation-orchestration.svg" alt="phase4-automation-orchestration.svg" width="32" height="32" />
-    - phase5-autonomous-enterprise.svg — `assets/svg/methodology/phase5-autonomous-enterprise.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/methodology/phase5-autonomous-enterprise.svg" alt="phase5-autonomous-enterprise.svg" width="32" height="32" />
-  - orbis
-    - ai-algorithm.svg — `assets/svg/orbis/ai-algorithm.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/orbis/ai-algorithm.svg" alt="ai-algorithm.svg" width="32" height="32" />
-    - ai.svg — `assets/svg/orbis/ai.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/orbis/ai.svg" alt="ai.svg" width="32" height="32" />
-    - consolidate.svg — `assets/svg/orbis/consolidate.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/orbis/consolidate.svg" alt="consolidate.svg" width="32" height="32" />
-    - dashboard.svg — `assets/svg/orbis/dashboard.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/orbis/dashboard.svg" alt="dashboard.svg" width="32" height="32" />
-    - data-lake.svg — `assets/svg/orbis/data-lake.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/orbis/data-lake.svg" alt="data-lake.svg" width="32" height="32" />
-    - database-management.svg — `assets/svg/orbis/database-management.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/orbis/database-management.svg" alt="database-management.svg" width="32" height="32" />
-    - integration.svg — `assets/svg/orbis/integration.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/orbis/integration.svg" alt="integration.svg" width="32" height="32" />
-    - semantic.svg — `assets/svg/orbis/semantic.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/orbis/semantic.svg" alt="semantic.svg" width="32" height="32" />
-    - stack.svg — `assets/svg/orbis/stack.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/orbis/stack.svg" alt="stack.svg" width="32" height="32" />
-    - workflow-1.svg — `assets/svg/orbis/workflow-1.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/orbis/workflow-1.svg" alt="workflow-1.svg" width="32" height="32" />
+    - phase1-data-foundation.svg — `assets/svg/dsp/methodology/phase1-data-foundation.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/methodology/phase1-data-foundation.svg" alt="phase1-data-foundation.svg" width="32" height="32" />
+    - phase2-data-integration.svg — `assets/svg/dsp/methodology/phase2-data-integration.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/methodology/phase2-data-integration.svg" alt="phase2-data-integration.svg" width="32" height="32" />
+    - phase3-advanced-analytics.svg — `assets/svg/dsp/methodology/phase3-advanced-analytics.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/methodology/phase3-advanced-analytics.svg" alt="phase3-advanced-analytics.svg" width="32" height="32" />
+    - phase4-automation-orchestration.svg — `assets/svg/dsp/methodology/phase4-automation-orchestration.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/methodology/phase4-automation-orchestration.svg" alt="phase4-automation-orchestration.svg" width="32" height="32" />
+    - phase5-autonomous-enterprise.svg — `assets/svg/dsp/methodology/phase5-autonomous-enterprise.svg`<br>      <img src="../omf3/apps/ccu-ui/public/assets/svg/dsp/methodology/phase5-autonomous-enterprise.svg" alt="phase5-autonomous-enterprise.svg" width="32" height="32" />
   - shopfloor
     - intersections
       - intersection-1.svg — `assets/svg/shopfloor/intersections/intersection-1.svg`<br>        <img src="../omf3/apps/ccu-ui/public/assets/svg/shopfloor/intersections/intersection-1.svg" alt="intersection-1.svg" width="32" height="32" />

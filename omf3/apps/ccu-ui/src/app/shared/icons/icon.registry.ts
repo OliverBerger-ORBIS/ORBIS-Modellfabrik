@@ -107,11 +107,11 @@ export const ICONS = {
   },
   methodology: {
     // Incremental development phases
-    phase1: 'assets/svg/methodology/phase1-data-foundation.svg',
-    phase2: 'assets/svg/methodology/phase2-data-integration.svg',
-    phase3: 'assets/svg/methodology/phase3-advanced-analytics.svg',
-    phase4: 'assets/svg/methodology/phase4-automation-orchestration.svg',
-    phase5: 'assets/svg/methodology/phase5-autonomous-enterprise.svg',
+    phase1: 'assets/svg/dsp/methodology/phase1-data-foundation.svg',
+    phase2: 'assets/svg/dsp/methodology/phase2-data-integration.svg',
+    phase3: 'assets/svg/dsp/methodology/phase3-advanced-analytics.svg',
+    phase4: 'assets/svg/dsp/methodology/phase4-automation-orchestration.svg',
+    phase5: 'assets/svg/dsp/methodology/phase5-autonomous-enterprise.svg',
   },
   ui: {
     orderProduction: 'assets/svg/ui/order-production.svg',

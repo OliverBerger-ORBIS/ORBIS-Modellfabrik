@@ -3,51 +3,53 @@
   <p class="dsp-use-cases__subtitle">{{ sectionSubtitle }}</p>
 
   <div class="dsp-use-cases__grid">
-    <div
+    <button
       *ngFor="let useCase of useCases; trackBy: trackById"
-      class="dsp-use-case"
-      [class.dsp-use-case--expanded]="useCase.expanded"
+      class="use-case-card"
+      type="button"
+      [class.use-case-card--active]="useCase.id === activeUseCaseId"
+      (click)="setActiveUseCase(useCase.id)"
     >
-      <div class="dsp-use-case__header" 
-           (click)="toggleUseCase(useCase.id)" 
-           (keydown.enter)="toggleUseCase(useCase.id)"
-           (keydown.space)="toggleUseCase(useCase.id)"
-           tabindex="0"
-           role="button"
-           [attr.aria-expanded]="useCase.expanded"
-           [attr.aria-controls]="'use-case-content-' + useCase.id">
-        <div class="dsp-use-case__icon">
+      <div class="use-case-card__icon">
+        <img [src]="useCase.icon" [alt]="useCase.title" />
+      </div>
+      <div class="use-case-card__title">{{ useCase.title }}</div>
+      <div class="use-case-card__subtitle">{{ useCase.description }}</div>
+    </button>
+  </div>
+
+  <ng-container *ngIf="activeUseCase as useCase">
+    <article class="dsp-use-case-detail">
+      <header class="dsp-use-case-detail__header">
+        <div class="dsp-use-case-detail__icon">
           <img [src]="useCase.icon" [alt]="useCase.title" />
         </div>
-        <div class="dsp-use-case__header-content">
-          <h3 class="dsp-use-case__title">{{ useCase.title }}</h3>
-          <p class="dsp-use-case__description">{{ useCase.description }}</p>
+        <div>
+          <div class="dsp-use-case-detail__label">Use Case</div>
+          <h3 class="dsp-use-case-detail__title">{{ useCase.title }}</h3>
+          <p class="dsp-use-case-detail__subtitle">{{ useCase.description }}</p>
         </div>
-        <div class="dsp-use-case__toggle">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </div>
-      </div>
+      </header>
 
-      <div class="dsp-use-case__content" 
-           *ngIf="useCase.expanded"
-           [attr.id]="'use-case-content-' + useCase.id">
-        <ul class="dsp-use-case__highlights">
-          <li *ngFor="let highlight of useCase.highlights" class="dsp-use-case__highlight">
-            {{ highlight }}
-          </li>
-        </ul>
+      <div class="dsp-use-case-detail__content">
+        <section class="dsp-use-case-detail__box">
+          <h4 class="dsp-use-case-detail__box-title" i18n="@@dspUseCaseActions">Actions</h4>
+          <ul class="dsp-use-case-detail__list">
+            <li *ngFor="let item of useCase.actions" class="dsp-use-case-detail__item">
+              {{ item }}
+            </li>
+          </ul>
+        </section>
+
+        <section class="dsp-use-case-detail__box">
+          <h4 class="dsp-use-case-detail__box-title" i18n="@@dspUseCaseSmartFactory">SmartFactory</h4>
+          <ul class="dsp-use-case-detail__list">
+            <li *ngFor="let item of useCase.smartFactory" class="dsp-use-case-detail__item">
+              {{ item }}
+            </li>
+          </ul>
+        </section>
       </div>
-    </div>
-  </div>
+    </article>
+  </ng-container>
 </div>

@@ -13,7 +13,6 @@ import { ShopfloorMappingService } from '../services/shopfloor-mapping.service';
 import { EnvironmentService } from '../services/environment.service';
 import { ConnectionService } from '../services/connection.service';
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
-import { OrbisDetailComponent } from '../components/orbis-detail/orbis-detail.component';
 import { DspDetailComponent } from '../components/dsp-detail/dsp-detail.component';
 import { DspArchitectureComponent } from '../components/dsp-architecture/dsp-architecture.component';
 import type { ShopfloorLayoutConfig, ShopfloorCellConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
@@ -23,12 +22,7 @@ import {
   type DetailItem,
   type SelectedDetailView,
   type DetailPanelView,
-  type OrbisDetailView,
   type DspDetailView,
-  type OrbisPhaseDefinition,
-  type OrbisUseCaseDefinition,
-  type OrbisPhaseView,
-  type OrbisUseCaseView,
   type DspArchitectureLayer,
   type DspActionLink,
 } from './configuration-detail.types';
@@ -83,7 +77,7 @@ interface ConfigurationViewModel {
 @Component({
   standalone: true,
   selector: 'app-configuration-tab',
-  imports: [CommonModule, ShopfloorPreviewComponent, OrbisDetailComponent, DspDetailComponent, DspArchitectureComponent],
+  imports: [CommonModule, ShopfloorPreviewComponent, DspDetailComponent, DspArchitectureComponent],
   templateUrl: './configuration-tab.component.html',
   styleUrl: './configuration-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -149,120 +143,6 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     },
   };
 
-  private readonly orbisPhases: OrbisPhaseDefinition[] = [
-    {
-      id: 'phase1',
-      title: $localize`:@@orbisPhase1Title:Phase 1 • Data Foundation & Connectivity`,
-      summary: $localize`:@@orbisPhase1Summary:Connect machines, sensors, ERP, MES, and quality systems.`,
-      activities: [
-        $localize`:@@orbisPhase1Activity1:Connect machines, sensors, ERP, MES, and quality systems.`,
-        $localize`:@@orbisPhase1Activity2:Standardize data via OPC UA, MQTT, and ISA-95.`,
-        $localize`:@@orbisPhase1Activity3:Build data lake architecture (Azure Data Lake, SAP Edge, IoT Hub).`,
-        $localize`:@@orbisPhase1Activity4:Ensure secure, scalable data ingestion pipelines.`,
-      ],
-      outcome: $localize`:@@orbisPhase1Outcome:End-to-end visibility and data availability.`,
-    },
-    {
-      id: 'phase2',
-      title: $localize`:@@orbisPhase2Title:Phase 2 • Data Integration & Modeling`,
-      summary: $localize`:@@orbisPhase2Summary:Combine OT + IT data into a single semantic layer.`,
-      activities: [
-        $localize`:@@orbisPhase2Activity1:Combine OT + IT data into a single semantic layer.`,
-        $localize`:@@orbisPhase2Activity2:Establish master data management and governance.`,
-        $localize`:@@orbisPhase2Activity3:Model production, inventory, and quality data relationships.`,
-        $localize`:@@orbisPhase2Activity4:Deploy SAP Datasphere, Azure Synapse, or Databricks for harmonization.`,
-      ],
-      outcome: $localize`:@@orbisPhase2Outcome:Trusted, consistent single source of truth.`,
-    },
-    {
-      id: 'phase3',
-      title: $localize`:@@orbisPhase3Title:Phase 3 • Advanced Analytics & Intelligence`,
-      summary: $localize`:@@orbisPhase3Summary:Connect analytics outputs to workflows and RPA bots.`,
-      activities: [
-        $localize`:@@orbisPhase3Activity1:Connect analytics outputs to workflows and RPA bots.`,
-        $localize`:@@orbisPhase3Activity2:Automate repetitive tasks across SAP and Azure ecosystems.`,
-        $localize`:@@orbisPhase3Activity3:Use event-driven triggers for maintenance, quality, or logistics actions.`,
-        $localize`:@@orbisPhase3Activity4:Deploy Power Automate, SAP Build Process Automation, Logic Apps.`,
-      ],
-      outcome: $localize`:@@orbisPhase3Outcome:Closed-loop automation, faster reaction time, reduced manual effort.`,
-    },
-    {
-      id: 'phase4',
-      title: $localize`:@@orbisPhase4Title:Phase 4 • Automation & Orchestration`,
-      summary: $localize`:@@orbisPhase4Summary:Connect analytics outputs to workflows and RPA bots.`,
-      activities: [
-        $localize`:@@orbisPhase4Activity1:Connect analytics outputs to workflows and RPA bots.`,
-        $localize`:@@orbisPhase4Activity2:Automate repetitive tasks across SAP and Azure ecosystems.`,
-        $localize`:@@orbisPhase4Activity3:Use event-driven triggers for maintenance, quality, or logistics actions.`,
-        $localize`:@@orbisPhase4Activity4:Deploy Power Automate, SAP Build Process Automation, Logic Apps.`,
-      ],
-      outcome: $localize`:@@orbisPhase4Outcome:Closed-loop automation, faster reaction time, reduced manual effort.`,
-    },
-    {
-      id: 'phase5',
-      title: $localize`:@@orbisPhase5Title:Phase 5 • Autonomous & Adaptive Enterprise`,
-      summary: $localize`:@@orbisPhase5Summary:Deploy agentic AI to reason, plan, and act autonomously.`,
-      activities: [
-        $localize`:@@orbisPhase5Activity1:Deploy agentic AI to reason, plan, and act autonomously.`,
-        $localize`:@@orbisPhase5Activity2:Integrate digital twins, LLMs, and reinforcement learning.`,
-        $localize`:@@orbisPhase5Activity3:Continuously self-optimize production, energy, and supply chain flows.`,
-        $localize`:@@orbisPhase5Activity4:Enable AI copilots for operators, planners, and engineers.`,
-      ],
-      outcome: $localize`:@@orbisPhase5Outcome:Self-learning, adaptive, intelligent manufacturing enterprise.`,
-    },
-  ];
-
-  private readonly orbisUseCases: OrbisUseCaseDefinition[] = [
-    {
-      id: 'data-aggregation',
-      title: $localize`:@@orbisUseCaseAggregationTitle:Data Aggregation`,
-      description: $localize`:@@orbisUseCaseAggregationDescription:Harmonize business, shopfloor, and sensor data for a single contextual production view.`,
-      highlights: [
-        $localize`:@@orbisUseCaseAggregationHighlight1:ERP order streams enriched with MES execution events and machine states.`,
-        $localize`:@@orbisUseCaseAggregationHighlight2:Machine telemetry correlated with single-part identifiers (NFC) and process parameters.`,
-        $localize`:@@orbisUseCaseAggregationHighlight3:Environmental data (temperature, humidity, air quality) linked to production sequences and genealogy.`,
-        $localize`:@@orbisUseCaseAggregationHighlight4:Process optimization via analysis of cycle times, takt variability, energy consumption, and machine utilization.`,
-      ],
-      icon: 'assets/svg/orbis/consolidate.svg',
-    },
-    {
-      id: 'track-trace',
-      title: $localize`:@@orbisUseCaseTrackTraceTitle:Track & Trace`,
-      description: $localize`:@@orbisUseCaseTrackTraceDescription:Complete object genealogy with real-time traceability and quality correlation.`,
-      highlights: [
-        $localize`:@@orbisUseCaseTrackTraceHighlight1:Object-level location tracking across conveyors, modules, and high-bay storage (HBW).`,
-        $localize`:@@orbisUseCaseTrackTraceHighlight2:Correlation of process parameters (DRILL, MILL, AIQS) with ERP/MES customer orders.`,
-        $localize`:@@orbisUseCaseTrackTraceHighlight3:Sensor and telemetry data linked to quality outcomes, rework decisions, and root-cause analysis.`,
-      ],
-      icon: 'assets/svg/orbis/integration.svg',
-    },
-    {
-      id: 'predictive-maintenance',
-      title: $localize`:@@orbisUseCasePredictiveTitle:Predictive Maintenance`,
-      description: $localize`:@@orbisUseCasePredictiveDescription:AI-driven detection of anomalies, wear patterns, and optimal service windows.`,
-      highlights: [
-        $localize`:@@orbisUseCasePredictiveHighlight1:Pattern recognition on spindle load, vibration, cycle duration, and energy usage.`,
-        $localize`:@@orbisUseCasePredictiveHighlight2:Anomaly scoring with automated escalation to maintenance bots or SAP notifications.`,
-        $localize`:@@orbisUseCasePredictiveHighlight3:Predictive forecasts feeding SAP maintenance plans, spare-part logistics, and operator guidance.`,
-      ],
-      icon: 'assets/svg/orbis/ai-algorithm.svg',
-    },
-    {
-      id: 'process-optimization',
-      title: $localize`:@@orbisUseCaseOptimizationTitle:Process Optimization`,
-      description: $localize`:@@orbisUseCaseOptimizationDescription:Continuous optimization of manufacturing processes using real-time and historical data.`,
-      highlights: [
-        $localize`:@@orbisUseCaseOptimizationHighlight1:Bottleneck and cycle-time analysis across DRILL, MILL, AIQS, FTS, and HBW.`,
-        $localize`:@@orbisUseCaseOptimizationHighlight2:Optimization of machine utilization, takt stability, and conveyor flow.`,
-        $localize`:@@orbisUseCaseOptimizationHighlight3:Energy and resource optimization using spindle load, vibration, and consumption data.`,
-        $localize`:@@orbisUseCaseOptimizationHighlight4:AI recommendations for parameters such as feed rate or spindle speed.`,
-        $localize`:@@orbisUseCaseOptimizationHighlight5:Simulation of what-if scenarios before applying changes to the physical line.`,
-        $localize`:@@orbisUseCaseOptimizationHighlight6:Closed-loop improvements via DSP executors and MES/DSP workflows.`,
-      ],
-      icon: 'assets/svg/orbis/database-management.svg',
-    },
-  ];
-
   private readonly dspArchitecture: DspArchitectureLayer[] = [
     {
       id: 'ux',
@@ -323,9 +203,6 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
   private moduleOverview$!: Observable<ModuleOverviewState>;
   private configSnapshot$!: Observable<CcuConfigSnapshot>;
   private externalLinks$!: Observable<ExternalLinksSettings>;
-  private readonly orbisPhaseSubject = new BehaviorSubject<string | null>(null);
-  private readonly orbisUseCaseExpandedSubject = new BehaviorSubject<Set<string>>(new Set());
-
   readonly selectedCell$ = this.selectedCellSubject.asObservable();
 
   viewModel$!: Observable<ConfigurationViewModel>;
@@ -687,27 +564,6 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     }
   }
 
-  selectOrbisPhase(phaseId: string): void {
-    if (!this.orbisPhases.some((phase) => phase.id === phaseId)) {
-      return;
-    }
-    const current = this.orbisPhaseSubject.value;
-    this.orbisPhaseSubject.next(current === phaseId ? null : phaseId);
-  }
-
-  toggleOrbisUseCase(useCaseId: string): void {
-    if (!this.orbisUseCases.some((useCase) => useCase.id === useCaseId)) {
-      return;
-    }
-    const next = new Set(this.orbisUseCaseExpandedSubject.value);
-    if (next.has(useCaseId)) {
-      next.delete(useCaseId);
-    } else {
-      next.add(useCaseId);
-    }
-    this.orbisUseCaseExpandedSubject.next(next);
-  }
-
   ngOnInit(): void {
     this.subscriptions.add(
       this.connectionService.state$
@@ -792,10 +648,8 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
       this.selectedCell$,
       this.configSnapshot$,
       this.externalLinks$,
-      this.orbisPhaseSubject.asObservable(),
-      this.orbisUseCaseExpandedSubject.asObservable(),
     ]).pipe(
-      map(([layout, overview, selectedCellId, config, links, activePhaseId, expandedUseCases]) => {
+      map(([layout, overview, selectedCellId, config, links]) => {
         const cells = layout.cells.map((cell) => ({
           ...cell,
           isSelected: cell.id === selectedCellId,
@@ -805,13 +659,7 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
           cells.find((cell) => cell.id === selectedCellId) ?? (cells.length ? cells[0] : null);
 
         const selection = this.buildSelectedDetails(selectedCell, overview);
-        const detailPanel = this.buildDetailPanel(
-          selectedCell,
-          overview,
-          links,
-          activePhaseId,
-          expandedUseCases
-        );
+        const detailPanel = this.buildDetailPanel(selectedCell, overview, links);
         const parameterCards = this.buildParameterCards(config);
 
         const highlightModules: string[] = [];
@@ -866,52 +714,15 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
   private buildDetailPanel(
     selectedCell: (LayoutCell & { isSelected?: boolean }) | null,
     overview: ModuleOverviewState,
-    links: ExternalLinksSettings,
-    activePhaseId: string | null,
-    expandedUseCases: Set<string>
+    _links: ExternalLinksSettings
   ): DetailPanelView {
     if (!selectedCell) {
       return { kind: 'default', selection: this.buildSelectedDetails(null, overview) };
     }
 
-    if (selectedCell.kind === 'fixed') {
-      const normalized = this.normalizeCellKey(selectedCell);
-      if (normalized === 'ORBIS') {
-        return {
-          kind: 'orbis',
-          view: this.buildOrbisDetailView(links, activePhaseId, expandedUseCases),
-        };
-      }
-    }
-
     return {
       kind: 'default',
       selection: this.buildSelectedDetails(selectedCell, overview),
-    };
-  }
-
-  private buildOrbisDetailView(
-    links: ExternalLinksSettings,
-    activePhaseId: string | null,
-    expandedUseCases: Set<string>
-  ): OrbisDetailView {
-    const activePhase = activePhaseId
-      ? this.orbisPhases.find((phase) => phase.id === activePhaseId) ?? null
-      : null;
-    const phases: OrbisPhaseView[] = this.orbisPhases.map((phase) => ({
-      ...phase,
-      active: phase.id === activePhaseId,
-    }));
-    const useCases: OrbisUseCaseView[] = this.orbisUseCases.map((useCase) => ({
-      ...useCase,
-      expanded: expandedUseCases.has(useCase.id),
-    }));
-
-    return {
-      phases,
-      activePhase,
-      useCases,
-      websiteUrl: links.orbisWebsiteUrl,
     };
   }
 

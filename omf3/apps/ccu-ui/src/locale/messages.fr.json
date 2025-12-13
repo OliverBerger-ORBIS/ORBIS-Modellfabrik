@@ -28,6 +28,12 @@
     "@@dspArchStepAuto": "Entreprise autonome & adaptative (cible)",
     "@@dspArchStepAutoDesc": "DSP permet la transition vers une production autonome et adaptative, où les processus s’auto-optimisent en continu à partir de données en temps réel.",
 
+    "@@dspPhase1TitleNew": "Data Foundation & Connectivity",
+    "@@dspPhase1SummaryNew": "Acquisition des signaux & Connectivité",
+
+    "@@dspPhase2TitleNew": "Data Integration & Modeling",
+    "@@dspPhase2SummaryNew": "Jumeau numérique & Modèle de données sémantique",
+
     "@@dspPhase3Title": "Analytique",
     "@@dspPhase3Summary": "Tableaux de bord en temps réel, suivi des KPI et analytique prédictive",
     "@@dspPhase3Activity1": "Mise en œuvre de tableaux de bord en temps réel et suivi des KPI (par ex. Power BI, SAP Analytics Cloud).",
@@ -35,6 +41,15 @@
     "@@dspPhase3Activity3": "Mise à disposition de l'analytique en libre-service pour permettre aux utilisateurs d'identifier des tendances.",
     "@@dspPhase3Activity4": "Application d'algorithmes de Machine Learning pour détecter les anomalies dans les données de production.",
     "@@dspPhase3Outcome": "Prise de décision fondée sur les données, insights prédictifs et transparence.",
+    "@@dspUseCaseActions": "Actions",
+    "@@dspUseCaseSmartFactory": "SmartFactory",
+    "@@dspPhase3TitleNew": "Advanced Analytics & Intelligence",
+    "@@dspPhase3SummaryNew": "Tableaux de bord en temps réel & analytique prédictive",
+
+    "@@dspPhase4TitleNew": "Automation & Orchestration",
+    "@@dspPhase4SummaryNew": "Process Objects, Orchestration décentralisée",
+
+    "@@dspPhase5SummaryNew": "Décisions autonomes, ML/IA, Data Lake + ERP + Edge",
 
     "@@dspMcStepOrg": "Organization & Asset Modeling",
     "@@dspMcStepOrgDesc": "The Management Cockpit centrally models shopfloor structures, assets and connected systems across all sites.",

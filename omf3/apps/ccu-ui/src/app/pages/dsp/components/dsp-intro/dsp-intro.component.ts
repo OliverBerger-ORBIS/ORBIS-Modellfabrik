@@ -49,17 +49,17 @@ export class DspIntroComponent {
     {
       title: $localize`:@@dspIntroItOtConvergenceTitle:IT/OT Convergence`,
       description: $localize`:@@dspIntroItOtConvergenceDesc:DSP connects shopfloor events with ERP, MES, IoT platforms, data lakes and analytics services — enabling true IT/OT convergence.`,
-      icon: 'assets/svg/orbis/integration.svg',
+      icon: 'assets/svg/dsp/methodology/phase2-data-integration.svg',
     },
     {
       title: $localize`:@@dspIntroBestOfBreedTitle:Best-of-Breed Integration`,
       description: $localize`:@@dspIntroBestOfBreedDesc:DSP integrates seamlessly with SAP Digital Manufacturing, SAP S/4HANA, SAP BTP, Azure IoT, Power BI, SAC and other best-of-breed systems.`,
-      icon: 'assets/svg/orbis/consolidate.svg',
+      icon: 'assets/svg/dsp/methodology/phase1-data-foundation.svg',
     },
     {
       title: $localize`:@@dspIntroAutonomousAdaptiveTitle:Autonomous & Adaptive Enterprise`,
       description: $localize`:@@dspIntroAutonomousAdaptiveDesc:Phase 5 represents the fully connected, autonomous and adaptive enterprise where data from shopfloor, Edge, ERP, analytics and data lakes enables self-optimizing workflows.`,
-      icon: 'assets/svg/orbis/ai-algorithm.svg',
+      icon: 'assets/svg/dsp/methodology/phase5-autonomous-enterprise.svg',
     },
   ];
 
