@@ -98,8 +98,13 @@
 
 **Aktueller Stand:**
 - ✅ `settings-tab.component.spec.ts` vorhanden (mit erweiterten Tests)
+- ✅ `fts-tab.component.spec.ts` vorhanden (34 Tests) **2025-12-13**
+- ✅ `track-trace-tab.component.spec.ts` vorhanden (15 Tests) **2025-12-13** (direct-access, nicht in Navigation)
+- ✅ `dsp-action-tab.component.spec.ts` vorhanden (direct-access, nicht in Navigation)
+- ✅ `presentation-page.component.spec.ts` vorhanden (2 Tests) **2025-12-13** (direct-access)
+- ✅ `dsp-architecture.component.spec.ts` vorhanden (7 Tests) **2025-12-13** (direct-access)
 
-**Status:** ⚠️ **TEILWEISE** - Weitere Tab-Tests könnten fehlen
+**Status:** ✅ **VOLLSTÄNDIG** - Alle Tab Components und direct-access Pages haben Tests
 
 ---
 
