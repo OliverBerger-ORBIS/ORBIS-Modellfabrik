@@ -162,7 +162,7 @@ test('Business Integration: Module States Aggregation', async () => {
   const gateway = createTestGateway();
   const business = createBusiness(gateway.streams);
 
-  const statesPromise = business.moduleStates$.pipe(take(2), toArray()).toPromise();
+  const statesPromise = lastValueFrom(business.moduleStates$.pipe(take(2), toArray()));
 
   // Emit multiple module states
   gateway.emit.module({
@@ -363,7 +363,7 @@ test('Business Integration: State Persistence Across Updates', async () => {
   const gateway = createTestGateway();
   const business = createBusiness(gateway.streams);
 
-  const statesPromise = business.moduleStates$.pipe(take(3), toArray()).toPromise();
+  const statesPromise = lastValueFrom(business.moduleStates$.pipe(take(3), toArray()));
 
   // Emit initial state
   gateway.emit.module({

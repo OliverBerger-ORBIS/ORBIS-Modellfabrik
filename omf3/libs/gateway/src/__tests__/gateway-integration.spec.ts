@@ -49,7 +49,7 @@ test('Gateway Integration: Topic-based Message Routing', async () => {
   const gateway = createGateway(subject.asObservable());
 
   // Test multiple order topics are routed correctly
-  const ordersPromise = gateway.orders$.pipe(take(3), toArray()).toPromise();
+  const ordersPromise = lastValueFrom(gateway.orders$.pipe(take(3), toArray()));
 
   subject.next(createMessage('ccu/order/active', { orderId: '1', status: 'active' }));
   subject.next(createMessage('ccu/order/completed', { orderId: '2', status: 'completed' }));
@@ -134,7 +134,7 @@ test('Gateway Integration: Array Payload Handling', async () => {
   const subject = new Subject<RawMqttMessage>();
   const gateway = createGateway(subject.asObservable());
 
-  const ordersPromise = gateway.orders$.pipe(take(3), toArray()).toPromise();
+  const ordersPromise = lastValueFrom(gateway.orders$.pipe(take(3), toArray()));
 
   // Send array payload
   subject.next(
@@ -216,7 +216,7 @@ test('Gateway Integration: Empty Payload Handling', async () => {
   const subject = new Subject<RawMqttMessage>();
   const gateway = createGateway(subject.asObservable());
 
-  const ordersPromise = gateway.orders$.pipe(take(1)).toPromise();
+  const ordersPromise = firstValueFrom(gateway.orders$);
 
   // Send message with empty object payload
   subject.next(createMessage('ccu/order/active', {}));
@@ -232,7 +232,7 @@ test('Gateway Integration: Rapid Message Sequence', async () => {
   const subject = new Subject<RawMqttMessage>();
   const gateway = createGateway(subject.asObservable());
 
-  const ordersPromise = gateway.orders$.pipe(take(10), toArray()).toPromise();
+  const ordersPromise = lastValueFrom(gateway.orders$.pipe(take(10), toArray()));
 
   // Send 10 messages rapidly
   for (let i = 0; i < 10; i++) {
