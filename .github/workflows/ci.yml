@@ -75,6 +75,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     name: Lint & Format Check
+    permissions:
+      contents: read
     
     steps:
     - name: Checkout
@@ -99,6 +101,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Production Build Test
     needs: [test, lint]
+    permissions:
+      contents: read
     
     steps:
     - name: Checkout
