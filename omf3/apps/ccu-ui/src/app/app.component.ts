@@ -9,6 +9,7 @@ import { LanguageService, LocaleKey } from './services/language.service';
 import { ConnectionService, ConnectionState } from './services/connection.service';
 import { getDashboardController, type DashboardMessageMonitor } from './mock-dashboard';
 import { MessageMonitorService } from './services/message-monitor.service';
+import { FooterComponent } from './components/footer/footer.component';
 import { Subscription } from 'rxjs';
 
 interface NavigationItem {
@@ -84,6 +85,7 @@ const NAVIGATION_ITEMS: Omit<NavigationItem, 'label'>[] = [
     NgClass,
     AsyncPipe,
     FormsModule,
+    FooterComponent,
   ],
   selector: 'app-root',
   templateUrl: './app.component.html',

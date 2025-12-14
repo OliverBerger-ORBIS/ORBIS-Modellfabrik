@@ -1,0 +1,94 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'omf3/**'
+      - 'package.json'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build for GitHub Pages
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Inject Version
+      run: |
+        VERSION=$(node -p "require('./package.json').version")
+        GIT_HASH=$(git rev-parse --short HEAD)
+        BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        
+        mkdir -p omf3/apps/ccu-ui/src/environments
+        cat > omf3/apps/ccu-ui/src/environments/version.ts << EOF
+        export const VERSION = {
+          full: '${VERSION}',
+          build: 'main-${GIT_HASH}',
+          buildDate: '${BUILD_DATE}',
+        };
+        EOF
+    
+    - name: Build OMF3 (All Locales)
+      run: npx nx build ccu-ui --configuration=production --localize
+    
+    - name: Prepare deployment
+      run: |
+        mkdir -p _site
+        cp -r dist/apps/ccu-ui/* _site/
+        
+        cat > _site/index.html << 'EOF'
+        <!DOCTYPE html>
+        <html><head>
+          <meta charset="utf-8">
+          <meta http-equiv="refresh" content="0; url=/ORBIS-Modellfabrik/en/">
+          <title>Redirecting...</title>
+        </head><body>
+          <p>Redirecting to <a href="/ORBIS-Modellfabrik/en/">English version</a>...</p>
+        </body></html>
+        EOF
+    
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+    
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: '_site'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    name: Deploy
+    
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4

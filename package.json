@@ -1,6 +1,6 @@
 {
   "name": "omf3-workspace",
-  "version": "0.0.0",
+  "version": "0.3.0",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -14,9 +14,16 @@
     "build": "nx build mqtt-client",
     "build:fixtures": "python scripts/build_order_fixtures.py",
     "build:github-pages": "nx build ccu-ui --configuration=github-pages",
-    "serve:local": "npm run build:github-pages && npx serve dist/apps/ccu-ui/browser -p 4200"
+    "serve:local": "npm run build:github-pages && npx serve dist/apps/ccu-ui/browser -p 4200",
+    "version": "npm run build && git add -A",
+    "postversion": "git push && git push --tags",
+    "version:patch": "npm version patch -m 'chore(release): %s'",
+    "version:minor": "npm version minor -m 'feat(release): %s'",
+    "version:major": "npm version major -m 'feat(release): %s [BREAKING]'",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
   },
   "devDependencies": {
+    "conventional-changelog-cli": "^4.1.0",
     "@angular-devkit/build-angular": "~18.2.0",
     "@angular-devkit/core": "~18.2.0",
     "@angular-devkit/schematics": "~18.2.0",
