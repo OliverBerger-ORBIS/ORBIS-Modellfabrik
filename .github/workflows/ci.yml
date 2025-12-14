@@ -44,17 +44,19 @@ jobs:
         npm test
     
     - name: Test Coverage Check
-      run: |
-        npm run test:coverage:check || echo "⚠️ Coverage thresholds not met - see coverage report"
-      continue-on-error: true
+      run: npm run test:coverage:check
     
-    - name: Upload Coverage Report
+    - name: Upload Coverage
       uses: codecov/codecov-action@v4
       if: always()
       with:
-        files: ./coverage/ccu-ui/coverage-final.json
-        flags: ccu-ui
-        name: ccu-ui-coverage
+        files: |
+          ./coverage/ccu-ui/coverage-final.json
+          ./coverage/mqtt-client/coverage-final.json
+          ./coverage/gateway/coverage-final.json
+          ./coverage/business/coverage-final.json
+        flags: omf3
+        name: omf3-coverage
         fail_ci_if_error: false
     
     - name: Validate structure
@@ -69,3 +71,63 @@ jobs:
       run: |
         git submodule status
         ls -la vendor/fischertechnik/
+
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint & Format Check
+    permissions:
+      contents: read
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: ESLint OMF3
+      run: npx nx lint ccu-ui
+    
+    - name: TypeScript Check OMF3 Libraries
+      run: npx nx run-many -t build --projects=mqtt-client,gateway,business,testing-fixtures --parallel=3
+
+  build:
+    runs-on: ubuntu-latest
+    name: Production Build Test
+    needs: [test, lint]
+    permissions:
+      contents: read
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build Production
+      run: npx nx build ccu-ui --configuration=production
+    
+    - name: Check bundle size
+      run: |
+        echo "📦 Bundle Size:"
+        du -sh dist/apps/ccu-ui/browser/
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: dist/apps/ccu-ui/
+        retention-days: 7

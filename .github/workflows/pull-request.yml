@@ -1,0 +1,41 @@
+name: Pull Request Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    name: PR Checks
+    permissions:
+      contents: read
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run affected tests (OMF3)
+      run: npx nx affected -t test --base=origin/${{ github.base_ref }} --exclude=ff-central-control-unit
+    
+    - name: Run affected lints (OMF3)
+      run: npx nx affected -t lint --base=origin/${{ github.base_ref }} --exclude=ff-central-control-unit
+    
+    - name: Check for breaking changes
+      run: |
+        CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E "(types\.ts|\.interface\.ts)" || true)
+        if [ -n "$CHANGED" ]; then
+          echo "⚠️ Type definition changes detected:"
+          echo "$CHANGED"
+        fi

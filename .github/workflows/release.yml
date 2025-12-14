@@ -1,0 +1,63 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: Create Release
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Extract version
+      id: version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/v}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+    
+    - name: Build Production
+      run: npx nx build ccu-ui --configuration=production --localize
+    
+    - name: Create Archive
+      run: |
+        cd dist/apps/ccu-ui/
+        tar -czf ../../../omf3-${{ steps.version.outputs.version }}.tar.gz *
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.version.outputs.tag }}
+        name: OMF3 Dashboard ${{ steps.version.outputs.version }}
+        body: |
+          ## OMF3 Dashboard ${{ steps.version.outputs.version }}
+          
+          ### Download
+          - [omf3-${{ steps.version.outputs.version }}.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag }}/omf3-${{ steps.version.outputs.version }}.tar.gz)
+          
+          ### Live Demo
+          - [GitHub Pages](https://oliverberger-orbis.github.io/ORBIS-Modellfabrik/en/)
+          
+          See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
+        files: omf3-${{ steps.version.outputs.version }}.tar.gz
+        draft: false
+        prerelease: ${{ contains(steps.version.outputs.version, '-') }}
