@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 let VERSION = { full: '0.3.0', build: 'dev', buildDate: new Date().toISOString() };
@@ -10,6 +10,7 @@ try {
   selector: 'app-footer',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <footer class="app-footer">
       <span>OMF3 Dashboard v{{ version.full }}</span>
