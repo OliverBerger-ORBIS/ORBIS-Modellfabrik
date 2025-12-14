@@ -18,7 +18,7 @@ import type {
   StepConfig,
   Point,
   AnchorSide,
-} from './dsp-architecture.types';
+} from '../dsp-animation/types';
 import {
   createDiagramConfig,
   VIEWBOX_WIDTH,

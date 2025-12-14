@@ -37,8 +37,6 @@ export function createComponentView(): DiagramConfig {
     { id: 'conn-ec-agent-management', fromId: 'edge-comp-agent', toId: 'dsp-mc', fromSide: 'right', toSide: 'left', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
   ];
   
-  connections.push(...edgeComponentConnections);
-  
   const baseShopfloorContainers = [
     'sf-systems-group',
     'sf-system-bp',
