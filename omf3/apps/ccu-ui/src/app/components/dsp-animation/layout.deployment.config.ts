@@ -1,7 +1,9 @@
 import type { ContainerConfig, ConnectionConfig, StepConfig, DiagramConfig } from './types';
+import { DiagramConfigBuilder } from './layout.builder';
 import {
   createDefaultContainers,
-  createDefaultConnections,
+  getShopfloorContainerIds,
+  getShopfloorConnectionIds,
   VIEWBOX_WIDTH,
   VIEWBOX_HEIGHT,
 } from './layout.shared.config';
@@ -9,7 +11,6 @@ import { getOrbisColor, ORBIS_COLORS } from '../../assets/color-palette';
 
 export function createDeploymentView(): DiagramConfig {
   const containers = createDefaultContainers();
-  const connections = createDefaultConnections();
   const pipelineBorder = getOrbisColor('solution-petrol-strong');
   const pipelineFills = [
     'rgba(0, 150, 129, 0.18)', // very light
@@ -43,8 +44,9 @@ export function createDeploymentView(): DiagramConfig {
     { id: 'deployment-step-provisioning', label: $localize`:@@dspDeployProvisioning:Bereitstellung`, fill: pipelineFills[3] },
   ];
 
+  const pipelineContainers: ContainerConfig[] = [];
   pipelineShapes.forEach((shape, index) => {
-    containers.push({
+    pipelineContainers.push({
       id: shape.id,
       label: shape.label,
       x: pipelineStartX + index * pipelineOffsetX,
@@ -62,30 +64,8 @@ export function createDeploymentView(): DiagramConfig {
   // Keine Verbindungen zwischen den Pipeline-Pfeilen (bewusst ohne arrows)
   
   // Deployment View Animation Steps - 5-step pipeline reveal
-  const baseShopfloorContainers = [
-    'layer-sf',
-    'sf-systems-group',
-    'sf-system-bp',
-    'sf-system-fts',
-    'sf-devices-group',
-    'sf-device-mill',
-    'sf-device-drill',
-    'sf-device-aiqs',
-    'sf-device-hbw',
-    'sf-device-dps',
-    'sf-device-chrg',
-  ];
-
-  const baseShopfloorConnections = [
-    'conn-dsp-edge-sf-system-bp',
-    'conn-dsp-edge-sf-system-fts',
-    'conn-dsp-edge-sf-device-mill',
-    'conn-dsp-edge-sf-device-drill',
-    'conn-dsp-edge-sf-device-aiqs',
-    'conn-dsp-edge-sf-device-hbw',
-    'conn-dsp-edge-sf-device-dps',
-    'conn-dsp-edge-sf-device-chrg',
-  ];
+  const baseShopfloorContainers = getShopfloorContainerIds();
+  const baseShopfloorConnections = getShopfloorConnectionIds();
   
   const steps: StepConfig[] = [
     // Step 1: Edge Container (empty)
@@ -193,13 +173,7 @@ export function createDeploymentView(): DiagramConfig {
     },
   ];
   
-  return {
-    containers,
-    connections,
-    steps,
-    viewBox: {
-      width: VIEWBOX_WIDTH,
-      height: VIEWBOX_HEIGHT,
-    },
-  };
+  return new DiagramConfigBuilder()
+    .withDeploymentView(steps, pipelineContainers)
+    .build();
 }

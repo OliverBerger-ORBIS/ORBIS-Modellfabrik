@@ -18,12 +18,12 @@ import type {
   StepConfig,
   Point,
   AnchorSide,
-} from './dsp-architecture.types';
+} from '../dsp-animation/types';
 import {
   createDiagramConfig,
   VIEWBOX_WIDTH,
   VIEWBOX_HEIGHT,
-} from './dsp-architecture.config';
+} from '../dsp-animation/layout.config';
 
 /**
  * DspArchitectureComponent - Animated SVG-based architecture diagram.

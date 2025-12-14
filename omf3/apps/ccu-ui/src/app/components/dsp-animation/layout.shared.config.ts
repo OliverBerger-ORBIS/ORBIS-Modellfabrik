@@ -708,3 +708,105 @@ export function createDefaultConnections(): ConnectionConfig[] {
     },
   ];
 }
+
+/**
+ * Helper functions to retrieve container and connection IDs.
+ * These functions centralize ID management and reduce code duplication across view configs.
+ */
+
+/**
+ * Returns all Shopfloor layer container IDs (layer, groups, systems, and devices).
+ * Used in functional and deployment views.
+ */
+export function getShopfloorContainerIds(): string[] {
+  return [
+    'layer-sf',
+    'sf-systems-group',
+    'sf-system-bp',
+    'sf-system-fts',
+    'sf-devices-group',
+    'sf-device-mill',
+    'sf-device-drill',
+    'sf-device-aiqs',
+    'sf-device-hbw',
+    'sf-device-dps',
+    'sf-device-chrg',
+  ];
+}
+
+/**
+ * Returns all Shopfloor device container IDs.
+ * Used in functional view step 1.
+ */
+export function getShopfloorDeviceIds(): string[] {
+  return [
+    'sf-device-mill',
+    'sf-device-drill',
+    'sf-device-aiqs',
+    'sf-device-hbw',
+    'sf-device-dps',
+    'sf-device-chrg',
+  ];
+}
+
+/**
+ * Returns all Shopfloor connection IDs (Edge to Systems and Devices).
+ * Used in functional and deployment views.
+ */
+export function getShopfloorConnectionIds(): string[] {
+  return [
+    'conn-dsp-edge-sf-system-bp',
+    'conn-dsp-edge-sf-system-fts',
+    'conn-dsp-edge-sf-device-mill',
+    'conn-dsp-edge-sf-device-drill',
+    'conn-dsp-edge-sf-device-aiqs',
+    'conn-dsp-edge-sf-device-hbw',
+    'conn-dsp-edge-sf-device-dps',
+    'conn-dsp-edge-sf-device-chrg',
+  ];
+}
+
+/**
+ * Returns all DSP container IDs (UX, Edge, Management Cloud).
+ * Used in functional view.
+ */
+export function getDspContainerIds(): string[] {
+  return [
+    'layer-dsp',
+    'dsp-ux',
+    'dsp-edge',
+    'dsp-mc',
+  ];
+}
+
+/**
+ * Returns all Business Process container IDs.
+ * Used in functional view.
+ */
+export function getBusinessContainerIds(): string[] {
+  return [
+    'layer-bp',
+    'bp-erp',
+    'bp-mes',
+    'bp-cloud',
+    'bp-analytics',
+    'bp-data-lake',
+  ];
+}
+
+/**
+ * Returns all Edge component container IDs (internal components within Edge box).
+ * Used in component view.
+ */
+export function getEdgeComponentIds(): string[] {
+  return [
+    'edge-comp-disc',
+    'edge-comp-event-bus',
+    'edge-comp-app-server',
+    'edge-comp-router',
+    'edge-comp-agent',
+    'edge-comp-log-server',
+    'edge-comp-disi',
+    'edge-comp-database',
+  ];
+}
