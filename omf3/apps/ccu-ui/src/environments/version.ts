@@ -1,5 +1,5 @@
 export const VERSION = {
   full: '0.0.0-dev',
   build: 'dev',
-  buildDate: new Date().toISOString(),
+  buildDate: '1970-01-01T00:00:00.000Z',
 };
