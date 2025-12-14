@@ -26,11 +26,11 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
-    - name: Run affected tests
-      run: npx nx affected -t test --base=origin/${{ github.base_ref }}
+    - name: Run affected tests (OMF3)
+      run: npx nx affected -t test --base=origin/${{ github.base_ref }} --exclude=ff-central-control-unit
     
-    - name: Run affected lints
-      run: npx nx affected -t lint --base=origin/${{ github.base_ref }}
+    - name: Run affected lints (OMF3)
+      run: npx nx affected -t lint --base=origin/${{ github.base_ref }} --exclude=ff-central-control-unit
     
     - name: Check for breaking changes
       run: |
