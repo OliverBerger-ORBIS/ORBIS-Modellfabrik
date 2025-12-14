@@ -1026,4 +1026,3 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     }
   }
 }
-
