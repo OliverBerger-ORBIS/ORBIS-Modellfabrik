@@ -1,10 +1,13 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-let VERSION = { full: '0.3.0', build: 'dev', buildDate: new Date().toISOString() };
+let VERSION = { full: '0.0.0-dev', build: 'dev', buildDate: new Date().toISOString() };
 try {
+  // Version file is generated during build (see deploy.yml workflow)
   VERSION = require('../../../environments/version').VERSION;
-} catch {}
+} catch {
+  // Fallback to dev version if version file not found (development mode)
+}
 
 @Component({
   selector: 'app-footer',

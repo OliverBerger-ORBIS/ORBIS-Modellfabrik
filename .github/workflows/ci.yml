@@ -45,7 +45,6 @@ jobs:
     
     - name: Test Coverage Check
       run: npm run test:coverage:check
-      continue-on-error: false
     
     - name: Upload Coverage
       uses: codecov/codecov-action@v4
@@ -94,7 +93,7 @@ jobs:
       run: npx nx run-many -t lint
     
     - name: TypeScript Check
-      run: npx nx run-many -t build --configuration=production --dry-run
+      run: npx nx run-many -t build --parallel=3
 
   build:
     runs-on: ubuntu-latest
