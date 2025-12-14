@@ -34,7 +34,7 @@ describe('Layout Shared Config Helper Functions', () => {
 
     it('should include specific systems', () => {
       const ids = getShopfloorContainerIds();
-      expect(ids).toContain('sf-system-bp');
+      expect(ids).toContain('sf-system-any');
       expect(ids).toContain('sf-system-fts');
     });
 
@@ -87,7 +87,7 @@ describe('Layout Shared Config Helper Functions', () => {
 
     it('should include connections to systems', () => {
       const ids = getShopfloorConnectionIds();
-      expect(ids).toContain('conn-dsp-edge-sf-system-bp');
+      expect(ids).toContain('conn-dsp-edge-sf-system-any');
       expect(ids).toContain('conn-dsp-edge-sf-system-fts');
     });
 

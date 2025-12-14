@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DspAnimationComponent } from '../../../../components/dsp-animation/dsp-animation.component';
 import { ExternalLinksService } from '../../../../services/external-links.service';
+import { LanguageService } from '../../../../services/language.service';
 
 /**
  * DSP Architecture Functional Section Component
@@ -23,12 +24,11 @@ export class DspArchitectureFunctionalSectionComponent {
   
   readonly viewMode = 'functional' as const;
 
-  private locale = 'en';
-
   constructor(
     private readonly router: Router,
     private readonly route: ActivatedRoute,
-    private readonly externalLinksService: ExternalLinksService
+    private readonly externalLinksService: ExternalLinksService,
+    private readonly languageService: LanguageService
   ) {}
 
   onActionTriggered(event: { id: string; url: string }): void {
@@ -36,20 +36,37 @@ export class DspArchitectureFunctionalSectionComponent {
       return;
     }
 
+    const locale = this.languageService.current;
+
     // Check if it's an external URL (http/https)
     if (event.url.startsWith('http://') || event.url.startsWith('https://')) {
       window.open(event.url, '_blank', 'noreferrer noopener');
       return;
     }
 
-    // Check if it's an absolute internal path
+    // Check if it's an absolute internal path (starts with /)
     if (event.url.startsWith('/')) {
-      this.router.navigateByUrl(event.url);
+      // Remove leading slash and prepend locale
+      const pathWithoutSlash = event.url.substring(1);
+      const fullPath = `/${locale}/${pathWithoutSlash}`;
+      this.router.navigateByUrl(fullPath);
+      return;
+    }
+
+    // Handle shopfloor devices - navigate to module page with device ID
+    if (event.id.startsWith('sf-device-')) {
+      // Extract module type from device ID (e.g., 'sf-device-mill' -> 'MILL')
+      const moduleType = event.id.replace('sf-device-', '').toUpperCase();
+      const fullPath = `/${locale}/module`;
+      this.router.navigate([fullPath], { 
+        queryParams: { module: moduleType },
+        fragment: moduleType 
+      });
       return;
     }
 
     // Relative path - prepend with locale
-    const fullPath = `/${this.locale}/${event.url}`;
+    const fullPath = `/${locale}/${event.url}`;
     this.router.navigateByUrl(fullPath);
   }
 }

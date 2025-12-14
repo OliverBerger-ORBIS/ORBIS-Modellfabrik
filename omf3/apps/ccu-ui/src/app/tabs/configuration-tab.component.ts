@@ -729,22 +729,28 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
   private buildDspDetailView(links: ExternalLinksSettings): DspDetailView {
     const actions: DspActionLink[] = [
       {
+        id: 'analytics',
+        label: $localize`:@@dspActionAnalytics:Open BP Analytical Application`,
+        description: $localize`:@@dspActionAnalyticsDescription:Switch to the analytics dashboard (BP Analytical Application) in a new window.`,
+        url: links.grafanaDashboardUrl,
+      },
+      {
+        id: 'smartfactory',
+        label: $localize`:@@dspActionSmartfactory:Open DSP SmartFactory Dashboard`,
+        description: $localize`:@@dspActionSmartfactoryDescription:Navigate to the SmartFactory Dashboard in a new tab.`,
+        url: links.smartfactoryDashboardUrl,
+      },
+      {
         id: 'edge',
-        label: $localize`:@@dspActionEdge:Open EDGE control`,
-        description: $localize`:@@dspActionEdgeDescription:Launch the configured EDGE endpoint in a new tab.`,
+        label: $localize`:@@dspActionEdge:Open DSP Edge`,
+        description: $localize`:@@dspActionEdgeDescription:Launch the configured DSP Edge endpoint in a new tab.`,
         url: links.dspControlUrl,
       },
       {
         id: 'management',
-        label: $localize`:@@dspActionManagement:Open management cockpit`,
-        description: $localize`:@@dspActionManagementDescription:Navigate to the cloud cockpit for KPI and workflow management.`,
+        label: $localize`:@@dspActionManagement:Open DSP Management Cockpit`,
+        description: $localize`:@@dspActionManagementDescription:Navigate to the DSP Management Cockpit for KPI and workflow management.`,
         url: links.managementCockpitUrl,
-      },
-      {
-        id: 'grafana',
-        label: $localize`:@@dspActionGrafana:Open Grafana dashboard`,
-        description: $localize`:@@dspActionGrafanaDescription:Switch to the analytics dashboard (Grafana) in a new window.`,
-        url: links.grafanaDashboardUrl,
       },
     ];
 
@@ -825,10 +831,10 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
       businessProcesses,
       shopfloorPlatforms,
       shopfloorSystems,
-      edgeUrl: links.dspControlUrl,
-      managementUrl: links.managementCockpitUrl,
       analyticsUrl: links.grafanaDashboardUrl,
       smartfactoryDashboardUrl: links.smartfactoryDashboardUrl,
+      edgeUrl: links.dspControlUrl,
+      managementUrl: links.managementCockpitUrl,
     };
   }
 

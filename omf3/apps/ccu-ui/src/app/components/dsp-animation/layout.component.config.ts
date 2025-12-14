@@ -16,7 +16,7 @@ export function createComponentView(): DiagramConfig {
     { id: 'conn-ec-database-router', fromId: 'edge-comp-database', toId: 'edge-comp-router', fromSide: 'top', toSide: 'bottom', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
 
     // DISI to Shopfloor Systems
-    { id: 'conn-ec-disi-sf-system-bp', fromId: 'edge-comp-disi', toId: 'sf-system-bp', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
+    { id: 'conn-ec-disi-sf-system-any', fromId: 'edge-comp-disi', toId: 'sf-system-any', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
     { id: 'conn-ec-disi-sf-system-fts', fromId: 'edge-comp-disi', toId: 'sf-system-fts', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
     { id: 'conn-ec-disi-sf-system-warehouse', fromId: 'edge-comp-disi', toId: 'sf-system-warehouse', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
     { id: 'conn-ec-disi-sf-system-factory', fromId: 'edge-comp-disi', toId: 'sf-system-factory', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
@@ -33,13 +33,14 @@ export function createComponentView(): DiagramConfig {
 
     // Business / UX integrations
     { id: 'conn-ec-disc-bp-erp', fromId: 'edge-comp-disc', toId: 'bp-erp', fromSide: 'top', toSide: 'bottom', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
+    { id: 'conn-ec-disc-bp-mes', fromId: 'edge-comp-disc', toId: 'bp-mes', fromSide: 'top', toSide: 'bottom', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
     { id: 'conn-ux-ec-appserver', fromId: 'dsp-ux', toId: 'edge-comp-app-server', fromSide: 'right', toSide: 'left', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
     { id: 'conn-ec-agent-management', fromId: 'edge-comp-agent', toId: 'dsp-mc', fromSide: 'right', toSide: 'left', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
   ];
   
   const baseShopfloorContainers = [
     'sf-systems-group',
-    'sf-system-bp',
+      'sf-system-any',
     'sf-system-fts',
     'sf-system-warehouse',
     'sf-system-factory',
@@ -67,7 +68,7 @@ export function createComponentView(): DiagramConfig {
   
   // External connections from edge components to shopfloor
   const disiShopfloorConnections = [
-    'conn-ec-disi-sf-system-bp',
+      'conn-ec-disi-sf-system-any',
     'conn-ec-disi-sf-system-fts',
     'conn-ec-disi-sf-system-warehouse',
     'conn-ec-disi-sf-system-factory',
@@ -149,12 +150,13 @@ export function createComponentView(): DiagramConfig {
         'edge-comp-disi',
         'edge-comp-database',
       ],
-      highlightedContainerIds: ['edge-comp-disc', 'bp-erp'],
+      highlightedContainerIds: ['edge-comp-disc', 'bp-mes', 'bp-erp'],
       visibleConnectionIds: [
         ...allEdgeComponentConnections,
+        'conn-ec-disc-bp-mes',
         'conn-ec-disc-bp-erp',
       ],
-      highlightedConnectionIds: ['conn-ec-disc-bp-erp'],
+      highlightedConnectionIds: ['conn-ec-disc-bp-mes', 'conn-ec-disc-bp-erp'],
       showFunctionIcons: false,
     },
     
@@ -182,6 +184,7 @@ export function createComponentView(): DiagramConfig {
       highlightedContainerIds: ['edge-comp-app-server', 'dsp-ux'],
       visibleConnectionIds: [
         ...allEdgeComponentConnections,
+        'conn-ec-disc-bp-mes',
         'conn-ec-disc-bp-erp',
         'conn-ux-ec-appserver',
       ],
@@ -214,6 +217,7 @@ export function createComponentView(): DiagramConfig {
       highlightedContainerIds: ['edge-comp-agent', 'dsp-mc'],
       visibleConnectionIds: [
         ...allEdgeComponentConnections,
+        'conn-ec-disc-bp-mes',
         'conn-ec-disc-bp-erp',
         'conn-ux-ec-appserver',
         'conn-ec-agent-management',
@@ -242,6 +246,7 @@ export function createComponentView(): DiagramConfig {
       highlightedContainerIds: ['edge-comp-disi'],
       visibleConnectionIds: [
         ...allEdgeComponentConnections,
+        'conn-ec-disc-bp-mes',
         'conn-ec-disc-bp-erp',
         'conn-ux-ec-appserver',
         'conn-ec-agent-management',

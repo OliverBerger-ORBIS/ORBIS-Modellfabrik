@@ -133,28 +133,23 @@ import { LanguageService, LocaleKey } from '../services/language.service';
 
         <form [formGroup]="linksForm" (ngSubmit)="saveExternalLinks()" class="links-form">
           <label>
-            <span i18n="@@settingsOrbisLinkLabel">ORBIS website URL</span>
-            <input type="url" formControlName="orbisWebsiteUrl" placeholder="https://www.orbis.de" />
-          </label>
-
-          <label>
-            <span i18n="@@settingsDspLinkLabel">DSP landing URL</span>
-            <input type="url" formControlName="dspControlUrl" placeholder="https://dsp.example.com" />
-          </label>
-
-          <label>
-            <span i18n="@@settingsManagementLinkLabel">Management Cockpit URL</span>
-            <input type="url" formControlName="managementCockpitUrl" placeholder="https://management.example.com" />
-          </label>
-
-          <label>
-            <span i18n="@@settingsGrafanaLinkLabel">Grafana dashboard URL</span>
+            <span i18n="@@settingsGrafanaLinkLabel">BP Analytical Application URL</span>
             <input type="url" formControlName="grafanaDashboardUrl" placeholder="https://grafana.example.com" />
           </label>
 
           <label>
-            <span i18n="@@settingsSmartFactoryLinkLabel">SmartFactory Dashboard URL</span>
+            <span i18n="@@settingsSmartFactoryLinkLabel">DSP SmartFactory Dashboard URL</span>
             <input type="text" formControlName="smartfactoryDashboardUrl" placeholder="/dsp-action" />
+          </label>
+
+          <label>
+            <span i18n="@@settingsDspLinkLabel">DSP Edge URL</span>
+            <input type="url" formControlName="dspControlUrl" placeholder="https://dsp.example.com" />
+          </label>
+
+          <label>
+            <span i18n="@@settingsManagementLinkLabel">DSP Management Cockpit URL</span>
+            <input type="url" formControlName="managementCockpitUrl" placeholder="https://management.example.com" />
           </label>
 
           <footer>
@@ -334,11 +329,10 @@ export class SettingsTabComponent implements OnInit {
 
     const linkSettings = this.externalLinksService.current;
     this.linksForm = this.fb.group({
-      orbisWebsiteUrl: [linkSettings.orbisWebsiteUrl, [Validators.required]],
-      dspControlUrl: [linkSettings.dspControlUrl, [Validators.required]],
-      managementCockpitUrl: [linkSettings.managementCockpitUrl, [Validators.required]],
       grafanaDashboardUrl: [linkSettings.grafanaDashboardUrl, [Validators.required]],
       smartfactoryDashboardUrl: [linkSettings.smartfactoryDashboardUrl],
+      dspControlUrl: [linkSettings.dspControlUrl, [Validators.required]],
+      managementCockpitUrl: [linkSettings.managementCockpitUrl, [Validators.required]],
     });
   }
 

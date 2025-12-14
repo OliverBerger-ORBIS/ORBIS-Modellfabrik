@@ -26,45 +26,42 @@ describe('ExternalLinksService', () => {
     it('should provide default settings', () => {
       const settings = service.current;
       expect(settings).toBeDefined();
-      expect(settings.orbisWebsiteUrl).toBeDefined();
-      expect(settings.dspControlUrl).toBeDefined();
-      expect(settings.managementCockpitUrl).toBeDefined();
       expect(settings.grafanaDashboardUrl).toBeDefined();
       expect(settings.smartfactoryDashboardUrl).toBeDefined();
+      expect(settings.dspControlUrl).toBeDefined();
+      expect(settings.managementCockpitUrl).toBeDefined();
     });
 
     it('should emit current settings on subscription', async () => {
       const settings$ = service.settings$;
       const value = await firstValueFrom(settings$);
       expect(value).toBeDefined();
-      expect(value.orbisWebsiteUrl).toBeDefined();
+      expect(value.grafanaDashboardUrl).toBeDefined();
     });
   });
 
   describe('Settings Management', () => {
     it('should update settings', () => {
       const newSettings: ExternalLinksSettings = {
-        orbisWebsiteUrl: 'https://test.orbis.de',
-        dspControlUrl: 'https://test.dsp.com',
-        managementCockpitUrl: 'https://test.cockpit.com',
         grafanaDashboardUrl: 'https://test.grafana.com',
         smartfactoryDashboardUrl: '/test-dsp',
+        dspControlUrl: 'https://test.dsp.com',
+        managementCockpitUrl: 'https://test.cockpit.com',
       };
 
       service.updateSettings(newSettings);
       const current = service.current;
 
-      expect(current.orbisWebsiteUrl).toBe('https://test.orbis.de');
+      expect(current.grafanaDashboardUrl).toBe('https://test.grafana.com');
       expect(current.dspControlUrl).toBe('https://test.dsp.com');
     });
 
     it('should persist settings to localStorage', () => {
       const newSettings: ExternalLinksSettings = {
-        orbisWebsiteUrl: 'https://test.orbis.de',
-        dspControlUrl: 'https://test.dsp.com',
-        managementCockpitUrl: 'https://test.cockpit.com',
         grafanaDashboardUrl: 'https://test.grafana.com',
         smartfactoryDashboardUrl: '/test-dsp',
+        dspControlUrl: 'https://test.dsp.com',
+        managementCockpitUrl: 'https://test.cockpit.com',
       };
 
       service.updateSettings(newSettings);
@@ -72,16 +69,15 @@ describe('ExternalLinksService', () => {
       const stored = localStorage.getItem('omf3.externalLinks');
       expect(stored).toBeTruthy();
       const parsed = JSON.parse(stored!);
-      expect(parsed.orbisWebsiteUrl).toBe('https://test.orbis.de');
+      expect(parsed.grafanaDashboardUrl).toBe('https://test.grafana.com');
     });
 
     it('should load settings from localStorage', () => {
       const storedSettings: ExternalLinksSettings = {
-        orbisWebsiteUrl: 'https://stored.orbis.de',
-        dspControlUrl: 'https://stored.dsp.com',
-        managementCockpitUrl: 'https://stored.cockpit.com',
         grafanaDashboardUrl: 'https://stored.grafana.com',
         smartfactoryDashboardUrl: '/stored-dsp',
+        dspControlUrl: 'https://stored.dsp.com',
+        managementCockpitUrl: 'https://stored.cockpit.com',
       };
 
       localStorage.setItem('omf3.externalLinks', JSON.stringify(storedSettings));
@@ -94,7 +90,7 @@ describe('ExternalLinksService', () => {
       const newService = TestBed.inject(ExternalLinksService);
       const current = newService.current;
 
-      expect(current.orbisWebsiteUrl).toBe('https://stored.orbis.de');
+      expect(current.grafanaDashboardUrl).toBe('https://stored.grafana.com');
     });
 
     it('should emit settings changes', (done) => {
@@ -106,15 +102,14 @@ describe('ExternalLinksService', () => {
         if (callCount === 1) {
           // Initial value
           const newSettings: ExternalLinksSettings = {
-            orbisWebsiteUrl: 'https://test.orbis.de',
-            dspControlUrl: 'https://test.dsp.com',
-            managementCockpitUrl: 'https://test.cockpit.com',
             grafanaDashboardUrl: 'https://test.grafana.com',
             smartfactoryDashboardUrl: '/test-dsp',
+            dspControlUrl: 'https://test.dsp.com',
+            managementCockpitUrl: 'https://test.cockpit.com',
           };
           service.updateSettings(newSettings);
         } else if (callCount === 2) {
-          expect(settings.orbisWebsiteUrl).toBe('https://test.orbis.de');
+          expect(settings.grafanaDashboardUrl).toBe('https://test.grafana.com');
           done();
         }
       });
@@ -129,11 +124,10 @@ describe('ExternalLinksService', () => {
       });
 
       const newSettings: ExternalLinksSettings = {
-        orbisWebsiteUrl: 'https://test.orbis.de',
-        dspControlUrl: 'https://test.dsp.com',
-        managementCockpitUrl: 'https://test.cockpit.com',
         grafanaDashboardUrl: 'https://test.grafana.com',
         smartfactoryDashboardUrl: '/test-dsp',
+        dspControlUrl: 'https://test.dsp.com',
+        managementCockpitUrl: 'https://test.cockpit.com',
       };
 
       expect(() => {
@@ -141,7 +135,7 @@ describe('ExternalLinksService', () => {
       }).not.toThrow();
 
       // Settings should still be updated in memory
-      expect(service.current.orbisWebsiteUrl).toBe('https://test.orbis.de');
+      expect(service.current.grafanaDashboardUrl).toBe('https://test.grafana.com');
 
       localStorage.setItem = originalSetItem;
     });
@@ -154,12 +148,12 @@ describe('ExternalLinksService', () => {
 
       // Should fallback to defaults
       expect(current).toBeDefined();
-      expect(current.orbisWebsiteUrl).toBeDefined();
+      expect(current.grafanaDashboardUrl).toBeDefined();
     });
 
     it('should handle partial settings in localStorage', () => {
       const partialSettings = {
-        orbisWebsiteUrl: 'https://partial.orbis.de',
+        grafanaDashboardUrl: 'https://partial.grafana.com',
       };
 
       localStorage.setItem('omf3.externalLinks', JSON.stringify(partialSettings));
@@ -173,93 +167,87 @@ describe('ExternalLinksService', () => {
       const current = newService.current;
 
       // Should merge with defaults
-      expect(current.orbisWebsiteUrl).toBe('https://partial.orbis.de');
+      expect(current.grafanaDashboardUrl).toBe('https://partial.grafana.com');
       expect(current.dspControlUrl).toBeDefined(); // From defaults
     });
 
     it('should handle empty string URLs', () => {
       const emptySettings: ExternalLinksSettings = {
-        orbisWebsiteUrl: '',
-        dspControlUrl: '',
-        managementCockpitUrl: '',
         grafanaDashboardUrl: '',
         smartfactoryDashboardUrl: '',
+        dspControlUrl: '',
+        managementCockpitUrl: '',
       };
 
       service.updateSettings(emptySettings);
       const current = service.current;
 
-      expect(current.orbisWebsiteUrl).toBe('');
+      expect(current.grafanaDashboardUrl).toBe('');
       expect(current.dspControlUrl).toBe('');
     });
 
     it('should handle very long URLs', () => {
       const longUrl = 'https://' + 'a'.repeat(2000) + '.com';
       const longSettings: ExternalLinksSettings = {
-        orbisWebsiteUrl: longUrl,
+        grafanaDashboardUrl: longUrl,
+        smartfactoryDashboardUrl: '/test-dsp',
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
-        grafanaDashboardUrl: 'https://test.grafana.com',
-        smartfactoryDashboardUrl: '/test-dsp',
       };
 
       service.updateSettings(longSettings);
       const current = service.current;
 
-      expect(current.orbisWebsiteUrl).toBe(longUrl);
+      expect(current.grafanaDashboardUrl).toBe(longUrl);
     });
 
     it('should handle rapid settings updates', () => {
       const settings1: ExternalLinksSettings = {
-        orbisWebsiteUrl: 'https://test1.orbis.de',
+        grafanaDashboardUrl: 'https://test1.grafana.com',
+        smartfactoryDashboardUrl: '/test-dsp',
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
-        grafanaDashboardUrl: 'https://test.grafana.com',
-        smartfactoryDashboardUrl: '/test-dsp',
       };
 
       const settings2: ExternalLinksSettings = {
-        orbisWebsiteUrl: 'https://test2.orbis.de',
+        grafanaDashboardUrl: 'https://test2.grafana.com',
+        smartfactoryDashboardUrl: '/test-dsp',
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
-        grafanaDashboardUrl: 'https://test.grafana.com',
-        smartfactoryDashboardUrl: '/test-dsp',
       };
 
       service.updateSettings(settings1);
       service.updateSettings(settings2);
 
-      expect(service.current.orbisWebsiteUrl).toBe('https://test2.orbis.de');
+      expect(service.current.grafanaDashboardUrl).toBe('https://test2.grafana.com');
     });
 
     it('should handle special characters in URLs', () => {
       const specialSettings: ExternalLinksSettings = {
-        orbisWebsiteUrl: 'https://test.com/path?param=value&other=123',
+        grafanaDashboardUrl: 'https://test.com/path?param=value&other=123',
+        smartfactoryDashboardUrl: '/test-dsp',
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
-        grafanaDashboardUrl: 'https://test.grafana.com',
-        smartfactoryDashboardUrl: '/test-dsp',
       };
 
       service.updateSettings(specialSettings);
       const current = service.current;
 
-      expect(current.orbisWebsiteUrl).toBe('https://test.com/path?param=value&other=123');
+      expect(current.grafanaDashboardUrl).toBe('https://test.com/path?param=value&other=123');
     });
 
     it('should handle relative URLs', () => {
       const relativeSettings: ExternalLinksSettings = {
-        orbisWebsiteUrl: '/relative/path',
-        dspControlUrl: '/dsp',
-        managementCockpitUrl: '/cockpit',
         grafanaDashboardUrl: '/grafana',
         smartfactoryDashboardUrl: '/dsp-action',
+        dspControlUrl: '/dsp',
+        managementCockpitUrl: '/cockpit',
       };
 
       service.updateSettings(relativeSettings);
       const current = service.current;
 
-      expect(current.orbisWebsiteUrl).toBe('/relative/path');
+      expect(current.grafanaDashboardUrl).toBe('/grafana');
     });
   });
 });

@@ -9,6 +9,7 @@ import type { MessageMonitorService } from '../../services/message-monitor.servi
 import type { HttpClient } from '@angular/common/http';
 import type { ChangeDetectorRef } from '@angular/core';
 import type { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
+import type { ActivatedRoute, Router } from '@angular/router';
 
 jest.mock('../../mock-dashboard', () => {
   const mockCommands = {
@@ -74,6 +75,14 @@ const createComponent = () => {
     getAllModules: jest.fn(() => []),
   } as unknown as ShopfloorMappingService;
 
+  const routeStub = {
+    queryParams: new BehaviorSubject({}),
+  } as unknown as ActivatedRoute;
+
+  const routerStub = {
+    navigate: jest.fn(() => Promise.resolve(true)),
+  } as unknown as Router;
+
   const initSpy = jest
     .spyOn(ModuleTabComponent.prototype as any, 'initializeStreams')
     .mockImplementation(() => {});
@@ -86,7 +95,9 @@ const createComponent = () => {
     messageMonitorStub,
     cdrStub,
     httpStub,
-    mappingServiceStub
+    mappingServiceStub,
+    routeStub,
+    routerStub
   );
   initSpy.mockRestore();
   return component;

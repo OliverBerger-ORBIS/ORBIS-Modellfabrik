@@ -218,10 +218,10 @@
     "@@settingsLinksHeadline": "Externe Links",
     "@@settingsLinksDescription": "Konfigurieren Sie die URLs, die für ORBIS- und DSP-Detailansichten im Konfigurations-Tab verwendet werden.",
     "@@settingsOrbisLinkLabel": "ORBIS-Website-URL",
-    "@@settingsDspLinkLabel": "DSP-Landing-URL",
-    "@@settingsManagementLinkLabel": "Management Cockpit URL",
-    "@@settingsGrafanaLinkLabel": "Grafana Dashboard URL",
-    "@@settingsSmartFactoryLinkLabel": "SmartFactory Dashboard URL",
+    "@@settingsGrafanaLinkLabel": "BP Analytical Application URL",
+    "@@settingsSmartFactoryLinkLabel": "DSP SmartFactory Dashboard URL",
+    "@@settingsDspLinkLabel": "DSP Edge URL",
+    "@@settingsManagementLinkLabel": "DSP Management Cockpit URL",
     "@@sensorHeading": "Sensordaten",
     "@@sensorSubheading": "Live-Daten von CCU-Umgebungssensoren",
     "@@sensorLastUpdate": "Letzte Aktualisierung",
@@ -408,6 +408,14 @@
     "@@dspGeneralBullet5": "Integrierte Industrie-4.0-Funktionen (IIoT, KI, Analytics).",
     "@@dspActionTabTitle": "DSP Actions",
     "@@dspActionTabDescription": "Visualisierung der DSP-Edge-Steuerung für Drill-Modul",
+    "@@dspActionAnalytics": "BP Analytical Application öffnen",
+    "@@dspActionAnalyticsDescription": "Wechseln Sie zum Analytics-Dashboard (BP Analytical Application) in einem neuen Fenster.",
+    "@@dspActionSmartfactory": "DSP SmartFactory Dashboard öffnen",
+    "@@dspActionSmartfactoryDescription": "Navigieren Sie zum SmartFactory Dashboard in einem neuen Tab.",
+    "@@dspActionEdge": "DSP Edge öffnen",
+    "@@dspActionEdgeDescription": "Starten Sie den konfigurierten DSP Edge Endpoint in einem neuen Tab.",
+    "@@dspActionManagement": "DSP Management Cockpit öffnen",
+    "@@dspActionManagementDescription": "Navigieren Sie zum DSP Management Cockpit für KPI- und Workflow-Management.",
     "@@dspActionFilterPlaceholder": "Topic filtern...",
     "@@dspActionNoMessages": "Keine Messages empfangen",
     "@@dspActionVisualizationTitle": "changeLight",
@@ -633,6 +641,7 @@
     "@@dspMesTeaserAnalyticsDesc": "Integration mit Power BI und SAP Analytics Cloud für Advanced Reporting",
     "@@dspMesTeaserDataLakeTitle": "Data Lake",
     "@@dspMesTeaserDataLakeDesc": "Zentraler Datenspeicher für historische Analysen und ML-Training",
-    "@@dspMesTeaserBadge": "🚧 In Entwicklung"
+    "@@dspMesTeaserBadge": "🚧 In Entwicklung",
+    "@@dspArchLabelAnySystem": "any System"
   }
 }

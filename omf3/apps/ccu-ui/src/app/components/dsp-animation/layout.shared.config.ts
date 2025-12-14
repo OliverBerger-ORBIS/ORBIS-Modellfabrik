@@ -474,7 +474,7 @@ export function createDefaultContainers(): ContainerConfig[] {
 
   // Default: 2 systems, 6 devices
   const systemEntries: { id: string; icon: IconKey; url?: string }[] = [
-    { id: 'sf-system-bp', icon: 'shopfloor-systems' as IconKey, url: 'fts' },
+    { id: 'sf-system-any', icon: 'shopfloor-systems' as IconKey, url: 'fts' },
     { id: 'sf-system-fts', icon: 'shopfloor-fts' as IconKey, url: 'process' },
   ];
 
@@ -629,9 +629,9 @@ export function createDefaultConnections(): ConnectionConfig[] {
     },
     // Edge to Shopfloor Systems
     {
-      id: 'conn-dsp-edge-sf-system-bp',
+      id: 'conn-dsp-edge-sf-system-any',
       fromId: 'dsp-edge',
-      toId: 'sf-system-bp',
+      toId: 'sf-system-any',
       fromSide: 'bottom',
       toSide: 'top',
       state: 'hidden',
@@ -722,7 +722,7 @@ export function getShopfloorContainerIds(): string[] {
   return [
     'layer-sf',
     'sf-systems-group',
-    'sf-system-bp',
+    'sf-system-any',
     'sf-system-fts',
     'sf-devices-group',
     'sf-device-mill',
@@ -755,7 +755,7 @@ export function getShopfloorDeviceIds(): string[] {
  */
 export function getShopfloorConnectionIds(): string[] {
   return [
-    'conn-dsp-edge-sf-system-bp',
+    'conn-dsp-edge-sf-system-any',
     'conn-dsp-edge-sf-system-fts',
     'conn-dsp-edge-sf-device-mill',
     'conn-dsp-edge-sf-device-drill',

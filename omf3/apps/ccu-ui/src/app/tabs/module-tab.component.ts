@@ -20,6 +20,7 @@ import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopf
 import { MessageMonitorService, type MonitoredMessage } from '../services/message-monitor.service';
 import { ModuleDetailsSidebarComponent } from '../components/module-details-sidebar/module-details-sidebar.component';
 import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
 import type { ShopfloorLayoutConfig, ShopfloorCellConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
 import { ShopfloorMappingService, type ModuleInfo } from '../services/shopfloor-mapping.service';
 
@@ -114,7 +115,9 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     private readonly messageMonitor: MessageMonitorService,
     private readonly cdr: ChangeDetectorRef,
     private readonly http: HttpClient,
-    private readonly mappingService: ShopfloorMappingService
+    private readonly mappingService: ShopfloorMappingService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router
   ) {
     this.currentEnvironmentKey = this.environmentService.current.key;
     this.loadShopfloorPreviewState();
@@ -222,6 +225,21 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
         this.layoutConfig = config;
         this.mappingService.initializeLayout(config);
         this.initializeRegistry();
+        
+        // Check for module query parameter from architecture click
+        this.route.queryParams.subscribe(params => {
+          const moduleType = params['module'];
+          if (moduleType) {
+            // Find module of this type and select it
+            this.selectModuleByType(moduleType);
+            // Remove query parameter from URL
+            this.router.navigate([], {
+              relativeTo: this.route,
+              queryParams: {},
+              replaceUrl: true
+            });
+          }
+        });
       },
       error: (error) => {
         console.warn('Failed to load shopfloor layout config:', error);
@@ -825,6 +843,44 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
       localStorage.setItem(this.shopfloorPreviewStorageKey, String(this.shopfloorPreviewExpanded));
     } catch (error) {
       // Ignore localStorage errors
+    }
+  }
+
+  /**
+   * Select module by type (e.g., 'MILL', 'DRILL', etc.)
+   * Used when navigating from architecture diagram
+   */
+  private selectModuleByType(moduleType: string): void {
+    if (!this.layoutConfig) {
+      return;
+    }
+
+    // Find cell with matching module type
+    const cell = this.layoutConfig.cells.find((c: ShopfloorCellConfig) => {
+      const cellName = c.name?.toUpperCase();
+      return cellName === moduleType.toUpperCase();
+    });
+
+    if (cell) {
+      // Simulate cell selection
+      this.onModuleCellSelected({ id: cell.id, kind: 'module' });
+    } else {
+      // Fallback: try to find by serial number pattern or module registry
+      const snapshot = this.moduleOverviewState.getSnapshot(this.currentEnvironmentKey);
+      const moduleStates = snapshot?.modules ?? {};
+      
+      // Find first module with matching type
+      const moduleEntry = Object.values(moduleStates).find(
+        (m) => m.subType?.toUpperCase() === moduleType.toUpperCase()
+      );
+
+      if (moduleEntry) {
+        this.selectedModuleSerialId = moduleEntry.id;
+        const display = this.moduleNameService.getModuleDisplayName(moduleEntry.subType ?? moduleType);
+        this.selectedModuleName = display.fullName;
+        this.updateSelectedMeta(null);
+        this.cdr.markForCheck();
+      }
     }
   }
 

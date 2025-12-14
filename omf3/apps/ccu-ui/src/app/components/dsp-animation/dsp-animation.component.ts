@@ -20,6 +20,7 @@ import {
   VIEWBOX_HEIGHT,
 } from './layout.config';
 import { ModuleNameService } from '../../services/module-name.service';
+import { ExternalLinksService } from '../../services/external-links.service';
 
 /**
  * DspAnimationComponent - Animated SVG-based architecture diagram.
@@ -45,6 +46,24 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   protected containers: ContainerConfig[] = [];
   protected connections: ConnectionConfig[] = [];
   protected steps: StepConfig[] = [];
+  
+  // Sorted connections for rendering (highlighted connections last)
+  protected get sortedConnections(): ConnectionConfig[] {
+    const currentStep = this.steps[this.currentStepIndex];
+    if (!currentStep) {
+      return this.connections;
+    }
+    
+    // Sort: non-highlighted first, highlighted last (so highlighted render on top)
+    return [...this.connections].sort((a, b) => {
+      const aHighlighted = currentStep.highlightedConnectionIds.includes(a.id);
+      const bHighlighted = currentStep.highlightedConnectionIds.includes(b.id);
+      
+      if (aHighlighted && !bHighlighted) return 1; // a goes after b
+      if (!aHighlighted && bHighlighted) return -1; // a goes before b
+      return 0; // keep original order
+    });
+  }
 
   // Animation state
   protected currentStepIndex = 0;
@@ -59,7 +78,7 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   protected readonly zoomStep = 0.1;
   protected readonly functionIconRadius = 120; // base radius for circular layout
   protected readonly functionIconScale = 1.0;
-  protected readonly functionIconHighlightScale = 1.6;
+  protected readonly functionIconHighlightScale = 1.92; // 1.6 * 1.2 = 20% additional enlargement for highlighted function icons
   private revealedFunctionIcons = new Set<IconKey>();
 
   // ViewBox dimensions
@@ -129,7 +148,7 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     'bp-cloud': $localize`:@@dspArchLabelCloudApps:Cloud\nApplications`,
     'bp-analytics': $localize`:@@dspArchLabelAnalytics:Analytical\nApplications`,
     'bp-data-lake': $localize`:@@dspArchLabelDataLake:Data Lake`,
-    'sf-system-bp': $localize`:@@dspArchLabelMES:MES`,
+    'sf-system-any': $localize`:@@dspArchLabelAnySystem:any System`,
     'sf-system-warehouse': $localize`:@@dspArchLabelWarehouse:Warehouse`,
     'sf-system-factory': $localize`:@@dspArchLabelFactory:Factory`,
     'sf-system-fts': $localize`:@@dspArchLabelFTS:AGV\nSystem`,
@@ -155,7 +174,8 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private readonly cdr: ChangeDetectorRef,
-    private readonly moduleNameService: ModuleNameService
+    private readonly moduleNameService: ModuleNameService,
+    private readonly externalLinksService: ExternalLinksService
   ) {}
 
   ngOnInit(): void {
@@ -183,6 +203,9 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     this.steps = config.steps;
     this.revealedFunctionIcons = new Set<IconKey>();
     this.initializeModuleLabels();
+    
+    // Update container URLs from ExternalLinksService
+    this.updateContainerUrls();
     
     // Determine initial step index
     let initialStepIndex = 0;
@@ -638,6 +661,29 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     const h = container.height;
     const tip = Math.max(12, Math.min(28, w * 0.15));
     return `0,0 ${w - tip},0 ${w},${h / 2} ${w - tip},${h} 0,${h} ${tip},${h / 2}`;
+  }
+
+  /**
+   * Update container URLs from ExternalLinksService
+   */
+  private updateContainerUrls(): void {
+    const links = this.externalLinksService.current;
+    this.containers.forEach((container) => {
+      switch (container.id) {
+        case 'dsp-ux':
+          container.url = links.smartfactoryDashboardUrl;
+          break;
+        case 'dsp-edge':
+          container.url = links.dspControlUrl;
+          break;
+        case 'dsp-mc':
+          container.url = links.managementCockpitUrl;
+          break;
+        case 'bp-analytics':
+          container.url = links.grafanaDashboardUrl;
+          break;
+      }
+    });
   }
 
   /**

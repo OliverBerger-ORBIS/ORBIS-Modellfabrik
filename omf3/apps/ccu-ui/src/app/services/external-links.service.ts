@@ -2,21 +2,19 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 export interface ExternalLinksSettings {
-  readonly orbisWebsiteUrl: string;
-  readonly dspControlUrl: string;
-  readonly managementCockpitUrl: string;
   readonly grafanaDashboardUrl: string;
   readonly smartfactoryDashboardUrl: string;
+  readonly dspControlUrl: string;
+  readonly managementCockpitUrl: string;
 }
 
 const STORAGE_KEY = 'omf3.externalLinks';
 
 const DEFAULT_SETTINGS: ExternalLinksSettings = {
-  orbisWebsiteUrl: 'https://www.orbis.de',
-  dspControlUrl: 'https://www.orbis-group.com/de-de/sap-orbis-loesungen/distributed-shopfloor-processing.html',
-  managementCockpitUrl: 'https://dspmcorbisprd.powerappsportals.com',
   grafanaDashboardUrl: 'http://192.168.0.201:3000/dashboards',
   smartfactoryDashboardUrl: '/dsp-action',
+  dspControlUrl: 'https://www.orbis-group.com/de-de/sap-orbis-loesungen/distributed-shopfloor-processing.html',
+  managementCockpitUrl: 'https://dspmcorbisprd.powerappsportals.com',
 };
 
 @Injectable({ providedIn: 'root' })

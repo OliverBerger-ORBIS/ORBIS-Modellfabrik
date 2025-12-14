@@ -108,7 +108,6 @@ describe('ConfigurationTabComponent', () => {
 
     const externalLinksServiceMock = {
       settings$: new BehaviorSubject<ExternalLinksSettings>({
-        orbisWebsiteUrl: '',
         dspControlUrl: '',
         managementCockpitUrl: '',
         grafanaDashboardUrl: '',

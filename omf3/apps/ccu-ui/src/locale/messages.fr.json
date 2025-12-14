@@ -76,6 +76,19 @@
     "@@dspSectionDeploymentTitle": "Déploiement",
     "@@dspSectionUseCasesTitle": "Cas d'usage",
     "@@dspSectionMethodologyTitle": "Méthodologie",
-    "@@settingsLanguageLinks": "Langues:"
+    "@@settingsLanguageLinks": "Langues:",
+    "@@settingsGrafanaLinkLabel": "URL Application Analytique BP",
+    "@@settingsSmartFactoryLinkLabel": "URL Tableau de bord DSP SmartFactory",
+    "@@settingsDspLinkLabel": "URL DSP Edge",
+    "@@settingsManagementLinkLabel": "URL DSP Management Cockpit",
+    "@@dspActionAnalytics": "Ouvrir l'Application Analytique BP",
+    "@@dspActionAnalyticsDescription": "Basculer vers le tableau de bord analytique (Application Analytique BP) dans une nouvelle fenêtre.",
+    "@@dspActionSmartfactory": "Ouvrir le Tableau de bord DSP SmartFactory",
+    "@@dspActionSmartfactoryDescription": "Naviguer vers le Tableau de bord SmartFactory dans un nouvel onglet.",
+    "@@dspActionEdge": "Ouvrir DSP Edge",
+    "@@dspActionEdgeDescription": "Lancer le point de terminaison DSP Edge configuré dans un nouvel onglet.",
+    "@@dspActionManagement": "Ouvrir le DSP Management Cockpit",
+    "@@dspActionManagementDescription": "Naviguer vers le DSP Management Cockpit pour la gestion des KPI et des workflows.",
+    "@@dspArchLabelAnySystem": "any System"
   }
 }

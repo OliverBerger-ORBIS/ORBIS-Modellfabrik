@@ -51,11 +51,10 @@ describe('SettingsTabComponent', () => {
   };
 
   const mockExternalLinks: ExternalLinksSettings = {
-    orbisWebsiteUrl: 'https://www.orbis.de',
-    dspControlUrl: 'https://dsp.example.com',
-    managementCockpitUrl: 'https://management.example.com',
     grafanaDashboardUrl: 'https://grafana.example.com',
     smartfactoryDashboardUrl: '/dsp-action',
+    dspControlUrl: 'https://dsp.example.com',
+    managementCockpitUrl: 'https://management.example.com',
   };
 
   beforeEach(async () => {
@@ -154,11 +153,10 @@ describe('SettingsTabComponent', () => {
 
   it('should initialize links form', () => {
     expect(component.linksForm).toBeDefined();
-    expect(component.linksForm.get('orbisWebsiteUrl')?.value).toBe('https://www.orbis.de');
-    expect(component.linksForm.get('dspControlUrl')?.value).toBe('https://dsp.example.com');
-    expect(component.linksForm.get('managementCockpitUrl')?.value).toBe('https://management.example.com');
     expect(component.linksForm.get('grafanaDashboardUrl')?.value).toBe('https://grafana.example.com');
     expect(component.linksForm.get('smartfactoryDashboardUrl')?.value).toBe('/dsp-action');
+    expect(component.linksForm.get('dspControlUrl')?.value).toBe('https://dsp.example.com');
+    expect(component.linksForm.get('managementCockpitUrl')?.value).toBe('https://management.example.com');
   });
 
   it('should save environment connection settings', () => {
@@ -214,7 +212,7 @@ describe('SettingsTabComponent', () => {
 
   it('should save external links', () => {
     component.linksForm.patchValue({
-      orbisWebsiteUrl: 'https://new.orbis.de',
+      grafanaDashboardUrl: 'https://new.grafana.example.com',
     });
     component.saveExternalLinks();
     expect(externalLinksService.updateSettings).toHaveBeenCalled();
@@ -223,7 +221,7 @@ describe('SettingsTabComponent', () => {
 
   it('should not save invalid links form', () => {
     component.linksForm.patchValue({
-      orbisWebsiteUrl: '', // Invalid: required field
+      grafanaDashboardUrl: '', // Invalid: required field
     });
     component.saveExternalLinks();
     expect(externalLinksService.updateSettings).not.toHaveBeenCalled();
