@@ -70,6 +70,8 @@ interface RenderFixed {
   height: number;
   background?: string;
   icon?: string;
+  iconWidth?: number; // Optional explicit icon width (for DSP logo with specific sizing)
+  iconHeight?: number; // Optional explicit icon height (for DSP logo with specific sizing)
   highlighted: boolean;
   showLabel: boolean;
   labelPosition?: 'bottom' | 'right' | 'left'; // Label position relative to icon
@@ -702,6 +704,19 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     const isDsp = cell.name?.toUpperCase() === 'DSP' || cell.id?.toUpperCase().includes('DSP');
     const labelPosition: 'bottom' | 'right' | 'left' = isDsp ? 'right' : 'bottom';
 
+    // For DSP logo: calculate size based on maximum x-coordinate (width)
+    // New SVG dimensions: 260 x 120 mm, aspect ratio: 260/120 = 2.167
+    // Use maximum width available in cell, maintain aspect ratio
+    let iconWidth: number | undefined;
+    let iconHeight: number | undefined;
+    if (isDsp && icon) {
+      // Use maximum width (cell.width * 0.95 for minimal padding), maintain aspect ratio
+      const maxWidth = cell.size.w * 0.95;
+      const aspectRatio = 260 / 120; // 2.167
+      iconWidth = maxWidth;
+      iconHeight = maxWidth / aspectRatio;
+    }
+
     return {
       id: cell.id,
       label: cell.name ?? cell.id,
@@ -711,8 +726,10 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       height: cell.size.h,
       background: cell.background_color,
       icon,
+      iconWidth,
+      iconHeight,
       highlighted,
-      showLabel: cell.show_name !== false,
+      showLabel: isDsp ? false : (cell.show_name !== false), // Hide label for DSP cell
       labelPosition,
     };
   }

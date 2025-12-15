@@ -73,7 +73,13 @@
           (keydown.space)="onFixedActivate(fixed, $event)"
           (dblclick)="onFixedDouble(fixed, $event)"
         >
-          <img *ngIf="fixed.icon" [src]="fixed.icon" [alt]="fixed.label" />
+          <img 
+            *ngIf="fixed.icon" 
+            [src]="fixed.icon" 
+            [alt]="fixed.label"
+            [style.width.px]="fixed.iconWidth"
+            [style.height.px]="fixed.iconHeight"
+          />
           <span *ngIf="fixed.showLabel" class="preview__module-label preview__fixed-label">{{ fixed.label }}</span>
         </div>
       </ng-container>

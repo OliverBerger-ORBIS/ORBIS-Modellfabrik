@@ -83,7 +83,7 @@ export const ICON_MAP: Record<IconKey, string> = {
   'logo-orbis': ICONS.brand.orbis,
   'logo-sap': ICONS.brand.sap,
   'logo-azure': ICONS.brand.azure,
-  'logo-dsp': ICONS.brand.orbis,
+  'logo-dsp': ICONS.brand.dsp,
   'logo-grafana': ICONS.brand.grafana,
   'logo-distributed': ICONS.dsp.architecture.edgeBox,
 

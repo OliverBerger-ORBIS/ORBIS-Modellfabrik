@@ -482,7 +482,7 @@ export const SHOPFLOOR_ASSET_MAP: Record<string, string> = {
   DPS_SQUARE1: 'assets/svg/shopfloor/systems/warehouse-system.svg',
   DPS_SQUARE2: 'assets/svg/shopfloor/shared/order-tracking.svg',
   ORBIS: 'assets/svg/brand/orbis-logo.svg',
-  DSP: 'assets/svg/brand/dsp-logo.svg',
+  DSP: 'assets/svg/brand/orbis-dsp-logo.svg',
   'INTERSECTION-1': 'assets/svg/shopfloor/intersections/intersection-1.svg',
   'INTERSECTION-2': 'assets/svg/shopfloor/intersections/intersection-2.svg',
   'INTERSECTION-3': 'assets/svg/shopfloor/intersections/intersection-3.svg',

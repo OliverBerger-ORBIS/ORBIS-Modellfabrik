@@ -3,7 +3,7 @@ export const ICONS = {
     orbis: 'assets/svg/brand/orbis-logo.svg',
     sap: 'assets/svg/brand/sap-logo.svg',
     azure: 'assets/svg/brand/azure-logo.svg',
-    dsp: 'assets/svg/brand/dsp-logo.svg',
+    dsp: 'assets/svg/brand/orbis-dsp-logo.svg',
     grafana: 'assets/svg/brand/grafana-logo.svg',
   },
   shopfloor: {
