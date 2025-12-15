@@ -10,6 +10,7 @@
   ],
   "include": [
     "src/**/*.d.ts",
+    "src/environments/**/*.ts",
     "../../libs/gateway/src/**/*.ts",
     "../../libs/testing-fixtures/src/**/*.ts",
     "../../libs/entities/src/**/*.ts",
