@@ -61,7 +61,7 @@ describe('MessageValidationService', () => {
     });
   });
 
-  describe('registerSchema', () => {
+  describe('registerSchema and validate', () => {
     it('should register a valid schema', () => {
       const schema = {
         type: 'object',
@@ -78,6 +78,81 @@ describe('MessageValidationService', () => {
 
       // Verify schema is registered
       expect(service.hasSchema('test/topic')).toBe(true);
+    });
+
+    it('should validate message against registered schema', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          value: { type: 'number' },
+        },
+        required: ['id'],
+      };
+
+      service.registerSchema('test/valid', schema);
+
+      // Valid message
+      const validResult = service.validate('test/valid', { id: 'test', value: 42 });
+      expect(validResult.valid).toBe(true);
+      expect(validResult.errors).toBeUndefined();
+    });
+
+    it('should reject invalid message with errors', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          count: { type: 'number' },
+        },
+        required: ['id', 'count'],
+      };
+
+      service.registerSchema('test/invalid', schema);
+
+      // Missing required field
+      const result1 = service.validate('test/invalid', { id: 'test' });
+      expect(result1.valid).toBe(false);
+      expect(result1.errors).toBeDefined();
+      expect(result1.errors!.length).toBeGreaterThan(0);
+
+      // Wrong type
+      const result2 = service.validate('test/invalid', { id: 123, count: 'not-a-number' });
+      expect(result2.valid).toBe(false);
+      expect(result2.errors).toBeDefined();
+    });
+
+    it('should handle complex nested schemas', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          user: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              age: { type: 'number' },
+            },
+            required: ['name'],
+          },
+        },
+        required: ['user'],
+      };
+
+      service.registerSchema('test/nested', schema);
+
+      // Valid nested
+      const validResult = service.validate('test/nested', {
+        user: { name: 'John', age: 30 },
+      });
+      expect(validResult.valid).toBe(true);
+
+      // Invalid nested - wrong type for age
+      const invalidResult = service.validate('test/nested', {
+        user: { name: 'John', age: 'thirty' }, // age should be number
+      });
+      expect(invalidResult.valid).toBe(false);
+      expect(invalidResult.errors).toBeDefined();
+      expect(invalidResult.errors!.length).toBeGreaterThan(0);
     });
 
     it('should handle invalid schema gracefully', () => {
