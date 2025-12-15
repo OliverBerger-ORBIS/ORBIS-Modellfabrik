@@ -21,6 +21,7 @@ import {
 } from './layout.config';
 import { ModuleNameService } from '../../services/module-name.service';
 import { ExternalLinksService } from '../../services/external-links.service';
+import type { CustomerDspConfig } from './configs/types';
 
 /**
  * DspAnimationComponent - Animated SVG-based architecture diagram.
@@ -40,6 +41,7 @@ import { ExternalLinksService } from '../../services/external-links.service';
 export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   @Input() viewMode: ViewMode = 'functional';
   @Input() initialStep?: number; // Optional: Start step (0-based). If undefined, starts at 0. Use -1 for last step.
+  @Input() customerConfig?: CustomerDspConfig; // Optional: Customer-specific configuration for labels and icons
   @Output() actionTriggered = new EventEmitter<{ id: string; url: string }>();
 
   // Diagram configuration
@@ -204,6 +206,11 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     this.revealedFunctionIcons = new Set<IconKey>();
     this.initializeModuleLabels();
     
+    // Apply customer-specific mappings if provided
+    if (this.customerConfig) {
+      this.applyCustomerMappings(this.customerConfig);
+    }
+    
     // Update container URLs from ExternalLinksService
     this.updateContainerUrls();
     
@@ -240,6 +247,63 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
       const name = this.moduleNameService.getModuleFullName(moduleId);
       if (name) {
         this.containerLabels[id] = name;
+      }
+    });
+  }
+
+  /**
+   * Apply customer-specific mappings to containers.
+   * This allows different customers to have different labels and icons for the same containers.
+   */
+  private applyCustomerMappings(config: CustomerDspConfig): void {
+    this.containers.forEach(container => {
+      // Map Shopfloor Devices
+      if (container.id.startsWith('sf-device-')) {
+        const mapping = config.sfDevices.find(d => d.id === container.id);
+        if (mapping) {
+          // Update label in containerLabels map
+          this.containerLabels[container.id] = mapping.label;
+          // Update icon path
+          if (mapping.customIconPath) {
+            container.logoIconKey = mapping.customIconPath as IconKey;
+          } else {
+            // Use generic icon from icons directory
+            container.logoIconKey = `generic-device-${mapping.iconKey}` as IconKey;
+          }
+        }
+      }
+      
+      // Map Shopfloor Systems
+      if (container.id.startsWith('sf-system-')) {
+        const mapping = config.sfSystems.find(s => s.id === container.id);
+        if (mapping) {
+          this.containerLabels[container.id] = mapping.label;
+          if (mapping.customIconPath) {
+            container.logoIconKey = mapping.customIconPath as IconKey;
+          } else {
+            container.logoIconKey = `generic-system-${mapping.iconKey}` as IconKey;
+          }
+        }
+      }
+      
+      // Map Business Processes
+      if (container.id.startsWith('bp-')) {
+        const mapping = config.bpProcesses.find(bp => bp.id === container.id);
+        if (mapping) {
+          this.containerLabels[container.id] = mapping.label;
+          // Update primary icon
+          if (mapping.customIconPath) {
+            container.logoIconKey = mapping.customIconPath as IconKey;
+          } else {
+            container.logoIconKey = `generic-system-${mapping.iconKey}` as IconKey;
+          }
+          // Update brand logo
+          if (mapping.customBrandPath) {
+            container.secondaryLogoIconKey = mapping.customBrandPath as IconKey;
+          } else {
+            container.secondaryLogoIconKey = `generic-brand-${mapping.brandLogoKey}` as IconKey;
+          }
+        }
       }
     });
   }

@@ -68,7 +68,18 @@ export type IconKey =
   | 'aws-logo'
   | 'google-cloud-logo'
   | 'logo-edge'
-  | 'logo-mc';
+  | 'logo-mc'
+  // Generic device icons
+  | 'generic-device-drill' | 'generic-device-mill' | 'generic-device-oven'
+  | 'generic-device-laser' | 'generic-device-cnc' | 'generic-device-printer-3d'
+  | 'generic-device-robot-arm' | 'generic-device-conveyor' | 'generic-device-warehouse'
+  | 'generic-device-agv' | 'generic-device-hbw'
+  // Generic system icons
+  | 'generic-system-warehouse-system' | 'generic-system-erp' | 'generic-system-mes'
+  | 'generic-system-cloud' | 'generic-system-analytics'
+  // Generic brand icons
+  | 'generic-brand-sap' | 'generic-brand-alpha-x' | 'generic-brand-aws'
+  | 'generic-brand-azure' | 'generic-brand-powerbi' | 'generic-brand-grafana';
 
 export interface FunctionIconConfig {
   iconKey: IconKey;
@@ -150,6 +161,34 @@ export const ICON_MAP: Record<IconKey, string> = {
   'google-cloud-logo': 'assets/svg/brand/google-cloud-logo.svg',
   'logo-edge': 'assets/svg/dsp/architecture/dsp-edge-box.svg',
   'logo-mc': 'assets/svg/dsp/architecture/dsp-mc-box.svg',
+  
+  // Generic device icons (customer-agnostic)
+  'generic-device-drill': 'assets/icons/devices/drill.svg',
+  'generic-device-mill': 'assets/icons/devices/mill.svg',
+  'generic-device-oven': 'assets/icons/devices/oven.svg',
+  'generic-device-laser': 'assets/icons/devices/laser.svg',
+  'generic-device-cnc': 'assets/icons/devices/cnc.svg',
+  'generic-device-printer-3d': 'assets/icons/devices/printer-3d.svg',
+  'generic-device-robot-arm': 'assets/icons/devices/robot-arm.svg',
+  'generic-device-conveyor': 'assets/icons/devices/conveyor.svg',
+  'generic-device-warehouse': 'assets/icons/devices/warehouse.svg',
+  'generic-device-agv': 'assets/icons/devices/agv.svg',
+  'generic-device-hbw': 'assets/icons/devices/hbw.svg',
+  
+  // Generic system icons
+  'generic-system-warehouse-system': 'assets/icons/systems/warehouse.svg',
+  'generic-system-erp': 'assets/icons/systems/erp.svg',
+  'generic-system-mes': 'assets/icons/systems/mes.svg',
+  'generic-system-cloud': 'assets/icons/systems/cloud.svg',
+  'generic-system-analytics': 'assets/icons/systems/cloud.svg', // Using cloud as fallback for analytics
+  
+  // Generic brand icons
+  'generic-brand-sap': 'assets/icons/brands/sap.svg',
+  'generic-brand-alpha-x': 'assets/icons/brands/alpha-x.svg',
+  'generic-brand-aws': 'assets/icons/brands/aws.svg',
+  'generic-brand-azure': 'assets/icons/brands/azure.svg',
+  'generic-brand-powerbi': 'assets/icons/brands/powerbi.svg',
+  'generic-brand-grafana': 'assets/icons/brands/grafana.svg',
 };
 
 export function getIconPath(key: IconKey | undefined | null): string {
