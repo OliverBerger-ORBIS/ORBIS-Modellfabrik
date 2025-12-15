@@ -186,7 +186,8 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['viewMode'] && !changes['viewMode'].isFirstChange()) ||
-        (changes['initialStep'] && !changes['initialStep'].isFirstChange())) {
+        (changes['initialStep'] && !changes['initialStep'].isFirstChange()) ||
+        (changes['customerConfig'] && !changes['customerConfig'].isFirstChange())) {
       this.loadConfiguration();
     }
   }

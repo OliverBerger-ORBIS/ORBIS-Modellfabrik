@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { DspAnimationComponent } from '@app/components/dsp-animation/dsp-animation.component';
-import { FMF_CONFIG } from '@app/components/dsp-animation/configs/fmf/fmf-config';
+import { DspAnimationComponent } from '../../../../components/dsp-animation/dsp-animation.component';
+import { FMF_CONFIG } from '../../../../components/dsp-animation/configs/fmf/fmf-config';
 
 /**
  * FMF (Fischertechnik Modellfabrik) DSP Architecture Page

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { DspAnimationComponent } from '@app/components/dsp-animation/dsp-animation.component';
-import { DEF_CONFIG } from '@app/components/dsp-animation/configs/def/def-config';
+import { DspAnimationComponent } from '../../../../components/dsp-animation/dsp-animation.component';
+import { DEF_CONFIG } from '../../../../components/dsp-animation/configs/def/def-config';
 
 /**
  * DEF (Digital Engineering Facility) DSP Architecture Page
