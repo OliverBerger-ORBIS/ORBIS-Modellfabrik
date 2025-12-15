@@ -54,7 +54,7 @@ jobs:
         EOF
     
     - name: Build OMF3 (All Locales)
-      run: npx nx build ccu-ui --configuration=production --localize
+      run: npx nx build ccu-ui --configuration=production --localize --baseHref=/ORBIS-Modellfabrik/
     
     - name: Prepare deployment
       run: |
