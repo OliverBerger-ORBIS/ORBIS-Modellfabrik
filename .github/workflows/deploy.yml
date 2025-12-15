@@ -59,7 +59,7 @@ jobs:
     - name: Prepare deployment
       run: |
         mkdir -p _site
-        cp -r dist/apps/ccu-ui/* _site/
+        cp -r dist/apps/ccu-ui/browser/* _site/
         
         cat > _site/index.html << 'EOF'
         <!DOCTYPE html>
