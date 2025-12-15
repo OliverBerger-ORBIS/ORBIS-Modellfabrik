@@ -19,7 +19,7 @@ export type GenericIconKey =
  * Mapping configuration for a shopfloor device
  */
 export interface DeviceMapping {
-  /** Abstract ID (e.g., 'sf-device-1', 'sf-device-2') */
+  /** Container ID (e.g., 'sf-device-mill', 'sf-device-drill', 'sf-device-hbw') */
   id: string;
   /** Customer-specific label for the device */
   label: string;
@@ -33,7 +33,7 @@ export interface DeviceMapping {
  * Mapping configuration for a shopfloor system
  */
 export interface SystemMapping {
-  /** Abstract ID (e.g., 'sf-system-1', 'sf-system-2') */
+  /** Container ID (e.g., 'sf-system-any', 'sf-system-fts', 'sf-system-warehouse') */
   id: string;
   /** Customer-specific label for the system */
   label: string;
@@ -47,7 +47,7 @@ export interface SystemMapping {
  * Mapping configuration for a business process
  */
 export interface BusinessProcessMapping {
-  /** Abstract ID (e.g., 'bp-1', 'bp-2') */
+  /** Container ID (e.g., 'bp-erp', 'bp-mes', 'bp-cloud') */
   id: string;
   /** Customer-specific label for the process */
   label: string;
@@ -56,7 +56,7 @@ export interface BusinessProcessMapping {
   /** Brand logo key (e.g., sap, alpha-x, aws, azure) */
   brandLogoKey: GenericIconKey;
   /** Optional: override with custom brand logo path */
-  customBrandPath?: string;
+  customBrandLogoPath?: string;
 }
 
 /**

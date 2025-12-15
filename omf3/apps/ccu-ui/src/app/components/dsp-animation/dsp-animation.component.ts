@@ -299,8 +299,8 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
             container.logoIconKey = `generic-system-${mapping.iconKey}` as IconKey;
           }
           // Update brand logo
-          if (mapping.customBrandPath) {
-            container.secondaryLogoIconKey = mapping.customBrandPath as IconKey;
+          if (mapping.customBrandLogoPath) {
+            container.secondaryLogoIconKey = mapping.customBrandLogoPath as IconKey;
           } else {
             container.secondaryLogoIconKey = `generic-brand-${mapping.brandLogoKey}` as IconKey;
           }
