@@ -112,17 +112,54 @@ export const ACME_CONFIG: CustomerDspConfig = {
 
 ### Verfügbare Icon Keys
 
-**Devices:**
-- `drill`, `mill`, `oven`, `laser`, `cnc`, `printer-3d`
-- `hydraulic`, `weight`
-- `robot-arm`, `conveyor`, `warehouse`, `agv`, `hbw`
+**Devices (Shopfloor Stations):**
+- `drill` - Drill Station
+- `mill` - Mill Station
+- `oven` - Oven Station
+- `laser` - Laser Station
+- `cnc` - CNC Station
+- `printer-3d` - 3D Printer Station
+- `hydraulic` - Hydraulic Station
+- `weight` - Weight Station
+- `robot-arm` - Robotic Arm Station
+- `conveyor` - Conveyor Station
+- `warehouse` - Warehouse Device
+- `agv` - AGV Device (wird zu `dps` gemappt)
+- `dps` - DPS Station
+- `hbw` - HBW Station
+- `hbw` - HBW (High Bay Warehouse)
+- `dps` - DPS (Distribution & Picking System) - **NEU**
+- `aiqs` - AIQS (AI Quality System) - **NEU**
 
-**Systems:**
-- `warehouse-system`, `scada`, `industrial-process`, `cargo`, `pump`
-- `erp`, `mes`, `cloud`, `analytics`
+**Systems (Shopfloor Systems):**
+- `warehouse-system` - Warehouse System
+- `scada` - SCADA System
+- `industrial-process` - Industrial Process System
+- `cargo` - Cargo System
+- `pump` - Pump System
+- `agv` - AGV System (wird zu `agv-system` gemappt, verwendet `shopfloor-fts` Icon)
+- `agv-system` - AGV System (explizit) - **NEU**
+
+**Business Processes:**
+- `erp` - ERP Applications
+- `mes` - MES Applications
+- `cloud` - Cloud Applications
+- `analytics` - Analytics Applications
 
 **Brand Logos:**
-- `sap`, `alpha-x`, `aws`, `azure`, `powerbi`, `grafana`
+- `sap` - SAP Logo
+- `alpha-x` - Alpha-X Logo
+- `aws` - AWS Logo
+- `azure` - Azure Logo
+- `powerbi` - PowerBI Logo
+- `grafana` - Grafana Logo
+- `googlecloud` - Google Cloud Logo
+- `alpha-x` - Alpha-X Logo
+- `aws` - AWS Logo
+- `azure` - Azure Logo
+- `powerbi` - PowerBI Logo
+- `grafana` - Grafana Logo
+- `google-cloud` - Google Cloud Logo - **NEU** (als `google-cloud-logo` in Icon-Registry)
 
 ## Schritt 3: I18n-Übersetzungen hinzufügen
 

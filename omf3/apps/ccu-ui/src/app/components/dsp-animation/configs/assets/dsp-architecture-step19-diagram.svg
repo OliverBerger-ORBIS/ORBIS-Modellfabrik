@@ -1,0 +1,207 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1140" style="background: #f5f5f5;">
+  <!-- Layer Backgrounds -->
+  <!-- Business Process Layer (white) -->
+  <rect x="0" y="80" width="1200" height="260" fill="#ffffff" stroke="rgba(22, 65, 148, 0.1)" stroke-width="1"/>
+  <text x="10" y="100" font-family="Arial, sans-serif" font-size="14" fill="#163494">Business Process Layer</text>
+  
+  <!-- DSP Layer (blue) -->
+  <rect x="0" y="340" width="1200" height="540" fill="rgba(207, 230, 255, 0.5)" stroke="rgba(22, 65, 148, 0.15)" stroke-width="1"/>
+  <text x="10" y="360" font-family="Arial, sans-serif" font-size="14" fill="#163494">DSP Layer</text>
+  
+  <!-- Shopfloor Layer (gray) -->
+  <rect x="0" y="880" width="1200" height="260" fill="rgba(241, 243, 247, 0.8)" stroke="rgba(31, 54, 91, 0.12)" stroke-width="1"/>
+  <text x="10" y="900" font-family="Arial, sans-serif" font-size="14" fill="#163494">Shopfloor Layer</text>
+  
+  <!-- Business Process Containers -->
+  <g id="business-layer">
+    <!-- bp-erp -->
+    <rect x="100" y="145" width="200" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="4"/>
+    <text x="200" y="165" font-family="Arial, sans-serif" font-size="12" fill="#163494" text-anchor="middle" font-weight="bold">bp-erp</text>
+    <text x="200" y="180" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">ERP Applications</text>
+    <text x="200" y="270" font-family="Arial, sans-serif" font-size="10" fill="#163494" text-anchor="middle">SAP</text>
+    
+    <!-- bp-mes -->
+    <rect x="330" y="145" width="200" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="4"/>
+    <text x="430" y="165" font-family="Arial, sans-serif" font-size="12" fill="#163494" text-anchor="middle" font-weight="bold">bp-mes</text>
+    <text x="430" y="180" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">MES Applications</text>
+    <text x="430" y="270" font-family="Arial, sans-serif" font-size="10" fill="#163494" text-anchor="middle">ORBIS</text>
+    
+    <!-- bp-cloud -->
+    <rect x="560" y="145" width="200" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="4"/>
+    <text x="660" y="165" font-family="Arial, sans-serif" font-size="12" fill="#163494" text-anchor="middle" font-weight="bold">bp-cloud</text>
+    <text x="660" y="180" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">Cloud Applications</text>
+    <text x="660" y="270" font-family="Arial, sans-serif" font-size="10" fill="#163494" text-anchor="middle">AWS / GCP</text>
+    
+    <!-- bp-analytics -->
+    <rect x="790" y="145" width="200" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="4"/>
+    <text x="890" y="165" font-family="Arial, sans-serif" font-size="12" fill="#163494" text-anchor="middle" font-weight="bold">bp-analytics</text>
+    <text x="890" y="180" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">Analytics</text>
+    <text x="890" y="270" font-family="Arial, sans-serif" font-size="10" fill="#163494" text-anchor="middle">Grafana</text>
+    
+    <!-- bp-data-lake -->
+    <rect x="1020" y="145" width="170" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="4"/>
+    <text x="1105" y="165" font-family="Arial, sans-serif" font-size="12" fill="#163494" text-anchor="middle" font-weight="bold">bp-data-lake</text>
+    <text x="1105" y="180" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">Data Lake</text>
+  </g>
+  
+  <!-- DSP Layer Containers -->
+  <g id="dsp-layer">
+    <!-- dsp-ux -->
+    <rect x="100" y="580" width="175" height="330" fill="#ffffff" stroke="#163494" stroke-width="2" rx="4"/>
+    <text x="187.5" y="600" font-family="Arial, sans-serif" font-size="12" fill="#163494" text-anchor="middle" font-weight="bold">dsp-ux</text>
+    <text x="187.5" y="615" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">SmartFactory</text>
+    <text x="187.5" y="630" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">Dashboard</text>
+    
+    <!-- dsp-edge -->
+    <rect x="325" y="410" width="480" height="540" fill="rgba(255, 255, 255, 0.95)" stroke="#163494" stroke-width="2" rx="4"/>
+    <text x="565" y="430" font-family="Arial, sans-serif" font-size="12" fill="#163494" text-anchor="middle" font-weight="bold">dsp-edge</text>
+    <text x="565" y="445" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">DSP Edge (On Premise)</text>
+    <text x="565" y="460" font-family="Arial, sans-serif" font-size="9" fill="#999" text-anchor="middle">9 Function Icons</text>
+    <text x="565" y="475" font-family="Arial, sans-serif" font-size="9" fill="#999" text-anchor="middle">8 Edge Components</text>
+    
+    <!-- Edge Components Grid (simplified) -->
+    <g id="edge-components" opacity="0.3">
+      <rect x="335" y="490" width="140" height="100" fill="#ffffff" stroke="#163494" stroke-width="1" rx="2"/>
+      <text x="405" y="540" font-family="Arial, sans-serif" font-size="8" fill="#163494" text-anchor="middle">DISC</text>
+      <rect x="495" y="490" width="140" height="100" fill="#ffffff" stroke="#163494" stroke-width="1" rx="2"/>
+      <text x="565" y="540" font-family="Arial, sans-serif" font-size="8" fill="#163494" text-anchor="middle">Event Bus</text>
+      <rect x="655" y="490" width="140" height="100" fill="#ffffff" stroke="#163494" stroke-width="1" rx="2"/>
+      <text x="725" y="540" font-family="Arial, sans-serif" font-size="8" fill="#163494" text-anchor="middle">App Server</text>
+      <rect x="335" y="610" width="140" height="100" fill="#ffffff" stroke="#163494" stroke-width="1" rx="2"/>
+      <text x="405" y="660" font-family="Arial, sans-serif" font-size="8" fill="#163494" text-anchor="middle">Router</text>
+      <rect x="495" y="610" width="140" height="100" fill="#ffffff" stroke="#163494" stroke-width="1" rx="2"/>
+      <text x="565" y="660" font-family="Arial, sans-serif" font-size="8" fill="#163494" text-anchor="middle">Agent</text>
+      <rect x="655" y="610" width="140" height="100" fill="#ffffff" stroke="#163494" stroke-width="1" rx="2"/>
+      <text x="725" y="660" font-family="Arial, sans-serif" font-size="8" fill="#163494" text-anchor="middle">Log Server</text>
+      <rect x="335" y="730" width="140" height="100" fill="#ffffff" stroke="#163494" stroke-width="1" rx="2"/>
+      <text x="405" y="780" font-family="Arial, sans-serif" font-size="8" fill="#163494" text-anchor="middle">DISI</text>
+      <rect x="495" y="730" width="140" height="100" fill="#ffffff" stroke="#163494" stroke-width="1" rx="2"/>
+      <text x="565" y="780" font-family="Arial, sans-serif" font-size="8" fill="#163494" text-anchor="middle">Database</text>
+    </g>
+    
+    <!-- dsp-mc -->
+    <rect x="855" y="410" width="315" height="540" fill="rgba(255, 255, 255, 0.95)" stroke="#163494" stroke-width="2" rx="4"/>
+    <text x="1012.5" y="430" font-family="Arial, sans-serif" font-size="12" fill="#163494" text-anchor="middle" font-weight="bold">dsp-mc</text>
+    <text x="1012.5" y="445" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">Management Cockpit</text>
+    <text x="1012.5" y="460" font-family="Arial, sans-serif" font-size="9" fill="#999" text-anchor="middle">(Cloud)</text>
+    <text x="1012.5" y="475" font-family="Arial, sans-serif" font-size="9" fill="#999" text-anchor="middle">6 Function Icons</text>
+  </g>
+  
+  <!-- Shopfloor Layer -->
+  <g id="shopfloor-layer">
+    <!-- Systems Group -->
+    <rect x="100" y="890" width="500" height="165" fill="#ffffff" stroke="rgba(0, 0, 0, 0.08)" stroke-width="1" rx="4"/>
+    <text x="350" y="910" font-family="Arial, sans-serif" font-size="12" fill="#163494" text-anchor="middle" font-weight="bold">sf-systems-group</text>
+    
+    <!-- Systems -->
+    <rect x="120" y="900" width="100" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="170" y="1000" font-family="Arial, sans-serif" font-size="9" fill="#163494" text-anchor="middle">sf-system-any</text>
+    
+    <rect x="240" y="900" width="100" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="290" y="1000" font-family="Arial, sans-serif" font-size="9" fill="#163494" text-anchor="middle">sf-system-fts</text>
+    
+    <rect x="360" y="900" width="100" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="410" y="1000" font-family="Arial, sans-serif" font-size="9" fill="#163494" text-anchor="middle">sf-system-warehouse</text>
+    
+    <rect x="480" y="900" width="100" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="530" y="1000" font-family="Arial, sans-serif" font-size="9" fill="#163494" text-anchor="middle">sf-system-factory</text>
+    
+    <!-- Devices Group -->
+    <rect x="640" y="890" width="530" height="165" fill="#ffffff" stroke="rgba(0, 0, 0, 0.08)" stroke-width="1" rx="4"/>
+    <text x="905" y="910" font-family="Arial, sans-serif" font-size="12" fill="#163494" text-anchor="middle" font-weight="bold">sf-devices-group</text>
+    
+    <!-- Devices -->
+    <rect x="660" y="900" width="80" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="700" y="1000" font-family="Arial, sans-serif" font-size="9" fill="#163494" text-anchor="middle">mill</text>
+    
+    <rect x="760" y="900" width="80" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="800" y="1000" font-family="Arial, sans-serif" font-size="9" fill="#163494" text-anchor="middle">drill</text>
+    
+    <rect x="860" y="900" width="80" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="900" y="1000" font-family="Arial, sans-serif" font-size="9" fill="#163494" text-anchor="middle">aiqs</text>
+    
+    <rect x="960" y="900" width="80" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="1000" y="1000" font-family="Arial, sans-serif" font-size="9" fill="#163494" text-anchor="middle">hbw</text>
+    
+    <rect x="1060" y="900" width="80" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="1100" y="1000" font-family="Arial, sans-serif" font-size="9" fill="#163494" text-anchor="middle">dps</text>
+    
+    <rect x="1160" y="900" width="80" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="1200" y="1000" font-family="Arial, sans-serif" font-size="9" fill="#163494" text-anchor="middle">chrg</text>
+  </g>
+  
+  <!-- Connections from Business Process to Edge -->
+  <g id="connections-bp" stroke="#666" stroke-width="2" fill="none" marker-end="url(#arrowhead)">
+    <path d="M 200 285 L 200 340 L 565 410" stroke-dasharray="5,5"/>
+    <text x="200" y="320" font-family="Arial, sans-serif" font-size="8" fill="#666">conn_bp-erp_dsp-edge</text>
+    
+    <path d="M 430 285 L 430 340 L 565 410"/>
+    <text x="430" y="320" font-family="Arial, sans-serif" font-size="8" fill="#666">conn_bp-mes_dsp-edge</text>
+    
+    <path d="M 660 285 L 660 340 L 565 410"/>
+    <text x="660" y="320" font-family="Arial, sans-serif" font-size="8" fill="#666">conn_bp-cloud_dsp-edge</text>
+    
+    <path d="M 890 285 L 890 340 L 565 410"/>
+    <text x="890" y="320" font-family="Arial, sans-serif" font-size="8" fill="#666">conn_bp-analytics_dsp-edge</text>
+    
+    <path d="M 1105 285 L 1105 340 L 565 410"/>
+    <text x="1105" y="320" font-family="Arial, sans-serif" font-size="8" fill="#666">conn_bp-data-lake_dsp-edge</text>
+  </g>
+  
+  <!-- Connections in DSP Layer -->
+  <g id="connections-dsp" stroke="#666" stroke-width="2" fill="none" marker-end="url(#arrowhead)">
+    <path d="M 275 745 L 325 745"/>
+    <text x="300" y="740" font-family="Arial, sans-serif" font-size="8" fill="#666">conn_dsp-ux_dsp-edge</text>
+    
+    <path d="M 805 745 L 855 745"/>
+    <text x="830" y="740" font-family="Arial, sans-serif" font-size="8" fill="#666">conn_dsp-edge_dsp-mc</text>
+  </g>
+  
+  <!-- Connections from Edge to Shopfloor -->
+  <g id="connections-sf" stroke="#666" stroke-width="2" fill="none" marker-end="url(#arrowhead)">
+    <path d="M 565 950 L 565 880 L 170 900"/>
+    <text x="370" y="920" font-family="Arial, sans-serif" font-size="8" fill="#666">conn_dsp-edge_sf-system-any</text>
+    
+    <path d="M 565 950 L 565 880 L 290 900"/>
+    <text x="430" y="920" font-family="Arial, sans-serif" font-size="8" fill="#666">conn_dsp-edge_sf-system-fts</text>
+    
+    <path d="M 565 950 L 565 880 L 700 900"/>
+    <text x="635" y="920" font-family="Arial, sans-serif" font-size="8" fill="#666">conn_dsp-edge_sf-device-mill</text>
+    
+    <path d="M 565 950 L 565 880 L 800 900"/>
+    <text x="685" y="920" font-family="Arial, sans-serif" font-size="8" fill="#666">conn_dsp-edge_sf-device-drill</text>
+    
+    <path d="M 565 950 L 565 880 L 900 900"/>
+    <text x="735" y="920" font-family="Arial, sans-serif" font-size="8" fill="#666">conn_dsp-edge_sf-device-aiqs</text>
+    
+    <path d="M 565 950 L 565 880 L 1000 900"/>
+    <text x="785" y="920" font-family="Arial, sans-serif" font-size="8" fill="#666">conn_dsp-edge_sf-device-hbw</text>
+    
+    <path d="M 565 950 L 565 880 L 1100 900"/>
+    <text x="835" y="920" font-family="Arial, sans-serif" font-size="8" fill="#666">conn_dsp-edge_sf-device-dps</text>
+    
+    <path d="M 565 950 L 565 880 L 1200 900"/>
+    <text x="885" y="920" font-family="Arial, sans-serif" font-size="8" fill="#666">conn_dsp-edge_sf-device-chrg</text>
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#666"/>
+    </marker>
+    <linearGradient id="shopfloor-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f1f3f7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e0e4ea;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Legend -->
+  <g id="legend" transform="translate(20, 20)">
+    <rect x="0" y="0" width="200" height="50" fill="rgba(255, 255, 255, 0.9)" stroke="#ccc" stroke-width="1" rx="4"/>
+    <text x="10" y="15" font-family="Arial, sans-serif" font-size="10" fill="#163494" font-weight="bold">Legend</text>
+    <line x1="10" y1="25" x2="30" y2="25" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="35" y="28" font-family="Arial, sans-serif" font-size="9" fill="#666">Connection</text>
+    <line x1="10" y1="40" x2="30" y2="40" stroke="#666" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+    <text x="35" y="43" font-family="Arial, sans-serif" font-size="9" fill="#666">Bidirectional</text>
+  </g>
+</svg>
