@@ -1,12 +1,12 @@
-Topic: module/v1/ff/SVR4H76449/order
+Topic: module/v1/ff/SVR4H76530/order
 Payload: 
 {
   "timestamp": "2025-01-01T00:00:00.000Z",
-  "serialNumber": "SVR4H76449",
-  "orderId": "ORDER_DRILL_SEQUENCE_001",
+  "serialNumber": "SVR4H76530",
+  "orderId": "ORDER_AIQS_SEQUENCE_001",
   "orderUpdateId": 1,
   "action": {
-    "id": "action_drill_pick_001",
+    "id": "action_aiqs_pick_001",
     "command": "PICK",
     "metadata": {
       "type": "WHITE",
@@ -17,27 +17,26 @@ Payload:
 
 {
   "timestamp": "2025-01-01T00:00:00.000Z",
-  "serialNumber": "SVR4H76449",
-  "orderId": "ORDER_DRILL_SEQUENCE_001",
+  "serialNumber": "SVR4H76530",
+  "orderId": "ORDER_AIQS_SEQUENCE_001",
   "orderUpdateId": 2,
   "action": {
-    "id": "action_drill_drill_002",
-    "command": "DRILL",
+    "id": "action_aiqs_check_quality_002",
+    "command": "CHECK_QUALITY",
     "metadata": {
       "type": "WHITE",
-      "workpieceId": "04a189ca341290",
-      "duration": 10
+      "workpieceId": "04a189ca341290"
     }
   }
 }
 
 {
   "timestamp": "2025-01-01T00:00:00.000Z",
-  "serialNumber": "SVR4H76449",
-  "orderId": "ORDER_DRILL_SEQUENCE_001",
+  "serialNumber": "SVR4H76530",
+  "orderId": "ORDER_AIQS_SEQUENCE_001",
   "orderUpdateId": 3,
   "action": {
-    "id": "action_drill_drop_003",
+    "id": "action_aiqs_drop_003",
     "command": "DROP",
     "metadata": {
       "type": "WHITE",

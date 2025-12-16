@@ -30,6 +30,23 @@ interface ModuleCommand {
   handler: () => Promise<void> | void;
 }
 
+interface SequenceCommand {
+  timestamp?: string;
+  serialNumber: string;
+  orderId: string;
+  orderUpdateId: number;
+  action: {
+    id: string;
+    command: string;
+    metadata: Record<string, unknown>;
+  };
+}
+
+interface ModuleSequenceCommands {
+  commands: SequenceCommand[];
+  topic: string;
+}
+
 type ModuleRow = {
   id: string;
   kind: 'module' | 'transport';
@@ -191,6 +208,11 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
 
   // Shopfloor layout config for serial number lookup
   private layoutConfig: ShopfloorLayoutConfig | null = null;
+
+  // Sequence commands for selected module
+  sequenceCommands: ModuleSequenceCommands | null = null;
+  // Track sent commands for developer mode
+  sentSequenceCommands: Array<{ command: SequenceCommand; topic: string; timestamp: string }> = [];
 
   readonly headingIcon = 'assets/svg/ui/heading-modules.svg';
 
@@ -782,6 +804,9 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
         : STATUS_ICONS.availability.unknown;
 
     const moduleType = moduleDetails?.subType ?? cell?.name ?? 'UNKNOWN';
+    
+    // Load sequence commands for this module type
+    this.loadSequenceCommands(moduleType);
 
     this.selectedModuleMeta = {
       availability: availabilityStatus,
@@ -880,6 +905,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
         const display = this.moduleNameService.getModuleDisplayName(moduleEntry.subType ?? moduleType);
         this.selectedModuleName = display.fullName;
         this.updateSelectedMeta(null);
+        this.loadSequenceCommands(moduleEntry.subType ?? moduleType);
         this.cdr.markForCheck();
       }
     }
@@ -904,6 +930,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     this.selectedModuleName = display.fullName;
 
     this.updateSelectedMeta(cell);
+    this.loadSequenceCommands(moduleType);
     this.cdr.markForCheck();
   }
 
@@ -911,6 +938,184 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     this.sidebarOpen = false;
     // Preserve selection - don't clear selectedModuleSerialId, selectedModuleName, etc.
     // This allows the user to reopen the sidebar without losing their selection
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Load sequence commands for the selected module type
+   */
+  private async loadSequenceCommands(moduleType: string): Promise<void> {
+    const sequenceFileMap: Record<string, string> = {
+      'DRILL': 'DRILL-Sequence.json',
+      'MILL': 'MILL-Sequence.json',
+      'AIQS': 'AIQS-Sequence.json',
+    };
+
+    const sequenceFile = sequenceFileMap[moduleType.toUpperCase()];
+    if (!sequenceFile) {
+      this.sequenceCommands = null;
+      this.sentSequenceCommands = [];
+      return;
+    }
+
+    try {
+      const response = await this.http.get(`data/omf-data/${sequenceFile}`, { responseType: 'text' }).toPromise();
+      if (!response) {
+        this.sequenceCommands = null;
+        this.sentSequenceCommands = [];
+        return;
+      }
+
+      // Parse the sequence file (format: Topic line, then JSON payloads separated by blank lines)
+      const lines = response.split('\n');
+      let topic = '';
+      const commands: SequenceCommand[] = [];
+      let currentJson = '';
+      let inPayload = false;
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        
+        // Skip comments and empty lines at start
+        if (trimmed === '' || trimmed.startsWith('#')) {
+          if (inPayload && currentJson.trim() !== '') {
+            // End of JSON payload
+            try {
+              const payload = JSON.parse(currentJson.trim());
+              commands.push(payload);
+              currentJson = '';
+              inPayload = false;
+            } catch (error) {
+              console.warn(`[module-tab] Failed to parse sequence command:`, error);
+              currentJson = '';
+              inPayload = false;
+            }
+          }
+          continue;
+        }
+        
+        if (trimmed.startsWith('Topic:')) {
+          topic = trimmed.replace('Topic:', '').trim();
+          continue;
+        }
+        
+        if (trimmed.startsWith('Payload:')) {
+          // Start of payload section
+          continue;
+        }
+        
+        if (trimmed.startsWith('{')) {
+          // Start of JSON object
+          inPayload = true;
+          currentJson = trimmed;
+          continue;
+        }
+        
+        if (inPayload) {
+          currentJson += '\n' + line;
+        }
+      }
+
+      // Parse last JSON if exists
+      if (currentJson.trim() !== '') {
+        try {
+          const payload = JSON.parse(currentJson.trim());
+          commands.push(payload);
+        } catch (error) {
+          console.warn(`[module-tab] Failed to parse last sequence command:`, error);
+        }
+      }
+
+      if (commands.length > 0 && topic) {
+        this.sequenceCommands = { commands, topic };
+        this.sentSequenceCommands = []; // Reset sent commands when loading new sequence
+        console.log(`[module-tab] Loaded ${commands.length} sequence commands for ${moduleType}`, { topic, commands });
+      } else {
+        console.warn(`[module-tab] No commands or topic found for ${moduleType}`, { commands: commands.length, topic });
+        this.sequenceCommands = null;
+        this.sentSequenceCommands = [];
+      }
+    } catch (error) {
+      console.warn(`[module-tab] Failed to load sequence commands for ${moduleType}:`, error);
+      this.sequenceCommands = null;
+      this.sentSequenceCommands = [];
+    }
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Send a specific command from the sequence by index
+   */
+  async sendSequenceCommand(commandIndex: number): Promise<void> {
+    if (!this.sequenceCommands || commandIndex < 0 || commandIndex >= this.sequenceCommands.commands.length) {
+      console.warn(`[module-tab] Invalid command index: ${commandIndex}`);
+      return;
+    }
+
+    const command = this.sequenceCommands.commands[commandIndex];
+    
+    // Add current timestamp to command payload (overwrite placeholder if exists)
+    const commandWithTimestamp = {
+      ...command,
+      timestamp: new Date().toISOString(),
+    };
+    
+    try {
+      await this.connectionService.publish(this.sequenceCommands.topic, commandWithTimestamp, { qos: 1 });
+      console.log(`[module-tab] Sent sequence command ${commandIndex + 1}/${this.sequenceCommands.commands.length}: ${command.action.command}`);
+      
+      // Track sent command for developer mode (use command with timestamp)
+      this.sentSequenceCommands.push({
+        command: commandWithTimestamp,
+        topic: this.sequenceCommands.topic,
+        timestamp: new Date().toISOString(),
+      });
+      
+      // Keep only last 10 sent commands
+      if (this.sentSequenceCommands.length > 10) {
+        this.sentSequenceCommands.shift();
+      }
+      
+      this.cdr.markForCheck();
+    } catch (error) {
+      console.error(`[module-tab] Failed to send sequence command:`, error);
+    }
+  }
+
+  /**
+   * Check if a command has been sent
+   */
+  isCommandSent(commandIndex: number): boolean {
+    if (!this.sequenceCommands || commandIndex < 0 || commandIndex >= this.sequenceCommands.commands.length) {
+      return false;
+    }
+    const command = this.sequenceCommands.commands[commandIndex];
+    return this.sentSequenceCommands.some(
+      (sent: { command: SequenceCommand; topic: string; timestamp: string }) => 
+        sent.command.orderUpdateId === command.orderUpdateId && sent.command.action.id === command.action.id
+    );
+  }
+
+  /**
+   * Format JSON payload for display (like in sidebar)
+   */
+  formatJsonPayload(payload: unknown): string {
+    if (typeof payload === 'string') {
+      try {
+        const parsed = JSON.parse(payload);
+        return JSON.stringify(parsed, null, 2);
+      } catch {
+        return payload;
+      }
+    }
+    return JSON.stringify(payload, null, 2);
+  }
+
+  /**
+   * Reset sent commands to allow retesting
+   */
+  resetSequenceCommands(): void {
+    this.sentSequenceCommands = [];
     this.cdr.markForCheck();
   }
 

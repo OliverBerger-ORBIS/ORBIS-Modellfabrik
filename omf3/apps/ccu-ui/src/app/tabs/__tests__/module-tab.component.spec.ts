@@ -50,6 +50,7 @@ const createComponent = () => {
 
   const connectionServiceStub = {
     state$: new BehaviorSubject<'disconnected'>('disconnected'),
+    publish: jest.fn(() => Promise.resolve()),
   } as unknown as ConnectionService;
 
   const moduleOverviewStateStub = {
@@ -273,6 +274,208 @@ describe('ModuleTabComponent sidebar and selection', () => {
     component.closeSidebar();
 
     expect(markForCheckSpy).toHaveBeenCalled();
+  });
+});
+
+describe('ModuleTabComponent sequence commands', () => {
+  it('should load sequence commands for DRILL module', async () => {
+    const component = createComponent();
+    const httpStub = (component as any).http as HttpClient;
+    
+    const mockSequenceData = `Topic: module/v1/ff/SVR4H76449/order
+Payload: 
+{
+  "timestamp": "2025-01-01T00:00:00.000Z",
+  "serialNumber": "SVR4H76449",
+  "orderId": "ORDER_DRILL_SEQUENCE_001",
+  "orderUpdateId": 1,
+  "action": {
+    "id": "action_drill_pick_001",
+    "command": "PICK",
+    "metadata": {
+      "type": "WHITE",
+      "workpieceId": "04a189ca341290"
+    }
+  }
+}`;
+
+    jest.spyOn(httpStub, 'get').mockReturnValue(of(mockSequenceData) as any);
+
+    await (component as any).loadSequenceCommands('DRILL');
+
+    expect(component.sequenceCommands).not.toBeNull();
+    expect(component.sequenceCommands?.commands).toHaveLength(1);
+    expect(component.sequenceCommands?.topic).toBe('module/v1/ff/SVR4H76449/order');
+    expect(component.sequenceCommands?.commands[0].action.command).toBe('PICK');
+    expect(component.sequenceCommands?.commands[0].action.metadata['workpieceId']).toBe('04a189ca341290');
+    expect(component.sentSequenceCommands).toHaveLength(0);
+  });
+
+  it('should send sequence command with timestamp', async () => {
+    const component = createComponent();
+    const connectionServiceStub = (component as any).connectionService as ConnectionService;
+    
+    component.sequenceCommands = {
+      topic: 'module/v1/ff/SVR4H76449/order',
+      commands: [{
+        serialNumber: 'SVR4H76449',
+        orderId: 'ORDER_DRILL_SEQUENCE_001',
+        orderUpdateId: 1,
+        action: {
+          id: 'action_drill_pick_001',
+          command: 'PICK',
+          metadata: {
+            type: 'WHITE',
+            workpieceId: '04a189ca341290',
+          },
+        },
+      }],
+    };
+
+    const publishSpy = jest.spyOn(connectionServiceStub, 'publish').mockResolvedValue();
+
+    await component.sendSequenceCommand(0);
+
+    expect(publishSpy).toHaveBeenCalledWith(
+      'module/v1/ff/SVR4H76449/order',
+      expect.objectContaining({
+        serialNumber: 'SVR4H76449',
+        orderId: 'ORDER_DRILL_SEQUENCE_001',
+        orderUpdateId: 1,
+        timestamp: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
+        action: expect.objectContaining({
+          command: 'PICK',
+        }),
+      }),
+      { qos: 1 }
+    );
+  });
+
+  it('should track sent commands', async () => {
+    const component = createComponent();
+    const connectionServiceStub = (component as any).connectionService as ConnectionService;
+    
+    component.sequenceCommands = {
+      topic: 'module/v1/ff/SVR4H76449/order',
+      commands: [{
+        serialNumber: 'SVR4H76449',
+        orderId: 'ORDER_DRILL_SEQUENCE_001',
+        orderUpdateId: 1,
+        action: {
+          id: 'action_drill_pick_001',
+          command: 'PICK',
+          metadata: { type: 'WHITE', workpieceId: '04a189ca341290' },
+        },
+      }],
+    };
+
+    jest.spyOn(connectionServiceStub, 'publish').mockResolvedValue();
+
+    expect(component.sentSequenceCommands).toHaveLength(0);
+    expect(component.isCommandSent(0)).toBe(false);
+
+    await component.sendSequenceCommand(0);
+
+    expect(component.sentSequenceCommands).toHaveLength(1);
+    expect(component.sentSequenceCommands[0].command.action.command).toBe('PICK');
+    expect(component.sentSequenceCommands[0].topic).toBe('module/v1/ff/SVR4H76449/order');
+    expect(component.isCommandSent(0)).toBe(true);
+  });
+
+  it('should reset sent commands', () => {
+    const component = createComponent();
+    
+    component.sentSequenceCommands = [
+      {
+        command: {
+          serialNumber: 'SVR4H76449',
+          orderId: 'ORDER_DRILL_SEQUENCE_001',
+          orderUpdateId: 1,
+          action: { id: 'action_drill_pick_001', command: 'PICK', metadata: {} },
+        },
+        topic: 'module/v1/ff/SVR4H76449/order',
+        timestamp: '2025-01-01T00:00:00.000Z',
+      },
+    ];
+
+    expect(component.sentSequenceCommands).toHaveLength(1);
+
+    component.resetSequenceCommands();
+
+    expect(component.sentSequenceCommands).toHaveLength(0);
+  });
+
+  it('should format JSON payload correctly', () => {
+    const component = createComponent();
+    
+    const payload = {
+      serialNumber: 'SVR4H76449',
+      orderId: 'ORDER_DRILL_SEQUENCE_001',
+      action: { command: 'PICK' },
+    };
+
+    const formatted = component.formatJsonPayload(payload);
+    const parsed = JSON.parse(formatted);
+
+    expect(parsed).toEqual(payload);
+    expect(formatted).toContain('"serialNumber"');
+    expect(formatted).toContain('"orderId"');
+  });
+
+  it('should not send command if index is invalid', async () => {
+    const component = createComponent();
+    const connectionServiceStub = (component as any).connectionService as ConnectionService;
+    
+    component.sequenceCommands = {
+      topic: 'module/v1/ff/SVR4H76449/order',
+      commands: [{
+        serialNumber: 'SVR4H76449',
+        orderId: 'ORDER_DRILL_SEQUENCE_001',
+        orderUpdateId: 1,
+        action: { id: 'action_drill_pick_001', command: 'PICK', metadata: {} },
+      }],
+    };
+
+    const publishSpy = jest.spyOn(connectionServiceStub, 'publish');
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+    await component.sendSequenceCommand(-1);
+    await component.sendSequenceCommand(10);
+
+    expect(publishSpy).not.toHaveBeenCalled();
+    expect(consoleWarnSpy).toHaveBeenCalledTimes(2);
+
+    consoleWarnSpy.mockRestore();
+  });
+
+  it('should keep only last 10 sent commands', async () => {
+    const component = createComponent();
+    const connectionServiceStub = (component as any).connectionService as ConnectionService;
+    
+    component.sequenceCommands = {
+      topic: 'module/v1/ff/SVR4H76449/order',
+      commands: Array.from({ length: 15 }, (_, i) => ({
+        serialNumber: 'SVR4H76449',
+        orderId: 'ORDER_DRILL_SEQUENCE_001',
+        orderUpdateId: i + 1,
+        action: {
+          id: `action_${i}`,
+          command: 'PICK',
+          metadata: { type: 'WHITE', workpieceId: '04a189ca341290' },
+        },
+      })),
+    };
+
+    jest.spyOn(connectionServiceStub, 'publish').mockResolvedValue();
+
+    // Send 12 commands
+    for (let i = 0; i < 12; i++) {
+      await component.sendSequenceCommand(i);
+    }
+
+    expect(component.sentSequenceCommands).toHaveLength(10);
+    expect(component.sentSequenceCommands[0].command.orderUpdateId).toBe(3); // First 2 were shifted out
+    expect(component.sentSequenceCommands[9].command.orderUpdateId).toBe(12); // Last one
   });
 });
 

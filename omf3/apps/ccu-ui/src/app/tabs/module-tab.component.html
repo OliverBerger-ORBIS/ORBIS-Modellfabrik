@@ -286,6 +286,76 @@
             </ng-template>
           </details>
         </div>
+        <div class="sequence-commands-section" *ngIf="sequenceCommands && (selectedModuleMeta?.moduleType === 'DRILL' || selectedModuleMeta?.moduleType === 'MILL' || selectedModuleMeta?.moduleType === 'AIQS')">
+          <div class="sequence-commands__header">
+            <h4 i18n="@@moduleTabSequenceCommandsTitle">Sequence Commands</h4>
+          </div>
+          <div class="sequence-commands__description">
+            <p class="sequence-commands__warning" i18n="@@moduleTabSequenceCommandsWarning">
+              Do not execute during running production process.
+            </p>
+            <p i18n="@@moduleTabSequenceCommandsDescription">
+              Send commands manually in sequence. Wait for each command to complete before sending the next.
+            </p>
+          </div>
+          <div class="sequence-commands__list">
+            <div 
+              class="sequence-command-item"
+              *ngFor="let cmd of sequenceCommands.commands; let i = index"
+              [class.sequence-command-item--sent]="isCommandSent(i)"
+            >
+              <span class="sequence-command__number">{{ i + 1 }}</span>
+              <span class="sequence-command__label">{{ cmd.action.command }}</span>
+              <span class="sequence-command__status" *ngIf="isCommandSent(i)" i18n="@@moduleTabSequenceCommandSent">Sent</span>
+            </div>
+          </div>
+          <div class="sequence-commands__actions">
+            <button
+              type="button"
+              class="command-button"
+              *ngFor="let cmd of sequenceCommands.commands; let i = index"
+              [disabled]="isCommandSent(i)"
+              (click)="sendSequenceCommand(i)"
+            >
+              <span i18n="@@moduleTabSequenceCommandSend">Senden</span> {{ cmd.action.command }}
+            </button>
+            <button
+              type="button"
+              class="command-button command-button--secondary"
+              [disabled]="sentSequenceCommands.length === 0"
+              (click)="resetSequenceCommands()"
+              i18n="@@moduleTabSequenceCommandReset"
+            >
+              Zurücksetzen
+            </button>
+          </div>
+          <details class="sequence-commands__dev">
+            <summary class="sequence-commands__dev-toggle" i18n="@@moduleTabSequenceCommandsShowDeveloper">Developer (last sent sequence commands)</summary>
+            <ng-container *ngIf="sentSequenceCommands.length > 0; else noSequenceMessages">
+              <div class="sequence-msg" *ngFor="let sent of sentSequenceCommands">
+                <div class="sequence-msg__row">
+                  <span class="detail-label">Topic</span>
+                  <span class="detail-value mono">{{ sent.topic }}</span>
+                </div>
+                <div class="sequence-msg__row">
+                  <span class="detail-label">Timestamp</span>
+                  <span class="detail-value mono">{{ sent.timestamp }}</span>
+                </div>
+                <div class="sequence-msg__row">
+                  <span class="detail-label">Command</span>
+                  <span class="detail-value mono">{{ sent.command.action.command }}</span>
+                </div>
+                <div class="sequence-msg__row">
+                  <span class="detail-label">Payload</span>
+                  <pre class="detail-value mono"><code>{{ formatJsonPayload(sent.command) }}</code></pre>
+                </div>
+              </div>
+            </ng-container>
+            <ng-template #noSequenceMessages>
+              <p class="detail-value" i18n="@@moduleTabSequenceCommandsNoMessages">No sequence commands sent yet.</p>
+            </ng-template>
+          </details>
+        </div>
       </div>
     </div>
   </div>

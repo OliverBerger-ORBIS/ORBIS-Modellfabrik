@@ -4,6 +4,21 @@ All notable changes to OMF3 Dashboard will be documented here.
 
 ## [Unreleased]
 
+### Added
+- Module sequence commands feature for DRILL, MILL, and AIQS modules
+- Manual sequence command execution with individual send buttons (PICK, DRILL/MILL/CHECK_QUALITY, DROP)
+- Developer mode for sequence commands showing sent payloads with formatted JSON
+- Reset button to clear sent commands for repeated testing
+- Sequence command files (DRILL-Sequence.json, MILL-Sequence.json, AIQS-Sequence.json) with real-life payload structure
+- Tests for sequence command loading, sending, tracking, and reset functionality
+
+### Changed
+- Sequence command payloads now match real-life structure:
+  - Added timestamp field (dynamically set on send)
+  - Removed priority and timeout from metadata
+  - Added workpieceId to metadata (14-character hex format)
+  - Metadata now only contains type and workpieceId
+
 ## [0.4.0] - 2025-12-16
 
 ### Added
