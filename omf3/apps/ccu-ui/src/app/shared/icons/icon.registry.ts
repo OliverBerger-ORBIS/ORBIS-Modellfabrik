@@ -102,7 +102,7 @@ export const ICONS = {
     scm: 'assets/svg/business/scm-application.svg',
     cloud: 'assets/svg/business/cloud-application.svg',
     analytics: 'assets/svg/business/analytics-application.svg',
-    dataLake: 'assets/svg/business/data-lake.svg',
+    dataLake: 'assets/svg/business/data-lake-application.svg',
     mes: 'assets/svg/business/mes-application.svg',
   },
   methodology: {

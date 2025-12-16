@@ -80,6 +80,16 @@ export const appRoutes: Routes = [
           import('./pages/refactor-demo/dsp-architecture.component').then((m) => m.DspArchitecturePageComponent),
       },
       {
+        path: 'dsp/customer/fmf',
+        loadComponent: () =>
+          import('./pages/dsp/customer/fmf/fmf-dsp-page.component').then((m) => m.FmfDspPageComponent),
+      },
+      {
+        path: 'dsp/customer/def',
+        loadComponent: () =>
+          import('./pages/dsp/customer/def/def-dsp-page.component').then((m) => m.DefDspPageComponent),
+      },
+      {
         path: 'presentation',
         loadComponent: () =>
           import('./pages/presentation/presentation-page.component').then((m) => m.PresentationPageComponent),

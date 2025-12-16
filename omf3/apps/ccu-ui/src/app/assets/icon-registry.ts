@@ -52,6 +52,7 @@ export type IconKey =
   | 'shopfloor-systems'
   | 'shopfloor-fts'
   | 'shopfloor-mes'
+  | 'shopfloor-bp'
   | 'shopfloor-scada'
   | 'shopfloor-aps'
   | 'shopfloor-warehouse'
@@ -68,7 +69,18 @@ export type IconKey =
   | 'aws-logo'
   | 'google-cloud-logo'
   | 'logo-edge'
-  | 'logo-mc';
+  | 'logo-mc'
+  // Generic device icons
+  | 'generic-device-drill' | 'generic-device-mill' | 'generic-device-oven'
+  | 'generic-device-laser' | 'generic-device-cnc' | 'generic-device-printer-3d'
+  | 'generic-device-robot-arm' | 'generic-device-conveyor' | 'generic-device-warehouse'
+  | 'generic-device-agv' | 'generic-device-hbw'
+  // Generic system icons
+  | 'generic-system-warehouse-system' | 'generic-system-erp' | 'generic-system-mes'
+  | 'generic-system-cloud' | 'generic-system-analytics'
+  // Generic brand icons
+  | 'generic-brand-sap' | 'generic-brand-alpha-x' | 'generic-brand-aws'
+  | 'generic-brand-azure' | 'generic-brand-powerbi' | 'generic-brand-grafana';
 
 export interface FunctionIconConfig {
   iconKey: IconKey;
@@ -135,6 +147,7 @@ export const ICON_MAP: Record<IconKey, string> = {
   'shopfloor-aps': ICONS.shopfloor.stations.dps,
   'shopfloor-warehouse': 'assets/svg/shopfloor/systems/warehouse-system.svg',
   'shopfloor-factory': 'assets/svg/shopfloor/systems/factory-system.svg',
+  'shopfloor-bp': 'assets/svg/shopfloor/systems/bp-system.svg',
   'shopfloor-it': ICONS.shopfloor.systems.any,
 
   'ux-box': ICONS.dsp.architecture.uxBox,
@@ -150,6 +163,34 @@ export const ICON_MAP: Record<IconKey, string> = {
   'google-cloud-logo': 'assets/svg/brand/google-cloud-logo.svg',
   'logo-edge': 'assets/svg/dsp/architecture/dsp-edge-box.svg',
   'logo-mc': 'assets/svg/dsp/architecture/dsp-mc-box.svg',
+  
+  // Generic device icons (using existing shopfloor station icons from src/assets/svg/shopfloor/stations/)
+  'generic-device-drill': 'assets/svg/shopfloor/stations/drill-station.svg',
+  'generic-device-mill': 'assets/svg/shopfloor/stations/mill-station.svg',
+  'generic-device-oven': 'assets/svg/shopfloor/stations/oven-station.svg',
+  'generic-device-laser': 'assets/svg/shopfloor/stations/mill-station.svg', // Using mill as fallback for laser (not available)
+  'generic-device-cnc': 'assets/svg/shopfloor/stations/mill-station.svg', // Using mill as fallback for CNC (not available)
+  'generic-device-printer-3d': 'assets/svg/shopfloor/stations/mixer.svg', // Using mixer as fallback for 3D printer (not available)
+  'generic-device-robot-arm': 'assets/svg/shopfloor/stations/chrg-station.svg', // Using chrg (robot arm) for robot-arm
+  'generic-device-conveyor': 'assets/svg/shopfloor/stations/conveyor-station.svg',
+  'generic-device-warehouse': 'assets/svg/shopfloor/stations/hbw-station.svg', // Using HBW for warehouse
+  'generic-device-agv': 'assets/svg/shopfloor/stations/dps-station.svg', // Using DPS as fallback for AGV (not available)
+  'generic-device-hbw': 'assets/svg/shopfloor/stations/hbw-station.svg',
+  
+  // Generic system icons (using existing business application icons from src/assets/svg/business/)
+  'generic-system-warehouse-system': 'assets/svg/shopfloor/systems/warehouse-system.svg',
+  'generic-system-erp': 'assets/svg/business/erp-application.svg',
+  'generic-system-mes': 'assets/svg/business/mes-application.svg',
+  'generic-system-cloud': 'assets/svg/business/cloud-application.svg',
+  'generic-system-analytics': 'assets/svg/business/analytics-application.svg',
+  
+  // Generic brand icons (using existing brand icons from src/assets/svg/brand/)
+  'generic-brand-sap': 'assets/svg/brand/sap-logo.svg',
+  'generic-brand-alpha-x': 'assets/svg/brand/sap-logo.svg', // Using SAP as fallback for Alpha-X (not available)
+  'generic-brand-aws': 'assets/svg/brand/aws-logo.svg',
+  'generic-brand-azure': 'assets/svg/brand/azure-logo.svg',
+  'generic-brand-powerbi': 'assets/svg/brand/azure-logo.svg', // Using Azure as fallback for PowerBI (not available)
+  'generic-brand-grafana': 'assets/svg/brand/grafana-logo.svg',
 };
 
 export function getIconPath(key: IconKey | undefined | null): string {

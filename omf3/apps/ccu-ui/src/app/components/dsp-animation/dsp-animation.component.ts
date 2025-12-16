@@ -21,6 +21,7 @@ import {
 } from './layout.config';
 import { ModuleNameService } from '../../services/module-name.service';
 import { ExternalLinksService } from '../../services/external-links.service';
+import type { CustomerDspConfig } from './configs/types';
 
 /**
  * DspAnimationComponent - Animated SVG-based architecture diagram.
@@ -40,6 +41,7 @@ import { ExternalLinksService } from '../../services/external-links.service';
 export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   @Input() viewMode: ViewMode = 'functional';
   @Input() initialStep?: number; // Optional: Start step (0-based). If undefined, starts at 0. Use -1 for last step.
+  @Input() customerConfig?: CustomerDspConfig; // Optional: Customer-specific configuration for labels and icons
   @Output() actionTriggered = new EventEmitter<{ id: string; url: string }>();
 
   // Diagram configuration
@@ -184,7 +186,8 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['viewMode'] && !changes['viewMode'].isFirstChange()) ||
-        (changes['initialStep'] && !changes['initialStep'].isFirstChange())) {
+        (changes['initialStep'] && !changes['initialStep'].isFirstChange()) ||
+        (changes['customerConfig'] && !changes['customerConfig'].isFirstChange())) {
       this.loadConfiguration();
     }
   }
@@ -197,11 +200,19 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
    * Load diagram configuration based on current view mode
    */
   private loadConfiguration(): void {
-    const config = createDiagramConfig(this.viewMode);
+    const config = createDiagramConfig(this.viewMode, this.customerConfig);
     this.containers = config.containers;
     this.connections = config.connections;
     this.steps = config.steps;
     this.revealedFunctionIcons = new Set<IconKey>();
+    
+    // Apply customer-specific mappings if provided (this sets labels from config)
+    if (this.customerConfig) {
+      this.applyCustomerMappings(this.customerConfig);
+    }
+    
+    // Initialize module labels AFTER customer mappings (only if no customer config or labels not set)
+    // This ensures customer config labels take precedence
     this.initializeModuleLabels();
     
     // Update container URLs from ExternalLinksService
@@ -225,8 +236,16 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * Replace shopfloor device labels with injected module names.
+   * For FMF customer, maps concrete IDs to module IDs.
+   * Only sets labels if they are not already set by customer config.
    */
   private initializeModuleLabels(): void {
+    // Only apply module labels for FMF customer (which uses Fischertechnik modules)
+    if (!this.customerConfig || this.customerConfig.customerKey !== 'fmf') {
+      return;
+    }
+
+    // Map FMF's concrete device IDs to module IDs
     const moduleMap: Record<string, string> = {
       'sf-device-mill': 'MILL',
       'sf-device-drill': 'DRILL',
@@ -237,9 +256,112 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     Object.entries(moduleMap).forEach(([id, moduleId]) => {
-      const name = this.moduleNameService.getModuleFullName(moduleId);
-      if (name) {
-        this.containerLabels[id] = name;
+      // Only set label if it's not already set by customer config
+      // Customer config labels take precedence
+      if (!this.containerLabels[id]) {
+        const name = this.moduleNameService.getModuleFullName(moduleId);
+        if (name) {
+          this.containerLabels[id] = name;
+        }
+      }
+    });
+  }
+
+  /**
+   * Apply customer-specific mappings to containers.
+   * This allows different customers to have different labels and icons for the same containers.
+   * Also hides containers that are not in the customer configuration.
+   */
+  private applyCustomerMappings(config: CustomerDspConfig): void {
+    // Get IDs from customer config for filtering
+    const configDeviceIds = new Set(config.sfDevices.map(d => d.id));
+    const configSystemIds = new Set(config.sfSystems.map(s => s.id));
+    const configBpIds = new Set(config.bpProcesses.map(bp => bp.id));
+
+    this.containers.forEach(container => {
+      // Map Shopfloor Devices
+      if (container.id.startsWith('sf-device-')) {
+        const mapping = config.sfDevices.find(d => d.id === container.id);
+        if (mapping) {
+          // Update label in containerLabels map
+          this.containerLabels[container.id] = mapping.label;
+          // Update icon path
+          if (mapping.customIconPath) {
+            container.logoIconKey = mapping.customIconPath as IconKey;
+          } else {
+            // Use generic icon from icons directory
+            container.logoIconKey = `generic-device-${mapping.iconKey}` as IconKey;
+          }
+          // Make visible if it was hidden
+          if (container.state === 'hidden') {
+            container.state = 'normal';
+          }
+        } else {
+          // Hide devices that are not in the customer config
+          container.state = 'hidden';
+        }
+      }
+      
+      // Map Shopfloor Systems
+      if (container.id.startsWith('sf-system-')) {
+        const mapping = config.sfSystems.find(s => s.id === container.id);
+        if (mapping) {
+          this.containerLabels[container.id] = mapping.label;
+          if (mapping.customIconPath) {
+            container.logoIconKey = mapping.customIconPath as IconKey;
+          } else {
+            // Map iconKey to correct system icon based on label
+            // Mapping by label name for clarity
+            const labelLower = mapping.label.toLowerCase();
+            if (labelLower.includes('agv')) {
+              container.logoIconKey = 'shopfloor-fts' as IconKey; // AGV System = FTS
+            } else if (labelLower.includes('any system')) {
+              container.logoIconKey = 'shopfloor-systems' as IconKey; // Any System → any-system.svg
+            } else if (labelLower.includes('bp system') || labelLower.includes('bp-system')) {
+              container.logoIconKey = 'shopfloor-bp' as IconKey; // BP System → bp-system.svg
+            } else if (labelLower.includes('warehouse')) {
+              container.logoIconKey = 'shopfloor-warehouse' as IconKey; // Warehouse System → warehouse-system.svg
+            } else if (mapping.iconKey === 'agv') {
+              container.logoIconKey = 'shopfloor-fts' as IconKey; // Fallback: iconKey 'agv'
+            } else {
+              container.logoIconKey = `generic-system-${mapping.iconKey}` as IconKey;
+            }
+          }
+          // Make visible if it was hidden
+          if (container.state === 'hidden') {
+            container.state = 'normal';
+          }
+        } else {
+          // Hide systems that are not in the customer config
+          container.state = 'hidden';
+        }
+      }
+      
+      // Map Business Processes
+      if (container.id.startsWith('bp-')) {
+        const mapping = config.bpProcesses.find(bp => bp.id === container.id);
+        if (mapping) {
+          this.containerLabels[container.id] = mapping.label;
+          // Update primary icon
+          if (mapping.customIconPath) {
+            container.logoIconKey = mapping.customIconPath as IconKey;
+          } else {
+            container.logoIconKey = `generic-system-${mapping.iconKey}` as IconKey;
+          }
+          // Update brand logo
+          if (mapping.customBrandLogoPath) {
+            container.secondaryLogoIconKey = mapping.customBrandLogoPath as IconKey;
+          } else {
+            container.secondaryLogoIconKey = `generic-brand-${mapping.brandLogoKey}` as IconKey;
+          }
+          // Make visible if it was hidden
+          if (container.state === 'hidden') {
+            container.state = 'normal';
+          }
+        } else {
+          // Hide business processes that are not in the customer config
+          container.state = 'hidden';
+        }
       }
     });
   }
@@ -479,18 +601,76 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     const maxCharsPerLine = Math.max(8, Math.floor((container.width - 12) / (fontSize * 0.58)));
     const maxLines = 3;
 
-    // Allow manual break hints using " / " (locale-safe) and hyphen-aware splitting
-    const hinted = label.split(' / ').join('\n');
+    // First check if the entire label fits in one line
+    // Remove break hints " / " and any hyphens before them, join without spaces
+    // Example: "Lade- / station" -> "Ladestation", "Fräs / station" -> "Frässtation"
+    const fullLabel = label.replace(/-\s*\/\s*/g, '').replace(/\s*\/\s*/g, '').trim();
+    if (fullLabel.length <= maxCharsPerLine) {
+      // Label fits in one line, return as single line (without break hints, hyphens, and spaces)
+      return [fullLabel];
+    }
+
+    // Label doesn't fit, need to wrap
+    // Allow manual break hints using " / " (locale-safe)
+    // Split by " / " first to preserve line breaks
+    const parts = label.split(' / ');
+    
+    // If we have explicit break hints, use them as separate lines
+    if (parts.length > 1) {
+      const lines: string[] = [];
+      for (let i = 0; i < parts.length; i++) {
+        const part = parts[i].trim();
+        if (!part) continue;
+        
+        // Check if this part needs a hyphen when breaking (if it doesn't already end with one)
+        const needsHyphen = i < parts.length - 1 && !part.endsWith('-');
+        
+        // Further split long parts if needed
+        if (part.length > maxCharsPerLine) {
+          const words = part.split(/\s+/);
+          let current = '';
+          for (const word of words) {
+            const tentative = current ? `${current} ${word}` : word;
+            if (tentative.length > maxCharsPerLine && current) {
+              // Add hyphen if breaking mid-word and not already ending with hyphen
+              const lineToAdd = current.endsWith('-') ? current : `${current}-`;
+              lines.push(lineToAdd);
+              current = word;
+              if (lines.length >= maxLines - 1) break;
+            } else {
+              current = tentative;
+            }
+          }
+          if (current && lines.length < maxLines) {
+            // If this is not the last part and doesn't end with hyphen, add hyphen
+            if (i < parts.length - 1 && !current.endsWith('-')) {
+              lines.push(`${current}-`);
+            } else {
+              lines.push(current);
+            }
+          }
+        } else {
+          // Part fits in one line, but if we're breaking here and it doesn't end with hyphen, add one
+          if (needsHyphen) {
+            lines.push(`${part}-`);
+          } else {
+            lines.push(part);
+          }
+        }
+        if (lines.length >= maxLines) break;
+      }
+      return lines.slice(0, maxLines);
+    }
+
+    // No explicit break hints, use automatic wrapping
     const dashExpanded: string[] = [];
-    hinted.split(/\s+/).forEach((token) => {
+    label.split(/\s+/).forEach((token) => {
       if (token.includes('-')) {
         const parts = token.split('-').filter(Boolean);
         parts.forEach((p, idx) => {
           dashExpanded.push(p);
           if (idx < parts.length - 1) dashExpanded.push('-');
         });
-      } else if (token.includes('\n')) {
-        token.split('\n').forEach((t) => dashExpanded.push(t));
       } else {
         dashExpanded.push(token);
       }

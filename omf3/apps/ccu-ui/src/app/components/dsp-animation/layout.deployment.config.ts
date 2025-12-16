@@ -9,7 +9,7 @@ import {
 } from './layout.shared.config';
 import { getOrbisColor, ORBIS_COLORS } from '../../assets/color-palette';
 
-export function createDeploymentView(): DiagramConfig {
+export function createDeploymentView(customerConfig?: import('./configs/types').CustomerDspConfig): DiagramConfig {
   const containers = createDefaultContainers();
   const pipelineBorder = getOrbisColor('solution-petrol-strong');
   const pipelineFills = [
@@ -173,7 +173,7 @@ export function createDeploymentView(): DiagramConfig {
     },
   ];
   
-  return new DiagramConfigBuilder()
+  return new DiagramConfigBuilder(customerConfig)
     .withDeploymentView(steps, pipelineContainers)
     .build();
 }

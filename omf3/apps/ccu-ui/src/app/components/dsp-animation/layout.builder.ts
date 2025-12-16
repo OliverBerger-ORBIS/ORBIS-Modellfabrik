@@ -3,8 +3,10 @@
  * Provides a fluent API to construct diagram configs with common defaults.
  */
 import type { ContainerConfig, ConnectionConfig, StepConfig, DiagramConfig } from './types';
+import type { CustomerDspConfig } from './configs/types';
 import {
   createDefaultContainers,
+  createCustomerContainers,
   createDefaultConnections,
   VIEWBOX_WIDTH,
   VIEWBOX_HEIGHT,
@@ -27,10 +29,14 @@ export class DiagramConfigBuilder {
   private connections: ConnectionConfig[];
   private steps: StepConfig[];
 
-  constructor() {
-    // Initialize with default containers and connections
-    this.containers = createDefaultContainers();
-    this.connections = createDefaultConnections();
+  constructor(customerConfig?: CustomerDspConfig) {
+    // Initialize with customer-specific or default containers
+    if (customerConfig) {
+      this.containers = createCustomerContainers(customerConfig);
+    } else {
+      this.containers = createDefaultContainers();
+    }
+    this.connections = createDefaultConnections(customerConfig);
     this.steps = [];
   }
 
