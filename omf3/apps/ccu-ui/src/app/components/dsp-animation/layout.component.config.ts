@@ -2,7 +2,7 @@ import type { ContainerConfig, ConnectionConfig, StepConfig, DiagramConfig } fro
 import { DiagramConfigBuilder } from './layout.builder';
 import { getEdgeComponentIds } from './layout.shared.config';
 
-export function createComponentView(): DiagramConfig {
+export function createComponentView(customerConfig?: import('./configs/types').CustomerDspConfig): DiagramConfig {
   // Add bidirectional connections between edge components
   // All components connect to Router as the central hub
   const edgeComponentConnections: ConnectionConfig[] = [
@@ -257,7 +257,7 @@ export function createComponentView(): DiagramConfig {
     },
   ];
   
-  return new DiagramConfigBuilder()
+  return new DiagramConfigBuilder(customerConfig)
     .withComponentView(steps, edgeComponentConnections)
     .build();
 }

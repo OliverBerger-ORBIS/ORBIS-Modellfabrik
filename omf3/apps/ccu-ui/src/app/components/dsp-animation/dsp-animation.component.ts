@@ -200,7 +200,7 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
    * Load diagram configuration based on current view mode
    */
   private loadConfiguration(): void {
-    const config = createDiagramConfig(this.viewMode);
+    const config = createDiagramConfig(this.viewMode, this.customerConfig);
     this.containers = config.containers;
     this.connections = config.connections;
     this.steps = config.steps;
@@ -233,15 +233,22 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * Replace shopfloor device labels with injected module names.
+   * For FMF customer, maps abstract IDs to module IDs.
    */
   private initializeModuleLabels(): void {
+    // Only apply module labels for FMF customer (which uses Fischertechnik modules)
+    if (!this.customerConfig || this.customerConfig.customerKey !== 'fmf') {
+      return;
+    }
+
+    // Map FMF's abstract device IDs to module IDs
     const moduleMap: Record<string, string> = {
-      'sf-device-mill': 'MILL',
-      'sf-device-drill': 'DRILL',
-      'sf-device-aiqs': 'AIQS',
-      'sf-device-hbw': 'HBW',
-      'sf-device-dps': 'DPS',
-      'sf-device-chrg': 'CHRG',
+      'sf-device-1': 'MILL',
+      'sf-device-2': 'DRILL',
+      'sf-device-3': 'AIQS',
+      'sf-device-4': 'HBW',
+      'sf-device-5': 'DPS',
+      'sf-device-6': 'CHRG',
     };
 
     Object.entries(moduleMap).forEach(([id, moduleId]) => {

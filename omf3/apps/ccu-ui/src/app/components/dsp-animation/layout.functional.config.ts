@@ -552,8 +552,8 @@ export function createDefaultSteps(): StepConfig[] {
   ];
 }
 
-export function createFunctionalView(): DiagramConfig {
-  return new DiagramConfigBuilder()
+export function createFunctionalView(customerConfig?: import('./configs/types').CustomerDspConfig): DiagramConfig {
+  return new DiagramConfigBuilder(customerConfig)
     .withFunctionalSteps(createDefaultSteps())
     .build();
 }

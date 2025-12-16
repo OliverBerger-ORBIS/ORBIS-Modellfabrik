@@ -1,6 +1,6 @@
 /**
  * FMF (Fischertechnik Modellfabrik) Customer Configuration
- * Maps FMF's Fischertechnik equipment to generic icons
+ * Maps FMF's Fischertechnik equipment to generic icons using abstract IDs
  */
 import type { CustomerDspConfig } from '../types';
 
@@ -8,78 +8,55 @@ export const FMF_CONFIG: CustomerDspConfig = {
   customerKey: 'fmf',
   customerName: 'Fischertechnik Modellfabrik',
   
-  // Shopfloor devices - Fischertechnik stations
-  // Using EXISTING container IDs from layout.shared.config.ts
+  // Shopfloor devices - 6 Fischertechnik stations with abstract IDs
   sfDevices: [
     {
-      id: 'sf-device-mill',
+      id: 'sf-device-1',
       label: $localize`:@@deviceMILL:Fräs / station`,
       iconKey: 'mill',
     },
     {
-      id: 'sf-device-drill',
+      id: 'sf-device-2',
       label: $localize`:@@deviceDRILL:Bohr / station`,
       iconKey: 'drill',
     },
     {
-      id: 'sf-device-aiqs',
+      id: 'sf-device-3',
       label: $localize`:@@deviceAIQS:KI- / Qualitäts / station`,
       iconKey: 'robot-arm', // Using robot-arm as closest match for AIQS
     },
     {
-      id: 'sf-device-hbw',
+      id: 'sf-device-4',
       label: $localize`:@@deviceHBW:Hochregal / lager`,
       iconKey: 'hbw',
     },
     {
-      id: 'sf-device-dps',
+      id: 'sf-device-5',
       label: $localize`:@@deviceDPS:Waren Ein- / und Ausgang`,
       iconKey: 'conveyor', // DPS is a material handling station
     },
     {
-      id: 'sf-device-chrg',
+      id: 'sf-device-6',
       label: $localize`:@@deviceCHRG:Lade- / station`,
       iconKey: 'robot-arm', // CHRG is a loading/robot station
     },
-    {
-      id: 'sf-device-conveyor',
-      label: $localize`:@@deviceConveyor:Förder- / station`,
-      iconKey: 'conveyor',
-    },
-    {
-      id: 'sf-device-stone-oven',
-      label: $localize`:@@deviceStoneOven:Ofen / station`,
-      iconKey: 'oven',
-    },
   ],
   
-  // Shopfloor systems
-  // Using EXISTING container IDs from layout.shared.config.ts
+  // Shopfloor systems - 2 systems with abstract IDs
   sfSystems: [
     {
-      id: 'sf-system-any',
+      id: 'sf-system-1',
       label: $localize`:@@dspArchLabelAnySystem:any System`,
       iconKey: 'warehouse-system',
     },
     {
-      id: 'sf-system-fts',
+      id: 'sf-system-2',
       label: $localize`:@@dspArchLabelFTS:AGV\nSystem`,
       iconKey: 'agv',
     },
-    {
-      id: 'sf-system-warehouse',
-      label: $localize`:@@dspArchLabelWarehouse:Warehouse`,
-      iconKey: 'warehouse-system',
-    },
-    {
-      id: 'sf-system-factory',
-      label: $localize`:@@dspArchLabelFactory:Factory`,
-      iconKey: 'warehouse-system', // Using warehouse as generic factory icon
-    },
   ],
   
-  // Business processes
-  // Using EXISTING container IDs from layout.shared.config.ts
+  // Business processes - 5 applications
   bpProcesses: [
     {
       id: 'bp-erp',
