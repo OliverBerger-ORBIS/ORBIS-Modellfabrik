@@ -1,7 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
-  <rect x="10" y="20" width="80" height="60" fill="#F3F4F6" stroke="#164194" stroke-width="2"/>
-  <rect x="20" y="30" width="25" height="15" fill="#4A90E2" stroke="#164194" stroke-width="1"/>
-  <rect x="55" y="30" width="25" height="15" fill="#4A90E2" stroke="#164194" stroke-width="1"/>
-  <rect x="20" y="55" width="60" height="15" fill="#6B7280" stroke="#164194" stroke-width="1"/>
-  <text x="50" y="95" font-family="Arial" font-size="12" text-anchor="middle" fill="#164194">ERP</text>
-</svg>
+../../../svg/business/erp-application.svg
