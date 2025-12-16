@@ -23,18 +23,16 @@ describe('FMF_CONFIG', () => {
       expect(FMF_CONFIG.sfDevices.length).toBe(6);
     });
 
-    it('should have mill device with abstract ID', () => {
-      const mill = FMF_CONFIG.sfDevices.find(d => d.iconKey === 'mill');
+    it('should have mill device', () => {
+      const mill = FMF_CONFIG.sfDevices.find(d => d.id === 'sf-device-mill');
       expect(mill).toBeDefined();
-      expect(mill?.id).toBe('sf-device-1');
-      expect(mill?.label).toBeTruthy();
+      expect(mill?.iconKey).toBe('mill');
     });
 
-    it('should have drill device with abstract ID', () => {
-      const drill = FMF_CONFIG.sfDevices.find(d => d.iconKey === 'drill');
+    it('should have drill device', () => {
+      const drill = FMF_CONFIG.sfDevices.find(d => d.id === 'sf-device-drill');
       expect(drill).toBeDefined();
-      expect(drill?.id).toBe('sf-device-2');
-      expect(drill?.label).toBeTruthy();
+      expect(drill?.iconKey).toBe('drill');
     });
 
     it('should have aiqs device', () => {
@@ -94,24 +92,10 @@ describe('FMF_CONFIG', () => {
       expect(FMF_CONFIG.sfSystems.length).toBeGreaterThan(0);
     });
 
-<<<<<<< HEAD
     it('should have 2 systems', () => {
       expect(FMF_CONFIG.sfSystems.length).toBe(2);
     });
 
-    it('should have warehouse system with abstract ID', () => {
-      const warehouse = FMF_CONFIG.sfSystems.find(s => s.iconKey === 'warehouse-system');
-      expect(warehouse).toBeDefined();
-      expect(warehouse?.id).toBe('sf-system-1');
-      expect(warehouse?.label).toBeTruthy();
-    });
-
-    it('should have AGV system with abstract ID', () => {
-      const agv = FMF_CONFIG.sfSystems.find(s => s.iconKey === 'agv');
-      expect(agv).toBeDefined();
-      expect(agv?.id).toBe('sf-system-2');
-      expect(agv?.label).toBeTruthy();
-=======
     it('should have any system', () => {
       const anySystem = FMF_CONFIG.sfSystems.find(s => s.id === 'sf-system-1');
       expect(anySystem).toBeDefined();

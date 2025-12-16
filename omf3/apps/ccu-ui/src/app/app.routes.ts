@@ -77,7 +77,7 @@ export const appRoutes: Routes = [
       {
         path: 'dsp-animation',
         loadComponent: () =>
-          import('./pages/refactor-demo/dsp-architecture.component').then((m) => m.DspArchitecturePageComponent),
+          import('./pages/dsp-animation/dsp-architecture.component').then((m) => m.DspArchitecturePageComponent),
       },
       {
         path: 'dsp/customer/fmf',
