@@ -55,6 +55,8 @@ export interface BusinessProcessMapping {
   iconKey: GenericIconKey;
   /** Brand logo key (e.g., sap, alpha-x, aws, azure) */
   brandLogoKey: GenericIconKey;
+  /** Optional: override with custom icon path */
+  customIconPath?: string;
   /** Optional: override with custom brand logo path */
   customBrandLogoPath?: string;
 }

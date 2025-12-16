@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { DspAnimationComponent } from '../../../../components/dsp-animation/dsp-animation.component';
 import { DEF_CONFIG } from '../../../../components/dsp-animation/configs/def/def-config';
 
@@ -10,6 +10,7 @@ import { DEF_CONFIG } from '../../../../components/dsp-animation/configs/def/def
   standalone: true,
   selector: 'app-def-dsp-page',
   imports: [DspAnimationComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="customer-dsp-page">
       <header class="customer-header">

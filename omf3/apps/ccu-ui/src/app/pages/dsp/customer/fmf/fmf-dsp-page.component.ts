@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { DspAnimationComponent } from '../../../../components/dsp-animation/dsp-animation.component';
 import { FMF_CONFIG } from '../../../../components/dsp-animation/configs/fmf/fmf-config';
 
@@ -10,6 +10,7 @@ import { FMF_CONFIG } from '../../../../components/dsp-animation/configs/fmf/fmf
   standalone: true,
   selector: 'app-fmf-dsp-page',
   imports: [DspAnimationComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="customer-dsp-page">
       <header class="customer-header">
