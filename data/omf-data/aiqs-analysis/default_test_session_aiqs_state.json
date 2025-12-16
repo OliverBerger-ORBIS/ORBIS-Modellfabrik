@@ -1,0 +1,46 @@
+[
+  {
+    "timestamp": "2025-08-14T16:14:45.240632",
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/state",
+    "payload": "{\"errors\": [], \"orderId\": \"b2640de0-9d73-478b-b2a8-cd7b9936ab10\", \"orderUpdateId\": 10, \"timestamp\": \"2025-08-14T12:10:52.308576Z\", \"batteryState\": {}, \"headerId\": 30, \"actionState\": {\"timestamp\": \"2025-08-14T12:10:52.308290Z\", \"result\": \"FAILED\", \"state\": \"FINISHED\", \"id\": \"38d2534b-7ae8-424b-ad28-0a7cfe055517\", \"command\": \"CHECK_QUALITY\"}, \"serialNumber\": \"SVR4H76530\", \"paused\": false}",
+    "qos": 0,
+    "retain": true,
+    "message_type": "unknown",
+    "module_type": "unknown",
+    "serial_number": "SVR4H76530",
+    "status": "unknown"
+  },
+  {
+    "timestamp": "2025-08-14T16:14:45.243505",
+    "topic": "module/v1/ff/SVR4H76530/state",
+    "payload": "{\"headerId\":1999,\"loads\":[{\"loadType\":\"WHITE\"}],\"actionState\":{\"command\":\"PICK\",\"id\":\"ddb83d39-9ffa-4646-b76e-6ecd96ba19cf\",\"metadata\":{\"priority\":\"NORMAL\",\"timeout\":300,\"type\":\"WHITE\"},\"state\":\"FAILED\"},\"serialNumber\":\"SVR4H76530\",\"timestamp\":\"2025-08-14T13:37:53.556Z\",\"errors\":[{\"errorType\":\"Validation\",\"errorLevel\":\"WARNING\",\"errorReferences\":[{\"topic\":\"order\"},{\"headerId\":1999},{\"orderId\":\"6be7ef45-6105-4ba7-8dc6-1bc2fa69aa02\"},{\"orderUpdateId\":0}],\"errorMessage\":\"Internal modulestate accepts only PICK \"}],\"orderUpdateId\":0,\"orderId\":\"6be7ef45-6105-4ba7-8dc6-1bc2fa69aa02\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "qos": 0,
+    "retain": true,
+    "message_type": "unknown",
+    "module_type": "unknown",
+    "serial_number": "SVR4H76530",
+    "status": "unknown"
+  },
+  {
+    "timestamp": "2025-08-14T16:14:45.251665",
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/state",
+    "payload": "{\"errors\": [], \"orderId\": \"b2640de0-9d73-478b-b2a8-cd7b9936ab10\", \"orderUpdateId\": 10, \"timestamp\": \"2025-08-14T12:10:52.308576Z\", \"batteryState\": {}, \"headerId\": 30, \"actionState\": {\"timestamp\": \"2025-08-14T12:10:52.308290Z\", \"result\": \"FAILED\", \"state\": \"FINISHED\", \"id\": \"38d2534b-7ae8-424b-ad28-0a7cfe055517\", \"command\": \"CHECK_QUALITY\"}, \"serialNumber\": \"SVR4H76530\", \"paused\": false}",
+    "qos": 0,
+    "retain": true,
+    "message_type": "unknown",
+    "module_type": "unknown",
+    "serial_number": "SVR4H76530",
+    "status": "unknown"
+  },
+  {
+    "timestamp": "2025-08-14T16:14:45.252547",
+    "topic": "module/v1/ff/SVR4H76530/state",
+    "payload": "{\"headerId\":1999,\"loads\":[{\"loadType\":\"WHITE\"}],\"actionState\":{\"command\":\"PICK\",\"id\":\"ddb83d39-9ffa-4646-b76e-6ecd96ba19cf\",\"metadata\":{\"priority\":\"NORMAL\",\"timeout\":300,\"type\":\"WHITE\"},\"state\":\"FAILED\"},\"serialNumber\":\"SVR4H76530\",\"timestamp\":\"2025-08-14T13:37:53.556Z\",\"errors\":[{\"errorType\":\"Validation\",\"errorLevel\":\"WARNING\",\"errorReferences\":[{\"topic\":\"order\"},{\"headerId\":1999},{\"orderId\":\"6be7ef45-6105-4ba7-8dc6-1bc2fa69aa02\"},{\"orderUpdateId\":0}],\"errorMessage\":\"Internal modulestate accepts only PICK \"}],\"orderUpdateId\":0,\"orderId\":\"6be7ef45-6105-4ba7-8dc6-1bc2fa69aa02\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "qos": 0,
+    "retain": true,
+    "message_type": "unknown",
+    "module_type": "unknown",
+    "serial_number": "SVR4H76530",
+    "status": "unknown"
+  }
+]

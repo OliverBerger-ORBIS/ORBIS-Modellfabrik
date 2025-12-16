@@ -1,0 +1,32 @@
+[
+  {
+    "topic": "module/v1/ff/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:22:56.756Z\",\"serialNumber\":\"SVR4H73275\",\"orderId\":\"8fd237e5-2170-4570-8023-36e8b4cd9b30\",\"orderUpdateId\":13,\"action\":{\"id\":\"3ead7ba3-e32e-4b13-a343-493864dcaae6\",\"command\":\"PICK\",\"metadata\":{\"workpiece\":{\"workpieceId\":\"040a8dca341291\",\"type\":\"RED\",\"history\":[{\"ts\":1762795158252,\"code\":400},{\"ts\":1762795212951,\"code\":600},{\"ts\":1762795326045,\"code\":200}],\"state\":\"PROCESSED\"}}}}",
+    "timestamp": "2025-11-10T18:22:56.779570"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:22:56.756Z\",\"serialNumber\":\"SVR4H73275\",\"orderId\":\"8fd237e5-2170-4570-8023-36e8b4cd9b30\",\"orderUpdateId\":13,\"action\":{\"id\":\"3ead7ba3-e32e-4b13-a343-493864dcaae6\",\"command\":\"PICK\",\"metadata\":{\"workpiece\":{\"workpieceId\":\"040a8dca341291\",\"type\":\"RED\",\"history\":[{\"ts\":1762795158252,\"code\":400},{\"ts\":1762795212951,\"code\":600},{\"ts\":1762795326045,\"code\":200}],\"state\":\"PROCESSED\"}}}}",
+    "timestamp": "2025-11-10T18:22:56.784638"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:25:41.089Z\",\"serialNumber\":\"SVR4H73275\",\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"orderUpdateId\":18,\"action\":{\"id\":\"3b8f35c7-2c74-47c9-b346-87fb64a50dde\",\"command\":\"PICK\",\"metadata\":{\"workpiece\":{\"workpieceId\":\"047389ca341291\",\"type\":\"BLUE\",\"history\":[{\"ts\":1762795055405,\"code\":400},{\"ts\":1762795192088,\"code\":700},{\"ts\":1762795278024,\"code\":600},{\"ts\":1762795427124,\"code\":200}],\"state\":\"PROCESSED\"}}}}",
+    "timestamp": "2025-11-10T18:25:41.109115"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:25:41.089Z\",\"serialNumber\":\"SVR4H73275\",\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"orderUpdateId\":18,\"action\":{\"id\":\"3b8f35c7-2c74-47c9-b346-87fb64a50dde\",\"command\":\"PICK\",\"metadata\":{\"workpiece\":{\"workpieceId\":\"047389ca341291\",\"type\":\"BLUE\",\"history\":[{\"ts\":1762795055405,\"code\":400},{\"ts\":1762795192088,\"code\":700},{\"ts\":1762795278024,\"code\":600},{\"ts\":1762795427124,\"code\":200}],\"state\":\"PROCESSED\"}}}}",
+    "timestamp": "2025-11-10T18:25:41.130139"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:27:21.808Z\",\"serialNumber\":\"SVR4H73275\",\"orderId\":\"dc7b8963-68b6-4b8b-9c94-c271d11b64dc\",\"orderUpdateId\":12,\"action\":{\"id\":\"829d89b8-fea0-42bb-9f7a-faac0e5bbbad\",\"command\":\"PICK\",\"metadata\":{\"workpiece\":{\"workpieceId\":\"047c8bca341291\",\"type\":\"WHITE\",\"history\":[{\"ts\":1762795475296,\"code\":400},{\"ts\":1762795530246,\"code\":700},{\"ts\":1762795623161,\"code\":200},{\"ts\":1762794909866,\"code\":100},{\"ts\":1762794941347,\"code\":300}],\"state\":\"PROCESSED\"}}}}",
+    "timestamp": "2025-11-10T18:27:21.810460"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:27:21.808Z\",\"serialNumber\":\"SVR4H73275\",\"orderId\":\"dc7b8963-68b6-4b8b-9c94-c271d11b64dc\",\"orderUpdateId\":12,\"action\":{\"id\":\"829d89b8-fea0-42bb-9f7a-faac0e5bbbad\",\"command\":\"PICK\",\"metadata\":{\"workpiece\":{\"workpieceId\":\"047c8bca341291\",\"type\":\"WHITE\",\"history\":[{\"ts\":1762795475296,\"code\":400},{\"ts\":1762795530246,\"code\":700},{\"ts\":1762795623161,\"code\":200},{\"ts\":1762794909866,\"code\":100},{\"ts\":1762794941347,\"code\":300}],\"state\":\"PROCESSED\"}}}}",
+    "timestamp": "2025-11-10T18:27:21.844770"
+  }
+]

@@ -1,0 +1,9 @@
+[
+  {
+    "topic": "module/v1/ff/SVR4H76530/state",
+    "payload": "{\"orderId\":\"6a7bd2fc-1111-2222-3333-444455556666\",\"serialNumber\":\"SVR4H76530\",\"actionState\":{\"id\":\"blue-aiqs\",\"command\":\"CHECK_QUALITY\",\"state\":\"FINISHED\",\"type\":\"QUALITY_CHECK\"},\"timestamp\":\"2025-02-01T08:40:00Z\"}",
+    "timestamp": "2025-02-01T08:40:00Z",
+    "qos": 0,
+    "retain": false
+  }
+]

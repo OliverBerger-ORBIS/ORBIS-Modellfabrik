@@ -1,0 +1,52 @@
+{
+  "session_name": "Start_20251110_175151",
+  "analysis_timestamp": "2025-12-16T18:51:23.042370",
+  "aiqs_serial": "SVR4H76530",
+  "total_messages": 3378,
+  "aiqs_relevant_messages": 3095,
+  "start_time": "2025-11-10T17:48:46.094261",
+  "end_time": "2025-11-10T17:51:51.835517",
+  "topic_counts": {
+    "ccu/pairing/state": 121,
+    "ccu/order/active": 3,
+    "ccu/order/completed": 3,
+    "/j1/txt/1/f/i/config/hbw": 2,
+    "/j1/txt/1/f/i/stock": 3,
+    "/j1/txt/1/f/i/order": 3,
+    "/j1/txt/1/i/ldr": 22,
+    "/j1/txt/1/i/broadcast": 2,
+    "/j1/txt/1/i/bme680": 21,
+    "/j1/txt/1/i/cam": 274,
+    "module/v1/ff/NodeRed/SVR4H76530/connection": 2,
+    "module/v1/ff/NodeRed/SVR4H76530/state": 3,
+    "module/v1/ff/NodeRed/SVR4H76530/factsheet": 3,
+    "module/v1/ff/SVR4H76530/state": 3,
+    "module/v1/ff/SVR4H76530/connection": 13,
+    "module/v1/ff/SVR4H76530/factsheet": 2,
+    "/j1/txt/1/o/broadcast": 2595,
+    "/j1/txt/1/c/cam": 6,
+    "/j1/txt/1/c/ldr": 6,
+    "/j1/txt/1/c/bme680": 6,
+    "module/v1/ff/SVR4H76530/instantAction": 1,
+    "module/v1/ff/NodeRed/SVR4H76530/instantAction": 1
+  },
+  "topic_categories": {
+    "ccu_pairing_state": 121,
+    "ccu_order_active": 3,
+    "ccu_order_completed": 3,
+    "txt_controller": 2940,
+    "aiqs_connection": 15,
+    "aiqs_state": 6,
+    "aiqs_factsheet": 5,
+    "aiqs_instant_action": 2
+  },
+  "payload_stats": {
+    "has_orderId": 4,
+    "has_actionState": 6
+  },
+  "commands_found": {
+    "factsheetRequest": 5
+  },
+  "check_quality_results_count": 0,
+  "check_quality_context_count": 0
+}

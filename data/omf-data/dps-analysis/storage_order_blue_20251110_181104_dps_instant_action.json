@@ -1,0 +1,382 @@
+[
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:06.803Z\",\"actions\":[{\"actionId\":\"bc319a2c-b0f0-4a86-b549-1e148770e0d6\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:06.855359"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:09.006Z\",\"actions\":[{\"actionId\":\"078e9aa8-b8dd-41ec-9856-f22f0fc41f72\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:09.094772"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:09.044Z\",\"actions\":[{\"actionId\":\"58b553df-ccac-41fb-a2b5-51b7c841cfc1\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:09.097721"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:09.249Z\",\"actions\":[{\"actionId\":\"3d14d909-024d-44f1-b990-a938f9d2b581\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:09.299476"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:09.423Z\",\"actions\":[{\"actionId\":\"9d02298b-353b-474d-acae-dc314fd61cf3\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:09.494599"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:09.445Z\",\"actions\":[{\"actionId\":\"7a6f6cf6-78b2-4bf9-bb63-5a58c46772b2\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:09.497876"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:22.660Z\",\"actions\":[{\"actionId\":\"6a75e945-094e-4ff5-803e-ad6d4a251a0a\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:22.711738"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:23.992Z\",\"actions\":[{\"actionId\":\"4674c546-a779-4ebb-b7c9-310d5fc29a2f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:24.043655"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:24.095Z\",\"actions\":[{\"actionId\":\"feb56059-ce02-43c7-9886-fc050981b2ba\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:24.147302"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:24.234Z\",\"actions\":[{\"actionId\":\"faae932a-41a9-4bd9-ab03-f56b774aa888\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:24.286924"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:24.415Z\",\"actions\":[{\"actionId\":\"e4a7a4e7-d0fb-4ae0-8c7f-005f154404f2\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:24.490352"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:24.441Z\",\"actions\":[{\"actionId\":\"a66d80b5-81fa-43ea-b2d5-5d2ae5610d82\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:24.493812"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:38.997Z\",\"actions\":[{\"actionId\":\"2e29feb2-15ff-4811-9d36-49d9b4abca1d\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:39.068090"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:39.089Z\",\"actions\":[{\"actionId\":\"be2439cd-5eb0-4009-a317-0e2829cf4f26\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:39.139711"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:39.243Z\",\"actions\":[{\"actionId\":\"14938cf1-9fa6-4190-9183-6c1d69701089\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:39.295931"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:39.420Z\",\"actions\":[{\"actionId\":\"4bfd8e0a-36cf-4889-868b-ce798f8a375c\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:39.495082"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:39.445Z\",\"actions\":[{\"actionId\":\"c80ba758-e7bd-4e69-b7af-43fa39fcf002\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:39.498546"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:40.569Z\",\"actions\":[{\"actionId\":\"ba459229-a9e2-4871-8c7a-39ba09c19ac0\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:40.620011"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:40.573Z\",\"actions\":[{\"actionId\":\"828647bb-75be-42ff-84da-cef8f089d656\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:40.623431"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:40.691Z\",\"actions\":[{\"actionId\":\"874ce702-937b-4bd0-a384-427034e190ee\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:40.702671"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:40.699Z\",\"actions\":[{\"actionId\":\"2af16b8f-0cdd-4838-8274-7e1b31c57363\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:40.713717"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:40.778Z\",\"actions\":[{\"actionId\":\"5e84ec1a-8eef-469f-8688-05f20ec2854f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:40.829769"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:40.828Z\",\"actions\":[{\"actionId\":\"ba42e9bc-4193-487a-a256-25a00fdcb2c2\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:40.842053"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:42.948Z\",\"actions\":[{\"actionId\":\"dc7c845e-2bb9-4cbf-9337-2f48307e1a46\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:42.996028"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:43.041Z\",\"actions\":[{\"actionId\":\"1989a3ab-f11e-411d-90c7-46fb4e453014\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:43.071688"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:43.067Z\",\"actions\":[{\"actionId\":\"7dc8ddf0-585d-4e74-aa8d-94e1e6577a53\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:43.081733"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:45.120Z\",\"actions\":[{\"actionId\":\"5cda5dd3-2afc-4301-8b0f-e214e0e17c62\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:45.171397"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:45.209Z\",\"actions\":[{\"actionId\":\"d2a622bc-6921-4195-9d0f-254884fb1a7a\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:45.248342"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:45.242Z\",\"actions\":[{\"actionId\":\"f0376e86-5bd0-4796-b6b3-0d9786fae7dc\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:45.258684"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:46.972Z\",\"actions\":[{\"actionId\":\"b8297439-e021-4507-9fe8-2286b55b3400\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:47.056019"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:50.897Z\",\"actions\":[{\"actionId\":\"d9f2b7ec-1310-49e3-afa1-50c14962e5d6\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:50.949141"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:50.909Z\",\"actions\":[{\"actionId\":\"8a32533a-bc5d-4d9a-a659-0f6b3d4e3715\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:50.949220"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:50.977Z\",\"actions\":[{\"actionId\":\"9db9ad5b-6a74-4843-8f6a-1a0b9161c6b1\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:51.027491"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:53.997Z\",\"actions\":[{\"actionId\":\"da70ce3f-e574-4364-8aaf-00ac2cf06a72\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:54.048112"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:54.089Z\",\"actions\":[{\"actionId\":\"4b8816fa-33e9-44e4-a7f5-723b8d27d2ad\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:54.140137"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:54.241Z\",\"actions\":[{\"actionId\":\"138f901d-2dbc-413c-affc-d3de79166228\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:54.293960"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:54.429Z\",\"actions\":[{\"actionId\":\"f27a94bd-c2b3-4916-9fcb-93768055ec33\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:54.499337"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:09:54.447Z\",\"actions\":[{\"actionId\":\"e680538d-eabb-4dd3-8bee-1b683ce9d326\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:09:54.502330"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:05.135Z\",\"actions\":[{\"actionId\":\"302ef483-7a78-4b51-bcc4-46c5f861459f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:05.189714"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:05.247Z\",\"actions\":[{\"actionId\":\"e6836eb2-366d-4bd9-8669-cd79dedfcf77\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:10:05.295837"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:05.325Z\",\"actions\":[{\"actionId\":\"0b437cb3-5215-45ad-9169-393591f23bfb\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:05.337119"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:05.333Z\",\"actions\":[{\"actionId\":\"ba411dbb-192d-4b0a-933a-14dcf96f5016\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:05.344877"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:05.530Z\",\"actions\":[{\"actionId\":\"82330a7e-0a7f-48af-83e7-b59d83c1d1ca\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:05.579358"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:05.621Z\",\"actions\":[{\"actionId\":\"9486bfb0-7a90-4da1-848d-c041ce4c54da\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:05.670427"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:07.542Z\",\"actions\":[{\"actionId\":\"35ee8b1b-dba9-4ba3-986d-7557f800ad44\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:07.593423"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:07.630Z\",\"actions\":[{\"actionId\":\"f6ebd387-9759-4cd1-a3d6-f6dc682ada96\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:07.679490"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:07.763Z\",\"actions\":[{\"actionId\":\"389bc637-2bf9-48bc-bdc5-70306c24004a\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:07.811381"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:08.998Z\",\"actions\":[{\"actionId\":\"efcde08e-e48f-4aa4-a48a-38d3061ff428\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:09.051379"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:09.088Z\",\"actions\":[{\"actionId\":\"4c23d695-ba58-4ddd-92cd-33e8f4b1cd2b\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:09.139402"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:09.247Z\",\"actions\":[{\"actionId\":\"173b2e3e-41cf-4103-8298-f5670da91e5f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:09.299517"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:09.418Z\",\"actions\":[{\"actionId\":\"83a392cc-84c9-4e92-9911-b06d7471bb39\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:09.494853"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:09.442Z\",\"actions\":[{\"actionId\":\"8e45db80-bd92-4a2d-8b55-269dc9a6764f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:09.498174"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:10.098Z\",\"actions\":[{\"actionId\":\"5cc61072-5216-4253-97f3-c7e25e77bd6f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:10.147368"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:10.190Z\",\"actions\":[{\"actionId\":\"e05953e1-5325-4ea1-93da-c023e28db237\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:10.240023"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:10.281Z\",\"actions\":[{\"actionId\":\"03e32f49-093c-48d1-b70e-57c85fda5d40\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:10.331485"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:11.900Z\",\"actions\":[{\"actionId\":\"a6da774d-843e-422c-b405-7e723cf8961c\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:11.948147"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:15.833Z\",\"actions\":[{\"actionId\":\"fd7ab711-827d-4ee7-8153-3ccc994bf623\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:15.883260"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:15.948Z\",\"actions\":[{\"actionId\":\"ff0e4220-b40b-46df-98db-c7c79580ed81\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:16.018829"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:15.969Z\",\"actions\":[{\"actionId\":\"6875c51c-b3d0-49e5-a4ea-6ad1b3b08c47\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:16.021893"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:23.993Z\",\"actions\":[{\"actionId\":\"9302603e-f79f-4e16-a3e2-4888c3b19db7\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:24.045556"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:24.085Z\",\"actions\":[{\"actionId\":\"2f8c1cb9-d64e-4bd3-81eb-8eb6783ee582\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:24.136543"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:24.236Z\",\"actions\":[{\"actionId\":\"aed36273-c997-4a91-bab5-8859bbc32a33\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:24.288391"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:24.424Z\",\"actions\":[{\"actionId\":\"14c98c89-77cd-485a-97b6-8a248647f9c3\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:24.495287"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:24.446Z\",\"actions\":[{\"actionId\":\"aec3139f-3ea1-49db-a91a-173b56a50177\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:24.500443"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:33.234Z\",\"actions\":[{\"actionId\":\"db0028f0-5f40-4222-b586-a9c296b5df19\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":false,\"red\":false,\"yellow\":true}}]}",
+    "timestamp": "2025-11-10T18:10:33.341624"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:33.368Z\",\"actions\":[{\"actionId\":\"601c8540-3ae6-48ef-a760-66b19bf4221f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:10:33.416603"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:38.989Z\",\"actions\":[{\"actionId\":\"6337f47a-e009-44fc-9457-4820f66e29c6\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:10:39.075564"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:39.076Z\",\"actions\":[{\"actionId\":\"57429b64-cf34-43a0-b8b8-b8c74e5f5b8b\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:10:39.127784"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:39.233Z\",\"actions\":[{\"actionId\":\"753b8bf0-836b-432d-9b26-9443d96ec8d0\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:10:39.283766"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:39.413Z\",\"actions\":[{\"actionId\":\"94afec26-670f-4a23-8acc-84ac163ea30f\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:10:39.495268"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:39.442Z\",\"actions\":[{\"actionId\":\"3058f264-c4eb-43de-8517-59e1d511d7c7\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:10:39.499146"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:53.996Z\",\"actions\":[{\"actionId\":\"3c936cff-102c-4e39-8813-741d3a6a58b6\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:10:54.048600"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:54.089Z\",\"actions\":[{\"actionId\":\"701e4c60-6966-4ebf-a18d-d916aaa40dd9\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:10:54.140334"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:54.243Z\",\"actions\":[{\"actionId\":\"c61df182-5550-436f-948f-e3f499c88ce8\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:10:54.297084"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:54.416Z\",\"actions\":[{\"actionId\":\"8c31e79c-545a-422f-969c-20e245f988df\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:10:54.499973"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:10:54.448Z\",\"actions\":[{\"actionId\":\"48e6d5ff-6da8-479b-a955-3459bc38aa08\",\"actionType\":\"setStatusLED\",\"metadata\":{\"green\":true,\"red\":false,\"yellow\":false}}]}",
+    "timestamp": "2025-11-10T18:10:54.503087"
+  }
+]

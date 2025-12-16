@@ -1,0 +1,12 @@
+[
+  {
+    "topic": "module/v1/ff/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:05:19.491Z\",\"serialNumber\":\"SVR4H73275\",\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"orderUpdateId\":15,\"action\":{\"id\":\"09c098e5-5b7f-45fc-b31d-e580c4627c50\",\"command\":\"PICK\",\"metadata\":{\"workpiece\":{\"workpieceId\":\"04a189ca341290\",\"type\":\"BLUE\",\"history\":[{\"ts\":1762794186341,\"code\":400},{\"ts\":1762794221125,\"code\":700},{\"ts\":1762794262953,\"code\":600},{\"ts\":1762794301037,\"code\":200}],\"state\":\"PROCESSED\"}}}}",
+    "timestamp": "2025-11-10T18:05:19.510080"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:05:19.491Z\",\"serialNumber\":\"SVR4H73275\",\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"orderUpdateId\":15,\"action\":{\"id\":\"09c098e5-5b7f-45fc-b31d-e580c4627c50\",\"command\":\"PICK\",\"metadata\":{\"workpiece\":{\"workpieceId\":\"04a189ca341290\",\"type\":\"BLUE\",\"history\":[{\"ts\":1762794186341,\"code\":400},{\"ts\":1762794221125,\"code\":700},{\"ts\":1762794262953,\"code\":600},{\"ts\":1762794301037,\"code\":200}],\"state\":\"PROCESSED\"}}}}",
+    "timestamp": "2025-11-10T18:05:19.524856"
+  }
+]

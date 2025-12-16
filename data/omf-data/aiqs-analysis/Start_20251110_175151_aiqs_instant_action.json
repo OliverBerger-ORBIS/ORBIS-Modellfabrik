@@ -1,0 +1,12 @@
+[
+  {
+    "topic": "module/v1/ff/SVR4H76530/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H76530\",\"timestamp\":\"2025-11-10T16:50:27.721Z\",\"actions\":[{\"actionId\":\"440a42ee-94f1-432b-8b6f-56a22360ddb4\",\"actionType\":\"reset\"}]}",
+    "timestamp": "2025-11-10T17:50:27.746489"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/instantAction",
+    "payload": "{\"host\":\"SVR4H76530\",\"serialNumber\":\"SVR4H76530\",\"timestamp\":\"2025-11-10T16:50:54.217Z\",\"actions\":[{\"actionId\":\"SOME_ID\",\"actionType\":\"factsheetRequest\",\"metadata\":{}}]}",
+    "timestamp": "2025-11-10T17:50:54.231703"
+  }
+]

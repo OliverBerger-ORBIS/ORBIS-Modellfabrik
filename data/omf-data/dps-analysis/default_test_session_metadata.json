@@ -1,0 +1,48 @@
+{
+  "session_name": "default_test_session",
+  "analysis_timestamp": "2025-12-16T18:51:07.396246",
+  "dps_serial": "SVR4H73275",
+  "total_messages": 206,
+  "dps_relevant_messages": 153,
+  "start_time": "2025-08-14T16:14:45.240861",
+  "end_time": "2025-08-14T16:15:33.958130",
+  "topic_counts": {
+    "module/v1/ff/NodeRed/SVR4H73275/connection": 2,
+    "module/v1/ff/NodeRed/SVR4H73275/state": 2,
+    "module/v1/ff/NodeRed/SVR4H73275/factsheet": 2,
+    "module/v1/ff/SVR4H73275/state": 2,
+    "module/v1/ff/SVR4H73275/connection": 5,
+    "module/v1/ff/SVR4H73275/factsheet": 2,
+    "ccu/pairing/state": 17,
+    "ccu/order/active": 1,
+    "ccu/order/completed": 1,
+    "/j1/txt/1/f/i/config/hbw": 1,
+    "/j1/txt/1/f/i/stock": 1,
+    "/j1/txt/1/f/i/order": 1,
+    "/j1/txt/1/i/ldr": 2,
+    "/j1/txt/1/i/broadcast": 1,
+    "/j1/txt/1/i/bme680": 2,
+    "/j1/txt/1/i/cam": 95,
+    "module/v1/ff/SVR4H73275/instantAction": 16
+  },
+  "topic_categories": {
+    "dps_connection": 7,
+    "dps_state": 4,
+    "dps_factsheet": 4,
+    "ccu_pairing_state": 17,
+    "ccu_order_active": 1,
+    "ccu_order_completed": 1,
+    "txt_controller": 103,
+    "dps_instant_action": 16
+  },
+  "payload_stats": {
+    "has_orderId": 4,
+    "has_actionState": 4,
+    "has_workpieceId": 6
+  },
+  "commands_found": {
+    "PICK": 8
+  },
+  "storage_order_context_count": 0,
+  "production_order_context_count": 0
+}

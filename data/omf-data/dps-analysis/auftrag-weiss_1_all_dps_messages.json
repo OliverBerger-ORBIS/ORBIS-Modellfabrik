@@ -1,0 +1,9 @@
+[
+  {
+    "topic": "ccu/order/active",
+    "payload": "{\"orderId\":\"258beef9-6001-43a2-b7d4-01ed50f4b155\",\"productId\":\"WHITE\",\"quantity\":1,\"status\":\"running\"}",
+    "timestamp": "2025-01-01T10:00:00Z",
+    "qos": 0,
+    "retain": false
+  }
+]

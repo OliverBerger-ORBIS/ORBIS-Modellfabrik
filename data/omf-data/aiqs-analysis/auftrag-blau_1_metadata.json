@@ -1,0 +1,26 @@
+{
+  "session_name": "auftrag-blau_1",
+  "analysis_timestamp": "2025-12-16T18:51:23.137820",
+  "aiqs_serial": "SVR4H76530",
+  "total_messages": 5,
+  "aiqs_relevant_messages": 2,
+  "start_time": "2025-02-01T08:30:00Z",
+  "end_time": "2025-02-01T08:40:00Z",
+  "topic_counts": {
+    "ccu/order/active": 1,
+    "module/v1/ff/SVR4H76530/state": 1
+  },
+  "topic_categories": {
+    "ccu_order_active": 1,
+    "aiqs_state": 1
+  },
+  "payload_stats": {
+    "has_orderId": 1,
+    "has_actionState": 1
+  },
+  "commands_found": {
+    "CHECK_QUALITY": 1
+  },
+  "check_quality_results_count": 1,
+  "check_quality_context_count": 2
+}

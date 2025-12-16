@@ -1,0 +1,19 @@
+{
+  "session_name": "auftrag-rot_1",
+  "analysis_timestamp": "2025-12-16T18:51:23.182175",
+  "aiqs_serial": "SVR4H76530",
+  "total_messages": 4,
+  "aiqs_relevant_messages": 1,
+  "start_time": "2025-03-12T14:00:00Z",
+  "end_time": "2025-03-12T14:00:00Z",
+  "topic_counts": {
+    "ccu/order/active": 1
+  },
+  "topic_categories": {
+    "ccu_order_active": 1
+  },
+  "payload_stats": {},
+  "commands_found": {},
+  "check_quality_results_count": 0,
+  "check_quality_context_count": 0
+}

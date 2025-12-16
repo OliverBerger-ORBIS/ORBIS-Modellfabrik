@@ -1,0 +1,9 @@
+[
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"orderId\":\"6a7bd2fc-1111-2222-3333-444455556666\",\"serialNumber\":\"SVR4H73275\",\"actionState\":{\"id\":\"blue-dps\",\"command\":\"DROP\",\"state\":\"FINISHED\",\"type\":\"MANUFACTURE\"},\"timestamp\":\"2025-02-01T08:45:00Z\"}",
+    "timestamp": "2025-02-01T08:45:00Z",
+    "qos": 0,
+    "retain": false
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 0, \"orderId\": \"\", \"errors\": [{\"errorType\": \"RESET_WARNING\", \"errorReferences\": [{\"orderId\": \"\"}], \"errorLevel\": \"WARNING\"}], \"batteryState\": {}, \"headerId\": 5, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"factsheetRequest\", \"state\": \"FINISHED\", \"id\": \"SOME_ID\", \"timestamp\": \"2025-11-10T16:50:54.564741Z\"}, \"actionStates\": [{\"command\": \"factsheetRequest\", \"state\": \"FINISHED\", \"id\": \"SOME_ID\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T16:50:54.563596Z\"}",
+    "timestamp": "2025-11-10T17:58:18.556848"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"headerId\":2,\"loads\":[],\"actionState\":null,\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T16:50:54.642Z\",\"errors\":[],\"orderUpdateId\":0,\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T17:58:18.557218"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"headerId\":514,\"loads\":[],\"actionState\":{\"id\":\"4db0d5dc-3841-4f92-85e1-fde21f9a569d\",\"state\":\"RUNNING\"},\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:00:44.414Z\",\"errors\":[],\"orderUpdateId\":0,\"orderId\":\"c9da720e-98e6-4d96-84d3-7baad5c5383d\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:00:44.430742"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 11, \"orderId\": \"c9da720e-98e6-4d96-84d3-7baad5c5383d\", \"errors\": [], \"batteryState\": {}, \"headerId\": 6, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"PICK\", \"state\": \"WAITIING\", \"id\": \"4db0d5dc-3841-4f92-85e1-fde21f9a569d\", \"timestamp\": \"2025-11-10T17:00:44.459070Z\"}, \"actionStates\": [{\"command\": \"PICK\", \"state\": \"WAITIING\", \"metadata\": {\"workpiece\": {\"type\": \"RED\", \"history\": [{\"ts\": 1762793958373, \"code\": 400}, {\"ts\": 1762793986891, \"code\": 600}, {\"ts\": 1762794026169, \"code\": 200}], \"state\": \"PROCESSED\", \"workpieceId\": \"04d78cca341290\"}}, \"id\": \"4db0d5dc-3841-4f92-85e1-fde21f9a569d\", \"timestamp\": \"2025-11-10T17:00:44.459070Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:00:44.461316Z\"}",
+    "timestamp": "2025-11-10T18:00:44.519939"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 11, \"orderId\": \"c9da720e-98e6-4d96-84d3-7baad5c5383d\", \"errors\": [], \"batteryState\": {}, \"headerId\": 7, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"PICK\", \"state\": \"RUNNING\", \"id\": \"4db0d5dc-3841-4f92-85e1-fde21f9a569d\", \"timestamp\": \"2025-11-10T17:00:44.924037Z\"}, \"actionStates\": [{\"command\": \"PICK\", \"state\": \"RUNNING\", \"metadata\": {\"workpiece\": {\"type\": \"RED\", \"history\": [{\"ts\": 1762793958373, \"code\": 400}, {\"ts\": 1762793986891, \"code\": 600}, {\"ts\": 1762794026169, \"code\": 200}], \"state\": \"PROCESSED\", \"workpieceId\": \"04d78cca341290\"}}, \"id\": \"4db0d5dc-3841-4f92-85e1-fde21f9a569d\", \"timestamp\": \"2025-11-10T17:00:44.924037Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:00:44.924355Z\"}",
+    "timestamp": "2025-11-10T18:00:45.042204"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 11, \"orderId\": \"c9da720e-98e6-4d96-84d3-7baad5c5383d\", \"errors\": [], \"batteryState\": {}, \"headerId\": 8, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"PICK\", \"state\": \"FINISHED\", \"result\": \"PASSED\", \"id\": \"4db0d5dc-3841-4f92-85e1-fde21f9a569d\", \"timestamp\": \"2025-11-10T17:01:07.544476Z\"}, \"actionStates\": [{\"command\": \"PICK\", \"metadata\": {\"workpiece\": {\"type\": \"RED\", \"history\": [{\"ts\": 1762793958373, \"code\": 400}, {\"ts\": 1762793986891, \"code\": 600}, {\"ts\": 1762794026169, \"code\": 200}], \"state\": \"PROCESSED\", \"workpieceId\": \"04d78cca341290\"}}, \"state\": \"FINISHED\", \"result\": \"PASSED\", \"id\": \"4db0d5dc-3841-4f92-85e1-fde21f9a569d\", \"timestamp\": \"2025-11-10T17:01:07.544476Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:01:07.544758Z\"}",
+    "timestamp": "2025-11-10T18:01:07.577830"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\":11,\"orderId\":\"c9da720e-98e6-4d96-84d3-7baad5c5383d\",\"errors\":[],\"batteryState\":{},\"headerId\":8,\"paused\":false,\"operatingMode\":\"AUTOMATIC\",\"information\":[],\"actionState\":{\"command\":\"PICK\",\"state\":\"FINISHED\",\"result\":\"PASSED\",\"id\":\"4db0d5dc-3841-4f92-85e1-fde21f9a569d\",\"timestamp\":\"2025-11-10T17:01:07.544476Z\"},\"actionStates\":[{\"command\":\"PICK\",\"metadata\":{\"workpiece\":{\"type\":\"RED\",\"history\":[{\"ts\":1762793958373,\"code\":400},{\"ts\":1762793986891,\"code\":600},{\"ts\":1762794026169,\"code\":200}],\"state\":\"PROCESSED\",\"workpieceId\":\"04d78cca341290\"}},\"state\":\"FINISHED\",\"result\":\"PASSED\",\"id\":\"4db0d5dc-3841-4f92-85e1-fde21f9a569d\",\"timestamp\":\"2025-11-10T17:01:07.544476Z\"}],\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:01:07.544758Z\"}",
+    "timestamp": "2025-11-10T18:01:08.594421"
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 1, \"orderId\": \"9b524f36-d50f-4cfe-aee3-2bfac6982213\", \"errors\": [], \"batteryState\": {}, \"headerId\": 107, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"DROP\", \"state\": \"FINISHED\", \"id\": \"7de74d7b-7c7c-4f68-9d29-247fd0c4884d\", \"timestamp\": \"2025-11-10T17:40:18.666286Z\"}, \"actionStates\": [{\"command\": \"DROP\", \"state\": \"FINISHED\", \"metadata\": {\"workpiece\": {\"type\": \"WHITE\", \"history\": [], \"state\": \"PROCESSED\", \"workpieceId\": \"047c8bca341291\"}}, \"id\": \"7de74d7b-7c7c-4f68-9d29-247fd0c4884d\", \"timestamp\": \"2025-11-10T17:40:18.666286Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:40:18.666579Z\"}",
+    "timestamp": "2025-11-10T18:41:31.879194"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\":1,\"orderId\":\"9b524f36-d50f-4cfe-aee3-2bfac6982213\",\"errors\":[],\"batteryState\":{},\"headerId\":107,\"paused\":false,\"operatingMode\":\"AUTOMATIC\",\"information\":[],\"actionState\":{\"command\":\"DROP\",\"state\":\"FINISHED\",\"id\":\"7de74d7b-7c7c-4f68-9d29-247fd0c4884d\",\"timestamp\":\"2025-11-10T17:40:18.666286Z\"},\"actionStates\":[{\"command\":\"DROP\",\"state\":\"FINISHED\",\"metadata\":{\"workpiece\":{\"type\":\"WHITE\",\"history\":[],\"state\":\"PROCESSED\",\"workpieceId\":\"047c8bca341291\"}},\"id\":\"7de74d7b-7c7c-4f68-9d29-247fd0c4884d\",\"timestamp\":\"2025-11-10T17:40:18.666286Z\"}],\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:40:18.666579Z\"}",
+    "timestamp": "2025-11-10T18:41:31.880038"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"headerId\":312,\"loads\":[],\"actionState\":{\"id\":\"f7188ef5-cc4e-41ac-8f12-216a44d26f65\",\"state\":\"RUNNING\"},\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:43:58.859Z\",\"errors\":[],\"orderUpdateId\":0,\"orderId\":\"bc51e53d-413a-4cd7-b128-b4407fba3c23\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:43:58.842581"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 11, \"orderId\": \"bc51e53d-413a-4cd7-b128-b4407fba3c23\", \"errors\": [], \"batteryState\": {}, \"headerId\": 108, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"PICK\", \"state\": \"WAITIING\", \"id\": \"f7188ef5-cc4e-41ac-8f12-216a44d26f65\", \"timestamp\": \"2025-11-10T17:43:58.851397Z\"}, \"actionStates\": [{\"command\": \"PICK\", \"state\": \"WAITIING\", \"metadata\": {\"workpiece\": {\"type\": \"WHITE\", \"history\": [{\"ts\": 1762796542460, \"code\": 400}, {\"ts\": 1762796576161, \"code\": 700}, {\"ts\": 1762796620270, \"code\": 200}], \"state\": \"PROCESSED\", \"workpieceId\": \"047b8bca341291\"}}, \"id\": \"f7188ef5-cc4e-41ac-8f12-216a44d26f65\", \"timestamp\": \"2025-11-10T17:43:58.851397Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:43:58.851708Z\"}",
+    "timestamp": "2025-11-10T18:43:58.899033"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 11, \"orderId\": \"bc51e53d-413a-4cd7-b128-b4407fba3c23\", \"errors\": [], \"batteryState\": {}, \"headerId\": 109, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"PICK\", \"state\": \"RUNNING\", \"id\": \"f7188ef5-cc4e-41ac-8f12-216a44d26f65\", \"timestamp\": \"2025-11-10T17:43:58.989330Z\"}, \"actionStates\": [{\"command\": \"PICK\", \"state\": \"RUNNING\", \"metadata\": {\"workpiece\": {\"type\": \"WHITE\", \"history\": [{\"ts\": 1762796542460, \"code\": 400}, {\"ts\": 1762796576161, \"code\": 700}, {\"ts\": 1762796620270, \"code\": 200}], \"state\": \"PROCESSED\", \"workpieceId\": \"047b8bca341291\"}}, \"id\": \"f7188ef5-cc4e-41ac-8f12-216a44d26f65\", \"timestamp\": \"2025-11-10T17:43:58.989330Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:43:58.989659Z\"}",
+    "timestamp": "2025-11-10T18:43:59.000589"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\": 11, \"orderId\": \"bc51e53d-413a-4cd7-b128-b4407fba3c23\", \"errors\": [], \"batteryState\": {}, \"headerId\": 110, \"paused\": false, \"operatingMode\": \"AUTOMATIC\", \"information\": [], \"actionState\": {\"command\": \"PICK\", \"state\": \"FINISHED\", \"result\": \"PASSED\", \"id\": \"f7188ef5-cc4e-41ac-8f12-216a44d26f65\", \"timestamp\": \"2025-11-10T17:44:21.435127Z\"}, \"actionStates\": [{\"command\": \"PICK\", \"metadata\": {\"workpiece\": {\"type\": \"WHITE\", \"history\": [{\"ts\": 1762796542460, \"code\": 400}, {\"ts\": 1762796576161, \"code\": 700}, {\"ts\": 1762796620270, \"code\": 200}], \"state\": \"PROCESSED\", \"workpieceId\": \"047b8bca341291\"}}, \"state\": \"FINISHED\", \"result\": \"PASSED\", \"id\": \"f7188ef5-cc4e-41ac-8f12-216a44d26f65\", \"timestamp\": \"2025-11-10T17:44:21.435127Z\"}], \"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-11-10T17:44:21.435454Z\"}",
+    "timestamp": "2025-11-10T18:44:21.442332"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"orderUpdateId\":11,\"orderId\":\"bc51e53d-413a-4cd7-b128-b4407fba3c23\",\"errors\":[],\"batteryState\":{},\"headerId\":110,\"paused\":false,\"operatingMode\":\"AUTOMATIC\",\"information\":[],\"actionState\":{\"command\":\"PICK\",\"state\":\"FINISHED\",\"result\":\"PASSED\",\"id\":\"f7188ef5-cc4e-41ac-8f12-216a44d26f65\",\"timestamp\":\"2025-11-10T17:44:21.435127Z\"},\"actionStates\":[{\"command\":\"PICK\",\"metadata\":{\"workpiece\":{\"type\":\"WHITE\",\"history\":[{\"ts\":1762796542460,\"code\":400},{\"ts\":1762796576161,\"code\":700},{\"ts\":1762796620270,\"code\":200}],\"state\":\"PROCESSED\",\"workpieceId\":\"047b8bca341291\"}},\"state\":\"FINISHED\",\"result\":\"PASSED\",\"id\":\"f7188ef5-cc4e-41ac-8f12-216a44d26f65\",\"timestamp\":\"2025-11-10T17:44:21.435127Z\"}],\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-11-10T17:44:21.435454Z\"}",
+    "timestamp": "2025-11-10T18:44:22.453654"
+  }
+]

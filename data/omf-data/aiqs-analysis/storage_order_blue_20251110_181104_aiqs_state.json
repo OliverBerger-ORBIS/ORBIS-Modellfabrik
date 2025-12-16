@@ -1,0 +1,12 @@
+[
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/state",
+    "payload": "{\"errors\": [], \"batteryState\": {}, \"serialNumber\": \"SVR4H76530\", \"timestamp\": \"2025-11-10T17:04:59.484865Z\", \"headerId\": 19, \"actionState\": {\"command\": \"CHECK_QUALITY\", \"result\": \"PASSED\", \"id\": \"5e919162-d76c-49f5-b597-5cdd96f385dc\", \"timestamp\": \"2025-11-10T17:04:59.484480Z\", \"state\": \"FINISHED\"}, \"paused\": false, \"orderUpdateId\": 10, \"orderId\": \"ceca8bef-bbe8-4012-aa18-725d7af68a10\"}",
+    "timestamp": "2025-11-10T18:08:57.714950"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/state",
+    "payload": "{\"headerId\":77,\"loads\":[],\"actionState\":{\"command\":\"DROP\",\"id\":\"e3f68c76-e8e8-4cb2-8eca-d7cdace5b821\",\"metadata\":{\"type\":\"BLUE\",\"workpieceId\":\"04a189ca341290\"},\"state\":\"FINISHED\"},\"serialNumber\":\"SVR4H76530\",\"timestamp\":\"2025-11-10T17:05:10.113Z\",\"errors\":[],\"orderUpdateId\":0,\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:08:57.715209"
+  }
+]

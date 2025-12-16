@@ -1,0 +1,22 @@
+[
+  {
+    "topic": "module/v1/ff/SVR4H76530/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:04:44.586Z\",\"serialNumber\":\"SVR4H76530\",\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"orderUpdateId\":11,\"action\":{\"id\":\"688ff93f-00b3-4657-a650-a48001c0273a\",\"command\":\"PICK\",\"metadata\":{\"type\":\"BLUE\",\"workpieceId\":\"04a189ca341290\"}}}",
+    "timestamp": "2025-11-10T18:04:44.592933"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:04:52.077Z\",\"serialNumber\":\"SVR4H76530\",\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"orderUpdateId\":12,\"action\":{\"id\":\"5e919162-d76c-49f5-b597-5cdd96f385dc\",\"command\":\"CHECK_QUALITY\",\"metadata\":{\"type\":\"BLUE\",\"workpieceId\":\"04a189ca341290\"}}}",
+    "timestamp": "2025-11-10T18:04:52.089446"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/order",
+    "payload": "{\"serialNumber\":\"SVR4H76530\",\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"orderUpdateId\":10,\"timestamp\":\"2025-11-10T17:04:56.111Z\",\"action\":{\"command\":\"CHECK_QUALITY\",\"id\":\"5e919162-d76c-49f5-b597-5cdd96f385dc\",\"metadata\":{\"type\":\"BLUE\",\"workpieceId\":\"04a189ca341290\"}}}",
+    "timestamp": "2025-11-10T18:04:56.119020"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:05:01.051Z\",\"serialNumber\":\"SVR4H76530\",\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"orderUpdateId\":13,\"action\":{\"id\":\"e3f68c76-e8e8-4cb2-8eca-d7cdace5b821\",\"command\":\"DROP\",\"metadata\":{\"type\":\"BLUE\",\"workpieceId\":\"04a189ca341290\"}}}",
+    "timestamp": "2025-11-10T18:05:01.061088"
+  }
+]

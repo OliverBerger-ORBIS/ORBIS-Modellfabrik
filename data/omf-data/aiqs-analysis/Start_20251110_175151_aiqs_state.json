@@ -1,0 +1,32 @@
+[
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/state",
+    "payload": "{\"errors\": [], \"batteryState\": {}, \"serialNumber\": \"SVR4H76530\", \"timestamp\": \"2025-11-10T16:47:29.090857Z\", \"headerId\": 2, \"actionState\": {\"command\": \"factsheetRequest\", \"id\": \"SOME_ID\", \"timestamp\": \"2025-11-10T16:47:29.091134Z\", \"state\": \"FINISHED\"}, \"paused\": false, \"orderUpdateId\": 0, \"orderId\": \"\"}",
+    "timestamp": "2025-11-10T17:48:46.094752"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/state",
+    "payload": "{\"headerId\":1,\"loads\":[],\"actionState\":{\"id\":\"445bff42-11b0-45d7-88e8-84e1d2233cf2\",\"state\":\"FINISHED\",\"command\":\"factsheetRequest\",\"metadata\":{}},\"serialNumber\":\"SVR4H76530\",\"timestamp\":\"2025-11-10T16:47:29.224Z\",\"errors\":[],\"orderUpdateId\":0,\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T17:48:46.098160"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/state",
+    "payload": "{\"errors\": [], \"batteryState\": {}, \"serialNumber\": \"SVR4H76530\", \"timestamp\": \"2025-11-10T16:47:29.090857Z\", \"headerId\": 2, \"actionState\": {\"command\": \"factsheetRequest\", \"id\": \"SOME_ID\", \"timestamp\": \"2025-11-10T16:47:29.091134Z\", \"state\": \"FINISHED\"}, \"paused\": false, \"orderUpdateId\": 0, \"orderId\": \"\"}",
+    "timestamp": "2025-11-10T17:49:27.873296"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/state",
+    "payload": "{\"headerId\":1,\"loads\":[],\"actionState\":{\"id\":\"445bff42-11b0-45d7-88e8-84e1d2233cf2\",\"state\":\"FINISHED\",\"command\":\"factsheetRequest\",\"metadata\":{}},\"serialNumber\":\"SVR4H76530\",\"timestamp\":\"2025-11-10T16:47:29.224Z\",\"errors\":[],\"orderUpdateId\":0,\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T17:49:27.873453"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/state",
+    "payload": "{\"headerId\":0,\"loads\":[],\"actionState\":null,\"serialNumber\":\"SVR4H76530\",\"timestamp\":\"2025-11-10T16:50:54.317Z\",\"errors\":[],\"orderUpdateId\":0,\"orderId\":\"\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T17:50:54.326558"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/state",
+    "payload": "{\"errors\": [], \"batteryState\": {}, \"serialNumber\": \"SVR4H76530\", \"timestamp\": \"2025-11-10T16:50:54.252863Z\", \"headerId\": 3, \"actionState\": {\"command\": \"factsheetRequest\", \"id\": \"SOME_ID\", \"timestamp\": \"2025-11-10T16:50:54.253269Z\", \"state\": \"FINISHED\"}, \"paused\": false, \"orderUpdateId\": 0, \"orderId\": \"\"}",
+    "timestamp": "2025-11-10T17:50:54.424252"
+  }
+]

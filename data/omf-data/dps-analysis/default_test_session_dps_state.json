@@ -1,0 +1,46 @@
+[
+  {
+    "timestamp": "2025-08-14T16:14:45.240952",
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-08-14T12:12:55.635084Z\", \"information\": [], \"actionStates\": [{\"id\": \"2cd5872d-c44d-414e-a561-45267392af84\", \"timestamp\": \"2025-08-14T11:09:06.749387Z\", \"result\": \"FAILED\", \"state\": \"FINISHED\", \"command\": \"PICK\", \"metadata\": {\"workpiece\": {\"workpieceId\": \"047c8bca341291\", \"state\": \"PROCESSED\", \"type\": \"WHITE\", \"history\": [{\"code\": 400, \"ts\": 1755169627910}, {\"code\": 700, \"ts\": 1755169662631}, {\"code\": 200, \"ts\": 1755169706797}, {\"code\": 400, \"ts\": 1755165257724}, {\"code\": 700, \"ts\": 1755165293555}, {\"code\": 200, \"ts\": 1755165337530}, {\"code\": 800, \"ts\": 1755165380588}, {\"code\": 100, \"ts\": 1755166997650}, {\"code\": 300, \"ts\": 1755167026799}]}}}], \"operatingMode\": \"AUTOMATIC\", \"batteryState\": {}, \"errors\": [{\"errorLevel\": \"WARNING\", \"errorType\": \"validationError\", \"errorReferences\": [{\"topic\": \"order\"}, {\"headerId\": null}, {\"orderId\": \"3ad5d0b4-50b8-4b52-8be5-2664a5f9c06f\"}, {\"orderUpdateId\": 1}]}], \"paused\": false, \"headerId\": 63, \"actionState\": {\"id\": \"2cd5872d-c44d-414e-a561-45267392af84\", \"timestamp\": \"2025-08-14T11:09:06.749387Z\", \"command\": \"PICK\", \"result\": \"FAILED\", \"state\": \"FINISHED\"}, \"orderUpdateId\": 11, \"orderId\": \"f1220dee-5c2a-4c73-a2e0-c414ee3f8bd7\"}",
+    "qos": 0,
+    "retain": true,
+    "message_type": "unknown",
+    "module_type": "unknown",
+    "serial_number": "SVR4H73275",
+    "status": "unknown"
+  },
+  {
+    "timestamp": "2025-08-14T16:14:45.244100",
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-08-14T12:12:55.635084Z\",\"information\":[],\"actionStates\":[{\"id\":\"2cd5872d-c44d-414e-a561-45267392af84\",\"timestamp\":\"2025-08-14T11:09:06.749387Z\",\"result\":\"FAILED\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"metadata\":{\"workpiece\":{\"workpieceId\":\"047c8bca341291\",\"state\":\"PROCESSED\",\"type\":\"WHITE\",\"history\":[{\"code\":400,\"ts\":1755169627910},{\"code\":700,\"ts\":1755169662631},{\"code\":200,\"ts\":1755169706797},{\"code\":400,\"ts\":1755165257724},{\"code\":700,\"ts\":1755165293555},{\"code\":200,\"ts\":1755165337530},{\"code\":800,\"ts\":1755165380588},{\"code\":100,\"ts\":1755166997650},{\"code\":300,\"ts\":1755167026799}]}}}],\"operatingMode\":\"AUTOMATIC\",\"batteryState\":{},\"errors\":[{\"errorLevel\":\"WARNING\",\"errorType\":\"validationError\",\"errorReferences\":[{\"topic\":\"order\"},{\"headerId\":null},{\"orderId\":\"3ad5d0b4-50b8-4b52-8be5-2664a5f9c06f\"},{\"orderUpdateId\":1}]}],\"paused\":false,\"headerId\":63,\"actionState\":{\"id\":\"2cd5872d-c44d-414e-a561-45267392af84\",\"timestamp\":\"2025-08-14T11:09:06.749387Z\",\"command\":\"PICK\",\"result\":\"FAILED\",\"state\":\"FINISHED\"},\"orderUpdateId\":11,\"orderId\":\"f1220dee-5c2a-4c73-a2e0-c414ee3f8bd7\"}",
+    "qos": 0,
+    "retain": true,
+    "message_type": "unknown",
+    "module_type": "unknown",
+    "serial_number": "SVR4H73275",
+    "status": "unknown"
+  },
+  {
+    "timestamp": "2025-08-14T16:14:45.251895",
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/state",
+    "payload": "{\"serialNumber\": \"SVR4H73275\", \"timestamp\": \"2025-08-14T12:12:55.635084Z\", \"information\": [], \"actionStates\": [{\"id\": \"2cd5872d-c44d-414e-a561-45267392af84\", \"timestamp\": \"2025-08-14T11:09:06.749387Z\", \"result\": \"FAILED\", \"state\": \"FINISHED\", \"command\": \"PICK\", \"metadata\": {\"workpiece\": {\"workpieceId\": \"047c8bca341291\", \"state\": \"PROCESSED\", \"type\": \"WHITE\", \"history\": [{\"code\": 400, \"ts\": 1755169627910}, {\"code\": 700, \"ts\": 1755169662631}, {\"code\": 200, \"ts\": 1755169706797}, {\"code\": 400, \"ts\": 1755165257724}, {\"code\": 700, \"ts\": 1755165293555}, {\"code\": 200, \"ts\": 1755165337530}, {\"code\": 800, \"ts\": 1755165380588}, {\"code\": 100, \"ts\": 1755166997650}, {\"code\": 300, \"ts\": 1755167026799}]}}}], \"operatingMode\": \"AUTOMATIC\", \"batteryState\": {}, \"errors\": [{\"errorLevel\": \"WARNING\", \"errorType\": \"validationError\", \"errorReferences\": [{\"topic\": \"order\"}, {\"headerId\": null}, {\"orderId\": \"3ad5d0b4-50b8-4b52-8be5-2664a5f9c06f\"}, {\"orderUpdateId\": 1}]}], \"paused\": false, \"headerId\": 63, \"actionState\": {\"id\": \"2cd5872d-c44d-414e-a561-45267392af84\", \"timestamp\": \"2025-08-14T11:09:06.749387Z\", \"command\": \"PICK\", \"result\": \"FAILED\", \"state\": \"FINISHED\"}, \"orderUpdateId\": 11, \"orderId\": \"f1220dee-5c2a-4c73-a2e0-c414ee3f8bd7\"}",
+    "qos": 0,
+    "retain": true,
+    "message_type": "unknown",
+    "module_type": "unknown",
+    "serial_number": "SVR4H73275",
+    "status": "unknown"
+  },
+  {
+    "timestamp": "2025-08-14T16:14:45.253081",
+    "topic": "module/v1/ff/SVR4H73275/state",
+    "payload": "{\"serialNumber\":\"SVR4H73275\",\"timestamp\":\"2025-08-14T12:12:55.635084Z\",\"information\":[],\"actionStates\":[{\"id\":\"2cd5872d-c44d-414e-a561-45267392af84\",\"timestamp\":\"2025-08-14T11:09:06.749387Z\",\"result\":\"FAILED\",\"state\":\"FINISHED\",\"command\":\"PICK\",\"metadata\":{\"workpiece\":{\"workpieceId\":\"047c8bca341291\",\"state\":\"PROCESSED\",\"type\":\"WHITE\",\"history\":[{\"code\":400,\"ts\":1755169627910},{\"code\":700,\"ts\":1755169662631},{\"code\":200,\"ts\":1755169706797},{\"code\":400,\"ts\":1755165257724},{\"code\":700,\"ts\":1755165293555},{\"code\":200,\"ts\":1755165337530},{\"code\":800,\"ts\":1755165380588},{\"code\":100,\"ts\":1755166997650},{\"code\":300,\"ts\":1755167026799}]}}}],\"operatingMode\":\"AUTOMATIC\",\"batteryState\":{},\"errors\":[{\"errorLevel\":\"WARNING\",\"errorType\":\"validationError\",\"errorReferences\":[{\"topic\":\"order\"},{\"headerId\":null},{\"orderId\":\"3ad5d0b4-50b8-4b52-8be5-2664a5f9c06f\"},{\"orderUpdateId\":1}]}],\"paused\":false,\"headerId\":63,\"actionState\":{\"id\":\"2cd5872d-c44d-414e-a561-45267392af84\",\"timestamp\":\"2025-08-14T11:09:06.749387Z\",\"command\":\"PICK\",\"result\":\"FAILED\",\"state\":\"FINISHED\"},\"orderUpdateId\":11,\"orderId\":\"f1220dee-5c2a-4c73-a2e0-c414ee3f8bd7\"}",
+    "qos": 0,
+    "retain": true,
+    "message_type": "unknown",
+    "module_type": "unknown",
+    "serial_number": "SVR4H73275",
+    "status": "unknown"
+  }
+]

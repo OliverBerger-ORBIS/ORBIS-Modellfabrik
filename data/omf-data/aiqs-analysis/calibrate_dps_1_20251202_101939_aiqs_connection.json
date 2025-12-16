@@ -1,0 +1,187 @@
+[
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/connection",
+    "payload": "{ \"headerId\": 2, \"timestamp\": \"2025-11-28T16:49:50.640855Z\", \"version\": \"1.0.0\", \"manufacturer\": \"Fischertechnik\", \"serialNumber\": \"SVR4H76530\", \"connectionState\": \"ONLINE\" }",
+    "timestamp": "2025-12-02T10:10:31.397772"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":91,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:10:31.398699"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/connection",
+    "payload": "{ \"headerId\": 2, \"timestamp\": \"2025-11-28T16:49:50.640855Z\", \"version\": \"1.0.0\", \"manufacturer\": \"Fischertechnik\", \"serialNumber\": \"SVR4H76530\", \"connectionState\": \"ONLINE\" }",
+    "timestamp": "2025-12-02T10:10:35.259207"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":91,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:10:35.259418"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":92,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:10:37.532074"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":93,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:10:52.541761"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":94,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:11:07.523793"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":95,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:11:22.526131"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":96,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:11:37.536371"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":97,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:11:52.525188"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":98,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:12:07.526506"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":99,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:12:22.534847"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":100,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:12:37.542161"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":101,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:12:52.532047"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":102,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:13:07.530983"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":103,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:13:22.527464"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":104,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:13:37.539141"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":105,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:13:52.523988"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":106,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:14:07.531762"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":107,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:14:22.523225"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":108,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:14:37.538292"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":109,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:14:52.528560"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":110,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:15:07.529031"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":111,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:15:22.533406"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":112,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:15:37.539247"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":113,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:15:52.535907"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":114,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:16:07.532532"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":115,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:16:22.535117"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":116,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:16:37.539673"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":117,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:16:52.538233"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":118,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:17:07.537530"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":119,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:17:22.543906"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":120,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:17:37.544700"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":121,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:17:52.542913"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H76530/connection",
+    "payload": "{ \"headerId\": 2, \"timestamp\": \"2025-11-28T16:49:50.640855Z\", \"version\": \"1.0.0\", \"manufacturer\": \"Fischertechnik\", \"serialNumber\": \"SVR4H76530\", \"connectionState\": \"ONLINE\" }",
+    "timestamp": "2025-12-02T10:19:36.381939"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":127,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:19:36.384922"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76530/connection",
+    "payload": "{\"headerId\":128,\"timestamp\":\"2025-12-02T08:47:37.590Z\",\"ip\":\"192.168.0.70\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR4H76530\",\"connectionState\":\"ONLINE\"}",
+    "timestamp": "2025-12-02T10:19:37.558931"
+  }
+]

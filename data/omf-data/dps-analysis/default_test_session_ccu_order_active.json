@@ -1,0 +1,13 @@
+[
+  {
+    "timestamp": "2025-08-14T16:14:45.246343",
+    "topic": "ccu/order/active",
+    "payload": "[]",
+    "qos": 0,
+    "retain": true,
+    "message_type": "unknown",
+    "module_type": "unknown",
+    "serial_number": "unknown",
+    "status": "unknown"
+  }
+]

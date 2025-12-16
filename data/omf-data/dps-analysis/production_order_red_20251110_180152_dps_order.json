@@ -1,0 +1,12 @@
+[
+  {
+    "topic": "module/v1/ff/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:00:44.391Z\",\"serialNumber\":\"SVR4H73275\",\"orderId\":\"c9da720e-98e6-4d96-84d3-7baad5c5383d\",\"orderUpdateId\":11,\"action\":{\"id\":\"4db0d5dc-3841-4f92-85e1-fde21f9a569d\",\"command\":\"PICK\",\"metadata\":{\"workpiece\":{\"workpieceId\":\"04d78cca341290\",\"type\":\"RED\",\"history\":[{\"ts\":1762793958373,\"code\":400},{\"ts\":1762793986891,\"code\":600},{\"ts\":1762794026169,\"code\":200}],\"state\":\"PROCESSED\"}}}}",
+    "timestamp": "2025-11-10T18:00:44.427939"
+  },
+  {
+    "topic": "module/v1/ff/NodeRed/SVR4H73275/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:00:44.391Z\",\"serialNumber\":\"SVR4H73275\",\"orderId\":\"c9da720e-98e6-4d96-84d3-7baad5c5383d\",\"orderUpdateId\":11,\"action\":{\"id\":\"4db0d5dc-3841-4f92-85e1-fde21f9a569d\",\"command\":\"PICK\",\"metadata\":{\"workpiece\":{\"workpieceId\":\"04d78cca341290\",\"type\":\"RED\",\"history\":[{\"ts\":1762793958373,\"code\":400},{\"ts\":1762793986891,\"code\":600},{\"ts\":1762794026169,\"code\":200}],\"state\":\"PROCESSED\"}}}}",
+    "timestamp": "2025-11-10T18:00:44.430830"
+  }
+]

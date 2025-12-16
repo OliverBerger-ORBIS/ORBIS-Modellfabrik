@@ -1,0 +1,47 @@
+{
+  "session_name": "calibrate_dps_1_20251202_101939",
+  "analysis_timestamp": "2025-12-16T18:51:24.485800",
+  "aiqs_serial": "SVR4H76530",
+  "total_messages": 1561,
+  "aiqs_relevant_messages": 1132,
+  "start_time": "2025-12-02T10:10:31.395507",
+  "end_time": "2025-12-02T10:19:37.889016",
+  "topic_counts": {
+    "ccu/pairing/state": 173,
+    "ccu/order/active": 3,
+    "ccu/order/completed": 3,
+    "/j1/txt/1/f/i/config/hbw": 3,
+    "/j1/txt/1/f/i/stock": 3,
+    "/j1/txt/1/f/i/order": 3,
+    "/j1/txt/1/i/ldr": 10,
+    "/j1/txt/1/i/broadcast": 3,
+    "/j1/txt/1/i/bme680": 10,
+    "/j1/txt/1/i/cam": 860,
+    "module/v1/ff/NodeRed/SVR4H76530/connection": 3,
+    "module/v1/ff/NodeRed/SVR4H76530/state": 3,
+    "module/v1/ff/NodeRed/SVR4H76530/factsheet": 3,
+    "module/v1/ff/SVR4H76530/state": 3,
+    "module/v1/ff/SVR4H76530/connection": 34,
+    "module/v1/ff/SVR4H76530/factsheet": 3,
+    "ccu/set/calibration": 12
+  },
+  "topic_categories": {
+    "ccu_pairing_state": 173,
+    "ccu_order_active": 3,
+    "ccu_order_completed": 3,
+    "txt_controller": 892,
+    "aiqs_connection": 37,
+    "aiqs_state": 6,
+    "aiqs_factsheet": 6,
+    "ccu_calibration_set": 12
+  },
+  "payload_stats": {
+    "has_orderId": 6,
+    "has_actionState": 6
+  },
+  "commands_found": {
+    "factsheetRequest": 3
+  },
+  "check_quality_results_count": 0,
+  "check_quality_context_count": 0
+}

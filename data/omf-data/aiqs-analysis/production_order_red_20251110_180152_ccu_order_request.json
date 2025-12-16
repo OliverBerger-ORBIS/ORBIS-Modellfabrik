@@ -1,0 +1,7 @@
+[
+  {
+    "topic": "ccu/order/request",
+    "payload": "{\"type\":\"RED\",\"timestamp\":\"2025-11-10T16:58:23.943Z\",\"orderType\":\"PRODUCTION\"}",
+    "timestamp": "2025-11-10T17:58:23.958437"
+  }
+]
