@@ -1,0 +1,160 @@
+<section class="aiqs-tab">
+  <header class="aiqs-tab__toolbar">
+    <div class="aiqs-tab__title">
+      <img [src]="headingIcon" alt="AIQS" class="aiqs-tab__icon" width="32" height="32" />
+      <div>
+        <h1>{{ headingTitle }}</h1>
+        <p class="aiqs-tab__subtitle">
+          {{ headingSubtitle }}
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <div class="aiqs-tab__content" *ngIf="aiqsState$ | async as aiqsState; else noData">
+    <div class="aiqs-tab__grid">
+      <!-- Left Column: Status & Quality Results -->
+      <div class="aiqs-tab__column aiqs-tab__column--left">
+        <!-- Status Section -->
+        <section class="aiqs-tab__section status-section">
+          <h2>
+            <img [src]="statusIcon" alt="Status" class="section-icon-img" width="24" height="24" />
+            <span i18n="@@aiqsStatusHeading">Status</span>
+            <span class="serial-badge">{{ aiqsState.serialNumber }}</span>
+          </h2>
+          
+          <div class="status-card">
+            <div class="status-item">
+              <span class="status-label">{{ labelConnection }}</span>
+              <div class="status-value">
+                <span class="status-badge" [class.online]="getConnectionStatus(aiqsState) === 'ONLINE'" [class.offline]="getConnectionStatus(aiqsState) === 'OFFLINE'">
+                  <img [src]="getConnectionStatus(aiqsState) === 'ONLINE' ? connectionOnlineIcon : connectionOfflineIcon" alt="" width="16" height="16" />
+                  <span>{{ getConnectionStatus(aiqsState) === 'ONLINE' ? statusOnline : statusOffline }}</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="status-item">
+              <span class="status-label">{{ labelAvailability }}</span>
+              <div class="status-value">
+                <span class="status-badge" 
+                      [class.ready]="getAvailability(aiqsState) === 'READY'" 
+                      [class.busy]="getAvailability(aiqsState) === 'BUSY'"
+                      [class.error]="getAvailability(aiqsState) === 'ERROR'">
+                  <span>{{ getAvailability(aiqsState) === 'READY' ? statusReady : (getAvailability(aiqsState) === 'BUSY' ? statusBusy : statusError) }}</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="status-item">
+              <span class="status-label">{{ labelOrderId }}</span>
+              <div class="status-value">
+                <span class="order-id">{{ getOrderIdDisplay(aiqsState.orderId) }}</span>
+              </div>
+            </div>
+
+            <div class="status-item" *ngIf="getCurrentAction(aiqsState) as action">
+              <span class="status-label">{{ labelCurrentAction }}</span>
+              <div class="status-value">
+                <span class="action-badge" [class]="getStateClass(action.state)">
+                  <span class="command">{{ action.command }}</span>
+                  <span class="state">{{ getStateLabel(action.state) }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Quality Results Section -->
+        <section class="aiqs-tab__section quality-section">
+          <h2>
+            <img [src]="qualityIcon" alt="Quality" class="section-icon-img" width="24" height="24" />
+            <span>{{ labelQualityResults }}</span>
+          </h2>
+
+          <div class="quality-card">
+            <div class="quality-item">
+              <span class="quality-label">{{ labelTotalChecks }}</span>
+              <div class="quality-value">
+                <span class="total-count">{{ getTotalChecks(aiqsState) }}</span>
+              </div>
+            </div>
+
+            <div class="quality-item">
+              <span class="quality-label">{{ labelPassed }}</span>
+              <div class="quality-value">
+                <img [src]="passedIcon" alt="Passed" width="16" height="16" />
+                <span class="passed-count">{{ getPassedCount(aiqsState) }}</span>
+              </div>
+            </div>
+
+            <div class="quality-item">
+              <span class="quality-label">{{ labelFailed }}</span>
+              <div class="quality-value">
+                <img [src]="failedIcon" alt="Failed" width="16" height="16" />
+                <span class="failed-count">{{ getFailedCount(aiqsState) }}</span>
+              </div>
+            </div>
+
+            <div class="quality-item">
+              <span class="quality-label">{{ labelSuccessRate }}</span>
+              <div class="quality-value">
+                <span class="success-rate">{{ getSuccessRate(aiqsState) }}%</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Check History -->
+      <div class="aiqs-tab__column aiqs-tab__column--right">
+        <section class="aiqs-tab__section history-section">
+          <h2>
+            <img [src]="historyIcon" alt="History" class="section-icon-img" width="24" height="24" />
+            <span>{{ labelCheckHistory }}</span>
+          </h2>
+
+          <div class="history-table-wrapper">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>{{ labelCommand }}</th>
+                  <th>{{ labelState }}</th>
+                  <th>{{ labelResult }}</th>
+                  <th>{{ labelTimestamp }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let action of getRecentActions(aiqsState); trackBy: trackByActionId">
+                  <td>
+                    <span class="command-name">{{ action.command }}</span>
+                  </td>
+                  <td>
+                    <span class="state-badge" [class]="getStateClass(action.state)">
+                      {{ getStateLabel(action.state) }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="result-badge" [class]="getResultClass(action.result)">
+                      {{ getResultLabel(action.result) }}
+                    </span>
+                  </td>
+                  <td class="timestamp">{{ formatTimestamp(action.timestamp) }}</td>
+                </tr>
+                <tr *ngIf="getRecentActions(aiqsState).length === 0">
+                  <td colspan="4" class="no-data" i18n="@@aiqsNoActionsYet">No quality checks recorded yet</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noData>
+    <div class="aiqs-tab__no-data">
+      <p i18n="@@aiqsNoDataAvailable">No AIQS data available. Waiting for MQTT messages...</p>
+    </div>
+  </ng-template>
+</section>
