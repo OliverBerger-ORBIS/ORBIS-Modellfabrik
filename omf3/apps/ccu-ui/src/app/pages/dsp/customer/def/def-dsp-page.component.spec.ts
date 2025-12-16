@@ -143,11 +143,14 @@ describe('DefDspPageComponent', () => {
   });
 
   it('should use different brand logos than FMF', () => {
-    // DEF uses Azure/PowerBI, different from FMF's AWS/Grafana
-    const cloudProcess = component.config.bpProcesses.find(bp => bp.id === 'bp-cloud');
-    expect(cloudProcess?.brandLogoKey).toBe('azure');
+    // DEF uses Azure/PowerBI/Alpha-X, different from FMF's AWS/Grafana/SAP
+    const dataLakeProcess = component.config.bpProcesses.find(bp => bp.id === 'bp-data-lake');
+    expect(dataLakeProcess?.brandLogoKey).toBe('azure');
     
     const analyticsProcess = component.config.bpProcesses.find(bp => bp.id === 'bp-analytics');
     expect(analyticsProcess?.brandLogoKey).toBe('powerbi');
+    
+    const erpProcess = component.config.bpProcesses.find(bp => bp.id === 'bp-erp');
+    expect(erpProcess?.brandLogoKey).toBe('alpha-x');
   });
 });

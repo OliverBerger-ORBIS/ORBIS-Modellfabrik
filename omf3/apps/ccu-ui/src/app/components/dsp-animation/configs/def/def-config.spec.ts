@@ -19,19 +19,26 @@ describe('DEF_CONFIG', () => {
       expect(DEF_CONFIG.sfDevices.length).toBeGreaterThan(0);
     });
 
+    it('should have 5 devices', () => {
+      expect(DEF_CONFIG.sfDevices.length).toBe(5);
+    });
+
     it('should have laser device (different from FMF)', () => {
       const laser = DEF_CONFIG.sfDevices.find(d => d.iconKey === 'laser');
       expect(laser).toBeDefined();
+      expect(laser?.id).toMatch(/^sf-device-\d+$/);
     });
 
     it('should have cnc device (different from FMF)', () => {
       const cnc = DEF_CONFIG.sfDevices.find(d => d.iconKey === 'cnc');
       expect(cnc).toBeDefined();
+      expect(cnc?.id).toMatch(/^sf-device-\d+$/);
     });
 
     it('should have 3D printer device (different from FMF)', () => {
       const printer = DEF_CONFIG.sfDevices.find(d => d.iconKey === 'printer-3d');
       expect(printer).toBeDefined();
+      expect(printer?.id).toMatch(/^sf-device-\d+$/);
     });
 
     it('should have all devices with valid IDs', () => {
@@ -60,6 +67,10 @@ describe('DEF_CONFIG', () => {
       expect(DEF_CONFIG.sfSystems.length).toBeGreaterThan(0);
     });
 
+    it('should have 4 systems', () => {
+      expect(DEF_CONFIG.sfSystems.length).toBe(4);
+    });
+
     it('should have all systems with valid IDs', () => {
       DEF_CONFIG.sfSystems.forEach(system => {
         expect(system.id).toBeTruthy();
@@ -86,6 +97,12 @@ describe('DEF_CONFIG', () => {
       expect(DEF_CONFIG.bpProcesses.length).toBeGreaterThan(0);
     });
 
+    it('should have 4 business processes (no bp-cloud)', () => {
+      expect(DEF_CONFIG.bpProcesses.length).toBe(4);
+      const cloudProcess = DEF_CONFIG.bpProcesses.find(bp => bp.id === 'bp-cloud');
+      expect(cloudProcess).toBeUndefined();
+    });
+
     it('should have ERP process with Alpha-X logo (different from FMF)', () => {
       const erp = DEF_CONFIG.bpProcesses.find(bp => bp.id === 'bp-erp');
       expect(erp).toBeDefined();
@@ -93,11 +110,11 @@ describe('DEF_CONFIG', () => {
       expect(erp?.brandLogoKey).toBe('alpha-x');
     });
 
-    it('should have Cloud process with Azure logo (different from FMF)', () => {
-      const cloud = DEF_CONFIG.bpProcesses.find(bp => bp.id === 'bp-cloud');
-      expect(cloud).toBeDefined();
-      expect(cloud?.iconKey).toBe('cloud');
-      expect(cloud?.brandLogoKey).toBe('azure');
+    it('should have Data Platform with Azure logo', () => {
+      const dataLake = DEF_CONFIG.bpProcesses.find(bp => bp.id === 'bp-data-lake');
+      expect(dataLake).toBeDefined();
+      expect(dataLake?.iconKey).toBe('cloud');
+      expect(dataLake?.brandLogoKey).toBe('azure');
     });
 
     it('should have Analytics process with PowerBI logo (different from FMF)', () => {

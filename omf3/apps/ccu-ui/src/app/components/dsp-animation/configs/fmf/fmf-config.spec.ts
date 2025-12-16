@@ -19,34 +19,36 @@ describe('FMF_CONFIG', () => {
       expect(FMF_CONFIG.sfDevices.length).toBeGreaterThan(0);
     });
 
-    it('should have mill device', () => {
-      const mill = FMF_CONFIG.sfDevices.find(d => d.id === 'sf-device-mill');
+    it('should have 6 devices', () => {
+      expect(FMF_CONFIG.sfDevices.length).toBe(6);
+    });
+
+    it('should have mill device with abstract ID', () => {
+      const mill = FMF_CONFIG.sfDevices.find(d => d.iconKey === 'mill');
       expect(mill).toBeDefined();
-      expect(mill?.iconKey).toBe('mill');
+      expect(mill?.id).toBe('sf-device-1');
+      expect(mill?.label).toBeTruthy();
     });
 
-    it('should have drill device', () => {
-      const drill = FMF_CONFIG.sfDevices.find(d => d.id === 'sf-device-drill');
+    it('should have drill device with abstract ID', () => {
+      const drill = FMF_CONFIG.sfDevices.find(d => d.iconKey === 'drill');
       expect(drill).toBeDefined();
-      expect(drill?.iconKey).toBe('drill');
+      expect(drill?.id).toBe('sf-device-2');
+      expect(drill?.label).toBeTruthy();
     });
 
-    it('should have oven device', () => {
-      const oven = FMF_CONFIG.sfDevices.find(d => d.id === 'sf-device-stone-oven');
-      expect(oven).toBeDefined();
-      expect(oven?.iconKey).toBe('oven');
-    });
-
-    it('should have hbw device', () => {
-      const hbw = FMF_CONFIG.sfDevices.find(d => d.id === 'sf-device-hbw');
+    it('should have hbw device with abstract ID', () => {
+      const hbw = FMF_CONFIG.sfDevices.find(d => d.iconKey === 'hbw');
       expect(hbw).toBeDefined();
-      expect(hbw?.iconKey).toBe('hbw');
+      expect(hbw?.id).toBe('sf-device-4');
+      expect(hbw?.label).toBeTruthy();
     });
 
-    it('should have conveyor device', () => {
-      const conveyor = FMF_CONFIG.sfDevices.find(d => d.id === 'sf-device-conveyor');
+    it('should have conveyor device with abstract ID', () => {
+      const conveyor = FMF_CONFIG.sfDevices.find(d => d.iconKey === 'conveyor');
       expect(conveyor).toBeDefined();
-      expect(conveyor?.iconKey).toBe('conveyor');
+      expect(conveyor?.id).toBe('sf-device-5');
+      expect(conveyor?.label).toBeTruthy();
     });
 
     it('should have robot-arm devices', () => {
@@ -80,16 +82,22 @@ describe('FMF_CONFIG', () => {
       expect(FMF_CONFIG.sfSystems.length).toBeGreaterThan(0);
     });
 
-    it('should have warehouse system', () => {
-      const warehouse = FMF_CONFIG.sfSystems.find(s => s.id === 'sf-system-warehouse');
-      expect(warehouse).toBeDefined();
-      expect(warehouse?.iconKey).toBe('warehouse-system');
+    it('should have 2 systems', () => {
+      expect(FMF_CONFIG.sfSystems.length).toBe(2);
     });
 
-    it('should have FTS/AGV system', () => {
-      const fts = FMF_CONFIG.sfSystems.find(s => s.id === 'sf-system-fts');
-      expect(fts).toBeDefined();
-      expect(fts?.iconKey).toBe('agv');
+    it('should have warehouse system with abstract ID', () => {
+      const warehouse = FMF_CONFIG.sfSystems.find(s => s.iconKey === 'warehouse-system');
+      expect(warehouse).toBeDefined();
+      expect(warehouse?.id).toBe('sf-system-1');
+      expect(warehouse?.label).toBeTruthy();
+    });
+
+    it('should have AGV system with abstract ID', () => {
+      const agv = FMF_CONFIG.sfSystems.find(s => s.iconKey === 'agv');
+      expect(agv).toBeDefined();
+      expect(agv?.id).toBe('sf-system-2');
+      expect(agv?.label).toBeTruthy();
     });
 
     it('should have all systems with valid IDs', () => {
