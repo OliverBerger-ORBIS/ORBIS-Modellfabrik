@@ -10,8 +10,10 @@ export type GenericIconKey =
   // Devices
   | 'drill' | 'mill' | 'oven' | 'laser' | 'cnc' | 'printer-3d' 
   | 'robot-arm' | 'conveyor' | 'warehouse' | 'agv' | 'hbw'
+  | 'hydraulic' | 'weight'
   // Systems
   | 'warehouse-system' | 'erp' | 'mes' | 'cloud' | 'analytics'
+  | 'scada' | 'industrial-process' | 'cargo' | 'pump'
   // Brands
   | 'sap' | 'alpha-x' | 'aws' | 'azure' | 'powerbi' | 'grafana';
 

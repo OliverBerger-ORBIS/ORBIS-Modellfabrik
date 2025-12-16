@@ -42,6 +42,11 @@ export type IconKey =
   | 'device-aiqs'
   | 'device-dps'
   | 'device-chrg'
+  | 'device-cnc'
+  | 'device-hydraulic'
+  | 'device-printer-3d'
+  | 'device-weight'
+  | 'device-laser'
   | 'device-plc'
   | 'device-robot-arm'
   | 'device-conveyor'
@@ -54,6 +59,9 @@ export type IconKey =
   | 'shopfloor-mes'
   | 'shopfloor-bp'
   | 'shopfloor-scada'
+  | 'shopfloor-industrial-process'
+  | 'shopfloor-cargo'
+  | 'shopfloor-pump'
   | 'shopfloor-aps'
   | 'shopfloor-warehouse'
   | 'shopfloor-factory'
@@ -73,10 +81,13 @@ export type IconKey =
   // Generic device icons
   | 'generic-device-drill' | 'generic-device-mill' | 'generic-device-oven'
   | 'generic-device-laser' | 'generic-device-cnc' | 'generic-device-printer-3d'
+  | 'generic-device-hydraulic' | 'generic-device-weight'
   | 'generic-device-robot-arm' | 'generic-device-conveyor' | 'generic-device-warehouse'
   | 'generic-device-agv' | 'generic-device-hbw'
   // Generic system icons
-  | 'generic-system-warehouse-system' | 'generic-system-erp' | 'generic-system-mes'
+  | 'generic-system-warehouse-system' | 'generic-system-scada' | 'generic-system-industrial-process'
+  | 'generic-system-cargo' | 'generic-system-pump'
+  | 'generic-system-erp' | 'generic-system-mes'
   | 'generic-system-cloud' | 'generic-system-analytics'
   // Generic brand icons
   | 'generic-brand-sap' | 'generic-brand-alpha-x' | 'generic-brand-aws'
@@ -132,6 +143,11 @@ export const ICON_MAP: Record<IconKey, string> = {
   'device-aiqs': ICONS.shopfloor.stations.aiqs,
   'device-dps': ICONS.shopfloor.stations.dps,
   'device-chrg': ICONS.shopfloor.stations.chrg,
+  'device-cnc': ICONS.shopfloor.stations.cnc,
+  'device-hydraulic': ICONS.shopfloor.stations.hydraulic,
+  'device-printer-3d': ICONS.shopfloor.stations.printer3d,
+  'device-weight': ICONS.shopfloor.stations.weight,
+  'device-laser': ICONS.shopfloor.stations.laser,
   'device-plc': ICONS.shopfloor.systems.any,
   'device-robot-arm': ICONS.shopfloor.stations.dps,
   'device-conveyor': 'assets/svg/shopfloor/stations/conveyor-station.svg',
@@ -143,7 +159,10 @@ export const ICON_MAP: Record<IconKey, string> = {
   'shopfloor-systems': ICONS.shopfloor.systems.any,
   'shopfloor-fts': ICONS.shopfloor.systems.fts,
   'shopfloor-mes': ICONS.shopfloor.shared.question,
-  'shopfloor-scada': ICONS.shopfloor.systems.any,
+  'shopfloor-scada': ICONS.shopfloor.systems.scada,
+  'shopfloor-industrial-process': ICONS.shopfloor.systems.industrialProcess,
+  'shopfloor-cargo': ICONS.shopfloor.systems.cargo,
+  'shopfloor-pump': ICONS.shopfloor.systems.pump,
   'shopfloor-aps': ICONS.shopfloor.stations.dps,
   'shopfloor-warehouse': 'assets/svg/shopfloor/systems/warehouse-system.svg',
   'shopfloor-factory': 'assets/svg/shopfloor/systems/factory-system.svg',
@@ -168,9 +187,11 @@ export const ICON_MAP: Record<IconKey, string> = {
   'generic-device-drill': 'assets/svg/shopfloor/stations/drill-station.svg',
   'generic-device-mill': 'assets/svg/shopfloor/stations/mill-station.svg',
   'generic-device-oven': 'assets/svg/shopfloor/stations/oven-station.svg',
-  'generic-device-laser': 'assets/svg/shopfloor/stations/mill-station.svg', // Using mill as fallback for laser (not available)
-  'generic-device-cnc': 'assets/svg/shopfloor/stations/mill-station.svg', // Using mill as fallback for CNC (not available)
-  'generic-device-printer-3d': 'assets/svg/shopfloor/stations/mixer.svg', // Using mixer as fallback for 3D printer (not available)
+  'generic-device-laser': 'assets/svg/shopfloor/stations/laser-station.svg',
+  'generic-device-cnc': 'assets/svg/shopfloor/stations/cnc-station.svg',
+  'generic-device-printer-3d': 'assets/svg/shopfloor/stations/printer-3d-station.svg',
+  'generic-device-hydraulic': 'assets/svg/shopfloor/stations/hydraulic-station.svg',
+  'generic-device-weight': 'assets/svg/shopfloor/stations/weight-station.svg',
   'generic-device-robot-arm': 'assets/svg/shopfloor/stations/chrg-station.svg', // Using chrg (robot arm) for robot-arm
   'generic-device-conveyor': 'assets/svg/shopfloor/stations/conveyor-station.svg',
   'generic-device-warehouse': 'assets/svg/shopfloor/stations/hbw-station.svg', // Using HBW for warehouse
@@ -179,6 +200,10 @@ export const ICON_MAP: Record<IconKey, string> = {
   
   // Generic system icons (using existing business application icons from src/assets/svg/business/)
   'generic-system-warehouse-system': 'assets/svg/shopfloor/systems/warehouse-system.svg',
+  'generic-system-scada': 'assets/svg/shopfloor/systems/scada-system.svg',
+  'generic-system-industrial-process': 'assets/svg/shopfloor/systems/industrial-process-system.svg',
+  'generic-system-cargo': 'assets/svg/shopfloor/systems/cargo-system.svg',
+  'generic-system-pump': 'assets/svg/shopfloor/systems/pump-system.svg',
   'generic-system-erp': 'assets/svg/business/erp-application.svg',
   'generic-system-mes': 'assets/svg/business/mes-application.svg',
   'generic-system-cloud': 'assets/svg/business/cloud-application.svg',

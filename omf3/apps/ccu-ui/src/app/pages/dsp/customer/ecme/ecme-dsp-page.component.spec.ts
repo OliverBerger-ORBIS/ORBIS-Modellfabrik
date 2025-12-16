@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DefDspPageComponent } from './def-dsp-page.component';
+import { EcmeDspPageComponent } from './ecme-dsp-page.component';
 import { DspAnimationComponent } from '../../../../components/dsp-animation/dsp-animation.component';
 import { DebugElement, Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { By } from '@angular/platform-browser';
@@ -18,22 +18,22 @@ class MockDspAnimationComponent {
   @Input() customerConfig?: CustomerDspConfig;
 }
 
-describe('DefDspPageComponent', () => {
-  let component: DefDspPageComponent;
-  let fixture: ComponentFixture<DefDspPageComponent>;
+describe('EcmeDspPageComponent', () => {
+  let component: EcmeDspPageComponent;
+  let fixture: ComponentFixture<EcmeDspPageComponent>;
   let compiled: DebugElement;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DefDspPageComponent],
+      imports: [EcmeDspPageComponent],
     })
-      .overrideComponent(DefDspPageComponent, {
+      .overrideComponent(EcmeDspPageComponent, {
         remove: { imports: [DspAnimationComponent] },
         add: { imports: [MockDspAnimationComponent] },
       })
       .compileComponents();
 
-    fixture = TestBed.createComponent(DefDspPageComponent);
+    fixture = TestBed.createComponent(EcmeDspPageComponent);
     component = fixture.componentInstance;
     compiled = fixture.debugElement;
     fixture.detectChanges();
@@ -43,10 +43,10 @@ describe('DefDspPageComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have DEF config', () => {
+  it('should have ECME config', () => {
     expect(component.config).toBeDefined();
-    expect(component.config.customerKey).toBe('def');
-    expect(component.config.customerName).toBe('Digital Engineering Facility');
+    expect(component.config.customerKey).toBe('ecme');
+    expect(component.config.customerName).toBe('European Company Manufacturing Everything');
   });
 
   it('should initialize with functional view mode', () => {
@@ -64,7 +64,7 @@ describe('DefDspPageComponent', () => {
 
   it('should render customer name in header', () => {
     const header = compiled.query(By.css('h1'));
-    expect(header.nativeElement.textContent).toContain('Digital Engineering Facility');
+    expect(header.nativeElement.textContent).toContain('European Company Manufacturing Everything');
   });
 
   it('should render subtitle', () => {
@@ -127,24 +127,24 @@ describe('DefDspPageComponent', () => {
     expect(header).toBeTruthy();
   });
 
-  it('should have DEF config with devices', () => {
+  it('should have ECME config with devices', () => {
     expect(component.config.sfDevices).toBeDefined();
     expect(component.config.sfDevices.length).toBeGreaterThan(0);
   });
 
-  it('should have DEF config with systems', () => {
+  it('should have ECME config with systems', () => {
     expect(component.config.sfSystems).toBeDefined();
     expect(component.config.sfSystems.length).toBeGreaterThan(0);
   });
 
-  it('should have DEF config with business processes', () => {
+  it('should have ECME config with business processes', () => {
     expect(component.config.bpProcesses).toBeDefined();
     expect(component.config.bpProcesses.length).toBeGreaterThan(0);
   });
 
   it('should use different brand logos than FMF', () => {
-    // DEF uses Azure/PowerBI, different from FMF's AWS/Grafana
-    // Note: DEF config doesn't have bp-cloud, only 4 business processes
+    // ECME uses Azure/PowerBI, different from FMF's AWS/Grafana
+    // Note: ECME config doesn't have bp-cloud, only 4 business processes
     const analyticsProcess = component.config.bpProcesses.find(bp => bp.id === 'bp-analytics');
     expect(analyticsProcess?.brandLogoKey).toBe('powerbi');
     

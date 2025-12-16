@@ -89,6 +89,15 @@
     "@@dspActionEdgeDescription": "Lancer le point de terminaison DSP Edge configuré dans un nouvel onglet.",
     "@@dspActionManagement": "Ouvrir le DSP Management Cockpit",
     "@@dspActionManagementDescription": "Naviguer vers le DSP Management Cockpit pour la gestion des KPI et des workflows.",
-    "@@dspArchLabelAnySystem": "any System"
+    "@@dspArchLabelAnySystem": "any System",
+    "@@deviceCNC": "CNC / Station",
+    "@@deviceHydraulic": "Hydraulique / Station",
+    "@@devicePrinter3D": "Imprimante 3D / Station",
+    "@@deviceWeight": "Balance / Station",
+    "@@deviceLaser": "Laser / Station",
+    "@@dspArchLabelScada": "SCADA / Système",
+    "@@dspArchLabelIndustrialProcess": "Processus industriel / Système",
+    "@@dspArchLabelCargo": "Cargo / Système",
+    "@@dspArchLabelPump": "Pompe / Système"
   }
 }

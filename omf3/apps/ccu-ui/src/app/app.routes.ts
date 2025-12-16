@@ -85,9 +85,9 @@ export const appRoutes: Routes = [
           import('./pages/dsp/customer/fmf/fmf-dsp-page.component').then((m) => m.FmfDspPageComponent),
       },
       {
-        path: 'dsp/customer/def',
+        path: 'dsp/customer/ecme',
         loadComponent: () =>
-          import('./pages/dsp/customer/def/def-dsp-page.component').then((m) => m.DefDspPageComponent),
+          import('./pages/dsp/customer/ecme/ecme-dsp-page.component').then((m) => m.EcmeDspPageComponent),
       },
       {
         path: 'presentation',

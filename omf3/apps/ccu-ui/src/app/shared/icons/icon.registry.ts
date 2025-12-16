@@ -14,6 +14,11 @@ export const ICONS = {
       aiqs: 'assets/svg/shopfloor/stations/aiqs-station.svg',
       dps: 'assets/svg/shopfloor/stations/dps-station.svg',
       chrg: 'assets/svg/shopfloor/stations/chrg-station.svg',
+      cnc: 'assets/svg/shopfloor/stations/cnc-station.svg',
+      hydraulic: 'assets/svg/shopfloor/stations/hydraulic-station.svg',
+      printer3d: 'assets/svg/shopfloor/stations/printer-3d-station.svg',
+      weight: 'assets/svg/shopfloor/stations/weight-station.svg',
+      laser: 'assets/svg/shopfloor/stations/laser-station.svg',
     },
     systems: {
       agv: 'assets/svg/shopfloor/shared/agv-vehicle.svg',
@@ -21,6 +26,10 @@ export const ICONS = {
       any: 'assets/svg/shopfloor/systems/any-system.svg',
       factory: 'assets/svg/shopfloor/systems/factory-system.svg',
       warehouse: 'assets/svg/shopfloor/systems/warehouse-system.svg',
+      scada: 'assets/svg/shopfloor/systems/scada-system.svg',
+      industrialProcess: 'assets/svg/shopfloor/systems/industrial-process-system.svg',
+      cargo: 'assets/svg/shopfloor/systems/cargo-system.svg',
+      pump: 'assets/svg/shopfloor/systems/pump-system.svg',
     },
     intersections: {
       1: 'assets/svg/shopfloor/intersections/intersection-1.svg',

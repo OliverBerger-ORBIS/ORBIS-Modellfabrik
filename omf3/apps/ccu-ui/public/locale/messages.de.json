@@ -389,6 +389,15 @@
     "@@configurationDspEdgeStatus": "Status wird geladen...",
     "@@configurationDspEdgeCurrentLight": "Aktueller changeLight",
     "@@configurationDspEdgeLastCommand": "Letzter Befehl:",
-    "@@configurationDspEdgeNoData": "Keine DSP-Edge-Befehle empfangen"
+    "@@configurationDspEdgeNoData": "Keine DSP-Edge-Befehle empfangen",
+    "@@deviceCNC": "CNC / Station",
+    "@@deviceHydraulic": "Hydraulik / Station",
+    "@@devicePrinter3D": "3D-Drucker / Station",
+    "@@deviceWeight": "Waage / Station",
+    "@@deviceLaser": "Laser / Station",
+    "@@dspArchLabelScada": "SCADA / System",
+    "@@dspArchLabelIndustrialProcess": "Industrieprozess / System",
+    "@@dspArchLabelCargo": "Fracht / System",
+    "@@dspArchLabelPump": "Pumpe / System"
   }
 }

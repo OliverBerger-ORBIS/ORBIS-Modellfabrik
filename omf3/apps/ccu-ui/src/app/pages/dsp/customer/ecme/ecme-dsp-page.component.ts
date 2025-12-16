@@ -1,19 +1,19 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DspAnimationComponent } from '../../../../components/dsp-animation/dsp-animation.component';
-import { DEF_CONFIG } from '../../../../components/dsp-animation/configs/def/def-config';
+import { ECME_CONFIG } from '../../../../components/dsp-animation/configs/ecme/ecme-config';
 import { VIEW_MODES } from '../shared/view-modes.const';
 import { CUSTOMER_PAGE_STYLES } from '../shared/customer-page.styles';
 import type { ViewMode } from '../../../../components/dsp-animation/types';
 
 /**
- * DEF (Digital Engineering Facility) DSP Architecture Page
- * Displays DSP architecture customized for DEF's equipment and systems
+ * ECME (European Company Manufacturing Everything) DSP Architecture Page
+ * Displays DSP architecture customized for ECME's equipment and systems
  * Supports functional, component, and deployment view modes
  */
 @Component({
   standalone: true,
-  selector: 'app-def-dsp-page',
+  selector: 'app-ecme-dsp-page',
   imports: [CommonModule, DspAnimationComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -41,8 +41,8 @@ import type { ViewMode } from '../../../../components/dsp-animation/types';
   `,
   styles: [CUSTOMER_PAGE_STYLES],
 })
-export class DefDspPageComponent {
-  config = DEF_CONFIG;
+export class EcmeDspPageComponent {
+  config = ECME_CONFIG;
   currentViewMode = signal<ViewMode>('functional');
   viewModes = VIEW_MODES;
   

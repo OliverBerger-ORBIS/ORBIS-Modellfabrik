@@ -18,8 +18,8 @@ configs/
 ├── types.ts              # TypeScript type definitions
 ├── fmf/
 │   └── fmf-config.ts     # FMF (Fischertechnik) customer config
-└── def/
-    └── def-config.ts     # DEF (example) customer config
+└── ecme/
+    └── ecme-config.ts    # ECME (European Company Manufacturing Everything) customer config
 ```
 
 ## Generic Icon Library
@@ -149,10 +149,12 @@ The FMF (Fischertechnik Modellfabrik) configuration demonstrates a factory with 
 - AWS cloud services
 - Grafana analytics
 
-### DEF Configuration
+### ECME Configuration
 
-The DEF (Digital Engineering Facility) configuration shows a different facility:
+The ECME (European Company Manufacturing Everything) configuration shows a different facility:
 - English terminology
+- New SVG icons for devices (CNC, Hydraulic, 3D Printer, Weight, Laser)
+- New SVG icons for systems (SCADA, Industrial Process, Cargo, Pump)
 - Alpha-X ERP and MES
 - Azure cloud services
 - PowerBI analytics
@@ -161,10 +163,12 @@ The DEF (Digital Engineering Facility) configuration shows a different facility:
 
 ### Device Icons
 - `drill`, `mill`, `oven`, `laser`, `cnc`, `printer-3d`
+- `hydraulic`, `weight`
 - `robot-arm`, `conveyor`, `warehouse`, `agv`, `hbw`
 
 ### System Icons
-- `warehouse-system`, `erp`, `mes`, `cloud`, `analytics`
+- `warehouse-system`, `scada`, `industrial-process`, `cargo`, `pump`
+- `erp`, `mes`, `cloud`, `analytics`
 
 ### Brand Icons
 - `sap`, `alpha-x`, `aws`, `azure`, `powerbi`, `grafana`

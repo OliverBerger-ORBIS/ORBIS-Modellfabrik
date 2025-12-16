@@ -4,10 +4,25 @@ All notable changes to OMF3 Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.4.0] - 2025-12-16
+
 ### Added
-- Phase 3: CI/CD Pipeline with GitHub Pages deployment
-- Automatic versioning with SemVer
-- Linting and build validation in CI
+- ECME (European Company Manufacturing Everything) customer configuration
+- New SVG icons for devices: CNC, Hydraulic, 3D Printer, Weight, Laser
+- New SVG icons for systems: SCADA, Industrial Process, Cargo, Pump
+- Comprehensive HOWTO guide for adding new customer configurations (`HOWTO_ADD_CUSTOMER.md`)
+- Tests for label wrapping functionality in sf-devices and sf-systems boxes
+- Semver versioning documentation (Decision Record + HowTo)
+- I18n translations for new device and system labels (DE/FR)
+
+### Changed
+- Renamed customer DEF to ECME (European Company Manufacturing Everything)
+- Updated icon registry with new device and system icons
+- Enhanced label wrapping logic to handle break hints correctly
+
+### Fixed
+- Label wrapping now correctly removes break hints when label fits on one line
+- Label wrapping adds hyphens correctly when wrapping occurs
 
 ## [0.3.0] - 2025-12-14
 

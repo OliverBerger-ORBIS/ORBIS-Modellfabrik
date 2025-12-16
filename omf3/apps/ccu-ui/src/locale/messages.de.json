@@ -642,6 +642,15 @@
     "@@dspMesTeaserDataLakeTitle": "Data Lake",
     "@@dspMesTeaserDataLakeDesc": "Zentraler Datenspeicher für historische Analysen und ML-Training",
     "@@dspMesTeaserBadge": "🚧 In Entwicklung",
-    "@@dspArchLabelAnySystem": "any System"
+    "@@dspArchLabelAnySystem": "any System",
+    "@@deviceCNC": "CNC / Station",
+    "@@deviceHydraulic": "Hydraulik / Station",
+    "@@devicePrinter3D": "3D-Drucker / Station",
+    "@@deviceWeight": "Waage / Station",
+    "@@deviceLaser": "Laser / Station",
+    "@@dspArchLabelScada": "SCADA / System",
+    "@@dspArchLabelIndustrialProcess": "Industrieprozess / System",
+    "@@dspArchLabelCargo": "Fracht / System",
+    "@@dspArchLabelPump": "Pumpe / System"
   }
 }
