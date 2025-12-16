@@ -12,7 +12,6 @@ const DPS_SERIAL = 'SVR4H73275';
 const DPS_STATE_TOPIC = `module/v1/ff/${DPS_SERIAL}/state`;
 const DPS_ORDER_TOPIC = `module/v1/ff/${DPS_SERIAL}/order`;
 const DPS_CONNECTION_TOPIC = `module/v1/ff/${DPS_SERIAL}/connection`;
-const DPS_NODERED_STATE_TOPIC = `module/v1/ff/NodeRed/${DPS_SERIAL}/state`;
 
 // DPS Types
 type ActionStateType = 'WAITING' | 'INITIALIZING' | 'RUNNING' | 'FINISHED' | 'FAILED' | string;

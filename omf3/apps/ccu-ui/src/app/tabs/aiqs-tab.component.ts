@@ -12,7 +12,6 @@ const AIQS_SERIAL = 'SVR4H76530';
 const AIQS_STATE_TOPIC = `module/v1/ff/${AIQS_SERIAL}/state`;
 const AIQS_ORDER_TOPIC = `module/v1/ff/${AIQS_SERIAL}/order`;
 const AIQS_CONNECTION_TOPIC = `module/v1/ff/${AIQS_SERIAL}/connection`;
-const AIQS_NODERED_STATE_TOPIC = `module/v1/ff/NodeRed/${AIQS_SERIAL}/state`;
 
 // AIQS Types
 type ActionStateType = 'WAITING' | 'INITIALIZING' | 'RUNNING' | 'FINISHED' | 'FAILED' | string;
@@ -79,9 +78,6 @@ export class AiqsTabComponent implements OnInit, OnDestroy {
   readonly labelCheckHistory = $localize`:@@aiqsLabelHistory:Check History`;
   readonly statusPassed = $localize`:@@aiqsStatusPassed:PASSED`;
   readonly statusFailed = $localize`:@@aiqsStatusFailed:FAILED`;
-  readonly commandCheckQuality = $localize`:@@aiqsCommandCheck:CHECK_QUALITY`;
-  readonly commandPick = $localize`:@@aiqsCommandPick:PICK`;
-  readonly commandDrop = $localize`:@@aiqsCommandDrop:DROP`;
   readonly statusOnline = $localize`:@@commonStatusOnline:Online`;
   readonly statusOffline = $localize`:@@commonStatusOffline:Offline`;
   readonly statusReady = $localize`:@@commonStatusReady:Ready`;
