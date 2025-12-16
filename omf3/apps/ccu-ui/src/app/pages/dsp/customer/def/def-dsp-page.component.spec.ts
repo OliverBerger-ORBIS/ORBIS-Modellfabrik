@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DefDspPageComponent } from './def-dsp-page.component';
 import { DspAnimationComponent } from '../../../../components/dsp-animation/dsp-animation.component';
-import { DebugElement, Component, Input } from '@angular/core';
+import { DebugElement, Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import type { CustomerDspConfig } from '../../../../components/dsp-animation/configs/types';
 import type { ViewMode } from '../../../../components/dsp-animation/types';
@@ -11,6 +11,7 @@ import type { ViewMode } from '../../../../components/dsp-animation/types';
   selector: 'app-dsp-animation',
   standalone: true,
   template: '<div class="mock-dsp-animation"></div>',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 class MockDspAnimationComponent {
   @Input() viewMode?: ViewMode;

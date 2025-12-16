@@ -162,33 +162,33 @@ export const ICON_MAP: Record<IconKey, string> = {
   'logo-edge': 'assets/svg/dsp/architecture/dsp-edge-box.svg',
   'logo-mc': 'assets/svg/dsp/architecture/dsp-mc-box.svg',
   
-  // Generic device icons (customer-agnostic)
-  'generic-device-drill': 'assets/icons/devices/drill.svg',
-  'generic-device-mill': 'assets/icons/devices/mill.svg',
-  'generic-device-oven': 'assets/icons/devices/oven.svg',
-  'generic-device-laser': 'assets/icons/devices/laser.svg',
-  'generic-device-cnc': 'assets/icons/devices/cnc.svg',
-  'generic-device-printer-3d': 'assets/icons/devices/printer-3d.svg',
-  'generic-device-robot-arm': 'assets/icons/devices/robot-arm.svg',
-  'generic-device-conveyor': 'assets/icons/devices/conveyor.svg',
-  'generic-device-warehouse': 'assets/icons/devices/warehouse.svg',
-  'generic-device-agv': 'assets/icons/devices/agv.svg',
-  'generic-device-hbw': 'assets/icons/devices/hbw.svg',
+  // Generic device icons (using existing shopfloor station icons from src/assets/svg/shopfloor/stations/)
+  'generic-device-drill': 'assets/svg/shopfloor/stations/drill-station.svg',
+  'generic-device-mill': 'assets/svg/shopfloor/stations/mill-station.svg',
+  'generic-device-oven': 'assets/svg/shopfloor/stations/oven-station.svg',
+  'generic-device-laser': 'assets/svg/shopfloor/stations/mill-station.svg', // Using mill as fallback for laser (not available)
+  'generic-device-cnc': 'assets/svg/shopfloor/stations/mill-station.svg', // Using mill as fallback for CNC (not available)
+  'generic-device-printer-3d': 'assets/svg/shopfloor/stations/mixer.svg', // Using mixer as fallback for 3D printer (not available)
+  'generic-device-robot-arm': 'assets/svg/shopfloor/stations/chrg-station.svg', // Using chrg (robot arm) for robot-arm
+  'generic-device-conveyor': 'assets/svg/shopfloor/stations/conveyor-station.svg',
+  'generic-device-warehouse': 'assets/svg/shopfloor/stations/hbw-station.svg', // Using HBW for warehouse
+  'generic-device-agv': 'assets/svg/shopfloor/stations/dps-station.svg', // Using DPS as fallback for AGV (not available)
+  'generic-device-hbw': 'assets/svg/shopfloor/stations/hbw-station.svg',
   
-  // Generic system icons
-  'generic-system-warehouse-system': 'assets/icons/systems/warehouse.svg',
-  'generic-system-erp': 'assets/icons/systems/erp.svg',
-  'generic-system-mes': 'assets/icons/systems/mes.svg',
-  'generic-system-cloud': 'assets/icons/systems/cloud.svg',
-  'generic-system-analytics': 'assets/icons/systems/cloud.svg', // Using cloud as fallback for analytics
+  // Generic system icons (using existing business application icons from src/assets/svg/business/)
+  'generic-system-warehouse-system': 'assets/svg/shopfloor/systems/warehouse-system.svg',
+  'generic-system-erp': 'assets/svg/business/erp-application.svg',
+  'generic-system-mes': 'assets/svg/business/mes-application.svg',
+  'generic-system-cloud': 'assets/svg/business/cloud-application.svg',
+  'generic-system-analytics': 'assets/svg/business/analytics-application.svg',
   
-  // Generic brand icons
-  'generic-brand-sap': 'assets/icons/brands/sap.svg',
-  'generic-brand-alpha-x': 'assets/icons/brands/alpha-x.svg',
-  'generic-brand-aws': 'assets/icons/brands/aws.svg',
-  'generic-brand-azure': 'assets/icons/brands/azure.svg',
-  'generic-brand-powerbi': 'assets/icons/brands/powerbi.svg',
-  'generic-brand-grafana': 'assets/icons/brands/grafana.svg',
+  // Generic brand icons (using existing brand icons from src/assets/svg/brand/)
+  'generic-brand-sap': 'assets/svg/brand/sap-logo.svg',
+  'generic-brand-alpha-x': 'assets/svg/brand/sap-logo.svg', // Using SAP as fallback for Alpha-X (not available)
+  'generic-brand-aws': 'assets/svg/brand/aws-logo.svg',
+  'generic-brand-azure': 'assets/svg/brand/azure-logo.svg',
+  'generic-brand-powerbi': 'assets/svg/brand/azure-logo.svg', // Using Azure as fallback for PowerBI (not available)
+  'generic-brand-grafana': 'assets/svg/brand/grafana-logo.svg',
 };
 
 export function getIconPath(key: IconKey | undefined | null): string {

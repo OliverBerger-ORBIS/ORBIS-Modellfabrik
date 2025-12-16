@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
-  <rect x="10" y="30" width="80" height="40" fill="#4A90E2" stroke="#164194" stroke-width="2"/>
-  <circle cx="50" cy="50" r="15" fill="#FF6B35" stroke="#164194" stroke-width="2"/>
-  <line x1="50" y1="35" x2="50" y2="10" stroke="#FF6B35" stroke-width="3"/>
-  <text x="50" y="90" font-family="Arial" font-size="12" text-anchor="middle" fill="#164194">Laser</text>
-</svg>

@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
-  <rect x="20" y="40" width="15" height="50" fill="#F2C811" stroke="#164194" stroke-width="1"/>
-  <rect x="42.5" y="25" width="15" height="65" fill="#E97C00" stroke="#164194" stroke-width="1"/>
-  <rect x="65" y="10" width="15" height="80" fill="#BE1E2D" stroke="#164194" stroke-width="1"/>
-  <text x="50" y="98" font-family="Arial" font-size="10" text-anchor="middle" fill="#164194">PowerBI</text>
-</svg>
