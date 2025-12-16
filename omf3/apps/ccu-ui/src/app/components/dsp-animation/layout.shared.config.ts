@@ -341,7 +341,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-cloud',
     state: 'hidden',
-    logoIconKey: 'logo-dsp' as IconKey,
+    logoIconKey: 'logo-orbis' as IconKey,
     logoPosition: 'top-left',
     secondaryLogoIconKey: 'logo-azure' as IconKey,
     secondaryLogoPosition: 'top-right',
@@ -473,10 +473,13 @@ export function createDefaultContainers(): ContainerConfig[] {
   const shopfloorGroupHeight = 165; // icon + label + group label
   const shopfloorGroupY = LAYOUT.SHOPFLOOR_Y + (LAYOUT.LAYER_HEIGHT - shopfloorGroupHeight) / 2;
 
-  // Default: 2 systems, 6 devices
+  // Default: 4 systems (all possible), 6 devices
+  // Customer configs will hide unused systems via applyCustomerMappings
   const systemEntries: { id: string; icon: IconKey; url?: string }[] = [
     { id: 'sf-system-any', icon: 'shopfloor-systems' as IconKey, url: 'fts' },
     { id: 'sf-system-fts', icon: 'shopfloor-fts' as IconKey, url: 'process' },
+    { id: 'sf-system-warehouse', icon: 'shopfloor-systems' as IconKey, url: 'process' },
+    { id: 'sf-system-factory', icon: 'shopfloor-systems' as IconKey, url: 'process' },
   ];
 
   const deviceEntries: { id: string; icon: IconKey; url?: string }[] = [
@@ -604,11 +607,12 @@ export function createDefaultContainers(): ContainerConfig[] {
   return containers;
 }
 
-export function createDefaultConnections(): ConnectionConfig[] {
+export function createDefaultConnections(customerConfig?: CustomerDspConfig): ConnectionConfig[] {
   return [
     // UX to Edge
+    // Connection naming: conn_<from-id>_<to-id>
     {
-      id: 'conn-dsp-ux-dsp-edge',
+      id: 'conn_dsp-ux_dsp-edge',
       fromId: 'dsp-ux',
       toId: 'dsp-edge',
       fromSide: 'right',
@@ -618,8 +622,9 @@ export function createDefaultConnections(): ConnectionConfig[] {
       bidirectional: true,
     },
     // Edge to Management
+    // Connection naming: conn_<from-id>_<to-id>
     {
-      id: 'conn-dsp-edge-dsp-mc',
+      id: 'conn_dsp-edge_dsp-mc',
       fromId: 'dsp-edge',
       toId: 'dsp-mc',
       fromSide: 'right',
@@ -628,85 +633,130 @@ export function createDefaultConnections(): ConnectionConfig[] {
       hasArrow: true,
       bidirectional: true,
     },
-    // Edge to Shopfloor Systems
-    {
-      id: 'conn-dsp-edge-sf-system-any',
-      fromId: 'dsp-edge',
-      toId: 'sf-system-any',
-      fromSide: 'bottom',
-      toSide: 'top',
-      state: 'hidden',
-      hasArrow: true,
-      bidirectional: true,
-    },
-    {
-      id: 'conn-dsp-edge-sf-system-fts',
-      fromId: 'dsp-edge',
-      toId: 'sf-system-fts',
-      fromSide: 'bottom',
-      toSide: 'top',
-      state: 'hidden',
-      hasArrow: true,
-      bidirectional: true,
-    },
-    // Edge to Shopfloor Devices
-    { id: 'conn-dsp-edge-sf-device-mill', fromId: 'dsp-edge', toId: 'sf-device-mill', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true },
-    { id: 'conn-dsp-edge-sf-device-drill', fromId: 'dsp-edge', toId: 'sf-device-drill', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true },
-    { id: 'conn-dsp-edge-sf-device-aiqs', fromId: 'dsp-edge', toId: 'sf-device-aiqs', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true },
-    { id: 'conn-dsp-edge-sf-device-hbw', fromId: 'dsp-edge', toId: 'sf-device-hbw', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true },
-    { id: 'conn-dsp-edge-sf-device-dps', fromId: 'dsp-edge', toId: 'sf-device-dps', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true },
-    { id: 'conn-dsp-edge-sf-device-chrg', fromId: 'dsp-edge', toId: 'sf-device-chrg', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true },
-    // Business to Edge
-    {
-      id: 'conn-bp-erp-dsp-edge',
-      fromId: 'bp-erp',
-      toId: 'dsp-edge',
-      fromSide: 'bottom',
-      toSide: 'top',
-      state: 'hidden',
-      hasArrow: true,
-      bidirectional: true,
-    },
-    {
-      id: 'conn-bp-mes-dsp-edge',
-      fromId: 'bp-mes',
-      toId: 'dsp-edge',
-      fromSide: 'bottom',
-      toSide: 'top',
-      state: 'hidden',
-      hasArrow: true,
-      bidirectional: true,
-    },
-    {
-      id: 'conn-bp-cloud-dsp-edge',
-      fromId: 'bp-cloud',
-      toId: 'dsp-edge',
-      fromSide: 'bottom',
-      toSide: 'top',
-      state: 'hidden',
-      hasArrow: true,
-      bidirectional: true,
-    },
-    {
-      id: 'conn-bp-analytics-dsp-edge',
-      fromId: 'bp-analytics',
-      toId: 'dsp-edge',
-      fromSide: 'bottom',
-      toSide: 'top',
-      state: 'hidden',
-      hasArrow: true,
-      bidirectional: true,
-    },
-    {
-      id: 'conn-bp-data-lake-dsp-edge',
-      fromId: 'bp-data-lake',
-      toId: 'dsp-edge',
-      fromSide: 'bottom',
-      toSide: 'top',
-      state: 'hidden',
-      hasArrow: true,
-      bidirectional: true,
-    },
+    // Edge to Shopfloor Systems (dynamic based on customer config)
+    // Connection naming: conn_<from-id>_<to-id>
+    ...(customerConfig 
+      ? customerConfig.sfSystems.map(system => ({
+          id: `conn_dsp-edge_${system.id}`,
+          fromId: 'dsp-edge',
+          toId: system.id,
+          fromSide: 'bottom' as const,
+          toSide: 'top' as const,
+          state: 'hidden' as const,
+          hasArrow: true,
+          bidirectional: true,
+        }))
+      : [
+          {
+            id: 'conn_dsp-edge_sf-system-any',
+            fromId: 'dsp-edge',
+            toId: 'sf-system-any',
+            fromSide: 'bottom' as const,
+            toSide: 'top' as const,
+            state: 'hidden' as const,
+            hasArrow: true,
+            bidirectional: true,
+          },
+          {
+            id: 'conn_dsp-edge_sf-system-fts',
+            fromId: 'dsp-edge',
+            toId: 'sf-system-fts',
+            fromSide: 'bottom' as const,
+            toSide: 'top' as const,
+            state: 'hidden' as const,
+            hasArrow: true,
+            bidirectional: true,
+          },
+        ]
+    ),
+    // Edge to Shopfloor Devices (dynamic based on customer config)
+    // Connection naming: conn_<from-id>_<to-id>
+    ...(customerConfig
+      ? customerConfig.sfDevices.map(device => ({
+          id: `conn_dsp-edge_${device.id}`,
+          fromId: 'dsp-edge',
+          toId: device.id,
+          fromSide: 'bottom' as const,
+          toSide: 'top' as const,
+          state: 'hidden' as const,
+          hasArrow: true,
+          bidirectional: true,
+        }))
+      : [
+          { id: 'conn_dsp-edge_sf-device-mill', fromId: 'dsp-edge', toId: 'sf-device-mill', fromSide: 'bottom' as const, toSide: 'top' as const, state: 'hidden' as const, hasArrow: true, bidirectional: true },
+          { id: 'conn_dsp-edge_sf-device-drill', fromId: 'dsp-edge', toId: 'sf-device-drill', fromSide: 'bottom' as const, toSide: 'top' as const, state: 'hidden' as const, hasArrow: true, bidirectional: true },
+          { id: 'conn_dsp-edge_sf-device-aiqs', fromId: 'dsp-edge', toId: 'sf-device-aiqs', fromSide: 'bottom' as const, toSide: 'top' as const, state: 'hidden' as const, hasArrow: true, bidirectional: true },
+          { id: 'conn_dsp-edge_sf-device-hbw', fromId: 'dsp-edge', toId: 'sf-device-hbw', fromSide: 'bottom' as const, toSide: 'top' as const, state: 'hidden' as const, hasArrow: true, bidirectional: true },
+          { id: 'conn_dsp-edge_sf-device-dps', fromId: 'dsp-edge', toId: 'sf-device-dps', fromSide: 'bottom' as const, toSide: 'top' as const, state: 'hidden' as const, hasArrow: true, bidirectional: true },
+          { id: 'conn_dsp-edge_sf-device-chrg', fromId: 'dsp-edge', toId: 'sf-device-chrg', fromSide: 'bottom' as const, toSide: 'top' as const, state: 'hidden' as const, hasArrow: true, bidirectional: true },
+        ]
+    ),
+    // Business to Edge (dynamic based on customer config)
+    // Connection naming: conn_<from-id>_<to-id>
+    ...(customerConfig
+      ? customerConfig.bpProcesses.map(bp => ({
+          id: `conn_${bp.id}_dsp-edge`,
+          fromId: bp.id,
+          toId: 'dsp-edge',
+          fromSide: 'bottom' as const,
+          toSide: 'top' as const,
+          state: 'hidden' as const,
+          hasArrow: true,
+          bidirectional: true,
+        }))
+      : [
+          {
+            id: 'conn_bp-erp_dsp-edge',
+            fromId: 'bp-erp',
+            toId: 'dsp-edge',
+            fromSide: 'bottom' as const,
+            toSide: 'top' as const,
+            state: 'hidden' as const,
+            hasArrow: true,
+            bidirectional: true,
+          },
+          {
+            id: 'conn_bp-mes_dsp-edge',
+            fromId: 'bp-mes',
+            toId: 'dsp-edge',
+            fromSide: 'bottom' as const,
+            toSide: 'top' as const,
+            state: 'hidden' as const,
+            hasArrow: true,
+            bidirectional: true,
+          },
+          {
+            id: 'conn_bp-cloud_dsp-edge',
+            fromId: 'bp-cloud',
+            toId: 'dsp-edge',
+            fromSide: 'bottom' as const,
+            toSide: 'top' as const,
+            state: 'hidden' as const,
+            hasArrow: true,
+            bidirectional: true,
+          },
+          {
+            id: 'conn_bp-analytics_dsp-edge',
+            fromId: 'bp-analytics',
+            toId: 'dsp-edge',
+            fromSide: 'bottom' as const,
+            toSide: 'top' as const,
+            state: 'hidden' as const,
+            hasArrow: true,
+            bidirectional: true,
+          },
+          {
+            id: 'conn_bp-data-lake_dsp-edge',
+            fromId: 'bp-data-lake',
+            toId: 'dsp-edge',
+            fromSide: 'bottom' as const,
+            toSide: 'top' as const,
+            state: 'hidden' as const,
+            hasArrow: true,
+            bidirectional: true,
+          },
+        ]
+    ),
   ];
 }
 
@@ -718,14 +768,22 @@ export function createDefaultConnections(): ConnectionConfig[] {
 /**
  * Returns all Shopfloor layer container IDs (layer, groups, systems, and devices).
  * Used in functional and deployment views.
+ * If customerConfig is provided, uses IDs from the config; otherwise uses default IDs.
  */
-export function getShopfloorContainerIds(): string[] {
+export function getShopfloorContainerIds(customerConfig?: CustomerDspConfig): string[] {
+  const baseIds = ['layer-sf', 'sf-systems-group', 'sf-devices-group'];
+  
+  if (customerConfig) {
+    const systemIds = customerConfig.sfSystems.map(s => s.id);
+    const deviceIds = customerConfig.sfDevices.map(d => d.id);
+    return [...baseIds, ...systemIds, ...deviceIds];
+  }
+  
+  // Default IDs for backward compatibility
   return [
-    'layer-sf',
-    'sf-systems-group',
+    ...baseIds,
     'sf-system-any',
     'sf-system-fts',
-    'sf-devices-group',
     'sf-device-mill',
     'sf-device-drill',
     'sf-device-aiqs',
@@ -738,8 +796,14 @@ export function getShopfloorContainerIds(): string[] {
 /**
  * Returns all Shopfloor device container IDs.
  * Used in functional view step 1.
+ * If customerConfig is provided, uses IDs from the config; otherwise uses default IDs.
  */
-export function getShopfloorDeviceIds(): string[] {
+export function getShopfloorDeviceIds(customerConfig?: CustomerDspConfig): string[] {
+  if (customerConfig) {
+    return customerConfig.sfDevices.map(d => d.id);
+  }
+  
+  // Default IDs for backward compatibility
   return [
     'sf-device-mill',
     'sf-device-drill',
@@ -753,17 +817,26 @@ export function getShopfloorDeviceIds(): string[] {
 /**
  * Returns all Shopfloor connection IDs (Edge to Systems and Devices).
  * Used in functional and deployment views.
+ * If customerConfig is provided, generates connection IDs from config; otherwise uses default IDs.
  */
-export function getShopfloorConnectionIds(): string[] {
+export function getShopfloorConnectionIds(customerConfig?: CustomerDspConfig): string[] {
+  if (customerConfig) {
+    // Connection naming: conn_<from-id>_<to-id>
+    const systemConnections = customerConfig.sfSystems.map(s => `conn_dsp-edge_${s.id}`);
+    const deviceConnections = customerConfig.sfDevices.map(d => `conn_dsp-edge_${d.id}`);
+    return [...systemConnections, ...deviceConnections];
+  }
+  
+  // Default IDs for backward compatibility (old naming)
   return [
-    'conn-dsp-edge-sf-system-any',
-    'conn-dsp-edge-sf-system-fts',
-    'conn-dsp-edge-sf-device-mill',
-    'conn-dsp-edge-sf-device-drill',
-    'conn-dsp-edge-sf-device-aiqs',
-    'conn-dsp-edge-sf-device-hbw',
-    'conn-dsp-edge-sf-device-dps',
-    'conn-dsp-edge-sf-device-chrg',
+    'conn_dsp-edge_sf-system-any',
+    'conn_dsp-edge_sf-system-fts',
+    'conn_dsp-edge_sf-device-mill',
+    'conn_dsp-edge_sf-device-drill',
+    'conn_dsp-edge_sf-device-aiqs',
+    'conn_dsp-edge_sf-device-hbw',
+    'conn_dsp-edge_sf-device-dps',
+    'conn_dsp-edge_sf-device-chrg',
   ];
 }
 
@@ -783,10 +856,19 @@ export function getDspContainerIds(): string[] {
 /**
  * Returns all Business Process container IDs.
  * Used in functional view.
+ * If customerConfig is provided, uses IDs from the config; otherwise uses default IDs.
  */
-export function getBusinessContainerIds(): string[] {
+export function getBusinessContainerIds(customerConfig?: CustomerDspConfig): string[] {
+  const baseIds = ['layer-bp'];
+  
+  if (customerConfig) {
+    const bpIds = customerConfig.bpProcesses.map(bp => bp.id);
+    return [...baseIds, ...bpIds];
+  }
+  
+  // Default IDs for backward compatibility
   return [
-    'layer-bp',
+    ...baseIds,
     'bp-erp',
     'bp-mes',
     'bp-cloud',
@@ -913,7 +995,7 @@ export function createCustomerContainers(customerConfig?: CustomerDspConfig): Co
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-edge',
     state: 'hidden',
-    logoIconKey: 'logo-dsp' as IconKey,
+    logoIconKey: 'logo-orbis' as IconKey,
     logoPosition: 'top-left',
     centerIconKey: 'logo-edge' as IconKey,
     borderColor: COLOR_PETROL_STRONG,
@@ -1093,7 +1175,7 @@ export function createCustomerContainers(customerConfig?: CustomerDspConfig): Co
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-cloud',
     state: 'hidden',
-    logoIconKey: 'logo-dsp' as IconKey,
+    logoIconKey: 'logo-orbis' as IconKey,
     logoPosition: 'top-left',
     secondaryLogoIconKey: 'logo-azure' as IconKey,
     secondaryLogoPosition: 'top-right',
@@ -1131,17 +1213,25 @@ export function createCustomerContainers(customerConfig?: CustomerDspConfig): Co
 
   // Create business process containers based on customer config
   customerConfig.bpProcesses.forEach((bpProcess, index) => {
+    const iconKey = bpProcess.customIconPath 
+      ? (bpProcess.customIconPath as IconKey)
+      : (`generic-system-${bpProcess.iconKey}` as IconKey);
+    
+    const brandLogoKey = bpProcess.customBrandLogoPath
+      ? (bpProcess.customBrandLogoPath as IconKey)
+      : (`generic-brand-${bpProcess.brandLogoKey}` as IconKey);
+    
     containers.push({
       id: bpProcess.id,
-      label: '', // Will be filled by applyCustomerMappings
+      label: bpProcess.label,
       x: businessStartX + (businessBoxWidth + businessGap) * index,
       y: businessBoxY,
       width: businessBoxWidth,
       height: LAYOUT.BUSINESS_BOX_HEIGHT,
       type: 'business',
       state: 'hidden',
-      logoIconKey: '' as IconKey, // Will be filled by applyCustomerMappings
-      secondaryLogoIconKey: '' as IconKey, // Will be filled by applyCustomerMappings
+      logoIconKey: iconKey,
+      secondaryLogoIconKey: brandLogoKey,
       secondaryLogoPosition: 'top-right',
       borderColor: 'rgba(22, 65, 148, 0.25)',
       backgroundColor: '#ffffff',
@@ -1207,16 +1297,38 @@ export function createCustomerContainers(customerConfig?: CustomerDspConfig): Co
 
   // Create system containers based on customer config
   customerConfig.sfSystems.forEach((system, index) => {
+    let iconKey: IconKey;
+    if (system.customIconPath) {
+      iconKey = system.customIconPath as IconKey;
+    } else {
+      // Map iconKey to correct system icon based on label
+      // Mapping by label name for clarity
+      const labelLower = system.label.toLowerCase();
+      if (labelLower.includes('agv')) {
+        iconKey = 'shopfloor-fts' as IconKey; // AGV System = FTS
+      } else if (labelLower.includes('any system')) {
+        iconKey = 'shopfloor-systems' as IconKey; // Any System → any-system.svg
+      } else if (labelLower.includes('bp system') || labelLower.includes('bp-system')) {
+        iconKey = 'shopfloor-bp' as IconKey; // BP System → bp-system.svg
+      } else if (labelLower.includes('warehouse')) {
+        iconKey = 'shopfloor-warehouse' as IconKey; // Warehouse System → warehouse-system.svg
+      } else if (system.iconKey === 'agv') {
+        iconKey = 'shopfloor-fts' as IconKey; // Fallback: iconKey 'agv'
+      } else {
+        iconKey = `generic-system-${system.iconKey}` as IconKey;
+      }
+    }
+    
     containers.push({
       id: system.id,
-      label: '', // Will be filled by applyCustomerMappings
+      label: system.label,
       x: systemStartX + index * (systemBoxWidth + systemGap),
       y: systemY,
       width: systemBoxWidth,
       height: systemBoxHeight,
       type: 'device',
       state: 'normal',
-      logoIconKey: '' as IconKey, // Will be filled by applyCustomerMappings
+      logoIconKey: iconKey,
       borderColor: 'rgba(0, 0, 0, 0.12)',
       backgroundColor: 'url(#shopfloor-gradient)',
       labelPosition: 'bottom-center',
@@ -1252,16 +1364,20 @@ export function createCustomerContainers(customerConfig?: CustomerDspConfig): Co
 
   // Create device containers based on customer config
   customerConfig.sfDevices.forEach((device, index) => {
+    const iconKey = device.customIconPath 
+      ? (device.customIconPath as IconKey)
+      : (`generic-device-${device.iconKey}` as IconKey);
+    
     containers.push({
       id: device.id,
-      label: '', // Will be filled by applyCustomerMappings
+      label: device.label,
       x: devicesStartX + index * (deviceBoxWidth + deviceGap),
       y: deviceY,
       width: deviceBoxWidth,
       height: deviceBoxHeight,
       type: 'device',
       state: 'normal',
-      logoIconKey: '' as IconKey, // Will be filled by applyCustomerMappings
+      logoIconKey: iconKey,
       borderColor: 'rgba(0, 0, 0, 0.12)',
       backgroundColor: 'url(#shopfloor-gradient)',
       labelPosition: 'bottom-center',

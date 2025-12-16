@@ -24,11 +24,19 @@ configs/
 
 ## Generic Icon Library
 
-Generic icons are stored in `public/assets/icons/` and organized by category:
+Generic icons are stored in `omf3/apps/ccu-ui/src/assets/svg/` and organized by category:
 
-- **devices/**: Generic device icons (drill, mill, laser, cnc, etc.)
-- **systems/**: Generic system icons (erp, mes, cloud, warehouse, etc.)
-- **brands/**: Brand/provider logos (sap, alpha-x, aws, azure, powerbi, grafana)
+- **shopfloor/stations/**: Generic device icons (drill, mill, laser, cnc, etc.)
+- **shopfloor/systems/**: Generic system icons (agv-system, any-system, warehouse-system, etc.)
+- **shopfloor/shared/**: Shared icons used for both devices and systems
+- **business/**: Business application icons (erp, mes, cloud, analytics, etc.)
+- **brand/**: Brand/provider logos (sap, alpha-x, aws, azure, powerbi, grafana)
+
+**📖 Detaillierte Anleitung:** Siehe [SVG_GUIDE.md](./SVG_GUIDE.md) für:
+- Wie neue Device-SVGs hinzugefügt werden
+- Wie Duplikate vermieden werden
+- Namenskonventionen
+- Best Practices
 
 ## Creating a New Customer Configuration
 

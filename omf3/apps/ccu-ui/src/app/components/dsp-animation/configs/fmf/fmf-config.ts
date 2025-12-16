@@ -8,35 +8,37 @@ export const FMF_CONFIG: CustomerDspConfig = {
   customerKey: 'fmf',
   customerName: 'Fischertechnik Modellfabrik',
   
-  // Shopfloor devices - 6 Fischertechnik stations with abstract IDs
+  // Shopfloor devices - 6 Fischertechnik stations with concrete IDs matching existing container IDs
   sfDevices: [
     {
-      id: 'sf-device-1',
+      id: 'sf-device-mill',
       label: $localize`:@@deviceMILL:Fräs / station`,
       iconKey: 'mill',
     },
     {
-      id: 'sf-device-2',
+      id: 'sf-device-drill',
       label: $localize`:@@deviceDRILL:Bohr / station`,
       iconKey: 'drill',
     },
     {
-      id: 'sf-device-3',
+      id: 'sf-device-aiqs',
       label: $localize`:@@deviceAIQS:KI- / Qualitäts / station`,
-      iconKey: 'robot-arm', // Using robot-arm as closest match for AIQS
+      iconKey: 'robot-arm', // Not used, customIconPath takes precedence
+      customIconPath: 'device-aiqs', // Use correct AIQS icon
     },
     {
-      id: 'sf-device-4',
+      id: 'sf-device-hbw',
       label: $localize`:@@deviceHBW:Hochregal / lager`,
       iconKey: 'hbw',
     },
     {
-      id: 'sf-device-5',
+      id: 'sf-device-dps',
       label: $localize`:@@deviceDPS:Waren Ein- / und Ausgang`,
-      iconKey: 'conveyor', // DPS is a material handling station
+      iconKey: 'conveyor', // Not used, customIconPath takes precedence
+      customIconPath: 'device-dps', // Use correct DPS icon
     },
     {
-      id: 'sf-device-6',
+      id: 'sf-device-chrg',
       label: $localize`:@@deviceCHRG:Lade- / station`,
       iconKey: 'robot-arm', // CHRG is a loading/robot station
     },
@@ -85,7 +87,8 @@ export const FMF_CONFIG: CustomerDspConfig = {
     {
       id: 'bp-data-lake',
       label: $localize`:@@dspArchLabelDataLake:Data Lake`,
-      iconKey: 'cloud',
+      iconKey: 'cloud', // Not used for Business Processes (logoIconKey is used instead)
+      customIconPath: 'bp-data-lake', // Use correct data-lake icon instead of generic-system-cloud
       brandLogoKey: 'aws',
     },
   ],

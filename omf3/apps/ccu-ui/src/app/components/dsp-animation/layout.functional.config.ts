@@ -1,5 +1,6 @@
 import type { ContainerConfig, ConnectionConfig, StepConfig, DiagramConfig } from './types';
 import { DiagramConfigBuilder } from './layout.builder';
+import type { CustomerDspConfig } from './configs/types';
 import {
   getShopfloorContainerIds,
   getShopfloorDeviceIds,
@@ -10,9 +11,33 @@ import {
 
 export { VIEWBOX_WIDTH, VIEWBOX_HEIGHT, LAYOUT } from './layout.shared.config';
 
-export function createDefaultSteps(): StepConfig[] {
-  const baseShopfloorContainers = getShopfloorContainerIds();
-  const baseShopfloorConnections = getShopfloorConnectionIds();
+/**
+ * Helper function to generate connection IDs using new naming convention: conn_<from-id>_<to-id>
+ */
+function conn(fromId: string, toId: string): string {
+  return `conn_${fromId}_${toId}`;
+}
+
+/**
+ * Helper function to generate business process connection IDs
+ */
+function getBpConnections(customerConfig?: CustomerDspConfig): string[] {
+  if (customerConfig) {
+    return customerConfig.bpProcesses.map(bp => conn(bp.id, 'dsp-edge'));
+  }
+  return [
+    conn('bp-erp', 'dsp-edge'),
+    conn('bp-mes', 'dsp-edge'),
+    conn('bp-cloud', 'dsp-edge'),
+    conn('bp-analytics', 'dsp-edge'),
+    conn('bp-data-lake', 'dsp-edge'),
+  ];
+}
+
+export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConfig[] {
+  const baseShopfloorContainers = getShopfloorContainerIds(customerConfig);
+  const baseShopfloorConnections = getShopfloorConnectionIds(customerConfig);
+  const bpConnections = getBpConnections(customerConfig);
 
   return [
     // Step 1: Shopfloor Devices
@@ -23,11 +48,11 @@ export function createDefaultSteps(): StepConfig[] {
       visibleContainerIds: [
         'layer-sf',
         'sf-devices-group',
-        ...getShopfloorDeviceIds(),
+        ...getShopfloorDeviceIds(customerConfig),
       ],
       highlightedContainerIds: [
         'sf-devices-group',
-        ...getShopfloorDeviceIds(),
+        ...getShopfloorDeviceIds(customerConfig),
       ],
       visibleConnectionIds: [],
       highlightedConnectionIds: [],
@@ -39,7 +64,9 @@ export function createDefaultSteps(): StepConfig[] {
       label: $localize`:@@dspArchStep2:Shopfloor Systems`,
       description: $localize`:@@dspArchStep2Desc:DSP integrates complete systems like AGVs, warehouses, and custom controls.`,
       visibleContainerIds: baseShopfloorContainers,
-      highlightedContainerIds: ['sf-systems-group', 'sf-system-any', 'sf-system-fts'],
+      highlightedContainerIds: customerConfig 
+        ? ['sf-systems-group', ...customerConfig.sfSystems.map(s => s.id)]
+        : ['sf-systems-group', 'sf-system-any', 'sf-system-fts'],
       visibleConnectionIds: [],
       highlightedConnectionIds: [],
     },
@@ -76,22 +103,26 @@ export function createDefaultSteps(): StepConfig[] {
       description: $localize`:@@dspArchStepConnectivityDesc:DSP verbindet Maschinen, Sensoren, Logistiksysteme und Shopfloor-Assets über direkte, bidirektionale Kommunikation – ohne Eingriffe in bestehende Steuerungslogik.`,
       visibleContainerIds: ['layer-dsp', 'dsp-edge', ...baseShopfloorContainers],
       highlightedContainerIds: ['dsp-edge'],
-      visibleConnectionIds: [
-        'conn-dsp-edge-sf-device-mill',
-        'conn-dsp-edge-sf-device-drill',
-        'conn-dsp-edge-sf-device-aiqs',
-        'conn-dsp-edge-sf-device-hbw',
-        'conn-dsp-edge-sf-device-dps',
-        'conn-dsp-edge-sf-device-chrg',
-      ], // Nur Device-Connections, keine System-Connections
-      highlightedConnectionIds: [
-        'conn-dsp-edge-sf-device-mill',
-        'conn-dsp-edge-sf-device-drill',
-        'conn-dsp-edge-sf-device-aiqs',
-        'conn-dsp-edge-sf-device-hbw',
-        'conn-dsp-edge-sf-device-dps',
-        'conn-dsp-edge-sf-device-chrg',
-      ], // Nur Device-Connections highlighted
+      visibleConnectionIds: customerConfig
+        ? customerConfig.sfDevices.map(d => `conn_dsp-edge_${d.id}`)
+        : [
+            'conn_dsp-edge_sf-device-mill',
+            'conn_dsp-edge_sf-device-drill',
+            'conn_dsp-edge_sf-device-aiqs',
+            'conn_dsp-edge_sf-device-hbw',
+            'conn_dsp-edge_sf-device-dps',
+            'conn_dsp-edge_sf-device-chrg',
+          ], // Nur Device-Connections, keine System-Connections
+      highlightedConnectionIds: customerConfig
+        ? customerConfig.sfDevices.map(d => `conn_dsp-edge_${d.id}`)
+        : [
+            'conn_dsp-edge_sf-device-mill',
+            'conn_dsp-edge_sf-device-drill',
+            'conn_dsp-edge_sf-device-aiqs',
+            'conn_dsp-edge_sf-device-hbw',
+            'conn_dsp-edge_sf-device-dps',
+            'conn_dsp-edge_sf-device-chrg',
+          ], // Nur Device-Connections highlighted
       showFunctionIcons: true,
       highlightedFunctionIcons: ['edge-network'],
     },
@@ -103,22 +134,31 @@ export function createDefaultSteps(): StepConfig[] {
       description: $localize`:@@dspArchStepEventDesc:DSP verarbeitet Shopfloor-Ereignisse in Echtzeit und übersetzt technische Signale in prozessrelevante Informationen.`,
       visibleContainerIds: ['layer-dsp', 'dsp-edge', ...baseShopfloorContainers],
       highlightedContainerIds: ['dsp-edge'],
-      visibleConnectionIds: [
-        // Device-Connections zuerst (werden zuerst gerendert, liegen unten)
-        'conn-dsp-edge-sf-device-mill',
-        'conn-dsp-edge-sf-device-drill',
-        'conn-dsp-edge-sf-device-aiqs',
-        'conn-dsp-edge-sf-device-hbw',
-        'conn-dsp-edge-sf-device-dps',
-        'conn-dsp-edge-sf-device-chrg',
-        // System-Connections danach (werden später gerendert, liegen oben)
-        'conn-dsp-edge-sf-system-any',
-        'conn-dsp-edge-sf-system-fts',
-      ],
-      highlightedConnectionIds: [
-        'conn-dsp-edge-sf-system-any',
-        'conn-dsp-edge-sf-system-fts',
-      ], // Nur System-Connections highlighted (werden zuletzt gerendert)
+      visibleConnectionIds: customerConfig
+        ? [
+            // Device-Connections zuerst (werden zuerst gerendert, liegen unten)
+            ...customerConfig.sfDevices.map(d => `conn_dsp-edge_${d.id}`),
+            // System-Connections danach (werden später gerendert, liegen oben)
+            ...customerConfig.sfSystems.map(s => `conn_dsp-edge_${s.id}`),
+          ]
+        : [
+            // Device-Connections zuerst (werden zuerst gerendert, liegen unten)
+            'conn_dsp-edge_sf-device-mill',
+            'conn_dsp-edge_sf-device-drill',
+            'conn_dsp-edge_sf-device-aiqs',
+            'conn_dsp-edge_sf-device-hbw',
+            'conn_dsp-edge_sf-device-dps',
+            'conn_dsp-edge_sf-device-chrg',
+            // System-Connections danach (werden später gerendert, liegen oben)
+            'conn_dsp-edge_sf-system-any',
+            'conn_dsp-edge_sf-system-fts',
+          ],
+      highlightedConnectionIds: customerConfig
+        ? customerConfig.sfSystems.map(s => `conn_dsp-edge_${s.id}`)
+        : [
+            'conn_dsp-edge_sf-system-any',
+            'conn_dsp-edge_sf-system-fts',
+          ], // Nur System-Connections highlighted (werden zuletzt gerendert)
       showFunctionIcons: true,
       highlightedFunctionIcons: ['edge-event-driven'],
     },
@@ -137,10 +177,15 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedContainerIds: ['dsp-edge', 'bp-erp'], // bp-erp mit Highlight
       visibleConnectionIds: [
-        'conn-bp-erp-dsp-edge',
+        ...(customerConfig 
+          ? customerConfig.bpProcesses.filter(bp => bp.id === 'bp-erp').map(bp => `conn_${bp.id}_dsp-edge`)
+          : ['conn_bp-erp_dsp-edge']
+        ),
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: ['conn-bp-erp-dsp-edge'], // conn-bp-erp-dsp-edge mit Highlight
+      highlightedConnectionIds: customerConfig
+        ? customerConfig.bpProcesses.filter(bp => bp.id === 'bp-erp').map(bp => `conn_${bp.id}_dsp-edge`)
+        : ['conn_bp-erp_dsp-edge'], // conn_bp-erp_dsp-edge mit Highlight
       showFunctionIcons: true,
       highlightedFunctionIcons: ['edge-choreography'],
     },
@@ -160,32 +205,43 @@ export function createDefaultSteps(): StepConfig[] {
       highlightedContainerIds: [
         'dsp-edge',
         'bp-erp',
-        'sf-system-any',
-        'sf-system-fts',
-        ...getShopfloorDeviceIds(),
+        ...(customerConfig ? customerConfig.sfSystems.map(s => s.id) : ['sf-system-any', 'sf-system-fts']),
+        ...getShopfloorDeviceIds(customerConfig),
       ], // Highlight bp-erp, sf-systems, sf-devices
-      visibleConnectionIds: [
-        'conn-bp-erp-dsp-edge',
-        'conn-dsp-edge-sf-system-any',
-        'conn-dsp-edge-sf-system-fts',
-        'conn-dsp-edge-sf-device-mill',
-        'conn-dsp-edge-sf-device-drill',
-        'conn-dsp-edge-sf-device-aiqs',
-        'conn-dsp-edge-sf-device-hbw',
-        'conn-dsp-edge-sf-device-dps',
-        'conn-dsp-edge-sf-device-chrg',
-      ],
-      highlightedConnectionIds: [
-        'conn-bp-erp-dsp-edge',
-        'conn-dsp-edge-sf-system-any',
-        'conn-dsp-edge-sf-system-fts',
-        'conn-dsp-edge-sf-device-mill',
-        'conn-dsp-edge-sf-device-drill',
-        'conn-dsp-edge-sf-device-aiqs',
-        'conn-dsp-edge-sf-device-hbw',
-        'conn-dsp-edge-sf-device-dps',
-        'conn-dsp-edge-sf-device-chrg',
-      ], // Alle Connections highlighted
+      visibleConnectionIds: customerConfig
+        ? [
+            ...customerConfig.bpProcesses.filter(bp => bp.id === 'bp-erp').map(bp => `conn_${bp.id}_dsp-edge`),
+            ...customerConfig.sfSystems.map(s => `conn_dsp-edge_${s.id}`),
+            ...customerConfig.sfDevices.map(d => `conn_dsp-edge_${d.id}`),
+          ]
+        : [
+            'conn_bp-erp_dsp-edge',
+            'conn_dsp-edge_sf-system-any',
+            'conn_dsp-edge_sf-system-fts',
+            'conn_dsp-edge_sf-device-mill',
+            'conn_dsp-edge_sf-device-drill',
+            'conn_dsp-edge_sf-device-aiqs',
+            'conn_dsp-edge_sf-device-hbw',
+            'conn_dsp-edge_sf-device-dps',
+            'conn_dsp-edge_sf-device-chrg',
+          ],
+      highlightedConnectionIds: customerConfig
+        ? [
+            ...customerConfig.bpProcesses.filter(bp => bp.id === 'bp-erp').map(bp => `conn_${bp.id}_dsp-edge`),
+            ...customerConfig.sfSystems.map(s => `conn_dsp-edge_${s.id}`),
+            ...customerConfig.sfDevices.map(d => `conn_dsp-edge_${d.id}`),
+          ]
+        : [
+            'conn_bp-erp_dsp-edge',
+            'conn_dsp-edge_sf-system-any',
+            'conn_dsp-edge_sf-system-fts',
+            'conn_dsp-edge_sf-device-mill',
+            'conn_dsp-edge_sf-device-drill',
+            'conn_dsp-edge_sf-device-aiqs',
+            'conn_dsp-edge_sf-device-hbw',
+            'conn_dsp-edge_sf-device-dps',
+            'conn_dsp-edge_sf-device-chrg',
+          ], // Alle Connections highlighted
       showFunctionIcons: true,
       highlightedFunctionIcons: ['edge-digital-twin'],
     },
@@ -206,12 +262,10 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedContainerIds: ['dsp-edge'],
       visibleConnectionIds: [
-        'conn-bp-erp-dsp-edge',
-        'conn-bp-mes-dsp-edge',
-        'conn-bp-cloud-dsp-edge',
+        ...bpConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: ['conn-bp-erp-dsp-edge'], // Highlight conn-bp-erp-dsp-edge
+      highlightedConnectionIds: [conn('bp-erp', 'dsp-edge')], // Highlight conn_bp-erp_dsp-edge
       showFunctionIcons: true,
       highlightedFunctionIcons: ['edge-best-of-breed'],
     },
@@ -233,13 +287,10 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedContainerIds: ['bp-analytics', 'bp-cloud'],
       visibleConnectionIds: [
-        'conn-bp-mes-dsp-edge',
-        'conn-bp-erp-dsp-edge',
-        'conn-bp-cloud-dsp-edge',
-        'conn-bp-analytics-dsp-edge',
+        ...bpConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: ['conn-bp-analytics-dsp-edge'], // Kein highlight von conn-bp-cloud-dsp-edge
+      highlightedConnectionIds: [conn('bp-analytics', 'dsp-edge')], // Kein highlight von conn_bp-cloud_dsp-edge
       showFunctionIcons: true,
       highlightedFunctionIcons: ['edge-analytics'],
     },
@@ -251,21 +302,17 @@ export function createDefaultSteps(): StepConfig[] {
       description: $localize`:@@dspArchStepAIDesc:DSP stellt strukturierte Echtzeitdaten als Grundlage für Analytics, Machine Learning und prädiktive Optimierung bereit.`,
       visibleContainerIds: [
         'layer-bp',
-        ...getBusinessContainerIds(),
+        ...getBusinessContainerIds(customerConfig),
         'layer-dsp',
         'dsp-edge',
         ...baseShopfloorContainers,
       ],
       highlightedContainerIds: ['dsp-edge', 'bp-data-lake'],
       visibleConnectionIds: [
-        'conn-bp-mes-dsp-edge',
-        'conn-bp-erp-dsp-edge',
-        'conn-bp-cloud-dsp-edge',
-        'conn-bp-analytics-dsp-edge',
-        'conn-bp-data-lake-dsp-edge',
+        ...bpConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: ['conn-bp-data-lake-dsp-edge'], // Highlight conn-bp-data-lake-dsp-edge
+      highlightedConnectionIds: [conn('bp-data-lake', 'dsp-edge')], // Highlight conn_bp-data-lake_dsp-edge
       showFunctionIcons: true,
       highlightedFunctionIcons: ['edge-ai-enablement'],
     },
@@ -300,28 +347,30 @@ export function createDefaultSteps(): StepConfig[] {
         ...getShopfloorDeviceIds(),
       ], // Alle bp-xyz, sf-devices, sf-systems highlighten
       visibleConnectionIds: [
-        'conn-bp-mes-dsp-edge',
-        'conn-bp-erp-dsp-edge',
-        'conn-bp-cloud-dsp-edge',
-        'conn-bp-analytics-dsp-edge',
-        'conn-bp-data-lake-dsp-edge',
+        ...bpConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: [
-        'conn-bp-mes-dsp-edge',
-        'conn-bp-erp-dsp-edge',
-        'conn-bp-cloud-dsp-edge',
-        'conn-bp-analytics-dsp-edge',
-        'conn-bp-data-lake-dsp-edge',
-        'conn-dsp-edge-sf-system-any',
-        'conn-dsp-edge-sf-system-fts',
-        'conn-dsp-edge-sf-device-mill',
-        'conn-dsp-edge-sf-device-drill',
-        'conn-dsp-edge-sf-device-aiqs',
-        'conn-dsp-edge-sf-device-hbw',
-        'conn-dsp-edge-sf-device-dps',
-        'conn-dsp-edge-sf-device-chrg',
-      ], // Highlight aller conn-dsp-edge-<xyz>
+      highlightedConnectionIds: customerConfig
+        ? [
+            ...bpConnections,
+            ...customerConfig.sfSystems.map(s => conn('dsp-edge', s.id)),
+            ...customerConfig.sfDevices.map(d => conn('dsp-edge', d.id)),
+          ]
+        : [
+            conn('bp-mes', 'dsp-edge'),
+            conn('bp-erp', 'dsp-edge'),
+            conn('bp-cloud', 'dsp-edge'),
+            conn('bp-analytics', 'dsp-edge'),
+            conn('bp-data-lake', 'dsp-edge'),
+            conn('dsp-edge', 'sf-system-any'),
+            conn('dsp-edge', 'sf-system-fts'),
+            conn('dsp-edge', 'sf-device-mill'),
+            conn('dsp-edge', 'sf-device-drill'),
+            conn('dsp-edge', 'sf-device-aiqs'),
+            conn('dsp-edge', 'sf-device-hbw'),
+            conn('dsp-edge', 'sf-device-dps'),
+            conn('dsp-edge', 'sf-device-chrg'),
+          ], // Highlight aller conn_dsp-edge_<xyz>
       showFunctionIcons: true,
       highlightedFunctionIcons: ['edge-autonomous-enterprise'],
     },
@@ -341,15 +390,11 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedContainerIds: ['dsp-ux'], // Highlight dsp-ux
       visibleConnectionIds: [
-        'conn-dsp-ux-dsp-edge',
-        'conn-bp-mes-dsp-edge',
-        'conn-bp-erp-dsp-edge',
-        'conn-bp-cloud-dsp-edge',
-        'conn-bp-analytics-dsp-edge',
-        'conn-bp-data-lake-dsp-edge',
+        conn('dsp-ux', 'dsp-edge'),
+        ...bpConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: ['conn-dsp-ux-dsp-edge'], // Highlight conn zu dsp-edge
+      highlightedConnectionIds: [conn('dsp-ux', 'dsp-edge')], // Highlight conn_dsp-ux_dsp-edge
       showFunctionIcons: true,
     },
 
@@ -373,16 +418,12 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedContainerIds: ['dsp-mc'],
       visibleConnectionIds: [
-        'conn-dsp-ux-dsp-edge',
-        'conn-dsp-edge-dsp-mc',
-        'conn-bp-mes-dsp-edge',
-        'conn-bp-erp-dsp-edge',
-        'conn-bp-cloud-dsp-edge',
-        'conn-bp-analytics-dsp-edge',
-        'conn-bp-data-lake-dsp-edge',
+        conn('dsp-ux', 'dsp-edge'),
+        conn('dsp-edge', 'dsp-mc'),
+        ...bpConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: ['conn-dsp-edge-dsp-mc'],
+      highlightedConnectionIds: [conn('dsp-edge', 'dsp-mc')],
       showFunctionIcons: true,
     },
 
@@ -406,16 +447,12 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedContainerIds: ['dsp-mc'],
       visibleConnectionIds: [
-        'conn-dsp-ux-dsp-edge',
-        'conn-dsp-edge-dsp-mc',
-        'conn-bp-mes-dsp-edge',
-        'conn-bp-erp-dsp-edge',
-        'conn-bp-cloud-dsp-edge',
-        'conn-bp-analytics-dsp-edge',
-        'conn-bp-data-lake-dsp-edge',
+        conn('dsp-ux', 'dsp-edge'),
+        conn('dsp-edge', 'dsp-mc'),
+        ...bpConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: ['conn-dsp-edge-dsp-mc'],
+      highlightedConnectionIds: [conn('dsp-edge', 'dsp-mc')],
       showFunctionIcons: true,
       highlightedFunctionIcons: ['mc-hierarchical-structure'],
     },
@@ -440,16 +477,12 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedContainerIds: ['dsp-mc'],
       visibleConnectionIds: [
-        'conn-dsp-ux-dsp-edge',
-        'conn-dsp-edge-dsp-mc',
-        'conn-bp-mes-dsp-edge',
-        'conn-bp-erp-dsp-edge',
-        'conn-bp-cloud-dsp-edge',
-        'conn-bp-analytics-dsp-edge',
-        'conn-bp-data-lake-dsp-edge',
+        conn('dsp-ux', 'dsp-edge'),
+        conn('dsp-edge', 'dsp-mc'),
+        ...bpConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: ['conn-dsp-edge-dsp-mc'],
+      highlightedConnectionIds: [conn('dsp-edge', 'dsp-mc')],
       showFunctionIcons: true,
       highlightedFunctionIcons: ['mc-orchestration'],
     },
@@ -474,16 +507,12 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedContainerIds: ['dsp-mc'],
       visibleConnectionIds: [
-        'conn-dsp-ux-dsp-edge',
-        'conn-dsp-edge-dsp-mc',
-        'conn-bp-mes-dsp-edge',
-        'conn-bp-erp-dsp-edge',
-        'conn-bp-cloud-dsp-edge',
-        'conn-bp-analytics-dsp-edge',
-        'conn-bp-data-lake-dsp-edge',
+        conn('dsp-ux', 'dsp-edge'),
+        conn('dsp-edge', 'dsp-mc'),
+        ...bpConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: ['conn-dsp-edge-dsp-mc'],
+      highlightedConnectionIds: [conn('dsp-edge', 'dsp-mc')],
       showFunctionIcons: true,
       highlightedFunctionIcons: ['mc-governance'],
     },
@@ -508,16 +537,12 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedContainerIds: ['dsp-mc', 'dsp-edge'],
       visibleConnectionIds: [
-        'conn-dsp-ux-dsp-edge',
-        'conn-dsp-edge-dsp-mc',
-        'conn-bp-mes-dsp-edge',
-        'conn-bp-erp-dsp-edge',
-        'conn-bp-cloud-dsp-edge',
-        'conn-bp-analytics-dsp-edge',
-        'conn-bp-data-lake-dsp-edge',
+        conn('dsp-ux', 'dsp-edge'),
+        conn('dsp-edge', 'dsp-mc'),
+        ...bpConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: ['conn-dsp-edge-dsp-mc'],
+      highlightedConnectionIds: [conn('dsp-edge', 'dsp-mc')],
       showFunctionIcons: true,
       highlightedFunctionIcons: ['logo-edge-a', 'logo-edge-b', 'logo-edge-c'],
     },
@@ -531,19 +556,15 @@ export function createDefaultSteps(): StepConfig[] {
         'layer-bp',
         'layer-dsp',
         'layer-sf',
-        ...getBusinessContainerIds(),
+        ...getBusinessContainerIds(customerConfig),
         ...getDspContainerIds(),
         ...baseShopfloorContainers,
       ],
       highlightedContainerIds: [], // No highlighting in final step
       visibleConnectionIds: [
-        'conn-dsp-ux-dsp-edge',
-        'conn-dsp-edge-dsp-mc',
-        'conn-bp-mes-dsp-edge',
-        'conn-bp-erp-dsp-edge',
-        'conn-bp-cloud-dsp-edge',
-        'conn-bp-analytics-dsp-edge',
-        'conn-bp-data-lake-dsp-edge',
+        conn('dsp-ux', 'dsp-edge'),
+        conn('dsp-edge', 'dsp-mc'),
+        ...bpConnections,
         ...baseShopfloorConnections,
       ],
       highlightedConnectionIds: [], // No highlighting in final step
@@ -554,6 +575,6 @@ export function createDefaultSteps(): StepConfig[] {
 
 export function createFunctionalView(customerConfig?: import('./configs/types').CustomerDspConfig): DiagramConfig {
   return new DiagramConfigBuilder(customerConfig)
-    .withFunctionalSteps(createDefaultSteps())
+    .withFunctionalSteps(createDefaultSteps(customerConfig))
     .build();
 }

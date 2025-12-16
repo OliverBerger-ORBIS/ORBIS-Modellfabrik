@@ -36,7 +36,7 @@ export class DiagramConfigBuilder {
     } else {
       this.containers = createDefaultContainers();
     }
-    this.connections = createDefaultConnections();
+    this.connections = createDefaultConnections(customerConfig);
     this.steps = [];
   }
 

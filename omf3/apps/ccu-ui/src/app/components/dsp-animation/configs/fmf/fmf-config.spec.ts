@@ -37,18 +37,30 @@ describe('FMF_CONFIG', () => {
       expect(drill?.label).toBeTruthy();
     });
 
-    it('should have hbw device with abstract ID', () => {
-      const hbw = FMF_CONFIG.sfDevices.find(d => d.iconKey === 'hbw');
-      expect(hbw).toBeDefined();
-      expect(hbw?.id).toBe('sf-device-4');
-      expect(hbw?.label).toBeTruthy();
+    it('should have aiqs device', () => {
+      const aiqs = FMF_CONFIG.sfDevices.find(d => d.id === 'sf-device-aiqs');
+      expect(aiqs).toBeDefined();
+      expect(aiqs?.iconKey).toBe('robot-arm');
+      expect(aiqs?.customIconPath).toBe('device-aiqs');
     });
 
-    it('should have conveyor device with abstract ID', () => {
-      const conveyor = FMF_CONFIG.sfDevices.find(d => d.iconKey === 'conveyor');
-      expect(conveyor).toBeDefined();
-      expect(conveyor?.id).toBe('sf-device-5');
-      expect(conveyor?.label).toBeTruthy();
+    it('should have hbw device', () => {
+      const hbw = FMF_CONFIG.sfDevices.find(d => d.id === 'sf-device-hbw');
+      expect(hbw).toBeDefined();
+      expect(hbw?.iconKey).toBe('hbw');
+    });
+
+    it('should have dps device', () => {
+      const dps = FMF_CONFIG.sfDevices.find(d => d.id === 'sf-device-dps');
+      expect(dps).toBeDefined();
+      expect(dps?.iconKey).toBe('conveyor');
+      expect(dps?.customIconPath).toBe('device-dps');
+    });
+
+    it('should have chrg device', () => {
+      const chrg = FMF_CONFIG.sfDevices.find(d => d.id === 'sf-device-chrg');
+      expect(chrg).toBeDefined();
+      expect(chrg?.iconKey).toBe('robot-arm');
     });
 
     it('should have robot-arm devices', () => {
@@ -82,6 +94,7 @@ describe('FMF_CONFIG', () => {
       expect(FMF_CONFIG.sfSystems.length).toBeGreaterThan(0);
     });
 
+<<<<<<< HEAD
     it('should have 2 systems', () => {
       expect(FMF_CONFIG.sfSystems.length).toBe(2);
     });
@@ -98,6 +111,17 @@ describe('FMF_CONFIG', () => {
       expect(agv).toBeDefined();
       expect(agv?.id).toBe('sf-system-2');
       expect(agv?.label).toBeTruthy();
+=======
+    it('should have any system', () => {
+      const anySystem = FMF_CONFIG.sfSystems.find(s => s.id === 'sf-system-1');
+      expect(anySystem).toBeDefined();
+      expect(anySystem?.iconKey).toBe('warehouse-system');
+    });
+
+    it('should have AGV/FTS system', () => {
+      const agv = FMF_CONFIG.sfSystems.find(s => s.id === 'sf-system-2');
+      expect(agv).toBeDefined();
+      expect(agv?.iconKey).toBe('agv');
     });
 
     it('should have all systems with valid IDs', () => {

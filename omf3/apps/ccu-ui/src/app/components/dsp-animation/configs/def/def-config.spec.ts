@@ -14,9 +14,9 @@ describe('DEF_CONFIG', () => {
   });
 
   describe('sfDevices', () => {
-    it('should have device mappings', () => {
+    it('should have exactly 5 device mappings', () => {
       expect(DEF_CONFIG.sfDevices).toBeDefined();
-      expect(DEF_CONFIG.sfDevices.length).toBeGreaterThan(0);
+      expect(DEF_CONFIG.sfDevices.length).toBe(5);
     });
 
     it('should have 5 devices', () => {
@@ -62,9 +62,17 @@ describe('DEF_CONFIG', () => {
   });
 
   describe('sfSystems', () => {
-    it('should have system mappings', () => {
+    it('should have exactly 4 system mappings', () => {
       expect(DEF_CONFIG.sfSystems).toBeDefined();
-      expect(DEF_CONFIG.sfSystems.length).toBeGreaterThan(0);
+      expect(DEF_CONFIG.sfSystems.length).toBe(4);
+    });
+
+    it('should have agv-system, any-system, bp-system, and warehouse-system', () => {
+      const systemLabels = DEF_CONFIG.sfSystems.map(s => s.label);
+      expect(systemLabels).toContain('AGV System');
+      expect(systemLabels).toContain('Any System');
+      expect(systemLabels).toContain('BP System');
+      expect(systemLabels).toContain('Warehouse System');
     });
 
     it('should have 4 systems', () => {
@@ -129,6 +137,16 @@ describe('DEF_CONFIG', () => {
       expect(defBrands).toContain('azure');
       expect(defBrands).toContain('powerbi');
       expect(defBrands).toContain('alpha-x');
+    });
+
+    it('should have exactly 4 business processes (no bp-cloud)', () => {
+      expect(DEF_CONFIG.bpProcesses.length).toBe(4);
+      const bpIds = DEF_CONFIG.bpProcesses.map(bp => bp.id);
+      expect(bpIds).toContain('bp-erp');
+      expect(bpIds).toContain('bp-mes');
+      expect(bpIds).toContain('bp-analytics');
+      expect(bpIds).toContain('bp-data-lake');
+      expect(bpIds).not.toContain('bp-cloud');
     });
 
     it('should have all processes with valid IDs', () => {

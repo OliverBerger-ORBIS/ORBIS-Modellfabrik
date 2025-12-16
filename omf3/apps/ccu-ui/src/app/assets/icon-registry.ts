@@ -52,6 +52,7 @@ export type IconKey =
   | 'shopfloor-systems'
   | 'shopfloor-fts'
   | 'shopfloor-mes'
+  | 'shopfloor-bp'
   | 'shopfloor-scada'
   | 'shopfloor-aps'
   | 'shopfloor-warehouse'
@@ -146,6 +147,7 @@ export const ICON_MAP: Record<IconKey, string> = {
   'shopfloor-aps': ICONS.shopfloor.stations.dps,
   'shopfloor-warehouse': 'assets/svg/shopfloor/systems/warehouse-system.svg',
   'shopfloor-factory': 'assets/svg/shopfloor/systems/factory-system.svg',
+  'shopfloor-bp': 'assets/svg/shopfloor/systems/bp-system.svg',
   'shopfloor-it': ICONS.shopfloor.systems.any,
 
   'ux-box': ICONS.dsp.architecture.uxBox,

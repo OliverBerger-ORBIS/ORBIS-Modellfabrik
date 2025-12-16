@@ -87,24 +87,24 @@ describe('Layout Shared Config Helper Functions', () => {
 
     it('should include connections to systems', () => {
       const ids = getShopfloorConnectionIds();
-      expect(ids).toContain('conn-dsp-edge-sf-system-any');
-      expect(ids).toContain('conn-dsp-edge-sf-system-fts');
+      expect(ids).toContain('conn_dsp-edge_sf-system-any');
+      expect(ids).toContain('conn_dsp-edge_sf-system-fts');
     });
 
     it('should include connections to devices', () => {
       const ids = getShopfloorConnectionIds();
-      expect(ids).toContain('conn-dsp-edge-sf-device-mill');
-      expect(ids).toContain('conn-dsp-edge-sf-device-drill');
-      expect(ids).toContain('conn-dsp-edge-sf-device-aiqs');
-      expect(ids).toContain('conn-dsp-edge-sf-device-hbw');
-      expect(ids).toContain('conn-dsp-edge-sf-device-dps');
-      expect(ids).toContain('conn-dsp-edge-sf-device-chrg');
+      expect(ids).toContain('conn_dsp-edge_sf-device-mill');
+      expect(ids).toContain('conn_dsp-edge_sf-device-drill');
+      expect(ids).toContain('conn_dsp-edge_sf-device-aiqs');
+      expect(ids).toContain('conn_dsp-edge_sf-device-hbw');
+      expect(ids).toContain('conn_dsp-edge_sf-device-dps');
+      expect(ids).toContain('conn_dsp-edge_sf-device-chrg');
     });
 
     it('should return IDs in consistent format', () => {
       const ids = getShopfloorConnectionIds();
       ids.forEach((id) => {
-        expect(id).toMatch(/^conn-dsp-edge-sf-(system|device)-[a-z]+$/);
+        expect(id).toMatch(/^conn_dsp-edge_sf-(system|device)-[a-z-]+$/);
       });
     });
   });

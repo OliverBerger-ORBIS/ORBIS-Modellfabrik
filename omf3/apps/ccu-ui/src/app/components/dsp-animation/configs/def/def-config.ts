@@ -41,22 +41,22 @@ export const DEF_CONFIG: CustomerDspConfig = {
   sfSystems: [
     {
       id: 'sf-system-1',
-      label: 'Generic System',
-      iconKey: 'warehouse-system',
-    },
-    {
-      id: 'sf-system-2',
-      label: 'AGV Fleet',
+      label: 'AGV System',
       iconKey: 'agv',
     },
     {
+      id: 'sf-system-2',
+      label: 'Any System',
+      iconKey: 'warehouse-system',
+    },
+    {
       id: 'sf-system-3',
-      label: 'Central Warehouse',
+      label: 'BP System',
       iconKey: 'warehouse-system',
     },
     {
       id: 'sf-system-4',
-      label: 'Production Line',
+      label: 'Warehouse System',
       iconKey: 'warehouse-system',
     },
   ],
@@ -84,7 +84,8 @@ export const DEF_CONFIG: CustomerDspConfig = {
     {
       id: 'bp-data-lake',
       label: 'Data Platform',
-      iconKey: 'cloud',
+      iconKey: 'cloud', // Not used for Business Processes (logoIconKey is used instead)
+      customIconPath: 'bp-data-lake', // Use correct data-lake icon instead of generic-system-cloud
       brandLogoKey: 'azure',
     },
   ],
