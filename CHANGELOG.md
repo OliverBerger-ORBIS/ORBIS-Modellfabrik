@@ -5,6 +5,11 @@ All notable changes to OMF3 Dashboard will be documented here.
 ## [Unreleased]
 
 ### Added
+- Windows helper scripts for npm/Node.js setup (run-omf3.ps1, run-omf3.bat, add-node-to-user-path.ps1)
+- Comprehensive npm/Node.js setup documentation (docs_orbis/how-to-use-npm.md) for Windows developers
+- Scripts handle common Windows issues: PATH problems, missing npx, automatic dependency installation
+
+### Added
 - Module sequence commands feature for DRILL, MILL, and AIQS modules
 - Manual sequence command execution with individual send buttons (PICK, DRILL/MILL/CHECK_QUALITY, DROP)
 - Developer mode for sequence commands showing sent payloads with formatted JSON
