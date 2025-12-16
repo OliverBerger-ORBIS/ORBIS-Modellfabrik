@@ -761,10 +761,15 @@ export class FtsTabComponent implements OnInit, OnDestroy {
     const cmd = action.command.toUpperCase();
     if (cmd === 'TURN') {
       const dir = this.getActionDirection(action)?.toUpperCase();
-      if (dir === 'LEFT') return 'TURN LEFT';
-      if (dir === 'RIGHT') return 'TURN RIGHT';
-      return 'TURN';
+      if (dir === 'LEFT') return $localize`:@@ftsActionTurnLeft:TURN LEFT`;
+      if (dir === 'RIGHT') return $localize`:@@ftsActionTurnRight:TURN RIGHT`;
+      return $localize`:@@ftsActionTurn:TURN`;
     }
+    if (cmd === 'DOCK') return $localize`:@@ftsActionDock:DOCK`;
+    if (cmd === 'PASS') return $localize`:@@ftsActionPass:PASS`;
+    if (cmd === 'PICK') return $localize`:@@ftsActionPick:PICK`;
+    if (cmd === 'DROP') return $localize`:@@ftsActionDrop:DROP`;
+    if (cmd === 'CLEARLOADHANDLER') return $localize`:@@ftsActionClearLoadHandler:clearLoadHandler`;
     return action.command;
   }
   
@@ -859,25 +864,15 @@ export class FtsTabComponent implements OnInit, OnDestroy {
   }
 
   get vehicleLabelLong(): string {
-    if (this.locale === 'de') return 'Fahrerloses Transportsystem (FTS)';
-    if (this.locale === 'fr') return 'Véhicule autoguidé (AGV)';
-    return 'Automated Guided Vehicle (AGV)';
+    return $localize`:@@ftsVehicleLabelLong:Automated Guided Vehicle (FTS)`;
   }
 
   get statusSubtitle(): string {
-    if (this.locale === 'de') {
-      return 'Echtzeit-Status, Batterie- und Routeninformationen für das Fahrerlose Transportsystem.';
-    }
-    if (this.locale === 'fr') {
-      return 'Statut en temps réel, batterie et informations de route pour l’AGV.';
-    }
-    return 'Real-time status, battery, and route information for the AGV.';
+    return $localize`:@@ftsStatusSubtitle:Real-time status, battery, and route information for the FTS.`;
   }
 
   get badgeTextVehiclePosition(): string {
-    if (this.locale === 'de') return 'FTS-Position';
-    if (this.locale === 'fr') return 'Position AGV';
-    return 'AGV Position';
+    return $localize`:@@ftsBadgePosition:Position`;
   }
 
   // Example payloads for developer view
@@ -970,6 +965,16 @@ export class FtsTabComponent implements OnInit, OnDestroy {
     if (stateUpper === 'FINISHED') return 'finished';
     if (stateUpper === 'FAILED') return 'failed';
     return 'unknown';
+  }
+
+  getStateLabel(state: string): string {
+    const stateUpper = state.toUpperCase();
+    if (stateUpper === 'WAITING') return $localize`:@@ftsStateWaiting:WAITING`;
+    if (stateUpper === 'INITIALIZING') return $localize`:@@ftsStateInitializing:INITIALIZING`;
+    if (stateUpper === 'RUNNING') return $localize`:@@ftsStateRunning:RUNNING`;
+    if (stateUpper === 'FINISHED') return $localize`:@@ftsStateFinished:FINISHED`;
+    if (stateUpper === 'FAILED') return $localize`:@@ftsStateFailed:FAILED`;
+    return $localize`:@@ftsStateUnknown:UNKNOWN`;
   }
 
   formatTimestamp(timestamp: string): string {

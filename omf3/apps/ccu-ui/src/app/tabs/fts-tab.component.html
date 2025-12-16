@@ -130,7 +130,7 @@
                 {{ getActionLabel(getCurrentAction(ftsState)!) }}
               </span>
               <span class="status-badge" [class]="getStateClass(getCurrentAction(ftsState)!.state)">
-                {{ getCurrentAction(ftsState)!.state }}
+                {{ getStateLabel(getCurrentAction(ftsState)!.state) }}
               </span>
             </div>
           </div>
@@ -145,7 +145,7 @@
                   {{ getActionLabel(action) }}
                 </span>
                 <span class="status-badge small" [class]="getStateClass(action.state)">
-                  {{ action.state }}
+                  {{ getStateLabel(action.state) }}
                 </span>
                 <span class="action-timestamp">{{ formatTimestamp(action.timestamp) }}</span>
               </li>

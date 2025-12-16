@@ -197,6 +197,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
   // I18n labels for shopfloor preview
   readonly shopfloorPreviewExpandLabel = $localize`:@@moduleTabShopfloorPreviewExpand:Expand shopfloor preview`;
   readonly shopfloorPreviewCollapseLabel = $localize`:@@moduleTabShopfloorPreviewCollapse:Collapse shopfloor preview`;
+  readonly modulesStatusBadgeText = $localize`:@@moduleTabModulesStatusBadge:Modules Status`;
 
   private initializeRegistry(): void {
     // Build registry from mapping service; fallback: add common FTS serial if not present
@@ -908,10 +909,8 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
 
   closeSidebar(): void {
     this.sidebarOpen = false;
-    this.selectedModuleSerialId = null;
-    this.selectedModuleName = null;
-    this.selectedModuleIcon = null;
-    this.selectedModuleMeta = null;
+    // Preserve selection - don't clear selectedModuleSerialId, selectedModuleName, etc.
+    // This allows the user to reopen the sidebar without losing their selection
     this.cdr.markForCheck();
   }
 

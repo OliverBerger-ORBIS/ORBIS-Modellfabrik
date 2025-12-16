@@ -40,10 +40,16 @@ export class DspPageComponent {
   
   // Accordion state - track which sections are expanded
   protected expandedSections = new Set<string>();
+  private readonly storageKey = 'dsp-page-accordion-expanded-sections';
   
   constructor(private readonly cdr: ChangeDetectorRef) {
-    // Overview section is expanded by default
-    this.expandedSections.add('overview');
+    // Load saved accordion state from localStorage
+    this.loadAccordionState();
+    
+    // If no saved state, expand overview section by default
+    if (this.expandedSections.size === 0) {
+      this.expandedSections.add('overview');
+    }
   }
   
   /**
@@ -62,6 +68,36 @@ export class DspPageComponent {
     } else {
       this.expandedSections.add(sectionId);
     }
+    this.saveAccordionState();
     this.cdr.markForCheck();
+  }
+  
+  /**
+   * Load accordion state from localStorage
+   */
+  private loadAccordionState(): void {
+    try {
+      const saved = localStorage.getItem(this.storageKey);
+      if (saved) {
+        const sections = JSON.parse(saved) as string[];
+        this.expandedSections = new Set(sections);
+      }
+    } catch (error) {
+      // Ignore localStorage errors (e.g., in private browsing mode)
+      console.warn('[DspPage] Failed to load accordion state:', error);
+    }
+  }
+  
+  /**
+   * Save accordion state to localStorage
+   */
+  private saveAccordionState(): void {
+    try {
+      const sections = Array.from(this.expandedSections);
+      localStorage.setItem(this.storageKey, JSON.stringify(sections));
+    } catch (error) {
+      // Ignore localStorage errors (e.g., in private browsing mode)
+      console.warn('[DspPage] Failed to save accordion state:', error);
+    }
   }
 }

@@ -42,6 +42,10 @@ const createComponent = () => {
 
   const moduleNameServiceStub = {
     getModuleDisplayText: jest.fn((type: string) => `${type.toUpperCase()} (Test)`),
+    getModuleDisplayName: jest.fn((type: string) => ({
+      fullName: `${type.toUpperCase()} Station`,
+      shortName: type.toUpperCase(),
+    })),
   } as unknown as ModuleNameService;
 
   const connectionServiceStub = {
@@ -132,6 +136,143 @@ describe('ModuleTabComponent registry metadata', () => {
 
     const row = (component as any).createModuleRow(moduleStatus);
     expect(row.registryActive).toBe(false);
+  });
+});
+
+describe('ModuleTabComponent sidebar and selection', () => {
+  it('should preserve module selection when closing sidebar', () => {
+    const component = createComponent();
+    
+    // Set up a selected module
+    const testSerialId = 'SVR3QA0022';
+    const testModuleName = 'DRILL Station';
+    const testIcon = 'assets/svg/shopfloor/stations/drill-station.svg';
+    const testMeta = {
+      availability: 'READY' as const,
+      availabilityLabel: 'Available',
+      availabilityIcon: '🟢',
+      availabilityClass: 'availability availability--ready',
+      connected: true,
+      connectionIcon: '📶',
+      connectionLabel: 'Connected',
+    };
+
+    component.selectedModuleSerialId = testSerialId;
+    component.selectedModuleName = testModuleName;
+    component.selectedModuleIcon = testIcon;
+    component.selectedModuleMeta = testMeta;
+    component.sidebarOpen = true;
+
+    // Close sidebar
+    component.closeSidebar();
+
+    // Verify sidebar is closed
+    expect(component.sidebarOpen).toBe(false);
+    
+    // Verify selection is preserved
+    expect(component.selectedModuleSerialId).toBe(testSerialId);
+    expect(component.selectedModuleName).toBe(testModuleName);
+    expect(component.selectedModuleIcon).toBe(testIcon);
+    expect(component.selectedModuleMeta).toEqual(testMeta);
+  });
+
+  it('should allow reopening sidebar without losing selection', () => {
+    const component = createComponent();
+    
+    // Set up a selected module
+    const testSerialId = 'SVR3QA0022';
+    const testModuleName = 'MILL Station';
+    
+    component.selectedModuleSerialId = testSerialId;
+    component.selectedModuleName = testModuleName;
+    component.sidebarOpen = false;
+
+    // Open sidebar
+    component.openSidebarForSelected();
+
+    // Verify sidebar is open
+    expect(component.sidebarOpen).toBe(true);
+    
+    // Verify selection is still there
+    expect(component.selectedModuleSerialId).toBe(testSerialId);
+    expect(component.selectedModuleName).toBe(testModuleName);
+
+    // Close sidebar again
+    component.closeSidebar();
+
+    // Verify sidebar is closed but selection remains
+    expect(component.sidebarOpen).toBe(false);
+    expect(component.selectedModuleSerialId).toBe(testSerialId);
+    expect(component.selectedModuleName).toBe(testModuleName);
+  });
+
+  it('should preserve selection when sidebar is closed after double-click selection', () => {
+    const component = createComponent();
+    
+    // Simulate module selection via double-click
+    const testEvent = { id: 'SVR3QA0022', kind: 'module' as const };
+    
+    // Mock the layout config and module overview state
+    (component as any).layoutConfig = {
+      cells: [{
+        id: 'SVR3QA0022',
+        name: 'DRILL',
+        serial_number: 'SVR3QA0022',
+        position: { x: 100, y: 200 },
+        size: { w: 50, h: 50 },
+      }],
+    };
+    
+    const moduleOverviewStateStub = {
+      getSnapshot: jest.fn(() => ({
+        modules: {
+          'SVR3QA0022': {
+            id: 'SVR3QA0022',
+            subType: 'DRILL',
+            connected: true,
+            availability: 'READY',
+            configured: true,
+            lastUpdate: '2025-12-16T12:00:00.000Z',
+          },
+        },
+      })),
+    } as any;
+    
+    // Replace the moduleOverviewState with our stub
+    (component as any).moduleOverviewState = moduleOverviewStateStub;
+    (component as any).currentEnvironmentKey = 'mock';
+
+    // Select module (this would normally be called by onModuleCellSelected)
+    component.onModuleCellSelected(testEvent);
+    
+    // Verify module is selected
+    expect(component.selectedModuleSerialId).toBe('SVR3QA0022');
+    expect(component.selectedModuleName).toBeDefined();
+
+    // Open sidebar (via double-click)
+    component.openSidebarForSelected();
+    expect(component.sidebarOpen).toBe(true);
+
+    // Close sidebar
+    component.closeSidebar();
+
+    // Verify selection is preserved
+    expect(component.sidebarOpen).toBe(false);
+    expect(component.selectedModuleSerialId).toBe('SVR3QA0022');
+    expect(component.selectedModuleName).toBeDefined();
+    expect(component.selectedModuleIcon).toBeDefined();
+    expect(component.selectedModuleMeta).toBeDefined();
+  });
+
+  it('should call markForCheck when closing sidebar', () => {
+    const component = createComponent();
+    const cdrStub = (component as any).cdr as ChangeDetectorRef;
+    const markForCheckSpy = jest.spyOn(cdrStub, 'markForCheck');
+
+    component.sidebarOpen = true;
+    component.closeSidebar();
+
+    expect(markForCheckSpy).toHaveBeenCalled();
   });
 });
 
