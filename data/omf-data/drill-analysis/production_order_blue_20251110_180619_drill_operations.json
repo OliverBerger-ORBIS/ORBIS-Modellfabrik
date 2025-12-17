@@ -1,0 +1,99 @@
+[
+  {
+    "timestamp": "2025-11-10T18:02:09.750238",
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "command": "DROP",
+    "state": "FINISHED",
+    "id": "8c3c746a-8dd8-4a6e-8239-af04ff13361f",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:03:20.290876",
+    "topic": "module/v1/ff/SVR4H76449/order",
+    "command": "PICK",
+    "id": "f6986d0b-7e2e-42dc-b537-f750cf2a6880",
+    "workpieceId": "04a189ca341290",
+    "type": "BLUE",
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:03:20.351562",
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "command": "PICK",
+    "state": "RUNNING",
+    "id": "f6986d0b-7e2e-42dc-b537-f750cf2a6880",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:03:31.094717",
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "command": "PICK",
+    "state": "FINISHED",
+    "id": "f6986d0b-7e2e-42dc-b537-f750cf2a6880",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:03:31.164613",
+    "topic": "module/v1/ff/SVR4H76449/order",
+    "command": "DRILL",
+    "id": "503de4f6-676c-48ec-a4e2-481adeab9f79",
+    "workpieceId": null,
+    "type": "BLUE",
+    "duration": 5
+  },
+  {
+    "timestamp": "2025-11-10T18:03:31.227952",
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "command": "DRILL",
+    "state": "RUNNING",
+    "id": "503de4f6-676c-48ec-a4e2-481adeab9f79",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:03:41.081018",
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "command": "DRILL",
+    "state": "FINISHED",
+    "id": "503de4f6-676c-48ec-a4e2-481adeab9f79",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:03:41.138270",
+    "topic": "module/v1/ff/SVR4H76449/order",
+    "command": "DROP",
+    "id": "09ee7983-7f92-4e5a-8dde-a88b499a4a5f",
+    "workpieceId": "04a189ca341290",
+    "type": "BLUE",
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:03:41.204297",
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "command": "DROP",
+    "state": "RUNNING",
+    "id": "09ee7983-7f92-4e5a-8dde-a88b499a4a5f",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:03:51.041189",
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "command": "DROP",
+    "state": "FINISHED",
+    "id": "09ee7983-7f92-4e5a-8dde-a88b499a4a5f",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  }
+]

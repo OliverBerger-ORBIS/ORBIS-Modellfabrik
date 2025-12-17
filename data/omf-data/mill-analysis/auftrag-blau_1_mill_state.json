@@ -1,0 +1,9 @@
+[
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"orderId\":\"6a7bd2fc-1111-2222-3333-444455556666\",\"serialNumber\":\"SVR3QA2098\",\"actionState\":{\"id\":\"blue-mill\",\"command\":\"MILL\",\"state\":\"FINISHED\",\"type\":\"MANUFACTURE\"},\"timestamp\":\"2025-02-01T08:35:00Z\"}",
+    "timestamp": "2025-02-01T08:35:00Z",
+    "qos": 0,
+    "retain": false
+  }
+]

@@ -1,0 +1,7 @@
+[
+  {
+    "topic": "ccu/order/response",
+    "payload": "{\"orderType\":\"STORAGE\",\"type\":\"WHITE\",\"timestamp\":\"2025-11-10T17:14:44.645Z\",\"orderId\":\"eb4d90bc-f842-4c59-9cff-07299bb78aa4\",\"productionSteps\":[{\"id\":\"af6a44f2-8108-498b-b33f-7d587277f91d\",\"type\":\"NAVIGATION\",\"state\":\"IN_PROGRESS\",\"source\":\"START\",\"target\":\"DPS\",\"startedAt\":\"2025-11-10T17:14:44.801Z\"},{\"id\":\"9f4f1518-f2f6-4a76-8d1f-6340343c8a75\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"af6a44f2-8108-498b-b33f-7d587277f91d\",\"state\":\"ENQUEUED\",\"command\":\"DROP\",\"moduleType\":\"DPS\"},{\"id\":\"0783dd8a-4bc5-4d1f-878f-63c5bf5798de\",\"type\":\"NAVIGATION\",\"state\":\"ENQUEUED\",\"source\":\"DPS\",\"target\":\"HBW\",\"dependentActionId\":\"9f4f1518-f2f6-4a76-8d1f-6340343c8a75\"},{\"id\":\"14e5d6a3-183b-4ee2-b35a-9014b15d6aea\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"0783dd8a-4bc5-4d1f-878f-63c5bf5798de\",\"state\":\"ENQUEUED\",\"command\":\"PICK\",\"moduleType\":\"HBW\"}],\"receivedAt\":\"2025-11-10T17:14:44.746Z\",\"state\":\"IN_PROGRESS\",\"workpieceId\":\"047c8bca341291\",\"startedAt\":\"2025-11-10T17:14:44.746Z\"}",
+    "timestamp": "2025-11-10T18:14:44.819738"
+  }
+]

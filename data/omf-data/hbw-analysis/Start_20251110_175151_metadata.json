@@ -1,0 +1,37 @@
+{
+  "session_name": "Start_20251110_175151",
+  "analysis_timestamp": "2025-12-17T18:05:41.279302",
+  "hbw_serial": "SVR3QA0022",
+  "total_messages": 3378,
+  "hbw_relevant_messages": 146,
+  "start_time": "2025-11-10T17:48:46.094261",
+  "end_time": "2025-11-10T17:51:45.933691",
+  "topic_counts": {
+    "ccu/pairing/state": 121,
+    "ccu/order/active": 3,
+    "ccu/order/completed": 3,
+    "module/v1/ff/SVR3QA0022/state": 3,
+    "module/v1/ff/SVR3QA0022/connection": 13,
+    "module/v1/ff/SVR3QA0022/factsheet": 2,
+    "module/v1/ff/SVR3QA0022/instantAction": 1
+  },
+  "topic_categories": {
+    "ccu_pairing_state": 121,
+    "ccu_order_active": 3,
+    "ccu_order_completed": 3,
+    "hbw_state": 3,
+    "hbw_connection": 13,
+    "hbw_factsheet": 2,
+    "hbw_instant_action": 1
+  },
+  "payload_stats": {
+    "has_actionState": 3,
+    "has_orderId": 1
+  },
+  "commands_found": {
+    "factsheetRequest": 2
+  },
+  "storage_operations_count": 0,
+  "storage_order_context_count": 0,
+  "storage_commands_context_count": 0
+}

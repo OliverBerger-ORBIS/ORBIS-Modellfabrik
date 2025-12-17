@@ -1,0 +1,17 @@
+[
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":0,\"loads\":[],\"actionState\":null,\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-12-02T08:47:37.339Z\",\"errors\":[],\"orderUpdateId\":0,\"orderId\":0,\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-12-02T10:10:31.398533"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":0,\"loads\":[],\"actionState\":null,\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-12-02T08:47:37.339Z\",\"errors\":[],\"orderUpdateId\":0,\"orderId\":0,\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-12-02T10:10:35.259314"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":0,\"loads\":[],\"actionState\":null,\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-12-02T08:47:37.339Z\",\"errors\":[],\"orderUpdateId\":0,\"orderId\":0,\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-12-02T10:19:36.384426"
+  }
+]

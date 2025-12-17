@@ -1,0 +1,37 @@
+[
+  {
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "payload": "{\"headerId\":36,\"loads\":[],\"actionState\":{\"command\":\"DROP\",\"id\":\"8c3c746a-8dd8-4a6e-8239-af04ff13361f\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR4H76449\",\"timestamp\":\"2025-11-10T16:56:55.012Z\",\"errors\":[],\"orderUpdateId\":5,\"orderId\":\"25e3dbe9-e956-41a0-8c1e-bade61141271\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:02:09.750238"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "payload": "{\"headerId\":62,\"loads\":[{\"loadType\":\"BLUE\"}],\"actionState\":{\"command\":\"PICK\",\"id\":\"f6986d0b-7e2e-42dc-b537-f750cf2a6880\",\"state\":\"RUNNING\",\"duration\":5},\"serialNumber\":\"SVR4H76449\",\"timestamp\":\"2025-11-10T17:03:20.346Z\",\"errors\":[],\"orderUpdateId\":3,\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:03:20.351562"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "payload": "{\"headerId\":64,\"loads\":[{\"loadType\":\"BLUE\"}],\"actionState\":{\"command\":\"PICK\",\"id\":\"f6986d0b-7e2e-42dc-b537-f750cf2a6880\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR4H76449\",\"timestamp\":\"2025-11-10T17:03:31.086Z\",\"errors\":[],\"orderUpdateId\":3,\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:03:31.094717"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "payload": "{\"headerId\":65,\"loads\":[{\"loadType\":\"BLUE\",\"duration\":5}],\"actionState\":{\"command\":\"DRILL\",\"id\":\"503de4f6-676c-48ec-a4e2-481adeab9f79\",\"state\":\"RUNNING\",\"duration\":5},\"serialNumber\":\"SVR4H76449\",\"timestamp\":\"2025-11-10T17:03:31.222Z\",\"errors\":[],\"orderUpdateId\":4,\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:03:31.227952"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "payload": "{\"headerId\":67,\"loads\":[{\"loadType\":\"BLUE\",\"duration\":5}],\"actionState\":{\"command\":\"DRILL\",\"id\":\"503de4f6-676c-48ec-a4e2-481adeab9f79\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR4H76449\",\"timestamp\":\"2025-11-10T17:03:41.075Z\",\"errors\":[],\"orderUpdateId\":4,\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:03:41.081018"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "payload": "{\"headerId\":68,\"loads\":[{\"loadType\":\"BLUE\",\"duration\":5}],\"actionState\":{\"command\":\"DROP\",\"id\":\"09ee7983-7f92-4e5a-8dde-a88b499a4a5f\",\"state\":\"RUNNING\",\"duration\":5},\"serialNumber\":\"SVR4H76449\",\"timestamp\":\"2025-11-10T17:03:41.198Z\",\"errors\":[],\"orderUpdateId\":5,\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:03:41.204297"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "payload": "{\"headerId\":69,\"loads\":[],\"actionState\":{\"command\":\"DROP\",\"id\":\"09ee7983-7f92-4e5a-8dde-a88b499a4a5f\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR4H76449\",\"timestamp\":\"2025-11-10T17:03:51.033Z\",\"errors\":[],\"orderUpdateId\":5,\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:03:51.041189"
+  }
+]

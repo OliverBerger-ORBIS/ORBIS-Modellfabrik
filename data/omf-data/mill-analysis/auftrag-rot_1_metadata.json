@@ -1,0 +1,20 @@
+{
+  "session_name": "auftrag-rot_1",
+  "analysis_timestamp": "2025-12-17T18:05:51.987509",
+  "mill_serial": "SVR3QA2098",
+  "total_messages": 4,
+  "mill_relevant_messages": 1,
+  "start_time": "2025-03-12T14:00:00Z",
+  "end_time": "2025-03-12T14:00:00Z",
+  "topic_counts": {
+    "ccu/order/active": 1
+  },
+  "topic_categories": {
+    "ccu_order_active": 1
+  },
+  "payload_stats": {},
+  "commands_found": {},
+  "mill_operations_count": 0,
+  "production_order_context_count": 0,
+  "mill_commands_context_count": 1
+}

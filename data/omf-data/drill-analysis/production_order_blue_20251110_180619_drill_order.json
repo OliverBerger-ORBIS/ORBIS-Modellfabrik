@@ -1,0 +1,17 @@
+[
+  {
+    "topic": "module/v1/ff/SVR4H76449/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:03:20.277Z\",\"serialNumber\":\"SVR4H76449\",\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"orderUpdateId\":3,\"action\":{\"id\":\"f6986d0b-7e2e-42dc-b537-f750cf2a6880\",\"command\":\"PICK\",\"metadata\":{\"type\":\"BLUE\",\"workpieceId\":\"04a189ca341290\"}}}",
+    "timestamp": "2025-11-10T18:03:20.290876"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:03:31.154Z\",\"serialNumber\":\"SVR4H76449\",\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"orderUpdateId\":4,\"action\":{\"id\":\"503de4f6-676c-48ec-a4e2-481adeab9f79\",\"command\":\"DRILL\",\"metadata\":{\"duration\":5,\"type\":\"BLUE\"}}}",
+    "timestamp": "2025-11-10T18:03:31.164613"
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:03:41.133Z\",\"serialNumber\":\"SVR4H76449\",\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"orderUpdateId\":5,\"action\":{\"id\":\"09ee7983-7f92-4e5a-8dde-a88b499a4a5f\",\"command\":\"DROP\",\"metadata\":{\"type\":\"BLUE\",\"workpieceId\":\"04a189ca341290\"}}}",
+    "timestamp": "2025-11-10T18:03:41.138270"
+  }
+]

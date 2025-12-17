@@ -1,0 +1,41 @@
+{
+  "session_name": "storage_order_blue_20251110_181104",
+  "analysis_timestamp": "2025-12-17T18:05:43.586264",
+  "drill_serial": "SVR4H76449",
+  "total_messages": 552,
+  "drill_relevant_messages": 99,
+  "start_time": "2025-11-10T18:08:57.714694",
+  "end_time": "2025-11-10T18:10:54.523895",
+  "topic_counts": {
+    "ccu/pairing/state": 77,
+    "ccu/order/active": 7,
+    "ccu/order/completed": 2,
+    "module/v1/ff/SVR4H76449/state": 1,
+    "module/v1/ff/SVR4H76449/connection": 9,
+    "module/v1/ff/SVR4H76449/factsheet": 1,
+    "ccu/order/request": 1,
+    "ccu/order/response": 1
+  },
+  "topic_categories": {
+    "ccu_pairing_state": 77,
+    "ccu_order_active": 7,
+    "ccu_order_completed": 2,
+    "drill_state": 1,
+    "drill_connection": 9,
+    "drill_factsheet": 1,
+    "ccu_order_request": 1,
+    "ccu_order_other": 1
+  },
+  "payload_stats": {
+    "has_orderId": 2,
+    "has_actionState": 1,
+    "has_workpieceId": 2,
+    "has_type": 2
+  },
+  "commands_found": {
+    "DROP": 1
+  },
+  "drill_operations_count": 1,
+  "production_order_context_count": 0,
+  "drill_commands_context_count": 86
+}

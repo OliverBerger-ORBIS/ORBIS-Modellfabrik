@@ -1,0 +1,35 @@
+{
+  "session_name": "default_test_session",
+  "analysis_timestamp": "2025-12-17T18:05:52.240799",
+  "mill_serial": "SVR3QA2098",
+  "total_messages": 206,
+  "mill_relevant_messages": 28,
+  "start_time": "2025-08-14T16:14:45.241157",
+  "end_time": "2025-08-14T16:15:19.740657",
+  "topic_counts": {
+    "module/v1/ff/SVR3QA2098/state": 2,
+    "module/v1/ff/SVR3QA2098/connection": 5,
+    "module/v1/ff/SVR3QA2098/factsheet": 2,
+    "ccu/pairing/state": 17,
+    "ccu/order/active": 1,
+    "ccu/order/completed": 1
+  },
+  "topic_categories": {
+    "mill_state": 2,
+    "mill_connection": 5,
+    "mill_factsheet": 2,
+    "ccu_pairing_state": 17,
+    "ccu_order_active": 1,
+    "ccu_order_completed": 1
+  },
+  "payload_stats": {
+    "has_orderId": 2,
+    "has_actionState": 2
+  },
+  "commands_found": {
+    "PICK": 2
+  },
+  "mill_operations_count": 2,
+  "production_order_context_count": 0,
+  "mill_commands_context_count": 15
+}

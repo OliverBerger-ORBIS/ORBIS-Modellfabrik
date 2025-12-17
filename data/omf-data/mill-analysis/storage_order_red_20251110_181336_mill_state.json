@@ -1,0 +1,7 @@
+[
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":66,\"loads\":[],\"actionState\":{\"command\":\"DROP\",\"id\":\"b9ec0dcd-917c-487e-bdc2-d0addafec877\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:04:31.820Z\",\"errors\":[],\"orderUpdateId\":9,\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:11:19.493539"
+  }
+]

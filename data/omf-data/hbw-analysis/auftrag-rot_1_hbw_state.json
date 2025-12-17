@@ -1,0 +1,9 @@
+[
+  {
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "payload": "{\"orderId\":\"9c0d4ef0-aaaa-bbbb-cccc-111122223333\",\"serialNumber\":\"SVR3QA0022\",\"actionState\":{\"id\":\"red-hbw\",\"command\":\"PICK\",\"state\":\"FINISHED\",\"type\":\"MANUFACTURE\"},\"timestamp\":\"2025-03-12T14:02:00Z\"}",
+    "timestamp": "2025-03-12T14:02:00Z",
+    "qos": 0,
+    "retain": false
+  }
+]

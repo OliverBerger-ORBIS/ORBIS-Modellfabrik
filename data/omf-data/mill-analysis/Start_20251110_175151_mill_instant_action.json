@@ -1,0 +1,7 @@
+[
+  {
+    "topic": "module/v1/ff/SVR3QA2098/instantAction",
+    "payload": "{\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T16:50:27.627Z\",\"actions\":[{\"actionId\":\"b0b6625e-cae6-4e09-8d0e-1ce10eb8c030\",\"actionType\":\"reset\"}]}",
+    "timestamp": "2025-11-10T17:50:27.719096"
+  }
+]

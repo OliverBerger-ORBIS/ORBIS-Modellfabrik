@@ -1,0 +1,37 @@
+[
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":0,\"loads\":[],\"actionState\":null,\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T16:50:54.094Z\",\"errors\":[],\"orderUpdateId\":0,\"orderId\":0,\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T17:58:18.556877"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":35,\"loads\":[{\"loadType\":\"RED\"}],\"actionState\":{\"command\":\"PICK\",\"id\":\"f0107ec0-e13a-47f8-8b4d-090a089c923a\",\"state\":\"RUNNING\"},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T16:59:27.457Z\",\"errors\":[],\"orderUpdateId\":3,\"orderId\":\"c9da720e-98e6-4d96-84d3-7baad5c5383d\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T17:59:27.461028"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":36,\"loads\":[{\"loadType\":\"RED\"}],\"actionState\":{\"command\":\"PICK\",\"id\":\"f0107ec0-e13a-47f8-8b4d-090a089c923a\",\"state\":\"FINISHED\"},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T16:59:36.875Z\",\"errors\":[],\"orderUpdateId\":3,\"orderId\":\"c9da720e-98e6-4d96-84d3-7baad5c5383d\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T17:59:36.879606"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":37,\"loads\":[{\"loadType\":\"RED\",\"duration\":5}],\"actionState\":{\"command\":\"MILL\",\"id\":\"41d67550-5791-4646-ac50-c2a0b84128ec\",\"state\":\"RUNNING\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T16:59:37.020Z\",\"errors\":[],\"orderUpdateId\":4,\"orderId\":\"c9da720e-98e6-4d96-84d3-7baad5c5383d\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T17:59:37.023334"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":39,\"loads\":[{\"loadType\":\"RED\",\"duration\":5}],\"actionState\":{\"command\":\"MILL\",\"id\":\"41d67550-5791-4646-ac50-c2a0b84128ec\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T16:59:46.835Z\",\"errors\":[],\"orderUpdateId\":4,\"orderId\":\"c9da720e-98e6-4d96-84d3-7baad5c5383d\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T17:59:46.839641"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":40,\"loads\":[{\"loadType\":\"RED\",\"duration\":5}],\"actionState\":{\"command\":\"DROP\",\"id\":\"7853b911-1232-43c1-8cd9-820c9ea25ffa\",\"state\":\"RUNNING\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T16:59:46.971Z\",\"errors\":[],\"orderUpdateId\":5,\"orderId\":\"c9da720e-98e6-4d96-84d3-7baad5c5383d\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T17:59:46.975939"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":42,\"loads\":[],\"actionState\":{\"command\":\"DROP\",\"id\":\"7853b911-1232-43c1-8cd9-820c9ea25ffa\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T16:59:56.790Z\",\"errors\":[],\"orderUpdateId\":5,\"orderId\":\"c9da720e-98e6-4d96-84d3-7baad5c5383d\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T17:59:56.793393"
+  }
+]

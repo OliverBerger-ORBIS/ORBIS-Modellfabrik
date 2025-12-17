@@ -1,0 +1,72 @@
+[
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":66,\"loads\":[],\"actionState\":{\"command\":\"DROP\",\"id\":\"b9ec0dcd-917c-487e-bdc2-d0addafec877\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:04:31.820Z\",\"errors\":[],\"orderUpdateId\":9,\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:16:47.562055"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":129,\"loads\":[{\"loadType\":\"RED\"}],\"actionState\":{\"command\":\"PICK\",\"id\":\"76a64663-6480-4474-adae-599b81d357a6\",\"state\":\"RUNNING\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:19:54.042Z\",\"errors\":[],\"orderUpdateId\":3,\"orderId\":\"8fd237e5-2170-4570-8023-36e8b4cd9b30\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:19:54.057684"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":130,\"loads\":[{\"loadType\":\"RED\"}],\"actionState\":{\"command\":\"PICK\",\"id\":\"76a64663-6480-4474-adae-599b81d357a6\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:20:03.959Z\",\"errors\":[],\"orderUpdateId\":3,\"orderId\":\"8fd237e5-2170-4570-8023-36e8b4cd9b30\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:20:03.976532"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":131,\"loads\":[{\"loadType\":\"RED\",\"duration\":5}],\"actionState\":{\"command\":\"MILL\",\"id\":\"dd9eba1c-8b58-4743-952e-e043e9158efb\",\"state\":\"RUNNING\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:20:04.111Z\",\"errors\":[],\"orderUpdateId\":4,\"orderId\":\"8fd237e5-2170-4570-8023-36e8b4cd9b30\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:20:04.128273"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":133,\"loads\":[{\"loadType\":\"RED\",\"duration\":5}],\"actionState\":{\"command\":\"MILL\",\"id\":\"dd9eba1c-8b58-4743-952e-e043e9158efb\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:20:12.892Z\",\"errors\":[],\"orderUpdateId\":4,\"orderId\":\"8fd237e5-2170-4570-8023-36e8b4cd9b30\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:20:12.909693"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":136,\"loads\":[{\"loadType\":\"RED\",\"duration\":5}],\"actionState\":{\"command\":\"DROP\",\"id\":\"ba092231-fc2b-4e4c-9f6c-24e78c229d01\",\"state\":\"RUNNING\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:20:49.091Z\",\"errors\":[],\"orderUpdateId\":6,\"orderId\":\"8fd237e5-2170-4570-8023-36e8b4cd9b30\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:20:49.106601"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":138,\"loads\":[],\"actionState\":{\"command\":\"DROP\",\"id\":\"ba092231-fc2b-4e4c-9f6c-24e78c229d01\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:20:56.849Z\",\"errors\":[],\"orderUpdateId\":6,\"orderId\":\"8fd237e5-2170-4570-8023-36e8b4cd9b30\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:20:56.967981"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":139,\"loads\":[{\"loadType\":\"BLUE\"}],\"actionState\":{\"command\":\"PICK\",\"id\":\"329d3098-6510-43cb-817e-e74ccf9283c5\",\"state\":\"RUNNING\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:20:58.567Z\",\"errors\":[],\"orderUpdateId\":8,\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:20:58.583575"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":140,\"loads\":[{\"loadType\":\"BLUE\"}],\"actionState\":{\"command\":\"PICK\",\"id\":\"329d3098-6510-43cb-817e-e74ccf9283c5\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:21:07.995Z\",\"errors\":[],\"orderUpdateId\":8,\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:21:08.013412"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":141,\"loads\":[{\"loadType\":\"BLUE\",\"duration\":5}],\"actionState\":{\"command\":\"MILL\",\"id\":\"fe6fe2c0-e530-4e7d-83d0-ed05bebcbbde\",\"state\":\"RUNNING\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:21:08.135Z\",\"errors\":[],\"orderUpdateId\":9,\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:21:08.151579"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":143,\"loads\":[{\"loadType\":\"BLUE\",\"duration\":5}],\"actionState\":{\"command\":\"MILL\",\"id\":\"fe6fe2c0-e530-4e7d-83d0-ed05bebcbbde\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:21:17.963Z\",\"errors\":[],\"orderUpdateId\":9,\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:21:17.980838"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":148,\"loads\":[{\"loadType\":\"BLUE\",\"duration\":5}],\"actionState\":{\"command\":\"DROP\",\"id\":\"72721925-305d-46ca-98b5-c6fb128bdc33\",\"state\":\"RUNNING\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:22:09.290Z\",\"errors\":[],\"orderUpdateId\":11,\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:22:09.306684"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":149,\"loads\":[],\"actionState\":{\"command\":\"DROP\",\"id\":\"72721925-305d-46ca-98b5-c6fb128bdc33\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:22:16.858Z\",\"errors\":[],\"orderUpdateId\":11,\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:22:16.876180"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":149,\"loads\":[],\"actionState\":{\"command\":\"DROP\",\"id\":\"72721925-305d-46ca-98b5-c6fb128bdc33\",\"state\":\"FINISHED\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-11-10T17:22:16.858Z\",\"errors\":[],\"orderUpdateId\":11,\"orderId\":\"8e79e45c-f4dc-4e2a-b7b9-8f56c3238c52\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "timestamp": "2025-11-10T18:27:48.904560"
+  }
+]

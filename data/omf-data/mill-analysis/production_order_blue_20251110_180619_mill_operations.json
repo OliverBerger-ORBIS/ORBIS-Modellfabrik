@@ -1,0 +1,99 @@
+[
+  {
+    "timestamp": "2025-11-10T18:02:09.705880",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "DROP",
+    "state": "FINISHED",
+    "id": "7853b911-1232-43c1-8cd9-820c9ea25ffa",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:04:03.397179",
+    "topic": "module/v1/ff/SVR3QA2098/order",
+    "command": "PICK",
+    "id": "669535a0-1891-49d8-99e8-6efa1e5cff42",
+    "workpieceId": "04a189ca341290",
+    "type": "BLUE",
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:04:03.449915",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "PICK",
+    "state": "RUNNING",
+    "id": "669535a0-1891-49d8-99e8-6efa1e5cff42",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:04:12.924204",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "PICK",
+    "state": "FINISHED",
+    "id": "669535a0-1891-49d8-99e8-6efa1e5cff42",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:04:12.976251",
+    "topic": "module/v1/ff/SVR3QA2098/order",
+    "command": "MILL",
+    "id": "d16d4714-c250-43ca-89a1-fb2caadd15a1",
+    "workpieceId": null,
+    "type": "BLUE",
+    "duration": 5
+  },
+  {
+    "timestamp": "2025-11-10T18:04:13.038574",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "MILL",
+    "state": "RUNNING",
+    "id": "d16d4714-c250-43ca-89a1-fb2caadd15a1",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:04:22.952454",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "MILL",
+    "state": "FINISHED",
+    "id": "d16d4714-c250-43ca-89a1-fb2caadd15a1",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:04:22.970828",
+    "topic": "module/v1/ff/SVR3QA2098/order",
+    "command": "DROP",
+    "id": "b9ec0dcd-917c-487e-bdc2-d0addafec877",
+    "workpieceId": "04a189ca341290",
+    "type": "BLUE",
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:04:23.029483",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "DROP",
+    "state": "RUNNING",
+    "id": "b9ec0dcd-917c-487e-bdc2-d0addafec877",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:04:31.861078",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "DROP",
+    "state": "FINISHED",
+    "id": "b9ec0dcd-917c-487e-bdc2-d0addafec877",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  }
+]

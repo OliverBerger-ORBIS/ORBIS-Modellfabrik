@@ -1,0 +1,37 @@
+[
+  {
+    "timestamp": "2025-11-10T18:08:57.715252",
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "command": "PICK",
+    "state": "FINISHED",
+    "id": "126c4e1b-50c4-47bc-99bc-e1d8f3295d4f",
+    "workpieceId": "04798eca341290",
+    "type": "WHITE"
+  },
+  {
+    "timestamp": "2025-11-10T18:10:15.889226",
+    "topic": "module/v1/ff/SVR3QA0022/order",
+    "command": "PICK",
+    "id": "fb698a0e-d18d-4d10-9641-840fa4226069",
+    "workpieceId": "04a189ca341290",
+    "type": "BLUE"
+  },
+  {
+    "timestamp": "2025-11-10T18:10:15.977663",
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "command": "PICK",
+    "state": "RUNNING",
+    "id": "fb698a0e-d18d-4d10-9641-840fa4226069",
+    "workpieceId": "04a189ca341290",
+    "type": "BLUE"
+  },
+  {
+    "timestamp": "2025-11-10T18:10:33.341265",
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "command": "PICK",
+    "state": "FINISHED",
+    "id": "fb698a0e-d18d-4d10-9641-840fa4226069",
+    "workpieceId": "04a189ca341290",
+    "type": "BLUE"
+  }
+]

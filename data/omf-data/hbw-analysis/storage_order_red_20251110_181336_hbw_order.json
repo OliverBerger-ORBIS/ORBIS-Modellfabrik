@@ -1,0 +1,7 @@
+[
+  {
+    "topic": "module/v1/ff/SVR3QA0022/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:12:35.530Z\",\"serialNumber\":\"SVR3QA0022\",\"orderId\":\"efd17d7a-efb2-4892-9c6e-ed7bba7af3d5\",\"orderUpdateId\":3,\"action\":{\"id\":\"ed0f2bf6-1441-4841-885f-c20332244cdd\",\"command\":\"PICK\",\"metadata\":{\"type\":\"RED\",\"workpieceId\":\"04808dca341291\"}}}",
+    "timestamp": "2025-11-10T18:12:35.609698"
+  }
+]

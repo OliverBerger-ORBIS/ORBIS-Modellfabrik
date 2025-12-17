@@ -1,0 +1,24 @@
+[
+  {
+    "timestamp": "2025-08-14T16:14:45.241157",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":1972,\"loads\":[{\"loadType\":\"BLUE\"}],\"actionState\":{\"id\":\"0eb74e51-331b-4d36-a205-c04dca8880ff\",\"state\":\"FAILED\",\"command\":\"PICK\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-08-14T13:37:45.388Z\",\"errors\":[{\"timestamp\":\"2025-08-14T12:31:08.415Z\",\"errorType\":\"PICK_failed\",\"errorMessage\":\"PICK failed\",\"errorLevel\":\"FATAL\",\"errorReferences\":[{\"topic\":\"order\"},{\"headerId\":1705},{\"orderId\":\"fe2ddece-206c-4629-aca8-6bc70abf45dd\"},{\"orderUpdateId\":1}]},{\"errorType\":\"Validation\",\"errorLevel\":\"WARNING\",\"errorReferences\":[{\"topic\":\"order\"},{\"headerId\":1972},{\"orderId\":\"eaa56670-b1b7-4ba1-af69-9cc694fd4843\"},{\"orderUpdateId\":1}],\"errorMessage\":\"OrderUpdateId not valid\"}],\"orderUpdateId\":1,\"orderId\":\"eaa56670-b1b7-4ba1-af69-9cc694fd4843\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "qos": 0,
+    "retain": true,
+    "message_type": "unknown",
+    "module_type": "unknown",
+    "serial_number": "SVR3QA2098",
+    "status": "unknown"
+  },
+  {
+    "timestamp": "2025-08-14T16:14:45.252086",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "payload": "{\"headerId\":1972,\"loads\":[{\"loadType\":\"BLUE\"}],\"actionState\":{\"id\":\"0eb74e51-331b-4d36-a205-c04dca8880ff\",\"state\":\"FAILED\",\"command\":\"PICK\",\"duration\":5},\"serialNumber\":\"SVR3QA2098\",\"timestamp\":\"2025-08-14T13:37:45.388Z\",\"errors\":[{\"timestamp\":\"2025-08-14T12:31:08.415Z\",\"errorType\":\"PICK_failed\",\"errorMessage\":\"PICK failed\",\"errorLevel\":\"FATAL\",\"errorReferences\":[{\"topic\":\"order\"},{\"headerId\":1705},{\"orderId\":\"fe2ddece-206c-4629-aca8-6bc70abf45dd\"},{\"orderUpdateId\":1}]},{\"errorType\":\"Validation\",\"errorLevel\":\"WARNING\",\"errorReferences\":[{\"topic\":\"order\"},{\"headerId\":1972},{\"orderId\":\"eaa56670-b1b7-4ba1-af69-9cc694fd4843\"},{\"orderUpdateId\":1}],\"errorMessage\":\"OrderUpdateId not valid\"}],\"orderUpdateId\":1,\"orderId\":\"eaa56670-b1b7-4ba1-af69-9cc694fd4843\",\"paused\":false,\"metadata\":{\"opcuaState\":\"connected\"}}",
+    "qos": 0,
+    "retain": true,
+    "message_type": "unknown",
+    "module_type": "unknown",
+    "serial_number": "SVR3QA2098",
+    "status": "unknown"
+  }
+]

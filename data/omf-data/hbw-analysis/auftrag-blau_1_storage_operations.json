@@ -1,0 +1,11 @@
+[
+  {
+    "timestamp": "2025-02-01T08:31:00Z",
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "command": "PICK",
+    "state": "FINISHED",
+    "id": "blue-hbw",
+    "workpieceId": null,
+    "type": null
+  }
+]

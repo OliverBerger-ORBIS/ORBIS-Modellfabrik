@@ -1,0 +1,45 @@
+{
+  "session_name": "production_order_bwr_20251110_182819",
+  "analysis_timestamp": "2025-12-17T18:05:52.493905",
+  "mill_serial": "SVR3QA2098",
+  "total_messages": 3625,
+  "mill_relevant_messages": 814,
+  "start_time": "2025-11-10T18:16:47.561282",
+  "end_time": "2025-11-10T18:28:09.537106",
+  "topic_counts": {
+    "ccu/pairing/state": 671,
+    "ccu/order/active": 63,
+    "ccu/order/completed": 5,
+    "module/v1/ff/SVR3QA2098/state": 14,
+    "module/v1/ff/SVR3QA2098/connection": 47,
+    "module/v1/ff/SVR3QA2098/factsheet": 2,
+    "ccu/order/request": 3,
+    "ccu/order/response": 3,
+    "module/v1/ff/SVR3QA2098/order": 6
+  },
+  "topic_categories": {
+    "ccu_pairing_state": 671,
+    "ccu_order_active": 63,
+    "ccu_order_completed": 5,
+    "mill_state": 14,
+    "mill_connection": 47,
+    "mill_factsheet": 2,
+    "ccu_order_request": 3,
+    "ccu_order_other": 3,
+    "mill_order": 6
+  },
+  "payload_stats": {
+    "has_orderId": 23,
+    "has_actionState": 14,
+    "has_type": 6,
+    "has_workpieceId": 4
+  },
+  "commands_found": {
+    "DROP": 8,
+    "PICK": 6,
+    "MILL": 6
+  },
+  "mill_operations_count": 20,
+  "production_order_context_count": 42,
+  "mill_commands_context_count": 658
+}

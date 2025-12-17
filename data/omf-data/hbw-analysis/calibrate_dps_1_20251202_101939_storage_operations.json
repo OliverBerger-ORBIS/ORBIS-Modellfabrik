@@ -1,0 +1,29 @@
+[
+  {
+    "timestamp": "2025-12-02T10:10:31.402529",
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "command": "PICK",
+    "state": "FINISHED",
+    "id": "2054a8dd-eabc-44f4-b1e2-ebd5948aceb9",
+    "workpieceId": "04808dca341291",
+    "type": "RED"
+  },
+  {
+    "timestamp": "2025-12-02T10:10:35.259526",
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "command": "PICK",
+    "state": "FINISHED",
+    "id": "2054a8dd-eabc-44f4-b1e2-ebd5948aceb9",
+    "workpieceId": "04808dca341291",
+    "type": "RED"
+  },
+  {
+    "timestamp": "2025-12-02T10:19:36.385503",
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "command": "PICK",
+    "state": "FINISHED",
+    "id": "2054a8dd-eabc-44f4-b1e2-ebd5948aceb9",
+    "workpieceId": "04808dca341291",
+    "type": "RED"
+  }
+]

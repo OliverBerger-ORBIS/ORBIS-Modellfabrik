@@ -1,0 +1,12 @@
+[
+  {
+    "timestamp": "2025-03-12T14:06:00Z",
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "command": "DRILL",
+    "state": "IN_PROGRESS",
+    "id": "red-drill",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  }
+]

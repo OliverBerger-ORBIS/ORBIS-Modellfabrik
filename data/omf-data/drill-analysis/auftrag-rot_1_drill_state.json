@@ -1,0 +1,9 @@
+[
+  {
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "payload": "{\"orderId\":\"9c0d4ef0-aaaa-bbbb-cccc-111122223333\",\"serialNumber\":\"SVR4H76449\",\"actionState\":{\"id\":\"red-drill\",\"command\":\"DRILL\",\"state\":\"IN_PROGRESS\",\"type\":\"MANUFACTURE\"},\"timestamp\":\"2025-03-12T14:06:00Z\"}",
+    "timestamp": "2025-03-12T14:06:00Z",
+    "qos": 0,
+    "retain": false
+  }
+]

@@ -1,0 +1,7 @@
+[
+  {
+    "topic": "module/v1/ff/SVR4H76449/instantAction",
+    "payload": "{\"serialNumber\":\"SVR4H76449\",\"timestamp\":\"2025-11-10T16:50:27.592Z\",\"actions\":[{\"actionId\":\"52643cd5-e29a-4887-8b43-273e3610e6cc\",\"actionType\":\"reset\"}]}",
+    "timestamp": "2025-11-10T17:50:27.625202"
+  }
+]

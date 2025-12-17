@@ -1,0 +1,20 @@
+[
+  {
+    "timestamp": "2025-08-14T16:14:45.243819",
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "command": "PICK",
+    "state": "FAILED",
+    "id": "7e45e026-da08-4c6f-b342-18ba801ce294",
+    "workpieceId": null,
+    "type": "WHITE"
+  },
+  {
+    "timestamp": "2025-08-14T16:14:45.252824",
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "command": "PICK",
+    "state": "FAILED",
+    "id": "7e45e026-da08-4c6f-b342-18ba801ce294",
+    "workpieceId": null,
+    "type": "WHITE"
+  }
+]

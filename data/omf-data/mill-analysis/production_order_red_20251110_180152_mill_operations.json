@@ -1,0 +1,89 @@
+[
+  {
+    "timestamp": "2025-11-10T17:59:27.423843",
+    "topic": "module/v1/ff/SVR3QA2098/order",
+    "command": "PICK",
+    "id": "f0107ec0-e13a-47f8-8b4d-090a089c923a",
+    "workpieceId": "04d78cca341290",
+    "type": "RED",
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T17:59:27.461028",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "PICK",
+    "state": "RUNNING",
+    "id": "f0107ec0-e13a-47f8-8b4d-090a089c923a",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T17:59:36.879606",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "PICK",
+    "state": "FINISHED",
+    "id": "f0107ec0-e13a-47f8-8b4d-090a089c923a",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T17:59:36.960582",
+    "topic": "module/v1/ff/SVR3QA2098/order",
+    "command": "MILL",
+    "id": "41d67550-5791-4646-ac50-c2a0b84128ec",
+    "workpieceId": null,
+    "type": "RED",
+    "duration": 5
+  },
+  {
+    "timestamp": "2025-11-10T17:59:37.023334",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "MILL",
+    "state": "RUNNING",
+    "id": "41d67550-5791-4646-ac50-c2a0b84128ec",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T17:59:46.839641",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "MILL",
+    "state": "FINISHED",
+    "id": "41d67550-5791-4646-ac50-c2a0b84128ec",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T17:59:46.918403",
+    "topic": "module/v1/ff/SVR3QA2098/order",
+    "command": "DROP",
+    "id": "7853b911-1232-43c1-8cd9-820c9ea25ffa",
+    "workpieceId": "04d78cca341290",
+    "type": "RED",
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T17:59:46.975939",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "DROP",
+    "state": "RUNNING",
+    "id": "7853b911-1232-43c1-8cd9-820c9ea25ffa",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T17:59:56.793393",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "DROP",
+    "state": "FINISHED",
+    "id": "7853b911-1232-43c1-8cd9-820c9ea25ffa",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  }
+]

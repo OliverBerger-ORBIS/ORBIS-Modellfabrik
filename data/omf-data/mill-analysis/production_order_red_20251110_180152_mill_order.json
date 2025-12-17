@@ -1,0 +1,17 @@
+[
+  {
+    "topic": "module/v1/ff/SVR3QA2098/order",
+    "payload": "{\"timestamp\":\"2025-11-10T16:59:27.386Z\",\"serialNumber\":\"SVR3QA2098\",\"orderId\":\"c9da720e-98e6-4d96-84d3-7baad5c5383d\",\"orderUpdateId\":3,\"action\":{\"id\":\"f0107ec0-e13a-47f8-8b4d-090a089c923a\",\"command\":\"PICK\",\"metadata\":{\"type\":\"RED\",\"workpieceId\":\"04d78cca341290\"}}}",
+    "timestamp": "2025-11-10T17:59:27.423843"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/order",
+    "payload": "{\"timestamp\":\"2025-11-10T16:59:36.952Z\",\"serialNumber\":\"SVR3QA2098\",\"orderId\":\"c9da720e-98e6-4d96-84d3-7baad5c5383d\",\"orderUpdateId\":4,\"action\":{\"id\":\"41d67550-5791-4646-ac50-c2a0b84128ec\",\"command\":\"MILL\",\"metadata\":{\"duration\":5,\"type\":\"RED\"}}}",
+    "timestamp": "2025-11-10T17:59:36.960582"
+  },
+  {
+    "topic": "module/v1/ff/SVR3QA2098/order",
+    "payload": "{\"timestamp\":\"2025-11-10T16:59:46.911Z\",\"serialNumber\":\"SVR3QA2098\",\"orderId\":\"c9da720e-98e6-4d96-84d3-7baad5c5383d\",\"orderUpdateId\":5,\"action\":{\"id\":\"7853b911-1232-43c1-8cd9-820c9ea25ffa\",\"command\":\"DROP\",\"metadata\":{\"type\":\"RED\",\"workpieceId\":\"04d78cca341290\"}}}",
+    "timestamp": "2025-11-10T17:59:46.918403"
+  }
+]

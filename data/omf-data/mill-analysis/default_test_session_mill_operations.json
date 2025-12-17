@@ -1,0 +1,22 @@
+[
+  {
+    "timestamp": "2025-08-14T16:14:45.241157",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "PICK",
+    "state": "FAILED",
+    "id": "0eb74e51-331b-4d36-a205-c04dca8880ff",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-08-14T16:14:45.252086",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "PICK",
+    "state": "FAILED",
+    "id": "0eb74e51-331b-4d36-a205-c04dca8880ff",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  }
+]

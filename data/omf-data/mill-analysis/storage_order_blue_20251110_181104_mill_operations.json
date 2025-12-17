@@ -1,0 +1,12 @@
+[
+  {
+    "timestamp": "2025-11-10T18:08:57.715120",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "DROP",
+    "state": "FINISHED",
+    "id": "b9ec0dcd-917c-487e-bdc2-d0addafec877",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  }
+]

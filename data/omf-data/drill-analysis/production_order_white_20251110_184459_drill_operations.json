@@ -1,0 +1,89 @@
+[
+  {
+    "timestamp": "2025-11-10T18:42:35.811407",
+    "topic": "module/v1/ff/SVR4H76449/order",
+    "command": "PICK",
+    "id": "ec86deb6-4343-4749-aede-4beb1637a158",
+    "workpieceId": "047b8bca341291",
+    "type": "WHITE",
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:42:35.869860",
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "command": "PICK",
+    "state": "RUNNING",
+    "id": "ec86deb6-4343-4749-aede-4beb1637a158",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:42:46.232077",
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "command": "PICK",
+    "state": "FINISHED",
+    "id": "ec86deb6-4343-4749-aede-4beb1637a158",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:42:46.235275",
+    "topic": "module/v1/ff/SVR4H76449/order",
+    "command": "DRILL",
+    "id": "1f17d522-ef36-4ea0-b454-c200136b498b",
+    "workpieceId": null,
+    "type": "WHITE",
+    "duration": 5
+  },
+  {
+    "timestamp": "2025-11-10T18:42:46.259276",
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "command": "DRILL",
+    "state": "RUNNING",
+    "id": "1f17d522-ef36-4ea0-b454-c200136b498b",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:42:56.085760",
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "command": "DRILL",
+    "state": "FINISHED",
+    "id": "1f17d522-ef36-4ea0-b454-c200136b498b",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:42:56.167308",
+    "topic": "module/v1/ff/SVR4H76449/order",
+    "command": "DROP",
+    "id": "170ad672-916d-4def-8ee5-c997f576295b",
+    "workpieceId": "047b8bca341291",
+    "type": "WHITE",
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:42:56.224677",
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "command": "DROP",
+    "state": "RUNNING",
+    "id": "170ad672-916d-4def-8ee5-c997f576295b",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:43:07.124610",
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "command": "DROP",
+    "state": "FINISHED",
+    "id": "170ad672-916d-4def-8ee5-c997f576295b",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  }
+]

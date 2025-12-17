@@ -1,0 +1,24 @@
+{
+  "session_name": "auftrag-weiss_1",
+  "analysis_timestamp": "2025-12-17T18:05:41.486010",
+  "hbw_serial": "SVR3QA0022",
+  "total_messages": 4,
+  "hbw_relevant_messages": 2,
+  "start_time": "2025-01-01T10:00:00Z",
+  "end_time": "2025-01-01T10:01:00Z",
+  "topic_counts": {
+    "ccu/order/active": 1,
+    "module/v1/ff/SVR3QA0022/state": 1
+  },
+  "topic_categories": {
+    "ccu_order_active": 1,
+    "hbw_state": 1
+  },
+  "payload_stats": {
+    "has_orderId": 1
+  },
+  "commands_found": {},
+  "storage_operations_count": 0,
+  "storage_order_context_count": 0,
+  "storage_commands_context_count": 0
+}

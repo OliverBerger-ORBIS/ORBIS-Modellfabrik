@@ -1,0 +1,7 @@
+[
+  {
+    "topic": "module/v1/ff/SVR3QA2098/factsheet",
+    "payload": "{\"headerId\":1,\"timestamp\":\"2025-11-10T16:47:29.064Z\",\"version\":\"1.3.0\",\"manufacturer\":\"Fischertechnik\",\"serialNumber\":\"SVR3QA2098\",\"typeSpecification\":{\"seriesName\":\"MOD-FF22+MILL+24V\",\"moduleClass\":\"MILL\"},\"physicalParameters\":{},\"protocolLimits\":{},\"protocolFeatures\":{\"moduleActions\":[{\"actionType\":\"DROP\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece that should be put on the FTS\",\"isOptional\":true}]},{\"actionType\":\"PICK\",\"actionParameters\":[{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece to pick up and process\"}]},{\"actionType\":\"MILL\",\"actionParameters\":[{\"parameterName\":\"duration\",\"parameterType\":\"number\",\"parameterDescription\":\"Set the duration of the milling operation\"},{\"parameterName\":\"type\",\"parameterType\":\"string\",\"parameterDescription\":\"Type of workpiece to process\",\"isOptional\":true}]}]},\"localizationParameters\":{},\"loadSpecification\":{\"loadSets\":[{\"setName\":\"WHITES\",\"loadType\":\"WHITE\"},{\"setName\":\"REDS\",\"loadType\":\"RED\"},{\"setName\":\"BLUES\",\"loadType\":\"BLUE\"}]}}",
+    "timestamp": "2025-11-10T18:11:19.493574"
+  }
+]

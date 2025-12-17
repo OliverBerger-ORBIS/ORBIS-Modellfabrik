@@ -1,0 +1,16 @@
+[
+  {
+    "topic": "ccu/order/active",
+    "payload": "[{\"orderId\":\"9c0d4ef0-aaaa-bbbb-cccc-111122223333\",\"orderType\":\"PRODUCTION\",\"type\":\"RED\",\"state\":\"IN_PROGRESS\",\"workpieceId\":\"WP-RED-001\",\"timestamp\":\"2025-03-12T14:00:00Z\",\"receivedAt\":\"2025-03-12T14:00:01Z\",\"startedAt\":\"2025-03-12T14:00:02Z\",\"productionSteps\":[{\"id\":\"red-hbw\",\"type\":\"MANUFACTURE\",\"moduleType\":\"HBW\",\"serialNumber\":\"SVR3QA0022\",\"command\":\"PICK\",\"state\":\"FINISHED\",\"startedAt\":\"2025-03-12T14:00:05Z\",\"stoppedAt\":\"2025-03-12T14:02:00Z\",\"description\":\"HBW pick for red order\",\"mqtt_command\":\"PICK\"},{\"id\":\"red-drill\",\"type\":\"MANUFACTURE\",\"moduleType\":\"DRILL\",\"serialNumber\":\"SVR4H76449\",\"command\":\"DRILL\",\"state\":\"IN_PROGRESS\",\"startedAt\":\"2025-03-12T14:03:00Z\",\"description\":\"Drilling in progress\",\"mqtt_command\":\"DRILL\"},{\"id\":\"red-dps\",\"type\":\"MANUFACTURE\",\"moduleType\":\"DPS\",\"serialNumber\":\"SVR4H73275\",\"command\":\"DROP\",\"state\":\"PENDING\",\"description\":\"Waiting for drop\",\"mqtt_command\":\"DROP\"}]}]",
+    "timestamp": "2025-03-12T14:00:00Z",
+    "qos": 0,
+    "retain": false
+  },
+  {
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "payload": "{\"orderId\":\"9c0d4ef0-aaaa-bbbb-cccc-111122223333\",\"serialNumber\":\"SVR4H76449\",\"actionState\":{\"id\":\"red-drill\",\"command\":\"DRILL\",\"state\":\"IN_PROGRESS\",\"type\":\"MANUFACTURE\"},\"timestamp\":\"2025-03-12T14:06:00Z\"}",
+    "timestamp": "2025-03-12T14:06:00Z",
+    "qos": 0,
+    "retain": false
+  }
+]

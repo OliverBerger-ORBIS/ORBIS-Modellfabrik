@@ -1,0 +1,7 @@
+[
+  {
+    "topic": "ccu/order/request",
+    "payload": "{\"timestamp\":\"2025-11-10T17:14:44.645Z\",\"orderType\":\"STORAGE\",\"type\":\"WHITE\",\"workpieceId\":\"047c8bca341291\"}",
+    "timestamp": "2025-11-10T18:14:44.663549"
+  }
+]

@@ -1,0 +1,9 @@
+[
+  {
+    "topic": "ccu/order/active",
+    "payload": "[{\"orderId\":\"6a7bd2fc-1111-2222-3333-444455556666\",\"orderType\":\"PRODUCTION\",\"type\":\"BLUE\",\"state\":\"COMPLETED\",\"workpieceId\":\"WP-BLUE-001\",\"timestamp\":\"2025-02-01T08:30:00Z\",\"receivedAt\":\"2025-02-01T08:30:01Z\",\"startedAt\":\"2025-02-01T08:30:02Z\",\"productionSteps\":[{\"id\":\"blue-hbw-pick\",\"type\":\"MANUFACTURE\",\"moduleType\":\"HBW\",\"serialNumber\":\"SVR3QA0022\",\"command\":\"PICK\",\"state\":\"FINISHED\",\"startedAt\":\"2025-02-01T08:30:05Z\",\"stoppedAt\":\"2025-02-01T08:31:00Z\",\"description\":\"HBW pick for blue order\",\"mqtt_command\":\"PICK\"},{\"id\":\"blue-mill\",\"type\":\"MANUFACTURE\",\"moduleType\":\"MILL\",\"serialNumber\":\"SVR3QA2098\",\"command\":\"MILL\",\"state\":\"FINISHED\",\"startedAt\":\"2025-02-01T08:32:00Z\",\"stoppedAt\":\"2025-02-01T08:35:00Z\",\"description\":\"Milling complete\",\"mqtt_command\":\"MILL\"},{\"id\":\"blue-aiqs\",\"type\":\"QUALITY_CHECK\",\"moduleType\":\"AIQS\",\"serialNumber\":\"SVR4H76530\",\"command\":\"CHECK_QUALITY\",\"state\":\"FINISHED\",\"startedAt\":\"2025-02-01T08:36:00Z\",\"stoppedAt\":\"2025-02-01T08:40:00Z\",\"description\":\"Quality check passed\",\"mqtt_command\":\"CHECK_QUALITY\"},{\"id\":\"blue-dps\",\"type\":\"MANUFACTURE\",\"moduleType\":\"DPS\",\"serialNumber\":\"SVR4H73275\",\"command\":\"DROP\",\"state\":\"FINISHED\",\"startedAt\":\"2025-02-01T08:41:00Z\",\"stoppedAt\":\"2025-02-01T08:45:00Z\",\"description\":\"Delivered at DPS\",\"mqtt_command\":\"DROP\"}]}]",
+    "timestamp": "2025-02-01T08:30:00Z",
+    "qos": 0,
+    "retain": false
+  }
+]

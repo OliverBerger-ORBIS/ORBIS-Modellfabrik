@@ -1,0 +1,196 @@
+[
+  {
+    "timestamp": "2025-11-10T18:16:47.562055",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "DROP",
+    "state": "FINISHED",
+    "id": "b9ec0dcd-917c-487e-bdc2-d0addafec877",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:19:53.996635",
+    "topic": "module/v1/ff/SVR3QA2098/order",
+    "command": "PICK",
+    "id": "76a64663-6480-4474-adae-599b81d357a6",
+    "workpieceId": "040a8dca341291",
+    "type": "RED",
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:19:54.057684",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "PICK",
+    "state": "RUNNING",
+    "id": "76a64663-6480-4474-adae-599b81d357a6",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:20:03.976532",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "PICK",
+    "state": "FINISHED",
+    "id": "76a64663-6480-4474-adae-599b81d357a6",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:20:04.068133",
+    "topic": "module/v1/ff/SVR3QA2098/order",
+    "command": "MILL",
+    "id": "dd9eba1c-8b58-4743-952e-e043e9158efb",
+    "workpieceId": null,
+    "type": "RED",
+    "duration": 5
+  },
+  {
+    "timestamp": "2025-11-10T18:20:04.128273",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "MILL",
+    "state": "RUNNING",
+    "id": "dd9eba1c-8b58-4743-952e-e043e9158efb",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:20:12.909693",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "MILL",
+    "state": "FINISHED",
+    "id": "dd9eba1c-8b58-4743-952e-e043e9158efb",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:20:49.085018",
+    "topic": "module/v1/ff/SVR3QA2098/order",
+    "command": "DROP",
+    "id": "ba092231-fc2b-4e4c-9f6c-24e78c229d01",
+    "workpieceId": "040a8dca341291",
+    "type": "RED",
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:20:49.106601",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "DROP",
+    "state": "RUNNING",
+    "id": "ba092231-fc2b-4e4c-9f6c-24e78c229d01",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:20:56.967981",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "DROP",
+    "state": "FINISHED",
+    "id": "ba092231-fc2b-4e4c-9f6c-24e78c229d01",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:20:58.539759",
+    "topic": "module/v1/ff/SVR3QA2098/order",
+    "command": "PICK",
+    "id": "329d3098-6510-43cb-817e-e74ccf9283c5",
+    "workpieceId": "047389ca341291",
+    "type": "BLUE",
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:20:58.583575",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "PICK",
+    "state": "RUNNING",
+    "id": "329d3098-6510-43cb-817e-e74ccf9283c5",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:21:08.013412",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "PICK",
+    "state": "FINISHED",
+    "id": "329d3098-6510-43cb-817e-e74ccf9283c5",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:21:08.093793",
+    "topic": "module/v1/ff/SVR3QA2098/order",
+    "command": "MILL",
+    "id": "fe6fe2c0-e530-4e7d-83d0-ed05bebcbbde",
+    "workpieceId": null,
+    "type": "BLUE",
+    "duration": 5
+  },
+  {
+    "timestamp": "2025-11-10T18:21:08.151579",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "MILL",
+    "state": "RUNNING",
+    "id": "fe6fe2c0-e530-4e7d-83d0-ed05bebcbbde",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:21:17.980838",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "MILL",
+    "state": "FINISHED",
+    "id": "fe6fe2c0-e530-4e7d-83d0-ed05bebcbbde",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:22:09.253398",
+    "topic": "module/v1/ff/SVR3QA2098/order",
+    "command": "DROP",
+    "id": "72721925-305d-46ca-98b5-c6fb128bdc33",
+    "workpieceId": "047389ca341291",
+    "type": "BLUE",
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:22:09.306684",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "DROP",
+    "state": "RUNNING",
+    "id": "72721925-305d-46ca-98b5-c6fb128bdc33",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:22:16.876180",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "DROP",
+    "state": "FINISHED",
+    "id": "72721925-305d-46ca-98b5-c6fb128bdc33",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  },
+  {
+    "timestamp": "2025-11-10T18:27:48.904560",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "DROP",
+    "state": "FINISHED",
+    "id": "72721925-305d-46ca-98b5-c6fb128bdc33",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  }
+]

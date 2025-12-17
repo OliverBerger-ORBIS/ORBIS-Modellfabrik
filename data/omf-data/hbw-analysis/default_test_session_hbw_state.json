@@ -1,0 +1,24 @@
+[
+  {
+    "timestamp": "2025-08-14T16:14:45.243819",
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "payload": "{\"headerId\":1727,\"loads\":[{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"A1\",\"loadTimestamp\":0},{\"loadType\":\"BLUE\",\"loadId\":\"04a189ca341290\",\"loadPosition\":\"A2\",\"loadTimestamp\":1755169376317},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"A3\",\"loadTimestamp\":0},{\"loadType\":\"WHITE\",\"loadId\":\"04798eca341290\",\"loadPosition\":\"B1\",\"loadTimestamp\":1755167412083},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"B2\",\"loadTimestamp\":0},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"B3\",\"loadTimestamp\":0},{\"loadType\":\"RED\",\"loadId\":\"040a8dca341291\",\"loadPosition\":\"C1\",\"loadTimestamp\":1755084997338},{\"loadType\":\"RED\",\"loadId\":\"04158cca341291\",\"loadPosition\":\"C2\",\"loadTimestamp\":1755155091370},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"C3\",\"loadTimestamp\":0}],\"actionState\":{\"id\":\"7e45e026-da08-4c6f-b342-18ba801ce294\",\"command\":\"PICK\",\"metadata\":{\"priority\":\"NORMAL\",\"timeout\":300,\"type\":\"WHITE\"},\"state\":\"FAILED\"},\"serialNumber\":\"SVR3QA0022\",\"timestamp\":\"2025-08-14T12:34:11.137Z\",\"errors\":[{\"errorType\":\"Validation\",\"errorLevel\":\"WARNING\",\"errorReferences\":[{\"topic\":\"order\"},{\"headerId\":1727},{\"orderId\":\"a0e2fd2e-2b19-416f-b878-b7955096de30\"},{\"orderUpdateId\":1}],\"errorMessage\":\"Module is not IDLE\"}],\"orderUpdateId\":1,\"orderId\":\"a0e2fd2e-2b19-416f-b878-b7955096de30\",\"paused\":false,\"operatingMode\":\"AUTOMATIC\",\"metadata\":{\"opcuaState\":\"connected\"},\"information\":[]}",
+    "qos": 0,
+    "retain": true,
+    "message_type": "unknown",
+    "module_type": "unknown",
+    "serial_number": "SVR3QA0022",
+    "status": "unknown"
+  },
+  {
+    "timestamp": "2025-08-14T16:14:45.252824",
+    "topic": "module/v1/ff/SVR3QA0022/state",
+    "payload": "{\"headerId\":1727,\"loads\":[{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"A1\",\"loadTimestamp\":0},{\"loadType\":\"BLUE\",\"loadId\":\"04a189ca341290\",\"loadPosition\":\"A2\",\"loadTimestamp\":1755169376317},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"A3\",\"loadTimestamp\":0},{\"loadType\":\"WHITE\",\"loadId\":\"04798eca341290\",\"loadPosition\":\"B1\",\"loadTimestamp\":1755167412083},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"B2\",\"loadTimestamp\":0},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"B3\",\"loadTimestamp\":0},{\"loadType\":\"RED\",\"loadId\":\"040a8dca341291\",\"loadPosition\":\"C1\",\"loadTimestamp\":1755084997338},{\"loadType\":\"RED\",\"loadId\":\"04158cca341291\",\"loadPosition\":\"C2\",\"loadTimestamp\":1755155091370},{\"loadType\":\"\",\"loadId\":\"\",\"loadPosition\":\"C3\",\"loadTimestamp\":0}],\"actionState\":{\"id\":\"7e45e026-da08-4c6f-b342-18ba801ce294\",\"command\":\"PICK\",\"metadata\":{\"priority\":\"NORMAL\",\"timeout\":300,\"type\":\"WHITE\"},\"state\":\"FAILED\"},\"serialNumber\":\"SVR3QA0022\",\"timestamp\":\"2025-08-14T12:34:11.137Z\",\"errors\":[{\"errorType\":\"Validation\",\"errorLevel\":\"WARNING\",\"errorReferences\":[{\"topic\":\"order\"},{\"headerId\":1727},{\"orderId\":\"a0e2fd2e-2b19-416f-b878-b7955096de30\"},{\"orderUpdateId\":1}],\"errorMessage\":\"Module is not IDLE\"}],\"orderUpdateId\":1,\"orderId\":\"a0e2fd2e-2b19-416f-b878-b7955096de30\",\"paused\":false,\"operatingMode\":\"AUTOMATIC\",\"metadata\":{\"opcuaState\":\"connected\"},\"information\":[]}",
+    "qos": 0,
+    "retain": true,
+    "message_type": "unknown",
+    "module_type": "unknown",
+    "serial_number": "SVR3QA0022",
+    "status": "unknown"
+  }
+]

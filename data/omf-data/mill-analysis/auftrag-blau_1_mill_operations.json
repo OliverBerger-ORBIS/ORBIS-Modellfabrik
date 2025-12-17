@@ -1,0 +1,12 @@
+[
+  {
+    "timestamp": "2025-02-01T08:35:00Z",
+    "topic": "module/v1/ff/SVR3QA2098/state",
+    "command": "MILL",
+    "state": "FINISHED",
+    "id": "blue-mill",
+    "workpieceId": null,
+    "type": null,
+    "duration": null
+  }
+]

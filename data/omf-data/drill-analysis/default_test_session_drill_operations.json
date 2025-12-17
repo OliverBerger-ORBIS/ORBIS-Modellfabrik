@@ -1,0 +1,22 @@
+[
+  {
+    "timestamp": "2025-08-14T16:14:45.241470",
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "command": "DRILL",
+    "state": "FAILED",
+    "id": "9f87971f-198a-47f7-8c87-de9e2ea9c42c",
+    "workpieceId": null,
+    "type": "WHITE",
+    "duration": 5
+  },
+  {
+    "timestamp": "2025-08-14T16:14:45.252305",
+    "topic": "module/v1/ff/SVR4H76449/state",
+    "command": "DRILL",
+    "state": "FAILED",
+    "id": "9f87971f-198a-47f7-8c87-de9e2ea9c42c",
+    "workpieceId": null,
+    "type": "WHITE",
+    "duration": 5
+  }
+]

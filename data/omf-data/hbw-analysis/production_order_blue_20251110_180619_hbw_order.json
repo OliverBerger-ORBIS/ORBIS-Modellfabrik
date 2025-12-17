@@ -1,0 +1,7 @@
+[
+  {
+    "topic": "module/v1/ff/SVR3QA0022/order",
+    "payload": "{\"timestamp\":\"2025-11-10T17:02:25.659Z\",\"serialNumber\":\"SVR3QA0022\",\"orderId\":\"ceca8bef-bbe8-4012-aa18-725d7af68a10\",\"orderUpdateId\":1,\"action\":{\"id\":\"8e820351-7933-4d7c-9aba-0ab5a1ab84bb\",\"command\":\"DROP\",\"metadata\":{\"type\":\"BLUE\"}}}",
+    "timestamp": "2025-11-10T18:02:25.665360"
+  }
+]
