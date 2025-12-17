@@ -175,7 +175,34 @@ export class DrillTabComponent implements OnInit, OnDestroy {
   }
 
   getRecentActions(state: DrillState | null): DrillActionState[] {
-    return state?.actionStates?.slice(-10).reverse() ?? [];
+    // First, try to get from actionStates array if available (mock mode)
+    if (state?.actionStates && state.actionStates.length > 0) {
+      return state.actionStates.slice(-10).reverse();
+    }
+    
+    // Otherwise, build history from message monitor (replay/live mode)
+    try {
+      const history = this.messageMonitor.getHistory(DRILL_STATE_TOPIC);
+      const actions: DrillActionState[] = [];
+      
+      // Extract actionState from each historical message
+      for (const msg of history) {
+        try {
+          const payload = typeof msg.payload === 'string' ? JSON.parse(msg.payload) : msg.payload;
+          if (payload?.actionState) {
+            actions.push(payload.actionState);
+          }
+        } catch (error) {
+          // Skip invalid messages
+        }
+      }
+      
+      // Return last 10 actions in reverse order (newest first)
+      return actions.slice(-10).reverse();
+    } catch (error) {
+      console.warn('[DRILL Tab] Failed to get action history:', error);
+      return [];
+    }
   }
 
   getDrillDepth(state: DrillState | null): number | null {

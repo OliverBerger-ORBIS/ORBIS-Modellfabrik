@@ -175,7 +175,34 @@ export class MillTabComponent implements OnInit, OnDestroy {
   }
 
   getRecentActions(state: MillState | null): MillActionState[] {
-    return state?.actionStates?.slice(-10).reverse() ?? [];
+    // First, try to get from actionStates array if available (mock mode)
+    if (state?.actionStates && state.actionStates.length > 0) {
+      return state.actionStates.slice(-10).reverse();
+    }
+    
+    // Otherwise, build history from message monitor (replay/live mode)
+    try {
+      const history = this.messageMonitor.getHistory(MILL_STATE_TOPIC);
+      const actions: MillActionState[] = [];
+      
+      // Extract actionState from each historical message
+      for (const msg of history) {
+        try {
+          const payload = typeof msg.payload === 'string' ? JSON.parse(msg.payload) : msg.payload;
+          if (payload?.actionState) {
+            actions.push(payload.actionState);
+          }
+        } catch (error) {
+          // Skip invalid messages
+        }
+      }
+      
+      // Return last 10 actions in reverse order (newest first)
+      return actions.slice(-10).reverse();
+    } catch (error) {
+      console.warn('[MILL Tab] Failed to get action history:', error);
+      return [];
+    }
   }
 
   getMillDepth(state: MillState | null): number | null {
