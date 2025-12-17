@@ -1,0 +1,167 @@
+<section class="mill-tab">
+  <header class="mill-tab__toolbar">
+    <div class="mill-tab__title">
+      <img [src]="headingIcon" alt="MILL" class="mill-tab__icon" width="32" height="32" />
+      <div>
+        <h1>{{ headingTitle }}</h1>
+        <p class="mill-tab__subtitle">
+          {{ headingSubtitle }}
+        </p>
+      </div>
+    </div>
+    <div class="mill-tab__fixtures" *ngIf="isMockMode">
+      <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
+      <div class="fixture-switch">
+        <button
+          type="button"
+          *ngFor="let fixture of fixtureOptions"
+          [class.active]="fixture === activeFixture"
+          (click)="loadFixture(fixture)"
+        >
+          {{ fixtureLabels[fixture] }}
+        </button>
+      </div>
+      <div class="environment-hint" *ngIf="isReplayMode">
+        <span i18n="@@millReplayHint">Using replay environment - MILL data from MQTT broker</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="mill-tab__content" *ngIf="millState$ | async as millState; else noData">
+    <div class="mill-tab__grid">
+      <!-- Left Column: Status & Connection -->
+      <div class="mill-tab__column mill-tab__column--left">
+        <!-- Status Section -->
+        <section class="mill-tab__section status-section">
+          <h2>
+            <img [src]="statusIcon" alt="Status" class="section-icon-img" width="24" height="24" />
+            <span i18n="@@millStatusHeading">Status</span>
+            <span class="serial-badge">{{ millState.serialNumber }}</span>
+          </h2>
+          
+          <div class="status-card">
+            <div class="status-item">
+              <span class="status-label">{{ labelConnection }}</span>
+              <div class="status-value">
+                <span class="status-badge" [class.online]="getConnectionStatus(millState) === 'ONLINE'" [class.offline]="getConnectionStatus(millState) === 'OFFLINE'">
+                  <img [src]="getConnectionStatus(millState) === 'ONLINE' ? connectionOnlineIcon : connectionOfflineIcon" alt="" width="16" height="16" />
+                  <span>{{ getConnectionStatus(millState) === 'ONLINE' ? statusOnline : statusOffline }}</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="status-item">
+              <span class="status-label">{{ labelAvailability }}</span>
+              <div class="status-value">
+                <span class="status-badge" 
+                      [class.ready]="getAvailability(millState) === 'READY'" 
+                      [class.busy]="getAvailability(millState) === 'BUSY'"
+                      [class.error]="getAvailability(millState) === 'ERROR'">
+                  <span>{{ getAvailability(millState) === 'READY' ? statusReady : (getAvailability(millState) === 'BUSY' ? statusBusy : statusError) }}</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="status-item">
+              <span class="status-label">{{ labelOrderId }}</span>
+              <div class="status-value">
+                <span class="order-id">{{ getOrderIdDisplay(millState.orderId) }}</span>
+              </div>
+            </div>
+
+            <div class="status-item" *ngIf="getCurrentAction(millState) as action">
+              <span class="status-label">{{ labelCurrentAction }}</span>
+              <div class="status-value">
+                <span class="action-badge" [class]="getStateClass(action.state)">
+                  <span class="command">{{ action.command }}</span>
+                  <span class="state">{{ getStateLabel(action.state) }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Milling Information Section -->
+        <section class="mill-tab__section milling-section">
+          <h2>
+            <img [src]="millIcon" alt="Milling" class="section-icon-img" width="24" height="24" />
+            <span>{{ labelMillingInfo }}</span>
+          </h2>
+
+          <div class="milling-card">
+            <div class="milling-item" *ngIf="getMillDepth(millState) as depth">
+              <span class="milling-label">{{ labelMillDepth }}</span>
+              <div class="milling-value">
+                <span class="depth-value">{{ depth }} mm</span>
+              </div>
+            </div>
+
+            <div class="milling-item" *ngIf="getMillSpeed(millState) as speed">
+              <span class="milling-label">{{ labelMillSpeed }}</span>
+              <div class="milling-value">
+                <span class="speed-value">{{ speed }} rpm</span>
+              </div>
+            </div>
+
+            <div class="milling-item">
+              <span class="milling-label">{{ labelWorkpieceId }}</span>
+              <div class="milling-value">
+                <span class="workpiece-id">{{ getWorkpieceId(millState) ?? '-' }}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Command History -->
+      <div class="mill-tab__column mill-tab__column--right">
+        <section class="mill-tab__section history-section">
+          <h2>
+            <img [src]="historyIcon" alt="History" class="section-icon-img" width="24" height="24" />
+            <span>{{ labelCommandHistory }}</span>
+          </h2>
+
+          <div class="history-table-wrapper">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>{{ labelCommand }}</th>
+                  <th>{{ labelState }}</th>
+                  <th>{{ labelResult }}</th>
+                  <th>{{ labelTimestamp }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let action of getRecentActions(millState); trackBy: trackByActionId">
+                  <td>
+                    <span class="command-name">{{ action.command }}</span>
+                  </td>
+                  <td>
+                    <span class="state-badge" [class]="getStateClass(action.state)">
+                      {{ getStateLabel(action.state) }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="result-badge" [class]="getResultClass(action.result)">
+                      {{ getResultLabel(action.result) }}
+                    </span>
+                  </td>
+                  <td class="timestamp">{{ formatTimestamp(action.timestamp) }}</td>
+                </tr>
+                <tr *ngIf="getRecentActions(millState).length === 0">
+                  <td colspan="4" class="no-data" i18n="@@millNoActionsYet">No actions recorded yet</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noData>
+    <div class="mill-tab__no-data">
+      <p i18n="@@millNoDataAvailable">No MILL data available. Waiting for MQTT messages...</p>
+    </div>
+  </ng-template>
+</section>
