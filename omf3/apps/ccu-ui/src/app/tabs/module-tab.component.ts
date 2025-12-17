@@ -204,6 +204,24 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
       previousLight: string | null;
       messages: MonitoredMessage[];
     };
+    hbwData?: {
+      currentAction?: { command: string; state: string };
+      storageSlot?: string;
+      storageLevel?: string;
+      workpieceId?: string;
+    };
+    drillData?: {
+      currentAction?: { command: string; state: string };
+      drillDepth?: number;
+      drillSpeed?: number;
+      workpieceId?: string;
+    };
+    millData?: {
+      currentAction?: { command: string; state: string };
+      millDepth?: number;
+      millSpeed?: number;
+      workpieceId?: string;
+    };
   } | null = null;
 
   // Shopfloor layout config for serial number lookup
@@ -808,6 +826,12 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     // Load sequence commands for this module type
     this.loadSequenceCommands(moduleType);
 
+    // Get module-specific data based on module type
+    const moduleTypeUpper = moduleType.toUpperCase();
+    const hbwData = moduleTypeUpper === 'HBW' && moduleId ? this.getHbwData(moduleId) : undefined;
+    const drillData = moduleTypeUpper === 'DRILL' && moduleId ? this.getDrillData(moduleId) : undefined;
+    const millData = moduleTypeUpper === 'MILL' && moduleId ? this.getMillData(moduleId) : undefined;
+
     this.selectedModuleMeta = {
       availability: availabilityStatus,
       availabilityLabel,
@@ -822,6 +846,9 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
       ipAddress: (moduleDetails as any)?.ipAddress ?? undefined,
       moduleType,
       drillAction: moduleType === 'DRILL' ? this.getDrillActionData() : undefined,
+      hbwData: hbwData ?? undefined,
+      drillData: drillData ?? undefined,
+      millData: millData ?? undefined,
     };
 
     const iconKey = cell?.icon ?? cell?.name ?? moduleDetails?.subType ?? moduleDetails?.id ?? 'QUESTION';
@@ -1225,6 +1252,140 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
         return msg.payload as { command?: string; value?: string };
       }
       return JSON.parse(String(msg.payload)) as { command?: string; value?: string };
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Get HBW-specific data from MQTT state messages
+   */
+  private getHbwData(serialId: string): {
+    currentAction?: { command: string; state: string };
+    storageSlot?: string;
+    storageLevel?: string;
+    workpieceId?: string;
+  } | null {
+    try {
+      const stateTopic = `module/v1/ff/${serialId}/state`;
+      const history = this.messageMonitor.getHistory(stateTopic);
+      
+      if (history.length === 0) {
+        return null;
+      }
+
+      // Get the latest state message
+      const lastMsg = history[history.length - 1];
+      const payload = this.parseModuleStatePayload(lastMsg);
+
+      if (!payload) {
+        return null;
+      }
+
+      return {
+        currentAction: payload.actionState ? {
+          command: payload.actionState.command || 'Unknown',
+          state: payload.actionState.state || 'Unknown'
+        } : undefined,
+        storageSlot: payload.actionState?.metadata?.slot,
+        storageLevel: payload.actionState?.metadata?.level,
+        workpieceId: payload.actionState?.metadata?.workpieceId || payload.actionState?.metadata?.workpiece?.workpieceId,
+      };
+    } catch (error) {
+      console.warn('[ModuleTab] Failed to get HBW data', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get DRILL-specific data from MQTT state messages
+   */
+  private getDrillData(serialId: string): {
+    currentAction?: { command: string; state: string };
+    drillDepth?: number;
+    drillSpeed?: number;
+    workpieceId?: string;
+  } | null {
+    try {
+      const stateTopic = `module/v1/ff/${serialId}/state`;
+      const history = this.messageMonitor.getHistory(stateTopic);
+      
+      if (history.length === 0) {
+        return null;
+      }
+
+      // Get the latest state message
+      const lastMsg = history[history.length - 1];
+      const payload = this.parseModuleStatePayload(lastMsg);
+
+      if (!payload) {
+        return null;
+      }
+
+      return {
+        currentAction: payload.actionState ? {
+          command: payload.actionState.command || 'Unknown',
+          state: payload.actionState.state || 'Unknown'
+        } : undefined,
+        drillDepth: payload.actionState?.metadata?.drillDepth,
+        drillSpeed: payload.actionState?.metadata?.drillSpeed,
+        workpieceId: payload.actionState?.metadata?.workpieceId || payload.actionState?.metadata?.workpiece?.workpieceId,
+      };
+    } catch (error) {
+      console.warn('[ModuleTab] Failed to get DRILL data', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get MILL-specific data from MQTT state messages
+   */
+  private getMillData(serialId: string): {
+    currentAction?: { command: string; state: string };
+    millDepth?: number;
+    millSpeed?: number;
+    workpieceId?: string;
+  } | null {
+    try {
+      const stateTopic = `module/v1/ff/${serialId}/state`;
+      const history = this.messageMonitor.getHistory(stateTopic);
+      
+      if (history.length === 0) {
+        return null;
+      }
+
+      // Get the latest state message
+      const lastMsg = history[history.length - 1];
+      const payload = this.parseModuleStatePayload(lastMsg);
+
+      if (!payload) {
+        return null;
+      }
+
+      return {
+        currentAction: payload.actionState ? {
+          command: payload.actionState.command || 'Unknown',
+          state: payload.actionState.state || 'Unknown'
+        } : undefined,
+        millDepth: payload.actionState?.metadata?.millDepth,
+        millSpeed: payload.actionState?.metadata?.millSpeed,
+        workpieceId: payload.actionState?.metadata?.workpieceId || payload.actionState?.metadata?.workpiece?.workpieceId,
+      };
+    } catch (error) {
+      console.warn('[ModuleTab] Failed to get MILL data', error);
+      return null;
+    }
+  }
+
+  /**
+   * Parse module state payload from MQTT message
+   */
+  private parseModuleStatePayload(msg: MonitoredMessage): any {
+    try {
+      if (typeof msg.payload === 'object' && msg.payload !== null) {
+        return msg.payload;
+      }
+      return JSON.parse(String(msg.payload));
     } catch {
       return null;
     }

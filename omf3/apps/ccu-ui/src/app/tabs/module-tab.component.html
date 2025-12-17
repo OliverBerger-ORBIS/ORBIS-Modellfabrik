@@ -286,6 +286,91 @@
             </ng-template>
           </details>
         </div>
+        
+        <!-- HBW Module-Specific Data -->
+        <div class="module-specific-section" *ngIf="selectedModuleMeta?.hbwData && selectedModuleMeta?.moduleType === 'HBW'">
+          <div class="module-specific-section__header">
+            <h4 i18n="@@moduleTabHbwDataTitle">Storage Information</h4>
+          </div>
+          <div class="module-specific-section__details">
+            <div class="detail-row" *ngIf="selectedModuleMeta?.hbwData?.currentAction">
+              <span class="detail-label" i18n="@@moduleTabHbwCurrentAction">Current Action</span>
+              <span class="detail-value">
+                <span class="action-badge">{{ selectedModuleMeta?.hbwData?.currentAction?.command }}</span>
+                <span class="state-badge">{{ selectedModuleMeta?.hbwData?.currentAction?.state }}</span>
+              </span>
+            </div>
+            <div class="detail-row" *ngIf="selectedModuleMeta?.hbwData?.storageSlot">
+              <span class="detail-label" i18n="@@moduleTabHbwSlot">Storage Slot</span>
+              <span class="detail-value">{{ selectedModuleMeta?.hbwData?.storageSlot }}</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedModuleMeta?.hbwData?.storageLevel">
+              <span class="detail-label" i18n="@@moduleTabHbwLevel">Storage Level</span>
+              <span class="detail-value">{{ selectedModuleMeta?.hbwData?.storageLevel }}</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedModuleMeta?.hbwData?.workpieceId">
+              <span class="detail-label" i18n="@@moduleTabHbwWorkpieceId">Workpiece ID</span>
+              <span class="detail-value mono">{{ selectedModuleMeta?.hbwData?.workpieceId }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- DRILL Module-Specific Data -->
+        <div class="module-specific-section" *ngIf="selectedModuleMeta?.drillData && selectedModuleMeta?.moduleType === 'DRILL'">
+          <div class="module-specific-section__header">
+            <h4 i18n="@@moduleTabDrillDataTitle">Drilling Information</h4>
+          </div>
+          <div class="module-specific-section__details">
+            <div class="detail-row" *ngIf="selectedModuleMeta?.drillData?.currentAction">
+              <span class="detail-label" i18n="@@moduleTabDrillCurrentAction">Current Action</span>
+              <span class="detail-value">
+                <span class="action-badge">{{ selectedModuleMeta?.drillData?.currentAction?.command }}</span>
+                <span class="state-badge">{{ selectedModuleMeta?.drillData?.currentAction?.state }}</span>
+              </span>
+            </div>
+            <div class="detail-row" *ngIf="selectedModuleMeta?.drillData?.drillDepth !== undefined && selectedModuleMeta?.drillData?.drillDepth !== null">
+              <span class="detail-label" i18n="@@moduleTabDrillDepth">Drill Depth</span>
+              <span class="detail-value">{{ selectedModuleMeta?.drillData?.drillDepth }} mm</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedModuleMeta?.drillData?.drillSpeed !== undefined && selectedModuleMeta?.drillData?.drillSpeed !== null">
+              <span class="detail-label" i18n="@@moduleTabDrillSpeed">Drill Speed</span>
+              <span class="detail-value">{{ selectedModuleMeta?.drillData?.drillSpeed }} rpm</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedModuleMeta?.drillData?.workpieceId">
+              <span class="detail-label" i18n="@@moduleTabDrillWorkpieceId">Workpiece ID</span>
+              <span class="detail-value mono">{{ selectedModuleMeta?.drillData?.workpieceId }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MILL Module-Specific Data -->
+        <div class="module-specific-section" *ngIf="selectedModuleMeta?.millData && selectedModuleMeta?.moduleType === 'MILL'">
+          <div class="module-specific-section__header">
+            <h4 i18n="@@moduleTabMillDataTitle">Milling Information</h4>
+          </div>
+          <div class="module-specific-section__details">
+            <div class="detail-row" *ngIf="selectedModuleMeta?.millData?.currentAction">
+              <span class="detail-label" i18n="@@moduleTabMillCurrentAction">Current Action</span>
+              <span class="detail-value">
+                <span class="action-badge">{{ selectedModuleMeta?.millData?.currentAction?.command }}</span>
+                <span class="state-badge">{{ selectedModuleMeta?.millData?.currentAction?.state }}</span>
+              </span>
+            </div>
+            <div class="detail-row" *ngIf="selectedModuleMeta?.millData?.millDepth !== undefined && selectedModuleMeta?.millData?.millDepth !== null">
+              <span class="detail-label" i18n="@@moduleTabMillDepth">Mill Depth</span>
+              <span class="detail-value">{{ selectedModuleMeta?.millData?.millDepth }} mm</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedModuleMeta?.millData?.millSpeed !== undefined && selectedModuleMeta?.millData?.millSpeed !== null">
+              <span class="detail-label" i18n="@@moduleTabMillSpeed">Mill Speed</span>
+              <span class="detail-value">{{ selectedModuleMeta?.millData?.millSpeed }} rpm</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedModuleMeta?.millData?.workpieceId">
+              <span class="detail-label" i18n="@@moduleTabMillWorkpieceId">Workpiece ID</span>
+              <span class="detail-value mono">{{ selectedModuleMeta?.millData?.workpieceId }}</span>
+            </div>
+          </div>
+        </div>
+        
         <div class="sequence-commands-section" *ngIf="sequenceCommands && (selectedModuleMeta?.moduleType === 'DRILL' || selectedModuleMeta?.moduleType === 'MILL' || selectedModuleMeta?.moduleType === 'AIQS')">
           <div class="sequence-commands__header">
             <h4 i18n="@@moduleTabSequenceCommandsTitle">Sequence Commands</h4>
