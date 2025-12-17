@@ -439,6 +439,7 @@ export const createConfigFixtureStream = (
 export { loadDspActionFixtures, createDspActionFixtureStream } from './dsp-action-fixtures';
 export { loadModuleStatusFixtures, createModuleStatusFixtureStream } from './module-status-fixtures';
 export { loadModuleShopfloorStatusFixtures, createModuleShopfloorStatusFixtureStream } from './module-shopfloor-status-fixtures';
+export { createModuleActionHistoryFixtureStream } from './module-action-history-fixtures';
 
 export const createSensorFixtureStream = (
   name: SensorFixtureName,
