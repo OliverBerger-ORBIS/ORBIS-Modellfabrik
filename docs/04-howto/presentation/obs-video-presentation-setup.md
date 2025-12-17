@@ -133,6 +133,16 @@ Links unten im **"Scenes"**-Panel nacheinander **+** klicken und anlegen:
 
 Das sind die **"richtigen Stellräder"**, die später den Unterschied machen.
 
+#### Kamera-Hardware (Konftel Cam50)
+
+- **Modell:** Konftel Cam50 (USB-PTZ-Kamera), identifiziert sich in OBS als Standard-Webcam
+- **Optimale Auflösung:** `1920x1080` (Shopfloor wird in der Totalen vollständig erfasst)
+- **Alternative Auflösungen:** `800x448` oder `600x360`, falls Bandbreite/FPS wichtiger als Detail sind
+- **FPS-Regler:** 5, 10, 15, 20, 24, 29.97 (NTSC), 30 sowie das vom Treiber gemeldete Maximum
+- **Videoformate:** `MJPEG` oder `H264` (beide funktionieren stabil; MJPEG bevorzugen, wenn CPU-Headroom vorhanden ist)
+- **Farbraum:** "Standard" sowie mehrere Rec*-Profile (z. B. Rec.601/709) – auf Standard bleiben, außer Sie kalibrieren gezielt auf Studiolicht
+- **Pufferung:** wahlweise `Auto`, `Enabled`, `Disabled`; für Teams-Demos reicht `Auto`, bei Frame-Drops testweise auf `Enabled` schalten
+
 ---
 
 ### F2) OMF3/Dashboard als Quellen: zwei Varianten
@@ -630,6 +640,35 @@ Wenn Sie in Teams präsentieren, ist Audio oft "heikel". Empfehlung: eindeutige 
 - `Ctrl+Alt+2` für Shopfloor
 - `Ctrl+Alt+3/4/5` für UI-Tabs
 - `Ctrl+Alt+0` für Hold-Slate (bei Problemen)
+
+---
+
+## T. Kundenpräsentation (Gedore) – OBS/Teams Playbook
+
+### T1) Setup-Variation
+- **Geräte:** Konftel Cam50 (siehe Abschnitt F1) + separater Laptop für OBS, zweiter Monitor als Program-Ausgang.
+- **DSP-Animationen:** Zusätzliche Media Source (`GFX_DSP_Gedore`) mit kundenspezifischen SVG/MP4-Sequenzen (Edge xyz_2 → xyz_1/3 → Logo).
+- **Szenen:**
+   - `P07_UI_HeroPlus3` (Standard-Story, rechts Panel mit Kundendaten).
+   - `P10_DSP_Gedore` (nur DSP-Animation + Kamera PiP).
+   - `P11_Video_Presentation` (Full-Screen Video, fallback falls Browser ruckelt).
+
+### T2) Ablauf (Empfehlung)
+1. **Intro (Hero+3)** – Kamera + Shopfloor + zwei kundenspezifische Panels.
+2. **DSP-Erklärung (`P10`)** – Animationen durchklicken, dabei Edge/Device/ERP-Linking erklären.
+3. **Modul-Detail (`P02`/`P04`)** – Auf Kundenmodul zoomen, Statusanzeigen zeigen.
+4. **Process-Story (`P03` + OBS Text-Overlay)** – Customer/Purchase Orders erläutern.
+5. **Q&A (`P01`)** – Kamera Vollbild für Fragen.
+
+### T3) OBS-spezifische Hinweise
+- **Studio Mode** aktiv, Szenenwechsel erst nach Preview.
+- **Hotkeys** ergänzen (`Ctrl+Alt+8` = `P10_DSP_Gedore`, `Ctrl+Alt+9` = `P11_Video_Presentation`).
+- **Audio:** Headset als einzige Audio-Quelle, Kamera-Mic muted.
+- **Teams**: Bildschirm „Monitor 2“ teilen, „Optimize“ aktiv; notiere im Chat, wenn Animationen starten.
+
+### T4) Nachbereitung
+- Aufzeichnung (`Ctrl+Alt+R`) lokal speichern, um Highlights später in kundenspezifische Clips zu schneiden.
+- Feedback sofort in PROJECT_STATUS Todo-Liste spiegeln (z. B. fehlende Module-Tiles, neue Prozess-Sichten).
 
 ---
 

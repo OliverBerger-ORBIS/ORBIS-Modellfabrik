@@ -1,116 +1,70 @@
 # ORBIS Modellfabrik - Projekt Status
 
-**Letzte Aktualisierung:** 13.11.2025  
-**Aktueller Status:** OMF3 Entwicklung läuft, OMF2 als Legacy markiert
+**Letzte Aktualisierung:** 17.12.2025  
+**Aktueller Status:** OSF (vormals OMF3) UI-Finishing & Kunden-Demos; OMF2 als Legacy eingefroren
 
-> **Dokumentations-Strategie:** Dieses Dokument ist die zentrale Quelle für alle Projekt-Änderungen und Status-Updates. Keine separate CHANGELOG.md - alles hier!
+> **Dokumentations-Strategie:** Dieses Dokument bündelt Projektstatus, Roadmap und Sprint-History; für Release-Versionen nutzen wir SemVer + die separate CHANGELOG.md.
 
-## 🚀 Aktuelle Arbeiten
+## 🚀 Aktuelle Arbeiten (Dezember 2025)
 
-### ✅ **OMF3 Entwicklung läuft** (seit 06.11.2025)
-- **Angular + Nx Workspace** - Moderne Frontend-Architektur ✅
-- **MQTT-Client Library** - WebSocket MQTT Adapter + Mock Adapter ✅
-- **Gateway Library** - Topic→Entity Mapping mit Schema-Validierung ✅
-- **Business Library** - RxJS Streams für Dashboard-Daten ✅
-- **Entities Library** - TypeScript Types und JSON Parser ✅
-- **CCU-UI Dashboard** - Tabbed Shell mit i18n Foundation ✅
-- **MessageMonitorService** - State Persistence für MQTT Messages ✅
-- **I18n Runtime Switching** - URL-basierte Locale-Routing (EN/DE/FR) ✅
-- **CI/CD Umstellung** - GitHub Actions auf OMF3 Tests umgestellt ✅
-- **Status:** OMF3 ist produktionsreif und demo-fähig ✅
+### ✅ OSF Kern stabil
+- Angular + Nx Workspace, MQTT/Gateway/Business/Entities Libraries sowie CCU-UI Grundrahmen sind produktionsreif und dienen als stabile Basis für Kunden-Demos.
+- MessageMonitorService, Tab Stream Pattern, i18n Runtime Switching und CI/CD-Pipeline laufen zuverlässig; OMF2 bleibt als Legacy-Referenz bestehen.
 
-### 🎯 **Messe-Vorbereitung läuft** (bis 26.11.2025)
-- **Messevorbereitung** - Unterbau, Marketing-Banner, Aufbau/Abbau-Test (in Arbeit)
-- **Messe in Mulhouse** - 24-26.11.2025 (geplant)
-- **Status:** Auf Kurs für Messe-Demo am 24-26.11.2025 🎯
+### 🔄 Laufende Schwerpunkte
+- **Module-/Shopfloor-Tab** wird zum zentralen Einstiegspunkt ausgebaut: Status-Tiles pro Modul, Sequenz-Kommandos, HBW-Lageransicht und konsistentes UX-Pattern für weitere Tabs (AGV, Konfiguration).
+- **DSP-Storytelling**: Responsive `dsp-responsive-mockup.svg`, MC/EDGE-Animation mit gestaffelten Highlights sowie interaktive Verlinkungen vom DSP-Layer zu OSF-Ansichten.
+- **Remote Demo Pipeline**: OBS/Teams Setup mit Konftel Cam50, Video- und Präsentationsmodus für Kunden (z. B. Gedore) inkl. DSP-Animationen.
+- **OSF Rebranding & Migration**: Umbenennung von OMF3 → OSF, Vorbereitung des Azure DevOps Repos und Docker-basierten Deployments (Hilcher-Box/RPi) als Teil des DSP-Kastens.
 
-## 📋 Aktuelle Entwicklungsphase
+## 📅 Externe Events (Q4 2025)
 
-### **Phase 3: OMF3-Entwicklung (AKTUELL)**
-- ✅ **Angular + Nx Workspace** - Moderne Frontend-Architektur etabliert
-- ✅ **MQTT-Client Library** - WebSocket + Mock Adapter implementiert
-- ✅ **Gateway Library** - Topic→Entity Mapping mit Schema-Validierung
-- ✅ **Business Library** - RxJS Streams für Dashboard-Daten
-- ✅ **Entities Library** - TypeScript Types und JSON Parser
-- ✅ **CCU-UI Dashboard** - Tabbed Shell mit i18n Foundation
-- ✅ **MessageMonitorService** - State Persistence (BehaviorSubject + CircularBuffer)
-- ✅ **I18n Runtime Switching** - URL-basierte Locale-Routing (EN/DE/FR)
-- ✅ **CI/CD Umstellung** - GitHub Actions auf OMF3 Tests umgestellt
-- ✅ **Tab Stream Pattern** - Konsistente Dateninitialisierung dokumentiert und getestet
-- ✅ **Message Monitor Tab** - UI mit Filtering, JSON Syntax Highlighting
-- ✅ **Shopfloor-Highlighting** - Orange Highlighting für aktive Routes und FTS
-- ✅ **MQTT-Verbindungsstatus** - Visuelle Status-Anzeige in Sidebar und Header
+### DSP-Kundentag @ Bostalsee (03.–04.12.) – ✅ Abgeschlossen
+- 03.12.: Aufbau & Test der Fischertechnik-Modellfabrik (FMF) vor Ort, Abgleich der DSP-Story mit aktueller OSF-Version.
+- 04.12.: Live-Demo der OSF (Shopfloor, Module-Tab, DSP-Animation) gegenüber DSP-Kundenkreis; Feedback floss in die aktuellen UI-Todos ein.
+- Status DSP-Event: Erfolgreich abgeschlossen, Assets (Slides, OBS-Szenen, Videos) sind referenzfähig für weitere Kunden.
 
-### **Phase 2: OMF2-Architektur (ABGESCHLOSSEN - Legacy)**
-- ✅ **OMF2 Migration vollständig abgeschlossen** (16.10.2025)
-- ✅ **Drei-Schichten-Architektur implementiert** - MQTT Client → Gateway → Business Manager
-- ✅ **Registry Manager** - Zentrale Konfiguration für alle Schemas und Templates
-- ✅ **Gateway-Routing-Pattern** - Schema-Validierung und Topic-Routing
-- ✅ **Business Manager** - ModuleManager, WorkpieceManager, SensorManager, OrderManager
-- ✅ **Order Manager** - Vollständige Order-Lifecycle-Verwaltung
-- ✅ **Storage Orders Logic** - PICK/DROP → LADEN/ENTLADEN AGV Logik
-- ✅ **i18n-System** - DE/EN/FR Support mit 195+ Translation Keys
-- ✅ **Best Practice Logging** - Multi-Level Ringbuffer mit UI-Integration
-- ✅ **Tests** - 341/341 Tests bestehen
-- **Status:** OMF2 ist produktionsreif, wird durch OMF3 ersetzt (Legacy)
+### Kundenpräsentation Gedore (Dezember) – 🔄 In Arbeit
+- Aufbau eines dedizierten OBS-/Teams-Setups inkl. Konftel Cam50, dedizierter Video- und DSP-Animationssequenzen.
+- Erstellung kundenspezifischer DSP-Animationen (Edge/Device Layer, Prozessketten) sowie Abstimmung der Moderationsstory.
+- Nachbereitung: Weitere Animationen & Linking-Konzepte, die direkt in OSF integriert werden.
 
-## 📋 Nächste Schritte
+## 📦 Plattformzustand
 
-### **🎯 Messe-Vorbereitung (Priorität 1)**
-- **Messevorbereitung** - Unterbau erstellen, Marketing-Banner, Aufbau/Abbau-Test
-- **Messe in Mulhouse** - 24-26.11.2025 - Live-Demonstration des OMF3 Dashboards
+### OSF Application Stack (2025)
+- Angular + Nx Workspace mit klar getrennten Libraries (MQTT, Gateway, Business, Entities) bildet den Kern.
+- CCU-UI liefert Tabs für Module, Orders, Track&Trace, AGV sowie spezialisierte Ansichten (Message Monitor, DSP, Process).
+- State-Handling basiert auf MessageMonitorService + Tab Stream Pattern (BehaviorSubjects, Circular Buffer, localStorage Persistence).
+- Tooling: Nx, Jest, ESLint, Storybook-Fallback, CI/CD via GitHub Actions, SemVer + CHANGELOG.
 
-### **🔧 Technische Verbesserungen (Priorität 2)**
-- **Auto-Refresh** - MQTT-Trigger für UI-Refresh (falls benötigt)
-- **Sensor Data UI** - Temperatur-Skala, Kamera-Controls verbessern
-- **Live-Test Sessions** - Mit echter Fabrik durchführen
+### Legacy Referenz (FMF / OMF2)
+- OMF2 bleibt eingefroren als Dokumentationsbasis für Registry-Modelle und Topic-Schemas.
+- Node-RED/APS-Analysen liegen archiviert vor; Migrationswissen wird nur noch bei Bedarf referenziert.
 
-### **🔍 Integration & Analyse (Priorität 3)**
-- **APS-CCU tiefere Analyse** - Central Control Unit: Docker-Container analysieren
-- **TXT-Controller Analyse** - AIQS, DPS, FTS Funktionsanalyse
-- **Rollenbasierte Tab-Sichtbarkeit** - Operator/Supervisor/Admin Rollen implementieren
+## 📋 Nächste Schritte (Roadmap Q1 2026)
 
-## ✅ **Abgeschlossene Arbeiten**
+1. **Shopfloor UX Refresh** – Module-Tab als Startpunkt (Status-Kacheln, Sequenz-Controls, HBW-Lager) und konsistente Layouts für AGV & Konfiguration.
+2. **Process & DSP Story** – Neuer Process-Tab für Geschäftsprozesse (Customer Order, Purchase Order, Production, Storage) plus erweitert animierte DSP-Kette.
+3. **Interaktive Verlinkungen** – DSP-Architektur klickbar (AGV → AGV-Tab, Devices → Modules, ERP → Process) inkl. gestaffelter Edge-Animation.
+4. **OSF Rebranding & Migration** – Repos/Wording von OMF3 → OSF, Vorbereitung Azure DevOps Mirror, Containerisierung für Hilcher/RPi.
+5. **Demo Excellence** – OBS/Teams Playbooks, kundenspezifische Animationen (Gedore), Blog-Serie zu OSF & DSP zur Lead-Generierung.
 
-### **Phase 1: APS "as IS" - Fischertechnik-System verstehen** ✅
-- ✅ **APS-Ecosystem dokumentiert** - System-Übersicht, Komponenten-Mapping
-- ✅ **Mosquitto Log-Analyse** - MQTT-Kommunikation, Client-IDs, Topics
-- ✅ **APS-NodeRED Flows analysiert** - OPC-UA, State-Machine, VDA 5050
-- ✅ **APS-CCU als Herz der Fabrik identifiziert**
-
-### **Phase 2: OMF2-Architektur** ✅ (Legacy)
-- ✅ **Drei-Schichten-Architektur** vollständig implementiert
-- ✅ **Registry Manager** zentrale Konfiguration für alle Schemas
-- ✅ **Gateway-Routing-Pattern** Schema-Validierung und Topic-Routing
-- ✅ **Business Manager** ModuleManager, WorkpieceManager, SensorManager, OrderManager
-- ✅ **Order Manager** vollständige Order-Lifecycle-Verwaltung
-- ✅ **Storage Orders Logic** PICK/DROP → LADEN/ENTLADEN AGV Logik
-- ✅ **i18n-System** DE/EN/FR Support mit 195+ Translation Keys
-- ✅ **Best Practice Logging** Multi-Level Ringbuffer mit UI-Integration
-- ✅ **Tests** Alle Tests bestehen
-- **Status:** OMF2 ist produktionsreif, wird durch OMF3 ersetzt (Legacy)
-
-### **Phase 3: OMF3-Entwicklung** ✅ (Aktuell)
-- ✅ **Angular + Nx Workspace** - Moderne Frontend-Architektur
-- ✅ **MQTT-Client Library** - WebSocket + Mock Adapter
-- ✅ **Gateway Library** - Topic→Entity Mapping
-- ✅ **Business Library** - RxJS Streams
-- ✅ **Entities Library** - TypeScript Types
-- ✅ **CCU-UI Dashboard** - Tabbed Shell mit i18n
-- ✅ **MessageMonitorService** - State Persistence
-- ✅ **I18n Runtime Switching** - URL-basierte Locale-Routing
-- ✅ **CI/CD Umstellung** - OMF3 Tests in GitHub Actions
-- ✅ **Tab Stream Pattern** - Konsistente Dateninitialisierung
-- ✅ **Message Monitor Tab** - UI mit Filtering
-- ✅ **Shopfloor-Highlighting** - Orange Highlighting
-- ✅ **MQTT-Verbindungsstatus** - Visuelle Status-Anzeige
-
-### **Dokumentation & Architektur** ✅
-- ✅ **Sprint-Dokumentation** erstellen (sprint_01 bis sprint_09)
-- ✅ **Mermaid Diagramm-System** - Hybrid-Ansatz mit `docs/_shared/diagrams/`
-- ✅ **Pre-commit und Git/GitHub Workflow** - Projekt-spezifische Hooks
-- ✅ **OMF3 Architektur-Dokumentation** - Project Structure, Decision Records
-- ✅ **Dokumentations-Cleanup** - OMF2-spezifische Docs entfernt/archiviert
+## 📝 Offene Todos
+1. **Module-Tab Status-Erweiterung** – Copilot/PR-Statusleisten (AIQS/DPS) in `omf3/apps/ccu-ui` übernehmen, Komponenten generalisieren und für HBW/DRILL/MILL identische Detailbereiche bereitstellen.
+2. **Sequence Commands bündeln** – Sequenzlisten für AIQS/DRILL/MILL in ein gemeinsames Collapsible-Panel am unteren Rand verschieben (Accordion-Komponente + konsistente Beschriftung).
+3. **HBW Lageransicht** – Lagerstände/Slots darstellen, sobald HBW selektiert ist (z. B. Grid mit Füllständen, gespeist aus dem HBW-Topic im Business-Layer).
+4. **Shopfloor-Benennung** – Module-Tab in der UI/Navigation zu „Shopfloor“ umbenennen und Dokumentation/Tooltips anpassen, damit er als Einstiegspunkt wahrgenommen wird.
+5. **Konfigurations-Tab Layout** – Shopfloor-Layout links, Module rechts; bei kleiner Breite Modulbereich nach unten umbrechen (CSS Grid/Flex + Angular Breakpoints).
+6. **AGV-Tab Reflow** – Layout an Module/Konfiguration angleichen: links Route & Live-Position, rechts Status, Actions, Load-Info, Commands.
+7. **DSP Edge Animation** – Animationssequenz überarbeiten (MC-Funktionen → EDGE xyz_2 verlinken → xyz_1/3 ergänzen → alle drei gestrichelt highlighten) als Grundlage fürs OSF/DSP-Logo.
+8. **Process-Tab Neuaufbau** – Geschäftsprozesse (Customer Orders, Purchase Orders, Production, Storage) mit Swimlanes/Karten darstellen; dient als ERP-Brücke.
+9. **Orders-Tab Klarstellung** – Tab in „Shopfloor Orders“ umbenennen, Finished-Liste per Default eingeklappt, letzter Auftrag automatisch expandiert.
+10. **DSP → AGV Link** – Klick auf AGV/FTS-Icon führt Nutzer direkt zum AGV-Tab (Router-Link + Tracking).
+11. **DSP → Modules Link** – Klick auf Device im DSP setzt Module-Tab mit vorselektiertem Device (QueryParam/State Transfer, 1:1 Zuordnung).
+12. **DSP → ERP Link** – Klick auf BP-ERP öffnet neuen Process-Tab (Purchase/Customer Orders) und zeigt ERP-Bezug.
+13. **OSF Rebranding** – Bezeichner OMF3 → OSF in Code, Assets, Doku; Angular Prefixes, ENV Variablen und README angleichen.
+14. **Azure DevOps Migration** – Mirror/Move Repository inkl. Pipelines nach ORBIS Azure DevOps, Rechte & Secrets definieren.
+15. **OSF Deployment & Storytelling** – Docker-Setup für Hilcher-Box/RPi abschließen, anschließende Blog-Serie zu OSF & DSP Story vorbereiten.
 
 ## 📊 Sprint-Vorgehen
 
@@ -118,7 +72,7 @@
 - **2-Wochen-Zyklen** für kontinuierliche Entwicklung
 - **PROJECT_STATUS.md** = Zentrale Change-Dokumentation
 - **Sprint-Dokumentation** = Detaillierte Rückblicke in `docs/sprints/`
-- **Keine CHANGELOG.md** = Redundanz vermeiden
+- **SemVer + CHANGELOG.md** = Release-Historie bleibt separat nachvollziehbar
 
 ### **Change-Management:**
 - **Alle Änderungen** werden hier dokumentiert
@@ -127,12 +81,23 @@
 
 ## 📊 Sprint-Status
 
-### Sprint 09 (13.11 - 27.11.2025) - **AKTUELL**
+### Sprint 11 (12.12 - 24.12.2025) - **AKTUELL**
 - **Status:** In Bearbeitung
-- **Fokus:** OMF3 Integration, MessageMonitorService, UI-Verbesserungen, Messevorbereitung
-- **Erreicht:** MessageMonitorService, I18n Runtime Switching, CI/CD Umstellung, Message Monitor Tab, Tab Stream Pattern, Shopfloor-Highlighting, MQTT-Verbindungsstatus
-- **In Arbeit:** Messevorbereitung (Unterbau, Banner, Aufbau/Abbau-Test)
-- **Geplant:** Messe in Mulhouse (24-26.11.2025)
+- **Fokus:** Gedore Remote-Präsentation, DSP-Animationen, OBS/Teams Playbook, Module-Tab UX.
+- **Erreicht:** Konftel Cam50 Settings + OBS-Doku aktualisiert, DSP-Mockup interaktiv geplant, Todo-Backlog priorisiert.
+- **In Arbeit:** DSP-Links (AGV/Devices/ERP), Process-Tab Konzept, kundenspezifische Animationen.
+
+### Sprint 10 (28.11 - 11.12.2025) - **ABGESCHLOSSEN**
+- **Status:** ✅ Abgeschlossen
+- **Fokus:** DSP-Kundentag Bostalsee, Module-Tab Feinschliff, Responsive DSP-Mockup, Rebranding-Plan.
+- **Erreicht:** Aufbau/Test FMF vor Ort, Live-Demo OSF + DSP, `dsp-responsive-mockup.svg` erstellt, OBS Pipeline stabilisiert.
+- **Nachlauf:** Feedback aus DSP-Event in Todo-Liste übernommen.
+
+### Sprint 09 (13.11 - 27.11.2025) - **ABGESCHLOSSEN**
+- **Status:** ✅ Abgeschlossen
+- **Fokus:** OMF3 Integration, MessageMonitorService, UI-Verbesserungen, Messevorbereitung.
+- **Erreicht:** MessageMonitorService, I18n Runtime Switching, CI/CD Umstellung, Message Monitor Tab, Tab Stream Pattern, Shopfloor-Highlighting, MQTT-Verbindungsstatus.
+- **Outcome:** Grundlage für OSF-Demos geschaffen, Messeunterlagen vorbereitet.
 
 ### Sprint 08 (30.10 - 12.11.2025) - **ABGESCHLOSSEN**
 - **Status:** ✅ Abgeschlossen
@@ -205,4 +170,4 @@
 
 ---
 
-**Status:** OMF3 Entwicklung läuft erfolgreich, OMF2 als Legacy markiert 🎯
+**Status:** OSF Entwicklung läuft erfolgreich; OMF2/FMF bleibt nur noch als Legacy-Referenz bestehen 🎯
