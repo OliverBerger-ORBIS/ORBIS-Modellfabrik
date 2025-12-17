@@ -6,6 +6,8 @@ import { EnvironmentService } from '../services/environment.service';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { ConnectionService } from '../services/connection.service';
 import { ModuleNameService } from '../services/module-name.service';
+import { getDashboardController } from '../mock-dashboard';
+import type { OrderFixtureName } from '@omf3/testing-fixtures';
 
 // DPS Serial Number
 const DPS_SERIAL = 'SVR4H73275';
@@ -55,12 +57,26 @@ interface DpsState {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DpsTabComponent implements OnInit, OnDestroy {
+  private dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
 
   // Observable streams
   dpsState$!: Observable<DpsState | null>;
   connection$!: Observable<any | null>;
   dpsOrder$!: Observable<any | null>;
+
+  // Fixtures for testing
+  readonly fixtureOptions: OrderFixtureName[] = [
+    'startup',
+    'storage_blue',
+    'production_bwr',
+  ];
+  readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
+    startup: $localize`:@@fixtureLabelStartup:Startup`,
+    storage_blue: $localize`:@@fixtureLabelStorageBlue:Storage Blue`,
+    production_bwr: $localize`:@@fixtureLabelProductionBwr:Production BWR`,
+  };
+  activeFixture: OrderFixtureName | null = this.dashboard.getCurrentFixture();
 
   // Icons
   readonly headingIcon = 'assets/svg/shopfloor/stations/dps-station.svg';
@@ -244,5 +260,52 @@ export class DpsTabComponent implements OnInit, OnDestroy {
 
   trackByActionId(_index: number, action: DpsActionState): string {
     return action.id;
+  }
+
+  get isMockMode(): boolean {
+    return this.environmentService.current.key === 'mock';
+  }
+
+  get isReplayMode(): boolean {
+    return this.environmentService.current.key === 'replay';
+  }
+
+  async loadFixture(fixture: OrderFixtureName): Promise<void> {
+    // In replay mode, fixtures are loaded from MQTT broker, not from local files
+    if (this.isReplayMode) {
+      console.info('[DPS Tab] Replay mode - DPS data should come from MQTT broker');
+      // In replay mode, we just wait for messages from the broker
+      // The streams will automatically update when messages arrive
+      this.activeFixture = fixture;
+      this.cdr.markForCheck();
+      return;
+    }
+    
+    if (!this.isMockMode) {
+      return; // Don't load fixtures in live mode
+    }
+    
+    this.activeFixture = fixture;
+    
+    try {
+      // Map OrderFixtureName to tab-specific preset
+      const presetMap: Partial<Record<OrderFixtureName, string>> = {
+        startup: 'startup',
+        storage_blue: 'track-trace-storage-blue',
+        production_bwr: 'track-trace-production-bwr',
+      };
+      
+      const preset = presetMap[fixture] || 'startup';
+      await this.dashboard.loadTabFixture(preset);
+      
+      // Re-initialize streams after fixture load
+      this.initializeStreams();
+      
+      // Trigger change detection to update UI
+      this.cdr.markForCheck();
+    } catch (error) {
+      console.warn('Failed to load DPS fixture', fixture, error);
+      console.warn('[DPS Tab] Note: DPS topics may not be included in standard fixtures. Consider using replay environment.');
+    }
   }
 }

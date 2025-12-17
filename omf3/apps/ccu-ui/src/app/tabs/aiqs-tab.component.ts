@@ -6,6 +6,8 @@ import { EnvironmentService } from '../services/environment.service';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { ConnectionService } from '../services/connection.service';
 import { ModuleNameService } from '../services/module-name.service';
+import { getDashboardController } from '../mock-dashboard';
+import type { OrderFixtureName } from '@omf3/testing-fixtures';
 
 // AIQS Serial Number
 const AIQS_SERIAL = 'SVR4H76530';
@@ -47,12 +49,24 @@ interface AiqsState {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AiqsTabComponent implements OnInit, OnDestroy {
+  private dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
 
   // Observable streams
   aiqsState$!: Observable<AiqsState | null>;
   connection$!: Observable<any | null>;
   aiqsOrder$!: Observable<any | null>;
+
+  // Fixtures for testing - including "sorted_out" fixture for failed quality checks
+  readonly fixtureOptions: OrderFixtureName[] = [
+    'startup',
+    'production_bwr',
+  ];
+  readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
+    startup: $localize`:@@fixtureLabelStartup:Startup`,
+    production_bwr: $localize`:@@fixtureLabelProductionBwr:Production BWR`,
+  };
+  activeFixture: OrderFixtureName | null = this.dashboard.getCurrentFixture();
 
   // Icons
   readonly headingIcon = 'assets/svg/shopfloor/stations/aiqs-station.svg';
@@ -227,5 +241,51 @@ export class AiqsTabComponent implements OnInit, OnDestroy {
 
   trackByActionId(_index: number, action: AiqsActionState): string {
     return action.id;
+  }
+
+  get isMockMode(): boolean {
+    return this.environmentService.current.key === 'mock';
+  }
+
+  get isReplayMode(): boolean {
+    return this.environmentService.current.key === 'replay';
+  }
+
+  async loadFixture(fixture: OrderFixtureName): Promise<void> {
+    // In replay mode, fixtures are loaded from MQTT broker, not from local files
+    if (this.isReplayMode) {
+      console.info('[AIQS Tab] Replay mode - AIQS data should come from MQTT broker');
+      // In replay mode, we just wait for messages from the broker
+      // The streams will automatically update when messages arrive
+      this.activeFixture = fixture;
+      this.cdr.markForCheck();
+      return;
+    }
+    
+    if (!this.isMockMode) {
+      return; // Don't load fixtures in live mode
+    }
+    
+    this.activeFixture = fixture;
+    
+    try {
+      // Map OrderFixtureName to tab-specific preset
+      const presetMap: Partial<Record<OrderFixtureName, string>> = {
+        startup: 'startup',
+        production_bwr: 'track-trace-production-bwr',
+      };
+      
+      const preset = presetMap[fixture] || 'startup';
+      await this.dashboard.loadTabFixture(preset);
+      
+      // Re-initialize streams after fixture load
+      this.initializeStreams();
+      
+      // Trigger change detection to update UI
+      this.cdr.markForCheck();
+    } catch (error) {
+      console.warn('Failed to load AIQS fixture', fixture, error);
+      console.warn('[AIQS Tab] Note: AIQS topics may not be included in standard fixtures. Consider using replay environment.');
+    }
   }
 }

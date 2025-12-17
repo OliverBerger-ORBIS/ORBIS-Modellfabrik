@@ -9,6 +9,22 @@
         </p>
       </div>
     </div>
+    <div class="dps-tab__fixtures" *ngIf="isMockMode">
+      <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
+      <div class="fixture-switch">
+        <button
+          type="button"
+          *ngFor="let fixture of fixtureOptions"
+          [class.active]="fixture === activeFixture"
+          (click)="loadFixture(fixture)"
+        >
+          {{ fixtureLabels[fixture] }}
+        </button>
+      </div>
+      <div class="environment-hint" *ngIf="isReplayMode">
+        <span i18n="@@dpsReplayHint">Using replay environment - DPS data from MQTT broker</span>
+      </div>
+    </div>
   </header>
 
   <div class="dps-tab__content" *ngIf="dpsState$ | async as dpsState; else noData">
