@@ -75,6 +75,16 @@ export const appRoutes: Routes = [
           import('./tabs/fts-tab.component').then((m) => m.FtsTabComponent),
       },
       {
+        path: 'dps',
+        loadComponent: () =>
+          import('./tabs/dps-tab.component').then((m) => m.DpsTabComponent),
+      },
+      {
+        path: 'aiqs',
+        loadComponent: () =>
+          import('./tabs/aiqs-tab.component').then((m) => m.AiqsTabComponent),
+      },
+      {
         path: 'dsp-animation',
         loadComponent: () =>
           import('./pages/dsp-animation/dsp-architecture.component').then((m) => m.DspArchitecturePageComponent),
