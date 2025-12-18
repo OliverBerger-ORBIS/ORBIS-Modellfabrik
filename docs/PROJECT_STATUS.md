@@ -3,6 +3,21 @@
 **Letzte Aktualisierung:** 17.12.2025  
 **Aktueller Status:** OSF (vormals OMF3) UI-Finishing & Kunden-Demos; OMF2 als Legacy eingefroren
 
+## 📋 Wichtige Erkenntnisse (Session-Notizen)
+
+### AIQS-Kamera-Daten Analyse (17.12.2025)
+- **Erkenntnis:** AIQS-Kamera-Daten (Photos von Workpieces) werden **NICHT über MQTT** übertragen
+- **Analyse:** `production_order_white_20251110_184459.log` Session vollständig analysiert
+- **Ergebnis:** 
+  - ❌ Keine Bilddaten in `module/v1/ff/SVR4H76530/state` Payloads
+  - ❌ Keine separaten Kamera-Topics für AIQS gefunden
+  - ✅ CHECK_QUALITY Commands enthalten nur `type` und `workpieceId` in Metadata
+- **Lösung:** Direkter HTTP-Zugriff auf TXT-Controller erforderlich
+  - **TXT-AIQS IP:** 192.168.0.103 (DHCP, kann variieren)
+  - **Web-Interface:** Port 80
+  - **API-Endpoint:** Muss noch ermittelt werden (TXT Controller Web-Interface prüfen)
+- **Referenz:** `docs/06-integrations/00-REFERENCE/module-serial-mapping.md` für Serial → IP Mapping
+
 > **Dokumentations-Strategie:** Dieses Dokument bündelt Projektstatus, Roadmap und Sprint-History; für Release-Versionen nutzen wir SemVer + die separate CHANGELOG.md.
 
 ## 🚀 Aktuelle Arbeiten (Dezember 2025)
@@ -52,19 +67,20 @@
 ## 📝 Offene Todos
 1. **Module-Tab Status-Erweiterung** – Copilot/PR-Statusleisten (AIQS/DPS) in `omf3/apps/ccu-ui` übernehmen, Komponenten generalisieren und für HBW/DRILL/MILL identische Detailbereiche bereitstellen.
 2. **Sequence Commands bündeln** – Sequenzlisten für AIQS/DRILL/MILL in ein gemeinsames Collapsible-Panel am unteren Rand verschieben (Accordion-Komponente + konsistente Beschriftung).
-3. **HBW Lageransicht** – Lagerstände/Slots darstellen, sobald HBW selektiert ist (z. B. Grid mit Füllständen, gespeist aus dem HBW-Topic im Business-Layer).
-4. **Shopfloor-Benennung** – Module-Tab in der UI/Navigation zu „Shopfloor“ umbenennen und Dokumentation/Tooltips anpassen, damit er als Einstiegspunkt wahrgenommen wird.
-5. **Konfigurations-Tab Layout** – Shopfloor-Layout links, Module rechts; bei kleiner Breite Modulbereich nach unten umbrechen (CSS Grid/Flex + Angular Breakpoints).
-6. **AGV-Tab Reflow** – Layout an Module/Konfiguration angleichen: links Route & Live-Position, rechts Status, Actions, Load-Info, Commands.
+3. **HBW Lageransicht** – Lagerstände/Slots darstellen im Modules-Tab, sobald HBW selektiert ist. HBW ist per default selektiert. (z. B. Grid mit Füllständen, gespeist aus dem HBW-Topic im Business-Layer) Vergleich mit Stock-Darstellung aus overview-Tab. GGf ist es ausreichend, die Inventory-Section mit Stock-Info beim Modules-Tab mit Selektion von HBW darzustellen..
+4. **Shopfloor-Benennung** – Module-Tab in der UI/Navigation zu „Shopfloor“ umbenennen und Dokumentation/Tooltips anpassen, damit er als Einstiegspunkt wahrgenommen wird. Der Shopdfloor wird dann an Position 2 der Navigatiosleiste verschoben. (Overview-Tab wird ggf durch TASK 8 Obsolet, da dann alle Info anders angeordnet wird und auf andere Tabs verteilt wird, so dass eine logische Abfolge resultiert.)
+5. **Konfigurations-Tab Layout** – Shopfloor-Layout links, Module rechts; bei kleiner Breite Modulbereich nach unten umbrechen (CSS Grid/Flex + Angular Breakpoints). (Diese Vorgehen soll für alle Tabs gelten, bei denen wir shopfloor-Laxyout verwenden)
+6. **AGV-Tab Reflow** – Layout an Module(=Shopfloor)/Konfiguration angleichen: links Route & Live-Position, rechts Status, Actions, Load-Info, Commands.
 7. **DSP Edge Animation** – Animationssequenz überarbeiten (MC-Funktionen → EDGE xyz_2 verlinken → xyz_1/3 ergänzen → alle drei gestrichelt highlighten) als Grundlage fürs OSF/DSP-Logo.
-8. **Process-Tab Neuaufbau** – Geschäftsprozesse (Customer Orders, Purchase Orders, Production, Storage) mit Swimlanes/Karten darstellen; dient als ERP-Brücke.
+8. **Process-Tab Neuaufbau** – Geschäftsprozesse (Customer Orders, Purchase Orders, Production, Storage) mit Swimlanes/Karten darstellen; dient als Customer und Purchase Order ERP-Brücke. PRODUCTION und STORAGE ORder als Shopfloor Prozesse aus ERP gesteuert)
 9. **Orders-Tab Klarstellung** – Tab in „Shopfloor Orders“ umbenennen, Finished-Liste per Default eingeklappt, letzter Auftrag automatisch expandiert.
 10. **DSP → AGV Link** – Klick auf AGV/FTS-Icon führt Nutzer direkt zum AGV-Tab (Router-Link + Tracking).
-11. **DSP → Modules Link** – Klick auf Device im DSP setzt Module-Tab mit vorselektiertem Device (QueryParam/State Transfer, 1:1 Zuordnung).
+11. **DSP → Modules Link** – Klick auf Device im DSP-Architektur responsive Darstellung setzt Module-Tab mit vorselektiertem Device (QueryParam/State Transfer, 1:1 Zuordnung).
 12. **DSP → ERP Link** – Klick auf BP-ERP öffnet neuen Process-Tab (Purchase/Customer Orders) und zeigt ERP-Bezug.
 13. **OSF Rebranding** – Bezeichner OMF3 → OSF in Code, Assets, Doku; Angular Prefixes, ENV Variablen und README angleichen.
 14. **Azure DevOps Migration** – Mirror/Move Repository inkl. Pipelines nach ORBIS Azure DevOps, Rechte & Secrets definieren.
 15. **OSF Deployment & Storytelling** – Docker-Setup für Hilcher-Box/RPi abschließen, anschließende Blog-Serie zu OSF & DSP Story vorbereiten.
+16. **AIQS-Kamera-Integration (sf-system)** – Anzeige der Information aus der AIQS-Station: Photo des Workpieces. AIQS-Kamera-Daten werden nicht über MQTT übertragen, sondern müssen direkt vom TXT-Controller (IP: 192.168.0.103) via HTTP abgerufen werden. Integration in Module-Tab bei AIQS-Auswahl. API-Endpoint muss noch ermittelt werden (TXT Controller Web-Interface prüfen, Python-Code in `integrations/TXT-AIQS/lib/camera.py` analysieren).
 
 ## 📊 Sprint-Vorgehen
 
