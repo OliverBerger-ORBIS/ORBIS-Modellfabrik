@@ -318,10 +318,10 @@
           </div>
           
           <!-- Command History -->
-          <div class="module-specific-section__history" *ngIf="selectedModuleMeta?.hbwData?.recentActions && selectedModuleMeta.hbwData.recentActions.length > 0">
+          <div class="module-specific-section__history" *ngIf="(selectedModuleMeta?.hbwData?.recentActions?.length || 0) > 0">
             <h5 i18n="@@moduleTabHbwCommandHistory">Command History</h5>
             <div class="history-list">
-              <div class="history-item" *ngFor="let action of selectedModuleMeta.hbwData.recentActions">
+              <div class="history-item" *ngFor="let action of selectedModuleMeta?.hbwData?.recentActions">
                 <span class="action-badge">{{ action.command }}</span>
                 <span class="state-badge">{{ action.state }}</span>
                 <span class="result-badge" *ngIf="action.result">{{ action.result }}</span>
@@ -362,10 +362,10 @@
           </div>
           
           <!-- Command History -->
-          <div class="module-specific-section__history" *ngIf="selectedModuleMeta?.drillData?.recentActions && selectedModuleMeta.drillData.recentActions.length > 0">
+          <div class="module-specific-section__history" *ngIf="(selectedModuleMeta?.drillData?.recentActions?.length || 0) > 0">
             <h5 i18n="@@moduleTabDrillCommandHistory">Command History</h5>
             <div class="history-list">
-              <div class="history-item" *ngFor="let action of selectedModuleMeta.drillData.recentActions">
+              <div class="history-item" *ngFor="let action of selectedModuleMeta?.drillData?.recentActions">
                 <span class="action-badge">{{ action.command }}</span>
                 <span class="state-badge">{{ action.state }}</span>
                 <span class="result-badge" *ngIf="action.result">{{ action.result }}</span>
@@ -406,10 +406,10 @@
           </div>
           
           <!-- Command History -->
-          <div class="module-specific-section__history" *ngIf="selectedModuleMeta?.millData?.recentActions && selectedModuleMeta.millData.recentActions.length > 0">
+          <div class="module-specific-section__history" *ngIf="(selectedModuleMeta?.millData?.recentActions?.length || 0) > 0">
             <h5 i18n="@@moduleTabMillCommandHistory">Command History</h5>
             <div class="history-list">
-              <div class="history-item" *ngFor="let action of selectedModuleMeta.millData.recentActions">
+              <div class="history-item" *ngFor="let action of selectedModuleMeta?.millData?.recentActions">
                 <span class="action-badge">{{ action.command }}</span>
                 <span class="state-badge">{{ action.state }}</span>
                 <span class="result-badge" *ngIf="action.result">{{ action.result }}</span>
