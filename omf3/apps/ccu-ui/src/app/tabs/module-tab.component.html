@@ -1,11 +1,11 @@
 <section class="module-tab">
   <header class="module-tab__toolbar">
     <div class="module-tab__title">
-      <img [src]="headingIcon" alt="Modules icon" class="module-tab__icon" />
+      <img [src]="headingIcon" alt="Shopfloor icon" class="module-tab__icon" />
       <div>
-        <h1 i18n="@@moduleTabHeadline">Modules</h1>
+        <h1 i18n="@@moduleTabHeadline">Shopfloor</h1>
         <p class="module-tab__subtitle" i18n="@@moduleTabDescription">
-          Module overview with status, connections and actions.
+          Shopfloor overview with module status, connections and actions.
         </p>
       </div>
     </div>
@@ -25,7 +25,7 @@
     </div>
   </header>
 
-  <span class="module-tab__hint" i18n="@@moduleTabHint">Data updates automatically from pairing state snapshots.</span>
+  <span class="module-tab__hint" i18n="@@moduleTabHint">Shopfloor data updates automatically from pairing state snapshots.</span>
 
   <ng-container *ngIf="rows$ | async as rows; else loading">
     <div class="module-table__wrapper" *ngIf="rows.length; else empty">
@@ -244,6 +244,7 @@
             <div class="detail-row" *ngIf="selectedModuleMeta?.hbwData?.currentAction">
               <span class="detail-label" i18n="@@moduleTabHbwCurrentAction">Current Action</span>
               <span class="detail-value">
+                <img *ngIf="getCommandEventIcon(selectedModuleMeta?.hbwData?.currentAction?.command)" [src]="getCommandEventIcon(selectedModuleMeta?.hbwData?.currentAction?.command)!" alt="" class="command-event-icon" width="20" height="20" />
                 <span class="action-badge">{{ selectedModuleMeta?.hbwData?.currentAction?.command }}</span>
                 <span class="state-badge">{{ selectedModuleMeta?.hbwData?.currentAction?.state }}</span>
                 <span class="timestamp-badge" *ngIf="selectedModuleMeta?.hbwData?.currentAction?.timestamp">
@@ -289,7 +290,10 @@
                 <tbody>
                   <tr *ngFor="let action of selectedModuleMeta?.hbwData?.recentActions">
                     <td>
-                      <span class="command-name">{{ action.command }}</span>
+                      <span class="command-cell-content">
+                        <img *ngIf="getCommandEventIcon(action.command)" [src]="getCommandEventIcon(action.command)!" alt="" class="command-event-icon" width="20" height="20" />
+                        <span class="command-name">{{ action.command }}</span>
+                      </span>
                     </td>
                     <td>
                       <span class="state-badge" [class]="getStateClass(action.state)">
@@ -321,6 +325,7 @@
             <div class="detail-row" *ngIf="selectedModuleMeta?.drillData?.currentAction">
               <span class="detail-label" i18n="@@moduleTabDrillCurrentAction">Current Action</span>
               <span class="detail-value">
+                <img *ngIf="getCommandEventIcon(selectedModuleMeta?.drillData?.currentAction?.command)" [src]="getCommandEventIcon(selectedModuleMeta?.drillData?.currentAction?.command)!" alt="" class="command-event-icon" width="20" height="20" />
                 <span class="action-badge">{{ selectedModuleMeta?.drillData?.currentAction?.command }}</span>
                 <span class="state-badge">{{ selectedModuleMeta?.drillData?.currentAction?.state }}</span>
                 <span class="timestamp-badge" *ngIf="selectedModuleMeta?.drillData?.currentAction?.timestamp">
@@ -366,7 +371,10 @@
                 <tbody>
                   <tr *ngFor="let action of selectedModuleMeta?.drillData?.recentActions">
                     <td>
-                      <span class="command-name">{{ action.command }}</span>
+                      <span class="command-cell-content">
+                        <img *ngIf="getCommandEventIcon(action.command)" [src]="getCommandEventIcon(action.command)!" alt="" class="command-event-icon" width="20" height="20" />
+                        <span class="command-name">{{ action.command }}</span>
+                      </span>
                     </td>
                     <td>
                       <span class="state-badge" [class]="getStateClass(action.state)">
@@ -456,6 +464,7 @@
             <div class="detail-row" *ngIf="selectedModuleMeta?.millData?.currentAction">
               <span class="detail-label" i18n="@@moduleTabMillCurrentAction">Current Action</span>
               <span class="detail-value">
+                <img *ngIf="getCommandEventIcon(selectedModuleMeta?.millData?.currentAction?.command)" [src]="getCommandEventIcon(selectedModuleMeta?.millData?.currentAction?.command)!" alt="" class="command-event-icon" width="20" height="20" />
                 <span class="action-badge">{{ selectedModuleMeta?.millData?.currentAction?.command }}</span>
                 <span class="state-badge">{{ selectedModuleMeta?.millData?.currentAction?.state }}</span>
                 <span class="timestamp-badge" *ngIf="selectedModuleMeta?.millData?.currentAction?.timestamp">
@@ -501,7 +510,10 @@
                 <tbody>
                   <tr *ngFor="let action of selectedModuleMeta?.millData?.recentActions">
                     <td>
-                      <span class="command-name">{{ action.command }}</span>
+                      <span class="command-cell-content">
+                        <img *ngIf="getCommandEventIcon(action.command)" [src]="getCommandEventIcon(action.command)!" alt="" class="command-event-icon" width="20" height="20" />
+                        <span class="command-name">{{ action.command }}</span>
+                      </span>
                     </td>
                     <td>
                       <span class="state-badge" [class]="getStateClass(action.state)">
@@ -532,11 +544,12 @@
 
           <div class="module-specific-section__details">
             <!-- Only show additional info not already displayed above -->
-            <div class="detail-row" *ngIf="dpsState?.actionState as action">
-              <span class="detail-label" i18n="@@dpsLabelCurrentAction">Current Action</span>
-              <span class="detail-value">
-                <span class="action-badge" [class]="getDpsStateClass(action.state)">
-                  <span class="command">{{ action.command }}</span>
+                <div class="detail-row" *ngIf="dpsState?.actionState as action">
+                  <span class="detail-label" i18n="@@dpsLabelCurrentAction">Current Action</span>
+                  <span class="detail-value">
+                    <img *ngIf="getCommandEventIcon(action.command)" [src]="getCommandEventIcon(action.command)!" alt="" class="command-event-icon" width="20" height="20" />
+                    <span class="action-badge" [class]="getDpsStateClass(action.state)">
+                      <span class="command">{{ action.command }}</span>
                   <span class="state">{{ getDpsStateLabel(action.state) }}</span>
                 </span>
               </span>
@@ -586,6 +599,7 @@
                   <ng-container *ngIf="getDpsRecentActions(dpsState).length === 0 && dpsState?.actionState as action">
                     <tr>
                       <td>
+                        <img *ngIf="getCommandEventIcon(action.command)" [src]="getCommandEventIcon(action.command)!" alt="" class="command-event-icon" width="20" height="20" />
                         <span class="command-name">{{ action.command }}</span>
                       </td>
                       <td>
@@ -603,7 +617,10 @@
                   </ng-container>
                   <tr *ngFor="let action of getDpsRecentActions(dpsState); trackBy: trackByDpsActionId">
                     <td>
-                      <span class="command-name">{{ action.command }}</span>
+                      <span class="command-cell-content">
+                        <img *ngIf="getCommandEventIcon(action.command)" [src]="getCommandEventIcon(action.command)!" alt="" class="command-event-icon" width="20" height="20" />
+                        <span class="command-name">{{ action.command }}</span>
+                      </span>
                     </td>
                     <td>
                       <span class="state-badge" [class]="getDpsStateClass(action.state)">
@@ -637,6 +654,7 @@
             <div class="detail-row" *ngIf="aiqsState?.actionState as action">
               <span class="detail-label" i18n="@@aiqsLabelCurrentAction">Current Action</span>
               <span class="detail-value">
+                <img *ngIf="getCommandEventIcon(action.command)" [src]="getCommandEventIcon(action.command)!" alt="" class="command-event-icon" width="20" height="20" />
                 <span class="action-badge" [class]="getAiqsStateClass(action.state)">
                   <span class="command">{{ action.command }}</span>
                   <span class="state">{{ getAiqsStateLabel(action.state) }}</span>
@@ -712,7 +730,10 @@
                   <ng-container *ngIf="getAiqsRecentActions(aiqsState).length === 0 && aiqsState?.actionState as action">
                     <tr>
                       <td>
-                        <span class="command-name">{{ action.command }}</span>
+                        <span class="command-cell-content">
+                          <img *ngIf="getCommandEventIcon(action.command)" [src]="getCommandEventIcon(action.command)!" alt="" class="command-event-icon" width="20" height="20" />
+                          <span class="command-name">{{ action.command }}</span>
+                        </span>
                       </td>
                       <td>
                         <span class="state-badge" [class]="getAiqsStateClass(action.state)">
@@ -729,7 +750,10 @@
                   </ng-container>
                   <tr *ngFor="let action of getAiqsRecentActions(aiqsState); trackBy: trackByAiqsActionId">
                     <td>
-                      <span class="command-name">{{ action.command }}</span>
+                      <span class="command-cell-content">
+                        <img *ngIf="getCommandEventIcon(action.command)" [src]="getCommandEventIcon(action.command)!" alt="" class="command-event-icon" width="20" height="20" />
+                        <span class="command-name">{{ action.command }}</span>
+                      </span>
                     </td>
                     <td>
                       <span class="state-badge" [class]="getAiqsStateClass(action.state)">

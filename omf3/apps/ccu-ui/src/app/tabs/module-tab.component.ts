@@ -2343,6 +2343,29 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Get event icon for a command
+   * process-event.svg for MILL, DRILL, CHECK_QUALITY
+   * pick-event.svg for PICK
+   * drop-event.svg for DROP
+   */
+  getCommandEventIcon(command: string | undefined): string | null {
+    if (!command) {
+      return null;
+    }
+    const cmd = command.toUpperCase();
+    if (cmd === 'MILL' || cmd === 'DRILL' || cmd === 'CHECK_QUALITY') {
+      return 'assets/svg/shopfloor/shared/process-event.svg';
+    }
+    if (cmd === 'PICK') {
+      return 'assets/svg/shopfloor/shared/pick-event.svg';
+    }
+    if (cmd === 'DROP') {
+      return 'assets/svg/shopfloor/shared/drop-event.svg';
+    }
+    return null;
+  }
+
+  /**
    * Format ISO timestamp to locale time string
    */
   formatTimestamp(timestamp: string | undefined): string {

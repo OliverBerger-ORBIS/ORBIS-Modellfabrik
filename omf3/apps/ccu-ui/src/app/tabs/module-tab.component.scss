@@ -457,6 +457,15 @@
 .detail-value {
   color: #111827;
   word-break: break-word;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.command-event-icon {
+  flex-shrink: 0;
+  vertical-align: middle;
 }
 
 .detail-row .availability,
@@ -740,10 +749,22 @@
   td {
     padding: 0.5rem;
     border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+  }
+
+  .command-cell-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .command-name {
     font-weight: 500;
+  }
+
+  .command-event-icon {
+    flex-shrink: 0;
+    vertical-align: middle;
   }
 
   .state-badge {

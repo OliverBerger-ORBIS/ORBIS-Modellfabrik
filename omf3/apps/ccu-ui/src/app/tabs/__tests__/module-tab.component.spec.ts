@@ -610,5 +610,56 @@ Payload:
     expect(component.sentSequenceCommands[0].command.orderUpdateId).toBe(3); // First 2 were shifted out
     expect(component.sentSequenceCommands[9].command.orderUpdateId).toBe(12); // Last one
   });
+
+  describe('getCommandEventIcon', () => {
+    it('should return process-event.svg for MILL command', () => {
+      const component = createComponent();
+      const icon = component.getCommandEventIcon('MILL');
+      expect(icon).toBe('assets/svg/shopfloor/shared/process-event.svg');
+    });
+
+    it('should return process-event.svg for DRILL command', () => {
+      const component = createComponent();
+      const icon = component.getCommandEventIcon('DRILL');
+      expect(icon).toBe('assets/svg/shopfloor/shared/process-event.svg');
+    });
+
+    it('should return process-event.svg for CHECK_QUALITY command', () => {
+      const component = createComponent();
+      const icon = component.getCommandEventIcon('CHECK_QUALITY');
+      expect(icon).toBe('assets/svg/shopfloor/shared/process-event.svg');
+    });
+
+    it('should return pick-event.svg for PICK command', () => {
+      const component = createComponent();
+      const icon = component.getCommandEventIcon('PICK');
+      expect(icon).toBe('assets/svg/shopfloor/shared/pick-event.svg');
+    });
+
+    it('should return drop-event.svg for DROP command', () => {
+      const component = createComponent();
+      const icon = component.getCommandEventIcon('DROP');
+      expect(icon).toBe('assets/svg/shopfloor/shared/drop-event.svg');
+    });
+
+    it('should return null for unknown commands', () => {
+      const component = createComponent();
+      const icon = component.getCommandEventIcon('UNKNOWN_COMMAND');
+      expect(icon).toBeNull();
+    });
+
+    it('should return null for undefined command', () => {
+      const component = createComponent();
+      const icon = component.getCommandEventIcon(undefined);
+      expect(icon).toBeNull();
+    });
+
+    it('should be case-insensitive', () => {
+      const component = createComponent();
+      expect(component.getCommandEventIcon('pick')).toBe('assets/svg/shopfloor/shared/pick-event.svg');
+      expect(component.getCommandEventIcon('DROP')).toBe('assets/svg/shopfloor/shared/drop-event.svg');
+      expect(component.getCommandEventIcon('mill')).toBe('assets/svg/shopfloor/shared/process-event.svg');
+    });
+  });
 });
 

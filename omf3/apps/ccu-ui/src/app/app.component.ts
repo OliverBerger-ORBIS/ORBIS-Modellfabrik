@@ -27,6 +27,11 @@ const NAVIGATION_ITEMS: Omit<NavigationItem, 'label'>[] = [
     roles: ['operator', 'admin'],
   },
   {
+    id: 'shopfloor',
+    route: '/module',
+    roles: ['operator', 'admin'],
+  },
+  {
     id: 'overview',
     route: '/overview',
     roles: ['operator', 'admin'],
@@ -44,11 +49,6 @@ const NAVIGATION_ITEMS: Omit<NavigationItem, 'label'>[] = [
   {
     id: 'sensor',
     route: '/sensor',
-    roles: ['operator', 'admin'],
-  },
-  {
-    id: 'module',
-    route: '/module',
     roles: ['operator', 'admin'],
   },
   {
@@ -100,6 +100,7 @@ export class AppComponent implements OnDestroy {
   get navigation(): NavigationItem[] {
     const labelMap: Record<string, string> = {
       'dsp': $localize`:@@navDsp:DSP`,
+      'shopfloor': $localize`:@@navShopfloor:Shopfloor`,
       'overview': $localize`:@@navOverview:Overview`,
       'order': $localize`:@@navOrder:Orders`,
       'process': $localize`:@@navProcess:Processes`,
