@@ -10,7 +10,7 @@ import type {
 import { SHOPFLOOR_ASSET_MAP, type OrderFixtureName } from '@omf3/testing-fixtures';
 import { getDashboardController } from '../mock-dashboard';
 import type { Observable } from 'rxjs';
-import { distinctUntilChanged, map, shareReplay } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, shareReplay, startWith, take } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { EnvironmentService } from '../services/environment.service';
 import { ModuleNameService } from '../services/module-name.service';
@@ -23,6 +23,89 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { ShopfloorLayoutConfig, ShopfloorCellConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
 import { ShopfloorMappingService, type ModuleInfo } from '../services/shopfloor-mapping.service';
+import { ICONS } from '../shared/icons/icon.registry';
+
+// DPS/AIQS Serial Numbers
+const DPS_SERIAL = 'SVR4H73275';
+const AIQS_SERIAL = 'SVR4H76530';
+
+// DPS/AIQS Topic Constants
+const DPS_STATE_TOPIC = `module/v1/ff/${DPS_SERIAL}/state`;
+const DPS_CONNECTION_TOPIC = `module/v1/ff/${DPS_SERIAL}/connection`;
+const AIQS_STATE_TOPIC = `module/v1/ff/${AIQS_SERIAL}/state`;
+const AIQS_CONNECTION_TOPIC = `module/v1/ff/${AIQS_SERIAL}/connection`;
+
+// DPS/AIQS Types
+type ActionStateType = 'WAITING' | 'INITIALIZING' | 'RUNNING' | 'FINISHED' | 'FAILED' | string;
+type DpsActionCommandType = 'INPUT_RGB' | 'RGB_NFC' | 'PICK' | 'DROP' | string;
+type AiqsActionCommandType = 'CHECK_QUALITY' | 'PICK' | 'DROP' | string;
+type WorkpieceColor = 'WHITE' | 'BLUE' | 'RED' | null;
+type QualityResult = 'PASSED' | 'FAILED';
+
+interface DpsActionState {
+  id: string;
+  command: DpsActionCommandType;
+  state: ActionStateType;
+  timestamp: string;
+  result?: 'PASSED' | 'FAILED';
+  metadata?: {
+    type?: WorkpieceColor;
+    workpieceId?: string;
+    workpiece?: {
+      type: string;
+      workpieceId: string;
+      state: string;
+    };
+  };
+}
+
+interface DpsState {
+  serialNumber: string;
+  timestamp: string;
+  orderId?: string;
+  orderUpdateId?: number;
+  connectionState?: 'ONLINE' | 'OFFLINE';
+  available?: 'READY' | 'BUSY' | 'ERROR';
+  actionState?: DpsActionState;
+  actionStates?: DpsActionState[];
+  metadata?: {
+    opcuaState?: 'connected' | 'disconnected';
+    [key: string]: unknown;
+  };
+  paused?: boolean;
+  errors?: unknown[];
+  loads?: Array<{
+    type?: WorkpieceColor | string;
+    loadType?: string;
+    [key: string]: unknown;
+  }>;
+}
+
+interface AiqsActionState {
+  id: string;
+  command: AiqsActionCommandType;
+  state: ActionStateType;
+  timestamp: string;
+  result?: QualityResult;
+  metadata?: Record<string, unknown>;
+}
+
+interface AiqsState {
+  serialNumber: string;
+  timestamp: string;
+  orderId?: string;
+  orderUpdateId?: number;
+  connectionState?: 'ONLINE' | 'OFFLINE';
+  available?: 'READY' | 'BUSY' | 'ERROR';
+  actionState?: AiqsActionState;
+  actionStates?: AiqsActionState[];
+  metadata?: {
+    opcuaState?: 'connected' | 'disconnected';
+    [key: string]: unknown;
+  };
+  paused?: boolean;
+  errors?: unknown[];
+}
 
 interface ModuleCommand {
   label: string;
@@ -115,6 +198,13 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
   private readonly subscriptions = new Subscription();
   private fixtureSubscriptions = new Subscription();
   private moduleOverviewSub?: Subscription;
+  private dpsStateSub?: Subscription;
+  private aiqsStateSub?: Subscription;
+  
+  // Accumulated action history (persists across state updates)
+  private allDpsActions: DpsActionState[] = [];
+  private allAiqsActions: AiqsActionState[] = [];
+  
   private currentEnvironmentKey: string;
   private moduleRegistry: ModuleRegistryEntry[] = [];
   private moduleRegistryOrder: string[] = [];
@@ -210,24 +300,37 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
       currentAction?: { command: string; state: string; timestamp?: string };
       storageSlot?: string;
       storageLevel?: string;
+      stockRow?: string | number;
+      stockColumn?: string | number;
       workpieceId?: string;
+      orderId?: string;
       recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
     };
     drillData?: {
       currentAction?: { command: string; state: string; timestamp?: string };
       drillDepth?: number;
       drillSpeed?: number;
+      processingTime?: number;
       workpieceId?: string;
+      orderId?: string;
       recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
     };
     millData?: {
       currentAction?: { command: string; state: string; timestamp?: string };
       millDepth?: number;
       millSpeed?: number;
+      processingTime?: number;
       workpieceId?: string;
+      orderId?: string;
       recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
     };
+    dpsData?: DpsState | null;
+    aiqsData?: AiqsState | null;
   } | null = null;
+
+  // Observable streams for DPS/AIQS
+  dpsState$!: Observable<DpsState | null>;
+  aiqsState$!: Observable<AiqsState | null>;
 
   // Shopfloor layout config for serial number lookup
   private layoutConfig: ShopfloorLayoutConfig | null = null;
@@ -328,6 +431,8 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
     this.fixtureSubscriptions.unsubscribe();
     this.moduleOverviewSub?.unsubscribe();
+    this.dpsStateSub?.unsubscribe();
+    this.aiqsStateSub?.unsubscribe();
   }
 
   trackById(_: number, row: ModuleRow): string {
@@ -521,6 +626,32 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     const dashboardModuleStream$ = this.moduleOverview$;
     this.bindModuleOverviewStream(dashboardModuleStream$);
     this.bindCacheOutputs();
+    
+    // Initialize DPS State stream
+    this.dpsState$ = this.messageMonitor.getLastMessage<DpsState>(DPS_STATE_TOPIC).pipe(
+      map((msg) => {
+        if (msg && msg.valid) {
+          return msg.payload as DpsState;
+        }
+        return null;
+      }),
+      startWith(null),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+
+    // Initialize AIQS State stream
+    this.aiqsState$ = this.messageMonitor.getLastMessage<AiqsState>(AIQS_STATE_TOPIC).pipe(
+      map((msg) => {
+        if (msg && msg.valid) {
+          return msg.payload as AiqsState;
+        }
+        return null;
+      }),
+      startWith(null),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+
+    // Note: DPS/AIQS streams are subscribed in updateSelectedMeta when module is selected
     
     // Subscribe to FTS states to get FTS position
     this.subscriptions.add(
@@ -834,6 +965,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     const moduleId = this.selectedModuleSerialId ?? cell?.id ?? null;
     const moduleDetails =
       moduleId ? snapshot?.modules?.[moduleId] ?? snapshot?.modules?.[cell?.id ?? ''] : null;
+    
 
     const availabilityStatus = (moduleDetails?.availability ?? 'Unknown') as ModuleAvailabilityStatus;
     const availabilityLabel = this.getAvailabilityLabel(availabilityStatus);
@@ -858,12 +990,25 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     // Load sequence commands for this module type
     this.loadSequenceCommands(moduleType);
 
+    // Unsubscribe from previous DPS/AIQS subscriptions
+    this.dpsStateSub?.unsubscribe();
+    this.aiqsStateSub?.unsubscribe();
+    
+    // Clear accumulated history when switching modules
+    if (this.selectedModuleSerialId !== DPS_SERIAL) {
+      this.allDpsActions = [];
+    }
+    if (this.selectedModuleSerialId !== AIQS_SERIAL) {
+      this.allAiqsActions = [];
+    }
+    
     // Get module-specific data based on module type
     const moduleTypeUpper = moduleType.toUpperCase();
     const hbwData = moduleTypeUpper === 'HBW' && moduleId ? this.getHbwData(moduleId) : undefined;
     const drillData = moduleTypeUpper === 'DRILL' && moduleId ? this.getDrillData(moduleId) : undefined;
     const millData = moduleTypeUpper === 'MILL' && moduleId ? this.getMillData(moduleId) : undefined;
-
+    
+    // Create selectedModuleMeta first (dpsData/aiqsData will be updated by subscriptions)
     this.selectedModuleMeta = {
       availability: availabilityStatus,
       availabilityLabel,
@@ -874,14 +1019,52 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
       connectionLabel,
       configured: moduleDetails?.configured,
       lastUpdate: moduleDetails?.lastUpdate,
-      position: cell ? this.formatPosition(cell) : undefined,
       ipAddress: (moduleDetails as any)?.ipAddress ?? undefined,
       moduleType,
       drillAction: moduleType === 'DRILL' ? this.getDrillActionData() : undefined,
       hbwData: hbwData ?? undefined,
       drillData: drillData ?? undefined,
       millData: millData ?? undefined,
+      dpsData: null,
+      aiqsData: null,
     };
+    
+    // Subscribe to DPS/AIQS streams when module is selected
+    if (this.selectedModuleSerialId === DPS_SERIAL) {
+      console.log('[module-tab] DPS selected, subscribing to stream:', DPS_STATE_TOPIC, 'Serial:', this.selectedModuleSerialId);
+      // Subscribe to get current value and updates
+      this.dpsStateSub = this.dpsState$.pipe(
+        distinctUntilChanged((prev, curr) => prev?.timestamp === curr?.timestamp)
+      ).subscribe((state) => {
+        console.log('[module-tab] DPS state update:', state);
+        console.log('[module-tab] DPS actionState:', state?.actionState);
+        console.log('[module-tab] DPS actionState.metadata:', state?.actionState?.metadata);
+        console.log('[module-tab] DPS actionState.metadata.workpiece:', state?.actionState?.metadata?.workpiece);
+        console.log('[module-tab] DPS actionStates:', state?.actionStates);
+        console.log('[module-tab] DPS orderId:', state?.orderId);
+        console.log('[module-tab] DPS workpiece color:', this.getDpsWorkpieceColor(state));
+        if (this.selectedModuleMeta && this.selectedModuleSerialId === DPS_SERIAL) {
+          this.selectedModuleMeta.dpsData = state;
+          this.cdr.markForCheck();
+        }
+      });
+      this.subscriptions.add(this.dpsStateSub);
+    }
+    
+    if (this.selectedModuleSerialId === AIQS_SERIAL) {
+      console.log('[module-tab] AIQS selected, subscribing to stream:', AIQS_STATE_TOPIC, 'Serial:', this.selectedModuleSerialId);
+      // Subscribe to get current value and updates
+      this.aiqsStateSub = this.aiqsState$.pipe(
+        distinctUntilChanged((prev, curr) => prev?.timestamp === curr?.timestamp)
+      ).subscribe((state) => {
+        console.log('[module-tab] AIQS state update:', state);
+        if (this.selectedModuleMeta && this.selectedModuleSerialId === AIQS_SERIAL) {
+          this.selectedModuleMeta.aiqsData = state;
+          this.cdr.markForCheck();
+        }
+      });
+      this.subscriptions.add(this.aiqsStateSub);
+    }
 
     const iconKey = cell?.icon ?? cell?.name ?? moduleDetails?.subType ?? moduleDetails?.id ?? 'QUESTION';
     this.selectedModuleIcon = this.resolveIconPath(iconKey);
@@ -987,6 +1170,17 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
 
     this.selectedModuleSerialId = moduleDetails?.id ?? cell?.serial_number ?? event.id;
     this.selectedModuleName = display.fullName;
+
+    // Debug: Log selected module info
+    console.log('[module-tab] Selected module:', {
+      eventId: event.id,
+      cellSerialNumber: cell?.serial_number,
+      moduleDetailsId: moduleDetails?.id,
+      selectedModuleSerialId: this.selectedModuleSerialId,
+      moduleType,
+      isDPS: this.selectedModuleSerialId === DPS_SERIAL,
+      isAIQS: this.selectedModuleSerialId === AIQS_SERIAL,
+    });
 
     this.updateSelectedMeta(cell);
     this.loadSequenceCommands(moduleType);
@@ -1178,6 +1372,368 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
+  // ===== DPS Helper Methods =====
+  
+  // Note: Connection and Availability are already provided by ModuleOverviewStatus via selectedModuleMeta
+  // These methods are only for DPS-specific state data (actionState, workpiece info, etc.)
+
+  getDpsCurrentAction(state: DpsState | null): DpsActionState | null {
+    return state?.actionState ?? null;
+  }
+
+  getDpsRecentActions(state: DpsState | null): DpsActionState[] {
+    // Accumulate actions from state (avoid duplicates)
+    if (state?.actionStates && state.actionStates.length > 0) {
+      // Add new actions that don't already exist
+      const newActions = state.actionStates.filter(
+        (action) => !this.allDpsActions.some(
+          (existing) => existing.id === action.id && existing.timestamp === action.timestamp
+        )
+      );
+      this.allDpsActions = [...this.allDpsActions, ...newActions];
+    }
+    
+    // Also add single actionState if it exists and is not already in history
+    if (state?.actionState) {
+      const exists = this.allDpsActions.some(
+        (existing) => existing.id === state.actionState!.id && existing.timestamp === state.actionState!.timestamp
+      );
+      if (!exists) {
+        this.allDpsActions = [...this.allDpsActions, state.actionState];
+      }
+    }
+    
+    // Sort by timestamp descending (newest first) and return last 50
+    return [...this.allDpsActions]
+      .sort((a, b) => {
+        const timeA = new Date(a.timestamp).getTime();
+        const timeB = new Date(b.timestamp).getTime();
+        return timeB - timeA; // Descending order
+      })
+      .slice(0, 50); // Keep last 50 actions
+  }
+
+  getDpsWorkpieceColor(state: DpsState | null): WorkpieceColor {
+    // PRIMARY: Check actionStates array (this is where the color actually is in real data)
+    // 1. Check actionStates[].metadata.workpiece.type (for DROP/PICK commands)
+    if (state?.actionStates && state.actionStates.length > 0) {
+      for (const action of state.actionStates) {
+        if (action.metadata?.workpiece?.type) {
+          const color = action.metadata.workpiece.type.toUpperCase();
+          if (color === 'WHITE' || color === 'BLUE' || color === 'RED') {
+            return color as WorkpieceColor;
+          }
+        }
+        // 2. Check actionStates[].metadata.type (for RGB_NFC commands)
+        if (action.metadata?.type) {
+          const color = action.metadata.type.toUpperCase();
+          if (color === 'WHITE' || color === 'BLUE' || color === 'RED') {
+            return color as WorkpieceColor;
+          }
+        }
+      }
+    }
+    // SECONDARY: Check loads array (alternative source)
+    if (state?.loads && state.loads.length > 0) {
+      for (const load of state.loads) {
+        const loadType = (load as { type?: WorkpieceColor | string }).type;
+        if (loadType) {
+          const color = String(loadType).toUpperCase();
+          if (color === 'WHITE' || color === 'BLUE' || color === 'RED') {
+            return color as WorkpieceColor;
+          }
+        }
+      }
+    }
+    // TERTIARY: Check actionState.metadata (fallback, but usually undefined in real data)
+    if (state?.actionState?.metadata?.workpiece?.type) {
+      const color = state.actionState.metadata.workpiece.type.toUpperCase();
+      if (color === 'WHITE' || color === 'BLUE' || color === 'RED') {
+        return color as WorkpieceColor;
+      }
+    }
+    if (state?.actionState?.metadata?.type) {
+      const color = state.actionState.metadata.type.toUpperCase();
+      if (color === 'WHITE' || color === 'BLUE' || color === 'RED') {
+        return color as WorkpieceColor;
+      }
+    }
+    return null;
+  }
+
+  getDpsNfcCode(state: DpsState | null): string | null {
+    // PRIMARY: Check actionStates array (this is where the NFC code actually is in real data)
+    if (state?.actionStates && state.actionStates.length > 0) {
+      for (const action of state.actionStates) {
+        if (action.metadata?.workpiece?.workpieceId) {
+          return action.metadata.workpiece.workpieceId;
+        }
+        if (action.metadata?.workpieceId) {
+          return action.metadata.workpieceId;
+        }
+        // For RGB_NFC commands, result contains the NFC code
+        if (action.command === 'RGB_NFC' && action.result) {
+          return action.result;
+        }
+      }
+    }
+    // SECONDARY: Check actionState (fallback, but usually undefined in real data)
+    if (state?.actionState?.metadata?.workpiece?.workpieceId) {
+      return state.actionState.metadata.workpiece.workpieceId;
+    }
+    if (state?.actionState?.metadata?.workpieceId) {
+      return state.actionState.metadata.workpieceId;
+    }
+    if (state?.actionState?.command === 'RGB_NFC' && state.actionState.result) {
+      return state.actionState.result;
+    }
+    return null;
+  }
+
+  getDpsWorkpieceState(state: DpsState | null): string | null {
+    // Check actionState.metadata.workpiece.state first
+    if (state?.actionState?.metadata?.workpiece?.state) {
+      return state.actionState.metadata.workpiece.state;
+    }
+    // Also check actionStates array
+    if (state?.actionStates) {
+      for (const action of state.actionStates) {
+        if (action.metadata?.workpiece?.state) {
+          return action.metadata.workpiece.state;
+        }
+      }
+    }
+    return null;
+  }
+
+  getDpsColorLabel(color: WorkpieceColor): string {
+    if (!color) return $localize`:@@dpsColorUnknown:Unknown`;
+    switch (color.toUpperCase()) {
+      case 'WHITE':
+        return $localize`:@@dpsColorWhite:White`;
+      case 'BLUE':
+        return $localize`:@@dpsColorBlue:Blue`;
+      case 'RED':
+        return $localize`:@@dpsColorRed:Red`;
+      default:
+        return $localize`:@@dpsColorUnknown:Unknown`;
+    }
+  }
+
+  getDpsColorClass(color: WorkpieceColor): string {
+    if (!color) return 'unknown';
+    return color.toLowerCase();
+  }
+
+  getDpsWorkpieceIcon(color: WorkpieceColor): string | null {
+    if (!color) return null;
+    const colorLower = color.toLowerCase();
+    if (colorLower === 'white') return ICONS.shopfloor.workpieces.white.dim3;
+    if (colorLower === 'blue') return ICONS.shopfloor.workpieces.blue.dim3;
+    if (colorLower === 'red') return ICONS.shopfloor.workpieces.red.dim3;
+    return null;
+  }
+
+  getDpsStateLabel(state: ActionStateType): string {
+    const stateUpper = state.toUpperCase();
+    if (stateUpper === 'WAITING') return $localize`:@@dpsStateWaiting:WAITING`;
+    if (stateUpper === 'INITIALIZING') return $localize`:@@dpsStateInitializing:INITIALIZING`;
+    if (stateUpper === 'RUNNING') return $localize`:@@dpsStateRunning:RUNNING`;
+    if (stateUpper === 'FINISHED') return $localize`:@@dpsStateFinished:FINISHED`;
+    if (stateUpper === 'FAILED') return $localize`:@@dpsStateFailed:FAILED`;
+    return state;
+  }
+
+  getDpsStateClass(state: ActionStateType): string {
+    const stateUpper = state.toUpperCase();
+    if (stateUpper === 'WAITING') return 'waiting';
+    if (stateUpper === 'INITIALIZING') return 'initializing';
+    if (stateUpper === 'RUNNING') return 'running';
+    if (stateUpper === 'FINISHED') return 'finished';
+    if (stateUpper === 'FAILED') return 'failed';
+    return 'unknown';
+  }
+
+  getDpsResultLabel(result: 'PASSED' | 'FAILED' | undefined): string {
+    if (!result) return '-';
+    return result === 'PASSED' ? $localize`:@@dpsResultPassed:PASSED` : $localize`:@@dpsResultFailed:FAILED`;
+  }
+
+  getDpsResultClass(result: 'PASSED' | 'FAILED' | undefined): string {
+    if (!result) return '';
+    return result.toLowerCase();
+  }
+
+  formatDpsTimestamp(timestamp: string): string {
+    try {
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) {
+        return timestamp; // Return original if invalid
+      }
+      return date.toLocaleTimeString();
+    } catch {
+      return timestamp;
+    }
+  }
+
+  getDpsOrderIdDisplay(orderId: string | undefined): string {
+    if (!orderId) return $localize`:@@dpsLabelNoOrder:No Order`;
+    return orderId.length > 12 ? `${orderId.substring(0, 12)}...` : orderId;
+  }
+
+  trackByDpsActionId(_index: number, action: DpsActionState): string {
+    return action.id;
+  }
+
+  // ===== AIQS Helper Methods =====
+
+  // Note: Connection and Availability are already provided by ModuleOverviewStatus via selectedModuleMeta
+  // These methods are only for AIQS-specific state data (actionState, quality results, etc.)
+
+  getAiqsCurrentAction(state: AiqsState | null): AiqsActionState | null {
+    return state?.actionState ?? null;
+  }
+
+  getAiqsRecentActions(state: AiqsState | null): AiqsActionState[] {
+    // Accumulate actions from state (avoid duplicates)
+    if (state?.actionStates && state.actionStates.length > 0) {
+      // Add new actions that don't already exist
+      const newActions = state.actionStates.filter(
+        (action) => !this.allAiqsActions.some(
+          (existing) => existing.id === action.id && existing.timestamp === action.timestamp
+        )
+      );
+      this.allAiqsActions = [...this.allAiqsActions, ...newActions];
+    }
+    
+    // Also add single actionState if it exists and is not already in history
+    if (state?.actionState) {
+      const exists = this.allAiqsActions.some(
+        (existing) => existing.id === state.actionState!.id && existing.timestamp === state.actionState!.timestamp
+      );
+      if (!exists) {
+        this.allAiqsActions = [...this.allAiqsActions, state.actionState];
+      }
+    }
+    
+    // Sort by timestamp descending (newest first) and return last 50
+    return [...this.allAiqsActions]
+      .sort((a, b) => {
+        const timeA = new Date(a.timestamp).getTime();
+        const timeB = new Date(b.timestamp).getTime();
+        return timeB - timeA; // Descending order
+      })
+      .slice(0, 50); // Keep last 50 actions
+  }
+
+  getAiqsQualityChecks(state: AiqsState | null): AiqsActionState[] {
+    return state?.actionStates?.filter(a => a.command === 'CHECK_QUALITY') ?? [];
+  }
+
+  getAiqsTotalChecks(state: AiqsState | null): number {
+    return this.getAiqsQualityChecks(state).length;
+  }
+
+  getAiqsPassedCount(state: AiqsState | null): number {
+    return this.getAiqsQualityChecks(state).filter(a => a.result === 'PASSED').length;
+  }
+
+  getAiqsFailedCount(state: AiqsState | null): number {
+    return this.getAiqsQualityChecks(state).filter(a => a.result === 'FAILED').length;
+  }
+
+  getAiqsSuccessRate(state: AiqsState | null): number {
+    const total = this.getAiqsTotalChecks(state);
+    if (total === 0) return 0;
+    const passed = this.getAiqsPassedCount(state);
+    return Math.round((passed / total) * 100);
+  }
+
+  getAiqsStateLabel(state: ActionStateType): string {
+    const stateUpper = state.toUpperCase();
+    if (stateUpper === 'WAITING') return $localize`:@@aiqsStateWaiting:WAITING`;
+    if (stateUpper === 'INITIALIZING') return $localize`:@@aiqsStateInitializing:INITIALIZING`;
+    if (stateUpper === 'RUNNING') return $localize`:@@aiqsStateRunning:RUNNING`;
+    if (stateUpper === 'FINISHED') return $localize`:@@aiqsStateFinished:FINISHED`;
+    if (stateUpper === 'FAILED') return $localize`:@@aiqsStateFailed:FAILED`;
+    return state;
+  }
+
+  getAiqsStateClass(state: ActionStateType): string {
+    const stateUpper = state.toUpperCase();
+    if (stateUpper === 'WAITING') return 'waiting';
+    if (stateUpper === 'INITIALIZING') return 'initializing';
+    if (stateUpper === 'RUNNING') return 'running';
+    if (stateUpper === 'FINISHED') return 'finished';
+    if (stateUpper === 'FAILED') return 'failed';
+    return 'unknown';
+  }
+
+  getAiqsResultLabel(result: QualityResult | undefined): string {
+    if (!result) return '-';
+    return result === 'PASSED' ? $localize`:@@aiqsStatusPassed:PASSED` : $localize`:@@aiqsStatusFailed:FAILED`;
+  }
+
+  getAiqsResultClass(result: QualityResult | undefined): string {
+    if (!result) return '';
+    return result.toLowerCase();
+  }
+
+  formatAiqsTimestamp(timestamp: string): string {
+    try {
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) {
+        return timestamp; // Return original if invalid
+      }
+      return date.toLocaleTimeString();
+    } catch {
+      return timestamp;
+    }
+  }
+
+  getAiqsOrderIdDisplay(orderId: string | undefined): string {
+    if (!orderId) return $localize`:@@aiqsLabelNoOrder:No Order`;
+    return orderId.length > 12 ? `${orderId.substring(0, 12)}...` : orderId;
+  }
+
+  getAiqsWorkpieceId(state: AiqsState | null | undefined): string | undefined {
+    if (!state) return undefined;
+    // Check actionState.metadata.workpieceId or actionState.metadata.workpiece.workpieceId
+    const actionState = state.actionState;
+    if (actionState?.metadata) {
+      const metadata = actionState.metadata as Record<string, unknown>;
+      if (typeof metadata['workpieceId'] === 'string') {
+        return metadata['workpieceId'] as string;
+      }
+      const workpiece = metadata['workpiece'] as { workpieceId?: string } | undefined;
+      if (workpiece?.workpieceId) {
+        return workpiece.workpieceId;
+      }
+    }
+    // Check actionStates array
+    if (state.actionStates && Array.isArray(state.actionStates)) {
+      for (const action of state.actionStates) {
+        if (action.metadata) {
+          const metadata = action.metadata as Record<string, unknown>;
+          if (typeof metadata['workpieceId'] === 'string') {
+            return metadata['workpieceId'] as string;
+          }
+          const workpiece = metadata['workpiece'] as { workpieceId?: string } | undefined;
+          if (workpiece?.workpieceId) {
+            return workpiece.workpieceId;
+          }
+        }
+      }
+    }
+    return undefined;
+  }
+
+  trackByAiqsActionId(_index: number, action: AiqsActionState): string {
+    return action.id;
+  }
+
+
+
   /**
    * Get message count for a specific module/transport by serial-Id.
    * Counts all messages from topics that belong to this module.
@@ -1296,7 +1852,10 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     currentAction?: { command: string; state: string; timestamp?: string };
     storageSlot?: string;
     storageLevel?: string;
+    stockRow?: string | number;
+    stockColumn?: string | number;
     workpieceId?: string;
+    orderId?: string;
     recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
   } | null {
     try {
@@ -1341,7 +1900,10 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
         } : undefined,
         storageSlot: payload.actionState?.metadata?.slot,
         storageLevel: payload.actionState?.metadata?.level,
+        stockRow: this.extractStockRow(payload),
+        stockColumn: this.extractStockColumn(payload),
         workpieceId: payload.actionState?.metadata?.workpieceId || payload.actionState?.metadata?.workpiece?.workpieceId,
+        orderId: payload.orderId,
         recentActions: recentActions.slice(-10).reverse() // Last 10 actions, newest first
       };
     } catch (error) {
@@ -1357,7 +1919,9 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     currentAction?: { command: string; state: string; timestamp?: string };
     drillDepth?: number;
     drillSpeed?: number;
+    processingTime?: number;
     workpieceId?: string;
+    orderId?: string;
     recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
   } | null {
     try {
@@ -1394,15 +1958,65 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
         }
       }
 
+      // Extract data from actionState or actionStates array
+      const actionState = payload.actionState;
+      const actionStates = payload.actionStates || [];
+      
+      // Try to find DRILL command in actionStates if not in actionState
+      const drillAction = actionState?.command === 'DRILL' ? actionState : 
+        actionStates.find((a: any) => a.command === 'DRILL');
+
+      // Extract processing time: 
+      // 1. From actionState.duration or actionState.metadata.duration
+      // 2. From loads array for duration
+      // 3. From ccu/pairing/state productionDuration (fallback)
+      // Note: The factsheet defines the parameter structure but not the actual value
+      let processingTime: number | undefined = undefined;
+      
+      // First try: From actionState
+      if (drillAction?.duration !== undefined) {
+        processingTime = drillAction.duration;
+      } else if (drillAction?.metadata?.duration !== undefined) {
+        processingTime = drillAction.metadata.duration;
+      } else if (actionState?.duration !== undefined) {
+        processingTime = actionState.duration;
+      } else if (actionState?.metadata?.duration !== undefined) {
+        processingTime = actionState.metadata.duration;
+      } else if (payload.loads && Array.isArray(payload.loads) && payload.loads.length > 0) {
+        // Second try: Check loads array for duration
+        const loadWithDuration = payload.loads.find((l: any) => l.duration !== undefined);
+        if (loadWithDuration?.duration !== undefined) {
+          processingTime = loadWithDuration.duration;
+        }
+      }
+      
+      // Third try: From ccu/pairing/state productionDuration (fallback)
+      if (processingTime === undefined) {
+        const pairingTopic = 'ccu/pairing/state';
+        const pairingHistory = this.messageMonitor.getHistory(pairingTopic);
+        if (pairingHistory.length > 0) {
+          const lastPairing = pairingHistory[pairingHistory.length - 1];
+          const pairingPayload = this.parseModuleStatePayload(lastPairing);
+          if (pairingPayload?.modules && Array.isArray(pairingPayload.modules)) {
+            const moduleInfo = pairingPayload.modules.find((m: any) => m.serialNumber === serialId);
+            if (moduleInfo?.productionDuration !== undefined) {
+              processingTime = moduleInfo.productionDuration;
+            }
+          }
+        }
+      }
+
       return {
-        currentAction: payload.actionState ? {
-          command: payload.actionState.command || 'Unknown',
-          state: payload.actionState.state || 'Unknown',
-          timestamp: payload.actionState.timestamp || lastMsg.timestamp || new Date().toISOString()
+        currentAction: actionState ? {
+          command: actionState.command || 'Unknown',
+          state: actionState.state || 'Unknown',
+          timestamp: actionState.timestamp || lastMsg.timestamp || new Date().toISOString()
         } : undefined,
-        drillDepth: payload.actionState?.metadata?.drillDepth,
-        drillSpeed: payload.actionState?.metadata?.drillSpeed,
-        workpieceId: payload.actionState?.metadata?.workpieceId || payload.actionState?.metadata?.workpiece?.workpieceId,
+        drillDepth: drillAction?.metadata?.drillDepth ?? actionState?.metadata?.drillDepth,
+        drillSpeed: drillAction?.metadata?.drillSpeed ?? actionState?.metadata?.drillSpeed,
+        processingTime,
+        workpieceId: drillAction?.metadata?.workpieceId ?? drillAction?.metadata?.workpiece?.workpieceId ?? actionState?.metadata?.workpieceId ?? actionState?.metadata?.workpiece?.workpieceId,
+        orderId: payload.orderId,
         recentActions: recentActions.slice(-10).reverse() // Last 10 actions, newest first
       };
     } catch (error) {
@@ -1418,7 +2032,9 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     currentAction?: { command: string; state: string; timestamp?: string };
     millDepth?: number;
     millSpeed?: number;
+    processingTime?: number;
     workpieceId?: string;
+    orderId?: string;
     recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
   } | null {
     try {
@@ -1455,15 +2071,65 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
         }
       }
 
+      // Extract data from actionState or actionStates array
+      const actionState = payload.actionState;
+      const actionStates = payload.actionStates || [];
+      
+      // Try to find MILL command in actionStates if not in actionState
+      const millAction = actionState?.command === 'MILL' ? actionState : 
+        actionStates.find((a: any) => a.command === 'MILL');
+
+      // Extract processing time: 
+      // 1. From actionState.duration or actionState.metadata.duration
+      // 2. From loads array for duration
+      // 3. From ccu/pairing/state productionDuration (fallback)
+      // Note: The factsheet defines the parameter structure but not the actual value
+      let processingTime: number | undefined = undefined;
+      
+      // First try: From actionState
+      if (millAction?.duration !== undefined) {
+        processingTime = millAction.duration;
+      } else if (millAction?.metadata?.duration !== undefined) {
+        processingTime = millAction.metadata.duration;
+      } else if (actionState?.duration !== undefined) {
+        processingTime = actionState.duration;
+      } else if (actionState?.metadata?.duration !== undefined) {
+        processingTime = actionState.metadata.duration;
+      } else if (payload.loads && Array.isArray(payload.loads) && payload.loads.length > 0) {
+        // Second try: Check loads array for duration
+        const loadWithDuration = payload.loads.find((l: any) => l.duration !== undefined);
+        if (loadWithDuration?.duration !== undefined) {
+          processingTime = loadWithDuration.duration;
+        }
+      }
+      
+      // Third try: From ccu/pairing/state productionDuration (fallback)
+      if (processingTime === undefined) {
+        const pairingTopic = 'ccu/pairing/state';
+        const pairingHistory = this.messageMonitor.getHistory(pairingTopic);
+        if (pairingHistory.length > 0) {
+          const lastPairing = pairingHistory[pairingHistory.length - 1];
+          const pairingPayload = this.parseModuleStatePayload(lastPairing);
+          if (pairingPayload?.modules && Array.isArray(pairingPayload.modules)) {
+            const moduleInfo = pairingPayload.modules.find((m: any) => m.serialNumber === serialId);
+            if (moduleInfo?.productionDuration !== undefined) {
+              processingTime = moduleInfo.productionDuration;
+            }
+          }
+        }
+      }
+
       return {
-        currentAction: payload.actionState ? {
-          command: payload.actionState.command || 'Unknown',
-          state: payload.actionState.state || 'Unknown',
-          timestamp: payload.actionState.timestamp || lastMsg.timestamp || new Date().toISOString()
+        currentAction: actionState ? {
+          command: actionState.command || 'Unknown',
+          state: actionState.state || 'Unknown',
+          timestamp: actionState.timestamp || lastMsg.timestamp || new Date().toISOString()
         } : undefined,
-        millDepth: payload.actionState?.metadata?.millDepth,
-        millSpeed: payload.actionState?.metadata?.millSpeed,
-        workpieceId: payload.actionState?.metadata?.workpieceId || payload.actionState?.metadata?.workpiece?.workpieceId,
+        millDepth: millAction?.metadata?.millDepth ?? actionState?.metadata?.millDepth,
+        millSpeed: millAction?.metadata?.millSpeed ?? actionState?.metadata?.millSpeed,
+        processingTime,
+        workpieceId: millAction?.metadata?.workpieceId ?? millAction?.metadata?.workpiece?.workpieceId ?? actionState?.metadata?.workpieceId ?? actionState?.metadata?.workpiece?.workpieceId,
+        orderId: payload.orderId,
         recentActions: recentActions.slice(-10).reverse() // Last 10 actions, newest first
       };
     } catch (error) {
@@ -1487,6 +2153,71 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Extract stock row from HBW payload
+   * Checks loads array for loadPosition matching current workpieceId
+   */
+  private extractStockRow(payload: any): string | number | undefined {
+    // First try metadata.row
+    if (payload.actionState?.metadata?.row !== undefined) {
+      return payload.actionState.metadata.row;
+    }
+    
+    // Try to extract from loads array based on workpieceId
+    const workpieceId = payload.actionState?.metadata?.workpieceId || payload.actionState?.metadata?.workpiece?.workpieceId;
+    if (workpieceId && payload.loads && Array.isArray(payload.loads)) {
+      const matchingLoad = payload.loads.find((l: any) => l.loadId === workpieceId && l.loadPosition);
+      if (matchingLoad?.loadPosition) {
+        // loadPosition is like "A1", "B2", etc. - extract first character (row)
+        return matchingLoad.loadPosition.charAt(0);
+      }
+    }
+    
+    // Fallback: try to parse from slot
+    if (payload.actionState?.metadata?.slot) {
+      const slot = String(payload.actionState.metadata.slot);
+      if (slot.length > 0) {
+        return slot.charAt(0);
+      }
+    }
+    
+    return undefined;
+  }
+
+  /**
+   * Extract stock column from HBW payload
+   * Checks loads array for loadPosition matching current workpieceId
+   */
+  private extractStockColumn(payload: any): string | number | undefined {
+    // First try metadata.column
+    if (payload.actionState?.metadata?.column !== undefined) {
+      return payload.actionState.metadata.column;
+    }
+    
+    // Try to extract from loads array based on workpieceId
+    const workpieceId = payload.actionState?.metadata?.workpieceId || payload.actionState?.metadata?.workpiece?.workpieceId;
+    if (workpieceId && payload.loads && Array.isArray(payload.loads)) {
+      const matchingLoad = payload.loads.find((l: any) => l.loadId === workpieceId && l.loadPosition);
+      if (matchingLoad?.loadPosition) {
+        // loadPosition is like "A1", "B2", etc. - extract rest (column)
+        const pos = matchingLoad.loadPosition;
+        if (pos.length > 1) {
+          return pos.substring(1);
+        }
+      }
+    }
+    
+    // Fallback: try to parse from slot
+    if (payload.actionState?.metadata?.slot) {
+      const slot = String(payload.actionState.metadata.slot);
+      if (slot.length > 1) {
+        return slot.substring(1);
+      }
+    }
+    
+    return undefined;
+  }
+
+  /**
    * Format ISO timestamp to locale time string
    */
   formatTimestamp(timestamp: string | undefined): string {
@@ -1498,5 +2229,56 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     } catch {
       return timestamp;
     }
+  }
+
+  /**
+   * Generic state class helper (for all modules)
+   */
+  getStateClass(state: string | undefined): string {
+    if (!state) return 'unknown';
+    const stateUpper = state.toUpperCase();
+    if (stateUpper === 'WAITING') return 'waiting';
+    if (stateUpper === 'INITIALIZING') return 'initializing';
+    if (stateUpper === 'RUNNING') return 'running';
+    if (stateUpper === 'FINISHED') return 'finished';
+    if (stateUpper === 'FAILED') return 'failed';
+    return 'unknown';
+  }
+
+  /**
+   * Generic result class helper (for all modules)
+   */
+  getResultClass(result: string | undefined): string {
+    if (!result) return '';
+    const resultUpper = result.toUpperCase();
+    if (resultUpper === 'PASSED') return 'passed';
+    if (resultUpper === 'FAILED') return 'failed';
+    return '';
+  }
+
+  /**
+   * Check if any action has a result (for conditional Result column display)
+   */
+  hasAnyResult(actions: Array<{ result?: string }> | undefined): boolean {
+    if (!actions || actions.length === 0) return false;
+    return actions.some(a => a.result);
+  }
+
+  /**
+   * Check if DPS actions have any result
+   */
+  hasDpsAnyResult(state: DpsState | null): boolean {
+    const actions = this.getDpsRecentActions(state);
+    if (actions.length === 0 && state?.actionState?.result) return true;
+    return this.hasAnyResult(actions) || !!state?.actionState?.result;
+  }
+
+  /**
+   * Check if AIQS actions have any result
+   */
+  hasAiqsAnyResult(state: AiqsState | null): boolean {
+    const actions = this.getAiqsRecentActions(state);
+    if (actions.length === 0 && state?.actionState?.result) return true;
+    return this.hasAnyResult(actions) || !!state?.actionState?.result;
   }
 }

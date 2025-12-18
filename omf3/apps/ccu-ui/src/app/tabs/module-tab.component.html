@@ -224,73 +224,16 @@
               <span class="detail-label" i18n="@@moduleTabDetailLastUpdate">Last update</span>
               <span class="detail-value">{{ selectedModuleMeta?.lastUpdate || 'Unknown' }}</span>
             </div>
-            <div class="detail-row">
-              <span class="detail-label" i18n="@@moduleTabDetailPosition">Position</span>
-              <span class="detail-value">{{ selectedModuleMeta?.position ?? '—' }}</span>
-            </div>
           </div>
-        </div>
-        <div class="drill-section" *ngIf="selectedModuleMeta?.moduleType === 'DRILL'">
-          <div class="drill-section__header">
-            <h4 i18n="@@moduleTabDrillDspAction">DSP Action – changeLight</h4>
-          </div>
-          <div class="drill-section__lights">
-            <div class="drill-light">
-              <span class="detail-label" i18n="@@moduleTabDrillCurrentLight">Current</span>
-              <div
-                class="drill-light__block drill-light__block--current"
-                [style.background-color]="selectedModuleMeta?.drillAction?.currentLight || '#cccccc'"
-                [attr.aria-label]="'Current color: ' + (selectedModuleMeta?.drillAction?.currentLight || 'none')"
-              >
-                <span *ngIf="!selectedModuleMeta?.drillAction?.currentLight" class="drill-light__no-value">—</span>
-              </div>
-              <div *ngIf="selectedModuleMeta?.drillAction?.currentLight" class="drill-light__value">
-                {{ selectedModuleMeta?.drillAction?.currentLight }}
-              </div>
-            </div>
-            <div class="drill-light">
-              <span class="detail-label" i18n="@@moduleTabDrillPreviousLight">Previous</span>
-              <div
-                class="drill-light__block drill-light__block--previous"
-                [style.background-color]="selectedModuleMeta?.drillAction?.previousLight || '#cccccc'"
-                [attr.aria-label]="'Previous color: ' + (selectedModuleMeta?.drillAction?.previousLight || 'none')"
-              >
-                <span *ngIf="!selectedModuleMeta?.drillAction?.previousLight" class="drill-light__no-value">—</span>
-              </div>
-              <div *ngIf="selectedModuleMeta?.drillAction?.previousLight" class="drill-light__value">
-                {{ selectedModuleMeta?.drillAction?.previousLight }}
-              </div>
-            </div>
-          </div>
-
-          <details class="drill-section__dev">
-            <summary class="drill-section__dev-toggle" i18n="@@moduleTabDrillShowDeveloper">Developer (last 2 dsp/drill/action)</summary>
-            <ng-container *ngIf="selectedModuleMeta?.drillAction?.messages?.length; else noDrillMessages">
-              <div class="drill-msg" *ngFor="let msg of selectedModuleMeta?.drillAction?.messages">
-                <div class="drill-msg__row">
-                  <span class="detail-label">Topic</span>
-                  <span class="detail-value mono">{{ msg.topic }}</span>
-                </div>
-                <div class="drill-msg__row">
-                  <span class="detail-label">Timestamp</span>
-                  <span class="detail-value mono">{{ msg.timestamp }}</span>
-                </div>
-                <div class="drill-msg__row">
-                  <span class="detail-label">Payload</span>
-                  <span class="detail-value mono">{{ msg.payload | json }}</span>
-                </div>
-              </div>
-            </ng-container>
-            <ng-template #noDrillMessages>
-              <p class="detail-value" i18n="@@moduleTabDrillNoMessages">No dsp/drill/action messages yet.</p>
-            </ng-template>
-          </details>
         </div>
         
         <!-- HBW Module-Specific Data -->
         <div class="module-specific-section" *ngIf="selectedModuleMeta?.hbwData && selectedModuleMeta?.moduleType === 'HBW'">
           <div class="module-specific-section__header">
-            <h4 i18n="@@moduleTabHbwDataTitle">Storage Information</h4>
+            <h4>
+              <img src="assets/svg/ui/heading-storage.svg" alt="Storage" class="section-icon-img" width="20" height="20" />
+              <span i18n="@@moduleTabHbwDataTitle">Storage Information</span>
+            </h4>
           </div>
           <div class="module-specific-section__details">
             <div class="detail-row" *ngIf="selectedModuleMeta?.hbwData?.currentAction">
@@ -311,6 +254,14 @@
               <span class="detail-label" i18n="@@moduleTabHbwLevel">Storage Level</span>
               <span class="detail-value">{{ selectedModuleMeta?.hbwData?.storageLevel }}</span>
             </div>
+            <div class="detail-row" *ngIf="selectedModuleMeta?.hbwData?.stockRow !== undefined && selectedModuleMeta?.hbwData?.stockRow !== null && selectedModuleMeta?.hbwData?.stockColumn !== undefined && selectedModuleMeta?.hbwData?.stockColumn !== null">
+              <span class="detail-label" i18n="@@moduleTabHbwStockPosition">Stock Position</span>
+              <span class="detail-value">Row: {{ selectedModuleMeta?.hbwData?.stockRow }}, Column: {{ selectedModuleMeta?.hbwData?.stockColumn }}</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedModuleMeta?.hbwData?.orderId">
+              <span class="detail-label" i18n="@@moduleTabHbwOrderId">Order ID</span>
+              <span class="detail-value">{{ selectedModuleMeta?.hbwData?.orderId }}</span>
+            </div>
             <div class="detail-row" *ngIf="selectedModuleMeta?.hbwData?.workpieceId">
               <span class="detail-label" i18n="@@moduleTabHbwWorkpieceId">Workpiece ID</span>
               <span class="detail-value mono">{{ selectedModuleMeta?.hbwData?.workpieceId }}</span>
@@ -318,23 +269,48 @@
           </div>
           
           <!-- Command History -->
-          <div class="module-specific-section__history" *ngIf="(selectedModuleMeta?.hbwData?.recentActions?.length || 0) > 0">
-            <h5 i18n="@@moduleTabHbwCommandHistory">Command History</h5>
-            <div class="history-list">
-              <div class="history-item" *ngFor="let action of selectedModuleMeta?.hbwData?.recentActions">
-                <span class="action-badge">{{ action.command }}</span>
-                <span class="state-badge">{{ action.state }}</span>
-                <span class="result-badge" *ngIf="action.result">{{ action.result }}</span>
-                <span class="timestamp">{{ formatTimestamp(action.timestamp) }}</span>
-              </div>
+          <details class="module-specific-section__history" *ngIf="(selectedModuleMeta?.hbwData?.recentActions?.length || 0) > 0">
+            <summary class="module-specific-section__history-toggle" i18n="@@moduleTabHbwCommandHistory">Command History ({{ selectedModuleMeta?.hbwData?.recentActions?.length || 0 }})</summary>
+            <div class="module-specific-section__history-table-wrapper">
+              <table class="module-specific-section__history-table">
+                <thead>
+                  <tr>
+                    <th i18n="@@moduleTabHistoryCommand">Command</th>
+                    <th i18n="@@moduleTabHistoryState">State</th>
+                    <th *ngIf="hasAnyResult(selectedModuleMeta?.hbwData?.recentActions)" i18n="@@moduleTabHistoryResult">Result</th>
+                    <th i18n="@@moduleTabHistoryTimestamp">Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let action of selectedModuleMeta?.hbwData?.recentActions">
+                    <td>
+                      <span class="command-name">{{ action.command }}</span>
+                    </td>
+                    <td>
+                      <span class="state-badge" [class]="getStateClass(action.state)">
+                        {{ action.state }}
+                      </span>
+                    </td>
+                    <td *ngIf="hasAnyResult(selectedModuleMeta?.hbwData?.recentActions)">
+                      <span class="result-badge" *ngIf="action.result" [class]="getResultClass(action.result)">
+                        {{ action.result }}
+                      </span>
+                    </td>
+                    <td class="timestamp">{{ formatTimestamp(action.timestamp) }}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-          </div>
+          </details>
         </div>
 
         <!-- DRILL Module-Specific Data -->
         <div class="module-specific-section" *ngIf="selectedModuleMeta?.drillData && selectedModuleMeta?.moduleType === 'DRILL'">
           <div class="module-specific-section__header">
-            <h4 i18n="@@moduleTabDrillDataTitle">Drilling Information</h4>
+            <h4>
+              <img src="assets/svg/ui/heading-modules.svg" alt="Drilling" class="section-icon-img" width="20" height="20" />
+              <span i18n="@@moduleTabDrillDataTitle">Drilling Information</span>
+            </h4>
           </div>
           <div class="module-specific-section__details">
             <div class="detail-row" *ngIf="selectedModuleMeta?.drillData?.currentAction">
@@ -355,6 +331,14 @@
               <span class="detail-label" i18n="@@moduleTabDrillSpeed">Drill Speed</span>
               <span class="detail-value">{{ selectedModuleMeta?.drillData?.drillSpeed }} rpm</span>
             </div>
+            <div class="detail-row" *ngIf="selectedModuleMeta?.drillData?.processingTime !== undefined && selectedModuleMeta?.drillData?.processingTime !== null">
+              <span class="detail-label" i18n="@@moduleTabDrillProcessingTime">Processing Time</span>
+              <span class="detail-value">{{ selectedModuleMeta?.drillData?.processingTime }} s</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedModuleMeta?.drillData?.orderId">
+              <span class="detail-label" i18n="@@moduleTabDrillOrderId">Order ID</span>
+              <span class="detail-value">{{ selectedModuleMeta?.drillData?.orderId }}</span>
+            </div>
             <div class="detail-row" *ngIf="selectedModuleMeta?.drillData?.workpieceId">
               <span class="detail-label" i18n="@@moduleTabDrillWorkpieceId">Workpiece ID</span>
               <span class="detail-value mono">{{ selectedModuleMeta?.drillData?.workpieceId }}</span>
@@ -362,23 +346,106 @@
           </div>
           
           <!-- Command History -->
-          <div class="module-specific-section__history" *ngIf="(selectedModuleMeta?.drillData?.recentActions?.length || 0) > 0">
-            <h5 i18n="@@moduleTabDrillCommandHistory">Command History</h5>
-            <div class="history-list">
-              <div class="history-item" *ngFor="let action of selectedModuleMeta?.drillData?.recentActions">
-                <span class="action-badge">{{ action.command }}</span>
-                <span class="state-badge">{{ action.state }}</span>
-                <span class="result-badge" *ngIf="action.result">{{ action.result }}</span>
-                <span class="timestamp">{{ formatTimestamp(action.timestamp) }}</span>
+          <details class="module-specific-section__history" *ngIf="(selectedModuleMeta?.drillData?.recentActions?.length || 0) > 0">
+            <summary class="module-specific-section__history-toggle" i18n="@@moduleTabDrillCommandHistory">Command History ({{ selectedModuleMeta?.drillData?.recentActions?.length || 0 }})</summary>
+            <div class="module-specific-section__history-table-wrapper">
+              <table class="module-specific-section__history-table">
+                <thead>
+                  <tr>
+                    <th i18n="@@moduleTabHistoryCommand">Command</th>
+                    <th i18n="@@moduleTabHistoryState">State</th>
+                    <th *ngIf="hasAnyResult(selectedModuleMeta?.drillData?.recentActions)" i18n="@@moduleTabHistoryResult">Result</th>
+                    <th i18n="@@moduleTabHistoryTimestamp">Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let action of selectedModuleMeta?.drillData?.recentActions">
+                    <td>
+                      <span class="command-name">{{ action.command }}</span>
+                    </td>
+                    <td>
+                      <span class="state-badge" [class]="getStateClass(action.state)">
+                        {{ action.state }}
+                      </span>
+                    </td>
+                    <td *ngIf="hasAnyResult(selectedModuleMeta?.drillData?.recentActions)">
+                      <span class="result-badge" *ngIf="action.result" [class]="getResultClass(action.result)">
+                        {{ action.result }}
+                      </span>
+                    </td>
+                    <td class="timestamp">{{ formatTimestamp(action.timestamp) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+
+          <!-- DSP Action - changeLight (DRILL specific, between History and Sequence Commands) -->
+          <div class="drill-section" *ngIf="selectedModuleMeta?.moduleType === 'DRILL' && selectedModuleMeta?.drillAction">
+            <div class="drill-section__header">
+              <h4 i18n="@@moduleTabDrillDspAction">DSP Action – changeLight</h4>
+            </div>
+            <div class="drill-section__lights">
+              <div class="drill-light">
+                <span class="detail-label" i18n="@@moduleTabDrillCurrentLight">Current</span>
+                <div
+                  class="drill-light__block drill-light__block--current"
+                  [style.background-color]="selectedModuleMeta?.drillAction?.currentLight || '#cccccc'"
+                  [attr.aria-label]="'Current color: ' + (selectedModuleMeta?.drillAction?.currentLight || 'none')"
+                >
+                  <span *ngIf="!selectedModuleMeta?.drillAction?.currentLight" class="drill-light__no-value">—</span>
+                </div>
+                <div *ngIf="selectedModuleMeta?.drillAction?.currentLight" class="drill-light__value">
+                  {{ selectedModuleMeta?.drillAction?.currentLight }}
+                </div>
+              </div>
+              <div class="drill-light">
+                <span class="detail-label" i18n="@@moduleTabDrillPreviousLight">Previous</span>
+                <div
+                  class="drill-light__block drill-light__block--previous"
+                  [style.background-color]="selectedModuleMeta?.drillAction?.previousLight || '#cccccc'"
+                  [attr.aria-label]="'Previous color: ' + (selectedModuleMeta?.drillAction?.previousLight || 'none')"
+                >
+                  <span *ngIf="!selectedModuleMeta?.drillAction?.previousLight" class="drill-light__no-value">—</span>
+                </div>
+                <div *ngIf="selectedModuleMeta?.drillAction?.previousLight" class="drill-light__value">
+                  {{ selectedModuleMeta?.drillAction?.previousLight }}
+                </div>
               </div>
             </div>
+
+            <details class="drill-section__dev">
+              <summary class="drill-section__dev-toggle" i18n="@@moduleTabDrillShowDeveloper">Developer (last 2 dsp/drill/action)</summary>
+              <ng-container *ngIf="selectedModuleMeta?.drillAction?.messages?.length; else noDrillMessages">
+                <div class="drill-msg" *ngFor="let msg of selectedModuleMeta?.drillAction?.messages">
+                  <div class="drill-msg__row">
+                    <span class="detail-label">Topic</span>
+                    <span class="detail-value mono">{{ msg.topic }}</span>
+                  </div>
+                  <div class="drill-msg__row">
+                    <span class="detail-label">Timestamp</span>
+                    <span class="detail-value mono">{{ msg.timestamp }}</span>
+                  </div>
+                  <div class="drill-msg__row">
+                    <span class="detail-label">Payload</span>
+                    <span class="detail-value mono">{{ msg.payload | json }}</span>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #noDrillMessages>
+                <p class="detail-value" i18n="@@moduleTabDrillNoMessages">No dsp/drill/action messages yet.</p>
+              </ng-template>
+            </details>
           </div>
         </div>
 
         <!-- MILL Module-Specific Data -->
         <div class="module-specific-section" *ngIf="selectedModuleMeta?.millData && selectedModuleMeta?.moduleType === 'MILL'">
           <div class="module-specific-section__header">
-            <h4 i18n="@@moduleTabMillDataTitle">Milling Information</h4>
+            <h4>
+              <img src="assets/svg/ui/heading-modules.svg" alt="Milling" class="section-icon-img" width="20" height="20" />
+              <span i18n="@@moduleTabMillDataTitle">Milling Information</span>
+            </h4>
           </div>
           <div class="module-specific-section__details">
             <div class="detail-row" *ngIf="selectedModuleMeta?.millData?.currentAction">
@@ -399,6 +466,14 @@
               <span class="detail-label" i18n="@@moduleTabMillSpeed">Mill Speed</span>
               <span class="detail-value">{{ selectedModuleMeta?.millData?.millSpeed }} rpm</span>
             </div>
+            <div class="detail-row" *ngIf="selectedModuleMeta?.millData?.processingTime !== undefined && selectedModuleMeta?.millData?.processingTime !== null">
+              <span class="detail-label" i18n="@@moduleTabMillProcessingTime">Processing Time</span>
+              <span class="detail-value">{{ selectedModuleMeta?.millData?.processingTime }} s</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedModuleMeta?.millData?.orderId">
+              <span class="detail-label" i18n="@@moduleTabMillOrderId">Order ID</span>
+              <span class="detail-value">{{ selectedModuleMeta?.millData?.orderId }}</span>
+            </div>
             <div class="detail-row" *ngIf="selectedModuleMeta?.millData?.workpieceId">
               <span class="detail-label" i18n="@@moduleTabMillWorkpieceId">Workpiece ID</span>
               <span class="detail-value mono">{{ selectedModuleMeta?.millData?.workpieceId }}</span>
@@ -406,89 +481,343 @@
           </div>
           
           <!-- Command History -->
-          <div class="module-specific-section__history" *ngIf="(selectedModuleMeta?.millData?.recentActions?.length || 0) > 0">
-            <h5 i18n="@@moduleTabMillCommandHistory">Command History</h5>
-            <div class="history-list">
-              <div class="history-item" *ngFor="let action of selectedModuleMeta?.millData?.recentActions">
-                <span class="action-badge">{{ action.command }}</span>
-                <span class="state-badge">{{ action.state }}</span>
-                <span class="result-badge" *ngIf="action.result">{{ action.result }}</span>
-                <span class="timestamp">{{ formatTimestamp(action.timestamp) }}</span>
-              </div>
+          <details class="module-specific-section__history" *ngIf="(selectedModuleMeta?.millData?.recentActions?.length || 0) > 0">
+            <summary class="module-specific-section__history-toggle" i18n="@@moduleTabMillCommandHistory">Command History ({{ selectedModuleMeta?.millData?.recentActions?.length || 0 }})</summary>
+            <div class="module-specific-section__history-table-wrapper">
+              <table class="module-specific-section__history-table">
+                <thead>
+                  <tr>
+                    <th i18n="@@moduleTabHistoryCommand">Command</th>
+                    <th i18n="@@moduleTabHistoryState">State</th>
+                    <th *ngIf="hasAnyResult(selectedModuleMeta?.millData?.recentActions)" i18n="@@moduleTabHistoryResult">Result</th>
+                    <th i18n="@@moduleTabHistoryTimestamp">Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let action of selectedModuleMeta?.millData?.recentActions">
+                    <td>
+                      <span class="command-name">{{ action.command }}</span>
+                    </td>
+                    <td>
+                      <span class="state-badge" [class]="getStateClass(action.state)">
+                        {{ action.state }}
+                      </span>
+                    </td>
+                    <td *ngIf="hasAnyResult(selectedModuleMeta?.millData?.recentActions)">
+                      <span class="result-badge" *ngIf="action.result" [class]="getResultClass(action.result)">
+                        {{ action.result }}
+                      </span>
+                    </td>
+                    <td class="timestamp">{{ formatTimestamp(action.timestamp) }}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-          </div>
-        </div>
-        
-        <div class="sequence-commands-section" *ngIf="sequenceCommands && (selectedModuleMeta?.moduleType === 'DRILL' || selectedModuleMeta?.moduleType === 'MILL' || selectedModuleMeta?.moduleType === 'AIQS')">
-          <div class="sequence-commands__header">
-            <h4 i18n="@@moduleTabSequenceCommandsTitle">Sequence Commands</h4>
-          </div>
-          <div class="sequence-commands__description">
-            <p class="sequence-commands__warning" i18n="@@moduleTabSequenceCommandsWarning">
-              Do not execute during running production process.
-            </p>
-            <p i18n="@@moduleTabSequenceCommandsDescription">
-              Send commands manually in sequence. Wait for each command to complete before sending the next.
-            </p>
-          </div>
-          <div class="sequence-commands__list">
-            <div 
-              class="sequence-command-item"
-              *ngFor="let cmd of sequenceCommands.commands; let i = index"
-              [class.sequence-command-item--sent]="isCommandSent(i)"
-            >
-              <span class="sequence-command__number">{{ i + 1 }}</span>
-              <span class="sequence-command__label">{{ cmd.action.command }}</span>
-              <span class="sequence-command__status" *ngIf="isCommandSent(i)" i18n="@@moduleTabSequenceCommandSent">Sent</span>
-            </div>
-          </div>
-          <div class="sequence-commands__actions">
-            <button
-              type="button"
-              class="command-button"
-              *ngFor="let cmd of sequenceCommands.commands; let i = index"
-              [disabled]="isCommandSent(i)"
-              (click)="sendSequenceCommand(i)"
-            >
-              <span i18n="@@moduleTabSequenceCommandSend">Senden</span> {{ cmd.action.command }}
-            </button>
-            <button
-              type="button"
-              class="command-button command-button--secondary"
-              [disabled]="sentSequenceCommands.length === 0"
-              (click)="resetSequenceCommands()"
-              i18n="@@moduleTabSequenceCommandReset"
-            >
-              Zurücksetzen
-            </button>
-          </div>
-          <details class="sequence-commands__dev">
-            <summary class="sequence-commands__dev-toggle" i18n="@@moduleTabSequenceCommandsShowDeveloper">Developer (last sent sequence commands)</summary>
-            <ng-container *ngIf="sentSequenceCommands.length > 0; else noSequenceMessages">
-              <div class="sequence-msg" *ngFor="let sent of sentSequenceCommands">
-                <div class="sequence-msg__row">
-                  <span class="detail-label">Topic</span>
-                  <span class="detail-value mono">{{ sent.topic }}</span>
-                </div>
-                <div class="sequence-msg__row">
-                  <span class="detail-label">Timestamp</span>
-                  <span class="detail-value mono">{{ sent.timestamp }}</span>
-                </div>
-                <div class="sequence-msg__row">
-                  <span class="detail-label">Command</span>
-                  <span class="detail-value mono">{{ sent.command.action.command }}</span>
-                </div>
-                <div class="sequence-msg__row">
-                  <span class="detail-label">Payload</span>
-                  <pre class="detail-value mono"><code>{{ formatJsonPayload(sent.command) }}</code></pre>
-                </div>
-              </div>
-            </ng-container>
-            <ng-template #noSequenceMessages>
-              <p class="detail-value" i18n="@@moduleTabSequenceCommandsNoMessages">No sequence commands sent yet.</p>
-            </ng-template>
           </details>
         </div>
+
+        <!-- DPS Section -->
+        <div class="module-specific-section" *ngIf="selectedModuleMeta?.moduleType === 'DPS' && selectedModuleMeta?.dpsData as dpsState">
+          <div class="module-specific-section__header">
+            <h4>
+              <img src="assets/svg/ui/heading-modules.svg" alt="Delivery and Pickup" class="section-icon-img" width="20" height="20" />
+              <span i18n="@@moduleTabDpsInformation">Delivery and Pickup Information</span>
+            </h4>
+          </div>
+
+          <div class="module-specific-section__details">
+            <!-- Only show additional info not already displayed above -->
+            <div class="detail-row" *ngIf="dpsState?.actionState as action">
+              <span class="detail-label" i18n="@@dpsLabelCurrentAction">Current Action</span>
+              <span class="detail-value">
+                <span class="action-badge" [class]="getDpsStateClass(action.state)">
+                  <span class="command">{{ action.command }}</span>
+                  <span class="state">{{ getDpsStateLabel(action.state) }}</span>
+                </span>
+              </span>
+            </div>
+
+            <div class="detail-row">
+              <span class="detail-label" i18n="@@dpsLabelOrderId">Order ID</span>
+              <span class="detail-value">{{ getDpsOrderIdDisplay(dpsState?.orderId) }}</span>
+            </div>
+
+            <!-- Workpiece Information integrated here -->
+            <div class="detail-row" *ngIf="getDpsWorkpieceColor(dpsState) as color">
+              <span class="detail-label" i18n="@@dpsLabelColor">Workpiece Color</span>
+              <span class="detail-value">
+                <div class="workpiece-color-display">
+                  <img *ngIf="getDpsWorkpieceIcon(color)" [src]="getDpsWorkpieceIcon(color)" [alt]="getDpsColorLabel(color)" class="workpiece-3d-icon" width="48" height="48" />
+                  <span class="color-text">{{ getDpsColorLabel(color) }}</span>
+                </div>
+              </span>
+            </div>
+
+            <div class="detail-row" *ngIf="getDpsNfcCode(dpsState) as nfcCode">
+              <span class="detail-label" i18n="@@dpsLabelNfcCode">NFC Code (WorkpieceId)</span>
+              <span class="detail-value mono">{{ nfcCode }}</span>
+            </div>
+
+            <div class="detail-row" *ngIf="getDpsWorkpieceState(dpsState) as workpieceState">
+              <span class="detail-label" i18n="@@dpsLabelWorkpieceState">Workpiece State</span>
+              <span class="detail-value">{{ workpieceState }}</span>
+            </div>
+          </div>
+
+          <!-- Command History -->
+          <details class="module-specific-section__history" *ngIf="dpsState?.actionState || getDpsRecentActions(dpsState).length > 0">
+            <summary class="module-specific-section__history-toggle" i18n="@@dpsLabelHistory">Command History ({{ getDpsRecentActions(dpsState).length || (dpsState?.actionState ? 1 : 0) }})</summary>
+            <div class="module-specific-section__history-table-wrapper">
+              <table class="module-specific-section__history-table">
+                <thead>
+                  <tr>
+                    <th i18n="@@dpsLabelCommand">Command</th>
+                    <th i18n="@@dpsLabelState">State</th>
+                    <th *ngIf="hasDpsAnyResult(dpsState)" i18n="@@dpsLabelResult">Result</th>
+                    <th i18n="@@dpsLabelTimestamp">Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngIf="getDpsRecentActions(dpsState).length === 0 && dpsState?.actionState as action">
+                    <tr>
+                      <td>
+                        <span class="command-name">{{ action.command }}</span>
+                      </td>
+                      <td>
+                        <span class="state-badge" [class]="getDpsStateClass(action.state)">
+                          {{ getDpsStateLabel(action.state) }}
+                        </span>
+                      </td>
+                      <td *ngIf="hasDpsAnyResult(dpsState)">
+                        <span class="result-badge" *ngIf="action.result" [class]="getDpsResultClass(action.result)">
+                          {{ getDpsResultLabel(action.result) }}
+                        </span>
+                      </td>
+                      <td class="timestamp">{{ formatDpsTimestamp(action.timestamp) }}</td>
+                    </tr>
+                  </ng-container>
+                  <tr *ngFor="let action of getDpsRecentActions(dpsState); trackBy: trackByDpsActionId">
+                    <td>
+                      <span class="command-name">{{ action.command }}</span>
+                    </td>
+                    <td>
+                      <span class="state-badge" [class]="getDpsStateClass(action.state)">
+                        {{ getDpsStateLabel(action.state) }}
+                      </span>
+                    </td>
+                      <td *ngIf="hasDpsAnyResult(dpsState)">
+                      <span class="result-badge" *ngIf="action.result" [class]="getDpsResultClass(action.result)">
+                        {{ getDpsResultLabel(action.result) }}
+                      </span>
+                    </td>
+                    <td class="timestamp">{{ formatDpsTimestamp(action.timestamp) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </div>
+
+        <!-- AIQS Section -->
+        <div class="module-specific-section" *ngIf="selectedModuleMeta?.moduleType === 'AIQS' && selectedModuleMeta?.aiqsData as aiqsState">
+          <div class="module-specific-section__header">
+            <h4>
+              <img src="assets/svg/ui/heading-sensors.svg" alt="Check Quality" class="section-icon-img" width="20" height="20" />
+              <span i18n="@@moduleTabAiqsInformation">Check Quality Information</span>
+            </h4>
+          </div>
+
+          <div class="module-specific-section__details">
+            <!-- Only show additional info not already displayed above -->
+            <div class="detail-row" *ngIf="aiqsState?.actionState as action">
+              <span class="detail-label" i18n="@@aiqsLabelCurrentAction">Current Action</span>
+              <span class="detail-value">
+                <span class="action-badge" [class]="getAiqsStateClass(action.state)">
+                  <span class="command">{{ action.command }}</span>
+                  <span class="state">{{ getAiqsStateLabel(action.state) }}</span>
+                  <span class="result-badge" *ngIf="action.command === 'CHECK_QUALITY' && action.result" [class]="getAiqsResultClass(action.result)">
+                    {{ action.result === 'PASSED' ? 'TRUE' : (action.result === 'FAILED' ? 'FALSE' : action.result) }}
+                  </span>
+                </span>
+              </span>
+            </div>
+
+            <div class="detail-row">
+              <span class="detail-label" i18n="@@aiqsLabelOrderId">Order ID</span>
+              <span class="detail-value">{{ getAiqsOrderIdDisplay(aiqsState?.orderId) }}</span>
+            </div>
+            <div class="detail-row" *ngIf="getAiqsWorkpieceId(aiqsState)">
+              <span class="detail-label" i18n="@@aiqsLabelWorkpieceId">Workpiece ID</span>
+              <span class="detail-value mono">{{ getAiqsWorkpieceId(aiqsState) }}</span>
+            </div>
+          </div>
+
+          <!-- Quality Results -->
+          <div class="module-specific-section__quality" *ngIf="getAiqsTotalChecks(aiqsState) > 0">
+            <div class="module-specific-section__header">
+              <h4>
+                <img src="assets/svg/ui/heading-sensors.svg" alt="Quality" class="section-icon-img" width="20" height="20" />
+                <span i18n="@@aiqsLabelResults">Quality Results</span>
+              </h4>
+            </div>
+
+            <div class="module-specific-section__details">
+              <div class="detail-row">
+                <span class="detail-label" i18n="@@aiqsLabelTotal">Total Checks</span>
+                <span class="detail-value total-count">{{ getAiqsTotalChecks(aiqsState) }}</span>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label" i18n="@@aiqsLabelPassed">Passed</span>
+                <span class="detail-value">
+                  <img src="assets/svg/shopfloor/shared/status-online.svg" alt="Passed" width="16" height="16" />
+                  <span>{{ getAiqsPassedCount(aiqsState) }}</span>
+                </span>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label" i18n="@@aiqsLabelFailed">Failed</span>
+                <span class="detail-value">
+                  <img src="assets/svg/shopfloor/shared/status-offline.svg" alt="Failed" width="16" height="16" />
+                  <span>{{ getAiqsFailedCount(aiqsState) }}</span>
+                </span>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label" i18n="@@aiqsLabelSuccessRate">Success Rate</span>
+                <span class="detail-value">{{ getAiqsSuccessRate(aiqsState) }}%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Check History -->
+          <details class="module-specific-section__history" *ngIf="aiqsState?.actionState || getAiqsRecentActions(aiqsState).length > 0">
+            <summary class="module-specific-section__history-toggle" i18n="@@aiqsLabelHistory">Check History ({{ getAiqsRecentActions(aiqsState).length || (aiqsState?.actionState ? 1 : 0) }})</summary>
+            <div class="module-specific-section__history-table-wrapper">
+              <table class="module-specific-section__history-table">
+                <thead>
+                  <tr>
+                    <th i18n="@@aiqsLabelCommand">Command</th>
+                    <th i18n="@@aiqsLabelState">State</th>
+                    <th *ngIf="hasAiqsAnyResult(aiqsState)" i18n="@@aiqsLabelResult">Result</th>
+                    <th i18n="@@aiqsLabelTimestamp">Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngIf="getAiqsRecentActions(aiqsState).length === 0 && aiqsState?.actionState as action">
+                    <tr>
+                      <td>
+                        <span class="command-name">{{ action.command }}</span>
+                      </td>
+                      <td>
+                        <span class="state-badge" [class]="getAiqsStateClass(action.state)">
+                          {{ getAiqsStateLabel(action.state) }}
+                        </span>
+                      </td>
+                      <td *ngIf="hasAiqsAnyResult(aiqsState)">
+                        <span class="result-badge" *ngIf="action.result" [class]="getAiqsResultClass(action.result)">
+                          {{ getAiqsResultLabel(action.result) }}
+                        </span>
+                      </td>
+                      <td class="timestamp">{{ formatAiqsTimestamp(action.timestamp) }}</td>
+                    </tr>
+                  </ng-container>
+                  <tr *ngFor="let action of getAiqsRecentActions(aiqsState); trackBy: trackByAiqsActionId">
+                    <td>
+                      <span class="command-name">{{ action.command }}</span>
+                    </td>
+                    <td>
+                      <span class="state-badge" [class]="getAiqsStateClass(action.state)">
+                        {{ getAiqsStateLabel(action.state) }}
+                      </span>
+                    </td>
+                    <td *ngIf="hasAiqsAnyResult(aiqsState)">
+                      <span class="result-badge" *ngIf="action.result" [class]="getAiqsResultClass(action.result)">
+                        {{ getAiqsResultLabel(action.result) }}
+                      </span>
+                    </td>
+                    <td class="timestamp">{{ formatAiqsTimestamp(action.timestamp) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </div>
+        
+        <!-- Sequence Commands (collapsed, at the bottom for DRILL/MILL/AIQS) -->
+        <details class="sequence-commands-section" *ngIf="sequenceCommands && (selectedModuleMeta?.moduleType === 'DRILL' || selectedModuleMeta?.moduleType === 'MILL' || selectedModuleMeta?.moduleType === 'AIQS')">
+          <summary class="sequence-commands__header">
+            <h4 i18n="@@moduleTabSequenceCommandsTitle">Sequence Commands</h4>
+            <span class="sequence-commands__chevron"></span>
+          </summary>
+          <div class="sequence-commands__content">
+            <div class="sequence-commands__description">
+              <p class="sequence-commands__warning" i18n="@@moduleTabSequenceCommandsWarning">
+                Do not execute during running production process.
+              </p>
+              <p i18n="@@moduleTabSequenceCommandsDescription">
+                Send commands manually in sequence. Wait for each command to complete before sending the next.
+              </p>
+            </div>
+            <div class="sequence-commands__list">
+              <div 
+                class="sequence-command-item"
+                *ngFor="let cmd of sequenceCommands.commands; let i = index"
+                [class.sequence-command-item--sent]="isCommandSent(i)"
+              >
+                <span class="sequence-command__number">{{ i + 1 }}</span>
+                <span class="sequence-command__label">{{ cmd.action.command }}</span>
+                <span class="sequence-command__status" *ngIf="isCommandSent(i)" i18n="@@moduleTabSequenceCommandSent">Sent</span>
+              </div>
+            </div>
+            <div class="sequence-commands__actions">
+              <button
+                type="button"
+                class="command-button"
+                *ngFor="let cmd of sequenceCommands.commands; let i = index"
+                [disabled]="isCommandSent(i)"
+                (click)="sendSequenceCommand(i)"
+              >
+                <span i18n="@@moduleTabSequenceCommandSend">Senden</span> {{ cmd.action.command }}
+              </button>
+              <button
+                type="button"
+                class="command-button command-button--secondary"
+                [disabled]="sentSequenceCommands.length === 0"
+                (click)="resetSequenceCommands()"
+                i18n="@@moduleTabSequenceCommandReset"
+              >
+                Zurücksetzen
+              </button>
+            </div>
+            <details class="sequence-commands__dev">
+              <summary class="sequence-commands__dev-toggle" i18n="@@moduleTabSequenceCommandsShowDeveloper">Developer (last sent sequence commands)</summary>
+              <ng-container *ngIf="sentSequenceCommands.length > 0; else noSequenceMessages">
+                <div class="sequence-msg" *ngFor="let sent of sentSequenceCommands">
+                  <div class="sequence-msg__row">
+                    <span class="detail-label">Topic</span>
+                    <span class="detail-value mono">{{ sent.topic }}</span>
+                  </div>
+                  <div class="sequence-msg__row">
+                    <span class="detail-label">Timestamp</span>
+                    <span class="detail-value mono">{{ sent.timestamp }}</span>
+                  </div>
+                  <div class="sequence-msg__row">
+                    <span class="detail-label">Command</span>
+                    <span class="detail-value mono">{{ sent.command.action.command }}</span>
+                  </div>
+                  <div class="sequence-msg__row">
+                    <span class="detail-label">Payload</span>
+                    <pre class="detail-value mono"><code>{{ formatJsonPayload(sent.command) }}</code></pre>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #noSequenceMessages>
+                <p class="detail-value" i18n="@@moduleTabSequenceCommandsNoMessages">No sequence commands sent yet.</p>
+              </ng-template>
+            </details>
+          </div>
+        </details>
       </div>
     </div>
   </div>

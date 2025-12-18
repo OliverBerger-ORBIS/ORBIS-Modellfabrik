@@ -235,7 +235,7 @@ describe('ConfigurationTabComponent', () => {
     expect(component.connectedLabel).toBeDefined();
     expect(component.configuredLabel).toBeDefined();
     expect(component.lastUpdateLabel).toBeDefined();
-    expect(component.positionLabel).toBeDefined();
+    expect(component.gridPositionLabel).toBeDefined();
   });
 
   it('should resolve asset path', () => {

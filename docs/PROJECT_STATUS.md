@@ -1,6 +1,6 @@
 # ORBIS Modellfabrik - Projekt Status
 
-**Letzte Aktualisierung:** 17.12.2025  
+**Letzte Aktualisierung:** 18.12.2025  
 **Aktueller Status:** OSF (vormals OMF3) UI-Finishing & Kunden-Demos; OMF2 als Legacy eingefroren
 
 ## 📋 Wichtige Erkenntnisse (Session-Notizen)
@@ -65,8 +65,8 @@
 5. **Demo Excellence** – OBS/Teams Playbooks, kundenspezifische Animationen (Gedore), Blog-Serie zu OSF & DSP zur Lead-Generierung.
 
 ## 📝 Offene Todos
-1. **Module-Tab Status-Erweiterung** – Copilot/PR-Statusleisten (AIQS/DPS) in `omf3/apps/ccu-ui` übernehmen, Komponenten generalisieren und für HBW/DRILL/MILL identische Detailbereiche bereitstellen.
-2. **Sequence Commands bündeln** – Sequenzlisten für AIQS/DRILL/MILL in ein gemeinsames Collapsible-Panel am unteren Rand verschieben (Accordion-Komponente + konsistente Beschriftung).
+1. ✅ **Module-Tab Status-Erweiterung** – Copilot/PR-Statusleisten (AIQS/DPS) in `omf3/apps/ccu-ui` übernehmen, Komponenten generalisieren und für HBW/DRILL/MILL identische Detailbereiche bereitstellen. **(Erledigt: 18.12.2025)**
+2. ✅ **Sequence Commands bündeln** – Sequenzlisten für AIQS/DRILL/MILL in ein gemeinsames Collapsible-Panel am unteren Rand verschieben (Accordion-Komponente + konsistente Beschriftung). **(Erledigt: 18.12.2025)**
 3. **HBW Lageransicht** – Lagerstände/Slots darstellen im Modules-Tab, sobald HBW selektiert ist. HBW ist per default selektiert. (z. B. Grid mit Füllständen, gespeist aus dem HBW-Topic im Business-Layer) Vergleich mit Stock-Darstellung aus overview-Tab. GGf ist es ausreichend, die Inventory-Section mit Stock-Info beim Modules-Tab mit Selektion von HBW darzustellen..
 4. **Shopfloor-Benennung** – Module-Tab in der UI/Navigation zu „Shopfloor“ umbenennen und Dokumentation/Tooltips anpassen, damit er als Einstiegspunkt wahrgenommen wird. Der Shopdfloor wird dann an Position 2 der Navigatiosleiste verschoben. (Overview-Tab wird ggf durch TASK 8 Obsolet, da dann alle Info anders angeordnet wird und auf andere Tabs verteilt wird, so dass eine logische Abfolge resultiert.)
 5. **Konfigurations-Tab Layout** – Shopfloor-Layout links, Module rechts; bei kleiner Breite Modulbereich nach unten umbrechen (CSS Grid/Flex + Angular Breakpoints). (Diese Vorgehen soll für alle Tabs gelten, bei denen wir shopfloor-Laxyout verwenden)
@@ -100,7 +100,7 @@
 ### Sprint 11 (12.12 - 24.12.2025) - **AKTUELL**
 - **Status:** In Bearbeitung
 - **Fokus:** Gedore Remote-Präsentation, DSP-Animationen, OBS/Teams Playbook, Module-Tab UX.
-- **Erreicht:** Konftel Cam50 Settings + OBS-Doku aktualisiert, DSP-Mockup interaktiv geplant, Todo-Backlog priorisiert.
+- **Erreicht:** Konftel Cam50 Settings + OBS-Doku aktualisiert, DSP-Mockup interaktiv geplant, Todo-Backlog priorisiert. Module-Tab Status-Erweiterung abgeschlossen (DPS/AIQS/HBW/DRILL/MILL mit einheitlicher Struktur, Workpiece-Informationen integriert, Sequence Commands gebündelt).
 - **In Arbeit:** DSP-Links (AGV/Devices/ERP), Process-Tab Konzept, kundenspezifische Animationen.
 
 ### Sprint 10 (28.11 - 11.12.2025) - **ABGESCHLOSSEN**

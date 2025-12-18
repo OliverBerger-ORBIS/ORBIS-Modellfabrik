@@ -44,6 +44,8 @@ interface LayoutCell {
   type?: string;
   background?: string;
   isSelected?: boolean;
+  position?: { x: number; y: number };
+  size?: { w: number; h: number };
 }
 
 interface LayoutViewModel {
@@ -95,7 +97,9 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
   readonly connectedLabel = $localize`:@@configurationConnectedLabel:Connected`;
   readonly configuredLabel = $localize`:@@configurationConfiguredLabel:Configured`;
   readonly lastUpdateLabel = $localize`:@@configurationLastUpdateLabel:Last Update`;
-  readonly positionLabel = $localize`:@@configurationPositionLabel:Position`;
+  readonly gridPositionLabel = $localize`:@@configurationGridPositionLabel:Grid Position`;
+  readonly cellPositionLabel = $localize`:@@configurationCellPositionLabel:Cell Position`;
+  readonly cellDimensionLabel = $localize`:@@configurationCellDimensionLabel:Cell Dimension`;
 
   private readonly fixedPositionDetails: Record<
     string,
@@ -335,6 +339,8 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
       rowSpan,
       columnSpan,
       icon: meta.icon || this.resolveAssetPath(SHOPFLOOR_ASSET_MAP[iconKey] ?? iconKey),
+      position: cell.position,
+      size: cell.size,
     };
   }
 
@@ -372,8 +378,16 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
           value: cell.type ?? this.unknownLabel,
         },
         {
-          label: this.positionLabel,
-          value: this.formatPosition(cell),
+          label: this.gridPositionLabel,
+          value: this.formatGridPosition(cell),
+        },
+        {
+          label: this.cellPositionLabel,
+          value: this.formatCellPosition(cell),
+        },
+        {
+          label: this.cellDimensionLabel,
+          value: this.formatCellDimension(cell),
         },
       ];
 
@@ -409,7 +423,9 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         subtitle: info.subtitle,
         items: [
           ...info.items,
-          { label: this.positionLabel, value: this.formatPosition(cell) },
+          { label: this.gridPositionLabel, value: this.formatGridPosition(cell) },
+          { label: this.cellPositionLabel, value: this.formatCellPosition(cell) },
+          { label: this.cellDimensionLabel, value: this.formatCellDimension(cell) },
           { label: $localize`:@@configurationIconLabel:Icon`, value: cell.type ?? this.unknownLabel },
         ],
         icon: cell.icon,
@@ -420,7 +436,9 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     return {
       title: cell.label,
       items: [
-        { label: this.positionLabel, value: this.formatPosition(cell) },
+        { label: this.gridPositionLabel, value: this.formatGridPosition(cell) },
+        { label: this.cellPositionLabel, value: this.formatCellPosition(cell) },
+        { label: this.cellDimensionLabel, value: this.formatCellDimension(cell) },
         { label: $localize`:@@configurationIconLabel:Icon`, value: cell.type ?? this.unknownLabel },
       ],
       icon: cell.icon,
@@ -501,8 +519,22 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     return fallback.startsWith('/') ? fallback.slice(1) : fallback;
   }
 
-  private formatPosition(cell: LayoutCell): string {
+  private formatGridPosition(cell: LayoutCell): string {
     return `R${cell.row + 1} • C${cell.column + 1}`;
+  }
+
+  private formatCellPosition(cell: LayoutCell): string {
+    if (!cell.position) {
+      return this.unknownLabel;
+    }
+    return `x: ${cell.position.x}, y: ${cell.position.y}`;
+  }
+
+  private formatCellDimension(cell: LayoutCell): string {
+    if (!cell.size) {
+      return this.unknownLabel;
+    }
+    return `w: ${cell.size.w}, h: ${cell.size.h}`;
   }
 
   get isMockMode(): boolean {
