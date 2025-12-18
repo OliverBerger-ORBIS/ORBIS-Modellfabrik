@@ -595,6 +595,76 @@
   font-weight: 500;
 }
 
+.timestamp-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin-left: 0.5rem;
+  font-family: monospace;
+}
+
+.result-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-right: 0.5rem;
+  
+  &:contains('PASSED') {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+  
+  &:contains('FAILED') {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+}
+
+.module-specific-section__history {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f3f4f6;
+
+  h5 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.history-list {
+  display: grid;
+  gap: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: #f9fafb;
+  border-radius: 4px;
+  font-size: 0.875rem;
+
+  .timestamp {
+    margin-left: auto;
+    color: #9ca3af;
+    font-size: 0.75rem;
+    font-family: monospace;
+  }
+}
+
 .sequence-commands-section {
   margin-top: 1rem;
   padding-top: 1rem;

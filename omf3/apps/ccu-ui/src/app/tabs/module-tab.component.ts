@@ -207,22 +207,25 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
       messages: MonitoredMessage[];
     };
     hbwData?: {
-      currentAction?: { command: string; state: string };
+      currentAction?: { command: string; state: string; timestamp?: string };
       storageSlot?: string;
       storageLevel?: string;
       workpieceId?: string;
+      recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
     };
     drillData?: {
-      currentAction?: { command: string; state: string };
+      currentAction?: { command: string; state: string; timestamp?: string };
       drillDepth?: number;
       drillSpeed?: number;
       workpieceId?: string;
+      recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
     };
     millData?: {
-      currentAction?: { command: string; state: string };
+      currentAction?: { command: string; state: string; timestamp?: string };
       millDepth?: number;
       millSpeed?: number;
       workpieceId?: string;
+      recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
     };
   } | null = null;
 
@@ -1290,10 +1293,11 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
    * Get HBW-specific data from MQTT state messages
    */
   private getHbwData(serialId: string): {
-    currentAction?: { command: string; state: string };
+    currentAction?: { command: string; state: string; timestamp?: string };
     storageSlot?: string;
     storageLevel?: string;
     workpieceId?: string;
+    recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
   } | null {
     try {
       const stateTopic = `module/v1/ff/${serialId}/state`;
@@ -1311,14 +1315,34 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
         return null;
       }
 
+      // Build recent actions from history (last 10)
+      const recentActions: Array<{ command: string; state: string; timestamp: string; result?: string }> = [];
+      for (const msg of history) {
+        try {
+          const p = this.parseModuleStatePayload(msg);
+          if (p?.actionState) {
+            recentActions.push({
+              command: p.actionState.command || 'Unknown',
+              state: p.actionState.state || 'Unknown',
+              timestamp: p.actionState.timestamp || msg.timestamp || new Date().toISOString(),
+              result: p.actionState.result
+            });
+          }
+        } catch (error) {
+          // Skip invalid messages
+        }
+      }
+
       return {
         currentAction: payload.actionState ? {
           command: payload.actionState.command || 'Unknown',
-          state: payload.actionState.state || 'Unknown'
+          state: payload.actionState.state || 'Unknown',
+          timestamp: payload.actionState.timestamp || lastMsg.timestamp || new Date().toISOString()
         } : undefined,
         storageSlot: payload.actionState?.metadata?.slot,
         storageLevel: payload.actionState?.metadata?.level,
         workpieceId: payload.actionState?.metadata?.workpieceId || payload.actionState?.metadata?.workpiece?.workpieceId,
+        recentActions: recentActions.slice(-10).reverse() // Last 10 actions, newest first
       };
     } catch (error) {
       console.warn('[ModuleTab] Failed to get HBW data', error);
@@ -1330,10 +1354,11 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
    * Get DRILL-specific data from MQTT state messages
    */
   private getDrillData(serialId: string): {
-    currentAction?: { command: string; state: string };
+    currentAction?: { command: string; state: string; timestamp?: string };
     drillDepth?: number;
     drillSpeed?: number;
     workpieceId?: string;
+    recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
   } | null {
     try {
       const stateTopic = `module/v1/ff/${serialId}/state`;
@@ -1351,14 +1376,34 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
         return null;
       }
 
+      // Build recent actions from history (last 10)
+      const recentActions: Array<{ command: string; state: string; timestamp: string; result?: string }> = [];
+      for (const msg of history) {
+        try {
+          const p = this.parseModuleStatePayload(msg);
+          if (p?.actionState) {
+            recentActions.push({
+              command: p.actionState.command || 'Unknown',
+              state: p.actionState.state || 'Unknown',
+              timestamp: p.actionState.timestamp || msg.timestamp || new Date().toISOString(),
+              result: p.actionState.result
+            });
+          }
+        } catch (error) {
+          // Skip invalid messages
+        }
+      }
+
       return {
         currentAction: payload.actionState ? {
           command: payload.actionState.command || 'Unknown',
-          state: payload.actionState.state || 'Unknown'
+          state: payload.actionState.state || 'Unknown',
+          timestamp: payload.actionState.timestamp || lastMsg.timestamp || new Date().toISOString()
         } : undefined,
         drillDepth: payload.actionState?.metadata?.drillDepth,
         drillSpeed: payload.actionState?.metadata?.drillSpeed,
         workpieceId: payload.actionState?.metadata?.workpieceId || payload.actionState?.metadata?.workpiece?.workpieceId,
+        recentActions: recentActions.slice(-10).reverse() // Last 10 actions, newest first
       };
     } catch (error) {
       console.warn('[ModuleTab] Failed to get DRILL data', error);
@@ -1370,10 +1415,11 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
    * Get MILL-specific data from MQTT state messages
    */
   private getMillData(serialId: string): {
-    currentAction?: { command: string; state: string };
+    currentAction?: { command: string; state: string; timestamp?: string };
     millDepth?: number;
     millSpeed?: number;
     workpieceId?: string;
+    recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
   } | null {
     try {
       const stateTopic = `module/v1/ff/${serialId}/state`;
@@ -1391,14 +1437,34 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
         return null;
       }
 
+      // Build recent actions from history (last 10)
+      const recentActions: Array<{ command: string; state: string; timestamp: string; result?: string }> = [];
+      for (const msg of history) {
+        try {
+          const p = this.parseModuleStatePayload(msg);
+          if (p?.actionState) {
+            recentActions.push({
+              command: p.actionState.command || 'Unknown',
+              state: p.actionState.state || 'Unknown',
+              timestamp: p.actionState.timestamp || msg.timestamp || new Date().toISOString(),
+              result: p.actionState.result
+            });
+          }
+        } catch (error) {
+          // Skip invalid messages
+        }
+      }
+
       return {
         currentAction: payload.actionState ? {
           command: payload.actionState.command || 'Unknown',
-          state: payload.actionState.state || 'Unknown'
+          state: payload.actionState.state || 'Unknown',
+          timestamp: payload.actionState.timestamp || lastMsg.timestamp || new Date().toISOString()
         } : undefined,
         millDepth: payload.actionState?.metadata?.millDepth,
         millSpeed: payload.actionState?.metadata?.millSpeed,
         workpieceId: payload.actionState?.metadata?.workpieceId || payload.actionState?.metadata?.workpiece?.workpieceId,
+        recentActions: recentActions.slice(-10).reverse() // Last 10 actions, newest first
       };
     } catch (error) {
       console.warn('[ModuleTab] Failed to get MILL data', error);
@@ -1417,6 +1483,17 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
       return JSON.parse(String(msg.payload));
     } catch {
       return null;
+    }
+  }
+
+  /**
+   * Format ISO timestamp to locale time string
+   */
+  formatTimestamp(timestamp: string): string {
+    try {
+      return new Date(timestamp).toLocaleTimeString();
+    } catch {
+      return timestamp;
     }
   }
 }
