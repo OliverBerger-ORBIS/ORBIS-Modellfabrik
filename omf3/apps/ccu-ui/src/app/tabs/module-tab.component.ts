@@ -172,7 +172,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     'module-action-history': $localize`:@@moduleActionHistoryFixtureLabel:Module Test Data`,
   };
 
-  activeFixture: OrderFixtureName | 'shopfloor-status' | 'drill-action' = 'startup';
+  activeFixture: OrderFixtureName | 'shopfloor-status' | 'drill-action' | 'module-action-history' = 'startup';
   moduleOverview$!: Observable<ModuleOverviewState>;
   rows$!: Observable<ModuleRow[]>;
   moduleStatusMap$!: Observable<Map<string, { connected: boolean; availability: ModuleAvailabilityStatus }>>;

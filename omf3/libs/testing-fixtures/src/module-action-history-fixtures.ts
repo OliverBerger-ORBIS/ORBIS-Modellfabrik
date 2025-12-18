@@ -1,4 +1,4 @@
-import { defer, from, Observable } from 'rxjs';
+import { defer, from, Observable, of } from 'rxjs';
 import { concatMap, delay } from 'rxjs/operators';
 import type { RawMqttMessage } from '@omf3/gateway';
 
