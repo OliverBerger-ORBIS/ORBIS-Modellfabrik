@@ -24,4 +24,14 @@ vendor/
 __pycache__/
 *.pyc
 
+# Node modules - verhindert TypeScript Language Server Überlastung
+node_modules/
+dist/
+build/
+out/
+
+# Große Session-Dateien (werden nicht für Code-Analyse benötigt)
+data/omf-data/sessions/*.log
+data/omf-data/sessions/*.db
+
 

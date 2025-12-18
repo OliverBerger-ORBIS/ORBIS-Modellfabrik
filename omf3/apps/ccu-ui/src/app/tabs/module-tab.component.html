@@ -229,6 +229,11 @@
         
         <!-- HBW Module-Specific Data -->
         <div class="module-specific-section" *ngIf="selectedModuleMeta?.hbwData && selectedModuleMeta?.moduleType === 'HBW'">
+          <!-- Stock Grid (moved to top) -->
+          <div class="module-specific-section__stock-grid">
+            <app-hbw-stock-grid></app-hbw-stock-grid>
+          </div>
+
           <div class="module-specific-section__header">
             <h4>
               <img src="assets/svg/ui/heading-storage.svg" alt="Storage" class="section-icon-img" width="20" height="20" />

@@ -1,0 +1,24 @@
+<div class="hbw-stock-grid" *ngIf="inventorySlots$ | async as slots">
+  <div class="hbw-stock-grid__corner"></div>
+  <div class="hbw-stock-grid__column-label" *ngFor="let column of [1, 2, 3]">{{ column }}</div>
+  <ng-container *ngFor="let row of ['A', 'B', 'C']; let rowIndex = index">
+    <div class="hbw-stock-grid__row-label">{{ row }}</div>
+    <ng-container *ngFor="let columnIndex of [0, 1, 2]">
+      <ng-container *ngIf="slots[rowIndex * 3 + columnIndex] as slot">
+        <figure
+          [title]="getSlotTooltip(slot)"
+          class="hbw-stock-grid__slot"
+          [class]="getSlotClass(slot)"
+        >
+          <img
+            [src]="getSlotIcon(slot)"
+            [alt]="getSlotLabel(slot)"
+            width="96"
+            height="96"
+          />
+          <figcaption class="hbw-stock-grid__slot-label">{{ slot.location }}</figcaption>
+        </figure>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+</div>

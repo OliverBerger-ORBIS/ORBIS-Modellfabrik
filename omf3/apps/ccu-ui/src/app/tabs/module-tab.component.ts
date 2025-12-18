@@ -19,6 +19,7 @@ import { ModuleOverviewStateService } from '../services/module-overview-state.se
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
 import { MessageMonitorService, type MonitoredMessage } from '../services/message-monitor.service';
 import { ModuleDetailsSidebarComponent } from '../components/module-details-sidebar/module-details-sidebar.component';
+import { HbwStockGridComponent } from '../components/hbw-stock-grid/hbw-stock-grid.component';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { ShopfloorLayoutConfig, ShopfloorCellConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
@@ -188,7 +189,7 @@ const STATUS_ICONS = {
 @Component({
   standalone: true,
   selector: 'app-module-tab',
-  imports: [NgIf, NgFor, NgClass, AsyncPipe, JsonPipe, ShopfloorPreviewComponent, ModuleDetailsSidebarComponent],
+  imports: [NgIf, NgFor, NgClass, AsyncPipe, JsonPipe, ShopfloorPreviewComponent, ModuleDetailsSidebarComponent, HbwStockGridComponent],
   templateUrl: './module-tab.component.html',
   styleUrls: ['./module-tab.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -213,6 +214,9 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
   // Shopfloor preview state
   shopfloorPreviewExpanded = false;
   private readonly shopfloorPreviewStorageKey = 'module-tab-shopfloor-preview-expanded';
+  
+  // Module selection persistence
+  private readonly moduleSelectionStorageKey = 'module-tab-selected-module-serial-id';
 
   constructor(
     private readonly environmentService: EnvironmentService,
@@ -694,7 +698,46 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.moduleStatusMap$.subscribe((map) => {
         this.currentModuleStatusMap = map;
+        
+        // Update selectedModuleMeta when status changes
+        if (this.selectedModuleSerialId && this.selectedModuleMeta) {
+          const currentStatus = map.get(this.selectedModuleSerialId);
+          if (currentStatus) {
+            // Update availability status
+            this.selectedModuleMeta.availability = currentStatus.availability;
+            this.selectedModuleMeta.availabilityLabel = this.getAvailabilityLabel(currentStatus.availability);
+            this.selectedModuleMeta.availabilityIcon = this.getAvailabilityIcon(currentStatus.availability);
+            this.selectedModuleMeta.availabilityClass = this.getAvailabilityClass(currentStatus.availability);
+            
+            // Update connection status
+            this.selectedModuleMeta.connected = currentStatus.connected;
+            this.selectedModuleMeta.connectionLabel = currentStatus.connected === true
+              ? $localize`:@@moduleTabConnected:Connected`
+              : currentStatus.connected === false
+              ? $localize`:@@moduleTabDisconnected:Disconnected`
+              : $localize`:@@moduleTabUnknown:Unknown`;
+            this.selectedModuleMeta.connectionIcon = currentStatus.connected === true
+              ? STATUS_ICONS.connection.connected
+              : currentStatus.connected === false
+              ? STATUS_ICONS.connection.disconnected
+              : STATUS_ICONS.availability.unknown;
+          }
+        }
+        
         this.cdr.markForCheck();
+      })
+    );
+    
+    // Restore or set default module selection when rows are available
+    this.subscriptions.add(
+      this.rows$.pipe(
+        filter((rows) => rows.length > 0),
+        take(1) // Only trigger once when first rows are available
+      ).subscribe(() => {
+        // Delay slightly to ensure module states are fully initialized
+        setTimeout(() => {
+          this.restoreOrSetDefaultModuleSelection();
+        }, 200);
       })
     );
   }
@@ -1146,6 +1189,10 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
         this.selectedModuleSerialId = moduleEntry.id;
         const display = this.moduleNameService.getModuleDisplayName(moduleEntry.subType ?? moduleType);
         this.selectedModuleName = display.fullName;
+        
+        // Save selection to localStorage
+        this.saveModuleSelection(this.selectedModuleSerialId);
+        
         this.updateSelectedMeta(null);
         this.loadSequenceCommands(moduleEntry.subType ?? moduleType);
         this.cdr.markForCheck();
@@ -1170,6 +1217,9 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
 
     this.selectedModuleSerialId = moduleDetails?.id ?? cell?.serial_number ?? event.id;
     this.selectedModuleName = display.fullName;
+
+    // Save selection to localStorage
+    this.saveModuleSelection(this.selectedModuleSerialId);
 
     // Debug: Log selected module info
     console.log('[module-tab] Selected module:', {
@@ -2148,6 +2198,81 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
       }
       return JSON.parse(String(msg.payload));
     } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Restore module selection from localStorage or set HBW as default
+   */
+  private restoreOrSetDefaultModuleSelection(): void {
+    const snapshot = this.moduleOverviewState.getSnapshot(this.currentEnvironmentKey);
+    const moduleStates = snapshot?.modules ?? {};
+    
+    if (Object.keys(moduleStates).length === 0) {
+      // No modules available yet, try again later
+      return;
+    }
+
+    // Try to restore saved selection
+    const savedSerialId = this.loadModuleSelection();
+    if (savedSerialId) {
+      const moduleEntry = Object.values(moduleStates).find((m) => m.id === savedSerialId);
+      if (moduleEntry) {
+        // Restore saved selection
+        const moduleType = moduleEntry.subType ?? 'UNKNOWN';
+        const display = this.moduleNameService.getModuleDisplayName(moduleType);
+        this.selectedModuleSerialId = savedSerialId;
+        this.selectedModuleName = display.fullName;
+        
+        const cell = this.layoutConfig?.cells.find((c: ShopfloorCellConfig) => c.serial_number === savedSerialId) ?? null;
+        this.updateSelectedMeta(cell);
+        this.loadSequenceCommands(moduleType);
+        this.cdr.markForCheck();
+        return;
+      }
+    }
+
+    // No saved selection or saved module not found - set HBW as default
+    const hbwModule = Object.values(moduleStates).find((m) => m.subType?.toUpperCase() === 'HBW');
+    if (hbwModule) {
+      const display = this.moduleNameService.getModuleDisplayName('HBW');
+      this.selectedModuleSerialId = hbwModule.id;
+      this.selectedModuleName = display.fullName;
+      
+      const cell = this.layoutConfig?.cells.find((c: ShopfloorCellConfig) => c.serial_number === hbwModule.id) ?? null;
+      this.updateSelectedMeta(cell);
+      this.loadSequenceCommands('HBW');
+      this.saveModuleSelection(hbwModule.id);
+      this.cdr.markForCheck();
+    }
+  }
+
+  /**
+   * Save module selection to localStorage
+   */
+  private saveModuleSelection(serialId: string | null): void {
+    try {
+      if (serialId) {
+        localStorage.setItem(this.moduleSelectionStorageKey, serialId);
+      } else {
+        localStorage.removeItem(this.moduleSelectionStorageKey);
+      }
+    } catch (error) {
+      // Ignore localStorage errors
+      console.warn('[module-tab] Failed to save module selection:', error);
+    }
+  }
+
+  /**
+   * Load module selection from localStorage
+   */
+  private loadModuleSelection(): string | null {
+    try {
+      return localStorage.getItem(this.moduleSelectionStorageKey);
+    } catch (error) {
+      // Ignore localStorage errors
+      console.warn('[module-tab] Failed to load module selection:', error);
       return null;
     }
   }

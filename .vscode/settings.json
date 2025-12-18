@@ -1,0 +1,51 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  
+  // TypeScript Language Server Optimierungen
+  "typescript.tsserver.maxTsServerMemory": 4096,
+  "typescript.tsserver.watchOptions": {
+    "excludeDirectories": [
+      "**/node_modules",
+      "**/dist",
+      "**/build",
+      "**/.git"
+    ],
+    "excludeFiles": [
+      "**/*.log",
+      "**/*.db"
+    ]
+  },
+  
+  // File Watcher Optimierungen
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/.git/**": true,
+    "**/data/omf-data/sessions/**": true,
+    "**/*.log": true,
+    "**/*.db": true
+  },
+  
+  // Search Optimierungen
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.git": true,
+    "**/data/omf-data/sessions": true,
+    "**/*.log": true,
+    "**/*.db": true
+  },
+  
+  // TypeScript: Nur Projekt-Dateien indexieren
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "typescript.suggest.autoImports": true,
+  
+  // Performance-Optimierungen
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": false
+  }
+}

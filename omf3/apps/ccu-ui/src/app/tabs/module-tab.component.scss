@@ -612,6 +612,11 @@
   gap: 0.5rem;
 }
 
+.module-specific-section__stock-grid {
+  // Stock Grid is first element, no additional border needed
+  margin-bottom: 1rem;
+}
+
 .action-badge {
   display: inline-block;
   padding: 0.25rem 0.5rem;
