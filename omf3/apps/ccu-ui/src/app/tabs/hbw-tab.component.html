@@ -1,15 +1,15 @@
-<section class="dps-tab">
-  <header class="dps-tab__toolbar">
-    <div class="dps-tab__title">
-      <img [src]="headingIcon" alt="DPS" class="dps-tab__icon" width="32" height="32" />
+<section class="hbw-tab">
+  <header class="hbw-tab__toolbar">
+    <div class="hbw-tab__title">
+      <img [src]="headingIcon" alt="HBW" class="hbw-tab__icon" width="32" height="32" />
       <div>
         <h1>{{ headingTitle }}</h1>
-        <p class="dps-tab__subtitle">
+        <p class="hbw-tab__subtitle">
           {{ headingSubtitle }}
         </p>
       </div>
     </div>
-    <div class="dps-tab__fixtures" *ngIf="isMockMode">
+    <div class="hbw-tab__fixtures" *ngIf="isMockMode">
       <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
       <div class="fixture-switch">
         <button
@@ -22,30 +22,30 @@
         </button>
       </div>
       <div class="environment-hint" *ngIf="isReplayMode">
-        <span i18n="@@dpsReplayHint">Using replay environment - DPS data from MQTT broker</span>
+        <span i18n="@@hbwReplayHint">Using replay environment - HBW data from MQTT broker</span>
       </div>
     </div>
   </header>
 
-  <div class="dps-tab__content" *ngIf="dpsState$ | async as dpsState; else noData">
-    <div class="dps-tab__grid">
+  <div class="hbw-tab__content" *ngIf="hbwState$ | async as hbwState; else noData">
+    <div class="hbw-tab__grid">
       <!-- Left Column: Status & Connection -->
-      <div class="dps-tab__column dps-tab__column--left">
+      <div class="hbw-tab__column hbw-tab__column--left">
         <!-- Status Section -->
-        <section class="dps-tab__section status-section">
+        <section class="hbw-tab__section status-section">
           <h2>
             <img [src]="statusIcon" alt="Status" class="section-icon-img" width="24" height="24" />
-            <span i18n="@@dpsStatusHeading">Status</span>
-            <span class="serial-badge">{{ dpsState.serialNumber }}</span>
+            <span i18n="@@hbwStatusHeading">Status</span>
+            <span class="serial-badge">{{ hbwState.serialNumber }}</span>
           </h2>
           
           <div class="status-card">
             <div class="status-item">
               <span class="status-label">{{ labelConnection }}</span>
               <div class="status-value">
-                <span class="status-badge" [class.online]="getConnectionStatus(dpsState) === 'ONLINE'" [class.offline]="getConnectionStatus(dpsState) === 'OFFLINE'">
-                  <img [src]="getConnectionStatus(dpsState) === 'ONLINE' ? connectionOnlineIcon : connectionOfflineIcon" alt="" width="16" height="16" />
-                  <span>{{ getConnectionStatus(dpsState) === 'ONLINE' ? statusOnline : statusOffline }}</span>
+                <span class="status-badge" [class.online]="getConnectionStatus(hbwState) === 'ONLINE'" [class.offline]="getConnectionStatus(hbwState) === 'OFFLINE'">
+                  <img [src]="getConnectionStatus(hbwState) === 'ONLINE' ? connectionOnlineIcon : connectionOfflineIcon" alt="" width="16" height="16" />
+                  <span>{{ getConnectionStatus(hbwState) === 'ONLINE' ? statusOnline : statusOffline }}</span>
                 </span>
               </div>
             </div>
@@ -54,10 +54,10 @@
               <span class="status-label">{{ labelAvailability }}</span>
               <div class="status-value">
                 <span class="status-badge" 
-                      [class.ready]="getAvailability(dpsState) === 'READY'" 
-                      [class.busy]="getAvailability(dpsState) === 'BUSY'"
-                      [class.error]="getAvailability(dpsState) === 'ERROR'">
-                  <span>{{ getAvailability(dpsState) === 'READY' ? statusReady : (getAvailability(dpsState) === 'BUSY' ? statusBusy : statusError) }}</span>
+                      [class.ready]="getAvailability(hbwState) === 'READY'" 
+                      [class.busy]="getAvailability(hbwState) === 'BUSY'"
+                      [class.error]="getAvailability(hbwState) === 'ERROR'">
+                  <span>{{ getAvailability(hbwState) === 'READY' ? statusReady : (getAvailability(hbwState) === 'BUSY' ? statusBusy : statusError) }}</span>
                 </span>
               </div>
             </div>
@@ -65,11 +65,11 @@
             <div class="status-item">
               <span class="status-label">{{ labelOrderId }}</span>
               <div class="status-value">
-                <span class="order-id">{{ getOrderIdDisplay(dpsState.orderId) }}</span>
+                <span class="order-id">{{ getOrderIdDisplay(hbwState.orderId) }}</span>
               </div>
             </div>
 
-            <div class="status-item" *ngIf="getCurrentAction(dpsState) as action">
+            <div class="status-item" *ngIf="getCurrentAction(hbwState) as action">
               <span class="status-label">{{ labelCurrentAction }}</span>
               <div class="status-value">
                 <span class="action-badge" [class]="getStateClass(action.state)">
@@ -81,33 +81,32 @@
           </div>
         </section>
 
-        <!-- Workpiece Information Section -->
-        <section class="dps-tab__section workpiece-section">
+        <!-- Storage Information Section -->
+        <section class="hbw-tab__section storage-section">
           <h2>
-            <img [src]="workpieceIcon" alt="Workpiece" class="section-icon-img" width="24" height="24" />
-            <span i18n="@@dpsWorkpieceHeading">Workpiece Information</span>
+            <img [src]="storageIcon" alt="Storage" class="section-icon-img" width="24" height="24" />
+            <span>{{ labelStorageInfo }}</span>
           </h2>
 
-          <div class="workpiece-card">
-            <div class="workpiece-item">
-              <span class="workpiece-label">{{ labelWorkpieceColor }}</span>
-              <div class="workpiece-value">
-                <span class="color-indicator" [class]="'color-' + getColorClass(getWorkpieceColor(dpsState))"></span>
-                <span class="color-text">{{ getColorLabel(getWorkpieceColor(dpsState)) }}</span>
+          <div class="storage-card">
+            <div class="storage-item">
+              <span class="storage-label">{{ labelSlot }}</span>
+              <div class="storage-value">
+                <span class="slot-value">{{ getStorageSlot(hbwState) ?? labelNoSlot }}</span>
               </div>
             </div>
 
-            <div class="workpiece-item">
-              <span class="workpiece-label">{{ labelNfcCode }}</span>
-              <div class="workpiece-value">
-                <span class="nfc-code">{{ getNfcCode(dpsState) ?? labelNfcNone }}</span>
+            <div class="storage-item">
+              <span class="storage-label">{{ labelLevel }}</span>
+              <div class="storage-value">
+                <span class="level-value">{{ getStorageLevel(hbwState) ?? labelNoLevel }}</span>
               </div>
             </div>
 
-            <div class="workpiece-item" *ngIf="getWorkpieceState(dpsState) as workpieceState">
-              <span class="workpiece-label">{{ labelWorkpieceState }}</span>
-              <div class="workpiece-value">
-                <span class="workpiece-state">{{ workpieceState }}</span>
+            <div class="storage-item">
+              <span class="storage-label">{{ labelWorkpieceId }}</span>
+              <div class="storage-value">
+                <span class="workpiece-id">{{ getWorkpieceId(hbwState) ?? '-' }}</span>
               </div>
             </div>
           </div>
@@ -115,8 +114,8 @@
       </div>
 
       <!-- Right Column: Command History -->
-      <div class="dps-tab__column dps-tab__column--right">
-        <section class="dps-tab__section history-section">
+      <div class="hbw-tab__column hbw-tab__column--right">
+        <section class="hbw-tab__section history-section">
           <h2>
             <img [src]="historyIcon" alt="History" class="section-icon-img" width="24" height="24" />
             <span>{{ labelCommandHistory }}</span>
@@ -151,7 +150,7 @@
                     <td class="timestamp">{{ formatTimestamp(action.timestamp) }}</td>
                   </tr>
                   <tr *ngIf="recentActions.length === 0">
-                    <td colspan="4" class="no-data" i18n="@@dpsNoActionsYet">No actions recorded yet</td>
+                    <td colspan="4" class="no-data" i18n="@@hbwNoActionsYet">No actions recorded yet</td>
                   </tr>
                 </ng-container>
               </tbody>
@@ -163,8 +162,8 @@
   </div>
 
   <ng-template #noData>
-    <div class="dps-tab__no-data">
-      <p i18n="@@dpsNoDataAvailable">No DPS data available. Waiting for MQTT messages...</p>
+    <div class="hbw-tab__no-data">
+      <p i18n="@@hbwNoDataAvailable">No HBW data available. Waiting for MQTT messages...</p>
     </div>
   </ng-template>
 </section>

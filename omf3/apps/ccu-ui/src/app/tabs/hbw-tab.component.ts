@@ -9,25 +9,25 @@ import { ModuleNameService } from '../services/module-name.service';
 import { getDashboardController } from '../mock-dashboard';
 import type { OrderFixtureName } from '@omf3/testing-fixtures';
 
-// DPS Serial Number
-const DPS_SERIAL = 'SVR4H73275';
-const DPS_STATE_TOPIC = `module/v1/ff/${DPS_SERIAL}/state`;
-const DPS_ORDER_TOPIC = `module/v1/ff/${DPS_SERIAL}/order`;
-const DPS_CONNECTION_TOPIC = `module/v1/ff/${DPS_SERIAL}/connection`;
+// HBW Serial Number
+const HBW_SERIAL = 'SVR3QA0022';
+const HBW_STATE_TOPIC = `module/v1/ff/${HBW_SERIAL}/state`;
+const HBW_ORDER_TOPIC = `module/v1/ff/${HBW_SERIAL}/order`;
+const HBW_CONNECTION_TOPIC = `module/v1/ff/${HBW_SERIAL}/connection`;
 
-// DPS Types
+// HBW Types
 type ActionStateType = 'WAITING' | 'INITIALIZING' | 'RUNNING' | 'FINISHED' | 'FAILED' | string;
-type ActionCommandType = 'INPUT_RGB' | 'RGB_NFC' | 'PICK' | 'DROP' | string;
-type WorkpieceColor = 'WHITE' | 'BLUE' | 'RED' | null;
+type ActionCommandType = 'PICK' | 'DROP' | 'factsheetRequest' | string;
 
-interface DpsActionState {
+interface HbwActionState {
   id: string;
   command: ActionCommandType;
   state: ActionStateType;
   timestamp: string;
   result?: 'PASSED' | 'FAILED';
   metadata?: {
-    type?: WorkpieceColor;
+    slot?: string;
+    level?: string;
     workpieceId?: string;
     workpiece?: {
       type: string;
@@ -37,34 +37,34 @@ interface DpsActionState {
   };
 }
 
-interface DpsState {
+interface HbwState {
   serialNumber: string;
   timestamp: string;
   orderId?: string;
   orderUpdateId?: number;
   connectionState?: 'ONLINE' | 'OFFLINE';
   available?: 'READY' | 'BUSY' | 'ERROR';
-  actionState?: DpsActionState;
-  actionStates?: DpsActionState[];
+  actionState?: HbwActionState;
+  actionStates?: HbwActionState[];
 }
 
 @Component({
   standalone: true,
-  selector: 'app-dps-tab',
+  selector: 'app-hbw-tab',
   imports: [CommonModule],
-  templateUrl: './dps-tab.component.html',
-  styleUrl: './dps-tab.component.scss',
+  templateUrl: './hbw-tab.component.html',
+  styleUrl: './hbw-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DpsTabComponent implements OnInit, OnDestroy {
+export class HbwTabComponent implements OnInit, OnDestroy {
   private dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
 
   // Observable streams
-  dpsState$!: Observable<DpsState | null>;
+  hbwState$!: Observable<HbwState | null>;
   connection$!: Observable<any | null>;
-  dpsOrder$!: Observable<any | null>;
-  recentActions$!: Observable<DpsActionState[]>;
+  hbwOrder$!: Observable<any | null>;
+  recentActions$!: Observable<HbwActionState[]>;
 
   // Fixtures for testing
   readonly fixtureOptions: OrderFixtureName[] = [
@@ -80,47 +80,45 @@ export class DpsTabComponent implements OnInit, OnDestroy {
   activeFixture: OrderFixtureName | null = this.dashboard.getCurrentFixture();
 
   // Icons
-  readonly headingIcon = 'assets/svg/shopfloor/stations/dps-station.svg';
+  readonly headingIcon = 'assets/svg/shopfloor/stations/hbw-station.svg';
   readonly statusIcon = 'assets/svg/ui/heading-modules.svg';
-  readonly workpieceIcon = 'assets/svg/ui/heading-inventory.svg';
+  readonly storageIcon = 'assets/svg/ui/heading-inventory.svg';
   readonly historyIcon = 'assets/svg/ui/heading-production.svg';
   readonly connectionOnlineIcon = 'assets/svg/shopfloor/shared/status-online.svg';
   readonly connectionOfflineIcon = 'assets/svg/shopfloor/shared/status-offline.svg';
 
   // i18n Labels
-  readonly headingTitle = $localize`:@@dpsTabTitle:Delivery & Pickup Station (DPS)`;
-  readonly headingSubtitle = $localize`:@@dpsTabSubtitle:Real-time monitoring of workpiece handling and identification`;
-  readonly labelConnection = $localize`:@@dpsLabelConnection:Connection`;
-  readonly labelAvailability = $localize`:@@dpsLabelAvailability:Availability`;
-  readonly labelCurrentAction = $localize`:@@dpsLabelCurrentAction:Current Action`;
-  readonly labelWorkpieceColor = $localize`:@@dpsLabelColor:Workpiece Color`;
-  readonly labelNfcCode = $localize`:@@dpsLabelNfcCode:NFC Code`;
-  readonly labelCommandHistory = $localize`:@@dpsLabelHistory:Command History`;
-  readonly labelColorWhite = $localize`:@@dpsColorWhite:White`;
-  readonly labelColorBlue = $localize`:@@dpsColorBlue:Blue`;
-  readonly labelColorRed = $localize`:@@dpsColorRed:Red`;
-  readonly labelColorUnknown = $localize`:@@dpsColorUnknown:Unknown`;
-  readonly labelNfcNone = $localize`:@@dpsNfcNone:None`;
+  readonly headingTitle = $localize`:@@hbwTabTitle:High-Bay Warehouse (HBW)`;
+  readonly headingSubtitle = $localize`:@@hbwTabSubtitle:Automated storage and retrieval system`;
+  readonly labelConnection = $localize`:@@hbwLabelConnection:Connection`;
+  readonly labelAvailability = $localize`:@@hbwLabelAvailability:Availability`;
+  readonly labelCurrentAction = $localize`:@@hbwLabelCurrentAction:Current Action`;
+  readonly labelStorageInfo = $localize`:@@hbwLabelStorageInfo:Storage Information`;
+  readonly labelCommandHistory = $localize`:@@hbwLabelHistory:Command History`;
+  readonly labelSlot = $localize`:@@hbwLabelSlot:Slot`;
+  readonly labelLevel = $localize`:@@hbwLabelLevel:Level`;
+  readonly labelWorkpieceId = $localize`:@@hbwLabelWorkpieceId:Workpiece ID`;
   readonly statusOnline = $localize`:@@commonStatusOnline:Online`;
   readonly statusOffline = $localize`:@@commonStatusOffline:Offline`;
   readonly statusReady = $localize`:@@commonStatusReady:Ready`;
   readonly statusBusy = $localize`:@@commonStatusBusy:Busy`;
   readonly statusError = $localize`:@@commonStatusError:Error`;
-  readonly labelSerialNumber = $localize`:@@dpsLabelSerialNumber:Serial Number`;
-  readonly labelOrderId = $localize`:@@dpsLabelOrderId:Order ID`;
-  readonly labelNoOrder = $localize`:@@dpsLabelNoOrder:No Order`;
-  readonly labelCommand = $localize`:@@dpsLabelCommand:Command`;
-  readonly labelState = $localize`:@@dpsLabelState:State`;
-  readonly labelResult = $localize`:@@dpsLabelResult:Result`;
-  readonly labelTimestamp = $localize`:@@dpsLabelTimestamp:Timestamp`;
-  readonly labelWorkpieceState = $localize`:@@dpsLabelWorkpieceState:Workpiece State`;
-  readonly stateWaiting = $localize`:@@dpsStateWaiting:WAITING`;
-  readonly stateInitializing = $localize`:@@dpsStateInitializing:INITIALIZING`;
-  readonly stateRunning = $localize`:@@dpsStateRunning:RUNNING`;
-  readonly stateFinished = $localize`:@@dpsStateFinished:FINISHED`;
-  readonly stateFailed = $localize`:@@dpsStateFailed:FAILED`;
-  readonly resultPassed = $localize`:@@dpsResultPassed:PASSED`;
-  readonly resultFailed = $localize`:@@dpsResultFailed:FAILED`;
+  readonly labelSerialNumber = $localize`:@@hbwLabelSerialNumber:Serial Number`;
+  readonly labelOrderId = $localize`:@@hbwLabelOrderId:Order ID`;
+  readonly labelNoOrder = $localize`:@@hbwLabelNoOrder:No Order`;
+  readonly labelCommand = $localize`:@@hbwLabelCommand:Command`;
+  readonly labelState = $localize`:@@hbwLabelState:State`;
+  readonly labelResult = $localize`:@@hbwLabelResult:Result`;
+  readonly labelTimestamp = $localize`:@@hbwLabelTimestamp:Timestamp`;
+  readonly stateWaiting = $localize`:@@hbwStateWaiting:WAITING`;
+  readonly stateInitializing = $localize`:@@hbwStateInitializing:INITIALIZING`;
+  readonly stateRunning = $localize`:@@hbwStateRunning:RUNNING`;
+  readonly stateFinished = $localize`:@@hbwStateFinished:FINISHED`;
+  readonly stateFailed = $localize`:@@hbwStateFailed:FAILED`;
+  readonly resultPassed = $localize`:@@hbwResultPassed:PASSED`;
+  readonly resultFailed = $localize`:@@hbwResultFailed:FAILED`;
+  readonly labelNoSlot = $localize`:@@hbwLabelNoSlot:No Slot`;
+  readonly labelNoLevel = $localize`:@@hbwLabelNoLevel:No Level`;
 
   constructor(
     private readonly messageMonitor: MessageMonitorService,
@@ -147,33 +145,33 @@ export class DpsTabComponent implements OnInit, OnDestroy {
   }
 
   private initializeStreams(): void {
-    // DPS State stream
-    this.dpsState$ = this.messageMonitor.getLastMessage<DpsState>(DPS_STATE_TOPIC).pipe(
+    // HBW State stream
+    this.hbwState$ = this.messageMonitor.getLastMessage<HbwState>(HBW_STATE_TOPIC).pipe(
       filter((msg) => msg !== null && msg.valid),
-      map((msg) => msg!.payload as DpsState),
+      map((msg) => msg!.payload as HbwState),
       startWith(null),
       shareReplay({ bufferSize: 1, refCount: false })
     );
 
     // Connection stream
-    this.connection$ = this.messageMonitor.getLastMessage<any>(DPS_CONNECTION_TOPIC).pipe(
+    this.connection$ = this.messageMonitor.getLastMessage<any>(HBW_CONNECTION_TOPIC).pipe(
       map((msg) => msg?.payload ?? null),
       shareReplay({ bufferSize: 1, refCount: false })
     );
 
     // Order stream
-    this.dpsOrder$ = this.messageMonitor.getLastMessage<any>(DPS_ORDER_TOPIC).pipe(
+    this.hbwOrder$ = this.messageMonitor.getLastMessage<any>(HBW_ORDER_TOPIC).pipe(
       map((msg) => msg?.payload ?? null),
       shareReplay({ bufferSize: 1, refCount: false })
     );
 
     // Recent actions stream - updates whenever state messages arrive
-    this.recentActions$ = this.messageMonitor.getLastMessage<DpsState>(DPS_STATE_TOPIC).pipe(
+    this.recentActions$ = this.messageMonitor.getLastMessage<HbwState>(HBW_STATE_TOPIC).pipe(
       map(() => {
         // Build history from all messages in the monitor
         try {
-          const history = this.messageMonitor.getHistory(DPS_STATE_TOPIC);
-          const actions: DpsActionState[] = [];
+          const history = this.messageMonitor.getHistory(HBW_STATE_TOPIC);
+          const actions: HbwActionState[] = [];
           
           // Extract actionState from each historical message
           for (const msg of history) {
@@ -190,7 +188,7 @@ export class DpsTabComponent implements OnInit, OnDestroy {
           // Return last 10 actions in reverse order (newest first)
           return actions.slice(-10).reverse();
         } catch (error) {
-          console.warn('[DPS Tab] Failed to get action history:', error);
+          console.warn('[HBW Tab] Failed to get action history:', error);
           return [];
         }
       }),
@@ -200,19 +198,19 @@ export class DpsTabComponent implements OnInit, OnDestroy {
   }
 
   // Helper methods for template
-  getConnectionStatus(state: DpsState | null): 'ONLINE' | 'OFFLINE' {
+  getConnectionStatus(state: HbwState | null): 'ONLINE' | 'OFFLINE' {
     return state?.connectionState ?? 'OFFLINE';
   }
 
-  getAvailability(state: DpsState | null): string {
+  getAvailability(state: HbwState | null): string {
     return state?.available ?? 'UNKNOWN';
   }
 
-  getCurrentAction(state: DpsState | null): DpsActionState | null {
+  getCurrentAction(state: HbwState | null): HbwActionState | null {
     return state?.actionState ?? null;
   }
 
-  getRecentActions(state: DpsState | null): DpsActionState[] {
+  getRecentActions(state: HbwState | null): HbwActionState[] {
     // First, try to get from actionStates array if available (mock mode)
     if (state?.actionStates && state.actionStates.length > 0) {
       return state.actionStates.slice(-10).reverse();
@@ -220,8 +218,8 @@ export class DpsTabComponent implements OnInit, OnDestroy {
     
     // Otherwise, build history from message monitor (replay/live mode)
     try {
-      const history = this.messageMonitor.getHistory(DPS_STATE_TOPIC);
-      const actions: DpsActionState[] = [];
+      const history = this.messageMonitor.getHistory(HBW_STATE_TOPIC);
+      const actions: HbwActionState[] = [];
       
       // Extract actionState from each historical message
       for (const msg of history) {
@@ -238,40 +236,21 @@ export class DpsTabComponent implements OnInit, OnDestroy {
       // Return last 10 actions in reverse order (newest first)
       return actions.slice(-10).reverse();
     } catch (error) {
-      console.warn('[DPS Tab] Failed to get action history:', error);
+      console.warn('[HBW Tab] Failed to get action history:', error);
       return [];
     }
   }
 
-  getWorkpieceColor(state: DpsState | null): WorkpieceColor {
-    return state?.actionState?.metadata?.type ?? null;
+  getStorageSlot(state: HbwState | null): string | null {
+    return state?.actionState?.metadata?.slot ?? null;
   }
 
-  getNfcCode(state: DpsState | null): string | null {
+  getStorageLevel(state: HbwState | null): string | null {
+    return state?.actionState?.metadata?.level ?? null;
+  }
+
+  getWorkpieceId(state: HbwState | null): string | null {
     return state?.actionState?.metadata?.workpieceId ?? null;
-  }
-
-  getWorkpieceState(state: DpsState | null): string | null {
-    return state?.actionState?.metadata?.workpiece?.state ?? null;
-  }
-
-  getColorLabel(color: WorkpieceColor): string {
-    if (!color) return this.labelColorUnknown;
-    switch (color.toUpperCase()) {
-      case 'WHITE':
-        return this.labelColorWhite;
-      case 'BLUE':
-        return this.labelColorBlue;
-      case 'RED':
-        return this.labelColorRed;
-      default:
-        return this.labelColorUnknown;
-    }
-  }
-
-  getColorClass(color: WorkpieceColor): string {
-    if (!color) return 'unknown';
-    return color.toLowerCase();
   }
 
   getStateLabel(state: ActionStateType): string {
@@ -317,7 +296,7 @@ export class DpsTabComponent implements OnInit, OnDestroy {
     return orderId.length > 12 ? `${orderId.substring(0, 12)}...` : orderId;
   }
 
-  trackByActionId(_index: number, action: DpsActionState): string {
+  trackByActionId(_index: number, action: HbwActionState): string {
     return action.id;
   }
 
@@ -332,7 +311,7 @@ export class DpsTabComponent implements OnInit, OnDestroy {
   async loadFixture(fixture: OrderFixtureName): Promise<void> {
     // In replay mode, fixtures are loaded from MQTT broker, not from local files
     if (this.isReplayMode) {
-      console.info('[DPS Tab] Replay mode - DPS data should come from MQTT broker');
+      console.info('[HBW Tab] Replay mode - HBW data should come from MQTT broker');
       // In replay mode, we just wait for messages from the broker
       // The streams will automatically update when messages arrive
       this.activeFixture = fixture;
@@ -363,8 +342,8 @@ export class DpsTabComponent implements OnInit, OnDestroy {
       // Trigger change detection to update UI
       this.cdr.markForCheck();
     } catch (error) {
-      console.warn('Failed to load DPS fixture', fixture, error);
-      console.warn('[DPS Tab] Note: DPS topics may not be included in standard fixtures. Consider using replay environment.');
+      console.warn('Failed to load HBW fixture', fixture, error);
+      console.warn('[HBW Tab] Note: HBW topics may not be included in standard fixtures. Consider using replay environment.');
     }
   }
 }

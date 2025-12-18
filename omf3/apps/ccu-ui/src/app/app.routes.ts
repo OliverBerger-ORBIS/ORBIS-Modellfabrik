@@ -85,6 +85,21 @@ export const appRoutes: Routes = [
           import('./tabs/aiqs-tab.component').then((m) => m.AiqsTabComponent),
       },
       {
+        path: 'hbw',
+        loadComponent: () =>
+          import('./tabs/hbw-tab.component').then((m) => m.HbwTabComponent),
+      },
+      {
+        path: 'drill',
+        loadComponent: () =>
+          import('./tabs/drill-tab.component').then((m) => m.DrillTabComponent),
+      },
+      {
+        path: 'mill',
+        loadComponent: () =>
+          import('./tabs/mill-tab.component').then((m) => m.MillTabComponent),
+      },
+      {
         path: 'dsp-animation',
         loadComponent: () =>
           import('./pages/dsp-animation/dsp-architecture.component').then((m) => m.DspArchitecturePageComponent),

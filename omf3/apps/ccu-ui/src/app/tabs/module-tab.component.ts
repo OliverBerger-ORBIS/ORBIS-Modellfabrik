@@ -146,7 +146,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     return this.environmentService.current.key === 'mock';
   }
 
-  readonly fixtureOptions: (OrderFixtureName | 'shopfloor-status' | 'drill-action')[] = [
+  readonly fixtureOptions: (OrderFixtureName | 'shopfloor-status' | 'drill-action' | 'module-action-history')[] = [
     'startup',
     'white',
     'white_step3',
@@ -156,8 +156,9 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     'storage',
     'shopfloor-status',
     'drill-action',
+    'module-action-history',
   ];
-  readonly fixtureLabels: Partial<Record<OrderFixtureName | 'shopfloor-status' | 'drill-action', string>> = {
+  readonly fixtureLabels: Partial<Record<OrderFixtureName | 'shopfloor-status' | 'drill-action' | 'module-action-history', string>> = {
     startup: $localize`:@@fixtureLabelStartup:Startup`,
     white: $localize`:@@fixtureLabelWhite:White`,
     white_step3: $localize`:@@fixtureLabelWhiteStep3:White • Step 3`,
@@ -168,9 +169,10 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     'track-trace': $localize`:@@fixtureLabelTrackTrace:Track & Trace`,
     'shopfloor-status': $localize`:@@fixtureLabelShopfloorStatus:Shopfloor Status`,
     'drill-action': $localize`:@@dspActionFixtureLabel:Drill Action`,
+    'module-action-history': $localize`:@@moduleActionHistoryFixtureLabel:Module Test Data`,
   };
 
-  activeFixture: OrderFixtureName | 'shopfloor-status' | 'drill-action' = 'startup';
+  activeFixture: OrderFixtureName | 'shopfloor-status' | 'drill-action' | 'module-action-history' = 'startup';
   moduleOverview$!: Observable<ModuleOverviewState>;
   rows$!: Observable<ModuleRow[]>;
   moduleStatusMap$!: Observable<Map<string, { connected: boolean; availability: ModuleAvailabilityStatus }>>;
@@ -203,6 +205,27 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
       currentLight: string | null;
       previousLight: string | null;
       messages: MonitoredMessage[];
+    };
+    hbwData?: {
+      currentAction?: { command: string; state: string; timestamp?: string };
+      storageSlot?: string;
+      storageLevel?: string;
+      workpieceId?: string;
+      recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
+    };
+    drillData?: {
+      currentAction?: { command: string; state: string; timestamp?: string };
+      drillDepth?: number;
+      drillSpeed?: number;
+      workpieceId?: string;
+      recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
+    };
+    millData?: {
+      currentAction?: { command: string; state: string; timestamp?: string };
+      millDepth?: number;
+      millSpeed?: number;
+      workpieceId?: string;
+      recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
     };
   } | null = null;
 
@@ -319,7 +342,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     }
   }
 
-  async loadFixture(fixture: OrderFixtureName | 'shopfloor-status' | 'drill-action'): Promise<void> {
+  async loadFixture(fixture: OrderFixtureName | 'shopfloor-status' | 'drill-action' | 'module-action-history'): Promise<void> {
     if (!this.isMockMode) {
       return; // Don't load fixtures in live/replay mode
     }
@@ -345,6 +368,13 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
         this.moduleOverviewState.clear(this.currentEnvironmentKey);
         await this.loadModuleStatusFixture();
         await this.loadDrillActionFixture();
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        this.cdr.markForCheck();
+      } else if (fixture === 'module-action-history') {
+        // Load module action history fixture with HBW, DRILL, MILL data
+        this.moduleOverviewState.clear(this.currentEnvironmentKey);
+        await this.loadModuleStatusFixture();
+        await this.loadModuleActionHistoryFixture();
         await new Promise((resolve) => setTimeout(resolve, 300));
         this.cdr.markForCheck();
       } else {
@@ -457,6 +487,26 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
       this.fixtureSubscriptions.add(sub);
     } catch (error) {
       console.error('[module-tab] Failed to load drill action fixture:', error);
+    }
+  }
+
+  private async loadModuleActionHistoryFixture(): Promise<void> {
+    try {
+      const { createModuleActionHistoryFixtureStream } = await import('@omf3/testing-fixtures');
+      const stream$ = createModuleActionHistoryFixtureStream({
+        intervalMs: 0,
+      });
+      const sub = stream$.subscribe((message) => {
+        try {
+          const payload = typeof message.payload === 'string' ? JSON.parse(message.payload) : message.payload;
+          this.messageMonitor.addMessage(message.topic, payload, message.timestamp);
+        } catch (error) {
+          console.error('[module-tab] Failed to parse module action history payload:', error);
+        }
+      });
+      this.fixtureSubscriptions.add(sub);
+    } catch (error) {
+      console.error('[module-tab] Failed to load module action history fixture:', error);
     }
   }
 
@@ -808,6 +858,12 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     // Load sequence commands for this module type
     this.loadSequenceCommands(moduleType);
 
+    // Get module-specific data based on module type
+    const moduleTypeUpper = moduleType.toUpperCase();
+    const hbwData = moduleTypeUpper === 'HBW' && moduleId ? this.getHbwData(moduleId) : undefined;
+    const drillData = moduleTypeUpper === 'DRILL' && moduleId ? this.getDrillData(moduleId) : undefined;
+    const millData = moduleTypeUpper === 'MILL' && moduleId ? this.getMillData(moduleId) : undefined;
+
     this.selectedModuleMeta = {
       availability: availabilityStatus,
       availabilityLabel,
@@ -822,6 +878,9 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
       ipAddress: (moduleDetails as any)?.ipAddress ?? undefined,
       moduleType,
       drillAction: moduleType === 'DRILL' ? this.getDrillActionData() : undefined,
+      hbwData: hbwData ?? undefined,
+      drillData: drillData ?? undefined,
+      millData: millData ?? undefined,
     };
 
     const iconKey = cell?.icon ?? cell?.name ?? moduleDetails?.subType ?? moduleDetails?.id ?? 'QUESTION';
@@ -1227,6 +1286,217 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
       return JSON.parse(String(msg.payload)) as { command?: string; value?: string };
     } catch {
       return null;
+    }
+  }
+
+  /**
+   * Get HBW-specific data from MQTT state messages
+   */
+  private getHbwData(serialId: string): {
+    currentAction?: { command: string; state: string; timestamp?: string };
+    storageSlot?: string;
+    storageLevel?: string;
+    workpieceId?: string;
+    recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
+  } | null {
+    try {
+      const stateTopic = `module/v1/ff/${serialId}/state`;
+      const history = this.messageMonitor.getHistory(stateTopic);
+      
+      if (history.length === 0) {
+        return null;
+      }
+
+      // Get the latest state message
+      const lastMsg = history[history.length - 1];
+      const payload = this.parseModuleStatePayload(lastMsg);
+
+      if (!payload) {
+        return null;
+      }
+
+      // Build recent actions from history (last 10)
+      const recentActions: Array<{ command: string; state: string; timestamp: string; result?: string }> = [];
+      for (const msg of history) {
+        try {
+          const p = this.parseModuleStatePayload(msg);
+          if (p?.actionState) {
+            recentActions.push({
+              command: p.actionState.command || 'Unknown',
+              state: p.actionState.state || 'Unknown',
+              timestamp: p.actionState.timestamp || msg.timestamp || new Date().toISOString(),
+              result: p.actionState.result
+            });
+          }
+        } catch (error) {
+          // Skip invalid messages
+        }
+      }
+
+      return {
+        currentAction: payload.actionState ? {
+          command: payload.actionState.command || 'Unknown',
+          state: payload.actionState.state || 'Unknown',
+          timestamp: payload.actionState.timestamp || lastMsg.timestamp || new Date().toISOString()
+        } : undefined,
+        storageSlot: payload.actionState?.metadata?.slot,
+        storageLevel: payload.actionState?.metadata?.level,
+        workpieceId: payload.actionState?.metadata?.workpieceId || payload.actionState?.metadata?.workpiece?.workpieceId,
+        recentActions: recentActions.slice(-10).reverse() // Last 10 actions, newest first
+      };
+    } catch (error) {
+      console.warn('[ModuleTab] Failed to get HBW data', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get DRILL-specific data from MQTT state messages
+   */
+  private getDrillData(serialId: string): {
+    currentAction?: { command: string; state: string; timestamp?: string };
+    drillDepth?: number;
+    drillSpeed?: number;
+    workpieceId?: string;
+    recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
+  } | null {
+    try {
+      const stateTopic = `module/v1/ff/${serialId}/state`;
+      const history = this.messageMonitor.getHistory(stateTopic);
+      
+      if (history.length === 0) {
+        return null;
+      }
+
+      // Get the latest state message
+      const lastMsg = history[history.length - 1];
+      const payload = this.parseModuleStatePayload(lastMsg);
+
+      if (!payload) {
+        return null;
+      }
+
+      // Build recent actions from history (last 10)
+      const recentActions: Array<{ command: string; state: string; timestamp: string; result?: string }> = [];
+      for (const msg of history) {
+        try {
+          const p = this.parseModuleStatePayload(msg);
+          if (p?.actionState) {
+            recentActions.push({
+              command: p.actionState.command || 'Unknown',
+              state: p.actionState.state || 'Unknown',
+              timestamp: p.actionState.timestamp || msg.timestamp || new Date().toISOString(),
+              result: p.actionState.result
+            });
+          }
+        } catch (error) {
+          // Skip invalid messages
+        }
+      }
+
+      return {
+        currentAction: payload.actionState ? {
+          command: payload.actionState.command || 'Unknown',
+          state: payload.actionState.state || 'Unknown',
+          timestamp: payload.actionState.timestamp || lastMsg.timestamp || new Date().toISOString()
+        } : undefined,
+        drillDepth: payload.actionState?.metadata?.drillDepth,
+        drillSpeed: payload.actionState?.metadata?.drillSpeed,
+        workpieceId: payload.actionState?.metadata?.workpieceId || payload.actionState?.metadata?.workpiece?.workpieceId,
+        recentActions: recentActions.slice(-10).reverse() // Last 10 actions, newest first
+      };
+    } catch (error) {
+      console.warn('[ModuleTab] Failed to get DRILL data', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get MILL-specific data from MQTT state messages
+   */
+  private getMillData(serialId: string): {
+    currentAction?: { command: string; state: string; timestamp?: string };
+    millDepth?: number;
+    millSpeed?: number;
+    workpieceId?: string;
+    recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
+  } | null {
+    try {
+      const stateTopic = `module/v1/ff/${serialId}/state`;
+      const history = this.messageMonitor.getHistory(stateTopic);
+      
+      if (history.length === 0) {
+        return null;
+      }
+
+      // Get the latest state message
+      const lastMsg = history[history.length - 1];
+      const payload = this.parseModuleStatePayload(lastMsg);
+
+      if (!payload) {
+        return null;
+      }
+
+      // Build recent actions from history (last 10)
+      const recentActions: Array<{ command: string; state: string; timestamp: string; result?: string }> = [];
+      for (const msg of history) {
+        try {
+          const p = this.parseModuleStatePayload(msg);
+          if (p?.actionState) {
+            recentActions.push({
+              command: p.actionState.command || 'Unknown',
+              state: p.actionState.state || 'Unknown',
+              timestamp: p.actionState.timestamp || msg.timestamp || new Date().toISOString(),
+              result: p.actionState.result
+            });
+          }
+        } catch (error) {
+          // Skip invalid messages
+        }
+      }
+
+      return {
+        currentAction: payload.actionState ? {
+          command: payload.actionState.command || 'Unknown',
+          state: payload.actionState.state || 'Unknown',
+          timestamp: payload.actionState.timestamp || lastMsg.timestamp || new Date().toISOString()
+        } : undefined,
+        millDepth: payload.actionState?.metadata?.millDepth,
+        millSpeed: payload.actionState?.metadata?.millSpeed,
+        workpieceId: payload.actionState?.metadata?.workpieceId || payload.actionState?.metadata?.workpiece?.workpieceId,
+        recentActions: recentActions.slice(-10).reverse() // Last 10 actions, newest first
+      };
+    } catch (error) {
+      console.warn('[ModuleTab] Failed to get MILL data', error);
+      return null;
+    }
+  }
+
+  /**
+   * Parse module state payload from MQTT message
+   */
+  private parseModuleStatePayload(msg: MonitoredMessage): any {
+    try {
+      if (typeof msg.payload === 'object' && msg.payload !== null) {
+        return msg.payload;
+      }
+      return JSON.parse(String(msg.payload));
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Format ISO timestamp to locale time string
+   */
+  formatTimestamp(timestamp: string | undefined): string {
+    if (!timestamp) {
+      return '';
+    }
+    try {
+      return new Date(timestamp).toLocaleTimeString();
+    } catch {
+      return timestamp;
     }
   }
 }

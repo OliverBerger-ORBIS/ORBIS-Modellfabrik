@@ -9,25 +9,25 @@ import { ModuleNameService } from '../services/module-name.service';
 import { getDashboardController } from '../mock-dashboard';
 import type { OrderFixtureName } from '@omf3/testing-fixtures';
 
-// DPS Serial Number
-const DPS_SERIAL = 'SVR4H73275';
-const DPS_STATE_TOPIC = `module/v1/ff/${DPS_SERIAL}/state`;
-const DPS_ORDER_TOPIC = `module/v1/ff/${DPS_SERIAL}/order`;
-const DPS_CONNECTION_TOPIC = `module/v1/ff/${DPS_SERIAL}/connection`;
+// MILL Serial Number
+const MILL_SERIAL = 'SVR3QA2098';
+const MILL_STATE_TOPIC = `module/v1/ff/${MILL_SERIAL}/state`;
+const MILL_ORDER_TOPIC = `module/v1/ff/${MILL_SERIAL}/order`;
+const MILL_CONNECTION_TOPIC = `module/v1/ff/${MILL_SERIAL}/connection`;
 
-// DPS Types
+// MILL Types
 type ActionStateType = 'WAITING' | 'INITIALIZING' | 'RUNNING' | 'FINISHED' | 'FAILED' | string;
-type ActionCommandType = 'INPUT_RGB' | 'RGB_NFC' | 'PICK' | 'DROP' | string;
-type WorkpieceColor = 'WHITE' | 'BLUE' | 'RED' | null;
+type ActionCommandType = 'MILL' | 'PICK' | 'DROP' | 'factsheetRequest' | string;
 
-interface DpsActionState {
+interface MillActionState {
   id: string;
   command: ActionCommandType;
   state: ActionStateType;
   timestamp: string;
   result?: 'PASSED' | 'FAILED';
   metadata?: {
-    type?: WorkpieceColor;
+    millDepth?: number;
+    millSpeed?: number;
     workpieceId?: string;
     workpiece?: {
       type: string;
@@ -37,90 +37,84 @@ interface DpsActionState {
   };
 }
 
-interface DpsState {
+interface MillState {
   serialNumber: string;
   timestamp: string;
   orderId?: string;
   orderUpdateId?: number;
   connectionState?: 'ONLINE' | 'OFFLINE';
   available?: 'READY' | 'BUSY' | 'ERROR';
-  actionState?: DpsActionState;
-  actionStates?: DpsActionState[];
+  actionState?: MillActionState;
+  actionStates?: MillActionState[];
 }
 
 @Component({
   standalone: true,
-  selector: 'app-dps-tab',
+  selector: 'app-mill-tab',
   imports: [CommonModule],
-  templateUrl: './dps-tab.component.html',
-  styleUrl: './dps-tab.component.scss',
+  templateUrl: './mill-tab.component.html',
+  styleUrl: './mill-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DpsTabComponent implements OnInit, OnDestroy {
+export class MillTabComponent implements OnInit, OnDestroy {
   private dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
 
   // Observable streams
-  dpsState$!: Observable<DpsState | null>;
+  millState$!: Observable<MillState | null>;
   connection$!: Observable<any | null>;
-  dpsOrder$!: Observable<any | null>;
-  recentActions$!: Observable<DpsActionState[]>;
+  millOrder$!: Observable<any | null>;
+  recentActions$!: Observable<MillActionState[]>;
 
   // Fixtures for testing
   readonly fixtureOptions: OrderFixtureName[] = [
     'startup',
-    'storage_blue',
     'production_bwr',
   ];
   readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
     startup: $localize`:@@fixtureLabelStartup:Startup`,
-    storage_blue: $localize`:@@fixtureLabelStorageBlue:Storage Blue`,
     production_bwr: $localize`:@@fixtureLabelProductionBwr:Production BWR`,
   };
   activeFixture: OrderFixtureName | null = this.dashboard.getCurrentFixture();
 
   // Icons
-  readonly headingIcon = 'assets/svg/shopfloor/stations/dps-station.svg';
+  readonly headingIcon = 'assets/svg/shopfloor/stations/mill-station.svg';
   readonly statusIcon = 'assets/svg/ui/heading-modules.svg';
-  readonly workpieceIcon = 'assets/svg/ui/heading-inventory.svg';
+  readonly millIcon = 'assets/svg/ui/heading-sensors.svg';
   readonly historyIcon = 'assets/svg/ui/heading-production.svg';
   readonly connectionOnlineIcon = 'assets/svg/shopfloor/shared/status-online.svg';
   readonly connectionOfflineIcon = 'assets/svg/shopfloor/shared/status-offline.svg';
 
   // i18n Labels
-  readonly headingTitle = $localize`:@@dpsTabTitle:Delivery & Pickup Station (DPS)`;
-  readonly headingSubtitle = $localize`:@@dpsTabSubtitle:Real-time monitoring of workpiece handling and identification`;
-  readonly labelConnection = $localize`:@@dpsLabelConnection:Connection`;
-  readonly labelAvailability = $localize`:@@dpsLabelAvailability:Availability`;
-  readonly labelCurrentAction = $localize`:@@dpsLabelCurrentAction:Current Action`;
-  readonly labelWorkpieceColor = $localize`:@@dpsLabelColor:Workpiece Color`;
-  readonly labelNfcCode = $localize`:@@dpsLabelNfcCode:NFC Code`;
-  readonly labelCommandHistory = $localize`:@@dpsLabelHistory:Command History`;
-  readonly labelColorWhite = $localize`:@@dpsColorWhite:White`;
-  readonly labelColorBlue = $localize`:@@dpsColorBlue:Blue`;
-  readonly labelColorRed = $localize`:@@dpsColorRed:Red`;
-  readonly labelColorUnknown = $localize`:@@dpsColorUnknown:Unknown`;
-  readonly labelNfcNone = $localize`:@@dpsNfcNone:None`;
+  readonly headingTitle = $localize`:@@millTabTitle:Milling Station (MILL)`;
+  readonly headingSubtitle = $localize`:@@millTabSubtitle:Precision milling operations and monitoring`;
+  readonly labelConnection = $localize`:@@millLabelConnection:Connection`;
+  readonly labelAvailability = $localize`:@@millLabelAvailability:Availability`;
+  readonly labelCurrentAction = $localize`:@@millLabelCurrentAction:Current Action`;
+  readonly labelMillingInfo = $localize`:@@millLabelMillingInfo:Milling Information`;
+  readonly labelCommandHistory = $localize`:@@millLabelHistory:Command History`;
+  readonly labelMillDepth = $localize`:@@millLabelDepth:Mill Depth`;
+  readonly labelMillSpeed = $localize`:@@millLabelSpeed:Mill Speed`;
+  readonly labelWorkpieceId = $localize`:@@millLabelWorkpieceId:Workpiece ID`;
   readonly statusOnline = $localize`:@@commonStatusOnline:Online`;
   readonly statusOffline = $localize`:@@commonStatusOffline:Offline`;
   readonly statusReady = $localize`:@@commonStatusReady:Ready`;
   readonly statusBusy = $localize`:@@commonStatusBusy:Busy`;
   readonly statusError = $localize`:@@commonStatusError:Error`;
-  readonly labelSerialNumber = $localize`:@@dpsLabelSerialNumber:Serial Number`;
-  readonly labelOrderId = $localize`:@@dpsLabelOrderId:Order ID`;
-  readonly labelNoOrder = $localize`:@@dpsLabelNoOrder:No Order`;
-  readonly labelCommand = $localize`:@@dpsLabelCommand:Command`;
-  readonly labelState = $localize`:@@dpsLabelState:State`;
-  readonly labelResult = $localize`:@@dpsLabelResult:Result`;
-  readonly labelTimestamp = $localize`:@@dpsLabelTimestamp:Timestamp`;
-  readonly labelWorkpieceState = $localize`:@@dpsLabelWorkpieceState:Workpiece State`;
-  readonly stateWaiting = $localize`:@@dpsStateWaiting:WAITING`;
-  readonly stateInitializing = $localize`:@@dpsStateInitializing:INITIALIZING`;
-  readonly stateRunning = $localize`:@@dpsStateRunning:RUNNING`;
-  readonly stateFinished = $localize`:@@dpsStateFinished:FINISHED`;
-  readonly stateFailed = $localize`:@@dpsStateFailed:FAILED`;
-  readonly resultPassed = $localize`:@@dpsResultPassed:PASSED`;
-  readonly resultFailed = $localize`:@@dpsResultFailed:FAILED`;
+  readonly labelSerialNumber = $localize`:@@millLabelSerialNumber:Serial Number`;
+  readonly labelOrderId = $localize`:@@millLabelOrderId:Order ID`;
+  readonly labelNoOrder = $localize`:@@millLabelNoOrder:No Order`;
+  readonly labelCommand = $localize`:@@millLabelCommand:Command`;
+  readonly labelState = $localize`:@@millLabelState:State`;
+  readonly labelResult = $localize`:@@millLabelResult:Result`;
+  readonly labelTimestamp = $localize`:@@millLabelTimestamp:Timestamp`;
+  readonly stateWaiting = $localize`:@@millStateWaiting:WAITING`;
+  readonly stateInitializing = $localize`:@@millStateInitializing:INITIALIZING`;
+  readonly stateRunning = $localize`:@@millStateRunning:RUNNING`;
+  readonly stateFinished = $localize`:@@millStateFinished:FINISHED`;
+  readonly stateFailed = $localize`:@@millStateFailed:FAILED`;
+  readonly resultPassed = $localize`:@@millResultPassed:PASSED`;
+  readonly resultFailed = $localize`:@@millResultFailed:FAILED`;
 
   constructor(
     private readonly messageMonitor: MessageMonitorService,
@@ -147,33 +141,33 @@ export class DpsTabComponent implements OnInit, OnDestroy {
   }
 
   private initializeStreams(): void {
-    // DPS State stream
-    this.dpsState$ = this.messageMonitor.getLastMessage<DpsState>(DPS_STATE_TOPIC).pipe(
+    // MILL State stream
+    this.millState$ = this.messageMonitor.getLastMessage<MillState>(MILL_STATE_TOPIC).pipe(
       filter((msg) => msg !== null && msg.valid),
-      map((msg) => msg!.payload as DpsState),
+      map((msg) => msg!.payload as MillState),
       startWith(null),
       shareReplay({ bufferSize: 1, refCount: false })
     );
 
     // Connection stream
-    this.connection$ = this.messageMonitor.getLastMessage<any>(DPS_CONNECTION_TOPIC).pipe(
+    this.connection$ = this.messageMonitor.getLastMessage<any>(MILL_CONNECTION_TOPIC).pipe(
       map((msg) => msg?.payload ?? null),
       shareReplay({ bufferSize: 1, refCount: false })
     );
 
     // Order stream
-    this.dpsOrder$ = this.messageMonitor.getLastMessage<any>(DPS_ORDER_TOPIC).pipe(
+    this.millOrder$ = this.messageMonitor.getLastMessage<any>(MILL_ORDER_TOPIC).pipe(
       map((msg) => msg?.payload ?? null),
       shareReplay({ bufferSize: 1, refCount: false })
     );
 
     // Recent actions stream - updates whenever state messages arrive
-    this.recentActions$ = this.messageMonitor.getLastMessage<DpsState>(DPS_STATE_TOPIC).pipe(
+    this.recentActions$ = this.messageMonitor.getLastMessage<MillState>(MILL_STATE_TOPIC).pipe(
       map(() => {
         // Build history from all messages in the monitor
         try {
-          const history = this.messageMonitor.getHistory(DPS_STATE_TOPIC);
-          const actions: DpsActionState[] = [];
+          const history = this.messageMonitor.getHistory(MILL_STATE_TOPIC);
+          const actions: MillActionState[] = [];
           
           // Extract actionState from each historical message
           for (const msg of history) {
@@ -190,7 +184,7 @@ export class DpsTabComponent implements OnInit, OnDestroy {
           // Return last 10 actions in reverse order (newest first)
           return actions.slice(-10).reverse();
         } catch (error) {
-          console.warn('[DPS Tab] Failed to get action history:', error);
+          console.warn('[MILL Tab] Failed to get action history:', error);
           return [];
         }
       }),
@@ -200,19 +194,19 @@ export class DpsTabComponent implements OnInit, OnDestroy {
   }
 
   // Helper methods for template
-  getConnectionStatus(state: DpsState | null): 'ONLINE' | 'OFFLINE' {
+  getConnectionStatus(state: MillState | null): 'ONLINE' | 'OFFLINE' {
     return state?.connectionState ?? 'OFFLINE';
   }
 
-  getAvailability(state: DpsState | null): string {
+  getAvailability(state: MillState | null): string {
     return state?.available ?? 'UNKNOWN';
   }
 
-  getCurrentAction(state: DpsState | null): DpsActionState | null {
+  getCurrentAction(state: MillState | null): MillActionState | null {
     return state?.actionState ?? null;
   }
 
-  getRecentActions(state: DpsState | null): DpsActionState[] {
+  getRecentActions(state: MillState | null): MillActionState[] {
     // First, try to get from actionStates array if available (mock mode)
     if (state?.actionStates && state.actionStates.length > 0) {
       return state.actionStates.slice(-10).reverse();
@@ -220,8 +214,8 @@ export class DpsTabComponent implements OnInit, OnDestroy {
     
     // Otherwise, build history from message monitor (replay/live mode)
     try {
-      const history = this.messageMonitor.getHistory(DPS_STATE_TOPIC);
-      const actions: DpsActionState[] = [];
+      const history = this.messageMonitor.getHistory(MILL_STATE_TOPIC);
+      const actions: MillActionState[] = [];
       
       // Extract actionState from each historical message
       for (const msg of history) {
@@ -238,40 +232,21 @@ export class DpsTabComponent implements OnInit, OnDestroy {
       // Return last 10 actions in reverse order (newest first)
       return actions.slice(-10).reverse();
     } catch (error) {
-      console.warn('[DPS Tab] Failed to get action history:', error);
+      console.warn('[MILL Tab] Failed to get action history:', error);
       return [];
     }
   }
 
-  getWorkpieceColor(state: DpsState | null): WorkpieceColor {
-    return state?.actionState?.metadata?.type ?? null;
+  getMillDepth(state: MillState | null): number | null {
+    return state?.actionState?.metadata?.millDepth ?? null;
   }
 
-  getNfcCode(state: DpsState | null): string | null {
+  getMillSpeed(state: MillState | null): number | null {
+    return state?.actionState?.metadata?.millSpeed ?? null;
+  }
+
+  getWorkpieceId(state: MillState | null): string | null {
     return state?.actionState?.metadata?.workpieceId ?? null;
-  }
-
-  getWorkpieceState(state: DpsState | null): string | null {
-    return state?.actionState?.metadata?.workpiece?.state ?? null;
-  }
-
-  getColorLabel(color: WorkpieceColor): string {
-    if (!color) return this.labelColorUnknown;
-    switch (color.toUpperCase()) {
-      case 'WHITE':
-        return this.labelColorWhite;
-      case 'BLUE':
-        return this.labelColorBlue;
-      case 'RED':
-        return this.labelColorRed;
-      default:
-        return this.labelColorUnknown;
-    }
-  }
-
-  getColorClass(color: WorkpieceColor): string {
-    if (!color) return 'unknown';
-    return color.toLowerCase();
   }
 
   getStateLabel(state: ActionStateType): string {
@@ -317,7 +292,7 @@ export class DpsTabComponent implements OnInit, OnDestroy {
     return orderId.length > 12 ? `${orderId.substring(0, 12)}...` : orderId;
   }
 
-  trackByActionId(_index: number, action: DpsActionState): string {
+  trackByActionId(_index: number, action: MillActionState): string {
     return action.id;
   }
 
@@ -332,7 +307,7 @@ export class DpsTabComponent implements OnInit, OnDestroy {
   async loadFixture(fixture: OrderFixtureName): Promise<void> {
     // In replay mode, fixtures are loaded from MQTT broker, not from local files
     if (this.isReplayMode) {
-      console.info('[DPS Tab] Replay mode - DPS data should come from MQTT broker');
+      console.info('[MILL Tab] Replay mode - MILL data should come from MQTT broker');
       // In replay mode, we just wait for messages from the broker
       // The streams will automatically update when messages arrive
       this.activeFixture = fixture;
@@ -350,7 +325,6 @@ export class DpsTabComponent implements OnInit, OnDestroy {
       // Map OrderFixtureName to tab-specific preset
       const presetMap: Partial<Record<OrderFixtureName, string>> = {
         startup: 'startup',
-        storage_blue: 'track-trace-storage-blue',
         production_bwr: 'track-trace-production-bwr',
       };
       
@@ -363,8 +337,8 @@ export class DpsTabComponent implements OnInit, OnDestroy {
       // Trigger change detection to update UI
       this.cdr.markForCheck();
     } catch (error) {
-      console.warn('Failed to load DPS fixture', fixture, error);
-      console.warn('[DPS Tab] Note: DPS topics may not be included in standard fixtures. Consider using replay environment.');
+      console.warn('Failed to load MILL fixture', fixture, error);
+      console.warn('[MILL Tab] Note: MILL topics may not be included in standard fixtures. Consider using replay environment.');
     }
   }
 }

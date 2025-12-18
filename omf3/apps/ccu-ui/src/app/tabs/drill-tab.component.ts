@@ -9,25 +9,25 @@ import { ModuleNameService } from '../services/module-name.service';
 import { getDashboardController } from '../mock-dashboard';
 import type { OrderFixtureName } from '@omf3/testing-fixtures';
 
-// DPS Serial Number
-const DPS_SERIAL = 'SVR4H73275';
-const DPS_STATE_TOPIC = `module/v1/ff/${DPS_SERIAL}/state`;
-const DPS_ORDER_TOPIC = `module/v1/ff/${DPS_SERIAL}/order`;
-const DPS_CONNECTION_TOPIC = `module/v1/ff/${DPS_SERIAL}/connection`;
+// DRILL Serial Number
+const DRILL_SERIAL = 'SVR4H76449';
+const DRILL_STATE_TOPIC = `module/v1/ff/${DRILL_SERIAL}/state`;
+const DRILL_ORDER_TOPIC = `module/v1/ff/${DRILL_SERIAL}/order`;
+const DRILL_CONNECTION_TOPIC = `module/v1/ff/${DRILL_SERIAL}/connection`;
 
-// DPS Types
+// DRILL Types
 type ActionStateType = 'WAITING' | 'INITIALIZING' | 'RUNNING' | 'FINISHED' | 'FAILED' | string;
-type ActionCommandType = 'INPUT_RGB' | 'RGB_NFC' | 'PICK' | 'DROP' | string;
-type WorkpieceColor = 'WHITE' | 'BLUE' | 'RED' | null;
+type ActionCommandType = 'DRILL' | 'PICK' | 'DROP' | 'factsheetRequest' | string;
 
-interface DpsActionState {
+interface DrillActionState {
   id: string;
   command: ActionCommandType;
   state: ActionStateType;
   timestamp: string;
   result?: 'PASSED' | 'FAILED';
   metadata?: {
-    type?: WorkpieceColor;
+    drillDepth?: number;
+    drillSpeed?: number;
     workpieceId?: string;
     workpiece?: {
       type: string;
@@ -37,90 +37,84 @@ interface DpsActionState {
   };
 }
 
-interface DpsState {
+interface DrillState {
   serialNumber: string;
   timestamp: string;
   orderId?: string;
   orderUpdateId?: number;
   connectionState?: 'ONLINE' | 'OFFLINE';
   available?: 'READY' | 'BUSY' | 'ERROR';
-  actionState?: DpsActionState;
-  actionStates?: DpsActionState[];
+  actionState?: DrillActionState;
+  actionStates?: DrillActionState[];
 }
 
 @Component({
   standalone: true,
-  selector: 'app-dps-tab',
+  selector: 'app-drill-tab',
   imports: [CommonModule],
-  templateUrl: './dps-tab.component.html',
-  styleUrl: './dps-tab.component.scss',
+  templateUrl: './drill-tab.component.html',
+  styleUrl: './drill-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DpsTabComponent implements OnInit, OnDestroy {
+export class DrillTabComponent implements OnInit, OnDestroy {
   private dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
 
   // Observable streams
-  dpsState$!: Observable<DpsState | null>;
+  drillState$!: Observable<DrillState | null>;
   connection$!: Observable<any | null>;
-  dpsOrder$!: Observable<any | null>;
-  recentActions$!: Observable<DpsActionState[]>;
+  drillOrder$!: Observable<any | null>;
+  recentActions$!: Observable<DrillActionState[]>;
 
   // Fixtures for testing
   readonly fixtureOptions: OrderFixtureName[] = [
     'startup',
-    'storage_blue',
     'production_bwr',
   ];
   readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
     startup: $localize`:@@fixtureLabelStartup:Startup`,
-    storage_blue: $localize`:@@fixtureLabelStorageBlue:Storage Blue`,
     production_bwr: $localize`:@@fixtureLabelProductionBwr:Production BWR`,
   };
   activeFixture: OrderFixtureName | null = this.dashboard.getCurrentFixture();
 
   // Icons
-  readonly headingIcon = 'assets/svg/shopfloor/stations/dps-station.svg';
+  readonly headingIcon = 'assets/svg/shopfloor/stations/drill-station.svg';
   readonly statusIcon = 'assets/svg/ui/heading-modules.svg';
-  readonly workpieceIcon = 'assets/svg/ui/heading-inventory.svg';
+  readonly drillIcon = 'assets/svg/ui/heading-sensors.svg';
   readonly historyIcon = 'assets/svg/ui/heading-production.svg';
   readonly connectionOnlineIcon = 'assets/svg/shopfloor/shared/status-online.svg';
   readonly connectionOfflineIcon = 'assets/svg/shopfloor/shared/status-offline.svg';
 
   // i18n Labels
-  readonly headingTitle = $localize`:@@dpsTabTitle:Delivery & Pickup Station (DPS)`;
-  readonly headingSubtitle = $localize`:@@dpsTabSubtitle:Real-time monitoring of workpiece handling and identification`;
-  readonly labelConnection = $localize`:@@dpsLabelConnection:Connection`;
-  readonly labelAvailability = $localize`:@@dpsLabelAvailability:Availability`;
-  readonly labelCurrentAction = $localize`:@@dpsLabelCurrentAction:Current Action`;
-  readonly labelWorkpieceColor = $localize`:@@dpsLabelColor:Workpiece Color`;
-  readonly labelNfcCode = $localize`:@@dpsLabelNfcCode:NFC Code`;
-  readonly labelCommandHistory = $localize`:@@dpsLabelHistory:Command History`;
-  readonly labelColorWhite = $localize`:@@dpsColorWhite:White`;
-  readonly labelColorBlue = $localize`:@@dpsColorBlue:Blue`;
-  readonly labelColorRed = $localize`:@@dpsColorRed:Red`;
-  readonly labelColorUnknown = $localize`:@@dpsColorUnknown:Unknown`;
-  readonly labelNfcNone = $localize`:@@dpsNfcNone:None`;
+  readonly headingTitle = $localize`:@@drillTabTitle:Drilling Station (DRILL)`;
+  readonly headingSubtitle = $localize`:@@drillTabSubtitle:Precision drilling operations and monitoring`;
+  readonly labelConnection = $localize`:@@drillLabelConnection:Connection`;
+  readonly labelAvailability = $localize`:@@drillLabelAvailability:Availability`;
+  readonly labelCurrentAction = $localize`:@@drillLabelCurrentAction:Current Action`;
+  readonly labelDrillingInfo = $localize`:@@drillLabelDrillingInfo:Drilling Information`;
+  readonly labelCommandHistory = $localize`:@@drillLabelHistory:Command History`;
+  readonly labelDrillDepth = $localize`:@@drillLabelDepth:Drill Depth`;
+  readonly labelDrillSpeed = $localize`:@@drillLabelSpeed:Drill Speed`;
+  readonly labelWorkpieceId = $localize`:@@drillLabelWorkpieceId:Workpiece ID`;
   readonly statusOnline = $localize`:@@commonStatusOnline:Online`;
   readonly statusOffline = $localize`:@@commonStatusOffline:Offline`;
   readonly statusReady = $localize`:@@commonStatusReady:Ready`;
   readonly statusBusy = $localize`:@@commonStatusBusy:Busy`;
   readonly statusError = $localize`:@@commonStatusError:Error`;
-  readonly labelSerialNumber = $localize`:@@dpsLabelSerialNumber:Serial Number`;
-  readonly labelOrderId = $localize`:@@dpsLabelOrderId:Order ID`;
-  readonly labelNoOrder = $localize`:@@dpsLabelNoOrder:No Order`;
-  readonly labelCommand = $localize`:@@dpsLabelCommand:Command`;
-  readonly labelState = $localize`:@@dpsLabelState:State`;
-  readonly labelResult = $localize`:@@dpsLabelResult:Result`;
-  readonly labelTimestamp = $localize`:@@dpsLabelTimestamp:Timestamp`;
-  readonly labelWorkpieceState = $localize`:@@dpsLabelWorkpieceState:Workpiece State`;
-  readonly stateWaiting = $localize`:@@dpsStateWaiting:WAITING`;
-  readonly stateInitializing = $localize`:@@dpsStateInitializing:INITIALIZING`;
-  readonly stateRunning = $localize`:@@dpsStateRunning:RUNNING`;
-  readonly stateFinished = $localize`:@@dpsStateFinished:FINISHED`;
-  readonly stateFailed = $localize`:@@dpsStateFailed:FAILED`;
-  readonly resultPassed = $localize`:@@dpsResultPassed:PASSED`;
-  readonly resultFailed = $localize`:@@dpsResultFailed:FAILED`;
+  readonly labelSerialNumber = $localize`:@@drillLabelSerialNumber:Serial Number`;
+  readonly labelOrderId = $localize`:@@drillLabelOrderId:Order ID`;
+  readonly labelNoOrder = $localize`:@@drillLabelNoOrder:No Order`;
+  readonly labelCommand = $localize`:@@drillLabelCommand:Command`;
+  readonly labelState = $localize`:@@drillLabelState:State`;
+  readonly labelResult = $localize`:@@drillLabelResult:Result`;
+  readonly labelTimestamp = $localize`:@@drillLabelTimestamp:Timestamp`;
+  readonly stateWaiting = $localize`:@@drillStateWaiting:WAITING`;
+  readonly stateInitializing = $localize`:@@drillStateInitializing:INITIALIZING`;
+  readonly stateRunning = $localize`:@@drillStateRunning:RUNNING`;
+  readonly stateFinished = $localize`:@@drillStateFinished:FINISHED`;
+  readonly stateFailed = $localize`:@@drillStateFailed:FAILED`;
+  readonly resultPassed = $localize`:@@drillResultPassed:PASSED`;
+  readonly resultFailed = $localize`:@@drillResultFailed:FAILED`;
 
   constructor(
     private readonly messageMonitor: MessageMonitorService,
@@ -147,33 +141,33 @@ export class DpsTabComponent implements OnInit, OnDestroy {
   }
 
   private initializeStreams(): void {
-    // DPS State stream
-    this.dpsState$ = this.messageMonitor.getLastMessage<DpsState>(DPS_STATE_TOPIC).pipe(
+    // DRILL State stream
+    this.drillState$ = this.messageMonitor.getLastMessage<DrillState>(DRILL_STATE_TOPIC).pipe(
       filter((msg) => msg !== null && msg.valid),
-      map((msg) => msg!.payload as DpsState),
+      map((msg) => msg!.payload as DrillState),
       startWith(null),
       shareReplay({ bufferSize: 1, refCount: false })
     );
 
     // Connection stream
-    this.connection$ = this.messageMonitor.getLastMessage<any>(DPS_CONNECTION_TOPIC).pipe(
+    this.connection$ = this.messageMonitor.getLastMessage<any>(DRILL_CONNECTION_TOPIC).pipe(
       map((msg) => msg?.payload ?? null),
       shareReplay({ bufferSize: 1, refCount: false })
     );
 
     // Order stream
-    this.dpsOrder$ = this.messageMonitor.getLastMessage<any>(DPS_ORDER_TOPIC).pipe(
+    this.drillOrder$ = this.messageMonitor.getLastMessage<any>(DRILL_ORDER_TOPIC).pipe(
       map((msg) => msg?.payload ?? null),
       shareReplay({ bufferSize: 1, refCount: false })
     );
 
     // Recent actions stream - updates whenever state messages arrive
-    this.recentActions$ = this.messageMonitor.getLastMessage<DpsState>(DPS_STATE_TOPIC).pipe(
+    this.recentActions$ = this.messageMonitor.getLastMessage<DrillState>(DRILL_STATE_TOPIC).pipe(
       map(() => {
         // Build history from all messages in the monitor
         try {
-          const history = this.messageMonitor.getHistory(DPS_STATE_TOPIC);
-          const actions: DpsActionState[] = [];
+          const history = this.messageMonitor.getHistory(DRILL_STATE_TOPIC);
+          const actions: DrillActionState[] = [];
           
           // Extract actionState from each historical message
           for (const msg of history) {
@@ -190,7 +184,7 @@ export class DpsTabComponent implements OnInit, OnDestroy {
           // Return last 10 actions in reverse order (newest first)
           return actions.slice(-10).reverse();
         } catch (error) {
-          console.warn('[DPS Tab] Failed to get action history:', error);
+          console.warn('[DRILL Tab] Failed to get action history:', error);
           return [];
         }
       }),
@@ -200,19 +194,19 @@ export class DpsTabComponent implements OnInit, OnDestroy {
   }
 
   // Helper methods for template
-  getConnectionStatus(state: DpsState | null): 'ONLINE' | 'OFFLINE' {
+  getConnectionStatus(state: DrillState | null): 'ONLINE' | 'OFFLINE' {
     return state?.connectionState ?? 'OFFLINE';
   }
 
-  getAvailability(state: DpsState | null): string {
+  getAvailability(state: DrillState | null): string {
     return state?.available ?? 'UNKNOWN';
   }
 
-  getCurrentAction(state: DpsState | null): DpsActionState | null {
+  getCurrentAction(state: DrillState | null): DrillActionState | null {
     return state?.actionState ?? null;
   }
 
-  getRecentActions(state: DpsState | null): DpsActionState[] {
+  getRecentActions(state: DrillState | null): DrillActionState[] {
     // First, try to get from actionStates array if available (mock mode)
     if (state?.actionStates && state.actionStates.length > 0) {
       return state.actionStates.slice(-10).reverse();
@@ -220,8 +214,8 @@ export class DpsTabComponent implements OnInit, OnDestroy {
     
     // Otherwise, build history from message monitor (replay/live mode)
     try {
-      const history = this.messageMonitor.getHistory(DPS_STATE_TOPIC);
-      const actions: DpsActionState[] = [];
+      const history = this.messageMonitor.getHistory(DRILL_STATE_TOPIC);
+      const actions: DrillActionState[] = [];
       
       // Extract actionState from each historical message
       for (const msg of history) {
@@ -238,40 +232,21 @@ export class DpsTabComponent implements OnInit, OnDestroy {
       // Return last 10 actions in reverse order (newest first)
       return actions.slice(-10).reverse();
     } catch (error) {
-      console.warn('[DPS Tab] Failed to get action history:', error);
+      console.warn('[DRILL Tab] Failed to get action history:', error);
       return [];
     }
   }
 
-  getWorkpieceColor(state: DpsState | null): WorkpieceColor {
-    return state?.actionState?.metadata?.type ?? null;
+  getDrillDepth(state: DrillState | null): number | null {
+    return state?.actionState?.metadata?.drillDepth ?? null;
   }
 
-  getNfcCode(state: DpsState | null): string | null {
+  getDrillSpeed(state: DrillState | null): number | null {
+    return state?.actionState?.metadata?.drillSpeed ?? null;
+  }
+
+  getWorkpieceId(state: DrillState | null): string | null {
     return state?.actionState?.metadata?.workpieceId ?? null;
-  }
-
-  getWorkpieceState(state: DpsState | null): string | null {
-    return state?.actionState?.metadata?.workpiece?.state ?? null;
-  }
-
-  getColorLabel(color: WorkpieceColor): string {
-    if (!color) return this.labelColorUnknown;
-    switch (color.toUpperCase()) {
-      case 'WHITE':
-        return this.labelColorWhite;
-      case 'BLUE':
-        return this.labelColorBlue;
-      case 'RED':
-        return this.labelColorRed;
-      default:
-        return this.labelColorUnknown;
-    }
-  }
-
-  getColorClass(color: WorkpieceColor): string {
-    if (!color) return 'unknown';
-    return color.toLowerCase();
   }
 
   getStateLabel(state: ActionStateType): string {
@@ -317,7 +292,7 @@ export class DpsTabComponent implements OnInit, OnDestroy {
     return orderId.length > 12 ? `${orderId.substring(0, 12)}...` : orderId;
   }
 
-  trackByActionId(_index: number, action: DpsActionState): string {
+  trackByActionId(_index: number, action: DrillActionState): string {
     return action.id;
   }
 
@@ -332,7 +307,7 @@ export class DpsTabComponent implements OnInit, OnDestroy {
   async loadFixture(fixture: OrderFixtureName): Promise<void> {
     // In replay mode, fixtures are loaded from MQTT broker, not from local files
     if (this.isReplayMode) {
-      console.info('[DPS Tab] Replay mode - DPS data should come from MQTT broker');
+      console.info('[DRILL Tab] Replay mode - DRILL data should come from MQTT broker');
       // In replay mode, we just wait for messages from the broker
       // The streams will automatically update when messages arrive
       this.activeFixture = fixture;
@@ -350,7 +325,6 @@ export class DpsTabComponent implements OnInit, OnDestroy {
       // Map OrderFixtureName to tab-specific preset
       const presetMap: Partial<Record<OrderFixtureName, string>> = {
         startup: 'startup',
-        storage_blue: 'track-trace-storage-blue',
         production_bwr: 'track-trace-production-bwr',
       };
       
@@ -363,8 +337,8 @@ export class DpsTabComponent implements OnInit, OnDestroy {
       // Trigger change detection to update UI
       this.cdr.markForCheck();
     } catch (error) {
-      console.warn('Failed to load DPS fixture', fixture, error);
-      console.warn('[DPS Tab] Note: DPS topics may not be included in standard fixtures. Consider using replay environment.');
+      console.warn('Failed to load DRILL fixture', fixture, error);
+      console.warn('[DRILL Tab] Note: DRILL topics may not be included in standard fixtures. Consider using replay environment.');
     }
   }
 }
