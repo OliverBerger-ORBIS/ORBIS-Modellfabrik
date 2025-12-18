@@ -64,6 +64,7 @@ export class DrillTabComponent implements OnInit, OnDestroy {
   drillState$!: Observable<DrillState | null>;
   connection$!: Observable<any | null>;
   drillOrder$!: Observable<any | null>;
+  recentActions$!: Observable<DrillActionState[]>;
 
   // Fixtures for testing
   readonly fixtureOptions: OrderFixtureName[] = [
@@ -157,6 +158,37 @@ export class DrillTabComponent implements OnInit, OnDestroy {
     // Order stream
     this.drillOrder$ = this.messageMonitor.getLastMessage<any>(DRILL_ORDER_TOPIC).pipe(
       map((msg) => msg?.payload ?? null),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+
+    // Recent actions stream - updates whenever state messages arrive
+    this.recentActions$ = this.messageMonitor.getLastMessage<DrillState>(DRILL_STATE_TOPIC).pipe(
+      map(() => {
+        // Build history from all messages in the monitor
+        try {
+          const history = this.messageMonitor.getHistory(DRILL_STATE_TOPIC);
+          const actions: DrillActionState[] = [];
+          
+          // Extract actionState from each historical message
+          for (const msg of history) {
+            try {
+              const payload = typeof msg.payload === 'string' ? JSON.parse(msg.payload) : msg.payload;
+              if (payload?.actionState) {
+                actions.push(payload.actionState);
+              }
+            } catch (error) {
+              // Skip invalid messages
+            }
+          }
+          
+          // Return last 10 actions in reverse order (newest first)
+          return actions.slice(-10).reverse();
+        } catch (error) {
+          console.warn('[DRILL Tab] Failed to get action history:', error);
+          return [];
+        }
+      }),
+      startWith([]),
       shareReplay({ bufferSize: 1, refCount: false })
     );
   }

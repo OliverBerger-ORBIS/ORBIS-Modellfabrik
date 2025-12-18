@@ -64,6 +64,7 @@ export class DpsTabComponent implements OnInit, OnDestroy {
   dpsState$!: Observable<DpsState | null>;
   connection$!: Observable<any | null>;
   dpsOrder$!: Observable<any | null>;
+  recentActions$!: Observable<DpsActionState[]>;
 
   // Fixtures for testing
   readonly fixtureOptions: OrderFixtureName[] = [
@@ -163,6 +164,37 @@ export class DpsTabComponent implements OnInit, OnDestroy {
     // Order stream
     this.dpsOrder$ = this.messageMonitor.getLastMessage<any>(DPS_ORDER_TOPIC).pipe(
       map((msg) => msg?.payload ?? null),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+
+    // Recent actions stream - updates whenever state messages arrive
+    this.recentActions$ = this.messageMonitor.getLastMessage<DpsState>(DPS_STATE_TOPIC).pipe(
+      map(() => {
+        // Build history from all messages in the monitor
+        try {
+          const history = this.messageMonitor.getHistory(DPS_STATE_TOPIC);
+          const actions: DpsActionState[] = [];
+          
+          // Extract actionState from each historical message
+          for (const msg of history) {
+            try {
+              const payload = typeof msg.payload === 'string' ? JSON.parse(msg.payload) : msg.payload;
+              if (payload?.actionState) {
+                actions.push(payload.actionState);
+              }
+            } catch (error) {
+              // Skip invalid messages
+            }
+          }
+          
+          // Return last 10 actions in reverse order (newest first)
+          return actions.slice(-10).reverse();
+        } catch (error) {
+          console.warn('[DPS Tab] Failed to get action history:', error);
+          return [];
+        }
+      }),
+      startWith([]),
       shareReplay({ bufferSize: 1, refCount: false })
     );
   }

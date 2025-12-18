@@ -132,25 +132,27 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let action of getRecentActions(millState); trackBy: trackByActionId">
-                  <td>
-                    <span class="command-name">{{ action.command }}</span>
-                  </td>
-                  <td>
-                    <span class="state-badge" [class]="getStateClass(action.state)">
-                      {{ getStateLabel(action.state) }}
-                    </span>
-                  </td>
-                  <td>
-                    <span class="result-badge" [class]="getResultClass(action.result)">
-                      {{ getResultLabel(action.result) }}
-                    </span>
-                  </td>
-                  <td class="timestamp">{{ formatTimestamp(action.timestamp) }}</td>
-                </tr>
-                <tr *ngIf="getRecentActions(millState).length === 0">
-                  <td colspan="4" class="no-data" i18n="@@millNoActionsYet">No actions recorded yet</td>
-                </tr>
+                <ng-container *ngIf="recentActions$ | async as recentActions">
+                  <tr *ngFor="let action of recentActions; trackBy: trackByActionId">
+                    <td>
+                      <span class="command-name">{{ action.command }}</span>
+                    </td>
+                    <td>
+                      <span class="state-badge" [class]="getStateClass(action.state)">
+                        {{ getStateLabel(action.state) }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="result-badge" [class]="getResultClass(action.result)">
+                        {{ getResultLabel(action.result) }}
+                      </span>
+                    </td>
+                    <td class="timestamp">{{ formatTimestamp(action.timestamp) }}</td>
+                  </tr>
+                  <tr *ngIf="recentActions.length === 0">
+                    <td colspan="4" class="no-data" i18n="@@millNoActionsYet">No actions recorded yet</td>
+                  </tr>
+                </ng-container>
               </tbody>
             </table>
           </div>
