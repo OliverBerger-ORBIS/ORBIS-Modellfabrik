@@ -1489,7 +1489,10 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
   /**
    * Format ISO timestamp to locale time string
    */
-  formatTimestamp(timestamp: string): string {
+  formatTimestamp(timestamp: string | undefined): string {
+    if (!timestamp) {
+      return '';
+    }
     try {
       return new Date(timestamp).toLocaleTimeString();
     } catch {
