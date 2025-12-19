@@ -240,6 +240,12 @@ export class SettingsTabComponent implements OnInit {
       description: 'Select and view customer-specific DSP architecture demonstrations (FMF, ECME).',
       available: true,
     },
+    {
+      label: 'Overview',
+      path: '/#/en/overview',
+      description: 'Overview tab with orders, FTS status, and inventory information. Moved from main navigation.',
+      available: true,
+    },
   ];
 
   /**

@@ -1,17 +1,32 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import type { ProductionFlowMap } from '@omf3/entities';
-import { SHOPFLOOR_ASSET_MAP, type OrderFixtureName } from '@omf3/testing-fixtures';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import type { OrderActive, ProductionFlowMap, InventoryOverviewState, StockSnapshot } from '@omf3/entities';
 import { getDashboardController, type DashboardStreamSet } from '../mock-dashboard';
 import { MessageMonitorService } from '../services/message-monitor.service';
-import { ModuleNameService } from '../services/module-name.service';
 import { EnvironmentService } from '../services/environment.service';
 import { ConnectionService } from '../services/connection.service';
+import { InventoryStateService } from '../services/inventory-state.service';
+import type { OrderFixtureName } from '@omf3/testing-fixtures';
+import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
 import type { Observable } from 'rxjs';
-import { map, shareReplay, filter, startWith, distinctUntilChanged } from 'rxjs/operators';
-import { merge, Subscription } from 'rxjs';
+import { map, shareReplay, filter, startWith, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { merge, Subscription, combineLatest } from 'rxjs';
 import { ICONS } from '../shared/icons/icon.registry';
-import { resolveLegacyShopfloorPath } from '../shared/icons/legacy-shopfloor-map';
+
+const INVENTORY_LOCATIONS = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
+const WORKPIECE_TYPES = ['BLUE', 'WHITE', 'RED'] as const;
+const PRODUCT_ICON_MAP: Record<(typeof WORKPIECE_TYPES)[number], string> = {
+  BLUE: ICONS.shopfloor.workpieces.blue.product,
+  WHITE: ICONS.shopfloor.workpieces.white.product,
+  RED: ICONS.shopfloor.workpieces.red.product,
+};
+const THREE_D_ICON_MAP: Record<(typeof WORKPIECE_TYPES)[number], string> = {
+  BLUE: ICONS.shopfloor.workpieces.blue.dim3,
+  WHITE: ICONS.shopfloor.workpieces.white.dim3,
+  RED: ICONS.shopfloor.workpieces.red.dim3,
+};
+const EMPTY_SLOT_ICON = ICONS.shopfloor.workpieces.slotEmpty;
+const MAX_CAPACITY = 3;
 
 interface ProcessStepView {
   id: string;
@@ -31,6 +46,20 @@ interface ProcessProductView {
   backgroundClass: string;
 }
 
+/**
+ * Process Tab Component
+ * 
+ * Displays business processes (Customer Orders, Purchase Orders) and shopfloor processes
+ * (Production Flow, Storage Flow) in a two-column layout.
+ * 
+ * Left column: Business processes (ERP bridge)
+ * - Purchase Orders: Material orders (exact copy from Overview Tab)
+ * - Customer Orders: Orders from customers (exact copy from Overview Tab)
+ * 
+ * Right column: Shopfloor processes (ERP-controlled)
+ * - Production Flow: HBW -> Manufacturing Steps (MILL, DRILL, AIQS) -> DPS
+ * - Storage Flow: DPS -> HBW
+ */
 @Component({
   standalone: true,
   selector: 'app-process-tab',
@@ -42,7 +71,8 @@ interface ProcessProductView {
 export class ProcessTabComponent implements OnInit, OnDestroy {
   private dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
-  private readonly defaultShopfloorIcon = resolveLegacyShopfloorPath('assets/svg/shopfloor/shared/question.svg');
+  private inventoryStreamSub?: Subscription;
+  private currentEnvironmentKey: string;
 
   readonly fixtureOptions: OrderFixtureName[] = ['startup', 'white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];
   readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
@@ -56,32 +86,66 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
   };
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
 
+  // Business processes - Inventory data from Overview Tab
+  inventoryOverview$!: Observable<InventoryOverviewState>;
+  availableCounts$!: Observable<Record<string, number>>;
+
+  // Shopfloor processes - Production flows
   flows$!: Observable<ProductionFlowMap>;
-  
   products$!: Observable<ProcessProductView[]>;
 
-  constructor(
-    private readonly messageMonitor: MessageMonitorService,
-    private readonly moduleNameService: ModuleNameService,
-    private readonly environmentService: EnvironmentService,
-    private readonly connectionService: ConnectionService
-  ) {
-    this.initializeStreams();
+  // Icons and labels
+  productIcons = PRODUCT_ICON_MAP;
+  threeDIcons = THREE_D_ICON_MAP;
+  emptySlotIcon = EMPTY_SLOT_ICON;
+  workpieceTypes = WORKPIECE_TYPES;
+  maxCapacity = MAX_CAPACITY;
+
+  readonly yesLabel = $localize`:@@commonYes:Yes`;
+  readonly noLabel = $localize`:@@commonNo:No`;
+  readonly orderButtonLabel = $localize`:@@overviewOrderButton:Order`;
+  readonly orderRawMaterialLabel = $localize`:@@overviewOrderRawMaterial:Order Raw Material`;
+  readonly erpRequiredLabel = $localize`:@@overviewErpRequired:ERP integration required`;
+
+  readonly customerOrdersIcon = 'assets/svg/ui/heading-customer-orders.svg';
+  readonly purchaseOrdersIcon = 'assets/svg/ui/heading-purchase-orders.svg';
+  readonly processIcon = ICONS.ui.processFlow;
+
+  // Accordion state
+  protected readonly expandedSections = new Set<string>(['procurement', 'production']); // Both expanded by default
+
+  isSectionExpanded(sectionId: string): boolean {
+    return this.expandedSections.has(sectionId);
   }
 
-  readonly processIcon = ICONS.ui.processFlow;
-  readonly startIcon = this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['HBW'] ?? 'assets/svg/shopfloor/stations/hbw-station.svg');
-  readonly endIcons = [
-    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS_SQUARE1'] ?? 'assets/svg/shopfloor/systems/warehouse-system.svg'),
-    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS'] ?? 'assets/svg/shopfloor/stations/dps-station.svg'),
-    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS_SQUARE2'] ?? 'assets/svg/shopfloor/shared/order-tracking.svg'),
+  toggleSection(sectionId: string): void {
+    if (this.expandedSections.has(sectionId)) {
+      this.expandedSections.delete(sectionId);
+    } else {
+      this.expandedSections.add(sectionId);
+    }
+    this.cdr.markForCheck();
+  }
+
+  // Production flow icons
+  readonly startIcon = this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['HBW'] ?? '/shopfloor/stock.svg');
+  // DPS icons for Production Flow: Warehouse, Robotic Arm, Delivery Truck
+  readonly productionEndIcons = [
+    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS_SQUARE1'] ?? '/shopfloor/warehouse.svg'), // Warehouse
+    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS'] ?? '/shopfloor/robot-arm.svg'), // Robotic Arm
+    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS_SQUARE2'] ?? '/shopfloor/order-tracking.svg'), // Delivery Truck
+  ];
+  // DPS icons for Storage Flow: Truck (order-tracking), Robotic Arm, Warehouse
+  readonly storageEndIcons = [
+    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS_SQUARE2'] ?? '/shopfloor/order-tracking.svg'), // Truck
+    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS'] ?? '/shopfloor/robot-arm.svg'), // Robotic Arm
+    this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS_SQUARE1'] ?? '/shopfloor/warehouse.svg'), // Warehouse
   ];
   readonly stepCountI18nMap: { [k: string]: string } = {
     '=0': $localize`:@@processNoSteps:No processing steps`,
     '=1': $localize`:@@processOneStep:1 Processing Step`,
     other: $localize`:@@processManySteps:# Processing Steps`,
   };
-  readonly deleteIcon = '🗑️';
 
   private readonly workpieceOrder = ['BLUE', 'WHITE', 'RED'] as const;
 
@@ -109,16 +173,287 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
     },
   } as const;
 
-  private getModuleMeta(key: string): { label: string; icon: string } {
-    return {
-      label: this.moduleNameService.getModuleFullName(key),
-      icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP[key as keyof typeof SHOPFLOOR_ASSET_MAP]),
-    };
+  private readonly moduleMeta: Record<string, { label: string; icon: string }> = {
+    HBW: { label: $localize`:@@processModuleHBW:High-bay warehouse`, icon: this.startIcon },
+    DRILL: { label: $localize`:@@processModuleDrill:Drill`, icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DRILL']) },
+    MILL: { label: $localize`:@@processModuleMill:Mill`, icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['MILL']) },
+    AIQS: {
+      label: $localize`:@@processModuleAiQs:AI Quality Station`,
+      icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['AIQS']),
+    },
+    DPS: { label: $localize`:@@processModuleDps:Goods outgoing`, icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS']) },
+  };
+
+  constructor(
+    private readonly environmentService: EnvironmentService,
+    private readonly messageMonitor: MessageMonitorService,
+    private readonly connectionService: ConnectionService,
+    private readonly inventoryState: InventoryStateService,
+    private readonly cdr: ChangeDetectorRef
+  ) {
+    this.currentEnvironmentKey = this.environmentService.current.key;
+    this.bindInventoryOutputs();
+    this.initializeFlowsStream();
+  }
+
+  get isMockMode(): boolean {
+    return this.environmentService.current.key === 'mock';
+  }
+
+  ngOnInit(): void {
+    this.subscriptions.add(
+      this.connectionService.state$
+        .pipe(distinctUntilChanged())
+        .subscribe((state) => {
+          if (state === 'connected') {
+            this.bindInventoryOutputs();
+            this.setupInventoryStreamSubscription();
+            this.initializeFlowsStream();
+          }
+        })
+    );
+
+    this.subscriptions.add(
+      this.environmentService.environment$
+        .pipe(distinctUntilChanged((prev, next) => prev.key === next.key))
+        .subscribe((environment) => {
+          this.currentEnvironmentKey = environment.key;
+          this.bindInventoryOutputs();
+          this.resetInventoryTracking();
+          this.setupInventoryStreamSubscription();
+          this.initializeFlowsStream();
+          if (environment.key === 'mock') {
+            void this.loadFixture(this.activeFixture);
+          }
+        })
+    );
+
+    this.setupInventoryStreamSubscription();
+
+    if (this.isMockMode) {
+      void this.loadFixture(this.activeFixture);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+    this.inventoryStreamSub?.unsubscribe();
+  }
+
+  async loadFixture(fixture: OrderFixtureName): Promise<void> {
+    if (!this.isMockMode) {
+      return;
+    }
+    this.activeFixture = fixture;
+    try {
+      this.resetInventoryTracking();
+      
+      const presetMap: Partial<Record<OrderFixtureName, string>> = {
+        startup: 'overview-startup',
+        white: 'overview-active',
+        white_step3: 'overview-active',
+        blue: 'overview-active',
+        red: 'overview-active',
+        mixed: 'overview-active',
+        storage: 'overview-active',
+      };
+      
+      const preset = presetMap[fixture] || 'overview-startup';
+      await this.dashboard.loadTabFixture(preset);
+      this.setupInventoryStreamSubscription();
+    } catch (error) {
+      console.warn('Failed to load process fixture', fixture, error);
+    }
+  }
+
+  async orderWorkpiece(type: (typeof WORKPIECE_TYPES)[number]): Promise<void> {
+    try {
+      console.info('[process-tab] Sending customer order:', type);
+      const dashboard = getDashboardController();
+      await dashboard.commands.sendCustomerOrder(type);
+      console.info('[process-tab] Customer order sent successfully:', type);
+    } catch (error) {
+      console.error('[process-tab] Failed to send customer order', type, error);
+    }
+  }
+
+  getWorkpieceLabel(type: (typeof WORKPIECE_TYPES)[number]): string {
+    switch (type) {
+      case 'BLUE':
+        return $localize`:@@overviewBlueProduct:Product Blue`;
+      case 'WHITE':
+        return $localize`:@@overviewWhiteProduct:Product White`;
+      case 'RED':
+        return $localize`:@@overviewRedProduct:Product Red`;
+      default:
+        return type;
+    }
+  }
+
+  getNeed(counts: Record<string, number>, type: (typeof WORKPIECE_TYPES)[number]): number {
+    return Math.max(0, this.maxCapacity - (counts[type] ?? 0));
+  }
+
+  isAvailable(availableCounts: Record<string, number>, type: (typeof WORKPIECE_TYPES)[number]): boolean {
+    return (availableCounts[type] ?? 0) > 0;
+  }
+
+  asArray(length: number): number[] {
+    return Array.from({ length }, (_, index) => index);
   }
 
   private resolveAssetPath(path?: string): string {
-    const candidate = path && path.length > 0 ? path : this.defaultShopfloorIcon;
-    return resolveLegacyShopfloorPath(candidate);
+    if (!path) {
+      return '';
+    }
+    return path.startsWith('/') ? path.slice(1) : path;
+  }
+
+  private bindInventoryOutputs(): void {
+    const inventory$ = this.inventoryState
+      .getState$(this.currentEnvironmentKey)
+      .pipe(
+        map((state) => state ?? this.createEmptyInventoryState()),
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
+
+    this.inventoryOverview$ = inventory$;
+    this.availableCounts$ = inventory$.pipe(map((state) => state.availableCounts));
+  }
+
+  private resetInventoryTracking(): void {
+    this.inventoryState.clear(this.currentEnvironmentKey);
+    this.messageMonitor.clearTopic('ccu/state/stock');
+    this.inventoryStreamSub?.unsubscribe();
+    this.inventoryStreamSub = undefined;
+  }
+
+  private createEmptyInventoryState(): InventoryOverviewState {
+    const slots: Record<string, { location: string; workpiece: null }> = {};
+    INVENTORY_LOCATIONS.forEach((location) => {
+      slots[location] = { location, workpiece: null };
+    });
+
+    const availableCounts: Record<string, number> = {};
+    const reservedCounts: Record<string, number> = {};
+    WORKPIECE_TYPES.forEach((type) => {
+      availableCounts[type] = 0;
+      reservedCounts[type] = 0;
+    });
+
+    return {
+      slots,
+      availableCounts,
+      reservedCounts,
+      lastUpdated: '',
+    };
+  }
+
+  private buildInventoryOverviewFromSnapshot(
+    snapshot: StockSnapshot | string | null | undefined
+  ): InventoryOverviewState {
+    let normalizedSnapshot: StockSnapshot | null | undefined = null;
+    if (typeof snapshot === 'string') {
+      try {
+        normalizedSnapshot = JSON.parse(snapshot) as StockSnapshot;
+      } catch (error) {
+        console.warn('[process-tab] Failed to parse stock snapshot payload', error);
+        normalizedSnapshot = null;
+      }
+    } else {
+      normalizedSnapshot = snapshot;
+    }
+
+    const slots: Record<string, { location: string; workpiece: { id: string; type: string; state: string } | null }> = {};
+    const availableCounts: Record<string, number> = {};
+    const reservedCounts: Record<string, number> = {};
+
+    INVENTORY_LOCATIONS.forEach((location) => {
+      slots[location] = { location, workpiece: null };
+    });
+
+    WORKPIECE_TYPES.forEach((type) => {
+      availableCounts[type] = 0;
+      reservedCounts[type] = 0;
+    });
+
+    if (normalizedSnapshot && Array.isArray(normalizedSnapshot.stockItems)) {
+      normalizedSnapshot.stockItems.forEach((item) => {
+        const location = item.location?.toUpperCase();
+        if (!location || !slots[location]) {
+          return;
+        }
+
+        const workpiece = item.workpiece
+          ? {
+              id: item.workpiece.id ?? '',
+              type: item.workpiece.type ?? '',
+              state: item.workpiece.state ?? 'RAW',
+            }
+          : null;
+
+        slots[location] = {
+          location,
+          workpiece,
+        };
+
+        if (workpiece?.type) {
+          const workpieceType = workpiece.type.toUpperCase();
+          const state = workpiece.state?.toUpperCase();
+          if (state === 'RAW') {
+            availableCounts[workpieceType] = (availableCounts[workpieceType] ?? 0) + 1;
+          } else if (state === 'RESERVED') {
+            reservedCounts[workpieceType] = (reservedCounts[workpieceType] ?? 0) + 1;
+          }
+        }
+      });
+    }
+
+    return {
+      slots,
+      availableCounts,
+      reservedCounts,
+      lastUpdated: normalizedSnapshot?.ts ?? new Date().toISOString(),
+    };
+  }
+
+  private setupInventoryStreamSubscription(): void {
+    const inventorySource$ = this.createInventorySourceStream();
+    this.inventoryStreamSub?.unsubscribe();
+    this.inventoryStreamSub = inventorySource$.subscribe((state) => {
+      this.inventoryState.setState(this.currentEnvironmentKey, state);
+    });
+  }
+
+  private createInventorySourceStream(): Observable<InventoryOverviewState> {
+    const cachedState = this.inventoryState.getSnapshot(this.currentEnvironmentKey);
+    const initialState = cachedState ?? this.createEmptyInventoryState();
+
+    const lastInventory = this.messageMonitor.getLastMessage<StockSnapshot>('ccu/state/stock').pipe(
+      filter((msg) => msg !== null && msg.valid),
+      map((msg) => this.buildInventoryOverviewFromSnapshot(msg!.payload)),
+      startWith(initialState)
+    );
+
+    return merge(lastInventory, this.dashboard.streams.inventoryOverview$).pipe(
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+  }
+
+  private initializeFlowsStream(): void {
+    // Pattern 2: MessageMonitorService + merge with dashboard.streams.flows$
+    const lastFlows = this.messageMonitor.getLastMessage<ProductionFlowMap>('ccu/state/flows').pipe(
+      filter((msg) => msg !== null && msg.valid),
+      map((msg) => msg!.payload as ProductionFlowMap),
+      startWith({} as ProductionFlowMap)
+    );
+
+    this.flows$ = merge(lastFlows, this.dashboard.streams.flows$).pipe(
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+
+    // Initialize products$ after flows$ is set
+    this.products$ = this.flows$.pipe(map((flows) => this.buildProductViews(flows)));
   }
 
   private buildProductViews(flows: ProductionFlowMap): ProcessProductView[] {
@@ -168,7 +503,10 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
 
   private mapStep(step: string, index: number): ProcessStepView {
     const key = step.toUpperCase();
-    const moduleMeta = this.getModuleMeta(key);
+    const moduleMeta = this.moduleMeta[key] ?? {
+      label: step,
+      icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS'] ?? 'shopfloor/robotic.svg'),
+    };
 
     return {
       id: `${key}-${index}`,
@@ -177,76 +515,4 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
       isPlaceholder: false,
     };
   }
-
-  get isMockMode(): boolean {
-    return this.environmentService.current.key === 'mock';
-  }
-
-  ngOnInit(): void {
-    this.subscriptions.add(
-      this.connectionService.state$
-        .pipe(distinctUntilChanged())
-        .subscribe((state) => {
-          if (state === 'connected') {
-            this.initializeStreams();
-          }
-        })
-    );
-
-    this.subscriptions.add(
-      this.environmentService.environment$
-        .pipe(distinctUntilChanged((prev, next) => prev.key === next.key))
-        .subscribe((environment) => {
-          this.initializeStreams();
-          if (environment.key === 'mock') {
-            void this.loadFixture(this.activeFixture);
-          }
-        })
-    );
-
-    if (this.isMockMode) {
-      void this.loadFixture(this.activeFixture);
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
-
-  async loadFixture(fixture: OrderFixtureName): Promise<void> {
-    if (!this.isMockMode) {
-      return; // Don't load fixtures in live/replay mode
-    }
-    this.activeFixture = fixture;
-    try {
-      // Always use process-startup preset (only startup fixtures needed for Process tab)
-      // The fixture parameter is kept for UI consistency, but we always load startup
-      await this.dashboard.loadTabFixture('process-startup');
-      const streams = this.dashboard.streams;
-      this.bindStreams(streams);
-    } catch (error) {
-      console.warn('Failed to load process fixture', fixture, error);
-    }
-  }
-
-  private initializeStreams(): void {
-    const controller = getDashboardController();
-    this.dashboard = controller;
-    this.activeFixture = controller.getCurrentFixture();
-    this.bindStreams();
-  }
-
-  private bindStreams(streams?: DashboardStreamSet): void {
-    const lastFlows = this.messageMonitor.getLastMessage<ProductionFlowMap>('ccu/state/flows').pipe(
-      filter((msg) => msg !== null && msg.valid),
-      map((msg) => msg!.payload),
-      startWith({} as ProductionFlowMap)
-    );
-    // Pattern enforcement: merge(lastFlows, this.dashboard.streams.flows$)
-    this.flows$ = merge(lastFlows, streams?.flows$ ?? this.dashboard.streams.flows$).pipe(
-      shareReplay({ bufferSize: 1, refCount: false })
-    );
-    this.products$ = this.flows$.pipe(map((flows) => this.buildProductViews(flows)));
-  }
 }
-

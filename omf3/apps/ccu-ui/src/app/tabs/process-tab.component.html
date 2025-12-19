@@ -1,83 +1,269 @@
-<section class="process-header">
-  <img [src]="processIcon" alt="Process icon" width="56" height="56" />
-  <div>
-    <h1 i18n="@@processTitle">Process</h1>
-    <p i18n="@@processSubtitle">Production planning</p>
-  </div>
-  <div class="process-tab__fixtures" *ngIf="isMockMode">
-    <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
-    <div class="fixture-switch">
-      <button
-        *ngFor="let fixture of fixtureOptions"
-        type="button"
-        [class.active]="fixture === activeFixture"
-        (click)="loadFixture(fixture)"
-      >
-        {{ fixtureLabels[fixture] }}
-      </button>
+<section class="process-tab">
+  <header class="process-tab__header">
+    <div>
+      <div class="process-tab__heading">
+        <img [src]="processIcon" alt="" aria-hidden="true" />
+        <h2 i18n="@@processTabHeadline">Business & Shopfloor Processes</h2>
+      </div>
+      <p i18n="@@processTabDescription">
+        Business processes (Customer Orders, Purchase Orders) and shopfloor processes (Production Flow, Storage Flow)
+        orchestrated by ERP systems.
+      </p>
     </div>
-  </div>
-</section>
 
-<section class="process-section" *ngIf="products$ | async as products; else noFlows">
-  <header class="section-header">
-    <h2>
-      <span i18n="@@processStepsTitle">Processing Steps</span>
-    </h2>
-    <p i18n="@@processStepsSubtitle">Unified material flow for all product types</p>
+    <div class="process-tab__fixtures" *ngIf="isMockMode">
+      <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
+      <div class="fixture-switch">
+        <button
+          *ngFor="let fixture of fixtureOptions"
+          type="button"
+          [class.active]="fixture === activeFixture"
+          (click)="loadFixture(fixture)"
+        >
+          {{ fixtureLabels[fixture] }}
+        </button>
+      </div>
+    </div>
   </header>
 
-  <div class="stage-card start">
-    <div class="icon xlarge"><img [src]="startIcon" alt="High-bay warehouse" width="96" height="96" /></div>
-    <div class="text">
-      <strong i18n="@@processStageStartTitle">(HBW) High-bay warehouse</strong>
-    </div>
-  </div>
-
-  <div class="arrow" aria-hidden="true">⬇️</div>
-
-  <div class="product-grid">
-    <article *ngFor="let product of products" class="product-card" [ngClass]="product.backgroundClass">
-      <header>
-        <div class="icons">
-          <img [src]="product.product3dIcon" [alt]="product.label" width="110" height="110" />
-          <img [src]="product.productIcon" [alt]="product.label" width="110" height="110" />
+  <div class="process-tab__accordion">
+    <!-- Procurement Process: Purchase Orders + Storage Flow -->
+    <article class="accordion-item" [class.is-open]="isSectionExpanded('procurement')">
+      <button
+        type="button"
+        class="accordion-trigger"
+        (click)="toggleSection('procurement')"
+        [attr.aria-expanded]="isSectionExpanded('procurement')"
+      >
+        <div class="accordion-trigger-content">
+          <img src="assets/svg/ui/heading-purchase-orders.svg" alt="" width="24" height="24" />
+          <span i18n="@@processTabProcurementProcessTitle">Procurement Process</span>
         </div>
-        <div class="meta">
-          <div class="primary-line">
-            <span class="dot" [class]="product.dotClass"></span>
-            <span class="label">{{ product.label | uppercase }}</span>
+        <span class="chevron" aria-hidden="true"></span>
+      </button>
+      <div class="accordion-panel" *ngIf="isSectionExpanded('procurement')">
+        <div class="process-tab__accordion-grid">
+          <!-- Left: Purchase Orders -->
+          <div class="process-tab__accordion-column">
+            <section class="process-tab__section purchase-orders" *ngIf="availableCounts$ | async as available">
+              <header>
+                <h2>
+                  <img [src]="purchaseOrdersIcon" alt="Purchase Orders" width="32" height="32" />
+                  <span i18n="@@overviewPurchaseOrders">Purchase Orders</span>
+                </h2>
+                <p i18n="@@overviewPurchaseOrdersHint">Raw material replenishment requires ERP integration.</p>
+              </header>
+
+              <div class="purchase-grid">
+                <article class="purchase-card" *ngFor="let type of workpieceTypes">
+                  <div class="purchase-header">
+                    <h3>
+                      <span class="dot" [class]="type.toLowerCase()"></span>
+                      {{ getWorkpieceLabel(type) }}
+                    </h3>
+                    <p class="stock" i18n="@@overviewCurrentStock">Stock: {{ available[type] === undefined ? 0 : available[type] }}</p>
+                  </div>
+                  <div class="purchase-body">
+                    <img
+                      class="workpiece-image"
+                      [src]="threeDIcons[type]"
+                      [alt]="getWorkpieceLabel(type)"
+                      width="120"
+                      height="120"
+                    />
+                    <div class="missing">
+                      <p i18n="@@overviewMissingWorkpieces">Missing workpieces</p>
+                      <div class="missing-slots">
+                        <img
+                          *ngFor="let _ of asArray(getNeed(available, type))"
+                          [src]="emptySlotIcon"
+                          alt="missing"
+                        />
+                      </div>
+                    </div>
+                    <div class="purchase-action">
+                      <button
+                        type="button"
+                        [class.primary]="getNeed(available, type) > 0"
+                        [class.secondary]="getNeed(available, type) === 0"
+                        [disabled]="getNeed(available, type) === 0"
+                      >
+                        {{ orderRawMaterialLabel }}
+                      </button>
+                      <small>{{ erpRequiredLabel }}</small>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </section>
           </div>
-          <span class="count">{{ product.stepCount | i18nPlural: stepCountI18nMap }}</span>
+
+          <!-- Right: Storage Flow -->
+          <div class="process-tab__accordion-column">
+            <section class="process-tab__section storage-flow">
+              <header>
+                <h2>
+                  <img src="assets/svg/ui/heading-storage.svg" alt="Storage Flow" width="32" height="32" />
+                  <span i18n="@@processTabStorageFlowTitle">Storage Flow</span>
+                </h2>
+                <p i18n="@@processTabStorageFlowSubtitle">DPS → HBW</p>
+              </header>
+
+              <div class="flow-visualization storage-flow-visualization">
+                <div class="stage-card start">
+                  <div class="icon xlarge multi">
+                    <img *ngFor="let icon of storageEndIcons" [src]="icon" alt="Delivery icon" width="96" height="96" />
+                  </div>
+                  <div class="text">
+                    <strong i18n="@@processStorageStartTitle">Pickup via Delivery and Pickup Station (DPS)</strong>
+                  </div>
+                </div>
+
+                <div class="arrow" aria-hidden="true">⬇️</div>
+
+                <div class="stage-card end">
+                  <div class="icon xlarge"><img [src]="startIcon" alt="High-bay warehouse" width="96" height="96" /></div>
+                  <div class="text">
+                    <strong i18n="@@processStorageEndTitle">Storage via high-bay warehouse (HBW)</strong>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
         </div>
-      </header>
-      <ul>
-        <li *ngFor="let step of product.steps" [class.placeholder]="step.isPlaceholder">
-          <div class="step-icon">
-            <img *ngIf="!step.isPlaceholder" [src]="step.icon" [alt]="step.label" width="72" height="72" />
+      </div>
+    </article>
+
+    <!-- Production Process: Customer Orders + Production Flow -->
+    <article class="accordion-item" [class.is-open]="isSectionExpanded('production')">
+      <button
+        type="button"
+        class="accordion-trigger"
+        (click)="toggleSection('production')"
+        [attr.aria-expanded]="isSectionExpanded('production')"
+      >
+        <div class="accordion-trigger-content">
+          <img src="assets/svg/ui/heading-production.svg" alt="" width="24" height="24" />
+          <span i18n="@@processTabProductionProcessTitle">Production Process</span>
+        </div>
+        <span class="chevron" aria-hidden="true"></span>
+      </button>
+      <div class="accordion-panel" *ngIf="isSectionExpanded('production')">
+        <div class="process-tab__accordion-grid">
+          <!-- Left: Customer Orders -->
+          <div class="process-tab__accordion-column">
+            <section class="process-tab__section customer-orders" *ngIf="availableCounts$ | async as available">
+              <header>
+                <h2>
+                  <img [src]="customerOrdersIcon" alt="Customer Orders" width="32" height="32" />
+                  <span i18n="@@overviewCustomerOrders">Customer Orders</span>
+                </h2>
+                <p i18n="@@overviewCustomerOrdersHint">Place production orders directly if stock is available.</p>
+              </header>
+
+              <div class="customer-grid">
+                <article class="customer-card" *ngFor="let type of workpieceTypes">
+                  <h3>
+                    <span class="dot" [class]="type.toLowerCase()"></span>
+                    {{ getWorkpieceLabel(type) | uppercase }}
+                  </h3>
+                  <div class="workpiece-stack">
+                    <img
+                      class="workpiece-image"
+                      [src]="productIcons[type]"
+                      [alt]="getWorkpieceLabel(type)"
+                      width="120"
+                      height="120"
+                    />
+                  </div>
+                  <dl>
+                    <div>
+                      <dt i18n="@@overviewStockLabel">Stock</dt>
+                      <dd>{{ available[type] === undefined ? 0 : available[type] }}</dd>
+                    </div>
+                    <div>
+                      <dt i18n="@@overviewAvailableLabel">Available</dt>
+                      <dd>{{ isAvailable(available, type) ? yesLabel : noLabel }}</dd>
+                    </div>
+                  </dl>
+                  <button
+                    type="button"
+                    class="primary"
+                    (click)="orderWorkpiece(type)"
+                    [disabled]="!isAvailable(available, type)"
+                  >
+                    {{ orderButtonLabel }}
+                  </button>
+                </article>
+              </div>
+            </section>
           </div>
-          <span class="step-label">{{ step.label }}</span>
-          <span class="delete-icon" aria-hidden="true" *ngIf="!step.isPlaceholder">{{ deleteIcon }}</span>
-        </li>
-      </ul>
+
+          <!-- Right: Production Flow -->
+          <div class="process-tab__accordion-column">
+            <section class="process-tab__section production-flow" *ngIf="products$ | async as products; else noFlows">
+              <header>
+                <h2>
+                  <img src="assets/svg/ui/heading-production.svg" alt="Production Flow" width="32" height="32" />
+                  <span i18n="@@processTabProductionFlowTitle">Production Flow</span>
+                </h2>
+                <p i18n="@@processTabProductionFlowSubtitle">HBW → Manufacturing Steps → DPS</p>
+              </header>
+
+              <div class="flow-visualization">
+                <div class="stage-card start">
+                  <div class="icon xlarge"><img [src]="startIcon" alt="High-bay warehouse" width="96" height="96" /></div>
+                  <div class="text">
+                    <strong i18n="@@processStageStartTitle">Retrieve via high-bay warehouse (HBW)</strong>
+                  </div>
+                </div>
+
+                <div class="arrow" aria-hidden="true">⬇️</div>
+
+                <div class="product-grid">
+                  <article *ngFor="let product of products" class="product-card" [ngClass]="product.backgroundClass">
+                    <header>
+                      <div class="icons">
+                        <img [src]="product.product3dIcon" [alt]="product.label" width="110" height="110" />
+                      </div>
+                    </header>
+                    <ul>
+                      <li *ngFor="let step of product.steps" [class.placeholder]="step.isPlaceholder">
+                        <div class="step-icon">
+                          <img *ngIf="!step.isPlaceholder" [src]="step.icon" [alt]="step.label" width="72" height="72" />
+                        </div>
+                        <span class="step-label">{{ step.label }}</span>
+                      </li>
+                    </ul>
+                    <!-- Final product box (without border) -->
+                    <div class="final-product-box">
+                      <img [src]="product.productIcon" [alt]="'Final ' + product.label" width="110" height="110" />
+                    </div>
+                  </article>
+                </div>
+
+                <div class="arrow" aria-hidden="true">⬇️</div>
+
+                <div class="stage-card end">
+                  <div class="icon xlarge multi">
+                    <img *ngFor="let icon of productionEndIcons" [src]="icon" alt="Delivery icon" width="96" height="96" />
+                  </div>
+                  <div class="text">
+                    <strong i18n="@@processStageEndTitle">Delivery via Delivery and Pickup Station (DPS)</strong>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <ng-template #noFlows>
+              <section class="empty-state">
+                <h2 i18n="@@processNoFlowsHeadline">No production flows available</h2>
+                <p i18n="@@processNoFlowsHint">Load a fixture or connect to live data to see the configured processing steps.</p>
+              </section>
+            </ng-template>
+          </div>
+        </div>
+      </div>
     </article>
   </div>
-
-  <div class="arrow" aria-hidden="true">⬇️</div>
-
-  <div class="stage-card end">
-    <div class="icon xlarge multi">
-      <img *ngFor="let icon of endIcons" [src]="icon" alt="Delivery icon" width="96" height="96" />
-    </div>
-    <div class="text">
-      <strong i18n="@@processStageEndTitle">Delivery via Delivery and Pickup Station (DPS)</strong>
-    </div>
-  </div>
 </section>
-
-<ng-template #noFlows>
-  <section class="empty-state">
-    <h2 i18n="@@processNoFlowsHeadline">No production flows available</h2>
-    <p i18n="@@processNoFlowsHint">Load a fixture or connect to live data to see the configured processing steps.</p>
-  </section>
-</ng-template>

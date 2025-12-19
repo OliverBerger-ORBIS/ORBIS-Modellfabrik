@@ -32,18 +32,13 @@ const NAVIGATION_ITEMS: Omit<NavigationItem, 'label'>[] = [
     roles: ['operator', 'admin'],
   },
   {
-    id: 'overview',
-    route: '/overview',
+    id: 'process',
+    route: '/process',
     roles: ['operator', 'admin'],
   },
   {
     id: 'order',
     route: '/order',
-    roles: ['operator', 'admin'],
-  },
-  {
-    id: 'process',
-    route: '/process',
     roles: ['operator', 'admin'],
   },
   {

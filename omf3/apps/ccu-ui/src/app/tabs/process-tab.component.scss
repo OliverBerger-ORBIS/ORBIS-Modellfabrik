@@ -2,48 +2,238 @@
   display: block;
 }
 
-.process-header {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
-  
-  > div:first-of-type {
+.process-tab {
+  padding: 2rem;
+  width: 100%;
+  margin: 0 auto;
+
+  &__header {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+
+    > div:first-of-type {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    > .process-tab__fixtures {
+      margin-left: auto;
+    }
+  }
+
+  &__heading {
     display: flex;
     gap: 1rem;
     align-items: center;
-    flex: 1;
-  }
-  
-  > .process-tab__fixtures {
-    margin-left: auto;
+    margin-bottom: 0.5rem;
+
+    img {
+      width: 56px;
+      height: 56px;
+      border-radius: 1.25rem;
+      background: linear-gradient(135deg, rgba(56, 132, 255, 0.2), rgba(255, 255, 255, 0.8));
+      padding: 0.75rem;
+      box-shadow: 0 18px 44px -28px rgba(17, 28, 45, 0.5);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0b2b4c;
+    }
   }
 
-  img {
-    border-radius: 1.25rem;
-    background: linear-gradient(135deg, rgba(56, 132, 255, 0.2), rgba(255, 255, 255, 0.8));
-    padding: 0.75rem;
-    box-shadow: 0 18px 44px -28px rgba(17, 28, 45, 0.5);
-  }
-
-  h1 {
-    margin: 0;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #0b2b4c;
-  }
-
-  p {
+  &__header p {
     margin: 0.25rem 0 0;
     color: var(--orbis-grey-strong);
+    font-size: 1rem;
   }
-}
 
-.process-tab__fixtures {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  &__fixtures {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  // Accordion container
+  &__accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+    border-radius: 1.2rem;
+    border: 1px solid rgba(23, 43, 77, 0.12);
+    background: rgba(255, 255, 255, 0.5);
+    padding: 1rem;
+  }
+
+  // Accordion grid for two-column layout within each accordion panel
+  &__accordion-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+    width: 100%;
+
+    @media (max-width: 1200px) {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+  }
+
+  &__accordion-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-width: 0;
+
+    &:first-child {
+      border-right: 2px solid rgba(var(--orbis-blue-strong-rgb), 0.1);
+      padding-right: 2rem;
+
+      @media (max-width: 1200px) {
+        border-right: none;
+        padding-right: 0;
+        border-bottom: 2px solid rgba(var(--orbis-blue-strong-rgb), 0.1);
+        padding-bottom: 2rem;
+      }
+    }
+
+    &:last-child {
+      padding-left: 2rem;
+
+      @media (max-width: 1200px) {
+        padding-left: 0;
+      }
+    }
+  }
+
+  &__column-title {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--orbis-nightblue);
+  }
+
+  &__column-subtitle {
+    margin: 0 0 1rem 0;
+    color: var(--orbis-grey-strong);
+    font-size: 0.9rem;
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 0; // Remove bottom margin, gap handles spacing
+    padding: 1.5rem;
+    border-radius: 1rem;
+    background: #ffffff;
+    box-shadow: 0 12px 40px -24px rgba(20, 63, 107, 0.35);
+
+    header {
+      margin-bottom: 1rem;
+
+      h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #13315c;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      p {
+        margin: 0.25rem 0 0;
+        color: var(--orbis-grey-strong);
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  // Accordion styles (matching DSP detail component pattern)
+  .accordion-item {
+    border: 1px solid rgba(var(--orbis-blue-strong-rgb), 0.18);
+    border-radius: 1rem;
+    background: #fff;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+
+    &.is-open {
+      box-shadow: 0 12px 30px -28px rgba(31, 54, 91, 0.5);
+      border-color: rgba(var(--orbis-blue-strong-rgb), 0.3);
+    }
+  }
+
+  .accordion-trigger {
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: transparent;
+    padding: 1.25rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #233047;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: rgba(var(--orbis-blue-strong-rgb), 0.04);
+    }
+
+    &:focus {
+      outline: 2px solid var(--orbis-blue-strong);
+      outline-offset: -2px;
+      border-radius: 1rem;
+    }
+
+    .accordion-trigger-content {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      img {
+        flex-shrink: 0;
+      }
+    }
+
+    .chevron {
+      width: 12px;
+      height: 12px;
+      border-right: 2px solid var(--orbis-blue-strong);
+      border-bottom: 2px solid var(--orbis-blue-strong);
+      transform: rotate(45deg);
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+    }
+  }
+
+  .accordion-item.is-open .chevron {
+    transform: rotate(-135deg);
+  }
+
+  .accordion-panel {
+    padding: 0 1.5rem 1.5rem;
+    display: block;
+    animation: fadeIn 0.2s ease-in;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 }
 
 .badge {
@@ -73,10 +263,7 @@
     padding: 0.35rem 0.9rem;
     border-radius: 999px;
     cursor: pointer;
-    transition:
-      background 0.2s ease,
-      color 0.2s ease,
-      box-shadow 0.2s ease;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 
     &:hover {
       background: rgba(255, 255, 255, 0.7);
@@ -90,31 +277,229 @@
   }
 }
 
-.process-section {
+// Customer Orders & Purchase Orders styles (from Overview Tab)
+.customer-grid {
   display: grid;
-  gap: 1.5rem;
+  gap: 1rem;
+
+  @media (min-width: 720px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
-.section-header {
-  display: flex;
-  align-items: center;
+.customer-card {
+  display: grid;
   gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 0.9rem;
+  background: none;
+  box-shadow: none;
 
-  h2 {
-    margin: 0;
+  h3 {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 1.2rem;
+    margin: 0;
+    font-size: 1rem;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--orbis-nightblue);
+    letter-spacing: 0.05em;
   }
 
-  p {
-    margin: 0;
-    color: #63748a;
+  .workpiece-stack {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+
+    .workpiece-image {
+      border: none;
+      box-shadow: none;
+    }
+
+    .three-d {
+      filter: drop-shadow(0 10px 18px rgba(17, 24, 39, 0.2));
+    }
   }
+
+  dl {
+    display: flex;
+    gap: 1.5rem;
+    margin: 0;
+
+    div {
+      display: grid;
+      gap: 0.15rem;
+    }
+
+    dt {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--orbis-grey-strong);
+    }
+
+    dd {
+      margin: 0;
+      font-weight: 700;
+      color: #102a43;
+    }
+  }
+
+  button {
+    justify-self: flex-start;
+  }
+}
+
+.purchase-grid {
+  display: grid;
+  gap: 1rem;
+
+  @media (min-width: 720px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.purchase-card {
+  display: grid;
+  gap: 0.75rem;
+  border-radius: 0.9rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(236, 243, 249, 0.8));
+  box-shadow: inset 0 0 0 1px rgba(19, 49, 92, 0.08);
+
+  .purchase-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    h3 {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .stock {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--orbis-grey-strong);
+    }
+  }
+
+  .purchase-body {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 1rem;
+
+    @media (max-width: 720px) {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .three-d {
+      border: none;
+      box-shadow: none;
+      filter: drop-shadow(0 10px 18px rgba(17, 24, 39, 0.2));
+    }
+  }
+
+  .missing {
+    display: grid;
+    gap: 0.35rem;
+    align-content: start;
+
+    p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--orbis-grey-strong);
+    }
+
+    .missing-slots {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+
+      img {
+        width: 48px;
+        height: 48px;
+      }
+    }
+  }
+
+  .purchase-action {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    justify-content: flex-end;
+    font-size: 0.8rem;
+    color: #9aa5b1;
+
+    button {
+      align-self: flex-start;
+    }
+  }
+}
+
+.dot {
+  display: inline-flex;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 999px;
+
+  &.blue {
+    background: #1f7ed2;
+  }
+
+  &.white {
+    background: #d5d7de;
+    box-shadow: 0 0 0 1px rgba(43, 55, 69, 0.2);
+  }
+
+  &.red {
+    background: #e12d39;
+  }
+}
+
+.workpiece-image {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  align-self: center;
+}
+
+button.primary,
+button.secondary {
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.55rem 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button.primary {
+  background: var(--orbis-blue-strong);
+  color: #ffffff;
+}
+
+button.primary:disabled {
+  background: rgba(var(--orbis-blue-strong-rgb), 0.3);
+  cursor: not-allowed;
+}
+
+button.secondary {
+  background: rgba(82, 96, 109, 0.12);
+  color: var(--orbis-grey-strong);
+  cursor: not-allowed;
+}
+
+// Flow Visualization styles (from old Process Tab)
+.flow-visualization {
+  display: grid;
+  gap: 1.5rem;
 }
 
 .stage-card {
@@ -161,10 +546,6 @@
       font-size: 1.15rem;
       color: #13315c;
     }
-
-    .subtitle {
-      color: #50647a;
-    }
   }
 }
 
@@ -184,7 +565,8 @@
 }
 
 .product-card {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 1.25rem;
   padding: 1.25rem;
   border-radius: 1.25rem;
@@ -217,26 +599,6 @@
         box-shadow: 0 16px 38px -28px rgba(14, 28, 45, 0.45);
       }
     }
-
-    .meta {
-      display: grid;
-      gap: 0.2rem;
-      text-align: center;
-
-      .primary-line {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        font-size: 1.1rem;
-        color: #132f4c;
-      }
-
-      .count {
-        color: #516070;
-        font-weight: 500;
-      }
-    }
   }
 
   ul {
@@ -245,6 +607,7 @@
     margin: 0;
     display: grid;
     gap: 0.75rem;
+    flex: 1; // Allow steps to grow, pushing final product box to bottom
   }
 
   li {
@@ -278,17 +641,6 @@
       font-weight: 600;
       color: #20344d;
     }
-
-    .delete-icon {
-      font-size: 1.4rem;
-      color: rgba(32, 52, 77, 0.75);
-      transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
-    }
-
-    &:hover .delete-icon {
-      color: rgba(32, 52, 77, 1);
-      transform: scale(1.05);
-    }
   }
 
   li.placeholder {
@@ -297,29 +649,35 @@
   }
 
   li.placeholder .step-icon,
-  li.placeholder .step-label,
-  li.placeholder .delete-icon {
+  li.placeholder .step-label {
     visibility: hidden;
+  }
+
+  // Final product box (without border, aligned at same height across all products)
+  .final-product-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem 0;
+    margin-top: auto; // Push to bottom, ensuring alignment across cards
+
+    img {
+      border-radius: 0.75rem;
+      box-shadow: 0 16px 38px -28px rgba(14, 28, 45, 0.45);
+    }
   }
 }
 
-.dot {
-  display: inline-flex;
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 999px;
+.storage-flow-visualization {
+  // Storage flow is simpler - just DPS -> HBW
+  .stage-card {
+    &.start {
+      background: linear-gradient(135deg, rgba(225, 249, 230, 0.85), rgba(255, 255, 255, 0.95));
+    }
 
-  &.blue {
-    background: #1f7ed2;
-  }
-
-  &.white {
-    background: #d5d7de;
-    box-shadow: 0 0 0 1px rgba(43, 55, 69, 0.2);
-  }
-
-  &.red {
-    background: #e12d39;
+    &.end {
+      background: linear-gradient(135deg, rgba(211, 237, 255, 0.85), rgba(255, 255, 255, 0.95));
+    }
   }
 }
 
@@ -338,6 +696,28 @@
 
   p {
     margin: 0;
-    color: var(--orbis-grey-strong);
+    color: #52606d;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .process-tab {
+    padding: 1rem;
+
+    &__header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    &__heading {
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+
+    &__column-title {
+      font-size: 1.25rem;
+    }
   }
 }
