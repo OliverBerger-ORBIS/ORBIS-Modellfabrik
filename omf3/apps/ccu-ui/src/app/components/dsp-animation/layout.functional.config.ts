@@ -517,11 +517,11 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       highlightedFunctionIcons: ['mc-governance'],
     },
 
-    // Step 18: MC Edge Segment (3x edge box)
+    // Step 18: MC Edge Segment - Central Edge Node (first edge box)
     {
       id: 'step-18',
       label: $localize`:@@dspMcStepEdge:Edge Node Visualization`,
-      description: $localize`:@@dspMcStepEdgeDesc:Management Cockpit displaying three DSP Edge nodes within a 120° segment.`,
+      description: $localize`:@@dspMcStepEdgeDesc:Management Cockpit displaying the central DSP Edge node connected to the Management Cockpit.`,
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
@@ -544,12 +544,42 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       ],
       highlightedConnectionIds: [conn('dsp-edge', 'dsp-mc')],
       showFunctionIcons: true,
-      highlightedFunctionIcons: ['logo-edge-a', 'logo-edge-b', 'logo-edge-c'],
+      highlightedFunctionIcons: ['logo-edge-b'], // Only central edge icon
     },
 
-    // Step 19: Autonomous & Adaptive Enterprise (Zielbild) - Final overview with all components visible
+    // Step 19: MC Edge Segment - Complete (all 3 edge boxes with connections)
     {
       id: 'step-19',
+      label: $localize`:@@dspMcStepEdgeComplete:Edge Node Visualization Complete`,
+      description: $localize`:@@dspMcStepEdgeCompleteDesc:Management Cockpit displaying three DSP Edge nodes within a 120° segment, all connected to the Management Cockpit and interconnected.`,
+      visibleContainerIds: [
+        'layer-bp',
+        'layer-dsp',
+        'bp-mes',
+        'bp-erp',
+        'bp-cloud',
+        'bp-analytics',
+        'bp-data-lake',
+        'dsp-ux',
+        'dsp-edge',
+        'dsp-mc',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: ['dsp-mc', 'dsp-edge'],
+      visibleConnectionIds: [
+        conn('dsp-ux', 'dsp-edge'),
+        conn('dsp-edge', 'dsp-mc'),
+        ...bpConnections,
+        ...baseShopfloorConnections,
+      ],
+      highlightedConnectionIds: [conn('dsp-edge', 'dsp-mc')],
+      showFunctionIcons: true,
+      highlightedFunctionIcons: ['logo-edge-a', 'logo-edge-b', 'logo-edge-c'], // All three edge icons
+    },
+
+    // Step 20: Autonomous & Adaptive Enterprise (Zielbild) - Final overview with all components visible
+    {
+      id: 'step-20',
       label: $localize`:@@dspArchStep12:Autonomous & Adaptive Enterprise`,
       description: $localize`:@@dspArchStep12Desc:Data from shopfloor, Edge, ERP, analytics, and data lakes enable autonomous workflows, predictive decisions, and continuous process optimization.`,
       visibleContainerIds: [

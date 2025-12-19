@@ -29,6 +29,11 @@ mkdir -p omf3/apps/ccu-ui/src/app/pages/dsp/customer/acme
 
 Erstellen Sie die Konfigurationsdatei `omf3/apps/ccu-ui/src/app/components/dsp-animation/configs/<customer-id>/<customer-id>-config.ts`:
 
+**WICHTIG - SVG-Nomenklatur:**
+- **Devices:** Alle Device-SVGs müssen `*-station.svg` heißen (z.B. `drill-station.svg`, `mill-station.svg`)
+- **Systems:** Alle System-SVGs müssen `*-system.svg` heißen (z.B. `warehouse-system.svg`, `agv-system.svg`)
+- **Business:** Alle Business-SVGs müssen `*-application.svg` heißen (z.B. `erp-application.svg`, `mes-application.svg`)
+
 ```typescript
 /**
  * ACME Customer Configuration
@@ -111,6 +116,11 @@ export const ACME_CONFIG: CustomerDspConfig = {
 - **Hyphen bei Umbrüchen**: Wenn ein Label umgebrochen wird, wird automatisch ein Bindestrich hinzugefügt (z.B. "CNC-" und "Station")
 
 ### Verfügbare Icon Keys
+
+**WICHTIG - SVG-Nomenklatur:**
+- **Devices:** Alle SVGs in `src/assets/svg/shopfloor/stations/` müssen `*-station.svg` heißen
+- **Systems:** Alle SVGs in `src/assets/svg/shopfloor/systems/` müssen `*-system.svg` heißen
+- **Business:** Alle SVGs in `src/assets/svg/business/` müssen `*-application.svg` heißen
 
 **Devices (Shopfloor Stations):**
 - `drill` - Drill Station
@@ -264,6 +274,8 @@ Fügen Sie die Route zu `omf3/apps/ccu-ui/src/app/app.routes.ts` hinzu:
 },
 ```
 
+**Hinweis:** Die Customer-Seite wird automatisch in der zentralen Customer-Auswahlseite (`/dsp/customer`) angezeigt, sobald die Route hinzugefügt wurde. Die Customer-Auswahlseite listet alle verfügbaren Customers auf und ermöglicht die Navigation zu den einzelnen Customer-Seiten.
+
 ## Schritt 6: Tests erstellen
 
 Erstellen Sie Test-Dateien:
@@ -349,6 +361,10 @@ Für Business Processes verwenden Sie konkrete IDs:
 - Prüfen Sie, ob der `iconKey` in `types.ts` definiert ist
 - Prüfen Sie, ob das Icon in `icon.registry.ts` registriert ist
 - Prüfen Sie, ob der `customIconPath` in `icon-registry.ts` existiert (falls verwendet)
+- **Prüfen Sie die SVG-Nomenklatur:** 
+  - Devices müssen `*-station.svg` heißen (z.B. `drill-station.svg`)
+  - Systems müssen `*-system.svg` heißen (z.B. `warehouse-system.svg`)
+  - Business müssen `*-application.svg` heißen (z.B. `erp-application.svg`)
 
 ### Route funktioniert nicht
 - Prüfen Sie, ob die Route in `app.routes.ts` korrekt hinzugefügt wurde

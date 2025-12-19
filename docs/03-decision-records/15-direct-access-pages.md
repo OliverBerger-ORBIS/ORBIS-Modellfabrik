@@ -7,8 +7,11 @@ Accepted
 - For presentation / video mode we need some routes reachable directly via URL, without adding more items to the tab navigation.
 - Current examples:
   - `/#/en/presentation` (FTS route & shopfloor layout)
-  - `/#/en/dsp-architecture` (refactored DSP architecture view)
-  - `/#/de/dsp-action` (planned)
+  - `/#/en/dsp-animation` (refactored DSP architecture view)
+  - `/#/en/dsp-action` (DSP Action page)
+  - `/#/en/dsp/customer` (Customer selector page - central entry point for customer-specific DSP architecture pages)
+  - `/#/en/dsp/customer/fmf` (FMF customer-specific DSP architecture)
+  - `/#/en/dsp/customer/ecme` (ECME customer-specific DSP architecture)
 - These links should be discoverable in the app, but not clutter the main navigation.
 
 ## Decision

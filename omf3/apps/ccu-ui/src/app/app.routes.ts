@@ -105,6 +105,11 @@ export const appRoutes: Routes = [
           import('./pages/dsp-animation/dsp-architecture.component').then((m) => m.DspArchitecturePageComponent),
       },
       {
+        path: 'dsp/customer',
+        loadComponent: () =>
+          import('./pages/dsp/customer/customer-selector-page.component').then((m) => m.CustomerSelectorPageComponent),
+      },
+      {
         path: 'dsp/customer/fmf',
         loadComponent: () =>
           import('./pages/dsp/customer/fmf/fmf-dsp-page.component').then((m) => m.FmfDspPageComponent),

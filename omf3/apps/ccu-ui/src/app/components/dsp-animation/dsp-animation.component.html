@@ -275,8 +275,9 @@
                   [class.container__function-icon]="!isFunctionIconHighlighted(icon.iconKey)"
                   [class.container__function-icon--highlighted]="isFunctionIconHighlighted(icon.iconKey)"
                 />
+                <!-- Connection from center to edge icons (Step 18: solid orange, Step 19: solid orange) -->
                 <line
-                  *ngIf="container.id === 'dsp-mc' && steps[currentStepIndex]?.id === 'step-18' && icon.iconKey.startsWith('logo-edge-')"
+                  *ngIf="container.id === 'dsp-mc' && (isCurrentStep('step-18') || isCurrentStep('step-19')) && icon.iconKey.startsWith('logo-edge-')"
                   [attr.x1]="container.width / 2"
                   [attr.y1]="container.height / 2"
                   [attr.x2]="getFunctionIconCenter(container, i, { iconKey: icon.iconKey, size: getFunctionIconSize(icon.iconKey) }).cx"
@@ -284,8 +285,27 @@
                   stroke="var(--microsoft-orange-medium)"
                   stroke-width="2"
                   stroke-linecap="round"
-                  stroke-dasharray="4 4"
+                  stroke-dasharray="none"
                 />
+              </ng-container>
+              <!-- Connections between edge icons (Step 19 only) - similar to orbis-dsp-logo.svg -->
+              <ng-container *ngIf="container.id === 'dsp-mc' && isCurrentStep('step-19')">
+                <ng-container *ngFor="let icon1 of getVisibleFunctionIcons(container); let i1 = index">
+                  <ng-container *ngFor="let icon2 of getVisibleFunctionIcons(container); let i2 = index">
+                    <line
+                      *ngIf="icon1.iconKey.startsWith('logo-edge-') && icon2.iconKey.startsWith('logo-edge-') && i1 < i2"
+                      [attr.x1]="getFunctionIconCenter(container, i1, { iconKey: icon1.iconKey, size: getFunctionIconSize(icon1.iconKey) }).cx"
+                      [attr.y1]="getFunctionIconCenter(container, i1, { iconKey: icon1.iconKey, size: getFunctionIconSize(icon1.iconKey) }).cy"
+                      [attr.x2]="getFunctionIconCenter(container, i2, { iconKey: icon2.iconKey, size: getFunctionIconSize(icon2.iconKey) }).cx"
+                      [attr.y2]="getFunctionIconCenter(container, i2, { iconKey: icon2.iconKey, size: getFunctionIconSize(icon2.iconKey) }).cy"
+                      stroke="#bbbcbc"
+                      stroke-width="1.2"
+                      stroke-linecap="round"
+                      stroke-dasharray="4 3"
+                      fill="none"
+                    />
+                  </ng-container>
+                </ng-container>
               </ng-container>
             </g>
 
@@ -298,7 +318,7 @@
               width="84"
               height="84"
               class="container__ux-icon"
-              [class.container__function-icon--highlighted]="steps[currentStepIndex].id === 'step-18' && container.id === 'dsp-edge'"
+              [class.container__function-icon--highlighted]="isCurrentStep('step-18') && container.id === 'dsp-edge'"
             />
 
             <!-- Environment labels (above DSP containers) - displayed as property, not separate container -->
@@ -431,7 +451,7 @@
       </g>
 
       <!-- Step Description Overlay (displayed prominently in the diagram) -->
-      <g *ngIf="steps[currentStepIndex].description" class="step-overlay">
+      <g *ngIf="getCurrentStep()?.description" class="step-overlay">
         <!-- Semi-transparent background box -->
         <rect
           [attr.x]="20"
@@ -453,7 +473,7 @@
           fill="#ffffff"
           class="step-overlay__title"
         >
-          {{ steps[currentStepIndex].label }}
+          {{ getCurrentStep()?.label }}
         </text>
         <!-- Step description -->
         <text
@@ -465,7 +485,7 @@
           fill="#ffffff"
           class="step-overlay__description"
         >
-          {{ steps[currentStepIndex].description }}
+          {{ getCurrentStep()?.description }}
         </text>
       </g>
 
@@ -496,7 +516,7 @@
   <footer class="dsp-architecture__controls">
     <div class="controls__step-indicator">
       <span class="step-label">
-        {{ steps[currentStepIndex].label }} ({{ currentStepIndex + 1 }} / {{ steps.length }})
+        {{ getCurrentStep()?.label }} ({{ currentStepIndex + 1 }} / {{ steps.length }})
       </span>
     </div>
     <div class="controls__buttons">

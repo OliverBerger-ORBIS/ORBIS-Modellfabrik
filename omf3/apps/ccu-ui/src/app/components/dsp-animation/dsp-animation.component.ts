@@ -402,10 +402,25 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
+   * Get current step safely
+   */
+  protected getCurrentStep(): StepConfig | undefined {
+    return this.steps[this.currentStepIndex];
+  }
+
+  /**
+   * Check if current step has specific ID
+   */
+  protected isCurrentStep(stepId: string): boolean {
+    const step = this.getCurrentStep();
+    return step?.id === stepId;
+  }
+
+  /**
    * Check if function icons should be shown
    */
   protected shouldShowFunctionIcons(): boolean {
-    const step = this.steps[this.currentStepIndex];
+    const step = this.getCurrentStep();
     return step?.showFunctionIcons !== false;
   }
 
@@ -413,7 +428,7 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
    * Check if a specific function icon is highlighted
    */
   protected isFunctionIconHighlighted(iconKey: string): boolean {
-    const step = this.steps[this.currentStepIndex];
+    const step = this.getCurrentStep();
     if (!step?.highlightedFunctionIcons) return false;
     return step.highlightedFunctionIcons.includes(iconKey);
   }
@@ -1022,17 +1037,25 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     const isMc = container.id === 'dsp-mc';
     // layout set: all slots to keep angles stable
     const layoutIcons = isMc
-      ? (container.functionIcons ?? []).filter((fi) =>
-          currentStep?.id === 'step-18' ? fi.iconKey.startsWith('logo-edge-') : !fi.iconKey.startsWith('logo-edge-')
-        )
+      ? (container.functionIcons ?? []).filter((fi) => {
+          if (currentStep?.id === 'step-18') {
+            return fi.iconKey === 'logo-edge-b'; // Only central icon in step 18
+          }
+          if (currentStep?.id === 'step-19') {
+            return fi.iconKey.startsWith('logo-edge-'); // All three icons in step 19
+          }
+          return !fi.iconKey.startsWith('logo-edge-');
+        })
       : container.functionIcons ?? [];
     const total = layoutIcons.length;
     if (total === 0) {
       return { x: container.width / 2, y: container.height / 2 };
     }
+    // For Step 18 with only one icon, center it in the 120° segment (at 180°)
+    // For Step 19 with three icons, distribute them across the 120° segment starting at 120°
     const startDeg = isMc
-      ? currentStep?.id === 'step-18'
-        ? 120
+      ? (currentStep?.id === 'step-18' || currentStep?.id === 'step-19')
+        ? (currentStep?.id === 'step-18' && total === 1) ? 180 : 120 // Center single icon in step 18, start at 120° for step 19
         : 300
       : 90;
     const spanDeg = isMc ? 120 : 360;
@@ -1041,7 +1064,7 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     const step = isMc
       ? total > 1
         ? spanDeg / (total - 1)
-        : 0
+        : 0 // Single icon: no step needed, position at startDeg
       : spanDeg / total; // edge: distribute evenly over full circle (9 icons -> 40°)
     const angleRad = ((startDeg + slotIndex * step) * Math.PI) / 180;
     const cx = container.width / 2;
@@ -1082,6 +1105,11 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     const step = this.steps[this.currentStepIndex];
     if (container.id === 'dsp-mc') {
       if (step?.id === 'step-18') {
+        // Step 18: Only show central edge icon (logo-edge-b)
+        return container.functionIcons.filter((fi) => fi.iconKey === 'logo-edge-b');
+      }
+      if (step?.id === 'step-19') {
+        // Step 19: Show all three edge icons
         return container.functionIcons.filter((fi) => fi.iconKey.startsWith('logo-edge-'));
       }
       return container.functionIcons.filter(

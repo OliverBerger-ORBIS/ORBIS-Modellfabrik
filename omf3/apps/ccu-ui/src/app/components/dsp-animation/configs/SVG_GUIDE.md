@@ -84,41 +84,46 @@ export type GenericIconKey =
 
 ### Regel 2: Wenn das gleiche SVG für Devices UND Systems verwendet wird
 
-**Option A: In `shared/` ablegen (empfohlen)**
+**Option A: In `shared/` ablegen (nur wenn wirklich geteilt)**
 ```
 shared/
-  └── warehouse.svg  # Wird für Devices UND Systems verwendet
+  └── agv-vehicle.svg  # Wird für Devices UND Systems verwendet
 ```
 
 Dann in `icon-registry.ts`:
 ```typescript
 // Für Devices
-'generic-device-warehouse': 'assets/svg/shopfloor/shared/warehouse.svg',
+'generic-device-agv': 'assets/svg/shopfloor/shared/agv-vehicle.svg',
 
 // Für Systems  
-'shopfloor-warehouse': 'assets/svg/shopfloor/shared/warehouse.svg',
-'generic-system-warehouse-system': 'assets/svg/shopfloor/shared/warehouse.svg',
+'shopfloor-fts': 'assets/svg/shopfloor/shared/agv-vehicle.svg',
 ```
 
-**Option B: In einem Ordner ablegen und referenzieren**
+**Option B: Separate SVGs für Devices und Systems (EMPFOHLEN)**
 ```
+stations/
+  └── warehouse-station.svg  # Für Devices
 systems/
-  └── warehouse-system.svg  # Original
+  └── warehouse-system.svg   # Für Systems
 ```
 
 Dann in `icon-registry.ts`:
 ```typescript
-// Für Devices: Auf das gleiche SVG verweisen
-'generic-device-warehouse': 'assets/svg/shopfloor/systems/warehouse-system.svg',
+// Für Devices: Separate Station-SVG
+'generic-device-warehouse': 'assets/svg/shopfloor/stations/warehouse-station.svg',
 
-// Für Systems: Auf das gleiche SVG verweisen
+// Für Systems: Separate System-SVG
 'shopfloor-warehouse': 'assets/svg/shopfloor/systems/warehouse-system.svg',
+'generic-system-warehouse-system': 'assets/svg/shopfloor/systems/warehouse-system.svg',
 ```
 
-### Regel 3: Namenskonvention
-- **Device-SVGs:** `*-station.svg` (z.B. `laser-station.svg`, `cnc-station.svg`)
-- **System-SVGs:** `*-system.svg` (z.B. `warehouse-system.svg`, `agv-system.svg`)
-- **Geteilte SVGs:** Neutraler Name (z.B. `warehouse.svg`, `agv-vehicle.svg`)
+**WICHTIG:** Die Nomenklatur `*-station.svg`, `*-system.svg`, `*-application.svg` MUSS befolgt werden!
+
+### Regel 3: Namenskonvention (KRITISCH - MUSS befolgt werden)
+- **Device-SVGs:** `*-station.svg` (z.B. `laser-station.svg`, `cnc-station.svg`, `conveyor-station.svg`, `oven-station.svg`)
+- **System-SVGs:** `*-system.svg` (z.B. `warehouse-system.svg`, `agv-system.svg`, `factory-system.svg`, `scada-system.svg`)
+- **Business-SVGs:** `*-application.svg` (z.B. `erp-application.svg`, `mes-application.svg`, `data-lake-application.svg`)
+- **Geteilte SVGs:** Neutraler Name (z.B. `agv-vehicle.svg`, `question.svg`)
 
 ## 📝 Beispiel: Warehouse SVG für Devices hinzufügen
 
@@ -128,19 +133,16 @@ Dann in `icon-registry.ts`:
 
 **Lösung (wenn neues Device-SVG erstellt wird):**
 
-1. **Neue Datei:** `assets/svg/shopfloor/stations/warehouse-station.svg`
+1. **Neue Datei:** `assets/svg/shopfloor/stations/warehouse-station.svg` (Nomenklatur: `*-station.svg`)
 2. **Icon-Registry aktualisieren:**
    ```typescript
    'generic-device-warehouse': 'assets/svg/shopfloor/stations/warehouse-station.svg',
    ```
 
-**ODER (wenn das gleiche SVG verwendet werden soll):**
-
-1. **Bestehende Datei verwenden:** `assets/svg/shopfloor/systems/warehouse-system.svg`
-2. **Icon-Registry aktualisieren:**
-   ```typescript
-   'generic-device-warehouse': 'assets/svg/shopfloor/systems/warehouse-system.svg',
-   ```
+**WICHTIG:** Verwenden Sie die korrekte Nomenklatur:
+- Devices → `*-station.svg` (z.B. `warehouse-station.svg`)
+- Systems → `*-system.svg` (z.B. `warehouse-system.svg`)
+- Business → `*-application.svg` (z.B. `erp-application.svg`)
 
 ## ✅ Checkliste für neue Device-SVGs
 

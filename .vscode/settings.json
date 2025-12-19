@@ -8,8 +8,8 @@
     "excludeDirectories": [
       "**/node_modules",
       "**/dist",
-      "**/build",
-      "**/.git"
+      "**/build"
+      // .git NICHT ausschließen, damit GitLens funktioniert
     ],
     "excludeFiles": [
       "**/*.log",
@@ -18,34 +18,47 @@
   },
   
   // File Watcher Optimierungen
+  // Hinweis: .git/** wird NICHT ausgeschlossen, damit GitLens funktioniert
   "files.watcherExclude": {
     "**/node_modules/**": true,
     "**/dist/**": true,
     "**/build/**": true,
-    "**/.git/**": true,
     "**/data/omf-data/sessions/**": true,
     "**/*.log": true,
     "**/*.db": true
   },
   
   // Search Optimierungen
+  // Hinweis: .git wird NICHT ausgeschlossen, damit GitLens funktioniert
   "search.exclude": {
     "**/node_modules": true,
     "**/dist": true,
     "**/build": true,
-    "**/.git": true,
     "**/data/omf-data/sessions": true,
     "**/*.log": true,
     "**/*.db": true
   },
+  
+  // GitLens Einstellungen - Explizit aktivieren
+  "gitlens.codeLens.enabled": true,
+  "gitlens.currentLine.enabled": true,
+  "gitlens.hovers.enabled": true,
+  "gitlens.views.commitDetails.enabled": true,
+  "gitlens.views.commits.enabled": true,
+  "gitlens.views.fileHistory.enabled": true,
+  "gitlens.views.lineHistory.enabled": true,
+  "gitlens.views.repositories.enabled": true,
+  "gitlens.views.search.enabled": true,
+  "gitlens.views.compare.enabled": true,
+  "gitlens.graph.enabled": true,
   
   // TypeScript: Nur Projekt-Dateien indexieren
   "typescript.preferences.includePackageJsonAutoImports": "off",
   "typescript.suggest.autoImports": true,
   
   // Performance-Optimierungen
+  // Hinweis: .git wird NICHT ausgeschlossen, damit GitLens funktioniert
   "files.exclude": {
-    "**/.git": true,
     "**/node_modules": false
   }
 }

@@ -234,6 +234,12 @@ export class SettingsTabComponent implements OnInit {
       description: 'Track & Trace use case page, accessible via direct URL (not in tab navigation). Fixtures available in mock mode.',
       available: true,
     },
+    {
+      label: 'DSP Customer Architecture',
+      path: '/#/en/dsp/customer',
+      description: 'Select and view customer-specific DSP architecture demonstrations (FMF, ECME).',
+      available: true,
+    },
   ];
 
   /**
