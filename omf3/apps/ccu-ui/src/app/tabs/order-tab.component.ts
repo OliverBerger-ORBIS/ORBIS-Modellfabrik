@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import type { OrderActive } from '@omf3/entities';
 import { getDashboardController } from '../mock-dashboard';
 import { OrderCardComponent } from '../components/order-card/order-card.component';
 import type { OrderFixtureName } from '@omf3/testing-fixtures';
-import { filter, map, shareReplay, startWith, distinctUntilChanged } from 'rxjs/operators';
+import { filter, map, shareReplay, startWith, distinctUntilChanged, take } from 'rxjs/operators';
 import { combineLatest, merge, Observable, of, Subscription } from 'rxjs';
 import { EnvironmentService } from '../services/environment.service';
 import { MessageMonitorService } from '../services/message-monitor.service';
@@ -49,7 +49,8 @@ export class OrderTabComponent implements OnInit, OnDestroy {
   constructor(
     private readonly environmentService: EnvironmentService,
     private readonly messageMonitor: MessageMonitorService,
-    private readonly connectionService: ConnectionService
+    private readonly connectionService: ConnectionService,
+    private readonly cdr: ChangeDetectorRef
   ) {
     this.initializeStreams();
   }
@@ -62,6 +63,10 @@ export class OrderTabComponent implements OnInit, OnDestroy {
   productionCompleted$: Observable<OrderActive[]> = of([]);
   storageActive$: Observable<OrderActive[]> = of([]);
   storageCompleted$: Observable<OrderActive[]> = of([]);
+  
+  // Cache for storage completed orders (for auto-expand functionality)
+  private currentStorageCompleted: OrderActive[] = [];
+  expandedStorageOrderId: string | null = null;
 
   readonly fixtureOptions: OrderFixtureName[] = ['white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];
   readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
@@ -84,6 +89,29 @@ export class OrderTabComponent implements OnInit, OnDestroy {
 
   toggleStorageCompleted(): void {
     this.storageCompletedCollapsed = !this.storageCompletedCollapsed;
+    // Auto-expand first (topmost) order when expanding completed list
+    if (!this.storageCompletedCollapsed) {
+      // Use cached orders for immediate synchronous access
+      if (this.currentStorageCompleted.length > 0) {
+        const topOrder = this.currentStorageCompleted[0];
+        this.expandedStorageOrderId = topOrder.orderId ?? null;
+      } else {
+        // Fallback: subscribe if cache is empty
+        this.subscriptions.add(
+          this.storageCompleted$.pipe(take(1)).subscribe((orders) => {
+            if (orders.length > 0) {
+              const topOrder = orders[0];
+              this.expandedStorageOrderId = topOrder.orderId ?? null;
+              this.cdr.markForCheck();
+            }
+          })
+        );
+      }
+      this.cdr.markForCheck();
+    } else {
+      this.expandedStorageOrderId = null;
+      this.cdr.markForCheck();
+    }
   }
 
   get productionCompletedToggleLabel(): string {
@@ -205,7 +233,11 @@ export class OrderTabComponent implements OnInit, OnDestroy {
     );
 
     this.storageCompleted$ = completedList$.pipe(
-      map((orders: OrderActive[]) => orders.filter((order: OrderActive) => inferType(order) === ORDER_TYPES.STORAGE))
+      map((orders: OrderActive[]) => orders.filter((order: OrderActive) => inferType(order) === ORDER_TYPES.STORAGE)),
+      map((orders: OrderActive[]) => {
+        this.currentStorageCompleted = orders;
+        return orders;
+      })
     );
   }
 
@@ -267,6 +299,10 @@ export class OrderTabComponent implements OnInit, OnDestroy {
     this.dashboard = controller;
     this.activeFixture = controller.getCurrentFixture();
     this.bindOrderStreams();
+  }
+
+  trackOrder(_index: number, order: OrderActive): string {
+    return order.orderId ?? '';
   }
 }
 

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BehaviorSubject, of } from 'rxjs';
 import { OrderTabComponent } from '../order-tab.component';
 import { EnvironmentService } from '../../services/environment.service';
@@ -39,7 +40,7 @@ describe('OrderTabComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [OrderTabComponent],
+      imports: [OrderTabComponent, HttpClientTestingModule],
       providers: [
         { provide: EnvironmentService, useValue: environmentServiceMock },
         { provide: MessageMonitorService, useValue: messageMonitorMock },
@@ -85,10 +86,35 @@ describe('OrderTabComponent', () => {
     expect(component.productionCompletedCollapsed).toBe(!initial);
   });
 
+  it('should toggle production completed without auto-expand', () => {
+    component.productionCompletedCollapsed = true;
+    component.toggleProductionCompleted();
+    expect(component.productionCompletedCollapsed).toBe(false);
+    // Production orders do not auto-expand
+  });
+
   it('should toggle storage completed collapsed state', () => {
     const initial = component.storageCompletedCollapsed;
     component.toggleStorageCompleted();
     expect(component.storageCompletedCollapsed).toBe(!initial);
+  });
+
+  it('should auto-expand last order when expanding storage completed', () => {
+    component.storageCompletedCollapsed = true;
+    // Mock storageCompleted$ to return orders
+    component.storageCompleted$ = of([
+      { orderId: 'order-3' } as OrderActive,
+      { orderId: 'order-4' } as OrderActive,
+    ]);
+    component.toggleStorageCompleted();
+    expect(component.storageCompletedCollapsed).toBe(false);
+    // expandedStorageOrderId should be set to the first (most recent) order
+    expect(component.expandedStorageOrderId).toBe('order-3');
+  });
+
+  it('should track orders by orderId', () => {
+    const order = { orderId: 'test-order-123' } as OrderActive;
+    expect(component.trackOrder(0, order)).toBe('test-order-123');
   });
 
   it('should provide toggle labels', () => {

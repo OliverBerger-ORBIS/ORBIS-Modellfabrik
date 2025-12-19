@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import type { OrderActive, ProductionStep } from '@omf3/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
 import { ShopfloorPreviewComponent } from '../shopfloor-preview/shopfloor-preview.component';
@@ -43,21 +43,38 @@ const DEFAULT_SHOPFLOOR_ICON = resolveLegacyShopfloorPath('assets/svg/shopfloor/
   styleUrl: './order-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrderCardComponent implements OnChanges {
+export class OrderCardComponent implements OnInit, OnChanges {
   @Input({ required: true }) order: OrderActive | null | undefined;
   @Input({ transform: (v: unknown) => Boolean(v) }) isCompleted = false;
+  @Input({ transform: (v: unknown) => Boolean(v) }) expanded = false;
 
   steps: ProductionStep[] = [];
   collapsed = false;
 
   constructor(private readonly moduleNameService: ModuleNameService) {}
 
+  ngOnInit(): void {
+    // Initialize collapsed state based on expanded and isCompleted
+    // This runs after all inputs are set, ensuring we have the correct initial state
+    this.updateCollapsedState();
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['order']) {
       this.steps = (this.order?.productionSteps ?? []) as ProductionStep[];
-      if (changes['order'].firstChange) {
-        this.collapsed = Boolean(this.isCompleted);
-      }
+    }
+    
+    // Always update collapsed state when any relevant input changes
+    this.updateCollapsedState();
+  }
+
+  private updateCollapsedState(): void {
+    // CRITICAL: If expanded is true, always uncollapse
+    // Otherwise, collapse if this is a completed order
+    if (this.expanded) {
+      this.collapsed = false;
+    } else if (this.isCompleted) {
+      this.collapsed = true;
     }
   }
 
