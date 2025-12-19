@@ -67,10 +67,10 @@
 ## 📝 Offene Todos
 1. ✅ **Module-Tab Status-Erweiterung** – Copilot/PR-Statusleisten (AIQS/DPS) in `omf3/apps/ccu-ui` übernehmen, Komponenten generalisieren und für HBW/DRILL/MILL identische Detailbereiche bereitstellen. **(Erledigt: 18.12.2025)**
 2. ✅ **Sequence Commands bündeln** – Sequenzlisten für AIQS/DRILL/MILL in ein gemeinsames Collapsible-Panel am unteren Rand verschieben (Accordion-Komponente + konsistente Beschriftung). **(Erledigt: 18.12.2025)**
-3. **HBW Lageransicht** – Lagerstände/Slots darstellen im Modules-Tab, sobald HBW selektiert ist. HBW ist per default selektiert. (z. B. 3x3 Grid-Darstellung)  Vergleich mit Stock-Darstellung aus overview-Tab. GGf ist es ausreichend, die Inventory-Section mit Stock-Info beim Modules-Tab mit Selektion von HBW darzustellen. Verpacken der Darstellung in eine "Struktur", die resizable ist und in das übrige Angular-Design passt. Die Komponente könnte angepasst werden, so dass auch die Einzelnen Lagerplätze nicht unbedingt, die dort angebenen Größe von (ca 120-160px haben muss). 
-4. **Shopfloor-Benennung** – Module-Tab in der UI/Navigation zu „Shopfloor“ umbenennen und Dokumentation/Tooltips anpassen, damit er als Einstiegspunkt wahrgenommen wird. Der Shopdfloor wird dann an Position 2 der Navigatiosleiste verschoben. (Overview-Tab wird ggf durch TASK 8 Obsolet, da dann alle Info anders angeordnet wird und auf andere Tabs verteilt wird, so dass eine logische Abfolge resultiert.) Neue Logos für Module und Digital Twin, sowie Anzeige der Commands in Module-Tab mit den SVGs für drop-event, pick-event und process-event.
-5. **Konfigurations-Tab Layout** – Shopfloor-Layout links, Module rechts; bei kleiner Breite Modulbereich nach unten umbrechen (CSS Grid/Flex + Angular Breakpoints). (Diese Vorgehen soll für alle Tabs gelten, bei denen wir shopfloor-Laxyout verwenden)
-6. **AGV-Tab Reflow** – Layout an Module(=Shopfloor)/Konfiguration angleichen: links Route & Live-Position, rechts Status, Actions, Load-Info, Commands.
+3. ✅ **HBW Lageransicht** – Lagerstände/Slots darstellen im Modules-Tab, sobald HBW selektiert ist. HBW ist per default selektiert. (z. B. 3x3 Grid-Darstellung)  Vergleich mit Stock-Darstellung aus overview-Tab. GGf ist es ausreichend, die Inventory-Section mit Stock-Info beim Modules-Tab mit Selektion von HBW darzustellen. Verpacken der Darstellung in eine "Struktur", die resizable ist und in das übrige Angular-Design passt. Die Komponente könnte angepasst werden, so dass auch die Einzelnen Lagerplätze nicht unbedingt, die dort angebenen Größe von (ca 120-160px haben muss). 
+4. ✅ **Shopfloor-Benennung** – Module-Tab in der UI/Navigation zu „Shopfloor“ umbenennen und Dokumentation/Tooltips anpassen, damit er als Einstiegspunkt wahrgenommen wird. Der Shopdfloor wird dann an Position 2 der Navigatiosleiste verschoben. (Overview-Tab wird ggf durch TASK 8 Obsolet, da dann alle Info anders angeordnet wird und auf andere Tabs verteilt wird, so dass eine logische Abfolge resultiert.) Neue Logos für Module und Digital Twin, sowie Anzeige der Commands in Module-Tab mit den SVGs für drop-event, pick-event und process-event.
+5. ✅ **Konfigurations-Tab Layout** – Shopfloor-Layout links, Module rechts; bei kleiner Breite Modulbereich nach unten umbrechen (CSS Grid/Flex + Angular Breakpoints). (Diese Vorgehen soll für alle Tabs gelten, bei denen wir shopfloor-Layout verwenden) **(Erledigt: 19.12.2025)**
+6. ✅ **AGV-Tab Reflow** – Layout an Module(=Shopfloor)/Konfiguration angleichen: links Route & Live-Position, rechts Status, Actions, Load-Info, Commands. **(Erledigt: 19.12.2025 - Layout bleibt wie es ist, da es sehr gut funktioniert)**
 7. **DSP Edge Animation** – Animationssequenz überarbeiten (MC-Funktionen → EDGE xyz_2 verlinken → xyz_1/3 ergänzen → alle drei gestrichelt highlighten) als Grundlage fürs OSF/DSP-Logo.
 8. **Process-Tab Neuaufbau** – Geschäftsprozesse (Customer Orders, Purchase Orders, Production, Storage) mit Swimlanes/Karten darstellen; dient als Customer und Purchase Order ERP-Brücke. PRODUCTION und STORAGE ORder als Shopfloor Prozesse aus ERP gesteuert)
 9. **Orders-Tab Klarstellung** – Tab in „Shopfloor Orders“ umbenennen, Finished-Liste per Default eingeklappt, letzter Auftrag automatisch expandiert.
@@ -79,10 +79,12 @@
 12. **DSP → ERP Link** – Klick auf BP-ERP öffnet neuen Process-Tab (Purchase/Customer Orders) und zeigt ERP-Bezug.
 13. **OSF Rebranding** – Bezeichner OMF3 → OSF in Code, Assets, Doku; Angular Prefixes, ENV Variablen und README angleichen.
 14. **Azure DevOps Migration** – Mirror/Move Repository inkl. Pipelines nach ORBIS Azure DevOps, Rechte & Secrets definieren.
-15. **OSF Deployment & Storytelling** – Docker-Setup für Hilcher-Box/RPi abschließen, anschließende Blog-Serie zu OSF & DSP Story vorbereiten.
-16. **AIQS-Kamera-Integration (sf-system)** – Anzeige der Information aus der AIQS-Station: Photo des Workpieces. AIQS-Kamera-Daten werden nicht über MQTT übertragen, sondern müssen direkt vom TXT-Controller (IP: 192.168.0.103) via HTTP abgerufen werden. Integration in Module-Tab bei AIQS-Auswahl. API-Endpoint muss noch ermittelt werden (TXT Controller Web-Interface prüfen, Python-Code in `integrations/TXT-AIQS/lib/camera.py` analysieren).
+15. **OSF Deployment – Docker-Setup für Hilcher-Box/RPi abschließen
+16. **Storytelling** , anschließende Blog-Serie zu OSF & DSP Story vorbereiten.
+17. **Stations und OPC-UA-Module** Erweiterung der Konfiguration um Infos (aus omf2)
+18. **AIQS-Kamera-Integration (sf-system)** – Anzeige der Information aus der AIQS-Station: Photo des Workpieces. AIQS-Kamera-Daten werden nicht über MQTT übertragen, sondern müssen direkt vom TXT-Controller (IP: 192.168.0.103) via HTTP abgerufen werden. Integration in Module-Tab bei AIQS-Auswahl. API-Endpoint muss noch ermittelt werden (TXT Controller Web-Interface prüfen, Python-Code in `integrations/TXT-AIQS/lib/camera.py` analysieren).
 
-**Letzte Aktualisierung:** 18.12.2025
+**Letzte Aktualisierung:** 19.12.2025
 
 ## 📊 Sprint-Vorgehen
 
@@ -102,7 +104,7 @@
 ### Sprint 11 (12.12 - 24.12.2025) - **AKTUELL**
 - **Status:** In Bearbeitung
 - **Fokus:** Gedore Remote-Präsentation, DSP-Animationen, OBS/Teams Playbook, Module-Tab UX.
-- **Erreicht:** Konftel Cam50 Settings + OBS-Doku aktualisiert, DSP-Mockup interaktiv geplant, Todo-Backlog priorisiert. Module-Tab Status-Erweiterung abgeschlossen (DPS/AIQS/HBW/DRILL/MILL mit einheitlicher Struktur, Workpiece-Informationen integriert, Sequence Commands gebündelt).
+- **Erreicht:** Konftel Cam50 Settings + OBS-Doku aktualisiert, DSP-Mockup interaktiv geplant, Todo-Backlog priorisiert. Module-Tab Status-Erweiterung abgeschlossen (DPS/AIQS/HBW/DRILL/MILL mit einheitlicher Struktur, Workpiece-Informationen integriert, Sequence Commands gebündelt). Configuration-Tab Layout mit CSS Grid (Shopfloor links, Module rechts, responsive Breakpoints). HBW Stock-Grid optimiert (quadratische Boxen, Label-Overlay, volle Breitennutzung). Shopfloor-Modul-Hervorhebung: Selektiertes Modul mit blauem Rand, nicht-selektierte nur mit Hintergrundfarbe. I18n für Module-Tab Details-Section (DE/EN/FR).
 - **In Arbeit:** DSP-Links (AGV/Devices/ERP), Process-Tab Konzept, kundenspezifische Animationen.
 
 ### Sprint 10 (28.11 - 11.12.2025) - **ABGESCHLOSSEN**

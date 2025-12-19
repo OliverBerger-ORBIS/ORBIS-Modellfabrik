@@ -661,5 +661,24 @@ Payload:
       expect(component.getCommandEventIcon('mill')).toBe('assets/svg/shopfloor/shared/process-event.svg');
     });
   });
+
+  describe('module selection highlighting', () => {
+    it('should have selectedModuleSerialId property', () => {
+      const component = createComponent();
+      const testSerialId = 'SVR3QA0022';
+      
+      component.selectedModuleSerialId = testSerialId;
+      
+      expect(component.selectedModuleSerialId).toBe(testSerialId);
+    });
+
+    it('should allow null selectedModuleSerialId', () => {
+      const component = createComponent();
+      
+      component.selectedModuleSerialId = null;
+      
+      expect(component.selectedModuleSerialId).toBeNull();
+    });
+  });
 });
 

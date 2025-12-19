@@ -321,9 +321,13 @@
 
 .module-tab__shopfloor-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1rem;
+  grid-template-columns: 3fr 2fr;
+  gap: 1.5rem;
   align-items: start;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .module-tab__shopfloor-description {
@@ -378,16 +382,26 @@
   background: #f9fafb;
   padding: 1rem;
   overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-width: 0; /* Allows flex item to shrink below content size */
 }
 
 .module-tab__selection-card {
-  margin-top: 1rem;
   border: 1px solid #e5e7eb;
   border-radius: 0.75rem;
   padding: 1rem;
   background: #fff;
   display: grid;
   gap: 0.75rem;
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+
+  @media (max-width: 1200px) {
+    margin-top: 1rem;
+    max-height: none;
+  }
 }
 
 .selection-card__header {
@@ -409,13 +423,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #e5e7eb;
+  border: 3px solid var(--orbis-blue-strong);
   border-radius: 8px;
   padding: 0.75rem;
   background: #f8fafc;
   width: 180px;
   height: 180px;
   flex: 0 0 180px;
+  box-shadow: 
+    0 0 0 1px rgba(var(--orbis-blue-strong-rgb), 0.2),
+    0 0 0 3px rgba(var(--orbis-blue-strong-rgb), 0.15);
 }
 
 @media (max-width: 760px) {

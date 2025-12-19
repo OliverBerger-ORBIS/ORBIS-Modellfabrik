@@ -322,7 +322,7 @@
               <div class="load-info">
                 <div class="load-header">
                   <span class="load-position-number">{{ load.loadPosition }}</span>
-                  <img [src]="getLoadIcon(load)" alt="" width="32" height="32" class="load-icon" />
+                  <img [src]="getLoadIcon(load)" alt="" width="48" height="48" class="load-icon" />
                   <span class="load-type" [class]="load.loadType?.toLowerCase() ?? ''">
                     <ng-container *ngIf="load.loadType">{{ load.loadType }}</ng-container>
                     <ng-container *ngIf="!load.loadType" i18n="@@ftsLoadEmpty">Empty</ng-container>

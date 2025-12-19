@@ -124,7 +124,7 @@
 
     <div class="module-tab__shopfloor-content" *ngIf="shopfloorPreviewExpanded">
     <p class="module-tab__shopfloor-description" i18n="@@moduleTabShopfloorPreviewDescription">
-      Visual representation of module status on the shopfloor. Connected modules show a connection indicator, and availability is indicated by colored borders (green: Available, orange: Busy, red: Blocked).
+      Visual representation of module status on the shopfloor. Connected modules show a connection indicator, and color-coded availability.
     </p>
     <div class="module-tab__legend">
       <span class="legend__item">
@@ -150,7 +150,7 @@
         <app-shopfloor-preview
           [order]="null"
           [scale]="0.6"
-          [highlightModulesOverride]="null"
+          [highlightModulesOverride]="selectedModuleSerialId ? [selectedModuleSerialId] : null"
           [highlightFixedOverride]="null"
           [selectionEnabled]="true"
           [showBaseRoads]="true"

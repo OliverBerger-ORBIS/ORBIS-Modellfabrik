@@ -156,4 +156,34 @@ describe('HbwStockGridComponent', () => {
     const icon = component.getSlotIcon(slot);
     expect(icon).toBe(component.emptySlotIcon);
   });
+
+  describe('Layout and styling', () => {
+    it('should render slot labels in template', () => {
+      fixture.detectChanges();
+      
+      const compiled = fixture.nativeElement;
+      const slotLabels = compiled.querySelectorAll('.hbw-stock-grid__slot-label');
+      
+      expect(slotLabels.length).toBe(9); // 3x3 grid = 9 slots
+      expect(slotLabels[0].textContent).toBe('A1');
+    });
+
+    it('should render slots with location labels', () => {
+      fixture.detectChanges();
+      
+      const compiled = fixture.nativeElement;
+      const slots = compiled.querySelectorAll('.hbw-stock-grid__slot');
+      
+      expect(slots.length).toBe(9); // 3x3 grid = 9 slots
+    });
+
+    it('should render grid container', () => {
+      fixture.detectChanges();
+      
+      const compiled = fixture.nativeElement;
+      const grid = compiled.querySelector('.hbw-stock-grid');
+      
+      expect(grid).toBeTruthy();
+    });
+  });
 });

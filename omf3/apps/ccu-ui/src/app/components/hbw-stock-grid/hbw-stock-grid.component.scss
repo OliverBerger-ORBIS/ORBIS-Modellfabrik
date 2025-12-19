@@ -7,8 +7,8 @@
   border-radius: 0.75rem;
   border: 1px solid #e5e7eb;
   max-width: 100%;
-  width: fit-content;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
 
   // Responsive: Bei kleiner Breite kompakter
   @media (max-width: 640px) {
@@ -48,25 +48,28 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
     padding: 0.75rem;
     background: #ffffff;
     border: 1px solid #e5e7eb;
     border-radius: 0.5rem;
-    min-height: 140px;
+    aspect-ratio: 1;
     transition: all 0.2s ease;
     cursor: default;
     margin: 0;
+    position: relative;
 
     &:hover {
       border-color: var(--orbis-blue-strong);
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    img {
+    img,
+    &__slot-icon {
       width: 96px;
       height: 96px;
       object-fit: contain;
+      position: relative;
+      z-index: 1;
     }
 
     &--empty {
@@ -98,10 +101,20 @@
   }
 
   &__slot-label {
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: #6b7280;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1f2937;
     text-align: center;
     margin: 0;
+    pointer-events: none;
+    text-shadow: 
+      0 0 3px rgba(255, 255, 255, 0.9),
+      0 0 6px rgba(255, 255, 255, 0.9),
+      0 1px 2px rgba(0, 0, 0, 0.3);
+    z-index: 10;
   }
 }
