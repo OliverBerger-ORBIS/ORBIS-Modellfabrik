@@ -74,15 +74,16 @@
 7. ✅**DSP Edge Animation** – Animationssequenz überarbeiten (MC-Funktionen → EDGE xyz_2 verlinken → xyz_1/3 ergänzen → alle drei gestrichelt highlighten) als Grundlage fürs OSF/DSP-Logo.
 8. ✅**Process-Tab Neuaufbau** – Geschäftsprozesse (Customer Orders, Purchase Orders, Production, Storage) mit Swimlanes/Karten darstellen; dient als Customer und Purchase Order ERP-Brücke. PRODUCTION und STORAGE ORder als Shopfloor Prozesse aus ERP gesteuert). Implementiert als Akkordeon-Struktur mit zwei Hauptbereichen: "Beschaffungs-Prozess" (Purchase Orders + Storage Flow) und "Produktions-Prozess" (Customer Orders + Production Flow). Process-Tab an Position 3 in der Navileiste verschoben. **(Erledigt: 19.12.2025)**
 9. ✅**Orders-Tab Klarstellung** – Tab an Position 4, Layout umgekehrt: Shopfloor links (3fr), Steps rechts (2fr) mit responsive Breakpoint bei 1200px. Shopfloor-Preview in jeder OrderCard links angezeigt (wie ursprünglich). Beschreibung angepasst: "Shopfloor-Aufträge" mit I18n-Keys für DE/FR. Finished-Liste per Default eingeklappt, bei Storage Orders wird der oberste Auftrag automatisch expandiert beim Expandieren der Finished-Liste. Aktive Orders bleiben immer expanded. **(Erledigt: 19.12.2025)**
-10. **DSP → AGV Link** – Klick auf AGV/FTS-Icon (sf-systems) im dsp-Tab führt Nutzer direkt zum AGV-Tab.
-11. **DSP → Modules Link** – Klick auf Device im DSP-Architektur responsive Darstellung setzt Module-Tab (shopfloor-Tab) mit vorselektiertem Device (QueryParam/State Transfer, 1:1 Zuordnung).
+10. ✅**DSP → AGV Link** – Klick auf AGV/FTS-Icon (sf-systems) im dsp-Tab führt Nutzer direkt zum AGV-Tab.
+11. ✅**DSP → Modules Link** – Klick auf Device im DSP-Architektur responsive Darstellung setzt Module-Tab (shopfloor-Tab) mit vorselektiertem Device (QueryParam/State Transfer, 1:1 Zuordnung).
 12. ✅ **DSP → ERP Link** – Klick auf BP-ERP öffnet den Process-Tab (Purchase/Customer Orders) und zeigt ERP-Bezug. Bei ausführen einer Purchase Order wird "fake-Info" zur Order angezeigt in einer ERP-BOX (Supplier-ID, Order-Amount (def. 1), Order-Date, planned delivery-Date). Bei Ausführen einer Customer-Order wird "fake-Info" angezeigt mit Customer-ID, ERP-Order-Number, Order-Amount (default = 1), Order-Date, planned delivery-date. -> Diese Info wird im Track-Trace-Scenario wieder aufgenommen und angezeigt. **(Erledigt: 20.12.2025 - ERP-Daten Verknüpfung, Order Status, zusätzliche Datenfelder, TURN LEFT/RIGHT Icons, i18n)**
-13. **OSF Rebranding** – Bezeichner OMF3 → OSF in Code, Assets, Doku; Angular Prefixes, ENV Variablen und README angleichen. Sowie konsequent Umbenennung der tabs-Komponenten (module-shopfloor, auch fts-tab sollte fortan agv-tab heißen)
+13. **OSF Rebranding** – Bezeichner OMF3 → OSF in Code, Assets, Doku; Angular Prefixes, ENV Variablen und README angleichen. Sowie konsequente Umbenennung der tabs-Komponenten (module (alt) vs shopfloor(neu) , auch fts-tab sollte fortan agv-tab heißen und fts nur bei der deutschen Übersetzung und natütrlich bei den topics die von außen Vorgegeben sind erhalten bleiben.). Die app wäre dann: osf-ui anstatt ccu-ui. Die Änderungen sollten sich ddurch den ganzen Workspace bis in GIT und die dortige Verwaltung durchziehen.
 14. **Azure DevOps Migration** – Mirror/Move Repository inkl. Pipelines nach ORBIS Azure DevOps, Rechte & Secrets definieren.
 15. **OSF Deployment – Docker-Setup für Hilcher-Box/RPi abschließen
 16. **Storytelling** , anschließende Blog-Serie zu OSF & DSP Story vorbereiten.
 17. **Stations und OPC-UA-Module** Erweiterung der Konfiguration um Infos (aus omf2)
 18. **AIQS-Kamera-Integration (sf-system)** – Anzeige der Information aus der AIQS-Station: Photo des Workpieces. AIQS-Kamera-Daten werden nicht über MQTT übertragen, sondern müssen direkt vom TXT-Controller (IP: 192.168.0.103) via HTTP abgerufen werden. Integration in Module-Tab bei AIQS-Auswahl. API-Endpoint muss noch ermittelt werden (TXT Controller Web-Interface prüfen, Python-Code in `integrations/TXT-AIQS/lib/camera.py` analysieren).
+19. **Dokumentation** Mal wieder aufräumen in den docs. Unter anderem Anpassen von dsp-architecture-step19-diagramm.svg. Das soll wirklich so aussehen, wie die functional-view-mode aufgebaut ist (mit allen Objekten) und Ihren NAmen am Beispiel von customer.fmf. Es sollen aber nicht die  SVG-ICONS eingebundfen werden, sondern der NAme der Keys, mit dnen man die Objekte angibt. Connections sollen wie im original L-Form haben etc. Viele Dokus sind komplett veraltet in ganzen REpo. Viele enthalten Planungen mit Optionen, die nach UMsetzung nicht mehr relevant sind
 
 **Letzte Aktualisierung:** 20.12.2025
 
@@ -101,8 +102,8 @@
 
 ## 📊 Sprint-Status
 
-### Sprint 11 (12.12 - 24.12.2025) - **ABGESCHLOSSEN**
-- **Status:** ✅ Abgeschlossen
+### Sprint 11 (12.12 - 24.12.2025) - **IN BEARBEITUNG**
+- **Status:** 🔄 In Bearbeitung (Tasks 1-12 erledigt, Task 13 in Planung)
 - **Fokus:** Shopfloor UX Refresh, Process-Tab Neuaufbau, Orders-Tab Klarstellung, DSP-Links, Track-Trace Erweiterungen, Gedore Remote-Präsentation Vorbereitung.
 - **Erreicht:** 
   - **Module-Tab (Tasks 1-4):** Status-Erweiterung für alle Module (DPS/AIQS/HBW/DRILL/MILL) mit einheitlicher Struktur, Workpiece-Informationen, gebündelte Sequence Commands, HBW Stock-Grid optimiert, Shopfloor-Modul-Hervorhebung (selektiertes Modul mit blauem Rand), I18n für Details-Section (DE/EN/FR), Tab umbenannt zu "Shopfloor" und an Position 2 verschoben.

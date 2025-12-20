@@ -4,6 +4,8 @@ All notable changes to OMF3 Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.5.0] - 2025-12-20
+
 ### Added
 - Windows helper scripts for npm/Node.js setup (run-omf3.ps1, run-omf3.bat, add-node-to-user-path.ps1)
 - Comprehensive npm/Node.js setup documentation (docs_orbis/how-to-use-npm.md) for Windows developers
@@ -38,6 +40,7 @@ All notable changes to OMF3 Dashboard will be documented here.
 - **DSP Architecture:**
   - Edge Animation sequence refined (MC functions → EDGE xyz_2 link → xyz_1/3 added → all three dashed highlight)
 - Tests for `ErpOrderDataService` and extended tests for `WorkpieceHistoryService`
+- OSF Rebranding Plan document (`docs/PLAN_OSF_REBRANDING.md`)
 
 ### Changed
 - Sequence command payloads now match real-life structure:
