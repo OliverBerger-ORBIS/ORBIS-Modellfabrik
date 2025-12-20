@@ -9,8 +9,8 @@ import { LanguageService, LocaleKey } from './services/language.service';
 import { ConnectionService, ConnectionState } from './services/connection.service';
 import { getDashboardController, type DashboardMessageMonitor } from './mock-dashboard';
 import { MessageMonitorService } from './services/message-monitor.service';
-import { FooterComponent } from './components/footer/footer.component';
 import { Subscription } from 'rxjs';
+import { VERSION } from '../environments/version';
 
 interface NavigationItem {
   id: string;
@@ -80,7 +80,6 @@ const NAVIGATION_ITEMS: Omit<NavigationItem, 'label'>[] = [
     NgClass,
     AsyncPipe,
     FormsModule,
-    FooterComponent,
   ],
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -96,7 +95,6 @@ export class AppComponent implements OnDestroy {
     const labelMap: Record<string, string> = {
       'dsp': $localize`:@@navDsp:DSP`,
       'shopfloor': $localize`:@@navShopfloor:Shopfloor`,
-      'overview': $localize`:@@navOverview:Overview`,
       'order': $localize`:@@navOrder:Orders`,
       'process': $localize`:@@navProcess:Processes`,
       'sensor': $localize`:@@navSensor:Environment Data`,
@@ -148,6 +146,8 @@ export class AppComponent implements OnDestroy {
     de: 'DE',
     fr: 'FR',
   };
+
+  readonly version = VERSION; // Version is loaded from environments/version.ts (generated during build from package.json)
 
   private readonly subscriptions = new Subscription();
   private readonly dashboardMessageMonitor: DashboardMessageMonitor;

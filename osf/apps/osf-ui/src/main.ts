@@ -51,7 +51,7 @@ function ensureHashRoute(): void {
   if (!window.location.hash || window.location.hash === '#' || window.location.hash === '#/') {
     const defaultLocale = getLocaleFromUrl(); // Will return 'en' if no hash
     const currentPath = window.location.pathname;
-    const newUrl = `${window.location.origin}${currentPath}#/${defaultLocale}/overview`;
+    const newUrl = `${window.location.origin}${currentPath}#/${defaultLocale}/dsp`;
     window.location.replace(newUrl);
   }
 }

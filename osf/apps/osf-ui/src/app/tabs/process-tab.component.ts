@@ -88,7 +88,7 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
   };
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
 
-  // Business processes - Inventory data from Overview Tab
+  // Business processes - Inventory data
   inventoryOverview$!: Observable<InventoryOverviewState>;
   availableCounts$!: Observable<Record<string, number>>;
 
@@ -257,16 +257,16 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
       this.resetInventoryTracking();
       
       const presetMap: Partial<Record<OrderFixtureName, string>> = {
-        startup: 'overview-startup',
-        white: 'overview-active',
-        white_step3: 'overview-active',
-        blue: 'overview-active',
-        red: 'overview-active',
-        mixed: 'overview-active',
-        storage: 'overview-active',
+        startup: 'process-startup',
+        white: 'order-white',
+        white_step3: 'order-white-step3',
+        blue: 'order-blue',
+        red: 'order-red',
+        mixed: 'order-mixed',
+        storage: 'order-storage',
       };
       
-      const preset = presetMap[fixture] || 'overview-startup';
+      const preset = presetMap[fixture] || 'process-startup';
       await this.dashboard.loadTabFixture(preset);
       this.setupInventoryStreamSubscription();
     } catch (error) {

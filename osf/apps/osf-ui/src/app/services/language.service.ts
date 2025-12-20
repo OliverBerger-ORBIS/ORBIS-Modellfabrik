@@ -31,14 +31,14 @@ export class LanguageService {
     // Get current route without locale
     const urlSegments = this.router.url.split('/').filter(Boolean);
     const currentLocale = urlSegments[0] as LocaleKey;
-    let routePath = 'overview';
+    let routePath = 'dsp';
     
     // If current URL has a locale, extract the route after it
     if (this.supportedLocales.includes(currentLocale)) {
-      routePath = urlSegments.slice(1).join('/') || 'overview';
+      routePath = urlSegments.slice(1).join('/') || 'dsp';
     } else {
       // No locale in URL, use current path
-      routePath = urlSegments.join('/') || 'overview';
+      routePath = urlSegments.join('/') || 'dsp';
     }
     
     // Navigate to new locale with same route

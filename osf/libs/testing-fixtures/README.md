@@ -145,7 +145,6 @@ Available presets in `TAB_FIXTURE_PRESETS`:
 - `process-startup` - Initial process/flow state
 - `sensor-startup` - Initial sensor readings
 - `config-default` - Default configuration
-- `overview-startup` / `overview-active` - Overview scenarios
 - `dsp-action-default` - DSP action scenario
 - `track-trace-default` - Track & trace workpiece genealogy
 

@@ -23,20 +23,6 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
   };
 
   describe('Pattern 1: Streams with startWith should use direct dashboard.streams.*', () => {
-    it('OverviewTab: orders$, orderCounts$, ftsStates$ should use dashboard.streams directly', () => {
-      const content = readFileContent(path.join(tabsDir, 'overview-tab.component.ts'));
-      
-      // Check orders$ uses dashboard.streams.orders$ with shareReplay and refCount: false
-      expect(content).toMatch(/this\.orders\$ = this\.dashboard\.streams\.orders\$\.pipe/);
-      expect(content).toMatch(/shareReplay\(\s*\{\s*bufferSize:\s*1,\s*refCount:\s*false\s*\}\s*\)/);
-      
-      // Check orderCounts$ uses dashboard.streams.orderCounts$
-      expect(content).toMatch(/this\.orderCounts\$ = this\.dashboard\.streams\.orderCounts\$\.pipe/);
-      
-      // Check ftsStates$ uses dashboard.streams.ftsStates$
-      expect(content).toMatch(/this\.ftsStates\$ = this\.dashboard\.streams\.ftsStates\$\.pipe/);
-    });
-
     it('ModuleTab: moduleOverview$ should use dashboard.streams.moduleOverview$', () => {
       const content = readFileContent(path.join(tabsDir, 'module-tab.component.ts'));
       
@@ -53,55 +39,6 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
   });
 
   describe('Pattern 2: Streams without startWith should merge MessageMonitorService', () => {
-    it('OverviewTab: inventoryOverview$ should merge MessageMonitorService with dashboard.streams', () => {
-      const content = readFileContent(path.join(tabsDir, 'overview-tab.component.ts'));
-      
-      // Check MessageMonitorService.getLastMessage is called for 'ccu/state/stock'
-      expect(content).toMatch(/this\.messageMonitor\.getLastMessage.*ccu\/state\/stock/);
-      
-      // Check merge is used
-      expect(content).toMatch(/merge\(.*this\.dashboard\.streams\.inventoryOverview\$/);
-      
-      // Check shareReplay with refCount: false
-      expect(content).toMatch(/shareReplay\(\s*\{\s*bufferSize:\s*1,\s*refCount:\s*false\s*\}\s*\)/);
-      
-      // Check transformation method exists
-      expect(content).toMatch(/buildInventoryOverviewFromSnapshot/);
-      
-      // CRITICAL: Check that startWith comes AFTER filter and map (Pattern 2 requirement)
-      // Find the section with getLastMessage and extract the pipe chain (may span multiple lines)
-      const getLastMessageStart = content.indexOf('getLastMessage');
-      expect(getLastMessageStart).toBeGreaterThan(-1);
-      if (getLastMessageStart > -1) {
-        // Extract from getLastMessage to the closing parenthesis of the pipe
-        const section = content.substring(getLastMessageStart);
-        const pipeStart = section.indexOf('.pipe(');
-        expect(pipeStart).toBeGreaterThan(-1);
-        if (pipeStart > -1) {
-          // Find the matching closing parenthesis
-          let depth = 0;
-          let pipeEnd = pipeStart + 6; // Start after '.pipe('
-          for (let i = pipeEnd; i < section.length; i++) {
-            if (section[i] === '(') depth++;
-            if (section[i] === ')') {
-              if (depth === 0) {
-                pipeEnd = i + 1;
-                break;
-              }
-              depth--;
-            }
-          }
-          const pipeChain = section.substring(pipeStart, pipeEnd);
-          const filterIndex = pipeChain.indexOf('filter');
-          const mapIndex = pipeChain.indexOf('map');
-          const startWithIndex = pipeChain.indexOf('startWith');
-          expect(filterIndex).toBeGreaterThan(-1);
-          expect(mapIndex).toBeGreaterThan(filterIndex);
-          expect(startWithIndex).toBeGreaterThan(mapIndex);
-        }
-      }
-    });
-
     it('ProcessTab: flows$ should merge MessageMonitorService with dashboard.streams', () => {
       const content = readFileContent(path.join(tabsDir, 'process-tab.component.ts'));
       
@@ -223,7 +160,6 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
   describe('Pattern Compliance: refCount: false', () => {
     it('All tab components should use refCount: false in shareReplay', () => {
       const tabFiles = [
-        'overview-tab.component.ts',
         'order-tab.component.ts',
         'process-tab.component.ts',
         'module-tab.component.ts',
@@ -249,7 +185,6 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
   describe('Pattern Compliance: MessageMonitorService usage', () => {
     it('Streams without startWith should import and use MessageMonitorService', () => {
       const pattern2Files = [
-        { file: 'overview-tab.component.ts', topic: 'ccu/state/stock' },
         { file: 'process-tab.component.ts', topic: 'ccu/state/flows' },
         { file: 'configuration-tab.component.ts', topic: 'ccu/state/config' },
         { file: 'sensor-tab.component.ts', topic: '/j1/txt/1/i/bme680' },
@@ -268,7 +203,6 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
 
     it('Pattern 2: startWith must come AFTER filter and map (critical pattern requirement)', () => {
       const pattern2Files = [
-        'overview-tab.component.ts',
         'process-tab.component.ts',
         'configuration-tab.component.ts',
       ];

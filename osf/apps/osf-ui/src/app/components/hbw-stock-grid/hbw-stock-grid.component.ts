@@ -245,7 +245,7 @@ export class HbwStockGridComponent implements OnInit, OnDestroy {
       return this.rawIcons[type];
     }
 
-    // PROCESSED or other states - use product icon (same as Overview-Tab)
+      // PROCESSED or other states - use product icon
     return this.productIcons[type] ?? this.rawIcons[type];
   }
 

@@ -151,10 +151,6 @@ describe('MockDashboard', () => {
       expect(streams).toBeDefined();
     });
 
-    it('should load overview-tab preset', async () => {
-      const streams = await controller.loadTabFixture('overview-tab', { loop: false });
-      expect(streams).toBeDefined();
-    });
 
     it('should load process-tab preset', async () => {
       const streams = await controller.loadTabFixture('process-tab', { loop: false });

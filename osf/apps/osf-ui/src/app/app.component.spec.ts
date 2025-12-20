@@ -45,8 +45,8 @@ describe('AppComponent', () => {
     // Mock window.location with a valid locale in pathname to avoid redirect
     mockLocation = {
       ...originalLocation,
-      pathname: '/en/overview',
-      href: '/en/overview',
+      pathname: '/en/dsp',
+      href: '/en/dsp',
     } as Location;
     
     // Replace window.location

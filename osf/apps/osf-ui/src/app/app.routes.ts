@@ -25,11 +25,6 @@ export const appRoutes: Routes = [
           import('./tabs/track-trace-tab.component').then((m) => m.TrackTraceTabComponent),
       },
       {
-        path: 'overview',
-        loadComponent: () =>
-          import('./tabs/overview-tab.component').then((m) => m.OverviewTabComponent),
-      },
-      {
         path: 'order',
         loadComponent: () =>
           import('./tabs/order-tab.component').then((m) => m.OrderTabComponent),
@@ -128,6 +123,6 @@ export const appRoutes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'en/overview',
+    redirectTo: 'en/dsp',
   },
 ];

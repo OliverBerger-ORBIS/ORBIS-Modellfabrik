@@ -83,7 +83,8 @@
 16. **Storytelling** , anschließende Blog-Serie zu OSF & DSP Story vorbereiten.
 17. **Stations und OPC-UA-Module** Erweiterung der Konfiguration um Infos (aus omf2)
 18. **AIQS-Kamera-Integration (sf-system)** – Anzeige der Information aus der AIQS-Station: Photo des Workpieces. AIQS-Kamera-Daten werden nicht über MQTT übertragen, sondern müssen direkt vom TXT-Controller (IP: 192.168.0.103) via HTTP abgerufen werden. Integration in Module-Tab bei AIQS-Auswahl. API-Endpoint muss noch ermittelt werden (TXT Controller Web-Interface prüfen, Python-Code in `integrations/TXT-AIQS/lib/camera.py` analysieren).
-19. **Dokumentation** Mal wieder aufräumen in den docs. Unter anderem Anpassen von dsp-architecture-step19-diagramm.svg. Das soll wirklich so aussehen, wie die functional-view-mode aufgebaut ist (mit allen Objekten) und Ihren NAmen am Beispiel von customer.fmf. Es sollen aber nicht die  SVG-ICONS eingebundfen werden, sondern der NAme der Keys, mit dnen man die Objekte angibt. Connections sollen wie im original L-Form haben etc. Viele Dokus sind komplett veraltet in ganzen REpo. Viele enthalten Planungen mit Optionen, die nach UMsetzung nicht mehr relevant sind
+19. **Dokumentation** Mal wieder aufräumen in den docs. Unter anderem Anpassen von dsp-architecture-step19-diagramm.svg. Das soll wirklich so aussehen, wie die functional-view-mode aufgebaut ist (mit allen Objekten) und Ihren NAmen am Beispiel von customer.fmf. Es sollen aber nicht die  SVG-ICONS eingebundfen werden, sondern der NAme der Keys, mit dnen man die Objekte angibt. Connections sollen wie im original L-Form haben etc. Viele Dokus sind komplett veraltet in ganzen REpo. Viele enthalten Planungen mit Optionen, die nach Umsetzung nicht mehr relevant sind.
+20. **OBS-Video** Testen und aufbau der OBS-Video präsentation auf Windows. Siehe doc obs-video-presentation-setup.md
 
 **Letzte Aktualisierung:** 20.12.2025
 

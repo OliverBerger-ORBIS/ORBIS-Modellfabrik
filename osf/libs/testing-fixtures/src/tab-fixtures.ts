@@ -223,23 +223,6 @@ export const TAB_FIXTURE_PRESETS: Record<string, TabFixtureConfig> = {
     sensors: 'default',
   },
   
-  // Overview tab presets
-  'overview-startup': {
-    orders: 'startup',
-    modules: 'startup',
-    stock: 'startup',
-    flows: 'startup',
-    config: 'startup',
-    sensors: 'startup',
-  },
-  'overview-active': {
-    orders: 'mixed',
-    modules: 'default',
-    stock: 'default',
-    flows: 'default',
-    config: 'default',
-    sensors: 'default',
-  },
   
   // DSP Action tab presets
   'dsp-action-default': {

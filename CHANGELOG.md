@@ -4,6 +4,23 @@ All notable changes to OMF3 Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.5.1] - 2025-12-20
+
+### Removed
+- **Overview-Tab:** Completely removed as all features have been migrated to Process-Tab and Module-Tab (Shopfloor)
+  - Purchase Orders and Customer Orders → Process-Tab
+  - HBW Inventory Grid → Module-Tab (HBW Stock Grid)
+  - OrdersViewComponent and AgvViewComponent removed (never functional)
+- **Fixtures:** Removed `overview-startup` and `overview-active` presets from tab-fixtures.ts
+- Overview-Tab route removed from navigation and routing
+
+### Changed
+- **Process-Tab:** Fixtures updated from `overview-*` to `process-startup` and `order-*` presets
+- **Default Route:** Changed from `overview` to `dsp` (localhost:4200/#/en/dsp)
+- **Browser Tab:** Title updated from "OSF-apps-ccu-ui" to "OSF Dashboard", favicon set to `orbis-dsp-logo.svg`
+- **Version Display:** Moved from Footer to Sidebar, now shows "OSF Dashboard v0.5.1" with proper spacing
+- **Language Service:** Default route fallback changed from `'overview'` to `'dsp'`
+
 ## [0.5.0] - 2025-12-20
 
 ### Added

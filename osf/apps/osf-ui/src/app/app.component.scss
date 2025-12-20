@@ -204,6 +204,33 @@
       outline-offset: 2px;
     }
   }
+
+  .sidebar__version {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(31, 54, 98, 0.08);
+
+    .version-info {
+      margin: 0;
+      font-size: 0.75rem;
+      color: var(--orbis-grey-strong);
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .version-label {
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #4b6584;
+    }
+
+    .version-number {
+      font-weight: 500;
+      color: var(--orbis-grey-strong);
+    }
+  }
 }
 
 .app-main {

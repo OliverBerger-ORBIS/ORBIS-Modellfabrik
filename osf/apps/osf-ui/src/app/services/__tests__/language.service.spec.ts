@@ -7,7 +7,7 @@ describe('LanguageService', () => {
   let router: Router;
 
   const mockRouter = {
-    url: '/en/overview',
+    url: '/en/dsp',
     navigate: jest.fn().mockResolvedValue(true),
   };
 
@@ -52,7 +52,7 @@ describe('LanguageService', () => {
     });
 
     it('should detect locale from URL', () => {
-      mockRouter.url = '/de/overview';
+      mockRouter.url = '/de/dsp';
       const locale = service.current;
       expect(locale).toBe('de');
     });
@@ -115,7 +115,7 @@ describe('LanguageService', () => {
 
       service.setLocale('de');
 
-      expect(navigateSpy).toHaveBeenCalledWith(['de', 'overview']);
+      expect(navigateSpy).toHaveBeenCalledWith(['de', 'dsp']);
     });
   });
 
@@ -136,7 +136,7 @@ describe('LanguageService', () => {
     });
 
     it('should ignore invalid locale in URL', () => {
-      mockRouter.url = '/invalid/overview';
+      mockRouter.url = '/invalid/dsp';
       localStorage.setItem('OSF.locale', 'de');
       expect(service.current).toBe('de');
     });
@@ -244,13 +244,13 @@ describe('LanguageService', () => {
 
     it('should handle route with hash', () => {
       // URL parsing ignores hash
-      mockRouter.url = '/en/overview#section';
+      mockRouter.url = '/en/dsp#section';
       const locale = service.current;
       expect(locale).toBe('en');
     });
 
     it('should not set locale if already set (edge case)', () => {
-      mockRouter.url = '/de/overview';
+      mockRouter.url = '/de/dsp';
       const navigateSpy = jest.spyOn(router, 'navigate');
 
       service.setLocale('de');

@@ -77,6 +77,13 @@
           <span i18n="@@sidebarConnectButtonLabel">Connect</span>
         </button>
       </section>
+
+      <section class="control-group sidebar__version" *ngIf="!sidebarCollapsed">
+        <p class="version-info">
+          <span class="version-label">OSF Dashboard</span>
+          <span class="version-number"> v{{ version.full }}</span>
+        </p>
+      </section>
     </div>
   </aside>
 
@@ -141,8 +148,6 @@
     <main class="app-content">
       <router-outlet />
     </main>
-    
-    <app-footer></app-footer>
   </div>
 </div>
 
