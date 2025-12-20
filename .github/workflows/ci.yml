@@ -51,7 +51,7 @@ jobs:
       if: always()
       with:
         files: |
-          ./coverage/ccu-ui/coverage-final.json
+          ./coverage/osf-ui/coverage-final.json
           ./coverage/mqtt-client/coverage-final.json
           ./coverage/gateway/coverage-final.json
           ./coverage/business/coverage-final.json
@@ -92,7 +92,7 @@ jobs:
       run: npm ci
     
     - name: ESLint OMF3
-      run: npx nx lint ccu-ui
+      run: npx nx lint osf-ui
     
     - name: TypeScript Check OMF3 Libraries
       run: npx nx run-many -t build --projects=mqtt-client,gateway,business,testing-fixtures --parallel=3
@@ -118,7 +118,7 @@ jobs:
       run: npm ci
     
     - name: Build Production
-      run: npx nx build ccu-ui --configuration=production
+      run: npx nx build osf-ui --configuration=production
     
     - name: Check bundle size
       run: |
@@ -129,5 +129,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: build-artifacts
-        path: dist/apps/ccu-ui/
+        path: dist/apps/osf-ui/
         retention-days: 7

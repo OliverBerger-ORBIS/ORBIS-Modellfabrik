@@ -1,0 +1,192 @@
+{
+  "name": "osf-ui",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "osf/apps/osf-ui/src",
+  "tags": [],
+  "i18n": {
+    "sourceLocale": "en",
+    "locales": {
+      "de": "osf/apps/osf-ui/src/locale/messages.de.json",
+      "fr": "osf/apps/osf-ui/src/locale/messages.fr.json"
+    }
+  },
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:application",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/apps/osf-ui",
+        "index": "osf/apps/osf-ui/src/index.html",
+        "browser": "osf/apps/osf-ui/src/main.ts",
+        "polyfills": [
+          "zone.js",
+          "@angular/localize/init"
+        ],
+        "tsConfig": "osf/apps/osf-ui/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "osf/apps/osf-ui/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "osf/apps/osf-ui/src/assets",
+            "output": "assets"
+          }
+        ],
+        "styles": [
+          "osf/apps/osf-ui/src/styles.scss"
+        ],
+        "scripts": [],
+        "localize": [
+          "en",
+          "de",
+          "fr"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "800kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "20kb",
+              "maximumError": "32kb"
+            }
+          ],
+          "outputHashing": "all",
+          "localize": [
+            "en",
+            "de",
+            "fr"
+          ],
+          "assets": [
+            {
+              "glob": "**/*",
+              "input": "osf/apps/osf-ui/public"
+            },
+            {
+              "glob": "**/*",
+              "input": "osf/apps/osf-ui/src/assets",
+              "output": "assets"
+            }
+          ]
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "localize": false,
+          "assets": [
+            {
+              "glob": "**/*",
+              "input": "osf/apps/osf-ui/public"
+            },
+            {
+              "glob": "**/*",
+              "input": "osf/apps/osf-ui/src/assets",
+              "output": "assets"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "osf/testing/fixtures/orders",
+              "output": "fixtures/orders"
+            },
+            {
+              "glob": "**/*.json",
+              "input": "osf/testing/fixtures/orders",
+              "output": "fixtures/orders"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "osf/testing/fixtures/modules",
+              "output": "fixtures/modules"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "osf/testing/fixtures/stock",
+              "output": "fixtures/stock"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "osf/testing/fixtures/flows",
+              "output": "fixtures/flows"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "osf/testing/fixtures/config",
+              "output": "fixtures/config"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "osf/testing/fixtures/sensors",
+              "output": "fixtures/sensors"
+            }
+          ]
+        },
+        "github-pages": {
+          "outputHashing": "all",
+          "optimization": true,
+          "sourceMap": false,
+          "baseHref": "/ORBIS-Modellfabrik/",
+          "localize": false
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "osf-ui:build:production"
+        },
+        "development": {
+          "buildTarget": "osf-ui:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "buildTarget": "osf-ui:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": [
+          "osf/apps/osf-ui/**/*.ts",
+          "osf/apps/osf-ui/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/osf/apps/osf-ui"
+      ],
+      "options": {
+        "jestConfig": "osf/apps/osf-ui/jest.config.ts"
+      }
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "osf-ui:build",
+        "port": 4200,
+        "staticFilePath": "dist/apps/osf-ui/browser",
+        "spa": true
+      }
+    }
+  }
+}

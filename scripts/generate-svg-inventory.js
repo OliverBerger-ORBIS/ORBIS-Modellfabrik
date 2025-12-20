@@ -3,7 +3,7 @@
  * Outputs to docs/svg-inventory.md and docs/svg-inventory.html (print-friendly).
  *
  * Sources scanned:
- * - omf3/apps/ccu-ui/public/assets/svg (only)
+ * - osf/apps/ccu-ui/public/assets/svg (only)
  */
 
 const fs = require('fs');
@@ -16,7 +16,7 @@ const repoRoot = path.resolve(__dirname, '..');
 const SOURCES = [
   {
     label: 'public/assets/svg',
-    root: path.join(repoRoot, 'omf3/apps/ccu-ui/public/assets/svg'),
+    root: path.join(repoRoot, 'osf/apps/ccu-ui/public/assets/svg'),
     assetPrefix: 'assets/svg',
   },
 ];

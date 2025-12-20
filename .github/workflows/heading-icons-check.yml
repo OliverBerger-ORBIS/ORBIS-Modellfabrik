@@ -2,15 +2,15 @@ name: Heading Icons QA (OMF3)
 on: 
   push:
     paths:
-      - 'omf3/**/*.ts'
-      - 'omf3/**/*.html'
-      - 'omf3/apps/ccu-ui/public/headings/**'
+      - 'osf/**/*.ts'
+      - 'osf/**/*.html'
+      - 'osf/apps/ccu-ui/public/headings/**'
       - 'scripts/check_heading_svgs_omf3.py'
   pull_request:
     paths:
-      - 'omf3/**/*.ts'
-      - 'omf3/**/*.html'
-      - 'omf3/apps/ccu-ui/public/headings/**'
+      - 'osf/**/*.ts'
+      - 'osf/**/*.html'
+      - 'osf/apps/ccu-ui/public/headings/**'
       - 'scripts/check_heading_svgs_omf3.py'
 jobs:
   check-heading-svgs-omf3:

@@ -1,0 +1,27 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "mqtt-client",
+  "projectType": "library",
+  "root": "osf/libs/mqtt-client",
+  "sourceRoot": "osf/libs/mqtt-client/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/mqtt-client",
+        "tsConfig": "osf/libs/mqtt-client/tsconfig.lib.json",
+        "main": "osf/libs/mqtt-client/src/index.ts",
+        "assets": []
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx osf/libs/mqtt-client/src/__tests__/mqtt-client.spec.ts"
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:lib"]
+}
+

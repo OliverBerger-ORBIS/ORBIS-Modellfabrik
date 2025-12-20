@@ -47,7 +47,7 @@ def create_fixture(
     ccu_order_file: Path | None = None,
     module_state_file: Path | None = None,
     log_file: Path | None = None,
-    output_dir: Path = Path('omf3/testing/fixtures/orders')
+    output_dir: Path = Path('osf/testing/fixtures/orders')
 ):
     """Create a fixture file by combining messages from multiple sources.
     

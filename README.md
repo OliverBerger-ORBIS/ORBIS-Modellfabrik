@@ -10,12 +10,12 @@
 - **APS-Module** - Physische Module (DRILL, HBW, etc.)
 
 ### **OMF (ORBIS-Modellfabrik) - To-Be System**
-- **OMF3-Dashboard** - Angular-basierte Steuerung (aktuell in Entwicklung)
-- **OMF2-Dashboard** - Streamlit-basierte Steuerung (Legacy, wird durch OMF3 ersetzt)
+- **OSF-Dashboard** - Angular-basierte Steuerung (aktuell in Entwicklung, ehemals OMF3)
+- **OMF2-Dashboard** - Streamlit-basierte Steuerung (Legacy, wird durch OSF ersetzt)
 - **Session Manager** - Helper-App für Session-Replay (Streamlit)
 - **OMF-CCU** - Nachbau der APS-CCU Funktionalität
 
-> **📋 Namenskonvention:** Groß-Schreibweise mit Bindestrich (z.B. APS-CCU, OMF3-Dashboard)
+> **📋 Namenskonvention:** Groß-Schreibweise mit Bindestrich (z.B. APS-CCU, OSF-Dashboard)
 
 ## 🎯 Quick Start
 
@@ -48,7 +48,7 @@
 ### **🚨 KRITISCHE VERBOTE (HÖCHSTE PRIORITÄT)**
 - **NIEMALS Streamlit-Apps starten:** `streamlit run` ❌ (Verursacht Race-Conditions, MQTT-Konflikte)
 - **NUR User startet Streamlit-Apps** - Agent startet KEINE Streamlit-Apps
-- **NIEMALS Angular-Apps starten ohne User-Freigabe:** `nx serve ccu-ui` nur nach expliziter Bestätigung
+- **NIEMALS Angular-Apps starten ohne User-Freigabe:** `nx serve osf-ui` nur nach expliziter Bestätigung
 
 ### **📋 Dokumentations-Workflow für neue Agenten/Chats**
 1. **🚨 MANDATORY DEVELOPMENT METHODOLOGY:** [Development Workflow](docs/04-howto/development/workflow.md) - **MUSS GELESEN WERDEN!**
@@ -67,8 +67,8 @@
 - **plan.md** = Konkrete Messe-Vorbereitung + Post-Messe Tasks
 - **docs/sprints/** = Detaillierte Sprint-Dokumentation
 - **docs/01-strategy/** = Strategische Grundlagen
-- **docs/02-architecture/** = Technische Architektur (OMF3)
-- **docs/03-decision-records/** = Architektur-Entscheidungen (OMF3)
+- **docs/02-architecture/** = Technische Architektur (OSF)
+- **docs/03-decision-records/** = Architektur-Entscheidungen (OSF)
 - **docs/04-howto/** = Praktische Anleitungen
 
 ### **🔄 MANDATORY AGENT WORKFLOW (KRITISCH)**
@@ -201,11 +201,11 @@ mqtt_client → gateway → business → angular_components
 
 1. **Repository klonen:** `git clone <repo-url>`
 2. **Verstehe das System:** [Vision](docs/01-strategy/vision.md) (5 Min)
-3. **Architektur verstehen:** [OMF3 Project Structure](docs/02-architecture/project-structure.md) (10 Min)
+3. **Architektur verstehen:** [OSF Project Structure](docs/02-architecture/project-structure.md) (10 Min)
 4. **Naming Conventions:** [Naming Conventions](docs/02-architecture/naming-conventions.md) (5 Min)
 5. **Praktisch arbeiten:** [How-Tos](docs/04-howto/) (je nach Aufgabe)
 
-### OMF3 Development Setup
+### OSF Development Setup
 
 ```bash
 # Dependencies installieren
@@ -224,7 +224,7 @@ nx test business
 nx build ccu-ui
 ```
 
-Die OMF3-Anwendung ist dann unter `http://localhost:4200` verfügbar.
+Die OSF-Anwendung ist dann unter `http://localhost:4200` verfügbar.
 
 ### Session Manager (Helper-App)
 
@@ -260,8 +260,8 @@ Die Session Manager-Anwendung ist dann unter `http://localhost:8501` verfügbar.
 
 ## 📁 Project Structure
 
-### OMF3 (Aktuell in Entwicklung)
-- `omf3/apps/ccu-ui/` - **Angular Dashboard Application**
+### OSF (Aktuell in Entwicklung, ehemals OMF3)
+- `omf3/apps/osf-ui/` - **Angular Dashboard Application**
   - Angular-basierte UI
   - MQTT Client Integration (WebSocket)
   - MessageMonitorService für State Persistence

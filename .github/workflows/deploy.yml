@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'omf3/**'
+      - 'osf/**'
       - 'package.json'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
@@ -44,8 +44,8 @@ jobs:
         GIT_HASH=$(git rev-parse --short HEAD)
         BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
         
-        mkdir -p omf3/apps/ccu-ui/src/environments
-        cat > omf3/apps/ccu-ui/src/environments/version.ts << EOF
+        mkdir -p osf/apps/osf-ui/src/environments
+        cat > osf/apps/osf-ui/src/environments/version.ts << EOF
         export const VERSION = {
           full: '${VERSION}',
           build: 'main-${GIT_HASH}',
@@ -54,12 +54,12 @@ jobs:
         EOF
     
     - name: Build OMF3 (All Locales)
-      run: npx nx build ccu-ui --configuration=production --localize --baseHref=/ORBIS-Modellfabrik/
+      run: npx nx build osf-ui --configuration=production --localize --baseHref=/ORBIS-Modellfabrik/
     
     - name: Prepare deployment
       run: |
         mkdir -p _site
-        cp -r dist/apps/ccu-ui/browser/* _site/
+        cp -r dist/apps/osf-ui/browser/* _site/
         
         cat > _site/index.html << 'EOF'
         <!DOCTYPE html>

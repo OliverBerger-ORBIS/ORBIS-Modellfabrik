@@ -19,25 +19,25 @@
       "node"
     ],
     "paths": {
-      "@omf3/business": [
+      "@osf/business": [
         "dist/out-tsc/business/index.d.ts",
-        "omf3/libs/business/src/index.ts"
+        "osf/libs/business/src/index.ts"
       ],
-      "@omf3/entities": [
+      "@osf/entities": [
         "dist/out-tsc/entities/index.d.ts",
-        "omf3/libs/entities/src/index.ts"
+        "osf/libs/entities/src/index.ts"
       ],
-      "@omf3/gateway": [
+      "@osf/gateway": [
         "dist/out-tsc/gateway/index.d.ts",
-        "omf3/libs/gateway/src/index.ts"
+        "osf/libs/gateway/src/index.ts"
       ],
-      "@omf3/mqtt-client": [
+      "@osf/mqtt-client": [
         "dist/out-tsc/mqtt-client/index.d.ts",
-        "omf3/libs/mqtt-client/src/index.ts"
+        "osf/libs/mqtt-client/src/index.ts"
       ],
-      "@omf3/testing-fixtures": [
+      "@osf/testing-fixtures": [
         "dist/out-tsc/testing-fixtures/index.d.ts",
-        "omf3/libs/testing-fixtures/src/index.ts"
+        "osf/libs/testing-fixtures/src/index.ts"
       ]
     }
   },

@@ -8,16 +8,16 @@ repos:
       # OMF3 Tests (CRITICAL - produktiver Code)
       - id: nx-test-omf3
         name: OMF3 Tests
-        entry: bash -c 'npx nx test ccu-ui && npx nx test mqtt-client'
+        entry: bash -c 'npx nx test osf-ui && npx nx test mqtt-client'
         language: system
         pass_filenames: false
         stages: [commit]
-        description: Run OMF3 tests (ccu-ui, mqtt-client)
+        description: Run OMF3 tests (osf-ui, mqtt-client)
 
       # TypeScript/ESLint Linting
       - id: nx-lint-omf3
         name: OMF3 Lint
-        entry: npx nx lint ccu-ui
+        entry: npx nx lint osf-ui
         language: system
         pass_filenames: false
         stages: [commit]
@@ -26,7 +26,7 @@ repos:
       # TypeScript Type Check (via tsc - non-blocking)
       - id: nx-type-check
         name: TypeScript Type Check
-        entry: bash -c 'cd omf3/apps/ccu-ui && npx tsc --noEmit' || true
+        entry: bash -c 'cd osf/apps/osf-ui && npx tsc --noEmit' || true
         language: system
         pass_filenames: false
         stages: [commit]

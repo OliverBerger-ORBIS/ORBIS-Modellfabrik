@@ -1,9 +1,9 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "npmScope": "omf3",
+  "npmScope": "osf",
   "workspaceLayout": {
-    "appsDir": "omf3/apps",
-    "libsDir": "omf3/libs"
+    "appsDir": "osf/apps",
+    "libsDir": "osf/libs"
   },
   "tasksRunnerOptions": {
     "default": {

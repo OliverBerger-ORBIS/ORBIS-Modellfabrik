@@ -36,11 +36,11 @@ jobs:
         echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
     
     - name: Build Production
-      run: npx nx build ccu-ui --configuration=production --localize
+      run: npx nx build osf-ui --configuration=production --localize
     
     - name: Create Archive
       run: |
-        cd dist/apps/ccu-ui/
+        cd dist/apps/osf-ui/
         tar -czf ../../../omf3-${{ steps.version.outputs.version }}.tar.gz *
     
     - name: Create Release

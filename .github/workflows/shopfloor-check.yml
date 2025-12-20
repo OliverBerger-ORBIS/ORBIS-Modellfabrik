@@ -4,15 +4,15 @@ on:
   push:
     branches: [ main, develop, 'feature/shopfloor-*' ]
     paths:
-      - 'omf3/apps/ccu-ui/src/app/components/shopfloor-preview/**'
-      - 'omf3/apps/ccu-ui/public/shopfloor/**'
-      - 'omf3/libs/testing-fixtures/**'
+      - 'osf/apps/osf-ui/src/app/components/shopfloor-preview/**'
+      - 'osf/apps/osf-ui/public/shopfloor/**'
+      - 'osf/libs/testing-fixtures/**'
   pull_request:
     branches: [ main, develop ]
     paths:
-      - 'omf3/apps/ccu-ui/src/app/components/shopfloor-preview/**'
-      - 'omf3/apps/ccu-ui/public/shopfloor/**'
-      - 'omf3/libs/testing-fixtures/**'
+      - 'osf/apps/osf-ui/src/app/components/shopfloor-preview/**'
+      - 'osf/apps/osf-ui/public/shopfloor/**'
+      - 'osf/libs/testing-fixtures/**'
 
 jobs:
   test-shopfloor-omf3:
@@ -44,7 +44,7 @@ jobs:
     
     - name: Verify shopfloor layout JSON exists
       run: |
-        if [ ! -f "omf3/apps/ccu-ui/public/shopfloor/shopfloor_layout.json" ]; then
+        if [ ! -f "osf/apps/osf-ui/public/shopfloor/shopfloor_layout.json" ]; then
           echo "❌ shopfloor_layout.json not found"
           exit 1
         else

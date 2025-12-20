@@ -20,7 +20,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { MockMqttAdapter } from '../omf3/libs/mqtt-client/src/mock-adapter';
+import { MockMqttAdapter } from '../osf/libs/mqtt-client/src/mock-adapter';
 
 interface SessionLogEntry {
   timestamp: string;

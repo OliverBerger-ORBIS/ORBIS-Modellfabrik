@@ -4,7 +4,7 @@ Utility script to extract compact MQTT fixture logs for the OMF3 dashboard.
 
 The script reads one or more recorded session logs (JSON lines), filters for
 topics relevant to the UI, and writes trimmed fixture files under
-`omf3/testing/fixtures/orders/{...}`.
+`osf/testing/fixtures/orders/{...}`.
 
 By default the script builds the predefined fixtures (white, blue, red, mixed)
 that combine order, module and optional FTS telemetry for deterministic replay.
@@ -180,7 +180,7 @@ def load_default_configs() -> List[FixtureConfig]:
             sources=[
                 Path("data/omf-data/sessions/production_order_white_20251110_184459.log"),
             ],
-            output=Path("omf3/testing/fixtures/orders/white/orders.log"),
+            output=Path("osf/testing/fixtures/orders/white/orders.log"),
             topic_patterns=[
                 "ccu/order/active",
                 "ccu/order/completed",
@@ -198,7 +198,7 @@ def load_default_configs() -> List[FixtureConfig]:
             sources=[
                 Path("data/omf-data/sessions/production_order_blue_20251110_180619.log"),
             ],
-            output=Path("omf3/testing/fixtures/orders/blue/orders.log"),
+            output=Path("osf/testing/fixtures/orders/blue/orders.log"),
             topic_patterns=[
                 "ccu/order/active",
                 "ccu/order/completed",
@@ -216,7 +216,7 @@ def load_default_configs() -> List[FixtureConfig]:
             sources=[
                 Path("data/omf-data/sessions/production_order_red_20251110_180152.log"),
             ],
-            output=Path("omf3/testing/fixtures/orders/red/orders.log"),
+            output=Path("osf/testing/fixtures/orders/red/orders.log"),
             topic_patterns=[
                 "ccu/order/active",
                 "ccu/order/completed",
@@ -234,7 +234,7 @@ def load_default_configs() -> List[FixtureConfig]:
             sources=[
                 Path("data/omf-data/sessions/production_order_bwr_20251110_182819.log"),
             ],
-            output=Path("omf3/testing/fixtures/orders/mixed/orders.log"),
+            output=Path("osf/testing/fixtures/orders/mixed/orders.log"),
             topic_patterns=[
                 "ccu/order/active",
                 "ccu/order/completed",
@@ -257,7 +257,7 @@ def load_default_configs() -> List[FixtureConfig]:
             sources=[
                 Path("data/omf-data/sessions/storage_order_white_20251110_181619.log"),
             ],
-            output=Path("omf3/testing/fixtures/orders/storage/orders.log"),
+            output=Path("osf/testing/fixtures/orders/storage/orders.log"),
             topic_patterns=[
                 "ccu/order/active",
                 "ccu/order/completed",

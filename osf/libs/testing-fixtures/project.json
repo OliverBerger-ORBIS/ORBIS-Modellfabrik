@@ -1,0 +1,28 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "testing-fixtures",
+  "projectType": "library",
+  "root": "osf/libs/testing-fixtures",
+  "sourceRoot": "osf/libs/testing-fixtures/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/testing-fixtures",
+        "tsConfig": "osf/libs/testing-fixtures/tsconfig.lib.json",
+        "main": "osf/libs/testing-fixtures/src/index.ts",
+        "assets": [],
+        "rootDir": "."
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx osf/libs/testing-fixtures/src/__tests__/order-fixtures.spec.ts"
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:lib", "category:testing"]
+}
+

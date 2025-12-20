@@ -1,0 +1,28 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "business",
+  "projectType": "library",
+  "root": "osf/libs/business",
+  "sourceRoot": "osf/libs/business/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/business",
+        "tsConfig": "osf/libs/business/tsconfig.lib.json",
+        "main": "osf/libs/business/src/index.ts",
+        "assets": [],
+        "rootDir": "."
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx --tsconfig osf/libs/business/tsconfig.spec.json osf/libs/business/src/__tests__/business.spec.ts osf/libs/business/src/__tests__/publish-commands.spec.ts"
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:lib"]
+}
+
