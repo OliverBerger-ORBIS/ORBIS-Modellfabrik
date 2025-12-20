@@ -45,9 +45,9 @@ export const appRoutes: Routes = [
           import('./tabs/configuration-tab.component').then((m) => m.ConfigurationTabComponent),
       },
       {
-        path: 'module',
+        path: 'shopfloor',
         loadComponent: () =>
-          import('./tabs/module-tab.component').then((m) => m.ModuleTabComponent),
+          import('./tabs/shopfloor-tab.component').then((m) => m.ShopfloorTabComponent),
       },
       {
         path: 'settings',

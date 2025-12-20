@@ -1,6 +1,6 @@
 {
-  "name": "omf3-workspace",
-  "version": "0.5.1",
+  "name": "osf-workspace",
+  "version": "0.5.2",
   "private": true,
   "license": "MIT",
   "scripts": {

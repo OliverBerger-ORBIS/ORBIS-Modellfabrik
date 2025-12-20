@@ -65,7 +65,7 @@
 5. **Demo Excellence** – OBS/Teams Playbooks, kundenspezifische Animationen (Gedore), Blog-Serie zu OSF & DSP zur Lead-Generierung.
 
 ## 📝 Offene Todos
-1. ✅ **Module-Tab Status-Erweiterung** – Copilot/PR-Statusleisten (AIQS/DPS) in `omf3/apps/ccu-ui` übernehmen, Komponenten generalisieren und für HBW/DRILL/MILL identische Detailbereiche bereitstellen. **(Erledigt: 18.12.2025)**
+1. ✅ **Module-Tab Status-Erweiterung** – Copilot/PR-Statusleisten (AIQS/DPS) in `osf/apps/osf-ui` übernehmen, Komponenten generalisieren und für HBW/DRILL/MILL identische Detailbereiche bereitstellen. **(Erledigt: 18.12.2025)**
 2. ✅ **Sequence Commands bündeln** – Sequenzlisten für AIQS/DRILL/MILL in ein gemeinsames Collapsible-Panel am unteren Rand verschieben (Accordion-Komponente + konsistente Beschriftung). **(Erledigt: 18.12.2025)**
 3. ✅ **HBW Lageransicht** – Lagerstände/Slots darstellen im Modules-Tab, sobald HBW selektiert ist. HBW ist per default selektiert. (z. B. 3x3 Grid-Darstellung)  Vergleich mit Stock-Darstellung aus overview-Tab. GGf ist es ausreichend, die Inventory-Section mit Stock-Info beim Modules-Tab mit Selektion von HBW darzustellen. Verpacken der Darstellung in eine "Struktur", die resizable ist und in das übrige Angular-Design passt. Die Komponente könnte angepasst werden, so dass auch die Einzelnen Lagerplätze nicht unbedingt, die dort angebenen Größe von (ca 120-160px haben muss). 
 4. ✅ **Shopfloor-Benennung** – Module-Tab in der UI/Navigation zu „Shopfloor“ umbenennen und Dokumentation/Tooltips anpassen, damit er als Einstiegspunkt wahrgenommen wird. Der Shopdfloor wird dann an Position 2 der Navigatiosleiste verschoben. (Overview-Tab wird ggf durch TASK 8 Obsolet, da dann alle Info anders angeordnet wird und auf andere Tabs verteilt wird, so dass eine logische Abfolge resultiert.) Neue Logos für Module und Digital Twin, sowie Anzeige der Commands in Module-Tab mit den SVGs für drop-event, pick-event und process-event.
@@ -77,14 +77,14 @@
 10. ✅**DSP → AGV Link** – Klick auf AGV/FTS-Icon (sf-systems) im dsp-Tab führt Nutzer direkt zum AGV-Tab.
 11. ✅**DSP → Modules Link** – Klick auf Device im DSP-Architektur responsive Darstellung setzt Module-Tab (shopfloor-Tab) mit vorselektiertem Device (QueryParam/State Transfer, 1:1 Zuordnung).
 12. ✅ **DSP → ERP Link** – Klick auf BP-ERP öffnet den Process-Tab (Purchase/Customer Orders) und zeigt ERP-Bezug. Bei ausführen einer Purchase Order wird "fake-Info" zur Order angezeigt in einer ERP-BOX (Supplier-ID, Order-Amount (def. 1), Order-Date, planned delivery-Date). Bei Ausführen einer Customer-Order wird "fake-Info" angezeigt mit Customer-ID, ERP-Order-Number, Order-Amount (default = 1), Order-Date, planned delivery-date. -> Diese Info wird im Track-Trace-Scenario wieder aufgenommen und angezeigt. **(Erledigt: 20.12.2025 - ERP-Daten Verknüpfung, Order Status, zusätzliche Datenfelder, TURN LEFT/RIGHT Icons, i18n)**
-13. **OSF Rebranding** – Bezeichner OMF3 → OSF in Code, Assets, Doku; Angular Prefixes, ENV Variablen und README angleichen. Sowie konsequente Umbenennung der tabs-Komponenten (module (alt) vs shopfloor(neu) , auch fts-tab sollte fortan agv-tab heißen und fts nur bei der deutschen Übersetzung und natütrlich bei den topics die von außen Vorgegeben sind erhalten bleiben.). Die app wäre dann: osf-ui anstatt ccu-ui. Die Änderungen sollten sich ddurch den ganzen Workspace bis in GIT und die dortige Verwaltung durchziehen.
-14. **Azure DevOps Migration** – Mirror/Move Repository inkl. Pipelines nach ORBIS Azure DevOps, Rechte & Secrets definieren.
-15. **OSF Deployment – Docker-Setup für Hilcher-Box/RPi abschließen
-16. **Storytelling** , anschließende Blog-Serie zu OSF & DSP Story vorbereiten.
-17. **Stations und OPC-UA-Module** Erweiterung der Konfiguration um Infos (aus omf2)
-18. **AIQS-Kamera-Integration (sf-system)** – Anzeige der Information aus der AIQS-Station: Photo des Workpieces. AIQS-Kamera-Daten werden nicht über MQTT übertragen, sondern müssen direkt vom TXT-Controller (IP: 192.168.0.103) via HTTP abgerufen werden. Integration in Module-Tab bei AIQS-Auswahl. API-Endpoint muss noch ermittelt werden (TXT Controller Web-Interface prüfen, Python-Code in `integrations/TXT-AIQS/lib/camera.py` analysieren).
-19. **Dokumentation** Mal wieder aufräumen in den docs. Unter anderem Anpassen von dsp-architecture-step19-diagramm.svg. Das soll wirklich so aussehen, wie die functional-view-mode aufgebaut ist (mit allen Objekten) und Ihren NAmen am Beispiel von customer.fmf. Es sollen aber nicht die  SVG-ICONS eingebundfen werden, sondern der NAme der Keys, mit dnen man die Objekte angibt. Connections sollen wie im original L-Form haben etc. Viele Dokus sind komplett veraltet in ganzen REpo. Viele enthalten Planungen mit Optionen, die nach Umsetzung nicht mehr relevant sind.
-20. **OBS-Video** Testen und aufbau der OBS-Video präsentation auf Windows. Siehe doc obs-video-presentation-setup.md
+13. ✅ **OSF Rebranding** – Bezeichner OMF3 → OSF in Code, Assets, Doku; Angular Prefixes, ENV Variablen und README angleichen. Sowie konsequente Umbenennung der tabs-Komponenten (module-tab → shopfloor-tab, fts-tab → agv-tab, wobei fts nur bei der deutschen Übersetzung und bei den topics die von außen vorgegeben sind erhalten bleibt). Die app wurde zu osf-ui umbenannt (anstatt ccu-ui). Die Änderungen wurden durch den ganzen Workspace bis in GIT und die dortige Verwaltung durchgezogen. **(Erledigt: 20.12.2025 - App-Umbenennung ccu-ui → osf-ui, Workspace-Umbenennung omf3 → osf, Komponenten-Umbenennung module-tab → shopfloor-tab und fts-tab → agv-tab, package.json name aktualisiert, wichtigste Dokumentation aktualisiert)**
+14. **Dokumentation** Mal wieder aufräumen in den docs. Unter anderem Anpassen von dsp-architecture-step19-diagramm.svg. Das soll wirklich so aussehen, wie die functional-view-mode aufgebaut ist (mit allen Objekten) und Ihren NAmen am Beispiel von customer.fmf. Es sollen aber nicht die  SVG-ICONS eingebundfen werden, sondern der NAme der Keys, mit dnen man die Objekte angibt. Connections sollen wie im original L-Form haben etc. Viele Dokus sind komplett veraltet in ganzen REpo. Viele enthalten Planungen mit Optionen, die nach Umsetzung nicht mehr relevant sind.
+15. **OBS-Video** Testen und aufbau der OBS-Video präsentation auf Windows. Siehe doc obs-video-presentation-setup.md
+16. **Stations und OPC-UA-Module** Erweiterung der Konfiguration um Infos (aus omf2)
+17. **Storytelling** , anschließende Blog-Serie zu OSF & DSP Story vorbereiten.
+18. **AIQS-Kamera-Integration (sf-system)** – Anzeige der Information aus der AIQS-Station: Photo des Workpieces. AIQS-Kamera-Daten werden nicht über MQTT übertragen, sondern müssen direkt vom TXT-Controller (IP: 192.168.0.103) via HTTP abgerufen werden. Integration in Shopfloor-Tab bei AIQS-Auswahl. API-Endpoint muss noch ermittelt werden (TXT Controller Web-Interface prüfen, Python-Code in `integrations/TXT-AIQS/lib/camera.py` analysieren).
+19. **Azure DevOps Migration** – Mirror/Move Repository inkl. Pipelines nach ORBIS Azure DevOps, Rechte & Secrets definieren.
+20. **OSF Deployment** – Docker-Setup für Hilcher-Box/RPi planen und durchführen
 
 **Letzte Aktualisierung:** 20.12.2025
 
@@ -104,7 +104,7 @@
 ## 📊 Sprint-Status
 
 ### Sprint 11 (12.12 - 24.12.2025) - **IN BEARBEITUNG**
-- **Status:** 🔄 In Bearbeitung (Tasks 1-12 erledigt, Task 13 in Planung)
+- **Status:** 🔄 In Bearbeitung (Tasks 1-13 erledigt)
 - **Fokus:** Shopfloor UX Refresh, Process-Tab Neuaufbau, Orders-Tab Klarstellung, DSP-Links, Track-Trace Erweiterungen, Gedore Remote-Präsentation Vorbereitung.
 - **Erreicht:** 
   - **Module-Tab (Tasks 1-4):** Status-Erweiterung für alle Module (DPS/AIQS/HBW/DRILL/MILL) mit einheitlicher Struktur, Workpiece-Informationen, gebündelte Sequence Commands, HBW Stock-Grid optimiert, Shopfloor-Modul-Hervorhebung (selektiertes Modul mit blauem Rand), I18n für Details-Section (DE/EN/FR), Tab umbenannt zu "Shopfloor" und an Position 2 verschoben.
@@ -115,9 +115,10 @@
   - **Orders-Tab (Task 9):** Layout umgekehrt (Shopfloor links 3fr, Steps rechts 2fr), responsive Breakpoint bei 1200px, Shopfloor-Preview in OrderCards, Finished-Liste per Default eingeklappt, Storage Orders Auto-Expand, Tab an Position 4 verschoben.
   - **DSP → ERP Link (Task 12):** ERP-Daten Verknüpfung zwischen Process-Tab und Track-Trace implementiert, `ErpOrderDataService` für Purchase/Customer Orders, ERP-Info-Box zeigt Supplier/Customer IDs, Order Dates, Planned Delivery Dates.
   - **Track-Trace Erweiterungen (Tasks 10-12):** TURN LEFT/RIGHT Icons basierend auf FTS Order Stream, Order Status (Active/Completed) aus dualen Order Streams, ERP-Daten Integration, zusätzliche Datenfelder (Raw Material Order Date, Delivery Date, Storage Date, Customer Order Date, Production Start Date, Delivery End Date), I18n mit englischen Defaults und DE/FR Übersetzungen, Architektur-Dokumentation erweitert.
+  - **OSF Rebranding (Task 13):** Vollständige Umbenennung von OMF3 → OSF und ccu-ui → osf-ui durchgeführt. Workspace-Verzeichnis omf3 → osf umbenannt, alle Komponenten aktualisiert (module-tab → shopfloor-tab, fts-tab → agv-tab), package.json name aktualisiert, wichtigste Dokumentation aktualisiert, alle Referenzen in Code, Tests, CI/CD und Dokumentation angepasst.
   - **Dokumentation & Tests:** Track-Trace Architektur-Dokumentation aktualisiert, Tests für `WorkpieceHistoryService` und `ErpOrderDataService` erweitert/erstellt.
   - **Demo-Vorbereitung:** Konftel Cam50 Settings + OBS-Doku aktualisiert, DSP-Mockup interaktiv geplant.
-- **Nachlauf:** DSP → AGV Link (Task 10), DSP → Modules Link (Task 11), kundenspezifische Animationen für Gedore-Präsentation.
+- **Nachlauf:** kundenspezifische Animationen für Gedore-Präsentation.
 
 ### Sprint 10 (28.11 - 11.12.2025) - **ABGESCHLOSSEN**
 - **Status:** ✅ Abgeschlossen
@@ -197,7 +198,7 @@
 - **Aktuelle Sprint-Dokumentation:** `docs/sprints/`
 - **Decision Records:** `docs/03-decision-records/`
 - **Architektur:** `docs/02-architecture/`
-- **OMF3 README:** `omf3/README.md`
+- **OSF README:** `osf/README.md`
 - **APS-Analyse:** `docs/06-integrations/`
 
 ---

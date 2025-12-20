@@ -188,13 +188,13 @@ const STATUS_ICONS = {
 
 @Component({
   standalone: true,
-  selector: 'app-module-tab',
+  selector: 'app-shopfloor-tab',
   imports: [NgIf, NgFor, NgClass, AsyncPipe, JsonPipe, ShopfloorPreviewComponent, ModuleDetailsSidebarComponent, HbwStockGridComponent],
-  templateUrl: './module-tab.component.html',
-  styleUrls: ['./module-tab.component.scss'],
+  templateUrl: './shopfloor-tab.component.html',
+  styleUrls: ['./shopfloor-tab.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModuleTabComponent implements OnInit, OnDestroy {
+export class ShopfloorTabComponent implements OnInit, OnDestroy {
   private dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
   private fixtureSubscriptions = new Subscription();
@@ -213,10 +213,10 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
 
   // Shopfloor preview state
   shopfloorPreviewExpanded = false;
-  private readonly shopfloorPreviewStorageKey = 'module-tab-shopfloor-preview-expanded';
+  private readonly shopfloorPreviewStorageKey = 'shopfloor-tab-shopfloor-preview-expanded';
   
   // Module selection persistence
-  private readonly moduleSelectionStorageKey = 'module-tab-selected-module-serial-id';
+  private readonly moduleSelectionStorageKey = 'shopfloor-tab-selected-module-serial-id';
 
   constructor(
     private readonly environmentService: EnvironmentService,

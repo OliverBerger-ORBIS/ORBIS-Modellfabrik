@@ -28,7 +28,7 @@ const NAVIGATION_ITEMS: Omit<NavigationItem, 'label'>[] = [
   },
   {
     id: 'shopfloor',
-    route: '/module',
+    route: '/shopfloor',
     roles: ['operator', 'admin'],
   },
   {

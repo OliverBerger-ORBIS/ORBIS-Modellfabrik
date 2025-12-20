@@ -1,16 +1,16 @@
-<section class="module-tab">
-  <header class="module-tab__toolbar">
-    <div class="module-tab__title">
-      <img [src]="headingIcon" alt="Shopfloor icon" class="module-tab__icon" />
+<section class="shopfloor-tab">
+  <header class="shopfloor-tab__toolbar">
+    <div class="shopfloor-tab__title">
+      <img [src]="headingIcon" alt="Shopfloor icon" class="shopfloor-tab__icon" />
       <div>
-        <h1 i18n="@@moduleTabHeadline">Shopfloor</h1>
-        <p class="module-tab__subtitle" i18n="@@moduleTabDescription">
+        <h1 i18n="@@moduleTabHeadline">Modules</h1>
+        <p class="shopfloor-tab__subtitle" i18n="@@moduleTabDescription">
           Shopfloor overview with module status, connections and actions.
         </p>
       </div>
     </div>
 
-    <div class="module-tab__fixtures" *ngIf="isMockMode">
+    <div class="shopfloor-tab__fixtures" *ngIf="isMockMode">
       <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
       <div class="fixture-switch">
         <button
@@ -25,11 +25,11 @@
     </div>
   </header>
 
-  <span class="module-tab__hint" i18n="@@moduleTabHint">Shopfloor data updates automatically from pairing state snapshots.</span>
+  <span class="shopfloor-tab__hint" i18n="@@moduleTabHint">Shopfloor data updates automatically from pairing state snapshots.</span>
 
   <ng-container *ngIf="rows$ | async as rows; else loading">
-    <div class="module-table__wrapper" *ngIf="rows.length; else empty">
-      <table class="module-table">
+    <div class="shopfloor-table__wrapper" *ngIf="rows.length; else empty">
+      <table class="shopfloor-table">
         <thead>
           <tr>
             <th scope="col" i18n="@@moduleTableColumnId">ID</th>
@@ -98,22 +98,22 @@
 </section>
 
 <ng-template #loading>
-  <div class="module-tab__info">
+  <div class="shopfloor-tab__info">
     <p i18n="@@moduleTabAwaiting">Awaiting module telemetry …</p>
   </div>
 </ng-template>
 
 <ng-template #empty>
-  <div class="module-tab__info module-tab__info--empty">
+  <div class="shopfloor-tab__info shopfloor-tab__info--empty">
     <p i18n="@@moduleTabEmpty">No module status data available.</p>
   </div>
 </ng-template>
 
 <!-- Shopfloor Preview Section (Collapsible) -->
-<div class="module-tab__shopfloor-section" *ngIf="rows$ | async as rows">
+<div class="shopfloor-tab__shopfloor-section" *ngIf="rows$ | async as rows">
   <button
     type="button"
-    class="module-tab__shopfloor-toggle"
+    class="shopfloor-tab__shopfloor-toggle"
     (click)="toggleShopfloorPreview()"
     [attr.aria-expanded]="shopfloorPreviewExpanded"
     [attr.aria-label]="shopfloorPreviewExpanded ? shopfloorPreviewCollapseLabel : shopfloorPreviewExpandLabel"
@@ -122,11 +122,11 @@
     <span i18n="@@moduleTabShopfloorPreviewTitle">Shopfloor Layout</span>
   </button>
 
-    <div class="module-tab__shopfloor-content" *ngIf="shopfloorPreviewExpanded">
-    <p class="module-tab__shopfloor-description" i18n="@@moduleTabShopfloorPreviewDescription">
+    <div class="shopfloor-tab__shopfloor-content" *ngIf="shopfloorPreviewExpanded">
+    <p class="shopfloor-tab__shopfloor-description" i18n="@@moduleTabShopfloorPreviewDescription">
       Visual representation of module status on the shopfloor. Connected modules show a connection indicator, and color-coded availability.
     </p>
-    <div class="module-tab__legend">
+    <div class="shopfloor-tab__legend">
       <span class="legend__item">
         <span class="legend__dot legend__dot--ready"></span>
         <span i18n="@@legendAvailable">Available</span>
@@ -145,8 +145,8 @@
       </span>
     </div>
 
-    <div class="module-tab__shopfloor-grid">
-      <div class="module-tab__shopfloor-preview-wrapper">
+    <div class="shopfloor-tab__shopfloor-grid">
+      <div class="shopfloor-tab__shopfloor-preview-wrapper">
         <app-shopfloor-preview
           [order]="null"
           [scale]="0.6"
@@ -164,7 +164,7 @@
         ></app-shopfloor-preview>
       </div>
 
-      <div *ngIf="selectedModuleSerialId" class="module-tab__selection-card">
+      <div *ngIf="selectedModuleSerialId" class="shopfloor-tab__selection-card">
         <div class="selection-card__header">
           <div>
             <p class="selection-card__label" i18n="@@moduleTabSelectedModule">Selected module</p>

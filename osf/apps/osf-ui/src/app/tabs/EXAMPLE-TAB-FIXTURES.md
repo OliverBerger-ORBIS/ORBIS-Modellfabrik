@@ -94,7 +94,7 @@ import { Component } from '@angular/core';
 import { getDashboardController } from '../mock-dashboard';
 
 @Component({
-  selector: 'app-module-tab',
+  selector: 'app-shopfloor-tab',
   // ...
 })
 export class ModuleTabComponent {

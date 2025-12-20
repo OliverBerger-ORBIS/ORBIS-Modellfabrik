@@ -67,7 +67,7 @@ export class DspArchitectureComponentSectionComponent {
     if (event.id.startsWith('sf-device-')) {
       // Extract module type from device ID (e.g., 'sf-device-mill' -> 'MILL')
       const moduleType = event.id.replace('sf-device-', '').toUpperCase();
-      const fullPath = `/${locale}/module`;
+      const fullPath = `/${locale}/shopfloor`;
       this.router.navigate([fullPath], { 
         queryParams: { module: moduleType },
         fragment: moduleType 

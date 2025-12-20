@@ -15,8 +15,8 @@ Die Dokumente beschreiben den Systemkontext, die Message Flows, und die Namensko
 
 ## 🔗 Dokumente
 
-### OMF3 Architecture (aktuell)
-- [OMF3 Project Structure](project-structure.md) – Nx Workspace Struktur und OMF3 Architektur
+### OSF Architecture (aktuell)
+- [OSF Project Structure](project-structure.md) – Nx Workspace Struktur und OSF Architektur
 - [Naming Conventions](naming-conventions.md) – Topics, Template-Keys, IDs
 - [DSP Architecture Component Spec](dsp-architecture-component-spec.md) – DSP Architecture Component Specification
 
@@ -62,7 +62,7 @@ classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
   end
 
   subgraph OMF [OMF Umgebung]
-    DASH["OMF3 Dashboard<br/>Angular App"]:::orbis
+    DASH["OSF Dashboard<br/>Angular App"]:::orbis
     SM["Session Manager<br/>Replay/Recording"]:::orbis
   end
 

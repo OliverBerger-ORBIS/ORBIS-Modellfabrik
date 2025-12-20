@@ -24,7 +24,7 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
 
   describe('Pattern 1: Streams with startWith should use direct dashboard.streams.*', () => {
     it('ModuleTab: moduleOverview$ should use dashboard.streams.moduleOverview$', () => {
-      const content = readFileContent(path.join(tabsDir, 'module-tab.component.ts'));
+      const content = readFileContent(path.join(tabsDir, 'shopfloor-tab.component.ts'));
       
       expect(content).toMatch(/this\.moduleOverview\$ = this\.dashboard\.streams\.moduleOverview\$\.pipe/);
       expect(content).toMatch(/shareReplay\(\s*\{\s*bufferSize:\s*1,\s*refCount:\s*false\s*\}\s*\)/);
@@ -162,7 +162,7 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
       const tabFiles = [
         'order-tab.component.ts',
         'process-tab.component.ts',
-        'module-tab.component.ts',
+        'shopfloor-tab.component.ts',
         'sensor-tab.component.ts',
         'configuration-tab.component.ts',
       ];
@@ -252,14 +252,14 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
 
     it('Streams with startWith should NOT use MessageMonitorService for their main streams', () => {
       const pattern1Files = [
-        'module-tab.component.ts',
+        'shopfloor-tab.component.ts',
       ];
 
       pattern1Files.forEach((file) => {
         const content = readFileContent(path.join(tabsDir, file));
         
         // Check that getLastMessage is NOT called for main stream topics
-        // (ModuleTab should only use dashboard.streams directly)
+        // (ShopfloorTab should only use dashboard.streams directly)
         const hasGetLastMessageForMainStream = 
           /getLastMessage.*module\/v1\/overview/.test(content);
         

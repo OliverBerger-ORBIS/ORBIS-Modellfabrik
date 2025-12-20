@@ -1,13 +1,13 @@
-# OMF3 Project Structure
+# OSF Project Structure
 
 **Status: VOLLSTÄNDIG DOKUMENTIERT** ✅  
 **Datum: 2025-11-15  
 **Architektur: Angular-basierte Architektur mit Nx Workspace**  
-**OMF3 Dashboard: IN ENTWICKLUNG** 🚧
+**OSF Dashboard: IN ENTWICKLUNG** 🚧
 
 ## 🎯 Übersicht
 
-Das OMF3 Projekt folgt einer **Angular-basierten Architektur** mit klarer Trennung der Verantwortlichkeiten über mehrere Libraries:
+Das OSF Projekt folgt einer **Angular-basierten Architektur** mit klarer Trennung der Verantwortlichkeiten über mehrere Libraries:
 
 ```
 ┌─────────────────────┐
@@ -50,9 +50,9 @@ Das OMF3 Projekt folgt einer **Angular-basierten Architektur** mit klarer Trennu
 ## 📁 Detaillierte Projektstruktur
 
 ```
-omf3/
+osf/
 ├── apps/
-│   └── ccu-ui/                      # 🚀 Angular Dashboard Application
+│   └── osf-ui/                      # 🚀 Angular Dashboard Application
 │       ├── src/
 │       │   ├── app/
 │       │   │   ├── app.component.ts  # Main App Component
@@ -152,7 +152,7 @@ omf3/
 
 **Implementierung:**
 ```typescript
-// omf3/libs/mqtt-client/src/mqtt-client.ts
+// osf/libs/mqtt-client/src/mqtt-client.ts
 export interface MqttClientWrapper {
   connect(url: string): Promise<void>;
   subscribe(topic: string): Promise<void>;
@@ -175,7 +175,7 @@ export interface MqttClientWrapper {
 
 **Implementierung:**
 ```typescript
-// omf3/libs/gateway/src/gateway.ts
+// osf/libs/gateway/src/gateway.ts
 export interface GatewayStreams {
   orders$: Observable<OrderActive>;
   stock$: Observable<StockMessage>;
@@ -193,7 +193,7 @@ export interface GatewayStreams {
 
 **Implementierung:**
 ```typescript
-// omf3/libs/business/src/business.ts
+// osf/libs/business/src/business.ts
 export interface BusinessStreams {
   orderCounts$: Observable<OrderCounts>;
   stockByPart$: Observable<StockByPart>;
@@ -231,7 +231,7 @@ Gateway (gateway)
     ↓ (Typed Entities)
 Business (business)
     ↓ (Derived Streams)
-Angular Components (ccu-ui)
+Angular Components (osf-ui)
     ↓ (User Interaction)
 MessageMonitorService (State Persistence)
 ```
@@ -241,18 +241,18 @@ MessageMonitorService (State Persistence)
 **Commands:**
 ```bash
 # Development
-nx serve ccu-ui                    # Start Development Server
-nx serve ccu-ui --configuration=development  # With locale support
+nx serve osf-ui                    # Start Development Server
+nx serve osf-ui --configuration=development  # With locale support
 
 # Testing
-nx test ccu-ui                    # Run Tests
+nx test osf-ui                    # Run Tests
 nx test mqtt-client               # Test MQTT Client
 nx test gateway                  # Test Gateway
 nx test business                 # Test Business
 
 # Building
-nx build ccu-ui                   # Build Production Bundle
-nx build ccu-ui --configuration=production  # Multi-locale Build
+nx build osf-ui                   # Build Production Bundle
+nx build osf-ui --configuration=production  # Multi-locale Build
 
 # Graph
 nx graph                          # Dependency Graph
@@ -266,7 +266,7 @@ nx graph                          # Dependency Graph
 - `fr`: French
 
 **Translation Files:**
-- `omf3/apps/ccu-ui/src/locale/messages.<locale>.json`
+- `osf/apps/osf-ui/src/locale/messages.<locale>.json`
 - Copied to `public/locale/` for development builds
 
 **Usage:**
@@ -279,11 +279,11 @@ $localize`:@@navOverview:Overview`
 
 **Test Structure:**
 - Unit Tests: `*.spec.ts` files alongside source files
-- Integration Tests: `omf3/testing/fixtures/` for replay data
+- Integration Tests: `osf/testing/fixtures/` for replay data
 
 **Test Commands:**
 ```bash
-nx test ccu-ui                    # Run all ccu-ui tests
+nx test osf-ui                    # Run all osf-ui tests
 nx test mqtt-client               # Run mqtt-client tests
 nx test gateway                   # Run gateway tests
 nx test business                  # Run business tests

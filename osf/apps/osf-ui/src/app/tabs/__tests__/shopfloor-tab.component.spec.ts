@@ -1,6 +1,6 @@
 import { BehaviorSubject, of } from 'rxjs';
 import type { ModuleOverviewState, ModuleOverviewStatus, TransportOverviewStatus } from '@osf/entities';
-import { ModuleTabComponent } from '../module-tab.component';
+import { ShopfloorTabComponent } from '../shopfloor-tab.component';
 import type { EnvironmentService } from '../../services/environment.service';
 import type { ModuleNameService } from '../../services/module-name.service';
 import type { ConnectionService } from '../../services/connection.service';
@@ -89,10 +89,10 @@ const createComponent = () => {
   } as unknown as Router;
 
   const initSpy = jest
-    .spyOn(ModuleTabComponent.prototype as any, 'initializeStreams')
+    .spyOn(ShopfloorTabComponent.prototype as any, 'initializeStreams')
     .mockImplementation(() => {});
 
-  const component = new ModuleTabComponent(
+  const component = new ShopfloorTabComponent(
     environmentStub,
     moduleNameServiceStub,
     connectionServiceStub,
@@ -140,7 +140,7 @@ describe('ModuleTabComponent registry metadata', () => {
   });
 });
 
-describe('ModuleTabComponent sidebar and selection', () => {
+describe('ShopfloorTabComponent sidebar and selection', () => {
   it('should preserve module selection when closing sidebar', () => {
     const component = createComponent();
     
@@ -277,7 +277,7 @@ describe('ModuleTabComponent sidebar and selection', () => {
   });
 });
 
-describe('ModuleTabComponent sequence commands', () => {
+describe('ShopfloorTabComponent sequence commands', () => {
   it('should load sequence commands for DRILL module', async () => {
     const component = createComponent();
     const httpStub = (component as any).http as HttpClient;
@@ -375,7 +375,7 @@ Payload:
     (component as any).restoreOrSetDefaultModuleSelection();
     
     expect(component.selectedModuleSerialId).toBe(hbwSerialId);
-    expect(setItemSpy).toHaveBeenCalledWith('module-tab-selected-module-serial-id', hbwSerialId);
+    expect(setItemSpy).toHaveBeenCalledWith('shopfloor-tab-selected-module-serial-id', hbwSerialId);
     
     getItemSpy.mockRestore();
     setItemSpy.mockRestore();
@@ -405,7 +405,7 @@ Payload:
     
     component.onModuleCellSelected({ id: serialId, kind: 'module' });
     
-    expect(setItemSpy).toHaveBeenCalledWith('module-tab-selected-module-serial-id', serialId);
+    expect(setItemSpy).toHaveBeenCalledWith('shopfloor-tab-selected-module-serial-id', serialId);
     setItemSpy.mockRestore();
   });
 

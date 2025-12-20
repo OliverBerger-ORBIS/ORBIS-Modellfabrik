@@ -4,6 +4,19 @@ All notable changes to OMF3 Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.5.2] - 2025-12-20
+
+### Changed
+- **OSF Rebranding (Task 13):** Complete rebranding from OMF3 to OSF
+  - **App Renaming:** `ccu-ui` → `osf-ui` (directory, project.json, scripts, CI/CD)
+  - **Workspace Renaming:** `omf3/` → `osf/` (directory, Nx scope, TypeScript paths)
+  - **Component Renaming:** `module-tab` → `shopfloor-tab` (files, class, selector, route, CSS classes, storage keys)
+  - **Component Renaming:** `fts-tab` → `agv-tab` (files, class, services, route; FTS remains in MQTT topics and German translations)
+  - **Package Name:** `omf3-workspace` → `osf-workspace`
+  - **Documentation:** Updated project structure, architecture docs, and main README files
+  - **Routes:** All `/module` routes changed to `/shopfloor`, DSP architecture component URLs updated
+  - **Table Header:** Shopfloor tab table header changed back to "Modules" (tab name remains "Shopfloor" for DSP connection)
+
 ## [0.5.1] - 2025-12-20
 
 ### Removed

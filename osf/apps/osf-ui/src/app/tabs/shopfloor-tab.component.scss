@@ -1,9 +1,9 @@
-.module-tab {
+.shopfloor-tab {
   display: grid;
   gap: 1.5rem;
 }
 
-.module-tab__toolbar {
+.shopfloor-tab__toolbar {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -17,36 +17,36 @@
   }
 }
 
-.module-tab__title {
+.shopfloor-tab__title {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.module-tab__icon {
+.shopfloor-tab__icon {
   width: 48px;
   height: 48px;
 }
 
-.module-tab__subtitle {
+.shopfloor-tab__subtitle {
   margin: 0.25rem 0 0;
   color: var(--orbis-grey-strong);
 }
 
-.module-tab__hint {
+.shopfloor-tab__hint {
   font-size: 0.85rem;
   color: var(--orbis-grey-strong);
   margin-top: -0.25rem;
 }
 
-.module-table__wrapper {
+.shopfloor-table__wrapper {
   border-radius: 1rem;
   background: #ffffff;
   box-shadow: 0 20px 45px -30px rgba(20, 63, 107, 0.6);
   overflow: hidden;
 }
 
-.module-table {
+.shopfloor-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
@@ -84,7 +84,7 @@
   }
 }
 
-.module-tab__fixtures {
+.shopfloor-tab__fixtures {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -263,7 +263,7 @@
   }
 }
 
-.module-tab__info {
+.shopfloor-tab__info {
   padding: 1.25rem;
   border-radius: 0.75rem;
   background: #f3f4f6;
@@ -277,7 +277,7 @@
 }
 
 // Shopfloor Preview Section
-.module-tab__shopfloor-section {
+.shopfloor-tab__shopfloor-section {
   margin-top: 2rem;
   border-radius: 1rem;
   background: #ffffff;
@@ -285,7 +285,7 @@
   overflow: hidden;
 }
 
-.module-tab__shopfloor-toggle {
+.shopfloor-tab__shopfloor-toggle {
   width: 100%;
   display: flex;
   align-items: center;
@@ -314,12 +314,12 @@
   }
 }
 
-.module-tab__shopfloor-content {
+.shopfloor-tab__shopfloor-content {
   padding: 1.5rem;
   border-top: 1px solid #e5e7eb;
 }
 
-.module-tab__shopfloor-grid {
+.shopfloor-tab__shopfloor-grid {
   display: grid;
   grid-template-columns: 3fr 2fr;
   gap: 1.5rem;
@@ -330,14 +330,14 @@
   }
 }
 
-.module-tab__shopfloor-description {
+.shopfloor-tab__shopfloor-description {
   margin: 0 0 1.25rem 0;
   color: var(--orbis-grey-strong);
   font-size: 0.9rem;
   line-height: 1.6;
 }
 
-.module-tab__legend {
+.shopfloor-tab__legend {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem 1rem;
@@ -377,7 +377,7 @@
   background: rgba(var(--orbis-grey-light-rgb), 0.8);
 }
 
-.module-tab__shopfloor-preview-wrapper {
+.shopfloor-tab__shopfloor-preview-wrapper {
   border-radius: 0.75rem;
   background: #f9fafb;
   padding: 1rem;
@@ -388,7 +388,7 @@
   min-width: 0; /* Allows flex item to shrink below content size */
 }
 
-.module-tab__selection-card {
+.shopfloor-tab__selection-card {
   border: 1px solid #e5e7eb;
   border-radius: 0.75rem;
   padding: 1rem;

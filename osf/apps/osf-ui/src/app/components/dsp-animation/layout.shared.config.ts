@@ -484,12 +484,12 @@ export function createDefaultContainers(): ContainerConfig[] {
   ];
 
   const deviceEntries: { id: string; icon: IconKey; url?: string }[] = [
-    { id: 'sf-device-mill', icon: 'device-mill' as IconKey, url: 'module' },
-    { id: 'sf-device-drill', icon: 'device-drill' as IconKey, url: 'module' },
-    { id: 'sf-device-aiqs', icon: 'device-aiqs' as IconKey, url: 'module' },
-    { id: 'sf-device-hbw', icon: 'device-hbw' as IconKey, url: 'module' },
-    { id: 'sf-device-dps', icon: 'device-dps' as IconKey, url: 'module' },
-    { id: 'sf-device-chrg', icon: 'device-chrg' as IconKey, url: 'module' },
+    { id: 'sf-device-mill', icon: 'device-mill' as IconKey, url: 'shopfloor' },
+    { id: 'sf-device-drill', icon: 'device-drill' as IconKey, url: 'shopfloor' },
+    { id: 'sf-device-aiqs', icon: 'device-aiqs' as IconKey, url: 'shopfloor' },
+    { id: 'sf-device-hbw', icon: 'device-hbw' as IconKey, url: 'shopfloor' },
+    { id: 'sf-device-dps', icon: 'device-dps' as IconKey, url: 'shopfloor' },
+    { id: 'sf-device-chrg', icon: 'device-chrg' as IconKey, url: 'shopfloor' },
   ];
 
   const systemsCount = systemEntries.length;
@@ -1398,7 +1398,7 @@ export function createCustomerContainers(customerConfig?: CustomerDspConfig): Co
     
     // Task 11: Extract module type from device ID (e.g., 'sf-device-mill' -> 'MILL')
     // URL will be handled in onActionTriggered to add query parameter
-    const deviceUrl = 'module'; // Base URL, query param added in handler
+    const deviceUrl = 'shopfloor'; // Base URL, query param added in handler
     
     containers.push({
       id: device.id,

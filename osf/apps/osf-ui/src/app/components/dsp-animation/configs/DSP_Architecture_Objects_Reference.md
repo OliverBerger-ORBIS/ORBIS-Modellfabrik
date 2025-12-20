@@ -294,32 +294,32 @@ Diese Komponenten sind innerhalb des `dsp-edge` Containers angeordnet (3x3 Grid)
 - **`sf-device-mill`** - Mill Station
   - **Icon:** `device-mill`
   - **Type:** `device`
-  - **URL:** `/module`
+  - **URL:** `/shopfloor`
 
 - **`sf-device-drill`** - Drill Station
   - **Icon:** `device-drill`
   - **Type:** `device`
-  - **URL:** `/module`
+  - **URL:** `/shopfloor`
 
 - **`sf-device-aiqs`** - AIQS Station
   - **Icon:** `device-aiqs`
   - **Type:** `device`
-  - **URL:** `/module`
+  - **URL:** `/shopfloor`
 
 - **`sf-device-hbw`** - HBW Station
   - **Icon:** `device-hbw`
   - **Type:** `device`
-  - **URL:** `/module`
+  - **URL:** `/shopfloor`
 
 - **`sf-device-dps`** - DPS Station
   - **Icon:** `device-dps`
   - **Type:** `device`
-  - **URL:** `/module`
+  - **URL:** `/shopfloor`
 
 - **`sf-device-chrg`** - Charging Station
   - **Icon:** `device-chrg`
   - **Type:** `device`
-  - **URL:** `/module`
+  - **URL:** `/shopfloor`
 
 **Hinweis:** Bei Customer Configs werden diese durch konkrete Device-IDs ersetzt (z.B. `sf-device-1`, `sf-device-2`, etc.).
 

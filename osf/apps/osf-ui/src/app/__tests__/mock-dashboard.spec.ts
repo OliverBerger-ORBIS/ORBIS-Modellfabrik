@@ -157,8 +157,8 @@ describe('MockDashboard', () => {
       expect(streams).toBeDefined();
     });
 
-    it('should load module-tab preset', async () => {
-      const streams = await controller.loadTabFixture('module-tab', { loop: false });
+    it('should load shopfloor-tab preset', async () => {
+      const streams = await controller.loadTabFixture('shopfloor-tab', { loop: false });
       expect(streams).toBeDefined();
     });
 
