@@ -1009,6 +1009,13 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     const moduleDetails =
       moduleId ? snapshot?.modules?.[moduleId] ?? snapshot?.modules?.[cell?.id ?? ''] : null;
     
+    // If cell is not provided but we have a serial ID, try to find the cell from layout config
+    let resolvedCell = cell;
+    if (!resolvedCell && this.selectedModuleSerialId && this.layoutConfig) {
+      resolvedCell = this.layoutConfig.cells.find(
+        (c: ShopfloorCellConfig) => c.serial_number === this.selectedModuleSerialId
+      ) ?? null;
+    }
 
     const availabilityStatus = (moduleDetails?.availability ?? 'Unknown') as ModuleAvailabilityStatus;
     const availabilityLabel = this.getAvailabilityLabel(availabilityStatus);
@@ -1028,7 +1035,25 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
         ? STATUS_ICONS.connection.disconnected
         : STATUS_ICONS.availability.unknown;
 
-    const moduleType = moduleDetails?.subType ?? cell?.name ?? 'UNKNOWN';
+    // Determine module type: try moduleDetails, then cell name, then mapping service, then fallback
+    let moduleType = moduleDetails?.subType ?? resolvedCell?.name ?? 'UNKNOWN';
+    
+    // If still UNKNOWN and we have a serial ID, try to get module type from mapping service
+    if (moduleType === 'UNKNOWN' && this.selectedModuleSerialId && this.mappingService.isInitialized()) {
+      const moduleInfo = this.mappingService.getModuleBySerial(this.selectedModuleSerialId);
+      if (moduleInfo) {
+        moduleType = moduleInfo.moduleType;
+      }
+    }
+    
+    // Ensure selectedModuleName is always set when we have a serial ID
+    if (this.selectedModuleSerialId) {
+      // Only update if not set or if it's currently "Unknown" or empty
+      if (!this.selectedModuleName || this.selectedModuleName === 'Unknown' || this.selectedModuleName === 'UNKNOWN') {
+        const display = this.moduleNameService.getModuleDisplayName(moduleType);
+        this.selectedModuleName = display.fullName;
+      }
+    }
     
     // Load sequence commands for this module type
     this.loadSequenceCommands(moduleType);

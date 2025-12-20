@@ -1,0 +1,100 @@
+<div
+  *ngIf="isOpen"
+  class="erp-info-box-overlay"
+  [attr.aria-labelledby]="isPurchaseOrder ? 'erp-purchase-title' : 'erp-customer-title'"
+>
+  <div class="erp-info-box-content">
+    <header class="erp-info-box-header">
+      <div>
+        <h3
+          *ngIf="isPurchaseOrder"
+          id="erp-purchase-title"
+          i18n="@@erpInfoBoxPurchaseOrderTitle"
+        >
+          Purchase Order Information
+        </h3>
+        <h3
+          *ngIf="isCustomerOrder"
+          id="erp-customer-title"
+          i18n="@@erpInfoBoxCustomerOrderTitle"
+        >
+          Customer Order Information
+        </h3>
+        <p class="erp-info-box-subtitle" *ngIf="isPurchaseOrder && workpieceType">
+          <ng-container i18n="@@erpInfoBoxPurchaseSubtitle">Raw Material for Product:</ng-container> <strong>{{ workpieceType }}</strong>
+        </p>
+        <p class="erp-info-box-subtitle" *ngIf="isCustomerOrder && workpieceType">
+          <ng-container i18n="@@erpInfoBoxCustomerSubtitle">Customer Order for Product:</ng-container> <strong>{{ workpieceType }}</strong>
+        </p>
+      </div>
+      <button
+        type="button"
+        class="erp-info-box-close"
+        (click)="onClose()"
+        i18n-aria-label="@@commonClose"
+        [attr.aria-label]="closeLabel"
+      >
+        ×
+      </button>
+    </header>
+
+    <div class="erp-info-box-body">
+      <!-- Purchase Order Data -->
+      <div *ngIf="isPurchaseOrder && purchaseData">
+        <div class="order-field" *ngIf="workpieceType">
+          <span class="field-label" i18n="@@erpInfoBoxProductType">Product Type:</span>
+          <span class="field-value">{{ workpieceType }}</span>
+        </div>
+        <div class="order-field">
+          <span class="field-label" i18n="@@erpInfoBoxPurchaseOrderId">Purchase Order:</span>
+          <span class="field-value erp-id">{{ purchaseData.purchaseOrderId }}</span>
+        </div>
+        <div class="order-field">
+          <span class="field-label" i18n="@@erpInfoBoxSupplierId">Supplier ID:</span>
+          <span class="field-value erp-id">{{ purchaseData.supplierId }}</span>
+        </div>
+        <div class="order-field">
+          <span class="field-label" i18n="@@erpInfoBoxOrderDate">Order Date:</span>
+          <span class="field-value">{{ formatDate(purchaseData.orderDate) }}</span>
+        </div>
+        <div class="order-field">
+          <span class="field-label" i18n="@@erpInfoBoxOrderAmount">Order Amount:</span>
+          <span class="field-value">{{ purchaseData.orderAmount }}</span>
+        </div>
+        <div class="order-field">
+          <span class="field-label" i18n="@@erpInfoBoxPlannedDeliveryDate">Planned Delivery Date:</span>
+          <span class="field-value">{{ formatDate(purchaseData.plannedDeliveryDate) }}</span>
+        </div>
+      </div>
+
+      <!-- Customer Order Data -->
+      <div *ngIf="isCustomerOrder && customerData">
+        <div class="order-field" *ngIf="workpieceType">
+          <span class="field-label" i18n="@@erpInfoBoxProductType">Product Type:</span>
+          <span class="field-value">{{ workpieceType }}</span>
+        </div>
+        <div class="order-field">
+          <span class="field-label" i18n="@@erpInfoBoxCustomerOrderId">Customer Order:</span>
+          <span class="field-value erp-id">{{ customerData.customerOrderId }}</span>
+        </div>
+        <div class="order-field">
+          <span class="field-label" i18n="@@erpInfoBoxCustomerId">Customer ID:</span>
+          <span class="field-value erp-id">{{ customerData.customerId }}</span>
+        </div>
+        <div class="order-field">
+          <span class="field-label" i18n="@@erpInfoBoxOrderDate">Order Date:</span>
+          <span class="field-value">{{ formatDate(customerData.orderDate) }}</span>
+        </div>
+        <div class="order-field">
+          <span class="field-label" i18n="@@erpInfoBoxOrderAmount">Order Amount:</span>
+          <span class="field-value">{{ customerData.orderAmount }}</span>
+        </div>
+        <div class="order-field">
+          <span class="field-label" i18n="@@erpInfoBoxPlannedDeliveryDate">Planned Delivery Date:</span>
+          <span class="field-value">{{ formatDate(customerData.plannedDeliveryDate) }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

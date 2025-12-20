@@ -76,7 +76,7 @@
 9. ✅**Orders-Tab Klarstellung** – Tab an Position 4, Layout umgekehrt: Shopfloor links (3fr), Steps rechts (2fr) mit responsive Breakpoint bei 1200px. Shopfloor-Preview in jeder OrderCard links angezeigt (wie ursprünglich). Beschreibung angepasst: "Shopfloor-Aufträge" mit I18n-Keys für DE/FR. Finished-Liste per Default eingeklappt, bei Storage Orders wird der oberste Auftrag automatisch expandiert beim Expandieren der Finished-Liste. Aktive Orders bleiben immer expanded. **(Erledigt: 19.12.2025)**
 10. **DSP → AGV Link** – Klick auf AGV/FTS-Icon (sf-systems) im dsp-Tab führt Nutzer direkt zum AGV-Tab.
 11. **DSP → Modules Link** – Klick auf Device im DSP-Architektur responsive Darstellung setzt Module-Tab (shopfloor-Tab) mit vorselektiertem Device (QueryParam/State Transfer, 1:1 Zuordnung).
-12. **DSP → ERP Link** – Klick auf BP-ERP öffnet den Process-Tab (Purchase/Customer Orders) und zeigt ERP-Bezug. Bei ausführen einer Purchase Order wird "fake-Info" zur Order angezeigt in einer ERP-BOX (Supplier-ID, Order-Amount (def. 1), Order-Date, planned delivery-Date). Bei Ausführen einer Customer-Order wird "fake-Info" angezeigt mit Customer-ID, ERP-Order-Number, Order-Amount (default = 1), Order-Date, planned delivery-date. -> Diese Info wird im Track-Trace-Scenario wieder aufgenommen und angezeigt.
+12. ✅ **DSP → ERP Link** – Klick auf BP-ERP öffnet den Process-Tab (Purchase/Customer Orders) und zeigt ERP-Bezug. Bei ausführen einer Purchase Order wird "fake-Info" zur Order angezeigt in einer ERP-BOX (Supplier-ID, Order-Amount (def. 1), Order-Date, planned delivery-Date). Bei Ausführen einer Customer-Order wird "fake-Info" angezeigt mit Customer-ID, ERP-Order-Number, Order-Amount (default = 1), Order-Date, planned delivery-date. -> Diese Info wird im Track-Trace-Scenario wieder aufgenommen und angezeigt. **(Erledigt: 20.12.2025 - ERP-Daten Verknüpfung, Order Status, zusätzliche Datenfelder, TURN LEFT/RIGHT Icons, i18n)**
 13. **OSF Rebranding** – Bezeichner OMF3 → OSF in Code, Assets, Doku; Angular Prefixes, ENV Variablen und README angleichen. Sowie konsequent Umbenennung der tabs-Komponenten (module-shopfloor, auch fts-tab sollte fortan agv-tab heißen)
 14. **Azure DevOps Migration** – Mirror/Move Repository inkl. Pipelines nach ORBIS Azure DevOps, Rechte & Secrets definieren.
 15. **OSF Deployment – Docker-Setup für Hilcher-Box/RPi abschließen
@@ -84,7 +84,7 @@
 17. **Stations und OPC-UA-Module** Erweiterung der Konfiguration um Infos (aus omf2)
 18. **AIQS-Kamera-Integration (sf-system)** – Anzeige der Information aus der AIQS-Station: Photo des Workpieces. AIQS-Kamera-Daten werden nicht über MQTT übertragen, sondern müssen direkt vom TXT-Controller (IP: 192.168.0.103) via HTTP abgerufen werden. Integration in Module-Tab bei AIQS-Auswahl. API-Endpoint muss noch ermittelt werden (TXT Controller Web-Interface prüfen, Python-Code in `integrations/TXT-AIQS/lib/camera.py` analysieren).
 
-**Letzte Aktualisierung:** 19.12.2025
+**Letzte Aktualisierung:** 20.12.2025
 
 ## 📊 Sprint-Vorgehen
 
@@ -101,11 +101,21 @@
 
 ## 📊 Sprint-Status
 
-### Sprint 11 (12.12 - 24.12.2025) - **AKTUELL**
-- **Status:** In Bearbeitung
-- **Fokus:** Gedore Remote-Präsentation, DSP-Animationen, OBS/Teams Playbook, Module-Tab UX.
-- **Erreicht:** Konftel Cam50 Settings + OBS-Doku aktualisiert, DSP-Mockup interaktiv geplant, Todo-Backlog priorisiert. Module-Tab Status-Erweiterung abgeschlossen (DPS/AIQS/HBW/DRILL/MILL mit einheitlicher Struktur, Workpiece-Informationen integriert, Sequence Commands gebündelt). Configuration-Tab Layout mit CSS Grid (Shopfloor links, Module rechts, responsive Breakpoints). HBW Stock-Grid optimiert (quadratische Boxen, Label-Overlay, volle Breitennutzung). Shopfloor-Modul-Hervorhebung: Selektiertes Modul mit blauem Rand, nicht-selektierte nur mit Hintergrundfarbe. I18n für Module-Tab Details-Section (DE/EN/FR).
-- **In Arbeit:** DSP-Links (AGV/Devices/ERP), Process-Tab Konzept, kundenspezifische Animationen.
+### Sprint 11 (12.12 - 24.12.2025) - **ABGESCHLOSSEN**
+- **Status:** ✅ Abgeschlossen
+- **Fokus:** Shopfloor UX Refresh, Process-Tab Neuaufbau, Orders-Tab Klarstellung, DSP-Links, Track-Trace Erweiterungen, Gedore Remote-Präsentation Vorbereitung.
+- **Erreicht:** 
+  - **Module-Tab (Tasks 1-4):** Status-Erweiterung für alle Module (DPS/AIQS/HBW/DRILL/MILL) mit einheitlicher Struktur, Workpiece-Informationen, gebündelte Sequence Commands, HBW Stock-Grid optimiert, Shopfloor-Modul-Hervorhebung (selektiertes Modul mit blauem Rand), I18n für Details-Section (DE/EN/FR), Tab umbenannt zu "Shopfloor" und an Position 2 verschoben.
+  - **Configuration-Tab (Task 5):** Layout mit CSS Grid (Shopfloor links, Module rechts, responsive Breakpoints).
+  - **AGV-Tab (Task 6):** Layout-Review abgeschlossen (bestehendes Layout beibehalten).
+  - **DSP Edge Animation (Task 7):** Animationssequenz überarbeitet (MC-Funktionen → EDGE xyz_2 verlinken → xyz_1/3 ergänzen → alle drei gestrichelt highlighten).
+  - **Process-Tab (Task 8):** Neuaufbau als Akkordeon-Struktur mit "Beschaffungs-Prozess" (Purchase Orders + Storage Flow) und "Produktions-Prozess" (Customer Orders + Production Flow), ERP-Info-Box für Purchase/Customer Orders, Tab an Position 3 verschoben.
+  - **Orders-Tab (Task 9):** Layout umgekehrt (Shopfloor links 3fr, Steps rechts 2fr), responsive Breakpoint bei 1200px, Shopfloor-Preview in OrderCards, Finished-Liste per Default eingeklappt, Storage Orders Auto-Expand, Tab an Position 4 verschoben.
+  - **DSP → ERP Link (Task 12):** ERP-Daten Verknüpfung zwischen Process-Tab und Track-Trace implementiert, `ErpOrderDataService` für Purchase/Customer Orders, ERP-Info-Box zeigt Supplier/Customer IDs, Order Dates, Planned Delivery Dates.
+  - **Track-Trace Erweiterungen (Tasks 10-12):** TURN LEFT/RIGHT Icons basierend auf FTS Order Stream, Order Status (Active/Completed) aus dualen Order Streams, ERP-Daten Integration, zusätzliche Datenfelder (Raw Material Order Date, Delivery Date, Storage Date, Customer Order Date, Production Start Date, Delivery End Date), I18n mit englischen Defaults und DE/FR Übersetzungen, Architektur-Dokumentation erweitert.
+  - **Dokumentation & Tests:** Track-Trace Architektur-Dokumentation aktualisiert, Tests für `WorkpieceHistoryService` und `ErpOrderDataService` erweitert/erstellt.
+  - **Demo-Vorbereitung:** Konftel Cam50 Settings + OBS-Doku aktualisiert, DSP-Mockup interaktiv geplant.
+- **Nachlauf:** DSP → AGV Link (Task 10), DSP → Modules Link (Task 11), kundenspezifische Animationen für Gedore-Präsentation.
 
 ### Sprint 10 (28.11 - 11.12.2025) - **ABGESCHLOSSEN**
 - **Status:** ✅ Abgeschlossen

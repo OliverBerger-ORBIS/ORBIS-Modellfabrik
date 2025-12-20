@@ -1,8 +1,13 @@
 import type { ContainerConfig, ConnectionConfig, StepConfig, DiagramConfig } from './types';
 import { DiagramConfigBuilder } from './layout.builder';
-import { getEdgeComponentIds } from './layout.shared.config';
+import { getEdgeComponentIds, getShopfloorContainerIds, getShopfloorDeviceIds, getShopfloorSystemIds } from './layout.shared.config';
 
 export function createComponentView(customerConfig?: import('./configs/types').CustomerDspConfig): DiagramConfig {
+  // Get customer-specific or default shopfloor container IDs
+  const baseShopfloorContainers = getShopfloorContainerIds(customerConfig);
+  const shopfloorSystemIds = getShopfloorSystemIds(customerConfig);
+  const shopfloorDeviceIds = getShopfloorDeviceIds(customerConfig);
+  
   // Add bidirectional connections between edge components
   // All components connect to Router as the central hub
   const edgeComponentConnections: ConnectionConfig[] = [
@@ -15,44 +20,37 @@ export function createComponentView(customerConfig?: import('./configs/types').C
     { id: 'conn-ec-disi-router', fromId: 'edge-comp-disi', toId: 'edge-comp-router', fromSide: 'top', toSide: 'bottom', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
     { id: 'conn-ec-database-router', fromId: 'edge-comp-database', toId: 'edge-comp-router', fromSide: 'top', toSide: 'bottom', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
 
-    // DISI to Shopfloor Systems
-    { id: 'conn-ec-disi-sf-system-any', fromId: 'edge-comp-disi', toId: 'sf-system-any', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
-    { id: 'conn-ec-disi-sf-system-fts', fromId: 'edge-comp-disi', toId: 'sf-system-fts', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
-    { id: 'conn-ec-disi-sf-system-warehouse', fromId: 'edge-comp-disi', toId: 'sf-system-warehouse', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
-    { id: 'conn-ec-disi-sf-system-factory', fromId: 'edge-comp-disi', toId: 'sf-system-factory', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
+    // DISI to Shopfloor Systems (customer-specific or default)
+    ...shopfloorSystemIds.map(systemId => ({
+      id: `conn-ec-disi-${systemId}`,
+      fromId: 'edge-comp-disi',
+      toId: systemId,
+      fromSide: 'bottom' as const,
+      toSide: 'top' as const,
+      state: 'hidden' as const,
+      hasArrow: true,
+      bidirectional: true,
+      arrowSize: 6,
+    })),
 
-    // DISI to Shopfloor Devices
-    { id: 'conn-ec-disi-sf-device-mill', fromId: 'edge-comp-disi', toId: 'sf-device-mill', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
-    { id: 'conn-ec-disi-sf-device-drill', fromId: 'edge-comp-disi', toId: 'sf-device-drill', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
-    { id: 'conn-ec-disi-sf-device-aiqs', fromId: 'edge-comp-disi', toId: 'sf-device-aiqs', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
-    { id: 'conn-ec-disi-sf-device-hbw', fromId: 'edge-comp-disi', toId: 'sf-device-hbw', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
-    { id: 'conn-ec-disi-sf-device-dps', fromId: 'edge-comp-disi', toId: 'sf-device-dps', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
-    { id: 'conn-ec-disi-sf-device-chrg', fromId: 'edge-comp-disi', toId: 'sf-device-chrg', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
-    { id: 'conn-ec-disi-sf-device-conveyor', fromId: 'edge-comp-disi', toId: 'sf-device-conveyor', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
-    { id: 'conn-ec-disi-sf-device-stone-oven', fromId: 'edge-comp-disi', toId: 'sf-device-stone-oven', fromSide: 'bottom', toSide: 'top', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
+    // DISI to Shopfloor Devices (customer-specific or default)
+    ...shopfloorDeviceIds.map(deviceId => ({
+      id: `conn-ec-disi-${deviceId}`,
+      fromId: 'edge-comp-disi',
+      toId: deviceId,
+      fromSide: 'bottom' as const,
+      toSide: 'top' as const,
+      state: 'hidden' as const,
+      hasArrow: true,
+      bidirectional: true,
+      arrowSize: 6,
+    })),
 
     // Business / UX integrations
     { id: 'conn-ec-disc-bp-erp', fromId: 'edge-comp-disc', toId: 'bp-erp', fromSide: 'top', toSide: 'bottom', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
     { id: 'conn-ec-disc-bp-mes', fromId: 'edge-comp-disc', toId: 'bp-mes', fromSide: 'top', toSide: 'bottom', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
     { id: 'conn-ux-ec-appserver', fromId: 'dsp-ux', toId: 'edge-comp-app-server', fromSide: 'right', toSide: 'left', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
     { id: 'conn-ec-agent-management', fromId: 'edge-comp-agent', toId: 'dsp-mc', fromSide: 'right', toSide: 'left', state: 'hidden', hasArrow: true, bidirectional: true, arrowSize: 6 },
-  ];
-  
-  const baseShopfloorContainers = [
-    'sf-systems-group',
-      'sf-system-any',
-    'sf-system-fts',
-    'sf-system-warehouse',
-    'sf-system-factory',
-    'sf-devices-group',
-    'sf-device-mill',
-    'sf-device-drill',
-    'sf-device-aiqs',
-    'sf-device-hbw',
-    'sf-device-dps',
-    'sf-device-chrg',
-    'sf-device-conveyor',
-    'sf-device-stone-oven',
   ];
   
   // Edge component connection IDs for internal routing
@@ -66,20 +64,10 @@ export function createComponentView(customerConfig?: import('./configs/types').C
     'conn-ec-database-router',
   ];
   
-  // External connections from edge components to shopfloor
+  // External connections from edge components to shopfloor (customer-specific or default)
   const disiShopfloorConnections = [
-      'conn-ec-disi-sf-system-any',
-    'conn-ec-disi-sf-system-fts',
-    'conn-ec-disi-sf-system-warehouse',
-    'conn-ec-disi-sf-system-factory',
-    'conn-ec-disi-sf-device-mill',
-    'conn-ec-disi-sf-device-drill',
-    'conn-ec-disi-sf-device-aiqs',
-    'conn-ec-disi-sf-device-hbw',
-    'conn-ec-disi-sf-device-dps',
-    'conn-ec-disi-sf-device-chrg',
-    'conn-ec-disi-sf-device-conveyor',
-    'conn-ec-disi-sf-device-stone-oven',
+    ...shopfloorSystemIds.map(id => `conn-ec-disi-${id}`),
+    ...shopfloorDeviceIds.map(id => `conn-ec-disi-${id}`),
   ];
   
   const steps: StepConfig[] = [

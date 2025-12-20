@@ -147,9 +147,9 @@ Track & Trace soll die komplette Historie eines Workpieces (Rohmaterial → Prod
 
 ## Offene Fragen
 
-1. **ERP-Integration:** Wie sollen echte ERP-IDs integriert werden? (Zukünftige Aufgabe)
-2. **Order-Historie:** Sollen auch abgeschlossene Orders (`ccu/order/completed`) berücksichtigt werden?
-3. **Multi-Order:** Was passiert, wenn ein Workpiece mehrere Orders durchläuft?
+1. ~~**ERP-Integration:** Wie sollen echte ERP-IDs integriert werden?~~ ✅ **Gelöst (2025-12-20):** `ErpOrderDataService` Integration implementiert, ERP-Daten werden aus Process-Tab übernommen
+2. ~~**Order-Historie:** Sollen auch abgeschlossene Orders (`ccu/order/completed`) berücksichtigt werden?~~ ✅ **Gelöst (2025-12-20):** Beide Streams (`ccu/order/active` und `ccu/order/completed`) werden abonniert, Status wird korrekt angezeigt
+3. **Multi-Order:** Was passiert, wenn ein Workpiece mehrere Orders durchläuft? (Zukünftige Aufgabe - aktuell wird nur die erste passende Order verwendet)
 
 ## Referenzen
 
@@ -158,7 +158,7 @@ Track & Trace soll die komplette Historie eines Workpieces (Rohmaterial → Prod
 - `omf2/registry/schemas/ccu_order_active.schema.json`
 - `omf2/registry/topics/ccu.yml`
 
-## Aktueller Status (2025-12-02)
+## Aktueller Status (2025-12-20)
 
 ### Fixture System
 
@@ -178,4 +178,230 @@ Track & Trace soll die komplette Historie eines Workpieces (Rohmaterial → Prod
 - Hauptdokumentation: `omf3/libs/testing-fixtures/README.md`
 - Tab-spezifische Presets: `omf3/libs/testing-fixtures/TAB-FIXTURES.md`
 - System-Fix-Dokumentation: `docs/FIXTURE_SYSTEM_FIX.md`
+
+## Erweiterte Features (2025-12-20)
+
+### 1. TURN LEFT/RIGHT Icons
+
+**Problem:** FTS TURN Events wurden bisher nur mit einem generischen Turn-Icon angezeigt, ohne Unterscheidung zwischen Links- und Rechtskurven.
+
+**Lösung:**
+- **FTS Order Stream Integration:** Der `WorkpieceHistoryService` abonniert den `ccu/order/fts` Topic, um TURN-Richtungen zu extrahieren
+- **Direction Mapping:** TURN-Actions werden mit ihrer Richtung (`LEFT` oder `RIGHT`) aus dem Order-Stream gemappt (`turnDirectionByActionId`)
+- **Event Details:** Die Richtung wird in `event.details['direction']` gespeichert
+- **Icon Selection:** `TrackTraceComponent.getEventIcon()` prüft die Richtung und verwendet:
+  - `ICONS.shopfloor.shared.turnLeftEvent` für TURN LEFT
+  - `ICONS.shopfloor.shared.turnRightEvent` für TURN RIGHT
+  - `ICONS.shopfloor.shared.turnEvent` als Fallback
+- **Label Display:** `getEventLabel()` zeigt "TURN LEFT" oder "TURN RIGHT" an
+
+**Implementierung:**
+```typescript
+// In WorkpieceHistoryService
+private readonly turnDirectionByActionId = new Map<string, 'LEFT' | 'RIGHT' | string>();
+
+// Subscribe to FTS order stream
+const ftsOrder$ = this.messageMonitor.getLastMessage('ccu/order/fts').pipe(...);
+ftsOrder$.subscribe((order: any) => {
+  if (Array.isArray(order.nodes)) {
+    order.nodes.forEach((node: any) => {
+      const action = node?.action;
+      if (action?.type === 'TURN' && action?.id && action?.metadata?.direction) {
+        this.turnDirectionByActionId.set(action.id, action.metadata.direction);
+      }
+    });
+  }
+});
+
+// In event generation
+if (eventType === 'TURN') {
+  const actionStateMeta = (state.actionState as any)?.metadata;
+  if (actionStateMeta?.direction) {
+    turnDirection = actionStateMeta.direction;
+  } else {
+    turnDirection = this.turnDirectionByActionId.get(state.actionState.id);
+  }
+  details.direction = turnDirection;
+}
+```
+
+### 2. Order Status (Active/Completed)
+
+**Problem:** Der Order Context zeigte keine Information darüber, ob eine Order aktuell aktiv oder bereits abgeschlossen ist.
+
+**Lösung:**
+- **Dual Order Stream:** `WorkpieceHistoryService` abonniert sowohl `ccu/order/active` als auch `ccu/order/completed`
+- **Status Determination:** `generateOrderContext()` prüft, ob eine Order-ID in `completed` Orders vorhanden ist
+- **Status Field:** `OrderContext` Interface erweitert um `status?: 'ACTIVE' | 'COMPLETED'`
+- **UI Display:** Track-Trace Template zeigt Status mit farblicher Hervorhebung (grün für Active, grau für Completed)
+
+**Implementierung:**
+```typescript
+// In generateOrderContext()
+const normalizedOrders = {
+  active: activeOrders || {},
+  completed: completedOrders || {}
+};
+
+const isCompleted = normalizedOrders.completed[orderId] !== undefined;
+const orderStatus: 'ACTIVE' | 'COMPLETED' = isCompleted ? 'COMPLETED' : 'ACTIVE';
+
+contexts.push({
+  ...orderData,
+  status: orderStatus,
+});
+```
+
+### 3. ERP-Daten Verknüpfung
+
+**Problem:** ERP-Daten (Purchase Orders, Customer Orders) aus dem Process-Tab wurden nicht mit den Track-Trace Order Contexts verknüpft.
+
+**Lösung:**
+- **ErpOrderDataService Integration:** `WorkpieceHistoryService` verwendet `ErpOrderDataService` um ERP-Daten abzurufen
+- **Storage Orders:** Für Storage Orders wird `popPurchaseOrderForWorkpieceType(workpieceType)` aufgerufen
+- **Production Orders:** Für Production Orders wird `popCustomerOrder()` aufgerufen
+- **Priority:** ERP-Daten haben Priorität über generierte Fake-IDs, aber Fallback auf Fake-IDs bleibt bestehen
+
+**Implementierung:**
+```typescript
+// In generateOrderContext() for STORAGE orders
+const workpieceTypeUpper = workpieceType.toUpperCase() as 'BLUE' | 'WHITE' | 'RED';
+const erpPurchaseData = this.erpOrderDataService.popPurchaseOrderForWorkpieceType(workpieceTypeUpper);
+
+contexts.push({
+  orderId,
+  orderType: 'STORAGE',
+  purchaseOrderId: purchaseOrderId || erpPurchaseData?.purchaseOrderId || generatePurchaseOrderId(),
+  supplierId: erpPurchaseData?.supplierId || generateSupplierId(),
+  orderDate: erpPurchaseData?.orderDate || orderDate,
+  rawMaterialOrderDate: erpPurchaseData?.orderDate,
+  // ...
+});
+
+// In generateOrderContext() for PRODUCTION orders
+const erpCustomerData = this.erpOrderDataService.popCustomerOrder();
+
+contexts.push({
+  orderId,
+  orderType: 'PRODUCTION',
+  customerOrderId: customerOrderId || erpCustomerData?.customerOrderId || generateCustomerOrderId(),
+  customerId: erpCustomerData?.customerId || generateCustomerId(),
+  orderDate: erpCustomerData?.orderDate || orderDate,
+  customerOrderDate: erpCustomerData?.orderDate,
+  // ...
+});
+```
+
+### 4. Zusätzliche Datenfelder
+
+**Problem:** Der Order Context zeigte nur grundlegende Daten (Order Date, Start/End Time), aber keine spezifischen Meilensteine wie Lieferung, Storage, Produktions-Start, etc.
+
+**Lösung:**
+- **Event Analysis:** `extractDatesFromEvents()` analysiert die Event-Historie eines Workpieces
+- **Date Extraction:** Spezifische Daten werden aus Events extrahiert:
+  - **Storage Orders:**
+    - `deliveryDate`: Erstes DPS-Event (Lieferung-Datum - wann angeliefert im DPS)
+    - `storageDate`: Erstes HBW-Event (Storage-Datum - wann im HBW eingelagert)
+  - **Production Orders:**
+    - `productionStartDate`: Letztes HBW-Event vor erstem Manufacturing-Event (Produktions-Start - Auslagerung aus HBW)
+    - `deliveryEndDate`: Letztes DPS-Event (Auslieferungs-Datum - Production-Ende im DPS)
+- **OrderContext Interface:** Erweitert um zusätzliche optionale Felder:
+  - `rawMaterialOrderDate?: string` - Bestellung-Datum RAW-Material (aus ERP)
+  - `deliveryDate?: string` - Lieferung-Datum (aus Events)
+  - `storageDate?: string` - Storage-Datum (aus Events)
+  - `customerOrderDate?: string` - Bestellung-Datum Customer-Order (aus ERP)
+  - `productionStartDate?: string` - Produktions-Start (aus Events)
+  - `deliveryEndDate?: string` - Auslieferungs-Datum (aus Events)
+
+**Implementierung:**
+```typescript
+private extractDatesFromEvents(
+  events: TrackTraceEvent[],
+  orderType: 'STORAGE' | 'PRODUCTION'
+): {
+  deliveryDate?: string;
+  storageDate?: string;
+  productionStartDate?: string;
+  deliveryEndDate?: string;
+} {
+  const dpsId = 'SVR4H73275';
+  const hbwId = 'SVR3QA0022';
+  
+  const result = {};
+  
+  // Find first DPS event (delivery date for storage orders)
+  if (orderType === 'STORAGE') {
+    const firstDpsEvent = events.find(e => e.location === dpsId || e.moduleId === dpsId);
+    if (firstDpsEvent) {
+      result.deliveryDate = firstDpsEvent.timestamp;
+    }
+  }
+  
+  // Find first HBW event (storage date)
+  const firstHbwEvent = events.find(e => e.location === hbwId || e.moduleId === hbwId);
+  if (firstHbwEvent) {
+    result.storageDate = firstHbwEvent.timestamp;
+  }
+  
+  // Find last HBW event before production (production start)
+  if (orderType === 'PRODUCTION') {
+    const manufacturingEvents = events.filter(e => 
+      e.stationId === 'DRILL' || e.stationId === 'MILL' || e.stationId === 'AIQS'
+    );
+    if (manufacturingEvents.length > 0) {
+      const firstManufacturingEvent = manufacturingEvents[0];
+      const hbwEventsBeforeProduction = events.filter(e => 
+        (e.location === hbwId || e.moduleId === hbwId) &&
+        new Date(e.timestamp).getTime() < new Date(firstManufacturingEvent.timestamp).getTime()
+      );
+      if (hbwEventsBeforeProduction.length > 0) {
+        const lastHbwEvent = hbwEventsBeforeProduction[hbwEventsBeforeProduction.length - 1];
+        result.productionStartDate = lastHbwEvent.timestamp;
+      }
+    }
+  }
+  
+  // Find last DPS event (delivery end date for production orders)
+  if (orderType === 'PRODUCTION') {
+    const dpsEvents = events.filter(e => e.location === dpsId || e.moduleId === dpsId);
+    if (dpsEvents.length > 0) {
+      const lastDpsEvent = dpsEvents[dpsEvents.length - 1];
+      result.deliveryEndDate = lastDpsEvent.timestamp;
+    }
+  }
+  
+  return result;
+}
+```
+
+### 5. Internationalization (i18n)
+
+**Problem:** Die neuen Datenfelder hatten deutsche Begriffe als Default-Texte im Template.
+
+**Lösung:**
+- **Default Language:** Alle Template-Texte auf Englisch geändert
+- **I18n Keys:** Neue Keys hinzugefügt für alle Datenfelder:
+  - `@@trackTraceOrderStatus`, `@@trackTraceOrderStatusActive`, `@@trackTraceOrderStatusCompleted`
+  - `@@trackTraceRawMaterialOrderDate` - "Raw Material Order Date:"
+  - `@@trackTraceDeliveryDate` - "Delivery Date:"
+  - `@@trackTraceStorageDate` - "Storage Date:"
+  - `@@trackTraceCustomerOrderDate` - "Customer Order Date:"
+  - `@@trackTraceProductionStartDate` - "Production Start:"
+  - `@@trackTraceDeliveryEndDate` - "Delivery Date:"
+- **DE/FR Translations:** Vollständige Übersetzungen in `messages.de.json` und `messages.fr.json`
+
+**Dateien:**
+- `omf3/apps/ccu-ui/src/app/components/track-trace/track-trace.component.html` - Template mit englischen Defaults
+- `omf3/apps/ccu-ui/src/locale/messages.de.json` - Deutsche Übersetzungen
+- `omf3/apps/ccu-ui/src/locale/messages.fr.json` - Französische Übersetzungen
+
+## Referenzen
+
+- `omf3/apps/ccu-ui/src/app/services/workpiece-history.service.ts` - Hauptservice für Track & Trace
+- `omf3/apps/ccu-ui/src/app/components/track-trace/track-trace.component.ts` - UI-Komponente
+- `omf3/apps/ccu-ui/src/app/services/erp-order-data.service.ts` - ERP-Daten Service
+- `omf3/apps/ccu-ui/src/app/tabs/fts-tab.component.ts` - Referenz für TURN LEFT/RIGHT Logik
+- `docs/07-analysis/production-order-analysis-results.md`
+- `omf2/registry/schemas/ccu_order_active.schema.json`
+- `omf2/registry/topics/ccu.yml`
 

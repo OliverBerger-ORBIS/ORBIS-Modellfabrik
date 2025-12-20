@@ -41,6 +41,8 @@ export const ICONS = {
       agvVehicle: 'assets/svg/shopfloor/shared/agv-vehicle.svg',
       question: 'assets/svg/shopfloor/shared/question.svg',
       turnEvent: 'assets/svg/shopfloor/shared/turn-event.svg',
+      turnLeftEvent: 'assets/svg/shopfloor/shared/turn-left-event.svg',
+      turnRightEvent: 'assets/svg/shopfloor/shared/turn-right-event.svg',
       dockEvent: 'assets/svg/shopfloor/shared/dock-event.svg',
       passEvent: 'assets/svg/shopfloor/shared/pass-event.svg',
       pickEvent: 'assets/svg/shopfloor/shared/pick-event.svg',

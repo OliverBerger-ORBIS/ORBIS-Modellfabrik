@@ -6,6 +6,7 @@ export interface ExternalLinksSettings {
   readonly smartfactoryDashboardUrl: string;
   readonly dspControlUrl: string;
   readonly managementCockpitUrl: string;
+  readonly erpSystemUrl: string; // Task 12: ERP/SAP System URL for future integration
 }
 
 const STORAGE_KEY = 'omf3.externalLinks';
@@ -15,6 +16,7 @@ const DEFAULT_SETTINGS: ExternalLinksSettings = {
   smartfactoryDashboardUrl: '/dsp-action',
   dspControlUrl: 'https://www.orbis-group.com/de-de/sap-orbis-loesungen/distributed-shopfloor-processing.html',
   managementCockpitUrl: 'https://dspmcorbisprd.powerappsportals.com',
+  erpSystemUrl: 'process', // Default: internal Process-Tab, can be changed to external ERP/SAP URL
 };
 
 @Injectable({ providedIn: 'root' })

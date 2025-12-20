@@ -114,14 +114,14 @@
                         class="event-item"
                         [class]="event.eventType.toLowerCase()"
                       >
-                        <img [src]="getEventIcon(event.eventType)" alt="" width="16" height="16" class="event-icon" />
+                        <img [src]="getEventIcon(event.eventType, event)" alt="" width="16" height="16" class="event-icon" />
                         <div class="event-content">
                           <div class="event-row">
                             <!-- Column 1: Module/FTS-Name + Action, Date Time -->
                             <div class="event-col-1">
                               <div class="event-module-action">
                                 <span class="event-module-name">{{ event.moduleName || 'FTS' }}</span>
-                                <span class="event-action-type">{{ event.eventType }}</span>
+                                <span class="event-action-type">{{ getEventLabel(event.eventType, event) }}</span>
                               </div>
                               <div class="event-time">{{ formatTimestamp(event.timestamp) }}</div>
                               <span class="event-duration" *ngIf="event.processDuration">
@@ -155,14 +155,14 @@
                       class="event-item"
                       [class]="event.eventType.toLowerCase()"
                     >
-                      <img [src]="getEventIcon(event.eventType)" alt="" width="16" height="16" class="event-icon" />
+                      <img [src]="getEventIcon(event.eventType, event)" alt="" width="16" height="16" class="event-icon" />
                       <div class="event-content">
                         <div class="event-row">
                           <!-- Column 1: Module/FTS-Name + Action, Date Time, Location -->
                           <div class="event-col-1">
                             <div class="event-module-action">
                               <span class="event-module-name">{{ event.moduleName || 'FTS' }}</span>
-                              <span class="event-action-type">{{ event.eventType }}</span>
+                              <span class="event-action-type">{{ getEventLabel(event.eventType, event) }}</span>
                             </div>
                             <div class="event-time">{{ formatTimestamp(event.timestamp) }}</div>
                             <div class="event-location" *ngIf="event.location">
@@ -215,6 +215,15 @@
                 <span class="order-type-label">{{ getOrderTypeLabel(order.orderType) }}</span>
               </div>
               <div class="order-details">
+                <!-- Order Status -->
+                <div class="order-field" *ngIf="order.status">
+                  <span class="field-label" i18n="@@trackTraceOrderStatus">Status:</span>
+                  <span class="field-value" [class.status-active]="order.status === 'ACTIVE'" [class.status-completed]="order.status === 'COMPLETED'">
+                    <ng-container *ngIf="order.status === 'ACTIVE'" i18n="@@trackTraceOrderStatusActive">Active</ng-container>
+                    <ng-container *ngIf="order.status === 'COMPLETED'" i18n="@@trackTraceOrderStatusCompleted">Completed</ng-container>
+                  </span>
+                </div>
+                
                 <!-- Storage Order Details -->
                 <div *ngIf="order.orderType === 'STORAGE'">
                   <div class="order-field" *ngIf="order.purchaseOrderId">
@@ -225,9 +234,17 @@
                     <span class="field-label" i18n="@@trackTraceSupplierId">Supplier ID:</span>
                     <span class="field-value erp-id">{{ order.supplierId }}</span>
                   </div>
-                  <div class="order-field" *ngIf="order.orderDate">
-                    <span class="field-label" i18n="@@trackTraceOrderDate">Order Date:</span>
-                    <span class="field-value">{{ formatTimestamp(order.orderDate) }}</span>
+                  <div class="order-field" *ngIf="order.rawMaterialOrderDate">
+                    <span class="field-label" i18n="@@trackTraceRawMaterialOrderDate">Raw Material Order Date:</span>
+                    <span class="field-value">{{ formatTimestamp(order.rawMaterialOrderDate) }}</span>
+                  </div>
+                  <div class="order-field" *ngIf="order.deliveryDate">
+                    <span class="field-label" i18n="@@trackTraceDeliveryDate">Delivery Date:</span>
+                    <span class="field-value">{{ formatTimestamp(order.deliveryDate) }}</span>
+                  </div>
+                  <div class="order-field" *ngIf="order.storageDate">
+                    <span class="field-label" i18n="@@trackTraceStorageDate">Storage Date:</span>
+                    <span class="field-value">{{ formatTimestamp(order.storageDate) }}</span>
                   </div>
                 </div>
                 <!-- Production Order Details -->
@@ -240,9 +257,17 @@
                     <span class="field-label" i18n="@@trackTraceCustomerId">Customer ID:</span>
                     <span class="field-value erp-id">{{ order.customerId }}</span>
                   </div>
-                  <div class="order-field" *ngIf="order.orderDate">
-                    <span class="field-label" i18n="@@trackTraceOrderDate">Order Date:</span>
-                    <span class="field-value">{{ formatTimestamp(order.orderDate) }}</span>
+                  <div class="order-field" *ngIf="order.customerOrderDate">
+                    <span class="field-label" i18n="@@trackTraceCustomerOrderDate">Customer Order Date:</span>
+                    <span class="field-value">{{ formatTimestamp(order.customerOrderDate) }}</span>
+                  </div>
+                  <div class="order-field" *ngIf="order.productionStartDate">
+                    <span class="field-label" i18n="@@trackTraceProductionStartDate">Production Start:</span>
+                    <span class="field-value">{{ formatTimestamp(order.productionStartDate) }}</span>
+                  </div>
+                  <div class="order-field" *ngIf="order.deliveryEndDate">
+                    <span class="field-label" i18n="@@trackTraceDeliveryEndDate">Delivery Date:</span>
+                    <span class="field-value">{{ formatTimestamp(order.deliveryEndDate) }}</span>
                   </div>
                 </div>
                 <div class="order-route" *ngIf="order.fromLocation || order.toLocation">

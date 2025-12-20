@@ -6,8 +6,7 @@
         <h2 i18n="@@processTabHeadline">Business & Shopfloor Processes</h2>
       </div>
       <p i18n="@@processTabDescription">
-        Business processes (Customer Orders, Purchase Orders) and shopfloor processes (Production Flow, Storage Flow)
-        orchestrated by ERP systems.
+        Business processes (Customer Orders, Purchase Orders) from ERP systems and shopfloor processes (Production Flow, Storage Flow) orchestrated by DSP.
       </p>
     </div>
 
@@ -87,14 +86,24 @@
                         [class.primary]="getNeed(available, type) > 0"
                         [class.secondary]="getNeed(available, type) === 0"
                         [disabled]="getNeed(available, type) === 0"
+                        (click)="orderRawMaterial(type)"
                       >
                         {{ orderRawMaterialLabel }}
                       </button>
-                      <small>{{ erpRequiredLabel }}</small>
                     </div>
                   </div>
                 </article>
               </div>
+              
+              <!-- ERP Info Box - Full width below purchase grid -->
+              <app-erp-info-box
+                *ngIf="hasAnyPurchaseOrderErpData()"
+                [isOpen]="true"
+                orderType="PURCHASE"
+                [orderData]="getFirstPurchaseOrderErpData()"
+                [workpieceType]="getFirstPurchaseOrderWorkpieceType()"
+                (close)="closeAllPurchaseOrderErpData()"
+              />
             </section>
           </div>
 
@@ -196,6 +205,16 @@
                   </button>
                 </article>
               </div>
+              
+              <!-- ERP Info Box - Full width below customer grid -->
+              <app-erp-info-box
+                *ngIf="hasAnyCustomerOrderErpData()"
+                [isOpen]="true"
+                orderType="CUSTOMER"
+                [orderData]="getFirstCustomerOrderErpData()"
+                [workpieceType]="getFirstCustomerOrderWorkpieceType()"
+                (close)="closeAllCustomerOrderErpData()"
+              />
             </section>
           </div>
 

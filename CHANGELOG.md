@@ -8,14 +8,36 @@ All notable changes to OMF3 Dashboard will be documented here.
 - Windows helper scripts for npm/Node.js setup (run-omf3.ps1, run-omf3.bat, add-node-to-user-path.ps1)
 - Comprehensive npm/Node.js setup documentation (docs_orbis/how-to-use-npm.md) for Windows developers
 - Scripts handle common Windows issues: PATH problems, missing npx, automatic dependency installation
-
-### Added
 - Module sequence commands feature for DRILL, MILL, and AIQS modules
 - Manual sequence command execution with individual send buttons (PICK, DRILL/MILL/CHECK_QUALITY, DROP)
 - Developer mode for sequence commands showing sent payloads with formatted JSON
 - Reset button to clear sent commands for repeated testing
 - Sequence command files (DRILL-Sequence.json, MILL-Sequence.json, AIQS-Sequence.json) with real-life payload structure
 - Tests for sequence command loading, sending, tracking, and reset functionality
+- **Track-Trace Enhancements:**
+  - TURN LEFT/RIGHT Icons: FTS TURN Events show specific icons based on direction (from FTS Order Stream)
+  - Order Status: Active/Completed status from `ccu/order/active` and `ccu/order/completed` streams
+  - ERP Data Integration: `ErpOrderDataService` links Purchase/Customer Orders from Process-Tab to Track-Trace Order Context
+  - Additional Date Fields: Event analysis extracts specific dates (Raw Material Order Date, Delivery Date, Storage Date, Customer Order Date, Production Start Date, Delivery End Date)
+  - I18n: All new data fields with English defaults and DE/FR translations
+- **Process-Tab:**
+  - ERP-Info-Box component for Purchase/Customer Orders
+  - Accordion structure with "Beschaffungs-Prozess" (Purchase Orders + Storage Flow) and "Produktions-Prozess" (Customer Orders + Production Flow)
+- **Shopfloor/Module-Tab:**
+  - Enhanced module highlighting (selected module with blue border, non-selected with background color only)
+  - HBW Stock-Grid optimization (square boxes, label overlay, full width utilization)
+  - Module status extension for all modules (DPS/AIQS/HBW/DRILL/MILL) with unified structure
+  - Tab renamed to "Shopfloor" and moved to position 2 in navigation
+- **Orders-Tab:**
+  - Layout reversed (Shopfloor left 3fr, Steps right 2fr) with responsive breakpoint at 1200px
+  - Shopfloor-Preview in OrderCards
+  - Finished list collapsed by default, Storage Orders auto-expand
+  - Tab moved to position 4 in navigation
+- **Configuration-Tab:**
+  - CSS Grid layout (Shopfloor left, Module right, responsive breakpoints)
+- **DSP Architecture:**
+  - Edge Animation sequence refined (MC functions → EDGE xyz_2 link → xyz_1/3 added → all three dashed highlight)
+- Tests for `ErpOrderDataService` and extended tests for `WorkpieceHistoryService`
 
 ### Changed
 - Sequence command payloads now match real-life structure:
@@ -23,6 +45,11 @@ All notable changes to OMF3 Dashboard will be documented here.
   - Removed priority and timeout from metadata
   - Added workpieceId to metadata (14-character hex format)
   - Metadata now only contains type and workpieceId
+- Track-Trace component: Enhanced with ERP data integration, order status, and additional date fields
+- Shopfloor-Preview: Canvas size increased by 5px padding on all sides to prevent highlight clipping
+- Module-Tab: Renamed to "Shopfloor" in UI/Navigation, moved to position 2
+- Process-Tab: Moved to position 3 in navigation
+- Orders-Tab: Moved to position 4 in navigation
 
 ## [0.4.0] - 2025-12-16
 

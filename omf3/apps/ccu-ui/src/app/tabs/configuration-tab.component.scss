@@ -179,13 +179,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #e5e7eb;
+    border: 3px solid var(--orbis-blue-strong); // Blue border for selected module (consistent with shopfloor layout)
     border-radius: 8px;
     padding: 0.75rem;
-    background: #f8fafc;
+    background: rgba(var(--orbis-blue-strong-rgb), 0.10); // Light blue background matching shopfloor highlight
     width: 180px;
     height: 180px;
     flex: 0 0 180px;
+    box-shadow: 
+      0 0 0 1px rgba(var(--orbis-blue-strong-rgb), 0.3),
+      0 0 0 3px rgba(var(--orbis-blue-strong-rgb), 0.2),
+      0 0 12px 4px rgba(var(--orbis-blue-strong-rgb), 0.25),
+      0 4px 16px 0 rgba(var(--orbis-blue-strong-rgb), 0.3); // Matching glow effect
 
     @media (max-width: 768px) {
       width: 150px;

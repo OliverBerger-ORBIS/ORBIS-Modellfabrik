@@ -378,8 +378,9 @@ export function createDefaultContainers(): ContainerConfig[] {
   const businessStartX = LAYOUT.CONTENT_START_X;
 
   // ERP first
-  containers.push({
-    id: 'bp-erp',
+  containers.push(    {
+      id: 'bp-erp',
+      url: 'process', // Task 12: BP-ERP → Process-Tab
     label: '',
     x: businessStartX,
     y: businessBoxY,
@@ -477,7 +478,7 @@ export function createDefaultContainers(): ContainerConfig[] {
   // Customer configs will hide unused systems via applyCustomerMappings
   const systemEntries: { id: string; icon: IconKey; url?: string }[] = [
     { id: 'sf-system-any', icon: 'shopfloor-systems' as IconKey, url: 'fts' },
-    { id: 'sf-system-fts', icon: 'shopfloor-fts' as IconKey, url: 'process' },
+    { id: 'sf-system-fts', icon: 'shopfloor-fts' as IconKey, url: 'fts' }, // Task 10: AGV/FTS → AGV-Tab
     { id: 'sf-system-warehouse', icon: 'shopfloor-systems' as IconKey, url: 'process' },
     { id: 'sf-system-factory', icon: 'shopfloor-systems' as IconKey, url: 'process' },
   ];
@@ -790,6 +791,25 @@ export function getShopfloorContainerIds(customerConfig?: CustomerDspConfig): st
     'sf-device-hbw',
     'sf-device-dps',
     'sf-device-chrg',
+  ];
+}
+
+/**
+ * Returns all Shopfloor system container IDs.
+ * Used in component view for connections.
+ * If customerConfig is provided, uses IDs from the config; otherwise uses default IDs.
+ */
+export function getShopfloorSystemIds(customerConfig?: CustomerDspConfig): string[] {
+  if (customerConfig) {
+    return customerConfig.sfSystems.map(s => s.id);
+  }
+  
+  // Default IDs for backward compatibility
+  return [
+    'sf-system-any',
+    'sf-system-fts',
+    'sf-system-warehouse',
+    'sf-system-factory',
   ];
 }
 
@@ -1319,6 +1339,13 @@ export function createCustomerContainers(customerConfig?: CustomerDspConfig): Co
       }
     }
     
+    // Determine URL based on system type (Task 10: AGV/FTS → AGV-Tab)
+    let systemUrl: string | undefined;
+    const labelLower = system.label.toLowerCase();
+    if (labelLower.includes('agv') || system.iconKey === 'agv') {
+      systemUrl = 'fts'; // AGV/FTS System → AGV-Tab
+    }
+    
     containers.push({
       id: system.id,
       label: system.label,
@@ -1328,6 +1355,7 @@ export function createCustomerContainers(customerConfig?: CustomerDspConfig): Co
       height: systemBoxHeight,
       type: 'device',
       state: 'normal',
+      url: systemUrl,
       logoIconKey: iconKey,
       borderColor: 'rgba(0, 0, 0, 0.12)',
       backgroundColor: 'url(#shopfloor-gradient)',
@@ -1368,6 +1396,10 @@ export function createCustomerContainers(customerConfig?: CustomerDspConfig): Co
       ? (device.customIconPath as IconKey)
       : (`generic-device-${device.iconKey}` as IconKey);
     
+    // Task 11: Extract module type from device ID (e.g., 'sf-device-mill' -> 'MILL')
+    // URL will be handled in onActionTriggered to add query parameter
+    const deviceUrl = 'module'; // Base URL, query param added in handler
+    
     containers.push({
       id: device.id,
       label: device.label,
@@ -1382,6 +1414,7 @@ export function createCustomerContainers(customerConfig?: CustomerDspConfig): Co
       backgroundColor: 'url(#shopfloor-gradient)',
       labelPosition: 'bottom-center',
       fontSize: 12,
+      url: deviceUrl,
     });
   });
 

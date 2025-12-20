@@ -2,6 +2,7 @@ import type { ContainerConfig, ConnectionConfig, StepConfig, DiagramConfig } fro
 import { DiagramConfigBuilder } from './layout.builder';
 import {
   createDefaultContainers,
+  createCustomerContainers,
   getShopfloorContainerIds,
   getShopfloorConnectionIds,
   VIEWBOX_WIDTH,
@@ -10,7 +11,8 @@ import {
 import { getOrbisColor, ORBIS_COLORS } from '../../assets/color-palette';
 
 export function createDeploymentView(customerConfig?: import('./configs/types').CustomerDspConfig): DiagramConfig {
-  const containers = createDefaultContainers();
+  // Use customer-specific containers if config provided, otherwise default
+  const containers = customerConfig ? createCustomerContainers(customerConfig) : createDefaultContainers();
   const pipelineBorder = getOrbisColor('solution-petrol-strong');
   const pipelineFills = [
     'rgba(0, 150, 129, 0.18)', // very light
@@ -64,8 +66,8 @@ export function createDeploymentView(customerConfig?: import('./configs/types').
   // Keine Verbindungen zwischen den Pipeline-Pfeilen (bewusst ohne arrows)
   
   // Deployment View Animation Steps - 5-step pipeline reveal
-  const baseShopfloorContainers = getShopfloorContainerIds();
-  const baseShopfloorConnections = getShopfloorConnectionIds();
+  const baseShopfloorContainers = getShopfloorContainerIds(customerConfig);
+  const baseShopfloorConnections = getShopfloorConnectionIds(customerConfig);
   
   const steps: StepConfig[] = [
     // Step 1: Edge Container (empty)

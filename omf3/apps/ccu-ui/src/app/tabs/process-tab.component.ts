@@ -12,6 +12,8 @@ import type { Observable } from 'rxjs';
 import { map, shareReplay, filter, startWith, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { merge, Subscription, combineLatest } from 'rxjs';
 import { ICONS } from '../shared/icons/icon.registry';
+import { ErpInfoBoxComponent, type PurchaseOrderData, type CustomerOrderData, type ErpOrderType } from '../components/erp-info-box/erp-info-box.component';
+import { ErpOrderDataService } from '../services/erp-order-data.service';
 
 const INVENTORY_LOCATIONS = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
 const WORKPIECE_TYPES = ['BLUE', 'WHITE', 'RED'] as const;
@@ -63,7 +65,7 @@ interface ProcessProductView {
 @Component({
   standalone: true,
   selector: 'app-process-tab',
-  imports: [CommonModule],
+  imports: [CommonModule, ErpInfoBoxComponent],
   templateUrl: './process-tab.component.html',
   styleUrl: './process-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -113,6 +115,11 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
 
   // Accordion state
   protected readonly expandedSections = new Set<string>(['procurement', 'production']); // Both expanded by default
+
+  // ERP Info Box state - per workpiece type
+  erpInfoBoxOpen: Record<string, boolean> = {};
+  erpOrderDataByType: Record<string, PurchaseOrderData | CustomerOrderData | null> = {};
+  erpOrderWorkpieceType: Record<string, string> = {}; // Store workpieceType for each order
 
   isSectionExpanded(sectionId: string): boolean {
     return this.expandedSections.has(sectionId);
@@ -189,7 +196,8 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
     private readonly messageMonitor: MessageMonitorService,
     private readonly connectionService: ConnectionService,
     private readonly inventoryState: InventoryStateService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private readonly erpOrderDataService: ErpOrderDataService
   ) {
     this.currentEnvironmentKey = this.environmentService.current.key;
     this.bindInventoryOutputs();
@@ -266,15 +274,217 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Generate Purchase Order Data (consistent with Track-Trace)
+   */
+  private generatePurchaseOrderData(): PurchaseOrderData {
+    const now = new Date();
+    const deliveryDate = new Date(now);
+    deliveryDate.setDate(deliveryDate.getDate() + 7); // 7 days from now
+
+    // Generate IDs consistent with Track-Trace format
+    const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const supplierRandom = Math.random().toString(36).substring(2, 6).toUpperCase();
+
+    return {
+      purchaseOrderId: `ERP-PO-${random}`,
+      supplierId: `SUP-${supplierRandom}`,
+      orderDate: now.toISOString(),
+      orderAmount: 1,
+      plannedDeliveryDate: deliveryDate.toISOString(),
+    };
+  }
+
+  /**
+   * Generate Customer Order Data (consistent with Track-Trace)
+   */
+  private generateCustomerOrderData(): CustomerOrderData {
+    const now = new Date();
+    const deliveryDate = new Date(now);
+    deliveryDate.setDate(deliveryDate.getDate() + 7); // 7 days from now
+
+    // Generate IDs consistent with Track-Trace format
+    const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const customerRandom = Math.random().toString(36).substring(2, 6).toUpperCase();
+
+    return {
+      customerOrderId: `ERP-CO-${random}`,
+      customerId: `CUST-${customerRandom}`,
+      orderDate: now.toISOString(),
+      orderAmount: 1,
+      plannedDeliveryDate: deliveryDate.toISOString(),
+    };
+  }
+
+  /**
+   * Order raw material (Purchase Order) - Task 12
+   */
+  async orderRawMaterial(type: (typeof WORKPIECE_TYPES)[number]): Promise<void> {
+    try {
+      console.info('[process-tab] Ordering raw material:', type);
+      const dashboard = getDashboardController();
+      await dashboard.commands.requestRawMaterial(type);
+      console.info('[process-tab] Raw material order sent successfully:', type);
+
+      // Generate and store Purchase Order data with workpiece type
+      const purchaseData = this.generatePurchaseOrderData();
+      this.erpOrderDataService.storePurchaseOrder(type, purchaseData);
+
+      // Show ERP Info Box inline for this workpiece type
+      // Store data with a key that includes the order type to separate Purchase and Customer orders
+      const purchaseKey = `purchase-${type}`;
+      this.erpOrderDataByType[purchaseKey] = purchaseData;
+      this.erpOrderWorkpieceType[purchaseKey] = type; // Store workpieceType (BLUE/WHITE/RED)
+      this.erpInfoBoxOpen[purchaseKey] = true;
+      this.cdr.markForCheck();
+    } catch (error) {
+      console.error('[process-tab] Failed to order raw material', type, error);
+    }
+  }
+
+  /**
+   * Order workpiece (Customer Order) - Task 12
+   */
   async orderWorkpiece(type: (typeof WORKPIECE_TYPES)[number]): Promise<void> {
     try {
       console.info('[process-tab] Sending customer order:', type);
       const dashboard = getDashboardController();
       await dashboard.commands.sendCustomerOrder(type);
       console.info('[process-tab] Customer order sent successfully:', type);
+
+      // Generate and store Customer Order data
+      const customerData = this.generateCustomerOrderData();
+      this.erpOrderDataService.storeCustomerOrder(customerData);
+
+      // Show ERP Info Box inline for this workpiece type
+      // Store data with a key that includes the order type to separate Purchase and Customer orders
+      const customerKey = `customer-${type}`;
+      this.erpOrderDataByType[customerKey] = customerData;
+      this.erpOrderWorkpieceType[customerKey] = type; // Store workpieceType (BLUE/WHITE/RED)
+      this.erpInfoBoxOpen[customerKey] = true;
+      this.cdr.markForCheck();
     } catch (error) {
       console.error('[process-tab] Failed to send customer order', type, error);
     }
+  }
+
+  /**
+   * Close ERP Info Box for a specific order key
+   */
+  closeErpInfoBox(key: string): void {
+    this.erpInfoBoxOpen[key] = false;
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Check if ERP Info Box is open for a workpiece type (legacy method, kept for compatibility)
+   */
+  isErpInfoBoxOpen(type: string): boolean {
+    // Check both purchase and customer keys
+    return this.erpInfoBoxOpen[`purchase-${type}`] === true || this.erpInfoBoxOpen[`customer-${type}`] === true;
+  }
+
+  /**
+   * Get ERP Order Data for a workpiece type (legacy method, kept for compatibility)
+   */
+  getErpOrderData(type: string): PurchaseOrderData | CustomerOrderData | null {
+    return this.erpOrderDataByType[`purchase-${type}`] || this.erpOrderDataByType[`customer-${type}`] || null;
+  }
+
+  /**
+   * Check if any Purchase Order has ERP data
+   */
+  hasAnyPurchaseOrderErpData(): boolean {
+    return this.workpieceTypes.some(type => {
+      const key = `purchase-${type}`;
+      return this.erpInfoBoxOpen[key] === true && this.erpOrderDataByType[key] !== null;
+    });
+  }
+
+  /**
+   * Get the first Purchase Order ERP data (for display in full-width box)
+   */
+  getFirstPurchaseOrderErpData(): PurchaseOrderData | null {
+    for (const type of this.workpieceTypes) {
+      const key = `purchase-${type}`;
+      const data = this.erpOrderDataByType[key];
+      if (data && this.erpInfoBoxOpen[key] === true) {
+        return data as PurchaseOrderData;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get the workpiece type for the first Purchase Order (for display in ERP box)
+   */
+  getFirstPurchaseOrderWorkpieceType(): string | undefined {
+    for (const type of this.workpieceTypes) {
+      const key = `purchase-${type}`;
+      if (this.erpInfoBoxOpen[key] === true && this.erpOrderDataByType[key] !== null) {
+        return this.erpOrderWorkpieceType[key] || type;
+      }
+    }
+    return undefined;
+  }
+
+  /**
+   * Close all Purchase Order ERP data
+   */
+  closeAllPurchaseOrderErpData(): void {
+    for (const type of this.workpieceTypes) {
+      const key = `purchase-${type}`;
+      this.erpInfoBoxOpen[key] = false;
+    }
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Check if any Customer Order has ERP data (only if orderWorkpiece was called)
+   */
+  hasAnyCustomerOrderErpData(): boolean {
+    return this.workpieceTypes.some(type => {
+      const key = `customer-${type}`;
+      return this.erpInfoBoxOpen[key] === true && this.erpOrderDataByType[key] !== null;
+    });
+  }
+
+  /**
+   * Get the first Customer Order ERP data (for display in full-width box)
+   */
+  getFirstCustomerOrderErpData(): CustomerOrderData | null {
+    for (const type of this.workpieceTypes) {
+      const key = `customer-${type}`;
+      const data = this.erpOrderDataByType[key];
+      if (data && this.erpInfoBoxOpen[key] === true) {
+        return data as CustomerOrderData;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get the workpiece type for the first Customer Order (for display in ERP box)
+   */
+  getFirstCustomerOrderWorkpieceType(): string | undefined {
+    for (const type of this.workpieceTypes) {
+      const key = `customer-${type}`;
+      if (this.erpInfoBoxOpen[key] === true && this.erpOrderDataByType[key] !== null) {
+        return this.erpOrderWorkpieceType[key] || type;
+      }
+    }
+    return undefined;
+  }
+
+  /**
+   * Close all Customer Order ERP data
+   */
+  closeAllCustomerOrderErpData(): void {
+    for (const type of this.workpieceTypes) {
+      const key = `customer-${type}`;
+      this.erpInfoBoxOpen[key] = false;
+    }
+    this.cdr.markForCheck();
   }
 
   getWorkpieceLabel(type: (typeof WORKPIECE_TYPES)[number]): string {

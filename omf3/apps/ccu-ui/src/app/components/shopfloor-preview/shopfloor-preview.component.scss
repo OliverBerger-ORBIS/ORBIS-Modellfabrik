@@ -31,7 +31,7 @@
   border-radius: 0;
   background: #ffffff;
   border: 1px solid rgba(148, 163, 184, 0.35);
-  overflow: hidden;
+  overflow: visible; // Changed from hidden to visible to show edge effects
   transform-origin: top left;
 }
 
@@ -97,7 +97,7 @@
   padding: 0;
   // Base border (like intersection cells) - hauchdünn
   border: 1px solid rgba(148, 163, 184, 0.35);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
 }
 
 .preview__fixed {
@@ -201,12 +201,17 @@
 
 .preview__element--highlight {
   // Blue border for selected module (Module-Tab)
+  // Enhanced visibility: stronger border, glow effect, elevated shadow, lighter background
   border: 3px solid var(--orbis-blue-strong) !important;
   box-shadow: 
-    0 0 0 1px rgba(var(--orbis-blue-strong-rgb), 0.2),
-    0 0 0 3px rgba(var(--orbis-blue-strong-rgb), 0.15);
-  background-color: rgba(var(--orbis-blue-strong-rgb), 0.08);
+    0 0 0 1px rgba(var(--orbis-blue-strong-rgb), 0.3),
+    0 0 0 3px rgba(var(--orbis-blue-strong-rgb), 0.2),
+    0 0 12px 4px rgba(var(--orbis-blue-strong-rgb), 0.25),
+    0 4px 16px 0 rgba(var(--orbis-blue-strong-rgb), 0.3);
+  background-color: rgba(var(--orbis-blue-strong-rgb), 0.10); // Lighter background
   z-index: 5; // Above availability borders
+  transform: scale(1.02); // Slight scale increase for prominence
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 // Current position highlighting (use success/ORBiS highlight green) - for FTS tab
@@ -218,12 +223,12 @@
 
 // Module status highlighting (availability-based border colors)
 // Base border is defined above, these override it when status is present
-// For Module-Tab: Only show borders when module is selected (highlighted), otherwise only background color
+// For Module-Tab: Show thin border in status color when not selected, thicker blue border when selected
 .preview__module {
   &--available {
-    // Only show border if highlighted (selected), otherwise just background
+    // Thin border in status color when not selected
     &:not(.preview__element--highlight) {
-      border: none !important;
+      border: 1px solid var(--status-success-strong) !important;
       box-shadow: none !important;
     }
     background-color: rgba(var(--status-success-strong-rgb), 0.15);
@@ -231,15 +236,19 @@
     &.preview__element--highlight {
       border: 3px solid var(--orbis-blue-strong) !important;
       box-shadow: 
-        0 0 0 1px rgba(var(--orbis-blue-strong-rgb), 0.2),
-        0 0 0 3px rgba(var(--orbis-blue-strong-rgb), 0.15);
-      background-color: rgba(var(--orbis-blue-strong-rgb), 0.08);
+        0 0 0 1px rgba(var(--orbis-blue-strong-rgb), 0.3),
+        0 0 0 3px rgba(var(--orbis-blue-strong-rgb), 0.2),
+        0 0 12px 4px rgba(var(--orbis-blue-strong-rgb), 0.25),
+        0 4px 16px 0 rgba(var(--orbis-blue-strong-rgb), 0.3);
+      background-color: rgba(var(--orbis-blue-strong-rgb), 0.10); // Lighter background
+      transform: scale(1.02);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     }
   }
 
   &--busy {
     &:not(.preview__element--highlight) {
-      border: none !important;
+      border: 1px solid var(--status-warning-strong) !important;
       box-shadow: none !important;
     }
     background-color: rgba(var(--status-warning-strong-rgb), 0.15);
@@ -247,15 +256,19 @@
     &.preview__element--highlight {
       border: 3px solid var(--orbis-blue-strong) !important;
       box-shadow: 
-        0 0 0 1px rgba(var(--orbis-blue-strong-rgb), 0.2),
-        0 0 0 3px rgba(var(--orbis-blue-strong-rgb), 0.15);
-      background-color: rgba(var(--orbis-blue-strong-rgb), 0.08);
+        0 0 0 1px rgba(var(--orbis-blue-strong-rgb), 0.3),
+        0 0 0 3px rgba(var(--orbis-blue-strong-rgb), 0.2),
+        0 0 12px 4px rgba(var(--orbis-blue-strong-rgb), 0.25),
+        0 4px 16px 0 rgba(var(--orbis-blue-strong-rgb), 0.3);
+      background-color: rgba(var(--orbis-blue-strong-rgb), 0.10); // Lighter background
+      transform: scale(1.02);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     }
   }
 
   &--blocked {
     &:not(.preview__element--highlight) {
-      border: none !important;
+      border: 1px solid var(--status-error-strong) !important;
       box-shadow: none !important;
     }
     background-color: rgba(var(--status-error-strong-rgb), 0.15);
@@ -263,15 +276,19 @@
     &.preview__element--highlight {
       border: 3px solid var(--orbis-blue-strong) !important;
       box-shadow: 
-        0 0 0 1px rgba(var(--orbis-blue-strong-rgb), 0.2),
-        0 0 0 3px rgba(var(--orbis-blue-strong-rgb), 0.15);
-      background-color: rgba(var(--orbis-blue-strong-rgb), 0.08);
+        0 0 0 1px rgba(var(--orbis-blue-strong-rgb), 0.3),
+        0 0 0 3px rgba(var(--orbis-blue-strong-rgb), 0.2),
+        0 0 12px 4px rgba(var(--orbis-blue-strong-rgb), 0.25),
+        0 4px 16px 0 rgba(var(--orbis-blue-strong-rgb), 0.3);
+      background-color: rgba(var(--orbis-blue-strong-rgb), 0.10); // Lighter background
+      transform: scale(1.02);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     }
   }
 
   &--unknown {
     &:not(.preview__element--highlight) {
-      border: none !important;
+      border: 1px solid var(--orbis-grey-strong) !important;
       box-shadow: none !important;
     }
     background-color: rgba(var(--orbis-grey-light-rgb), 0.3) !important;
@@ -279,9 +296,13 @@
     &.preview__element--highlight {
       border: 3px solid var(--orbis-blue-strong) !important;
       box-shadow: 
-        0 0 0 1px rgba(var(--orbis-blue-strong-rgb), 0.2),
-        0 0 0 3px rgba(var(--orbis-blue-strong-rgb), 0.15);
-      background-color: rgba(var(--orbis-blue-strong-rgb), 0.08);
+        0 0 0 1px rgba(var(--orbis-blue-strong-rgb), 0.3),
+        0 0 0 3px rgba(var(--orbis-blue-strong-rgb), 0.2),
+        0 0 12px 4px rgba(var(--orbis-blue-strong-rgb), 0.25),
+        0 4px 16px 0 rgba(var(--orbis-blue-strong-rgb), 0.3);
+      background-color: rgba(var(--orbis-blue-strong-rgb), 0.10); // Lighter background
+      transform: scale(1.02);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     }
   }
 

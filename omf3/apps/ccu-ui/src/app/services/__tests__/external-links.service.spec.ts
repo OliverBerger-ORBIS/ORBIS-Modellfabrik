@@ -30,6 +30,7 @@ describe('ExternalLinksService', () => {
       expect(settings.smartfactoryDashboardUrl).toBeDefined();
       expect(settings.dspControlUrl).toBeDefined();
       expect(settings.managementCockpitUrl).toBeDefined();
+      expect(settings.erpSystemUrl).toBeDefined();
     });
 
     it('should emit current settings on subscription', async () => {
@@ -47,6 +48,7 @@ describe('ExternalLinksService', () => {
         smartfactoryDashboardUrl: '/test-dsp',
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
+        erpSystemUrl: 'process',
       };
 
       service.updateSettings(newSettings);
@@ -62,6 +64,7 @@ describe('ExternalLinksService', () => {
         smartfactoryDashboardUrl: '/test-dsp',
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
+        erpSystemUrl: 'process',
       };
 
       service.updateSettings(newSettings);
@@ -78,6 +81,7 @@ describe('ExternalLinksService', () => {
         smartfactoryDashboardUrl: '/stored-dsp',
         dspControlUrl: 'https://stored.dsp.com',
         managementCockpitUrl: 'https://stored.cockpit.com',
+        erpSystemUrl: 'process',
       };
 
       localStorage.setItem('omf3.externalLinks', JSON.stringify(storedSettings));
@@ -106,6 +110,7 @@ describe('ExternalLinksService', () => {
             smartfactoryDashboardUrl: '/test-dsp',
             dspControlUrl: 'https://test.dsp.com',
             managementCockpitUrl: 'https://test.cockpit.com',
+            erpSystemUrl: 'process',
           };
           service.updateSettings(newSettings);
         } else if (callCount === 2) {
@@ -128,6 +133,7 @@ describe('ExternalLinksService', () => {
         smartfactoryDashboardUrl: '/test-dsp',
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
+        erpSystemUrl: 'process',
       };
 
       expect(() => {
@@ -177,6 +183,7 @@ describe('ExternalLinksService', () => {
         smartfactoryDashboardUrl: '',
         dspControlUrl: '',
         managementCockpitUrl: '',
+        erpSystemUrl: '',
       };
 
       service.updateSettings(emptySettings);
@@ -193,6 +200,7 @@ describe('ExternalLinksService', () => {
         smartfactoryDashboardUrl: '/test-dsp',
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
+        erpSystemUrl: 'process',
       };
 
       service.updateSettings(longSettings);
@@ -207,6 +215,7 @@ describe('ExternalLinksService', () => {
         smartfactoryDashboardUrl: '/test-dsp',
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
+        erpSystemUrl: 'process',
       };
 
       const settings2: ExternalLinksSettings = {
@@ -214,6 +223,7 @@ describe('ExternalLinksService', () => {
         smartfactoryDashboardUrl: '/test-dsp',
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
+        erpSystemUrl: 'process',
       };
 
       service.updateSettings(settings1);
@@ -228,6 +238,7 @@ describe('ExternalLinksService', () => {
         smartfactoryDashboardUrl: '/test-dsp',
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
+        erpSystemUrl: 'process',
       };
 
       service.updateSettings(specialSettings);
@@ -242,6 +253,7 @@ describe('ExternalLinksService', () => {
         smartfactoryDashboardUrl: '/dsp-action',
         dspControlUrl: '/dsp',
         managementCockpitUrl: '/cockpit',
+        erpSystemUrl: 'process',
       };
 
       service.updateSettings(relativeSettings);

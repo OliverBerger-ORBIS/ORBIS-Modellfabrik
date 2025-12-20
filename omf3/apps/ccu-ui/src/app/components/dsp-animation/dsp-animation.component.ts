@@ -877,6 +877,10 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
         case 'bp-analytics':
           container.url = links.grafanaDashboardUrl;
           break;
+        case 'bp-erp':
+          // Task 12: Use ERP URL from settings, fallback to 'process' for internal route
+          container.url = links.erpSystemUrl || 'process';
+          break;
       }
     });
   }

@@ -152,6 +152,12 @@ import { LanguageService, LocaleKey } from '../services/language.service';
             <input type="url" formControlName="managementCockpitUrl" placeholder="https://management.example.com" />
           </label>
 
+          <label>
+            <span i18n="@@settingsErpSystemLinkLabel">ERP/SAP System URL</span>
+            <input type="text" formControlName="erpSystemUrl" placeholder="process" />
+            <small i18n="@@settingsErpSystemLinkHint">Internal route (e.g., 'process') or external ERP/SAP URL for future integration.</small>
+          </label>
+
           <footer>
             <button type="submit" class="primary" [disabled]="linksForm.pristine || linksForm.invalid" i18n="@@settingsSaveButton">
               Save changes
@@ -345,6 +351,7 @@ export class SettingsTabComponent implements OnInit {
       smartfactoryDashboardUrl: [linkSettings.smartfactoryDashboardUrl],
       dspControlUrl: [linkSettings.dspControlUrl, [Validators.required]],
       managementCockpitUrl: [linkSettings.managementCockpitUrl, [Validators.required]],
+      erpSystemUrl: [linkSettings.erpSystemUrl],
     });
   }
 

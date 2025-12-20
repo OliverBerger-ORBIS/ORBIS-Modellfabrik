@@ -5,6 +5,7 @@ import { MessageMonitorService } from './message-monitor.service';
 import { ModuleNameService } from './module-name.service';
 import { EnvironmentService } from './environment.service';
 import { FtsRouteService } from './fts-route.service';
+import { ErpOrderDataService } from './erp-order-data.service';
 
 /**
  * Track & Trace event for workpiece history
@@ -48,13 +49,21 @@ export interface OrderContext {
   orderType: 'STORAGE' | 'PRODUCTION' | string;
   purchaseOrderId?: string; // From ERP system (e.g., "ERP-PO-XYZ...")
   supplierId?: string; // Supplier ID from ERP
-  orderDate?: string; // Order date from ERP (timestamp)
+  orderDate?: string; // Order date from ERP (timestamp) - Bestellung-Datum RAW-Material / Customer-Order
   customerOrderId?: string; // For production orders (e.g., "ERP-CO-XYZ...")
   customerId?: string; // Customer ID from ERP
-  startTime?: string;
-  endTime?: string;
+  startTime?: string; // Production-Start (Auslagerung aus HBW) / Storage-Start
+  endTime?: string; // Auslieferungs-Datum (Production-Ende im DPS) / Storage-Ende
   fromLocation?: string;
   toLocation?: string;
+  status?: 'ACTIVE' | 'COMPLETED'; // Order status from Orders-Tab
+  // Additional date fields for better tracking
+  rawMaterialOrderDate?: string; // Bestellung-Datum RAW-Material (wann bestellt im Process-Tab)
+  deliveryDate?: string; // Lieferung-Datum (wann angeliefert im DPS)
+  storageDate?: string; // Storage-Datum (wann im HBW eingelagert)
+  customerOrderDate?: string; // Bestellung-Datum Customer-Order (wann erfolgte Kunden-Bestellung)
+  productionStartDate?: string; // Produktions-Start (Auslagerung aus HBW)
+  deliveryEndDate?: string; // Auslieferungs-Datum (Production-Ende im DPS)
 }
 
 /**
@@ -154,6 +163,9 @@ export class WorkpieceHistoryService implements OnDestroy {
   private readonly moduleNameService = inject(ModuleNameService);
   private readonly environmentService = inject(EnvironmentService);
   private readonly ftsRouteService = inject(FtsRouteService);
+  private readonly erpOrderDataService = inject(ErpOrderDataService);
+  // TURN direction lookup (from order stream) - similar to FTS-Tab
+  private readonly turnDirectionByActionId = new Map<string, 'LEFT' | 'RIGHT' | string>();
 
   ngOnDestroy(): void {
     // Clean up all subscriptions
@@ -226,6 +238,26 @@ export class WorkpieceHistoryService implements OnDestroy {
     );
 
     // Subscribe to active orders for order context
+    // Subscribe to FTS order stream to extract TURN direction information
+    const ftsOrder$ = this.messageMonitor.getLastMessage('ccu/order/fts').pipe(
+      map((msg) => msg?.payload ?? null),
+      filter((order) => order !== null)
+    );
+    
+    ftsOrder$.subscribe((order: any) => {
+      if (!order) return;
+      // Build actionId -> direction map for TURN actions (same logic as FTS-Tab)
+      // Order schema: nodes[].action.id / type / metadata.direction
+      if (Array.isArray(order.nodes)) {
+        order.nodes.forEach((node: any) => {
+          const action = node?.action;
+          if (action?.type === 'TURN' && action?.id && action?.metadata?.direction) {
+            this.turnDirectionByActionId.set(action.id, action.metadata.direction);
+          }
+        });
+      }
+    });
+    
     const activeOrders$ = this.messageMonitor.getLastMessage('ccu/order/active').pipe(
       map((msg) => {
         if (!msg?.valid || !msg.payload) return null;
@@ -285,15 +317,49 @@ export class WorkpieceHistoryService implements OnDestroy {
     
     const moduleState$ = merge(...moduleStateStreams);
 
+    // Subscribe to completed orders for order status
+    const completedOrders$ = this.messageMonitor.getLastMessage('ccu/order/completed').pipe(
+      map((msg) => {
+        if (!msg?.valid || !msg.payload) return null;
+        try {
+          const payload = typeof msg.payload === 'string' ? JSON.parse(msg.payload) : msg.payload;
+          return Array.isArray(payload) ? payload : [payload];
+        } catch {
+          return null;
+        }
+      }),
+      map((orders) => {
+        if (!orders) return {};
+        const completedMap: Record<string, any> = {};
+        orders.forEach((order: any) => {
+          if (order && order.orderId) {
+            completedMap[order.orderId] = order;
+          }
+        });
+        return completedMap;
+      })
+    );
+    
+    // Combine active and completed orders
+    const allOrders$ = combineLatest([
+      activeOrders$.pipe(startWith(null)),
+      completedOrders$.pipe(startWith({}))
+    ]).pipe(
+      map(([active, completed]) => ({
+        active: active || {},
+        completed: completed || {},
+      }))
+    );
+    
     // Combine FTS state and orders to update history
     // Use startWith(null) to ensure combineLatest emits even if one stream hasn't emitted yet
     const ftsSubscription = combineLatest([
       ftsState$.pipe(startWith(null)),
-      activeOrders$.pipe(startWith(null))
-    ]).subscribe(([ftsState, activeOrders]) => {
+      allOrders$.pipe(startWith({ active: {}, completed: {} }))
+    ]).subscribe(([ftsState, orders]) => {
       if (ftsState) {
         try {
-          this.updateWorkpieceHistory(environmentKey, ftsState as FtsState, activeOrders);
+          this.updateWorkpieceHistory(environmentKey, ftsState as FtsState, orders);
         } catch (error) {
           console.error('[WorkpieceHistoryService] Error updating history from FTS:', error);
         }
@@ -301,14 +367,14 @@ export class WorkpieceHistoryService implements OnDestroy {
     });
 
     // Subscribe to module state messages to process PICK/PROCESS/DROP events
-    // Combine with activeOrders to have order context available
+    // Combine with allOrders to have order context available
     const moduleSubscription = combineLatest([
       moduleState$.pipe(startWith(null)),
-      activeOrders$.pipe(startWith(null))
-    ]).subscribe(([moduleState, activeOrders]) => {
+      allOrders$.pipe(startWith({ active: {}, completed: {} }))
+    ]).subscribe(([moduleState, orders]) => {
       if (moduleState) {
         try {
-          this.updateWorkpieceHistoryFromModule(environmentKey, moduleState as ModuleState, activeOrders);
+          this.updateWorkpieceHistoryFromModule(environmentKey, moduleState as ModuleState, orders);
         } catch (error) {
           console.error('[WorkpieceHistoryService] Error updating history from module:', error);
         }
@@ -404,7 +470,7 @@ export class WorkpieceHistoryService implements OnDestroy {
   private updateWorkpieceHistory(
     environmentKey: string,
     state: FtsState,
-    activeOrders: unknown
+    orders: { active: Record<string, any>; completed: Record<string, any> } | unknown
   ): void {
     const historyMap = new Map(this.getStore(environmentKey).value);
 
@@ -436,13 +502,18 @@ export class WorkpieceHistoryService implements OnDestroy {
 
     state.load?.forEach((loadItem) => {
       if (loadItem.loadId && loadItem.loadType) {
+        // Normalize orders parameter
+        const normalizedOrders = orders && typeof orders === 'object' && 'active' in orders
+          ? orders as { active: Record<string, any>; completed: Record<string, any> }
+          : { active: orders as any || {}, completed: {} };
+        
         const existingHistory = historyMap.get(loadItem.loadId) || {
           workpieceId: loadItem.loadId,
           workpieceType: loadItem.loadType,
           events: [],
           currentLocation: state.lastNodeId,
           currentState: 'IN_TRANSPORT',
-          orders: this.generateOrderContext(loadItem.loadType, activeOrders, state.orderId),
+          orders: this.generateOrderContext(loadItem.loadType, normalizedOrders, state.orderId, []),
         };
 
         // Determine order type based on location
@@ -549,6 +620,19 @@ export class WorkpieceHistoryService implements OnDestroy {
             // Regular event for transport/storage
             // Also for cases where workpiece cannot be processed at this station (e.g., RED at DRILL)
             const eventType = this.mapActionCommandToEventType(state.actionState.command);
+            // Extract TURN direction from actionState metadata or turnDirectionByActionId map
+            let turnDirection: string | undefined;
+            if (eventType === 'TURN') {
+              // Try to get direction from actionState metadata (if available in FTS state)
+              const actionStateMeta = (state.actionState as any)?.metadata;
+              if (actionStateMeta?.direction) {
+                turnDirection = actionStateMeta.direction;
+              } else {
+                // Fallback to order-derived map
+                turnDirection = this.turnDirectionByActionId.get(state.actionState.id);
+              }
+            }
+            
             existingHistory.events.push({
               ...baseEvent,
               eventType: eventType,
@@ -557,6 +641,7 @@ export class WorkpieceHistoryService implements OnDestroy {
               details: {
                 actionState: state.actionState.state,
                 loadPosition: loadItem.loadPosition,
+                direction: turnDirection, // Store direction in details for TURN events
               },
             } as TrackTraceEvent);
           }
@@ -571,6 +656,30 @@ export class WorkpieceHistoryService implements OnDestroy {
 
         existingHistory.currentLocation = state.lastNodeId;
         existingHistory.currentState = state.driving ? 'IN_TRANSPORT' : 'STATIONARY';
+        
+        // Update order context with extracted dates from events
+        if (existingHistory.orders && existingHistory.orders.length > 0) {
+          const orderType = this.determineOrderType(state.lastNodeId, existingHistory.events);
+          const extractedDates = this.extractDatesFromEvents(existingHistory.events, orderType);
+          
+          existingHistory.orders = existingHistory.orders.map(order => {
+            if (order.orderType === 'STORAGE') {
+              return {
+                ...order,
+                deliveryDate: extractedDates.deliveryDate || order.deliveryDate,
+                storageDate: extractedDates.storageDate || order.storageDate,
+              };
+            } else if (order.orderType === 'PRODUCTION') {
+              return {
+                ...order,
+                productionStartDate: extractedDates.productionStartDate || order.productionStartDate,
+                deliveryEndDate: extractedDates.deliveryEndDate || order.deliveryEndDate,
+              };
+            }
+            return order;
+          });
+        }
+        
         historyMap.set(loadItem.loadId, existingHistory);
       }
     });
@@ -585,7 +694,7 @@ export class WorkpieceHistoryService implements OnDestroy {
   private updateWorkpieceHistoryFromModule(
     environmentKey: string,
     moduleState: ModuleState,
-    activeOrders: unknown
+    orders: { active: Record<string, any>; completed: Record<string, any> } | unknown
   ): void {
 
     const historyMap = new Map(this.getStore(environmentKey).value);
@@ -798,13 +907,91 @@ export class WorkpieceHistoryService implements OnDestroy {
   }
 
   /**
+   * Extract date information from workpiece events
+   * Analyzes events to find delivery date (DPS), storage date (HBW), production start (HBW exit), delivery end (DPS)
+   */
+  private extractDatesFromEvents(events: TrackTraceEvent[], orderType: 'STORAGE' | 'PRODUCTION'): {
+    deliveryDate?: string; // Lieferung-Datum (wann angeliefert im DPS)
+    storageDate?: string; // Storage-Datum (wann im HBW eingelagert)
+    productionStartDate?: string; // Produktions-Start (Auslagerung aus HBW)
+    deliveryEndDate?: string; // Auslieferungs-Datum (Production-Ende im DPS)
+  } {
+    const dpsId = 'SVR4H73275';
+    const hbwId = 'SVR3QA0022';
+    
+    const result: {
+      deliveryDate?: string;
+      storageDate?: string;
+      productionStartDate?: string;
+      deliveryEndDate?: string;
+    } = {};
+    
+    // Find first DPS event (delivery date for storage orders)
+    if (orderType === 'STORAGE') {
+      const firstDpsEvent = events.find(e => e.location === dpsId || e.moduleId === dpsId);
+      if (firstDpsEvent) {
+        result.deliveryDate = firstDpsEvent.timestamp;
+      }
+    }
+    
+    // Find first HBW event (storage date)
+    const firstHbwEvent = events.find(e => e.location === hbwId || e.moduleId === hbwId);
+    if (firstHbwEvent) {
+      result.storageDate = firstHbwEvent.timestamp;
+    }
+    
+    // Find last HBW event before production (production start - Auslagerung aus HBW)
+    if (orderType === 'PRODUCTION') {
+      // Find the last HBW event before any manufacturing station event
+      const manufacturingEvents = events.filter(e => 
+        e.stationId === 'DRILL' || e.stationId === 'MILL' || e.stationId === 'AIQS' ||
+        e.moduleName === 'DRILL' || e.moduleName === 'MILL' || e.moduleName === 'AIQS'
+      );
+      if (manufacturingEvents.length > 0) {
+        const firstManufacturingEvent = manufacturingEvents[0];
+        // Find last HBW event before first manufacturing event
+        const hbwEventsBeforeProduction = events.filter(e => 
+          (e.location === hbwId || e.moduleId === hbwId) &&
+          new Date(e.timestamp).getTime() < new Date(firstManufacturingEvent.timestamp).getTime()
+        );
+        if (hbwEventsBeforeProduction.length > 0) {
+          const lastHbwEvent = hbwEventsBeforeProduction[hbwEventsBeforeProduction.length - 1];
+          result.productionStartDate = lastHbwEvent.timestamp;
+        }
+      }
+    }
+    
+    // Find last DPS event (delivery end date for production orders)
+    if (orderType === 'PRODUCTION') {
+      const dpsEvents = events.filter(e => e.location === dpsId || e.moduleId === dpsId);
+      if (dpsEvents.length > 0) {
+        const lastDpsEvent = dpsEvents[dpsEvents.length - 1];
+        result.deliveryEndDate = lastDpsEvent.timestamp;
+      }
+    }
+    
+    return result;
+  }
+
+  /**
    * Generate order context from active orders
    * @param workpieceType - Workpiece type (BLUE, WHITE, RED)
-   * @param activeOrders - Active orders from ccu/order/active topic
+   * @param orders - Orders object with active and completed orders
    * @param ftsOrderId - Order ID from FTS state (real UUID from backend, not generated!)
+   * @param events - Optional events array to extract date information
    */
-  private generateOrderContext(workpieceType: string, activeOrders: unknown, ftsOrderId?: string): OrderContext[] {
+  private generateOrderContext(
+    workpieceType: string,
+    orders: { active: Record<string, any>; completed: Record<string, any> } | unknown,
+    ftsOrderId?: string,
+    events?: TrackTraceEvent[]
+  ): OrderContext[] {
     const contexts: OrderContext[] = [];
+
+    // Normalize orders parameter
+    const normalizedOrders = orders && typeof orders === 'object' && 'active' in orders
+      ? orders as { active: Record<string, any>; completed: Record<string, any> }
+      : { active: {}, completed: {} };
 
     // Helper functions to generate fake ERP IDs
     const generatePurchaseOrderId = (): string => {
@@ -822,10 +1009,15 @@ export class WorkpieceHistoryService implements OnDestroy {
       return `CUST-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
     };
 
-    // Try to extract order info from activeOrders if available
+    // Combine active and completed orders for lookup
+    const allOrders = { ...normalizedOrders.active, ...normalizedOrders.completed };
+    const activeOrdersArray = Object.values(normalizedOrders.active);
+    const allOrdersArray = Object.values(allOrders);
+
+    // Try to extract order info from orders if available
     // Match orders by orderId - prefer FTS orderId if provided
-    if (Array.isArray(activeOrders)) {
-      for (const order of activeOrders) {
+    if (allOrdersArray.length > 0) {
+      for (const order of allOrdersArray) {
         if (order && typeof order === 'object' && 'orderId' in order && 'orderType' in order) {
           const orderType = String(order.orderType).toUpperCase();
           const orderId = String(order.orderId);
@@ -851,30 +1043,53 @@ export class WorkpieceHistoryService implements OnDestroy {
           }
 
           const orderDate = 'startedAt' in order ? String(order.startedAt) : new Date().toISOString();
+          
+          // Determine order status (ACTIVE or COMPLETED)
+          const isCompleted = normalizedOrders.completed[orderId] !== undefined;
+          const orderStatus: 'ACTIVE' | 'COMPLETED' = isCompleted ? 'COMPLETED' : 'ACTIVE';
+
+          // Extract date information from events if available
+          const extractedDates = events ? this.extractDatesFromEvents(events, orderType as 'STORAGE' | 'PRODUCTION') : {};
 
           if (orderType === 'STORAGE') {
+            // Try to get ERP Purchase Order data from ErpOrderDataService
+            // Match by workpieceType (BLUE, WHITE, RED)
+            const workpieceTypeUpper = workpieceType.toUpperCase() as 'BLUE' | 'WHITE' | 'RED';
+            const erpPurchaseData = this.erpOrderDataService.popPurchaseOrderForWorkpieceType(workpieceTypeUpper);
+            
             contexts.push({
               orderId,
               orderType: 'STORAGE',
-              purchaseOrderId: purchaseOrderId || generatePurchaseOrderId(),
-              supplierId: generateSupplierId(),
-              orderDate,
+              purchaseOrderId: purchaseOrderId || erpPurchaseData?.purchaseOrderId || generatePurchaseOrderId(),
+              supplierId: erpPurchaseData?.supplierId || generateSupplierId(),
+              orderDate: erpPurchaseData?.orderDate || orderDate, // Bestellung-Datum RAW-Material
+              rawMaterialOrderDate: erpPurchaseData?.orderDate, // Bestellung-Datum RAW-Material (explicit)
+              deliveryDate: extractedDates.deliveryDate, // Lieferung-Datum (wann angeliefert im DPS)
+              storageDate: extractedDates.storageDate, // Storage-Datum (wann im HBW eingelagert)
               fromLocation,
               toLocation,
-              startTime: 'startedAt' in order ? String(order.startedAt) : undefined,
-              endTime: 'stoppedAt' in order ? String(order.stoppedAt) : undefined,
+              startTime: 'startedAt' in order ? String(order.startedAt) : undefined, // Storage-Start
+              endTime: 'stoppedAt' in order ? String(order.stoppedAt) : undefined, // Storage-Ende
+              status: orderStatus,
             });
           } else if (orderType === 'PRODUCTION') {
+            // Try to get ERP Customer Order data from ErpOrderDataService
+            const erpCustomerData = this.erpOrderDataService.popCustomerOrder();
+            
             contexts.push({
               orderId,
               orderType: 'PRODUCTION',
-              customerOrderId: customerOrderId || generateCustomerOrderId(),
-              customerId: generateCustomerId(),
-              orderDate,
+              customerOrderId: customerOrderId || erpCustomerData?.customerOrderId || generateCustomerOrderId(),
+              customerId: erpCustomerData?.customerId || generateCustomerId(),
+              orderDate: erpCustomerData?.orderDate || orderDate, // Bestellung-Datum Customer-Order
+              customerOrderDate: erpCustomerData?.orderDate, // Bestellung-Datum Customer-Order (explicit)
+              productionStartDate: extractedDates.productionStartDate || ('startedAt' in order ? String(order.startedAt) : undefined), // Produktions-Start (Auslagerung aus HBW)
+              deliveryEndDate: extractedDates.deliveryEndDate || ('stoppedAt' in order ? String(order.stoppedAt) : undefined), // Auslieferungs-Datum (Production-Ende im DPS)
               fromLocation,
               toLocation,
-              startTime: 'startedAt' in order ? String(order.startedAt) : undefined,
-              endTime: 'stoppedAt' in order ? String(order.stoppedAt) : undefined,
+              startTime: 'startedAt' in order ? String(order.startedAt) : undefined, // Produktions-Start
+              endTime: 'stoppedAt' in order ? String(order.stoppedAt) : undefined, // Auslieferungs-Datum
+              status: orderStatus,
             });
           }
         }
@@ -887,6 +1102,11 @@ export class WorkpieceHistoryService implements OnDestroy {
       const now = new Date();
       const oneHourAgo = new Date(now.getTime() - 3600000);
 
+      // Try to get ERP data from ErpOrderDataService
+      const workpieceTypeUpper = workpieceType.toUpperCase() as 'BLUE' | 'WHITE' | 'RED';
+      const erpPurchaseData = this.erpOrderDataService.popPurchaseOrderForWorkpieceType(workpieceTypeUpper);
+      const erpCustomerData = this.erpOrderDataService.popCustomerOrder();
+
       // Determine order type based on workpiece history (will be refined by determineOrderType)
       // For now, create both contexts and let the event system determine which one to use
       // The orderId will be the real UUID from FTS state
@@ -894,17 +1114,17 @@ export class WorkpieceHistoryService implements OnDestroy {
         {
           orderId: ftsOrderId, // Use real UUID from FTS state, not generated!
           orderType: 'STORAGE',
-          purchaseOrderId: generatePurchaseOrderId(), // Fake ERP ID (only if not available from backend)
-          supplierId: generateSupplierId(), // Fake Supplier ID (only if not available from backend)
-          orderDate: oneHourAgo.toISOString(),
+          purchaseOrderId: erpPurchaseData?.purchaseOrderId || generatePurchaseOrderId(), // Use ERP data if available
+          supplierId: erpPurchaseData?.supplierId || generateSupplierId(), // Use ERP data if available
+          orderDate: erpPurchaseData?.orderDate || oneHourAgo.toISOString(),
           startTime: oneHourAgo.toISOString(),
         },
         {
           orderId: ftsOrderId, // Use real UUID from FTS state, not generated!
           orderType: 'PRODUCTION',
-          customerOrderId: generateCustomerOrderId(), // Fake ERP ID (only if not available from backend)
-          customerId: generateCustomerId(), // Fake Customer ID (only if not available from backend)
-          orderDate: now.toISOString(),
+          customerOrderId: erpCustomerData?.customerOrderId || generateCustomerOrderId(), // Use ERP data if available
+          customerId: erpCustomerData?.customerId || generateCustomerId(), // Use ERP data if available
+          orderDate: erpCustomerData?.orderDate || now.toISOString(),
           startTime: now.toISOString(),
         },
       ];

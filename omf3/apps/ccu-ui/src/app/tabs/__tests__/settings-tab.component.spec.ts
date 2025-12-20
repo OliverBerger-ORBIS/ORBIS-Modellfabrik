@@ -55,6 +55,7 @@ describe('SettingsTabComponent', () => {
     smartfactoryDashboardUrl: '/dsp-action',
     dspControlUrl: 'https://dsp.example.com',
     managementCockpitUrl: 'https://management.example.com',
+    erpSystemUrl: 'https://erp.example.com',
   };
 
   beforeEach(async () => {

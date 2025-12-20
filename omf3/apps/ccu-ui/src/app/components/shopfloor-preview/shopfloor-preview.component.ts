@@ -493,9 +493,11 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       return;
     }
 
-    // Increase canvas size by 2px to the right and bottom to make borders visible
-    const width = this.layoutConfig.metadata.canvas.width + 2;
-    const height = this.layoutConfig.metadata.canvas.height + 2;
+    // Increase canvas size by 5px on all sides to make edge effects (glow, shadows) visible
+    // This prevents clipping of highlight effects when modules are scaled and positioned near edges
+    const PADDING = 5;
+    const width = this.layoutConfig.metadata.canvas.width + (PADDING * 2);
+    const height = this.layoutConfig.metadata.canvas.height + (PADDING * 2);
 
     const moduleHighlightSet = this.buildHighlightAliasSet(this.highlightModulesOverride);
     const fixedHighlightSet = this.buildHighlightAliasSet(this.highlightFixedOverride);
@@ -504,26 +506,64 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
 
     const modules = this.layoutConfig.cells
       .filter((cell) => cell.role === 'module')
-      .map((cell) => this.createModuleRender(cell, moduleHighlightSet, currentPositionModuleSet));
+      .map((cell) => this.createModuleRender(cell, moduleHighlightSet, currentPositionModuleSet, PADDING));
 
     const fixedPositions = this.layoutConfig.cells
       .filter((cell) => cell.role === 'company' || cell.role === 'software')
-      .map((cell) => this.createFixedRender(cell, fixedHighlightSet));
+      .map((cell) => this.createFixedRender(cell, fixedHighlightSet, PADDING));
 
     const intersections = this.layoutConfig.cells
       .filter((cell) => cell.role === 'intersection')
-      .map((cell) => this.createIntersectionRender(cell));
+      .map((cell) => this.createIntersectionRender(cell, PADDING));
 
     const roads = this.showBaseRoads
       ? this.parsedRoads
-          .map((road) => this.buildRoadSegment(road))
+          .map((road) => {
+            const segment = this.buildRoadSegment(road);
+            if (!segment) return null;
+            // Offset road coordinates by padding to match module positions
+            return {
+              ...segment,
+              x1: segment.x1 + PADDING,
+              y1: segment.y1 + PADDING,
+              x2: segment.x2 + PADDING,
+              y2: segment.y2 + PADDING,
+            };
+          })
           .filter((segment): segment is RenderRoad => segment !== null)
       : [];
 
     const route = this.computeActiveRoute();
     
     // Use FTS route segments if provided (for FTS tab), otherwise use order route
-    const activeRouteSegments = this.ftsRouteSegments ?? route?.segments;
+    // Offset route segments and endpoints by padding to match module positions
+    const activeRouteSegments = this.ftsRouteSegments 
+      ? this.ftsRouteSegments.map(seg => ({
+          ...seg,
+          x1: seg.x1 + PADDING,
+          y1: seg.y1 + PADDING,
+          x2: seg.x2 + PADDING,
+          y2: seg.y2 + PADDING,
+        }))
+      : route?.segments.map(seg => ({
+          ...seg,
+          x1: seg.x1 + PADDING,
+          y1: seg.y1 + PADDING,
+          x2: seg.x2 + PADDING,
+          y2: seg.y2 + PADDING,
+        }));
+    
+    // Offset route endpoints and overlay by padding
+    const routeEndpoints = route?.endpoints.map(ep => ({
+      x: ep.x + PADDING,
+      y: ep.y + PADDING,
+    }));
+    
+    const routeOverlay = route?.overlay ? {
+      ...route.overlay,
+      x: route.overlay.x + PADDING,
+      y: route.overlay.y + PADDING,
+    } : undefined;
     
     // Compute FTS overlay if position is provided
     let ftsOverlay: RouteOverlay | undefined;
@@ -531,9 +571,10 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       const ftsIcon = this.getAssetPath('FTS');
       if (ftsIcon) {
         // Increase FTS size by 30% for stronger presence (48 * 1.3 = 62.4, rounded to 62)
+        // Offset position by padding to match module positions
         ftsOverlay = {
-          x: this.ftsPosition.x,
-          y: this.ftsPosition.y,
+          x: this.ftsPosition.x + PADDING,
+          y: this.ftsPosition.y + PADDING,
           icon: ftsIcon,
           width: 62,
           height: 62,
@@ -557,8 +598,8 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       intersections,
       roads,
       activeRouteSegments,
-      routeEndpoints: route?.endpoints,
-      routeOverlay: route?.overlay,
+      routeEndpoints,
+      routeOverlay,
       ftsOverlay,
     };
   }
@@ -594,7 +635,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     }
   }
 
-  private createModuleRender(cell: ShopfloorCellConfig, highlightAliases: Set<string>, currentPositionAliases: Set<string>): RenderModule {
+  private createModuleRender(cell: ShopfloorCellConfig, highlightAliases: Set<string>, currentPositionAliases: Set<string>, padding: number = 0): RenderModule {
     const mainSubcell = cell.subcells?.find((sub) => sub.is_main);
     const iconArea = mainSubcell
       ? {
@@ -674,27 +715,32 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       status = this.moduleStatusMap?.get(cell.id);
     }
 
+    // Offset positions by padding to account for increased canvas size
     return {
       id: cell.id,
       label,
-      top: cell.position.y,
-      left: cell.position.x,
+      top: cell.position.y + padding,
+      left: cell.position.x + padding,
       width: cell.size.w,
       height: cell.size.h,
       icon,
       iconWidth,
       iconHeight,
-      iconTop,
-      iconLeft,
+      iconTop: iconTop + padding,
+      iconLeft: iconLeft + padding,
       highlighted,
       isCurrentPosition,
       showLabel: cell.show_name !== false,
-      attachments,
+      attachments: attachments.map(att => ({
+        ...att,
+        top: att.top + padding,
+        left: att.left + padding,
+      })),
       status, // Include status for overlays and highlighting
     };
   }
 
-  private createFixedRender(cell: ShopfloorCellConfig, highlightAliases: Set<string>): RenderFixed {
+  private createFixedRender(cell: ShopfloorCellConfig, highlightAliases: Set<string>, padding: number = 0): RenderFixed {
     const iconKey = cell.icon ?? cell.name ?? cell.id;
     const icon = this.getAssetPath(iconKey);
     const highlightCandidates = [cell.id, cell.name ?? '', iconKey];
@@ -720,8 +766,8 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     return {
       id: cell.id,
       label: cell.name ?? cell.id,
-      top: cell.position.y,
-      left: cell.position.x,
+      top: cell.position.y + padding,
+      left: cell.position.x + padding,
       width: cell.size.w,
       height: cell.size.h,
       background: cell.background_color,
@@ -734,12 +780,12 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     };
   }
 
-  private createIntersectionRender(cell: ShopfloorCellConfig): RenderIntersection {
+  private createIntersectionRender(cell: ShopfloorCellConfig, padding: number = 0): RenderIntersection {
     const iconScale = this.getRoleScale('intersection');
     return {
       id: cell.id,
-      top: cell.position.y,
-      left: cell.position.x,
+      top: cell.position.y + padding,
+      left: cell.position.x + padding,
       width: cell.size.w,
       height: cell.size.h,
       icon: this.getAssetPath(cell.icon ?? cell.name ?? cell.id),

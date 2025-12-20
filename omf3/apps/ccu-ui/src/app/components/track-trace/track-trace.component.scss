@@ -579,6 +579,14 @@
     // Order Context Column
     .order-context-column {
       .order-context {
+        .status-active {
+          color: var(--status-success-strong);
+          font-weight: 600;
+        }
+        .status-completed {
+          color: var(--orbis-grey-strong);
+          font-weight: 600;
+        }
         margin-bottom: 0;
 
         .order-context-title {

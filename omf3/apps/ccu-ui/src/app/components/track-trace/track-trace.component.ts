@@ -83,7 +83,7 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     return type.toLowerCase();
   }
 
-  getEventIcon(eventType: string): string {
+  getEventIcon(eventType: string, event?: TrackTraceEvent): string {
     // Return SVG path instead of emoji
     switch (eventType.toUpperCase()) {
       case 'DOCK':
@@ -93,7 +93,13 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
       case 'DROP':
         return ICONS.shopfloor.shared.dropEvent;
       case 'TURN':
-        return ICONS.shopfloor.shared.turnEvent;
+        // Check for TURN LEFT or TURN RIGHT direction
+        if (event?.details && 'direction' in event.details) {
+          const dir = String(event.details['direction']).toUpperCase();
+          if (dir === 'LEFT') return ICONS.shopfloor.shared.turnLeftEvent;
+          if (dir === 'RIGHT') return ICONS.shopfloor.shared.turnRightEvent;
+        }
+        return ICONS.shopfloor.shared.turnEvent; // Fallback to generic turn icon
       case 'PASS':
         return ICONS.shopfloor.shared.passEvent;
       case 'TRANSPORT':
@@ -103,6 +109,15 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
       default:
         return ICONS.shopfloor.shared.locationMarker;
     }
+  }
+  
+  getEventLabel(eventType: string, event?: TrackTraceEvent): string {
+    if (eventType.toUpperCase() === 'TURN' && event?.details && 'direction' in event.details) {
+      const dir = String(event.details['direction']).toUpperCase();
+      if (dir === 'LEFT') return $localize`:@@ftsActionTurnLeft:TURN LEFT`;
+      if (dir === 'RIGHT') return $localize`:@@ftsActionTurnRight:TURN RIGHT`;
+    }
+    return eventType;
   }
 
   getOrderTypeIcon(orderType: string | undefined): string {

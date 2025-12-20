@@ -5,6 +5,7 @@ import { DspAnimationComponent } from '../../../../components/dsp-animation/dsp-
 import { ExternalLinksService } from '../../../../services/external-links.service';
 import { LanguageService } from '../../../../services/language.service';
 import { FMF_CONFIG } from '../../../../components/dsp-animation/configs/fmf/fmf-config';
+import { map } from 'rxjs/operators';
 
 /**
  * DSP Architecture Functional Section Component
@@ -34,6 +35,11 @@ export class DspArchitectureFunctionalSectionComponent {
     private readonly languageService: LanguageService
   ) {}
 
+  private getErpUrl(): string {
+    // Task 12: Use ERP URL from settings, fallback to 'process' for internal route
+    return this.externalLinksService.current.erpSystemUrl || 'process';
+  }
+
   onActionTriggered(event: { id: string; url: string }): void {
     if (!event.url) {
       return;
@@ -56,7 +62,7 @@ export class DspArchitectureFunctionalSectionComponent {
       return;
     }
 
-    // Handle shopfloor devices - navigate to module page with device ID
+    // Task 11: Handle shopfloor devices - navigate to module page with device ID
     if (event.id.startsWith('sf-device-')) {
       // Extract module type from device ID (e.g., 'sf-device-mill' -> 'MILL')
       const moduleType = event.id.replace('sf-device-', '').toUpperCase();
@@ -65,6 +71,27 @@ export class DspArchitectureFunctionalSectionComponent {
         queryParams: { module: moduleType },
         fragment: moduleType 
       });
+      return;
+    }
+
+    // Task 10: Handle AGV/FTS systems - navigate to AGV-Tab
+    if (event.id.startsWith('sf-system-') && (event.url === 'fts' || event.id.includes('fts') || event.id.includes('agv'))) {
+      const fullPath = `/${locale}/fts`;
+      this.router.navigateByUrl(fullPath);
+      return;
+    }
+
+    // Task 12: Handle BP-ERP - navigate to Process-Tab or external ERP/SAP URL
+    if (event.id === 'bp-erp') {
+      const erpUrl = this.getErpUrl();
+      // Check if it's an external URL (http/https)
+      if (erpUrl.startsWith('http://') || erpUrl.startsWith('https://')) {
+        window.open(erpUrl, '_blank', 'noreferrer noopener');
+        return;
+      }
+      // Internal route - navigate to Process-Tab
+      const fullPath = `/${locale}/${erpUrl}`;
+      this.router.navigateByUrl(fullPath);
       return;
     }
 
