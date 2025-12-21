@@ -15,19 +15,25 @@ Eine Kundenkonfiguration besteht aus:
 Erstellen Sie ein neues Verzeichnis für den Kunden:
 
 ```bash
-mkdir -p omf3/apps/ccu-ui/src/app/components/dsp-animation/configs/<customer-id>
-mkdir -p omf3/apps/ccu-ui/src/app/pages/dsp/customer/<customer-id>
+mkdir -p osf/apps/osf-ui/src/app/components/dsp-animation/configs/<customer-id>
+mkdir -p osf/apps/osf-ui/src/app/pages/dsp/customer/<customer-id>
 ```
 
 **Beispiel:**
 ```bash
-mkdir -p omf3/apps/ccu-ui/src/app/components/dsp-animation/configs/acme
-mkdir -p omf3/apps/ccu-ui/src/app/pages/dsp/customer/acme
+mkdir -p osf/apps/osf-ui/src/app/components/dsp-animation/configs/acme
+mkdir -p osf/apps/osf-ui/src/app/pages/dsp/customer/acme
 ```
 
 ## Schritt 2: Konfigurationsdatei erstellen
 
-Erstellen Sie die Konfigurationsdatei `omf3/apps/ccu-ui/src/app/components/dsp-animation/configs/<customer-id>/<customer-id>-config.ts`:
+**WICHTIG - Template verwenden:**
+- Verwenden Sie **FMF_CONFIG** (`fmf-config.ts`) als Template für neue Customer-Configs
+- Die Default-Config ist nur ein Fallback für Tests/Entwicklung, nicht für neue Customers
+
+Erstellen Sie die Konfigurationsdatei `osf/apps/osf-ui/src/app/components/dsp-animation/configs/<customer-id>/<customer-id>-config.ts`:
+
+**Tipp:** Kopieren Sie `fmf-config.ts` als Basis und passen Sie die Werte an.
 
 **WICHTIG - SVG-Nomenklatur:**
 - **Devices:** Alle Device-SVGs müssen `*-station.svg` heißen (z.B. `drill-station.svg`, `mill-station.svg`)
@@ -45,32 +51,29 @@ export const ACME_CONFIG: CustomerDspConfig = {
   customerKey: 'acme',
   customerName: 'ACME Corporation',
   
-  // Shopfloor devices - Liste der Geräte
+  // Shopfloor devices - Liste der Devices mit semantischen IDs
   sfDevices: [
     {
-      id: 'sf-device-1',  // Abstract ID (sf-device-1 bis sf-device-5)
+      id: 'sf-device-cnc',  // Semantische ID: Der Teil nach "sf-device-" wird für das SVG verwendet
       label: $localize`:@@deviceCNC:CNC / Station`,  // I18n-Label mit Umbruch-Hinweis " / "
-      iconKey: 'cnc',  // Generic Icon Key (siehe types.ts)
-      customIconPath: 'device-cnc',  // Optional: Spezifischer Icon-Pfad
+      iconKey: 'cnc-station',  // Entspricht cnc-station.svg im Ordner shopfloor/stations/
     },
     {
-      id: 'sf-device-2',
+      id: 'sf-device-laser',
       label: $localize`:@@deviceLaser:Laser / Station`,
-      iconKey: 'laser',
-      customIconPath: 'device-laser',
+      iconKey: 'laser-station',  // Entspricht laser-station.svg
     },
-    // ... weitere Devices
+    // ... weitere Devices (z.B. sf-device-mill → iconKey: 'mill-station')
   ],
   
-  // Shopfloor systems - Liste der Systeme
+  // Shopfloor systems - Liste der Systeme mit semantischen IDs
   sfSystems: [
     {
-      id: 'sf-system-1',  // Abstract ID (sf-system-1 bis sf-system-4)
+      id: 'sf-system-scada',  // Semantische ID: Der Teil nach "sf-system-" wird für das SVG verwendet
       label: $localize`:@@dspArchLabelScada:SCADA / System`,
-      iconKey: 'scada',  // Generic Icon Key
-      customIconPath: 'shopfloor-scada',  // Optional: Spezifischer Icon-Pfad
+      iconKey: 'scada-system',  // Entspricht scada-system.svg im Ordner shopfloor/systems/
     },
-    // ... weitere Systems
+    // ... weitere Systems (z.B. sf-system-warehouse → iconKey: 'warehouse-system')
   ],
   
   // Business processes - Liste der Geschäftsprozesse
@@ -155,6 +158,8 @@ export const ACME_CONFIG: CustomerDspConfig = {
 - `mes` - MES Applications
 - `cloud` - Cloud Applications
 - `analytics` - Analytics Applications
+- `scm` - SCM Applications (Supply Chain Management)
+- `crm` - CRM Applications (Customer Relationship Management)
 
 **Brand Logos:**
 - `sap` - SAP Logo
@@ -175,7 +180,7 @@ export const ACME_CONFIG: CustomerDspConfig = {
 
 Fügen Sie die Übersetzungen zu allen I18n-Dateien hinzu:
 
-**Deutsch (`omf3/apps/ccu-ui/src/locale/messages.de.json`):**
+**Deutsch (`osf/apps/osf-ui/src/locale/messages.de.json`):**
 ```json
 {
   "locale": "de",
@@ -188,7 +193,7 @@ Fügen Sie die Übersetzungen zu allen I18n-Dateien hinzu:
 }
 ```
 
-**Französisch (`omf3/apps/ccu-ui/src/locale/messages.fr.json`):**
+**Französisch (`osf/apps/osf-ui/src/locale/messages.fr.json`):**
 ```json
 {
   "locale": "fr",
@@ -201,11 +206,11 @@ Fügen Sie die Übersetzungen zu allen I18n-Dateien hinzu:
 }
 ```
 
-**Wichtig:** Aktualisieren Sie auch die Dateien in `omf3/apps/ccu-ui/public/locale/`!
+**Wichtig:** Aktualisieren Sie auch die Dateien in `osf/apps/osf-ui/public/locale/`!
 
 ## Schritt 4: Customer Page Component erstellen
 
-Erstellen Sie die Page Component `omf3/apps/ccu-ui/src/app/pages/dsp/customer/<customer-id>/<customer-id>-dsp-page.component.ts`:
+Erstellen Sie die Page Component `osf/apps/osf-ui/src/app/pages/dsp/customer/<customer-id>/<customer-id>-dsp-page.component.ts`:
 
 ```typescript
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
@@ -264,7 +269,7 @@ export class AcmeDspPageComponent {
 
 ## Schritt 5: Route hinzufügen
 
-Fügen Sie die Route zu `omf3/apps/ccu-ui/src/app/app.routes.ts` hinzu:
+Fügen Sie die Route zu `osf/apps/osf-ui/src/app/app.routes.ts` hinzu:
 
 ```typescript
 {
@@ -312,7 +317,7 @@ describe('AcmeDspPageComponent', () => {
 
 Wenn Sie ein Kundenlogo verwenden möchten:
 
-1. Erstellen Sie das Verzeichnis: `omf3/apps/ccu-ui/src/assets/customers/<customer-id>/`
+1. Erstellen Sie das Verzeichnis: `osf/apps/osf-ui/src/assets/customers/<customer-id>/`
 2. Legen Sie das Logo als `logo.svg` ab
 3. Setzen Sie `customerLogoPath: 'assets/customers/<customer-id>/logo.svg'` in der Config
 
@@ -331,17 +336,19 @@ http://localhost:4200/dsp/customer/<customer-id>
 
 ## Container ID Strategie
 
-### Abstract IDs (empfohlen)
+### Semantische IDs (empfohlen)
 
-Verwenden Sie abstract IDs für Devices und Systems, um Flexibilität zu gewährleisten:
+Verwenden Sie semantische IDs für Devices und Systems. Die ID bestimmt den SVG-Dateinamen:
 
-- **Devices**: `sf-device-1`, `sf-device-2`, ..., `sf-device-5`
-- **Systems**: `sf-system-1`, `sf-system-2`, ..., `sf-system-4`
+- **Devices**: `sf-device-xyz` → `iconKey: 'xyz-station'` → `xyz-station.svg` (im Ordner `shopfloor/stations/`)
+- **Systems**: `sf-system-xyz` → `iconKey: 'xyz-system'` → `xyz-system.svg` (im Ordner `shopfloor/systems/`)
+
+Falls das entsprechende SVG nicht existiert, wird automatisch ein Fallback verwendet (z.B. `any-system.svg` für Systems, `any-station.svg` für Devices).
 
 ### Konkrete IDs (nur wenn nötig)
 
 Für Business Processes verwenden Sie konkrete IDs:
-- `bp-erp`, `bp-mes`, `bp-analytics`, `bp-data-lake`, `bp-cloud`
+- `bp-erp`, `bp-mes`, `bp-cloud`, `bp-analytics`, `bp-data-lake`, `bp-scm`, `bp-crm`
 
 ## Best Practices
 
@@ -350,6 +357,7 @@ Für Business Processes verwenden Sie konkrete IDs:
 3. **Tests**: Erstellen Sie Tests für die Config und die Component
 4. **Dokumentation**: Aktualisieren Sie `README.md` mit dem neuen Kunden
 5. **Konsistenz**: Folgen Sie den bestehenden Beispielen (FMF, ECME)
+6. **Template**: Verwenden Sie FMF_CONFIG als Template (nicht die Default-Config)
 
 ## Troubleshooting
 

@@ -5,15 +5,21 @@
 
 /**
  * Generic icon keys for reusable assets across all customers
+ * Keys follow the pattern: <name>-station.svg (devices), <name>-system.svg (systems), <name>-application.svg (business)
  */
 export type GenericIconKey = 
-  // Devices
+  // Devices (legacy keys without -station suffix, kept for backward compatibility)
   | 'drill' | 'mill' | 'oven' | 'laser' | 'cnc' | 'printer-3d' 
   | 'robot-arm' | 'conveyor' | 'warehouse' | 'agv' | 'hbw'
   | 'hydraulic' | 'weight'
-  // Systems
+  // Devices (new semantic keys with -station suffix)
+  | 'cnc-station' | 'hydraulic-station' | 'printer-3d-station' | 'weight-station' | 'laser-station'
+  // Systems (legacy keys without -system suffix, kept for backward compatibility)
   | 'warehouse-system' | 'erp' | 'mes' | 'cloud' | 'analytics'
   | 'scada' | 'industrial-process' | 'cargo' | 'pump'
+  // Systems (new semantic keys with -system suffix)
+  | 'scada-system' | 'industrial-process-system' | 'cargo-system' | 'pump-system'
+  | 'any-system' | 'agv-system'
   // Brands
   | 'sap' | 'alpha-x' | 'aws' | 'azure' | 'powerbi' | 'grafana';
 

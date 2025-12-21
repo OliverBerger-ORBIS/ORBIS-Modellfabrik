@@ -1334,7 +1334,11 @@ export function createCustomerContainers(customerConfig?: CustomerDspConfig): Co
         iconKey = 'shopfloor-warehouse' as IconKey; // Warehouse System → warehouse-system.svg
       } else if (system.iconKey === 'agv') {
         iconKey = 'shopfloor-fts' as IconKey; // Fallback: iconKey 'agv'
+      } else if (system.iconKey.endsWith('-system')) {
+        // New semantic key format: use directly (e.g., 'scada-system' -> 'scada-system')
+        iconKey = system.iconKey as IconKey;
       } else {
+        // Legacy format: add generic-system- prefix (e.g., 'scada' -> 'generic-system-scada')
         iconKey = `generic-system-${system.iconKey}` as IconKey;
       }
     }
@@ -1392,9 +1396,16 @@ export function createCustomerContainers(customerConfig?: CustomerDspConfig): Co
 
   // Create device containers based on customer config
   customerConfig.sfDevices.forEach((device, index) => {
-    const iconKey = device.customIconPath 
-      ? (device.customIconPath as IconKey)
-      : (`generic-device-${device.iconKey}` as IconKey);
+    let iconKey: IconKey;
+    if (device.customIconPath) {
+      iconKey = device.customIconPath as IconKey;
+    } else if (device.iconKey.endsWith('-station')) {
+      // New semantic key format: use directly (e.g., 'cnc-station' -> 'cnc-station')
+      iconKey = device.iconKey as IconKey;
+    } else {
+      // Legacy format: add generic-device- prefix (e.g., 'cnc' -> 'generic-device-cnc')
+      iconKey = `generic-device-${device.iconKey}` as IconKey;
+    }
     
     // Task 11: Extract module type from device ID (e.g., 'sf-device-mill' -> 'MILL')
     // URL will be handled in onActionTriggered to add query parameter

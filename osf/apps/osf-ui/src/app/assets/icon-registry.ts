@@ -91,7 +91,12 @@ export type IconKey =
   | 'generic-system-cloud' | 'generic-system-analytics'
   // Generic brand icons
   | 'generic-brand-sap' | 'generic-brand-alpha-x' | 'generic-brand-aws'
-  | 'generic-brand-azure' | 'generic-brand-powerbi' | 'generic-brand-grafana';
+  | 'generic-brand-azure' | 'generic-brand-powerbi' | 'generic-brand-grafana'
+  // New semantic keys with -station suffix (devices)
+  | 'cnc-station' | 'hydraulic-station' | 'printer-3d-station' | 'weight-station' | 'laser-station'
+  // New semantic keys with -system suffix (systems)
+  | 'scada-system' | 'industrial-process-system' | 'cargo-system' | 'pump-system'
+  | 'any-system' | 'agv-system';
 
 export interface FunctionIconConfig {
   iconKey: IconKey;
@@ -216,6 +221,21 @@ export const ICON_MAP: Record<IconKey, string> = {
   'generic-brand-azure': 'assets/svg/brand/azure-logo.svg',
   'generic-brand-powerbi': 'assets/svg/brand/azure-logo.svg', // Using Azure as fallback for PowerBI (not available)
   'generic-brand-grafana': 'assets/svg/brand/grafana-logo.svg',
+  
+  // New semantic keys with -station suffix (devices) - direct mapping to SVG files
+  'cnc-station': 'assets/svg/shopfloor/stations/cnc-station.svg',
+  'hydraulic-station': 'assets/svg/shopfloor/stations/hydraulic-station.svg',
+  'printer-3d-station': 'assets/svg/shopfloor/stations/printer-3d-station.svg',
+  'weight-station': 'assets/svg/shopfloor/stations/weight-station.svg',
+  'laser-station': 'assets/svg/shopfloor/stations/laser-station.svg',
+  
+  // New semantic keys with -system suffix (systems) - direct mapping to SVG files
+  'scada-system': 'assets/svg/shopfloor/systems/scada-system.svg',
+  'industrial-process-system': 'assets/svg/shopfloor/systems/industrial-process-system.svg',
+  'cargo-system': 'assets/svg/shopfloor/systems/cargo-system.svg',
+  'pump-system': 'assets/svg/shopfloor/systems/pump-system.svg',
+  'any-system': 'assets/svg/shopfloor/systems/any-system.svg',
+  'agv-system': 'assets/svg/shopfloor/systems/agv-system.svg',
 };
 
 export function getIconPath(key: IconKey | undefined | null): string {

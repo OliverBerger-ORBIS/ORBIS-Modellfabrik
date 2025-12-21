@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" style="background: #f5f5f5;">
+  <!-- DSP Layer Background -->
+  <rect x="0" y="0" width="1200" height="480" fill="rgba(207, 230, 255, 0.5)" stroke="rgba(22, 65, 148, 0.15)" stroke-width="1"/>
+  <text x="20" y="20" font-family="Arial, sans-serif" font-size="18" fill="#163494" font-weight="600">DSP Layer (layer-dsp)</text>
+  
+  <!-- dsp-edge Container -->
+  <rect x="325" y="40" width="480" height="400" fill="rgba(255, 255, 255, 0.95)" stroke="#163494" stroke-width="2" rx="8"/>
+  
+  <!-- Center Icon placeholder (logo-edge) -->
+  <circle cx="565" cy="240" r="42" fill="none" stroke="#163494" stroke-width="1" stroke-dasharray="4 4"/>
+  <text x="565" y="245" font-family="Arial, sans-serif" font-size="10" fill="#999" text-anchor="middle">logo-edge</text>
+  
+  <!-- Edge Function Icons (9 icons in circle, startDeg=90°, spanDeg=360°) -->
+  <g id="edge-functions">
+    <!-- edge-interoperability (90.0°) -->
+    <circle cx="565" cy="400" r="36" fill="#ffffff" stroke="#163494" stroke-width="1"/>
+    <text x="565" y="400" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="565" dy="-0.6em">edge</tspan><tspan x="565" dy="1.2em">-interoperability</tspan></text>
+    
+    <!-- edge-network (130.0°) -->
+    <circle cx="462.1539824501537" cy="362.5671108990365" r="36" fill="#ffffff" stroke="#163494" stroke-width="1"/>
+    <text x="462.1539824501537" y="362.5671108990365" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="462.1539824501537" dy="-0.6em">edge</tspan><tspan x="462.1539824501537" dy="1.2em">-network</tspan></text>
+    
+    <!-- edge-event-driven (170.0°) -->
+    <circle cx="407.4307595180467" cy="267.78370842670887" r="36" fill="#ffffff" stroke="#163494" stroke-width="1"/>
+    <text x="407.4307595180467" y="267.78370842670887" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="407.4307595180467" dy="-0.6em">edge</tspan><tspan x="407.4307595180467" dy="1.2em">-event-driven</tspan></text>
+    
+    <!-- edge-choreography (210.0°) -->
+    <circle cx="426.43593539448983" cy="160" r="36" fill="#ffffff" stroke="#163494" stroke-width="1"/>
+    <text x="426.43593539448983" y="160" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="426.43593539448983" dy="-0.6em">edge</tspan><tspan x="426.43593539448983" dy="1.2em">-choreography</tspan></text>
+    
+    <!-- edge-digital-twin (250.0°) -->
+    <circle cx="510.2767770678929" cy="89.6491806742547" r="36" fill="#ffffff" stroke="#163494" stroke-width="1"/>
+    <text x="510.2767770678929" y="89.6491806742547" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="510.2767770678929" dy="-0.6em">edge</tspan><tspan x="510.2767770678929" dy="1.2em">-digital-twin</tspan></text>
+    
+    <!-- edge-best-of-breed (290.0°) -->
+    <circle cx="619.7232229321069" cy="89.64918067425464" r="36" fill="#ffffff" stroke="#163494" stroke-width="1"/>
+    <text x="619.7232229321069" y="89.64918067425464" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="619.7232229321069" dy="-0.6em">edge</tspan><tspan x="619.7232229321069" dy="1.2em">-best-of-breed</tspan></text>
+    
+    <!-- edge-analytics (330.0°) -->
+    <circle cx="703.5640646055101" cy="159.99999999999994" r="36" fill="#ffffff" stroke="#163494" stroke-width="1"/>
+    <text x="703.5640646055101" y="159.99999999999994" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="703.5640646055101" dy="-0.6em">edge</tspan><tspan x="703.5640646055101" dy="1.2em">-analytics</tspan></text>
+    
+    <!-- edge-ai-enablement (370.0°) -->
+    <circle cx="722.5692404819533" cy="267.7837084267088" r="36" fill="#ffffff" stroke="#163494" stroke-width="1"/>
+    <text x="722.5692404819533" y="267.7837084267088" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="722.5692404819533" dy="-0.6em">edge</tspan><tspan x="722.5692404819533" dy="1.2em">-ai-enablement</tspan></text>
+    
+    <!-- edge-autonomous-enterprise (410.0°) -->
+    <circle cx="667.8460175498464" cy="362.56711089903644" r="36" fill="#ffffff" stroke="#163494" stroke-width="1"/>
+    <text x="667.8460175498464" y="362.56711089903644" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="667.8460175498464" dy="-0.6em">edge</tspan><tspan x="667.8460175498464" dy="1.2em">-autonomous-enterprise</tspan></text>
+    
+  </g>
+  
+  <!-- dsp-mc Container -->
+  <rect x="855" y="40" width="315" height="400" fill="rgba(255, 255, 255, 0.95)" stroke="#163494" stroke-width="2" rx="8"/>
+  
+  <!-- Center Icon placeholder (logo-mc) -->
+  <circle cx="1012.5" cy="240" r="42" fill="none" stroke="#163494" stroke-width="1" stroke-dasharray="4 4"/>
+  <text x="1012.5" y="245" font-family="Arial, sans-serif" font-size="10" fill="#999" text-anchor="middle">logo-mc</text>
+  
+  <!-- MC Function Icons (3 icons in arc, right side, startDeg=300°, spanDeg=120°) -->
+  <g id="mc-functions">
+    <!-- mc-hierarchical-structure (300.0°) -->
+    <circle cx="1068.5" cy="143.0051547761429" r="36" fill="#ffffff" stroke="#163494" stroke-width="1"/>
+    <text x="1068.5" y="143.0051547761429" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="1068.5" dy="-0.6em">mc</tspan><tspan x="1068.5" dy="1.2em">-hierarchical-structure</tspan></text>
+    
+    <!-- mc-orchestration (360.0°) -->
+    <circle cx="1124.5" cy="239.99999999999997" r="36" fill="#ffffff" stroke="#163494" stroke-width="1"/>
+    <text x="1124.5" y="239.99999999999997" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="1124.5" dy="-0.6em">mc</tspan><tspan x="1124.5" dy="1.2em">-orchestration</tspan></text>
+    
+    <!-- mc-governance (420.0°) -->
+    <circle cx="1068.5" cy="336.99484522385717" r="36" fill="#ffffff" stroke="#163494" stroke-width="1"/>
+    <text x="1068.5" y="336.99484522385717" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="1068.5" dy="-0.6em">mc</tspan><tspan x="1068.5" dy="1.2em">-governance</tspan></text>
+    
+  </g>
+  
+  <!-- Edge Instance Icons (3 icons in arc, left side, startDeg=120°, spanDeg=120°) -->
+  <g id="edge-instances">
+    <!-- logo-edge-a (120.0°) -->
+    <circle cx="956.5" cy="336.99484522385717" r="36" fill="#ffffff" stroke="#163494" stroke-width="1"/>
+    <text x="956.5" y="336.99484522385717" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="956.5" dy="-0.6em">logo</tspan><tspan x="956.5" dy="1.2em">-edge-a</tspan></text>
+    
+    <!-- logo-edge-b (180.0°) -->
+    <circle cx="900.5" cy="240" r="36" fill="#ffffff" stroke="#163494" stroke-width="1"/>
+    <text x="900.5" y="240" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="900.5" dy="-0.6em">logo</tspan><tspan x="900.5" dy="1.2em">-edge-b</tspan></text>
+    
+    <!-- logo-edge-c (240.0°) -->
+    <circle cx="956.5" cy="143.0051547761429" r="36" fill="#ffffff" stroke="#163494" stroke-width="1"/>
+    <text x="956.5" y="143.0051547761429" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="956.5" dy="-0.6em">logo</tspan><tspan x="956.5" dy="1.2em">-edge-c</tspan></text>
+    
+  </g>
+</svg>

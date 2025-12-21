@@ -141,7 +141,7 @@ describe('Customer Configuration Types', () => {
           { id: 'sf-device-1', label: 'Device 1', iconKey: 'mill' },
         ],
         sfSystems: [
-          { id: 'sf-system-1', label: 'System 1', iconKey: 'mes' },
+          { id: 'sf-system-any', label: 'System 1', iconKey: 'any-system' },
         ],
         bpProcesses: [
           { id: 'bp-1', label: 'Process 1', iconKey: 'erp', brandLogoKey: 'sap' },
@@ -189,8 +189,8 @@ describe('Customer Configuration Types', () => {
           { id: 'sf-device-3', label: 'Device 3', iconKey: 'oven' },
         ],
         sfSystems: [
-          { id: 'sf-system-1', label: 'System 1', iconKey: 'warehouse-system' },
-          { id: 'sf-system-2', label: 'System 2', iconKey: 'mes' },
+          { id: 'sf-system-any', label: 'System 1', iconKey: 'any-system' },
+          { id: 'sf-system-fts', label: 'System 2', iconKey: 'agv-system' },
         ],
         bpProcesses: [
           { id: 'bp-1', label: 'Process 1', iconKey: 'erp', brandLogoKey: 'sap' },

@@ -158,7 +158,7 @@ describe('DspAnimationComponent - Label Wrapping', () => {
 
     describe('System labels with break hints', () => {
       it('should wrap SCADA System label correctly', () => {
-        const container = createContainer('sf-system-1', 'SCADA / System', 60, 12);
+        const container = createContainer('sf-system-scada', 'SCADA / System', 60, 12);
         component['containers'] = [container];
         const lines = (component as any).getWrappedLabelLines(container);
         expect(lines.length).toBeGreaterThanOrEqual(1);
@@ -170,7 +170,7 @@ describe('DspAnimationComponent - Label Wrapping', () => {
 
       it('should wrap Industrial Process System label correctly', () => {
         const container = createContainer(
-          'sf-system-2',
+          'sf-system-industrial-process',
           'Industrial Process / System',
           60,
           12
@@ -182,7 +182,7 @@ describe('DspAnimationComponent - Label Wrapping', () => {
       });
 
       it('should wrap Cargo System label correctly', () => {
-        const container = createContainer('sf-system-3', 'Cargo / System', 60, 12);
+        const container = createContainer('sf-system-cargo', 'Cargo / System', 60, 12);
         component['containers'] = [container];
         const lines = (component as any).getWrappedLabelLines(container);
         expect(lines.length).toBeGreaterThanOrEqual(1);
@@ -193,7 +193,7 @@ describe('DspAnimationComponent - Label Wrapping', () => {
       });
 
       it('should wrap Pump System label correctly', () => {
-        const container = createContainer('sf-system-4', 'Pump / System', 60, 12);
+        const container = createContainer('sf-system-pump', 'Pump / System', 60, 12);
         component['containers'] = [container];
         const lines = (component as any).getWrappedLabelLines(container);
         expect(lines.length).toBeGreaterThanOrEqual(1);

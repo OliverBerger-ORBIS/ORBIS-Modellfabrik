@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1140" style="background: #f5f5f5;">
+  <!-- Layer Backgrounds -->
+  <!-- Business Process Layer (white) -->
+  <rect x="0" y="80" width="1200" height="260" fill="#ffffff" stroke="rgba(22, 65, 148, 0.1)" stroke-width="1"/>
+  <text x="20" y="100" font-family="Arial, sans-serif" font-size="18" fill="#163494" font-weight="600">Business Process Layer (layer-bp)</text>
+  
+  <!-- DSP Layer (blue) -->
+  <rect x="0" y="340" width="1200" height="540" fill="rgba(207, 230, 255, 0.5)" stroke="rgba(22, 65, 148, 0.15)" stroke-width="1"/>
+  <text x="20" y="360" font-family="Arial, sans-serif" font-size="18" fill="#163494" font-weight="600">DSP Layer (layer-dsp)</text>
+  
+  <!-- Shopfloor Layer (gray) -->
+  <rect x="0" y="880" width="1200" height="260" fill="rgba(241, 243, 247, 0.8)" stroke="rgba(31, 54, 91, 0.12)" stroke-width="1"/>
+  <text x="20" y="900" font-family="Arial, sans-serif" font-size="18" fill="#163494" font-weight="600">Shopfloor Layer (layer-sf)</text>
+  
+  <!-- Business Process Containers -->
+  <g id="business-layer">
+    <!-- bp-erp -->
+    <rect x="100" y="145" width="190" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="8"/>
+    <text x="195" y="215" font-family="Arial, sans-serif" font-size="22.400000000000002" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="195" dy="0">bp-erp</tspan><tspan x="195" dy="1.2em" font-size="13" fill="#666">(erp-application)</tspan></text>
+    
+    <!-- bp-mes -->
+    <rect x="320" y="145" width="190" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="8"/>
+    <text x="415" y="215" font-family="Arial, sans-serif" font-size="22.400000000000002" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="415" dy="0">bp-mes</tspan><tspan x="415" dy="1.2em" font-size="13" fill="#666">(mes-application)</tspan></text>
+    
+    <!-- bp-cloud -->
+    <rect x="540" y="145" width="190" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="8"/>
+    <text x="635" y="215" font-family="Arial, sans-serif" font-size="22.400000000000002" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="635" dy="0">bp-cloud</tspan><tspan x="635" dy="1.2em" font-size="13" fill="#666">(cloud-application)</tspan></text>
+    
+    <!-- bp-analytics -->
+    <rect x="760" y="145" width="190" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="8"/>
+    <text x="855" y="215" font-family="Arial, sans-serif" font-size="22.400000000000002" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="855" dy="0">bp-analytics</tspan><tspan x="855" dy="1.2em" font-size="13" fill="#666">(analytics-application)</tspan></text>
+    
+    <!-- bp-data-lake -->
+    <rect x="980" y="145" width="190" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="8"/>
+    <text x="1075" y="215" font-family="Arial, sans-serif" font-size="22.400000000000002" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="1075" dy="0">bp-data-lake</tspan><tspan x="1075" dy="1.2em" font-size="13" fill="#666">(data-lake-application)</tspan></text>
+    
+  </g>
+  
+  <!-- DSP Layer Containers -->
+  <g id="dsp-layer">
+    <!-- dsp-ux -->
+    <rect x="100" y="480" width="175" height="260" fill="rgba(255, 255, 255, 0.95)" stroke="#163494" stroke-width="2" rx="8"/>
+    <text x="187.5" y="516" font-family="Arial, sans-serif" font-size="25.6" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="187.5" dy="0">dsp-ux</tspan><tspan x="187.5" dy="1.2em" font-size="15" fill="#666">(dsp-ux-box)</tspan></text>
+    
+    <!-- dsp-edge -->
+    <rect x="325" y="410" width="480" height="400" fill="rgba(255, 255, 255, 0.95)" stroke="#163494" stroke-width="2" rx="8"/>
+    <text x="565" y="446" font-family="Arial, sans-serif" font-size="25.6" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="565" dy="0">dsp-edge</tspan><tspan x="565" dy="1.2em" font-size="15" fill="#666">(dsp-edge-box)</tspan></text>
+    
+    <!-- dsp-mc -->
+    <rect x="855" y="410" width="315" height="400" fill="rgba(255, 255, 255, 0.95)" stroke="#163494" stroke-width="2" rx="8"/>
+    <text x="1012.5" y="446" font-family="Arial, sans-serif" font-size="25.6" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="1012.5" dy="0">dsp-mc</tspan><tspan x="1012.5" dy="1.2em" font-size="15" fill="#666">(dsp-mc-box)</tspan></text>
+    
+  </g>
+  
+  <!-- Shopfloor Layer -->
+  <g id="shopfloor-layer">
+    <!-- Systems Group -->
+    <rect x="100" y="927.5" width="402.4" height="165" fill="#ffffff" stroke="rgba(0, 0, 0, 0.08)" stroke-width="1" rx="16"/>
+    <text x="301.2" y="1082.5" font-family="Arial, sans-serif" font-size="28" fill="#163494" text-anchor="middle" font-weight="600">sf-systems-group</text>
+    
+    <!-- sf-system-any -->
+    <rect x="120" y="937.5" width="83.1" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="161.55" y="997.5" font-family="Arial, sans-serif" font-size="16" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="161.55" dy="-0.6em">sf-system</tspan><tspan x="161.55" dy="1.2em">-any</tspan><tspan x="161.55" dy="1.2em" font-size="10" fill="#666">(any-system)</tspan></text>
+    
+    <!-- sf-system-fts -->
+    <rect x="213.1" y="937.5" width="83.1" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="254.64999999999998" y="997.5" font-family="Arial, sans-serif" font-size="16" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="254.64999999999998" dy="-0.6em">sf-system</tspan><tspan x="254.64999999999998" dy="1.2em">-fts</tspan><tspan x="254.64999999999998" dy="1.2em" font-size="10" fill="#666">(agv-system)</tspan></text>
+    
+    <!-- sf-system-warehouse -->
+    <rect x="306.2" y="937.5" width="83.1" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="347.75" y="997.5" font-family="Arial, sans-serif" font-size="16" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="347.75" dy="-0.6em">sf-system</tspan><tspan x="347.75" dy="1.2em">-warehouse</tspan><tspan x="347.75" dy="1.2em" font-size="10" fill="#666">(warehouse-system)</tspan></text>
+    
+    <!-- sf-system-factory -->
+    <rect x="399.3" y="937.5" width="83.1" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="440.85" y="997.5" font-family="Arial, sans-serif" font-size="16" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="440.85" dy="-0.6em">sf-system</tspan><tspan x="440.85" dy="1.2em">-factory</tspan><tspan x="440.85" dy="1.2em" font-size="10" fill="#666">(factory-system)</tspan></text>
+    
+    <!-- Devices Group -->
+    <rect x="562.4" y="927.5" width="607.6" height="165" fill="#ffffff" stroke="rgba(0, 0, 0, 0.08)" stroke-width="1" rx="16"/>
+    <text x="866.2" y="1082.5" font-family="Arial, sans-serif" font-size="28" fill="#163494" text-anchor="middle" font-weight="600">sf-devices-group</text>
+    
+    <!-- sf-device-mill -->
+    <rect x="582.4" y="937.5" width="86.3" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="625.55" y="997.5" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="625.55" dy="-0.6em">sf-device</tspan><tspan x="625.55" dy="1.2em">-mill</tspan><tspan x="625.55" dy="1.2em" font-size="9" fill="#666">(mill-station)</tspan></text>
+    
+    <!-- sf-device-drill -->
+    <rect x="678.7" y="937.5" width="86.3" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="721.85" y="997.5" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="721.85" dy="-0.6em">sf-device</tspan><tspan x="721.85" dy="1.2em">-drill</tspan><tspan x="721.85" dy="1.2em" font-size="9" fill="#666">(drill-station)</tspan></text>
+    
+    <!-- sf-device-aiqs -->
+    <rect x="774.9" y="937.5" width="86.3" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="818.05" y="997.5" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="818.05" dy="-0.6em">sf-device</tspan><tspan x="818.05" dy="1.2em">-aiqs</tspan><tspan x="818.05" dy="1.2em" font-size="9" fill="#666">(aiqs-station)</tspan></text>
+    
+    <!-- sf-device-hbw -->
+    <rect x="871.2" y="937.5" width="86.3" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="914.35" y="997.5" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="914.35" dy="-0.6em">sf-device</tspan><tspan x="914.35" dy="1.2em">-hbw</tspan><tspan x="914.35" dy="1.2em" font-size="9" fill="#666">(hbw-station)</tspan></text>
+    
+    <!-- sf-device-dps -->
+    <rect x="967.5" y="937.5" width="86.3" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="1010.65" y="997.5" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="1010.65" dy="-0.6em">sf-device</tspan><tspan x="1010.65" dy="1.2em">-dps</tspan><tspan x="1010.65" dy="1.2em" font-size="9" fill="#666">(dps-station)</tspan></text>
+    
+    <!-- sf-device-chrg -->
+    <rect x="1063.7" y="937.5" width="86.3" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
+    <text x="1106.8500000000001" y="997.5" font-family="Arial, sans-serif" font-size="14.4" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="1106.8500000000001" dy="-0.6em">sf-device</tspan><tspan x="1106.8500000000001" dy="1.2em">-chrg</tspan><tspan x="1106.8500000000001" dy="1.2em" font-size="9" fill="#666">(chrg-station)</tspan></text>
+    
+  </g>
+  
+  <!-- Connections from Business Process to Edge (L-form, bidirectional, no labels) -->
+  <g id="connections-bp" stroke="#666" stroke-width="2" fill="none" marker-start="url(#arrowhead-reverse)" marker-end="url(#arrowhead)">
+    <!-- conn_bp-erp_dsp-edge -->
+    <path d="M 195 285 L 195 347.5 L 565 347.5 L 565 410"/>
+    
+    <!-- conn_bp-mes_dsp-edge -->
+    <path d="M 415 285 L 415 347.5 L 565 347.5 L 565 410"/>
+    
+    <!-- conn_bp-cloud_dsp-edge -->
+    <path d="M 635 285 L 635 347.5 L 565 347.5 L 565 410"/>
+    
+    <!-- conn_bp-analytics_dsp-edge -->
+    <path d="M 855 285 L 855 347.5 L 565 347.5 L 565 410"/>
+    
+    <!-- conn_bp-data-lake_dsp-edge -->
+    <path d="M 1075 285 L 1075 347.5 L 565 347.5 L 565 410"/>
+    
+  </g>
+  
+  <!-- Connections in DSP Layer (L-form, bidirectional, no labels) -->
+  <g id="connections-dsp" stroke="#666" stroke-width="2" fill="none" marker-start="url(#arrowhead-reverse)" marker-end="url(#arrowhead)">
+    <!-- conn_dsp-ux_dsp-edge -->
+    <path d="M 275 610 L 325 610"/>
+    
+    <!-- conn_dsp-edge_dsp-mc -->
+    <path d="M 805 610 L 855 610"/>
+    
+  </g>
+  
+  <!-- Connections from Edge to Shopfloor (L-form, bidirectional, no labels) -->
+  <g id="connections-sf" stroke="#666" stroke-width="2" fill="none" marker-start="url(#arrowhead-reverse)" marker-end="url(#arrowhead)">
+    <!-- conn_dsp-edge_sf-system-any -->
+    <path d="M 565 810 L 565 873.75 L 161.55 873.75 L 161.55 937.5"/>
+    
+    <!-- conn_dsp-edge_sf-system-fts -->
+    <path d="M 565 810 L 565 873.75 L 254.64999999999998 873.75 L 254.64999999999998 937.5"/>
+    
+    <!-- conn_dsp-edge_sf-device-mill -->
+    <path d="M 565 810 L 565 873.75 L 625.55 873.75 L 625.55 937.5"/>
+    
+    <!-- conn_dsp-edge_sf-device-drill -->
+    <path d="M 565 810 L 565 873.75 L 721.85 873.75 L 721.85 937.5"/>
+    
+    <!-- conn_dsp-edge_sf-device-aiqs -->
+    <path d="M 565 810 L 565 873.75 L 818.05 873.75 L 818.05 937.5"/>
+    
+    <!-- conn_dsp-edge_sf-device-hbw -->
+    <path d="M 565 810 L 565 873.75 L 914.35 873.75 L 914.35 937.5"/>
+    
+    <!-- conn_dsp-edge_sf-device-dps -->
+    <path d="M 565 810 L 565 873.75 L 1010.65 873.75 L 1010.65 937.5"/>
+    
+    <!-- conn_dsp-edge_sf-device-chrg -->
+    <path d="M 565 810 L 565 873.75 L 1106.8500000000001 873.75 L 1106.8500000000001 937.5"/>
+    
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#666"/>
+    </marker>
+    <marker id="arrowhead-reverse" markerWidth="10" markerHeight="10" refX="1" refY="3" orient="auto">
+      <polygon points="10 0, 0 3, 10 6" fill="#666"/>
+    </marker>
+    <linearGradient id="shopfloor-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f1f3f7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e0e4ea;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Legend -->
+  <g id="legend" transform="translate(830, 20)">
+    <rect x="0" y="0" width="350" height="70" fill="rgba(255, 255, 255, 0.95)" stroke="#163494" stroke-width="1" rx="4"/>
+    <text x="10" y="22" font-family="Arial, sans-serif" font-size="14" fill="#163494" font-weight="600">Legende:</text>
+    <text x="10" y="42" font-family="Arial, sans-serif" font-size="12" fill="#666">• Container Key (z.B. <tspan fill="#163494">bp-erp</tspan>, <tspan fill="#163494">sf-system-any</tspan>)</text>
+    <text x="10" y="58" font-family="Arial, sans-serif" font-size="12" fill="#666">• SVG Dateiname (z.B. <tspan fill="#666">(erp-application)</tspan>)</text>
+  </g>
+</svg>

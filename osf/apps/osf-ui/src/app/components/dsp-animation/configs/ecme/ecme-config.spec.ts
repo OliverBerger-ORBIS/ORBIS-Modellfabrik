@@ -20,33 +20,33 @@ describe('ECME_CONFIG', () => {
     });
 
     it('should have cnc device', () => {
-      const cnc = ECME_CONFIG.sfDevices.find(d => d.iconKey === 'cnc');
+      const cnc = ECME_CONFIG.sfDevices.find(d => d.iconKey === 'cnc-station');
       expect(cnc).toBeDefined();
-      expect(cnc?.customIconPath).toBe('device-cnc');
+      expect(cnc?.iconKey).toBe('cnc-station');
     });
 
     it('should have hydraulic device', () => {
-      const hydraulic = ECME_CONFIG.sfDevices.find(d => d.iconKey === 'hydraulic');
+      const hydraulic = ECME_CONFIG.sfDevices.find(d => d.iconKey === 'hydraulic-station');
       expect(hydraulic).toBeDefined();
-      expect(hydraulic?.customIconPath).toBe('device-hydraulic');
+      expect(hydraulic?.iconKey).toBe('hydraulic-station');
     });
 
     it('should have printer-3d device', () => {
-      const printer = ECME_CONFIG.sfDevices.find(d => d.iconKey === 'printer-3d');
+      const printer = ECME_CONFIG.sfDevices.find(d => d.iconKey === 'printer-3d-station');
       expect(printer).toBeDefined();
-      expect(printer?.customIconPath).toBe('device-printer-3d');
+      expect(printer?.iconKey).toBe('printer-3d-station');
     });
 
     it('should have weight device', () => {
-      const weight = ECME_CONFIG.sfDevices.find(d => d.iconKey === 'weight');
+      const weight = ECME_CONFIG.sfDevices.find(d => d.iconKey === 'weight-station');
       expect(weight).toBeDefined();
-      expect(weight?.customIconPath).toBe('device-weight');
+      expect(weight?.iconKey).toBe('weight-station');
     });
 
     it('should have laser device', () => {
-      const laser = ECME_CONFIG.sfDevices.find(d => d.iconKey === 'laser');
+      const laser = ECME_CONFIG.sfDevices.find(d => d.iconKey === 'laser-station');
       expect(laser).toBeDefined();
-      expect(laser?.customIconPath).toBe('device-laser');
+      expect(laser?.iconKey).toBe('laser-station');
     });
 
     it('should have all devices with valid IDs', () => {
@@ -68,9 +68,10 @@ describe('ECME_CONFIG', () => {
       });
     });
 
-    it('should have all devices with custom icon paths', () => {
+    it('should have all devices with semantic icon keys', () => {
       ECME_CONFIG.sfDevices.forEach(device => {
-        expect(device.customIconPath).toBeTruthy();
+        expect(device.iconKey).toBeTruthy();
+        expect(device.iconKey).toMatch(/-station$/);
       });
     });
   });
@@ -82,27 +83,27 @@ describe('ECME_CONFIG', () => {
     });
 
     it('should have scada system', () => {
-      const scada = ECME_CONFIG.sfSystems.find(s => s.iconKey === 'scada');
+      const scada = ECME_CONFIG.sfSystems.find(s => s.iconKey === 'scada-system');
       expect(scada).toBeDefined();
-      expect(scada?.customIconPath).toBe('shopfloor-scada');
+      expect(scada?.iconKey).toBe('scada-system');
     });
 
     it('should have industrial-process system', () => {
-      const industrial = ECME_CONFIG.sfSystems.find(s => s.iconKey === 'industrial-process');
+      const industrial = ECME_CONFIG.sfSystems.find(s => s.iconKey === 'industrial-process-system');
       expect(industrial).toBeDefined();
-      expect(industrial?.customIconPath).toBe('shopfloor-industrial-process');
+      expect(industrial?.iconKey).toBe('industrial-process-system');
     });
 
     it('should have cargo system', () => {
-      const cargo = ECME_CONFIG.sfSystems.find(s => s.iconKey === 'cargo');
+      const cargo = ECME_CONFIG.sfSystems.find(s => s.iconKey === 'cargo-system');
       expect(cargo).toBeDefined();
-      expect(cargo?.customIconPath).toBe('shopfloor-cargo');
+      expect(cargo?.iconKey).toBe('cargo-system');
     });
 
     it('should have pump system', () => {
-      const pump = ECME_CONFIG.sfSystems.find(s => s.iconKey === 'pump');
+      const pump = ECME_CONFIG.sfSystems.find(s => s.iconKey === 'pump-system');
       expect(pump).toBeDefined();
-      expect(pump?.customIconPath).toBe('shopfloor-pump');
+      expect(pump?.iconKey).toBe('pump-system');
     });
 
     it('should have all systems with valid IDs', () => {
@@ -124,9 +125,10 @@ describe('ECME_CONFIG', () => {
       });
     });
 
-    it('should have all systems with custom icon paths', () => {
+    it('should have all systems with semantic icon keys', () => {
       ECME_CONFIG.sfSystems.forEach(system => {
-        expect(system.customIconPath).toBeTruthy();
+        expect(system.iconKey).toBeTruthy();
+        expect(system.iconKey).toMatch(/-system$/);
       });
     });
   });
@@ -197,9 +199,9 @@ describe('ECME_CONFIG', () => {
 
   it('should demonstrate different equipment than FMF', () => {
     const deviceIconKeys = ECME_CONFIG.sfDevices.map(d => d.iconKey);
-    // ECME should have cnc, hydraulic, printer-3d, weight, laser which are different from FMF
+    // ECME should have cnc-station, hydraulic-station, printer-3d-station, weight-station, laser-station which are different from FMF
     const uniqueDevices = deviceIconKeys.filter(key => 
-      ['cnc', 'hydraulic', 'printer-3d', 'weight', 'laser'].includes(key)
+      ['cnc-station', 'hydraulic-station', 'printer-3d-station', 'weight-station', 'laser-station'].includes(key)
     );
     expect(uniqueDevices.length).toBeGreaterThan(0);
   });

@@ -97,15 +97,15 @@ describe('FMF_CONFIG', () => {
     });
 
     it('should have any system', () => {
-      const anySystem = FMF_CONFIG.sfSystems.find(s => s.id === 'sf-system-1');
+      const anySystem = FMF_CONFIG.sfSystems.find(s => s.id === 'sf-system-any');
       expect(anySystem).toBeDefined();
-      expect(anySystem?.iconKey).toBe('warehouse-system');
+      expect(anySystem?.iconKey).toBe('any-system');
     });
 
     it('should have AGV/FTS system', () => {
-      const agv = FMF_CONFIG.sfSystems.find(s => s.id === 'sf-system-2');
+      const agv = FMF_CONFIG.sfSystems.find(s => s.id === 'sf-system-fts');
       expect(agv).toBeDefined();
-      expect(agv?.iconKey).toBe('agv');
+      expect(agv?.iconKey).toBe('agv-system');
     });
 
     it('should have all systems with valid IDs', () => {

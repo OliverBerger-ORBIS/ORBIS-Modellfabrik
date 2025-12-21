@@ -1,6 +1,6 @@
 # ORBIS Modellfabrik - Projekt Status
 
-**Letzte Aktualisierung:** 18.12.2025
+**Letzte Aktualisierung:** 21.12.2025
 **Aktueller Status:** OSF (vormals OMF3) UI-Finishing & Kunden-Demos; OMF2 als Legacy eingefroren
 
 ## 📋 Wichtige Erkenntnisse (Session-Notizen)
@@ -78,7 +78,25 @@
 11. ✅**DSP → Modules Link** – Klick auf Device im DSP-Architektur responsive Darstellung setzt Module-Tab (shopfloor-Tab) mit vorselektiertem Device (QueryParam/State Transfer, 1:1 Zuordnung).
 12. ✅ **DSP → ERP Link** – Klick auf BP-ERP öffnet den Process-Tab (Purchase/Customer Orders) und zeigt ERP-Bezug. Bei ausführen einer Purchase Order wird "fake-Info" zur Order angezeigt in einer ERP-BOX (Supplier-ID, Order-Amount (def. 1), Order-Date, planned delivery-Date). Bei Ausführen einer Customer-Order wird "fake-Info" angezeigt mit Customer-ID, ERP-Order-Number, Order-Amount (default = 1), Order-Date, planned delivery-date. -> Diese Info wird im Track-Trace-Scenario wieder aufgenommen und angezeigt. **(Erledigt: 20.12.2025 - ERP-Daten Verknüpfung, Order Status, zusätzliche Datenfelder, TURN LEFT/RIGHT Icons, i18n)**
 13. ✅ **OSF Rebranding** – Bezeichner OMF3 → OSF in Code, Assets, Doku; Angular Prefixes, ENV Variablen und README angleichen. Sowie konsequente Umbenennung der tabs-Komponenten (module-tab → shopfloor-tab, fts-tab → agv-tab, wobei fts nur bei der deutschen Übersetzung und bei den topics die von außen vorgegeben sind erhalten bleibt). Die app wurde zu osf-ui umbenannt (anstatt ccu-ui). Die Änderungen wurden durch den ganzen Workspace bis in GIT und die dortige Verwaltung durchgezogen. **(Erledigt: 20.12.2025 - App-Umbenennung ccu-ui → osf-ui, Workspace-Umbenennung omf3 → osf, Komponenten-Umbenennung module-tab → shopfloor-tab und fts-tab → agv-tab, package.json name aktualisiert, wichtigste Dokumentation aktualisiert)**
-14. **Dokumentation** Mal wieder aufräumen in den docs. Unter anderem Anpassen von dsp-architecture-step19-diagramm.svg. Das soll wirklich so aussehen, wie die functional-view-mode aufgebaut ist (mit allen Objekten) und Ihren NAmen am Beispiel von customer.fmf. Es sollen aber nicht die  SVG-ICONS eingebundfen werden, sondern der NAme der Keys, mit dnen man die Objekte angibt. Connections sollen wie im original L-Form haben etc. Viele Dokus sind komplett veraltet in ganzen REpo. Viele enthalten Planungen mit Optionen, die nach Umsetzung nicht mehr relevant sind.
+14. ⏳ **Dokumentation** Mal wieder aufräumen in den docs. **(Teilweise erledigt: 21.12.2025 - DSP-Architektur-Diagramme und SVG-Inventory erstellt, Objects Reference aktualisiert, Business Applications erweitert (SCM, CRM), HOWTO_ADD_CUSTOMER aktualisiert; Dokumentation Cleanup folgt später)**
+   - ✅ **DSP-Architektur-Diagramme erstellt:**
+     - `dsp-architecture-functional-view.svg` - Functional View mit allen Layern, Containern und Connections (Key-Namen statt Icons, L-Form Connections, bidirektional)
+     - `dsp-architecture-edge-mc-functions.svg` - Edge & MC Functions Detailansicht
+     - `dsp-architecture-component-view.svg` - Component View mit 8 Edge-Komponenten
+     - `dsp-architecture-deployment-view.svg` - Deployment View mit 4 Pipeline-Steps
+     - Alle Diagramme in `DSP_Architecture_Objects_Reference.md` eingebettet
+   - ✅ **SVG-Inventory erstellt:**
+     - `docs/02-architecture/dsp-svg-inventory.md` - Übersicht aller verfügbaren SVG-Assets (filtert bereits dokumentierte SVGs aus)
+     - Generierungsscript: `scripts/generate-svg-inventory.js`
+   - ✅ **Objects Reference aktualisiert:**
+     - Business Applications erweitert (SCM, CRM hinzugefügt)
+     - Device-Unterscheidung entfernt (alle Devices als verfügbar)
+     - SVG-Tiles für alle Icon-Kategorien (Business, Edge Functions, MC Functions, Edge Components, Shopfloor Systems/Devices)
+   - ✅ **HOWTO_ADD_CUSTOMER.md aktualisiert:**
+     - FMF_CONFIG als Template empfohlen (statt Default-Config)
+     - Pfade korrigiert (omf3/ccu-ui → osf/osf-ui)
+     - Business Processes Liste erweitert (bp-scm, bp-crm)
+   - ⏳ **Dokumentation Cleanup:** Folgt später (viele veraltete Planungsdokumente identifiziert, Schritt-für-Schritt Cleanup geplant)
 15. **OBS-Video** Testen und aufbau der OBS-Video präsentation auf Windows. Siehe doc obs-video-presentation-setup.md
 16. **Stations und OPC-UA-Module** Erweiterung der Konfiguration um Infos (aus omf2)
 17. **Storytelling** , anschließende Blog-Serie zu OSF & DSP Story vorbereiten.
@@ -116,9 +134,10 @@
   - **DSP → ERP Link (Task 12):** ERP-Daten Verknüpfung zwischen Process-Tab und Track-Trace implementiert, `ErpOrderDataService` für Purchase/Customer Orders, ERP-Info-Box zeigt Supplier/Customer IDs, Order Dates, Planned Delivery Dates.
   - **Track-Trace Erweiterungen (Tasks 10-12):** TURN LEFT/RIGHT Icons basierend auf FTS Order Stream, Order Status (Active/Completed) aus dualen Order Streams, ERP-Daten Integration, zusätzliche Datenfelder (Raw Material Order Date, Delivery Date, Storage Date, Customer Order Date, Production Start Date, Delivery End Date), I18n mit englischen Defaults und DE/FR Übersetzungen, Architektur-Dokumentation erweitert.
   - **OSF Rebranding (Task 13):** Vollständige Umbenennung von OMF3 → OSF und ccu-ui → osf-ui durchgeführt. Workspace-Verzeichnis omf3 → osf umbenannt, alle Komponenten aktualisiert (module-tab → shopfloor-tab, fts-tab → agv-tab), package.json name aktualisiert, wichtigste Dokumentation aktualisiert, alle Referenzen in Code, Tests, CI/CD und Dokumentation angepasst.
+  - **DSP-Architektur-Dokumentation (Task 14, teilweise):** 4 neue SVG-Diagramme erstellt (functional-view, edge-mc-functions, component-view, deployment-view), SVG-Inventory nach `docs/02-architecture/` verschoben, Objects Reference aktualisiert mit SVG-Tiles für alle Icon-Kategorien, Business Applications erweitert (SCM, CRM), HOWTO_ADD_CUSTOMER aktualisiert (FMF als Template, Pfade korrigiert).
   - **Dokumentation & Tests:** Track-Trace Architektur-Dokumentation aktualisiert, Tests für `WorkpieceHistoryService` und `ErpOrderDataService` erweitert/erstellt.
   - **Demo-Vorbereitung:** Konftel Cam50 Settings + OBS-Doku aktualisiert, DSP-Mockup interaktiv geplant.
-- **Nachlauf:** kundenspezifische Animationen für Gedore-Präsentation.
+- **Nachlauf:** kundenspezifische Animationen für Gedore-Präsentation, Dokumentation Cleanup (Task 14 Teil 2).
 
 ### Sprint 10 (28.11 - 11.12.2025) - **ABGESCHLOSSEN**
 - **Status:** ✅ Abgeschlossen
@@ -198,6 +217,8 @@
 - **Aktuelle Sprint-Dokumentation:** `docs/sprints/`
 - **Decision Records:** `docs/03-decision-records/`
 - **Architektur:** `docs/02-architecture/`
+  - **DSP-Architektur-Referenz:** `osf/apps/osf-ui/src/app/components/dsp-animation/configs/DSP_Architecture_Objects_Reference.md`
+  - **DSP SVG-Inventory:** `docs/02-architecture/dsp-svg-inventory.md`
 - **OSF README:** `osf/README.md`
 - **APS-Analyse:** `docs/06-integrations/`
 

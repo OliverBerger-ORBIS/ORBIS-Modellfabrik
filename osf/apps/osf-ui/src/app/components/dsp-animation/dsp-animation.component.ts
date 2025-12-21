@@ -288,8 +288,11 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
           // Update icon path
           if (mapping.customIconPath) {
             container.logoIconKey = mapping.customIconPath as IconKey;
+          } else if (mapping.iconKey.endsWith('-station')) {
+            // New semantic key format: use directly (e.g., 'cnc-station' -> 'cnc-station')
+            container.logoIconKey = mapping.iconKey as IconKey;
           } else {
-            // Use generic icon from icons directory
+            // Legacy format: add generic-device- prefix (e.g., 'cnc' -> 'generic-device-cnc')
             container.logoIconKey = `generic-device-${mapping.iconKey}` as IconKey;
           }
           // Make visible if it was hidden
@@ -323,7 +326,11 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
               container.logoIconKey = 'shopfloor-warehouse' as IconKey; // Warehouse System → warehouse-system.svg
             } else if (mapping.iconKey === 'agv') {
               container.logoIconKey = 'shopfloor-fts' as IconKey; // Fallback: iconKey 'agv'
+            } else if (mapping.iconKey.endsWith('-system')) {
+              // New semantic key format: use directly (e.g., 'scada-system' -> 'scada-system')
+              container.logoIconKey = mapping.iconKey as IconKey;
             } else {
+              // Legacy format: add generic-system- prefix (e.g., 'scada' -> 'generic-system-scada')
               container.logoIconKey = `generic-system-${mapping.iconKey}` as IconKey;
             }
           }

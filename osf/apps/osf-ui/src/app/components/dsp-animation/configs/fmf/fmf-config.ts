@@ -44,17 +44,17 @@ export const FMF_CONFIG: CustomerDspConfig = {
     },
   ],
   
-  // Shopfloor systems - 2 systems with abstract IDs
+  // Shopfloor systems - 2 systems with semantic IDs (consistent with default config)
   sfSystems: [
     {
-      id: 'sf-system-1',
+      id: 'sf-system-any',
       label: $localize`:@@dspArchLabelAnySystem:any System`,
-      iconKey: 'warehouse-system',
+      iconKey: 'any-system',
     },
     {
-      id: 'sf-system-2',
+      id: 'sf-system-fts',
       label: $localize`:@@dspArchLabelFTS:AGV\nSystem`,
-      iconKey: 'agv',
+      iconKey: 'agv-system', // Uses agv-system.svg (fts-system.svg doesn't exist, agv-system is the correct mapping)
     },
   ],
   

@@ -8,65 +8,56 @@ export const ECME_CONFIG: CustomerDspConfig = {
   customerKey: 'ecme',
   customerName: 'European Company Manufacturing Everything',
   
-  // Shopfloor devices - 5 devices with new SVG icons
+  // Shopfloor devices - 5 devices with semantic IDs
   sfDevices: [
     {
-      id: 'sf-device-1',
+      id: 'sf-device-cnc',
       label: $localize`:@@deviceCNC:CNC / Station`,
-      iconKey: 'cnc',
-      customIconPath: 'device-cnc',
+      iconKey: 'cnc-station',
     },
     {
-      id: 'sf-device-2',
+      id: 'sf-device-hydraulic',
       label: $localize`:@@deviceHydraulic:Hydraulic / Station`,
-      iconKey: 'hydraulic',
-      customIconPath: 'device-hydraulic',
+      iconKey: 'hydraulic-station',
     },
     {
-      id: 'sf-device-3',
+      id: 'sf-device-printer-3d',
       label: $localize`:@@devicePrinter3D:3D Printer / Station`,
-      iconKey: 'printer-3d',
-      customIconPath: 'device-printer-3d',
+      iconKey: 'printer-3d-station',
     },
     {
-      id: 'sf-device-4',
+      id: 'sf-device-weight',
       label: $localize`:@@deviceWeight:Weight / Station`,
-      iconKey: 'weight',
-      customIconPath: 'device-weight',
+      iconKey: 'weight-station',
     },
     {
-      id: 'sf-device-5',
+      id: 'sf-device-laser',
       label: $localize`:@@deviceLaser:Laser / Station`,
-      iconKey: 'laser',
-      customIconPath: 'device-laser',
+      iconKey: 'laser-station',
     },
   ],
   
-  // Shopfloor systems - 4 systems with new SVG icons
+  // Shopfloor systems - 4 systems with semantic IDs
   sfSystems: [
     {
-      id: 'sf-system-1',
+      id: 'sf-system-scada',
       label: $localize`:@@dspArchLabelScada:SCADA / System`,
-      iconKey: 'scada',
-      customIconPath: 'shopfloor-scada',
+      iconKey: 'scada-system',
     },
     {
-      id: 'sf-system-2',
+      id: 'sf-system-industrial-process',
       label: $localize`:@@dspArchLabelIndustrialProcess:Industrial Process / System`,
-      iconKey: 'industrial-process',
-      customIconPath: 'shopfloor-industrial-process',
+      iconKey: 'industrial-process-system',
     },
     {
-      id: 'sf-system-3',
+      id: 'sf-system-cargo',
       label: $localize`:@@dspArchLabelCargo:Cargo / System`,
-      iconKey: 'cargo',
-      customIconPath: 'shopfloor-cargo',
+      iconKey: 'cargo-system',
     },
     {
-      id: 'sf-system-4',
+      id: 'sf-system-pump',
       label: $localize`:@@dspArchLabelPump:Pump / System`,
-      iconKey: 'pump',
-      customIconPath: 'shopfloor-pump',
+      iconKey: 'pump-system',
     },
   ],
   
