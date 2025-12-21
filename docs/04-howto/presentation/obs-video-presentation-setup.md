@@ -1,6 +1,6 @@
-# OBS Video-Präsentation Setup für ORBIS SmartFactory (OMF3)
+# OBS Video-Präsentation Setup für ORBIS SmartFactory (OSF)
 
-**Zielgruppe:** Präsentatoren, die OMF3 (ORBIS SmartFactory) in Teams-Meetings demonstrieren  
+**Zielgruppe:** Präsentatoren, die OSF (vormals OMF3) in Teams-Meetings demonstrieren  
 **Plattform:** Windows  
 **Tools:** OBS Studio, Microsoft Teams
 
@@ -8,7 +8,7 @@
 
 ## 🎯 Zielzustand
 
-- **Monitor 1 (Laptop):** OBS-Bedienung (Studio Mode), Browser/OMF3, Teams-Controls, Notizen
+- **Monitor 1 (Laptop):** OBS-Bedienung (Studio Mode), Browser/OSF UI, Teams-Controls, Notizen
 - **Monitor 2 (extern):** Nur das fertige OBS-Program im Vollbild (Fullscreen Projector)
 - **Teams:** Teilt Monitor 2 (nicht das OBS-Fenster)
 
@@ -16,18 +16,18 @@
 
 ## A. Vorbereitungen in Windows
 
-### A1) Monitore korrekt konfigurieren
+### A1) Monitors configured correctly
 
-1. **Windows Einstellungen** → **System** → **Anzeige**
-2. Unter **"Mehrere Bildschirme"**: **"Diese Anzeigen erweitern"** wählen
-3. Auf **"Identifizieren"** klicken und sicherstellen, welcher Monitor #1 (Laptop) und #2 (extern) ist
-4. **Empfehlung:** Monitor 2 als die Präsentationsfläche verwenden (nicht zwingend "Hauptanzeige")
+1. **Windows Settings** → **System** → **Display**
+2. Under **Multiple displays** choose **Extend these displays**
+3. Use **Identify** to confirm which screen is #1 (laptop) vs. #2 (external)
+4. **Recommendation:** use monitor 2 as the presentation surface (it does not have to be the primary display)
 
-### A2) Skalierung stabil halten
+### A2) Keep scaling stable
 
-1. In derselben Anzeige-Ansicht: pro Monitor die Skalierung prüfen
-2. **Monitor 2 auf 100% oder 125%** setzen (wichtig: später nicht ständig umstellen)
-3. Monitor 2 auf eine "saubere" Auflösung lassen (z.B. 3600×1900 ist ok; OBS/Teams arbeiten trotzdem auf dem von Ihnen definierten Output)
+1. In the same Display view verify the scaling per screen
+2. Set **monitor 2 to 100 % or 125 %** and avoid changing it later
+3. Keep monitor 2 on a clean resolution (e.g., 2560×1440 or 1920×1080); OBS/Teams will still output whatever you configure in section C
 
 ---
 
@@ -36,8 +36,8 @@
 ### B1) OBS starten und zwei organisatorische Container anlegen
 
 In OBS gibt es zwei Dinge:
-- **Profile** = Video/Output/Encoder-Einstellungen
-- **Scene Collection** = Szenen + Quellen (Ihre Demo-Layouts)
+- **Profile** = Video/Output/Encoder settings
+- **Scene Collection** = Scenes + sources (Ihre Demo-Layouts)
 
 #### Schritt 1: Erstes Profil anlegen (30 fps)
 
@@ -51,20 +51,30 @@ In OBS gibt es zwei Dinge:
 2. Name: `ORBIS SmartFactory Demo`
 3. **OK**
 
+### B2) Hardware-agnostic sandbox setup
+
+Sie können das gesamte Layout vorbereiten, auch wenn weder Kamera noch Präsentationsmonitor verfügbar sind:
+
+1. **Canvas-Größe unabhängig von Hardware:** Die Werte aus Abschnitt C gelten immer. OBS rendert intern auf 2560×1440 → 1920×1080, selbst wenn aktuell nur ein kleiner Laptop-Screen vorhanden ist.
+2. **Kamera-Platzhalter:** Legen Sie eine `Color Source` oder ein statisches PNG (z. B. `placeholder-camera.png`) an und nennen Sie sie `VID_CAM_USB_Main`. Sobald die echte Kamera angeschlossen wird, tauschen Sie nur die Quelle über **Right-click → Properties → Device** aus.
+3. **Browser-Fenster ohne Zweitmonitor:** Öffnen Sie pro Tab ein Edge/Chrome-Fenster, setzen Sie es auf 1920×1080 und lassen Sie es minimiert. Window-Capture behält die Größe, auch wenn das Fenster außerhalb des sichtbaren Bereichs liegt.
+4. **Preview statt Fullscreen Projector:** Solange kein zweiter Monitor da ist, verwenden Sie **View → Multiview (Fullscreen)** oder **View → Windowed Projector (Program)**. Dieses Fenster können Sie später in Teams teilen; sobald der zweite Monitor angeschlossen ist, wechseln Sie auf den echten Fullscreen Projector.
+5. **Testing ohne Kamera:** Aktivieren Sie bei Bedarf **Tools → Start Virtual Camera**, wählen Sie diese als Device und prüfen Sie so das Layout sogar in Teams, ohne physische Kamera.
+
 ---
 
 ## C. OBS Video-Einstellungen (empfohlen für UI + Shopfloor)
 
 ### C1) Video (Canvas/Output/FPS)
 
-1. **OBS Settings** → **Video**
-2. Setzen:
+1. **File** → **Settings** → **Video**
+2. Set the following values:
    - **Base (Canvas) Resolution:** `2560x1440`
    - **Output (Scaled) Resolution:** `1920x1080`
    - **Common FPS Values:** `30`
 3. **Apply** → **OK**
 
-**Ergebnis:** Sie layouten mit 1440p (bessere Schärfe/Reserve), liefern aber 1080p aus (Teams-kompatibel).
+**Result:** Canvas bleibt 1440p (mehr Schärfe/Reserve), Output ist 1080p und damit Teams-kompatibel.
 
 ---
 
@@ -72,15 +82,15 @@ In OBS gibt es zwei Dinge:
 
 ### D1) Output (Recording für Qualitätskontrolle)
 
-1. **Settings** → **Output**
+1. **File** → **Settings** → **Output**
 2. **Output Mode:** `Advanced`
 3. Tab **Recording**
    - **Type:** `Standard`
    - **Recording Format:** `MKV`
    - **Encoder:** Hardware (NVENC/QSV/AMF), falls vorhanden; sonst `x264`
-4. **Apply/OK**
+4. **Apply** → **OK**
 
-**Hinweis:** Sie "streamen" nicht aus OBS. Recording ist nur, um nach dem Test die Qualität zu prüfen.
+**Note:** Sie streamen nicht aus OBS. Recording dient nur zur Qualitätssicherung nach Tests.
 
 ---
 
@@ -92,11 +102,12 @@ Links unten im **"Scenes"**-Panel nacheinander **+** klicken und anlegen:
 
 - **S1 - Kamera Vollbild**
 - **S2 - Shopfloor Vollbild**
-- **S3 - Overview Vollbild**
-- **S4 - Active Orders Vollbild**
+- **S3 - Process Vollbild**
+- **S4 - Orders Vollbild**
 - **S5 - Track&Trace Vollbild**
 - **S6 - 4up Grid**
 - **S7 - Hero + 3**
+- **S8 - Multiview Quad (optional)**
 
 ---
 
@@ -145,60 +156,49 @@ Das sind die **"richtigen Stellräder"**, die später den Unterschied machen.
 
 ---
 
-### F2) OMF3/Dashboard als Quellen: zwei Varianten
+### F2) OSF Dashboard als Quellen (empfohlen: Window Capture)
 
-#### Variante A (am stabilsten): OBS "Browser"-Quellen
+OBS Browser Sources sind für diese Demo unbrauchbar (keine Maus/Keyboard-Events). Verwenden Sie ausschließlich Window Capture:
 
-Wenn Sie URLs pro Tab/Route verwenden können:
+1. Öffnen Sie je Ansicht (Shopfloor, Process, Orders, Track&Trace) ein **eigenes Browserfenster** und setzen Sie Größe/Zoom auf `1920×1080 @ 100 %`.
+2. Entfernen Sie Browser-Toolbars/Lesezeichenleisten für saubere Frames und positionieren Sie die Fenster auf einem festen Desktop-Bereich (dürfen minimiert sein).
+3. In OBS Szene wählen → **Sources** → **+** → **Window Capture** → gewünschtes Fenster.
+4. **Transform** → **Fit to Screen**. Cropping nur einsetzen, wenn unvermeidbar.
 
-- `…/shopfloor`
-- `…/overview`
-- `…/orders`
-- `…/tracktrace`
+**Regeln für stabile Captures:**
 
-(die echten URLs setzen Sie dann ein)
+- Fenstergröße **einmal** festlegen, danach nicht verschieben/zoomen.
+- Pro Ansicht ein eigenständiges Fenster anlegen, keine Tabs teilen.
+- Nach dem Ausrichten Quellen sperren (Abschnitt H), damit nichts verrutscht.
+- Wenn kein zweiter Monitor verfügbar ist, lassen Sie die Fenster im Hintergrund offen; OBS captured sie trotzdem.
 
-**Für jede Vollbild-Szene:**
+### F3) OBS Multiview (Quad-Output ohne manuelles 4up-Layout)
 
-1. Szene auswählen (z. B. **S3 - Overview Vollbild**)
-2. **Sources** → **+** → **Browser**
-3. Name: z. B. `OMF3 - Overview`
-4. **URL:** Ihre Overview-URL
-5. **Width/Height:**
-   - **Width:** `1920`
-   - **Height:** `1080`
-6. **OK**
-7. **Transform** → **Fit to Screen**
+Statt der manuellen Szene **S6 - 4up Grid** können Sie das OBS-Multiview nutzen und als fertiges 4er-Layout ausgeben:
 
-Wiederholen für Shopfloor/Orders/Track&Trace.
-
-#### Variante B (wenn Login/SSO nur im echten Browser zuverlässig geht): Window Capture
-
-1. Öffnen Sie je Ansicht ein **eigenes Browserfenster** (nicht nur Tabs)
-2. In OBS Szene auswählen
-3. **Sources** → **+** → **Window Capture**
-4. Passendes Fenster wählen
-5. **Transform** → **Fit to Screen**
-
-**Wichtig bei Window Capture:**
-
-- Fenstergröße einmal einstellen, danach nicht mehr anfassen
-- In OBS nach Fertigstellung Quellen sperren (siehe Abschnitt H)
+1. Scenes vorbereiten: `P02_DT_Shopfloor_Full`, `P03_UI_Process_Full`, `P04_UI_Orders_Full`, `P05_UI_TrackTrace_Full` müssen alle funktionieren.
+2. **OBS → Settings → General → Multiview**:
+   - **Multiview Layout:** `Top 8 (2×4)` (zeigt vier Slots oben nebeneinander – restliche Slots bleiben leer)
+   - **Disable Preview/Program:** aktivieren, damit nur die vier Szenen sichtbar sind.
+3. **View → Multiview (Windowed)** öffnen. Das Fenster zeigt nun die vier aktiven Szenen gleichzeitig.
+4. Für den Stream neue Szene `S8 - Multiview Quad` anlegen → **Sources → + → Window Capture** → Fenster `Multiview` auswählen → **Transform → Fit to Screen**.
+5. Diese Szene können Sie wie jede andere Szene testen oder auf Monitor 2 projizieren (zunächst als Windowed Projector teilen, später `View → Multiview (Fullscreen)` auf Monitor 2).
+6. Vorteile: kein manuelles Pixel-Layout, Szenen bleiben interaktiv; Tests funktionieren auch ohne zweiten Monitor, weil das Multiview-Fenster auf dem Laptop verbleibt.
 
 ---
 
 ## G. Multi-Layouts exakt bauen
 
-**Voraussetzung:** Output ist 1920×1080.
+**Voraussetzung:** Output ist 1920×1080. Wenn Sie kein eigenes Grid bauen möchten, nutzen Sie stattdessen den in Abschnitt F3 beschriebenen Multiview-Ansatz (Szene `S8 - Multiview Quad`).
 
 ### G1) S6 - 4up Grid (4 gleich große Fenster)
 
 1. Szene **S6 - 4up Grid** wählen
 2. Vier Quellen hinzufügen (Browser oder Window Capture), z. B.:
-   - `OMF3 - Shopfloor`
-   - `OMF3 - Overview`
-   - `OMF3 - Active Orders`
-   - `OMF3 - Track&Trace`
+   - `OSF - Shopfloor`
+   - `OSF - Process`
+   - `OSF - Orders`
+   - `OSF - Track&Trace`
 3. Für jede Quelle: **Rechtsklick** → **Transform** → **Edit Transform**
 
 **Setzen Sie exakt:**
@@ -215,7 +215,7 @@ Wiederholen für Shopfloor/Orders/Track&Trace.
 1. Szene **S7 - Hero + 3** wählen
 2. Quellen hinzufügen:
    - **Hero:** Shopfloor oder Kamera
-   - **3 kleine:** Overview, Orders, Track&Trace
+   - **3 kleine:** Process, Orders, Track&Trace
 3. **Transform-Werte exakt:**
 
 - **Hero links groß:** X=`0`, Y=`0`, W=`1280`, H=`1080`
@@ -294,8 +294,8 @@ Jetzt zeigt Monitor 2 nur das Sendebild.
 
 1. **S1** Kamera Vollbild (FTS fährt)
 2. **S2** Shopfloor Vollbild
-3. **S3** Overview Vollbild
-4. **S4** Active Orders Vollbild
+3. **S3** Process Vollbild
+4. **S4** Orders Vollbild
 5. **S5** Track&Trace Vollbild
 6. **S7** Hero + 3 (entscheidend: kleine Panels lesbar?)
 7. **S6** 4up Grid (nur wenn lesbar genug)
@@ -336,7 +336,7 @@ Jetzt zeigt Monitor 2 nur das Sendebild.
 
 - **Standardprofil:** `Teams-Demo-1080p60` (wenn OBS Stats sauber bleiben)
 - **Fallbackprofil:** `Teams-Demo-1080p30`
-- **Standard-Szene:** **S7 Hero + 3** (Hero = Shopfloor oder Kamera; rechts = Overview/Orders/Track&Trace)
+- **Standard-Szene:** **S7 Hero + 3** (Hero = Shopfloor oder Kamera; rechts = Process/Orders/Track&Trace)
 - **Detail-Szenen:** Vollbild je Tab für Lesbarkeit
 
 ---
@@ -351,8 +351,8 @@ Jetzt zeigt Monitor 2 nur das Sendebild.
 
 - **P01_Cam_Full** - Kamera Vollbild
 - **P02_DT_Shopfloor_Full** - Shopfloor Vollbild
-- **P03_UI_Overview_Full** - Overview Vollbild
-- **P04_UI_Orders_Full** - Active Orders Vollbild
+- **P03_UI_Process_Full** - Process Vollbild
+- **P04_UI_Orders_Full** - Orders Vollbild
 - **P05_UI_TrackTrace_Full** - Track&Trace Vollbild
 - **P06_UI_4Up** - 4-Up Grid Layout
 - **P07_UI_HeroPlus3** - Hero + 3 Layout (Standard)
@@ -364,7 +364,7 @@ Jetzt zeigt Monitor 2 nur das Sendebild.
 
 Diese Szenen werden später in P06/P07 als "Scene Source" eingebunden:
 
-- **H01_UI_Overview_Panel** - Overview als Panel
+- **H01_UI_Process_Panel** - Process als Panel
 - **H02_UI_Orders_Panel** - Orders als Panel
 - **H03_UI_TrackTrace_Panel** - Track&Trace als Panel
 - **H04_DT_Shopfloor_Panel** - Shopfloor als Panel
@@ -387,21 +387,21 @@ Wenn Sie mal Capture Card nutzen:
 
 - **VID_CAP_HDMI_Camlink** - Capture Card über HDMI
 
-#### N2.2 OMF3 / Web-UI (Browser Source)
+#### N2.2 OSF / Web-UI (Browser Source)
 
 Wenn möglich, je Ansicht eine Browser Source:
 
-- **WEB_OMF3_DT_Shopfloor** - Shopfloor-Ansicht (Browser Source)
-- **WEB_OMF3_UI_Overview** - Overview-Tab (Browser Source)
-- **WEB_OMF3_UI_Orders** - Orders-Tab (Browser Source)
-- **WEB_OMF3_UI_TrackTrace** - Track&Trace-Tab (Browser Source)
+- **WEB_OSF_DT_Shopfloor** - Shopfloor-Ansicht (Browser Source)
+- **WEB_OSF_UI_Process** - Process-Tab (Browser Source)
+- **WEB_OSF_UI_Orders** - Orders-Tab (Browser Source)
+- **WEB_OSF_UI_TrackTrace** - Track&Trace-Tab (Browser Source)
 
 Wenn Sie Window Capture statt Browser Source nutzen müssen:
 
-- **WIN_Chrome_OMF3_DT_Shopfloor** - Shopfloor (Window Capture)
-- **WIN_Chrome_OMF3_UI_Overview** - Overview (Window Capture)
-- **WIN_Chrome_OMF3_UI_Orders** - Orders (Window Capture)
-- **WIN_Chrome_OMF3_UI_TrackTrace** - Track&Trace (Window Capture)
+- **WIN_Chrome_OSF_DT_Shopfloor** - Shopfloor (Window Capture)
+- **WIN_Chrome_OSF_UI_Process** - Process (Window Capture)
+- **WIN_Chrome_OSF_UI_Orders** - Orders (Window Capture)
+- **WIN_Chrome_OSF_UI_TrackTrace** - Track&Trace (Window Capture)
 
 **Wichtig:** Halten Sie die Variante (WEB_ vs WIN_) im Namen fest, sonst verlieren Sie später Zeit.
 
@@ -446,25 +446,25 @@ Wenn Sie in Teams präsentieren, ist Audio oft "heikel". Empfehlung: eindeutige 
 - optional `GFX_Logo_ORBIS`
 
 #### P02_DT_Shopfloor_Full
-- `WEB_OMF3_DT_Shopfloor` (oder `WIN_…`)
+- `WEB_OSF_DT_Shopfloor` (oder `WIN_…`)
 - optional `GFX_Logo_ORBIS`
 
-#### P03_UI_Overview_Full
-- `WEB_OMF3_UI_Overview`
+#### P03_UI_Process_Full
+- `WEB_OSF_UI_Process`
 
 #### P04_UI_Orders_Full
-- `WEB_OMF3_UI_Orders`
+- `WEB_OSF_UI_Orders`
 
 #### P05_UI_TrackTrace_Full
-- `WEB_OMF3_UI_TrackTrace`
+- `WEB_OSF_UI_TrackTrace`
 
 #### P06_UI_4Up
 - Entweder direkt die vier `WEB_/WIN_`-Quellen
 - oder besser: Scene Sources `H01..H04`
 
 #### P07_UI_HeroPlus3
-- **Hero:** `WEB_OMF3_DT_Shopfloor` oder `VID_CAM_USB_Main`
-- **rechts:** Overview/Orders/TrackTrace (als Panels)
+- **Hero:** `WEB_OSF_DT_Shopfloor` oder `VID_CAM_USB_Main`
+- **rechts:** Process/Orders/TrackTrace (als Panels)
 
 #### P99_Hold_Slate
 - `GFX_Logo_ORBIS` + `TXT_SceneLabel` ("Einen Moment…")
@@ -479,7 +479,7 @@ Wenn Sie in Teams präsentieren, ist Audio oft "heikel". Empfehlung: eindeutige 
 
 - **Ctrl + Alt + 1** → Switch to `P01_Cam_Full`
 - **Ctrl + Alt + 2** → Switch to `P02_DT_Shopfloor_Full`
-- **Ctrl + Alt + 3** → Switch to `P03_UI_Overview_Full`
+- **Ctrl + Alt + 3** → Switch to `P03_UI_Process_Full`
 - **Ctrl + Alt + 4** → Switch to `P04_UI_Orders_Full`
 - **Ctrl + Alt + 5** → Switch to `P05_UI_TrackTrace_Full`
 - **Ctrl + Alt + 6** → Switch to `P07_UI_HeroPlus3` (Ihr Standard)
@@ -606,18 +606,18 @@ Wenn Sie in Teams präsentieren, ist Audio oft "heikel". Empfehlung: eindeutige 
 
 **Empfohlene 8–10 Minuten "Storyline" mit Szenenwechseln:**
 
-1. **Einstieg (30s):** `P07_UI_HeroPlus3` - Hero = Shopfloor, rechts = Overview/Orders/TrackTrace
+1. **Einstieg (30s):** `P07_UI_HeroPlus3` - Hero = Shopfloor, rechts = Process/Orders/Track&Trace
    - "Willkommen zur ORBIS SmartFactory Demo"
 
 2. **Shopfloor-Übersicht (1-2 Min):** `P02_DT_Shopfloor_Full`
    - Shopfloor-Layout erklären
    - Module zeigen (HBW, DRILL, MILL, DPS, AIQS, FTS)
 
-3. **Overview-Tab (1-2 Min):** `P03_UI_Overview_Full`
-   - Active Orders zeigen
+3. **Process-Tab (1-2 Min):** `P03_UI_Process_Full`
+   - Prozesse erläutern
    - Inventory-Status
 
-4. **Active Orders (1-2 Min):** `P04_UI_Orders_Full`
+4. **Orders (1-2 Min):** `P04_UI_Orders_Full`
    - Order-Details
    - Production Steps
 
@@ -680,4 +680,4 @@ Wenn Sie in Teams präsentieren, ist Audio oft "heikel". Empfehlung: eindeutige 
 
 ---
 
-**Letzte Aktualisierung:** 2025-12-16
+**Letzte Aktualisierung:** 2025-12-21
