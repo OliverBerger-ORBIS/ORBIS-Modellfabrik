@@ -347,6 +347,17 @@
     "@@trackTraceCustomerId": "ID Client:",
     "@@trackTraceCustomerOrderDate": "Date de commande client:",
     "@@trackTraceProductionStartDate": "Début de production:",
-    "@@trackTraceDeliveryEndDate": "Date d'expédition:"
+    "@@trackTraceDeliveryEndDate": "Date d'expédition:",
+    "@@configurationOpcUaServer": "Serveur OPC-UA",
+    "@@configurationOpcUaEndpoint": "Point d'accès OPC-UA",
+    "@@configurationOpcUaIpAddress": "Adresse IP OPC-UA",
+    "@@configurationOpcUaDescription": "Description OPC-UA",
+    "@@configurationTxtController": "Contrôleur TXT",
+    "@@configurationTxtControllerName": "Nom du contrôleur TXT",
+    "@@configurationTxtControllerIp": "Adresse IP du contrôleur TXT",
+    "@@configurationTxtControllerIpNote": "(DHCP)",
+    "@@configurationTxtControllerDescription": "Description du contrôleur TXT",
+    "@@configurationOpcUaSectionTitle": "Serveur OPC-UA",
+    "@@configurationTxtControllerSectionTitle": "Contrôleur TXT 4.0"
   }
 }

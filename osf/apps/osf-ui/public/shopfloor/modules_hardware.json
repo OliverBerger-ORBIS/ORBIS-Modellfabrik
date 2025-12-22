@@ -1,0 +1,116 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "last_updated": "2025-12-22",
+    "description": "Module hardware configuration (OPC-UA stations and TXT controllers) for OSF shopfloor",
+    "source": "Based on OMF2 registry configuration (modules.yml, stations.yml, txt_controllers.yml)"
+  },
+  "modules": {
+    "SVR3QA0022": {
+      "serial_number": "SVR3QA0022",
+      "module_name": "HBW",
+      "module_type": "Storage",
+      "opc_ua_station": {
+        "ip_address": "192.168.0.80",
+        "ip_range": "192.168.0.80-83",
+        "endpoint": "opc.tcp://192.168.0.80:4840",
+        "description": "Vacuum gripper with conveyor belt and high-bay warehouse"
+      },
+      "txt_controllers": []
+    },
+    "SVR4H76449": {
+      "serial_number": "SVR4H76449",
+      "module_name": "DRILL",
+      "module_type": "Processing",
+      "opc_ua_station": {
+        "ip_address": "192.168.0.50",
+        "ip_range": "192.168.0.50-55",
+        "endpoint": "opc.tcp://192.168.0.50:4840",
+        "description": "Vacuum gripper with conveyor belt and drill"
+      },
+      "txt_controllers": []
+    },
+    "SVR3QA2098": {
+      "serial_number": "SVR3QA2098",
+      "module_name": "MILL",
+      "module_type": "Processing",
+      "opc_ua_station": {
+        "ip_address": "192.168.0.40",
+        "ip_range": "192.168.0.40-45",
+        "endpoint": "opc.tcp://192.168.0.40:4840",
+        "description": "Vacuum gripper with conveyor belt and mill"
+      },
+      "txt_controllers": []
+    },
+    "SVR4H76530": {
+      "serial_number": "SVR4H76530",
+      "module_name": "AIQS",
+      "module_type": "Quality-Control",
+      "opc_ua_station": {
+        "ip_address": "192.168.0.70",
+        "ip_range": "192.168.0.70-75",
+        "endpoint": "opc.tcp://192.168.0.70:4840",
+        "description": "Vacuum gripper with conveyor belt"
+      },
+      "txt_controllers": [
+        {
+          "id": "TXT4.0-00Y4",
+          "name": "TXT-AIQS",
+          "ip_address": "192.168.0.103",
+          "mqtt_client": "txt_aiqs_mqtt_client",
+          "description": "Quality Control Camera"
+        }
+      ]
+    },
+    "SVR4H73275": {
+      "serial_number": "SVR4H73275",
+      "module_name": "DPS",
+      "module_type": "Input/Output",
+      "opc_ua_station": {
+        "ip_address": "192.168.0.90",
+        "ip_range": "192.168.0.90",
+        "endpoint": "opc.tcp://192.168.0.90:4840",
+        "description": "6-axis gripper with NFC scanner"
+      },
+      "txt_controllers": [
+        {
+          "id": "TXT4.0-p0F4",
+          "name": "TXT-DPS",
+          "ip_address": "192.168.0.102",
+          "mqtt_client": "txt_dps_mqtt_client",
+          "description": "NFC-Reader and Sensor-Station"
+        },
+        {
+          "id": "TXT4.0-WiY4",
+          "name": "TXT-CGW",
+          "ip_address": "192.168.0.101",
+          "mqtt_client": "txt_cgw_mqtt_client",
+          "description": "Cloud Gateway"
+        }
+      ]
+    },
+    "5iO4": {
+      "serial_number": "5iO4",
+      "module_name": "FTS",
+      "module_type": "Transport",
+      "opc_ua_station": null,
+      "txt_controllers": [
+        {
+          "id": "TXT4.0-5iO4",
+          "name": "TXT-FTS",
+          "ip_address": "192.168.0.104",
+          "mqtt_client": "txt_fts_mqtt_client",
+          "description": "Transport Control System"
+        }
+      ]
+    },
+    "CHRG0": {
+      "serial_number": "CHRG0",
+      "module_name": "CHRG",
+      "module_type": "Charging",
+      "opc_ua_station": null,
+      "txt_controllers": []
+    }
+  }
+}
+

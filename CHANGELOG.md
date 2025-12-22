@@ -4,6 +4,28 @@ All notable changes to OMF3 Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.6.0] - 2025-12-22
+
+### Added
+- **Module Hardware Configuration (Task 16):** Integration of OMF2 module hardware configuration into OSF
+  - **ModuleHardwareService:** New service to load and provide hardware configuration (OPC-UA servers, TXT controllers)
+  - **modules_hardware.json:** Hardware configuration file with OMF2-derived data (English as default language)
+  - **Configuration Tab Enhancements:**
+    - Separate sections for OPC-UA Server and TXT 4.0 Controller details
+    - Large icons for OPC-UA Server and TXT Controller (66% of station icon size)
+    - Sections only displayed when hardware is present
+    - TXT Controller IP addresses marked as DHCP (dynamically assigned)
+  - **Icons:** New SVG icons for OPC-UA Server (`opc-ua-server.svg`) and TXT Controller (`txt-controller.svg`)
+  - **i18n:** German and French translations for hardware configuration labels
+  - **Tests:** Complete test suite for `ModuleHardwareService`, Configuration Tab tests extended
+
+### Changed
+- **hardware-architecture.md:** Updated with reference to `modules_hardware.json` and OSF integration
+- **PROJECT_STATUS.md:** Task 16 marked as completed
+
+### Removed
+- **OMF2 Analysis Documents:** Removed temporary analysis documents (`OMF2_MODULE_CONFIGURATION_ANALYSIS.md`, `OMF2_MODULE_CONFIGURATION_ANALYSIS_UPDATE.md`, `OMF2_MODULE_CONFIGURATION_INTEGRATION_PLAN.md`) - information now consolidated in `hardware-architecture.md`
+
 ## [0.5.2] - 2025-12-20
 
 ### Changed

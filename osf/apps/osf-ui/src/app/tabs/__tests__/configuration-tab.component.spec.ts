@@ -8,10 +8,12 @@ import { MessageMonitorService } from '../../services/message-monitor.service';
 import { ModuleNameService } from '../../services/module-name.service';
 import { ConnectionService } from '../../services/connection.service';
 import { ExternalLinksService } from '../../services/external-links.service';
+import { ModuleHardwareService } from '../../services/module-hardware.service';
 import * as mockDashboard from '../../mock-dashboard';
 import type { ModuleOverviewState, CcuConfigSnapshot } from '@osf/entities';
 import type { ExternalLinksSettings } from '../../services/external-links.service';
 import type { ShopfloorLayoutConfig } from '../../components/shopfloor-preview/shopfloor-layout.types';
+import type { ModuleHardwareConfig } from '../../components/shopfloor-preview/module-hardware.types';
 
 // Mock getDashboardController
 jest.spyOn(mockDashboard, 'getDashboardController').mockReturnValue({
@@ -84,6 +86,27 @@ describe('ConfigurationTabComponent', () => {
   let httpClient: jest.Mocked<HttpClient>;
   let router: jest.Mocked<Router>;
   let activatedRoute: jest.Mocked<ActivatedRoute>;
+  let moduleHardwareService: jest.Mocked<ModuleHardwareService>;
+
+  const mockModuleHardwareConfig: ModuleHardwareConfig = {
+    serial_number: 'SVR4H73275',
+    module_name: 'DPS',
+    module_type: 'Input/Output',
+    opc_ua_station: {
+      ip_address: '192.168.0.90',
+      ip_range: '192.168.0.90',
+      endpoint: 'opc.tcp://192.168.0.90:4840',
+      description: '6-axis gripper arm with NFC scanner',
+    },
+    txt_controllers: [
+      {
+        id: 'TXT4.0-p0F4',
+        name: 'TXT-DPS',
+        ip_address: '192.168.0.102',
+        description: 'NFC-Reader and Sensor-Station',
+      },
+    ],
+  };
 
   beforeEach(async () => {
     const environmentServiceMock = {
@@ -100,6 +123,10 @@ describe('ConfigurationTabComponent', () => {
     const moduleNameServiceMock = {
       getModuleFullName: jest.fn((key: string) => `${key} Module`),
       getModuleDisplayText: jest.fn((key: string) => `${key} Display`),
+      getModuleDisplayName: jest.fn((key: string) => ({
+        id: key,
+        fullName: `${key} Module`,
+      })),
     };
 
     const connectionServiceMock = {
@@ -118,6 +145,23 @@ describe('ConfigurationTabComponent', () => {
 
     const httpClientMock = {
       get: jest.fn(() => of(mockLayoutConfig)),
+    };
+
+    const moduleHardwareServiceMock = {
+      getModuleHardwareConfig: jest.fn((serial: string) => {
+        if (serial === 'SVR4H73275') {
+          return mockModuleHardwareConfig;
+        }
+        return null;
+      }),
+      hasOpcUaServer: jest.fn((serial: string) => serial === 'SVR4H73275'),
+      hasTxtController: jest.fn((serial: string) => serial === 'SVR4H73275'),
+      getOpcUaStation: jest.fn((serial: string) =>
+        serial === 'SVR4H73275' ? mockModuleHardwareConfig.opc_ua_station : null
+      ),
+      getTxtControllers: jest.fn((serial: string) =>
+        serial === 'SVR4H73275' ? mockModuleHardwareConfig.txt_controllers : []
+      ),
     };
 
     const routerMock = {
@@ -141,6 +185,7 @@ describe('ConfigurationTabComponent', () => {
         { provide: HttpClient, useValue: httpClientMock },
         { provide: Router, useValue: routerMock },
         { provide: ActivatedRoute, useValue: activatedRouteMock },
+        { provide: ModuleHardwareService, useValue: moduleHardwareServiceMock },
       ],
     }).compileComponents();
 
@@ -154,6 +199,7 @@ describe('ConfigurationTabComponent', () => {
     httpClient = TestBed.inject(HttpClient) as any;
     router = TestBed.inject(Router) as any;
     activatedRoute = TestBed.inject(ActivatedRoute) as any;
+    moduleHardwareService = TestBed.inject(ModuleHardwareService) as any;
   });
 
   it('should create', () => {
@@ -312,10 +358,10 @@ describe('ConfigurationTabComponent', () => {
   });
 
   it('should open external link', () => {
-    const navigateSpy = jest.spyOn(router, 'navigate');
+    const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null);
     component.openExternalLink('https://example.com');
-    // Router.navigate might not be called directly, but the method should exist
-    expect(component.openExternalLink).toBeDefined();
+    expect(openSpy).toHaveBeenCalledWith('https://example.com', '_blank', 'noreferrer noopener');
+    openSpy.mockRestore();
   });
 
   it('should format timestamp', () => {
@@ -357,6 +403,125 @@ describe('ConfigurationTabComponent', () => {
     };
     const value = component.getChangeLightValue(message);
     expect(value).toBeNull();
+  });
+
+  describe('Module Hardware Configuration', () => {
+    it('should use ModuleHardwareService to get hardware config', () => {
+      const mockOverview: ModuleOverviewState = {
+        modules: {
+          SVR4H73275: {
+            id: 'SVR4H73275',
+            connected: true,
+            availability: 'READY',
+            configured: true,
+            messageCount: 1,
+            lastUpdate: '2025-12-22T12:00:00Z',
+          },
+        },
+        transports: {},
+      };
+
+      const mockCell = {
+        id: 'DPS',
+        label: 'DPS',
+        kind: 'module' as const,
+        row: 1,
+        column: 1,
+        rowSpan: 1,
+        columnSpan: 1,
+        icon: 'dps-icon',
+        tooltip: 'DPS',
+        serialNumber: 'SVR4H73275',
+        type: 'DPS',
+      };
+
+      const details = component['buildSelectedDetails'](mockCell, mockOverview);
+      expect(moduleHardwareService.getModuleHardwareConfig).toHaveBeenCalledWith('SVR4H73275');
+      expect(details.hasOpcUaStation).toBe(true);
+      expect(details.hasTxtController).toBe(true);
+      expect(details.opcUaItems).toBeDefined();
+      expect(details.txtControllerItems).toBeDefined();
+    });
+
+    it('should not show OPC-UA section if module has no OPC-UA server', () => {
+      moduleHardwareService.getModuleHardwareConfig.mockReturnValue({
+        ...mockModuleHardwareConfig,
+        opc_ua_station: null,
+      });
+      moduleHardwareService.hasOpcUaServer.mockReturnValue(false);
+
+      const mockOverview: ModuleOverviewState = {
+        modules: {
+          '5iO4': {
+            id: '5iO4',
+            connected: true,
+            availability: 'READY',
+            configured: true,
+            messageCount: 1,
+            lastUpdate: '2025-12-22T12:00:00Z',
+          },
+        },
+        transports: {},
+      };
+
+      const mockCell = {
+        id: 'FTS',
+        label: 'FTS',
+        kind: 'module' as const,
+        row: 1,
+        column: 1,
+        rowSpan: 1,
+        columnSpan: 1,
+        icon: 'fts-icon',
+        tooltip: 'FTS',
+        serialNumber: '5iO4',
+        type: 'FTS',
+      };
+
+      const details = component['buildSelectedDetails'](mockCell, mockOverview);
+      expect(details.hasOpcUaStation).toBe(false);
+      expect(details.opcUaItems).toBeUndefined();
+    });
+
+    it('should not show TXT Controller section if module has no TXT controller', () => {
+      moduleHardwareService.getModuleHardwareConfig.mockReturnValue({
+        ...mockModuleHardwareConfig,
+        txt_controllers: [],
+      });
+      moduleHardwareService.hasTxtController.mockReturnValue(false);
+
+      const mockOverview: ModuleOverviewState = {
+        modules: {
+          SVR3QA0022: {
+            id: 'SVR3QA0022',
+            connected: true,
+            availability: 'READY',
+            configured: true,
+            messageCount: 1,
+            lastUpdate: '2025-12-22T12:00:00Z',
+          },
+        },
+        transports: {},
+      };
+
+      const mockCell = {
+        id: 'HBW',
+        label: 'HBW',
+        kind: 'module' as const,
+        row: 1,
+        column: 1,
+        rowSpan: 1,
+        columnSpan: 1,
+        icon: 'hbw-icon',
+        tooltip: 'HBW',
+        serialNumber: 'SVR3QA0022',
+        type: 'HBW',
+      };
+
+      const details = component['buildSelectedDetails'](mockCell, mockOverview);
+      expect(details.hasTxtController).toBe(false);
+      expect(details.txtControllerItems).toBeUndefined();
+    });
   });
 });
 

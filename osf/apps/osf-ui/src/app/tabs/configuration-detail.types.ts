@@ -7,6 +7,8 @@ export type DetailPanelKind = 'default' | 'orbis' | 'dsp';
 export interface DetailItem {
   label: string;
   value: string;
+  /** Optional icon key for visual representation (e.g., 'opc-ua-station', 'txt-controller') */
+  icon?: string;
 }
 
 export interface SelectedDetailView {
@@ -19,6 +21,14 @@ export interface SelectedDetailView {
   icon?: string;
   /** Optional icon name/key for the selected cell/module */
   iconName?: string;
+  /** OPC-UA station items (separate section) */
+  opcUaItems?: DetailItem[];
+  /** TXT Controller items (separate section) */
+  txtControllerItems?: DetailItem[];
+  /** Whether module has OPC-UA station (for icon display) */
+  hasOpcUaStation?: boolean;
+  /** Whether module has TXT controller (for icon display) */
+  hasTxtController?: boolean;
 }
 
 export interface OrbisPhaseDefinition {

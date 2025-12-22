@@ -98,13 +98,21 @@
      - Business Processes Liste erweitert (bp-scm, bp-crm)
    - ⏳ **Dokumentation Cleanup:** Folgt später (viele veraltete Planungsdokumente identifiziert, Schritt-für-Schritt Cleanup geplant)
 15. **OBS-Video** Testen und aufbau der OBS-Video präsentation auf Windows. Siehe doc obs-video-presentation-setup.md
-16. **Stations und OPC-UA-Module** Erweiterung der Konfiguration um Infos (aus omf2)
+16. ✅ **Stations und OPC-UA-Module** Erweiterung der Konfiguration um Infos (aus omf2) **(Erledigt: 22.12.2025)**
+   - `ModuleHardwareService` erstellt für Hardware-Konfiguration (OPC-UA Server, TXT Controller)
+   - `modules_hardware.json` erstellt mit OMF2-Daten (englische Texte als Default)
+   - Configuration Tab erweitert: Separate Sections für OPC-UA Server und TXT Controller mit Icons
+   - Icons erstellt/angepasst: `opc-ua-server.svg`, `txt-controller.svg` (66% Größe der Station-Icons)
+   - Sections werden nur angezeigt, wenn Hardware vorhanden ist
+   - TXT Controller IPs als DHCP markiert (dynamisch vergeben)
+   - i18n Keys für DE/FR hinzugefügt
+   - Tests erstellt: `ModuleHardwareService` vollständig getestet, Configuration Tab Tests erweitert
 17. **Storytelling** , anschließende Blog-Serie zu OSF & DSP Story vorbereiten.
 18. **AIQS-Kamera-Integration (sf-system)** – Anzeige der Information aus der AIQS-Station: Photo des Workpieces. AIQS-Kamera-Daten werden nicht über MQTT übertragen, sondern müssen direkt vom TXT-Controller (IP: 192.168.0.103) via HTTP abgerufen werden. Integration in Shopfloor-Tab bei AIQS-Auswahl. API-Endpoint muss noch ermittelt werden (TXT Controller Web-Interface prüfen, Python-Code in `integrations/TXT-AIQS/lib/camera.py` analysieren).
 19. **Azure DevOps Migration** – Mirror/Move Repository inkl. Pipelines nach ORBIS Azure DevOps, Rechte & Secrets definieren.
 20. **OSF Deployment** – Docker-Setup für Hilcher-Box/RPi planen und durchführen
 
-**Letzte Aktualisierung:** 20.12.2025
+**Letzte Aktualisierung:** 22.12.2025
 
 ## 📊 Sprint-Vorgehen
 

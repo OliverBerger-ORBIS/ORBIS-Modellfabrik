@@ -296,11 +296,27 @@ Docker Bridge: 172.18.0.x
 
 ---
 
+## 📋 Module Hardware Configuration
+
+Die Hardware-Konfiguration (OPC-UA Server, TXT Controller) wird in OSF in `osf/apps/osf-ui/public/shopfloor/modules_hardware.json` gespeichert und über den `ModuleHardwareService` im Configuration Tab angezeigt.
+
+**Struktur:**
+- **OPC-UA Server:** IP-Adresse, Endpoint, Beschreibung
+- **TXT Controller:** ID, Name, IP-Adresse (DHCP), Beschreibung
+- **Zuordnung:** Via Module Serial Number (z.B. `SVR4H73275`)
+
+**Im Configuration Tab:**
+- Separate Sections für OPC-UA Server und TXT Controller
+- Icons für visuelle Darstellung (`opc-ua-server.svg`, `txt-controller.svg`)
+- Nur angezeigt, wenn Hardware vorhanden ist
+- TXT Controller IPs werden als DHCP markiert (dynamisch vergeben)
+
 ## 🔗 Siehe auch
 
 - [Module Serial Mapping](module-serial-mapping.md) - Detaillierte Serial-Number-Zuordnung
 - [MQTT Topic Conventions](mqtt-topic-conventions.md) - Topic-Naming-Patterns
 - [CCU-Backend Orchestration](ccu-backend-orchestration.md) - Order-Flow Details
+- **OSF Configuration:** `osf/apps/osf-ui/public/shopfloor/modules_hardware.json` - Hardware-Konfiguration
 
 ---
 

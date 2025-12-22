@@ -10,6 +10,7 @@ import { getDashboardController, type DashboardStreamSet } from '../mock-dashboa
 import { MessageMonitorService, MonitoredMessage } from '../services/message-monitor.service';
 import { ModuleNameService } from '../services/module-name.service';
 import { ShopfloorMappingService } from '../services/shopfloor-mapping.service';
+import { ModuleHardwareService } from '../services/module-hardware.service';
 import { EnvironmentService } from '../services/environment.service';
 import { ConnectionService } from '../services/connection.service';
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
@@ -27,6 +28,7 @@ import {
   type DspActionLink,
 } from './configuration-detail.types';
 import { DETAIL_ASSET_MAP, getAssetPath } from '../assets/detail-asset-map';
+import { getIconPath } from '../assets/icon-registry';
 
 type LayoutCellKind = 'module' | 'fixed';
 
@@ -232,7 +234,8 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     private readonly externalLinksService: ExternalLinksService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
-    private readonly mappingService: ShopfloorMappingService
+    private readonly mappingService: ShopfloorMappingService,
+    private readonly moduleHardwareService: ModuleHardwareService
   ) {
     this.externalLinks$ = this.externalLinksService.settings$;
     this.layoutInfo$ = this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').pipe(
@@ -271,6 +274,18 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     return this.resolveAssetPath(
       SHOPFLOOR_ASSET_MAP['PARAMETER_CONFIGURATION'] ?? SHOPFLOOR_ASSET_MAP['CONFIGURATION']
     );
+  }
+
+  /**
+   * Get icon path from icon key (for DetailItem icons)
+   * @param iconKey Icon key (e.g., 'opc-ua-station', 'txt-controller')
+   * @returns Icon path or empty string if not found
+   */
+  getIconPath(iconKey?: string): string {
+    if (!iconKey) {
+      return '';
+    }
+    return getIconPath(iconKey as any);
   }
 
   private buildLayout(layout: ShopfloorLayoutConfig): LayoutViewModel {
@@ -391,15 +406,58 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         },
       ];
 
-      // Add DSP-Edge information for DRILL module
-      if (moduleType === 'DRILL') {
-        const dspActionMsg = this.messageMonitor.getLastMessage('dsp/drill/action');
-        // Note: This is a synchronous call, but we need async data
-        // We'll handle this in the template with async pipe
-        items.push({
-          label: $localize`:@@configurationDspEdgeControlled:Controlled by DSP Edge`,
-          value: $localize`:@@configurationDspEdgeStatus:Loading status...`,
-        });
+      // Prepare OPC-UA and TXT Controller sections separately
+      const opcUaItems: DetailItem[] = [];
+      const txtControllerItems: DetailItem[] = [];
+      let hasOpcUaStation = false;
+      let hasTxtController = false;
+      
+      if (cell.serialNumber) {
+        const hardwareConfig = this.moduleHardwareService.getModuleHardwareConfig(cell.serialNumber);
+        
+        if (hardwareConfig) {
+          // OPC-UA Station Information (only if available)
+          if (hardwareConfig.opc_ua_station) {
+            hasOpcUaStation = true;
+            opcUaItems.push({
+              label: $localize`:@@configurationOpcUaEndpoint:OPC-UA Endpoint`,
+              value: hardwareConfig.opc_ua_station.endpoint,
+            });
+            opcUaItems.push({
+              label: $localize`:@@configurationOpcUaIpAddress:OPC-UA IP Address`,
+              value: hardwareConfig.opc_ua_station.ip_address,
+            });
+            if (hardwareConfig.opc_ua_station.description) {
+              opcUaItems.push({
+                label: $localize`:@@configurationOpcUaDescription:OPC-UA Description`,
+                value: hardwareConfig.opc_ua_station.description,
+              });
+            }
+          }
+
+          // TXT Controller Information (only if available)
+          const txtControllers = hardwareConfig.txt_controllers ?? [];
+          if (txtControllers.length > 0) {
+            hasTxtController = true;
+            txtControllers.forEach((txt, index) => {
+              const suffix = txtControllers.length > 1 ? ` ${index + 1}` : '';
+              txtControllerItems.push({
+                label: `${$localize`:@@configurationTxtControllerName:TXT Controller Name`}${suffix}`,
+                value: `${txt.name} (${txt.id})`,
+              });
+              txtControllerItems.push({
+                label: `${$localize`:@@configurationTxtControllerIp:TXT Controller IP`}${suffix}`,
+                value: `${txt.ip_address} ${$localize`:@@configurationTxtControllerIpNote:(DHCP)`}`,
+              });
+              if (txt.description) {
+                txtControllerItems.push({
+                  label: `${$localize`:@@configurationTxtControllerDescription:TXT Controller Description`}${suffix}`,
+                  value: txt.description,
+                });
+              }
+            });
+          }
+        }
       }
 
       return {
@@ -409,6 +467,10 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         moduleType: moduleType,
         icon: cell.icon,
         iconName: cell.type,
+        opcUaItems: hasOpcUaStation ? opcUaItems : undefined,
+        txtControllerItems: hasTxtController ? txtControllerItems : undefined,
+        hasOpcUaStation,
+        hasTxtController,
       };
     }
 

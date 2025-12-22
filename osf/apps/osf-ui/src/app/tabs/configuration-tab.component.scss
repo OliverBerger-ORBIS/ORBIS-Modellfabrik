@@ -300,15 +300,18 @@
     .item-icon {
       width: 2.5rem;
       height: 2.5rem;
-      border-radius: 0.8rem;
+      border-radius: 0.5rem;
       background: rgba(236, 244, 255, 0.8);
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
 
       img {
         max-width: 100%;
         max-height: 100%;
+        width: 2rem;
+        height: 2rem;
       }
     }
 
@@ -340,6 +343,100 @@
 
   .selection-panel {
     margin: 0;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.55rem 0.35rem;
+    border-radius: 0.9rem;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: inset 0 0 0 1px rgba(17, 56, 107, 0.06);
+
+    .item-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.5rem;
+      background: rgba(236, 244, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      img {
+        max-width: 100%;
+        max-height: 100%;
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+
+    .label {
+      font-weight: 600;
+      color: var(--orbis-nightblue);
+    }
+
+    .value {
+      justify-self: end;
+      font-weight: 600;
+      color: #1a4d94;
+    }
+  }
+}
+
+// Hardware configuration sections
+.hardware-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed rgba(17, 56, 107, 0.15);
+
+  .hardware-section__header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hardware-section__icon {
+    width: 120px;
+    height: 120px;
+    border: 3px solid var(--orbis-blue-strong);
+    border-radius: 8px;
+    padding: 0.75rem;
+    background: rgba(var(--orbis-blue-strong-rgb), 0.10);
+    box-shadow: 
+      0 0 0 1px rgba(var(--orbis-blue-strong-rgb), 0.3),
+      0 0 0 3px rgba(var(--orbis-blue-strong-rgb), 0.2),
+      0 0 12px 4px rgba(var(--orbis-blue-strong-rgb), 0.25),
+      0 4px 16px 0 rgba(var(--orbis-blue-strong-rgb), 0.3);
+    object-fit: contain;
+    flex-shrink: 0;
+
+    @media (max-width: 768px) {
+      width: 100px;
+      height: 100px;
+    }
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--orbis-nightblue);
+  }
+
+  ul {
+    margin-top: 0;
   }
 }
 

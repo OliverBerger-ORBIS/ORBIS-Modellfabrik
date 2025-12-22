@@ -41,40 +41,40 @@
           </header>
           <ul>
             <li *ngFor="let item of panel.selection.items">
+              <div class="item-icon" *ngIf="item.icon">
+                <img [src]="getIconPath(item.icon)" [alt]="item.label" />
+              </div>
               <span class="label">{{ item.label }}</span>
               <span class="value">{{ item.value }}</span>
             </li>
           </ul>
           
-          <!-- DSP-Edge Section for DRILL module -->
-          <section *ngIf="panel.selection.moduleType === 'DRILL'" class="dsp-edge-section">
-            <h4 i18n="@@configurationDspEdgeHeading">Controlled by DSP Edge</h4>
-            <ng-container *ngIf="getDspActionMessage() | async as msg; else noDspMessage">
-              <div class="dsp-edge-info">
-                <div class="dsp-edge-light-badge">
-                  <span i18n="@@configurationDspEdgeCurrentLight">Current changeLight</span>
-                  <div
-                    class="dsp-edge-color-badge"
-                    [style.background-color]="getChangeLightValue(msg) || '#cccccc'"
-                    [attr.aria-label]="'Current color: ' + (getChangeLightValue(msg) || 'none')"
-                  >
-                    <span *ngIf="!getChangeLightValue(msg)" class="dsp-edge-no-value">—</span>
-                  </div>
-                  <span *ngIf="getChangeLightValue(msg)" class="dsp-edge-color-value">
-                    {{ getChangeLightValue(msg) }}
-                  </span>
-                </div>
-                <div class="dsp-edge-timestamp">
-                  <small i18n="@@configurationDspEdgeLastCommand">Last Command:</small>
-                  <small>{{ formatTimestamp(msg.timestamp) }}</small>
-                </div>
-              </div>
-            </ng-container>
-            <ng-template #noDspMessage>
-              <p class="dsp-edge-no-data" i18n="@@configurationDspEdgeNoData">
-                No DSP Edge commands received
-              </p>
-            </ng-template>
+          <!-- OPC-UA Section -->
+          <section *ngIf="panel.selection.hasOpcUaStation" class="hardware-section">
+            <div class="hardware-section__header">
+              <img [src]="getIconPath('opc-ua-station')" [alt]="'OPC-UA Server'" class="hardware-section__icon" />
+              <h4 i18n="@@configurationOpcUaSectionTitle">OPC-UA Server</h4>
+            </div>
+            <ul>
+              <li *ngFor="let item of panel.selection.opcUaItems">
+                <span class="label">{{ item.label }}</span>
+                <span class="value">{{ item.value }}</span>
+              </li>
+            </ul>
+          </section>
+          
+          <!-- TXT Controller Section -->
+          <section *ngIf="panel.selection.hasTxtController" class="hardware-section">
+            <div class="hardware-section__header">
+              <img [src]="getIconPath('txt-controller')" [alt]="'TXT 4.0 Controller'" class="hardware-section__icon" />
+              <h4 i18n="@@configurationTxtControllerSectionTitle">TXT 4.0 Controller</h4>
+            </div>
+            <ul>
+              <li *ngFor="let item of panel.selection.txtControllerItems">
+                <span class="label">{{ item.label }}</span>
+                <span class="value">{{ item.value }}</span>
+              </li>
+            </ul>
           </section>
         </section>
       </ng-container>
