@@ -1,9 +1,9 @@
 @echo off
-REM scripts\run-omf3.bat - Starter for OMF3 dev server
-REM Usage: run-omf3.bat [project] [configuration]
+REM scripts\run-osf.bat - Starter for OSF dev server
+REM Usage: run-osf.bat [project] [configuration]
 
 SET "PROJECT=%~1"
-IF "%PROJECT%"=="" SET "PROJECT=ccu-ui"
+IF "%PROJECT%"=="" SET "PROJECT=osf-ui"
 SET "CONFIG=%~2"
 IF "%CONFIG%"=="" SET "CONFIG=development"
 

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hold Slate • ORBIS</title>
+    <style>
+      :root { --bg: #0b0f1a; --accent: #1f2a44; }
+      html, body { height: 100%; margin: 0; }
+      body {
+        background: radial-gradient(60% 60% at 50% 40%, rgba(255,255,255,0.06), transparent 60%), var(--bg);
+        display: grid;
+        place-items: center;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      }
+      .frame {
+        width: 100vw;
+        height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 4vmin;
+        box-sizing: border-box;
+      }
+      .logo {
+        max-width: min(65vw, 80vh);
+        max-height: min(65vw, 80vh);
+        width: 100%;
+        height: auto;
+        filter: drop-shadow(0 6px 24px rgba(0,0,0,0.35));
+      }
+      /* Optional subtle bottom bar */
+      .bar {
+        position: fixed;
+        inset: auto 0 0 0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame">
+      <!-- Uses the existing SVG from the repository; no duplication -->
+      <img class="logo" alt="ORBIS DSP Logo" src="osf/apps/osf-ui/public/assets/svg/brand/orbis-dsp-logo.svg" />
+    </div>
+    <div class="bar" aria-hidden="true"></div>
+  </body>
+</html>

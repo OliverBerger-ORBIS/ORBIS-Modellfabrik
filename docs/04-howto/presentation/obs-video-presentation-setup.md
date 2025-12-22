@@ -1,6 +1,6 @@
 # OBS Video-Präsentation Setup für ORBIS SmartFactory (OSF)
 
-**Zielgruppe:** Präsentatoren, die OSF (vormals OMF3) in Teams-Meetings demonstrieren  
+**Zielgruppe:** Präsentatoren, die OSF in Teams-Meetings demonstrieren  
 **Plattform:** Windows  
 **Tools:** OBS Studio, Microsoft Teams
 
@@ -76,6 +76,8 @@ Sie können das gesamte Layout vorbereiten, auch wenn weder Kamera noch Präsent
 
 **Result:** Canvas bleibt 1440p (mehr Schärfe/Reserve), Output ist 1080p und damit Teams-kompatibel.
 
+> **Fallback:** Wenn Ihre Monitorkombi diese Werte nicht zulässt, nutzen Sie vorerst das aktuelle Profil (z. B. 3840×2160 → 1280×720). Die restliche Szene-/Quellenstruktur funktioniert trotzdem und kann später wieder auf 2560→1920 zurückgestellt werden.
+
 ---
 
 ## D. OBS Output/Recording (für reproduzierbare Tests)
@@ -94,20 +96,19 @@ Sie können das gesamte Layout vorbereiten, auch wenn weder Kamera noch Präsent
 
 ---
 
-## E. Szenen anlegen (Vollbild, 4-up, Hero+3)
+## E. Szenen anlegen (Vollbild + Portrait + Hero+2)
 
 ### E1) Szenenliste erstellen
 
-Links unten im **"Scenes"**-Panel nacheinander **+** klicken und anlegen:
+Links unten im **"Scenes"**-Panel nacheinander **+** klicken und anlegen. Die ersten vier Szenen füllen später automatisch die Multiview-Slots 1–4.
 
-- **S1 - Kamera Vollbild**
-- **S2 - Shopfloor Vollbild**
-- **S3 - Process Vollbild**
-- **S4 - Orders Vollbild**
-- **S5 - Track&Trace Vollbild**
-- **S6 - 4up Grid**
-- **S7 - Hero + 3**
-- **S8 - Multiview Quad (optional)**
+- **S1 - Orders Vollbild (Edge InPrivate)** – OSF Orders/Track&Trace im separaten Edge-Profil
+- **S2 - Digital-Twin Vollbild (Chrome)** – Route `#/de/presentation` inkl. FTS/AGV-Feed
+- **S3 - OSF Vollbild (Chrome)** – Hauptdashboard mit allen Tabs (Overview, DSP, KPIs)
+- **S4 - Kamera Vollbild** – USB-Kamera oder Placeholder
+- **S5 - Hero + 2** – Komposition aus Portrait + Digital Twin + Kamera
+- **S6 - OSF Portrait (Edge)** – Responsive/Portrait-Version, dient als Vollbildfallback und als Quelle für S5
+- **S7 - Hold Slate** – Pausen-/Wartebild über Browser Source (siehe `hold-slate.html`)
 
 ---
 
@@ -115,7 +116,7 @@ Links unten im **"Scenes"**-Panel nacheinander **+** klicken und anlegen:
 
 ### F1) Kamera als Quelle (USB)
 
-1. Szene **S1 - Kamera Vollbild** auswählen
+1. Szene **S4 - Kamera Vollbild** auswählen
 2. **Sources** → **+** → **Video Capture Device**
 3. Name: `CAM - USB`
 4. **Device:** Ihre USB-Kamera auswählen
@@ -156,72 +157,74 @@ Das sind die **"richtigen Stellräder"**, die später den Unterschied machen.
 
 ---
 
-### F2) OSF Dashboard als Quellen (empfohlen: Window Capture)
+### F2) Browser-Quellen (Window Capture, 4 Fenster)
 
-OBS Browser Sources sind für diese Demo unbrauchbar (keine Maus/Keyboard-Events). Verwenden Sie ausschließlich Window Capture:
+Alle UI-Szenen laufen über Window Capture. Wir nutzen **zwei Chrome-** und **zwei Edge-Fenster**, damit Sessions voneinander getrennt bleiben und Multiview die Slots sauber füllt.
 
-1. Öffnen Sie je Ansicht (Shopfloor, Process, Orders, Track&Trace) ein **eigenes Browserfenster** und setzen Sie Größe/Zoom auf `1920×1080 @ 100 %`.
-2. Entfernen Sie Browser-Toolbars/Lesezeichenleisten für saubere Frames und positionieren Sie die Fenster auf einem festen Desktop-Bereich (dürfen minimiert sein).
-3. In OBS Szene wählen → **Sources** → **+** → **Window Capture** → gewünschtes Fenster.
-4. **Transform** → **Fit to Screen**. Cropping nur einsetzen, wenn unvermeidbar.
+1. **Vier Fenster vorbereiten:**
+   - **Chrome Fenster A (Landscape, S3):** Standardprofil (1920×1080) mit allen acht Demo-Tabs (DSP, Shopfloor, Process, Orders, Environment Data, Configuration, AGV, Track&Trace). Sprache immer `DE`, Environment `Live`, Sidebar eingeklappt.
+   - **Chrome Fenster B (Digital Twin, S2):** Incognito/Privat-Fenster (1920×1080) mit Route `#/de/presentation` und aktivem FTS-/AGV-Feed, nur ein Tab.
+   - **Edge Fenster A (Orders, S1):** InPrivate-Session (1920×1080) für Orders/Track&Trace, nur ein Tab.
+   - **Edge Fenster B (Portrait, S6):** Business-Profil, via `Ctrl+Shift+M` oder DevTools-Device-Toolbar auf 1080×1920 gestellt.
+   Nutzen Sie `Win + Pfeil` und `Alt + Space → S`, um exakt zu skalieren. Zoom immer mit `Ctrl + 0` zurücksetzen.
+2. **Tabs je Fenster fixieren:** Jede Route/Tab einmal laden, dann nicht mehr ändern. Bookmark-Bar ausblenden (`Ctrl+Shift+B`), damit nix flackert.
+3. **Window Capture hinzufügen:**
+   - **S1 - Orders Vollbild:** Quelle `Edge_Priv_OSF_ORDER` (Edge InPrivate Fenster A).
+   - **S2 - Digital-Twin Vollbild:** Quelle `Chrome_Priv_DigitalTwin` (Chrome Fenster B).
+   - **S3 - OSF Vollbild:** Quelle `Chrome_OSF_Landscape` (Chrome Fenster A).
+   - **S6 - OSF Portrait:** Quelle `Edge_OSF_Portrait` (Edge Fenster B).
+   Quellen nach dem Positionieren auf `Fit to Screen` setzen und sofort sperren.
+4. **Naming im Sources-Panel:**
+   - `Edge_Priv_OSF_ORDER` (Edge InPrivate → Orders/Track&Trace)
+   - `Chrome_Priv_DigitalTwin` (Chrome Incognito → DT)
+   - `Chrome_OSF_Landscape` (Chrome Standard → Dashboard)
+   - `Edge_OSF_Portrait` (Edge Business → Portrait)
+   Nutzen Sie exakt diese Namen, damit Hero + 2 und Multiview immer auf dieselben Assets verweisen.
+5. **Kein zweiter Monitor?** Fenster minimieren reicht. OBS rendert minimierte Fenster weiter, solange sie nicht geschlossen werden.
 
-**Regeln für stabile Captures:**
+### F3) OBS Multiview (Slots 1–4 direkt)
 
-- Fenstergröße **einmal** festlegen, danach nicht verschieben/zoomen.
-- Pro Ansicht ein eigenständiges Fenster anlegen, keine Tabs teilen.
-- Nach dem Ausrichten Quellen sperren (Abschnitt H), damit nichts verrutscht.
-- Wenn kein zweiter Monitor verfügbar ist, lassen Sie die Fenster im Hintergrund offen; OBS captured sie trotzdem.
+Statt einer zusätzlichen Szene nutzen wir das native Multiview und füttern Slots 1–4 mit `S1–S4` (Orders, Digital Twin, OSF Dashboard, Kamera).
 
-### F3) OBS Multiview (Quad-Output ohne manuelles 4up-Layout)
+1. **Reihenfolge prüfen:** In der Scenes-Liste muss exakt `S1 → S2 → S3 → S4 → S5 → S6` stehen. So landen die gewünschten Quellen automatisch in den Multiview-Slots 1–4.
+2. **Settings → General → Multiview:** Layout `Top 8 (2×4)` wählen und `Disable Preview/Program` aktivieren.
+3. **View → Multiview (Windowed)** testen. Wenn ein Slot falsch belegt ist, verschieben Sie die Szene in der Liste oder blenden Sie sie temporär aus.
+4. **Fullscreen für Demo:** `View → Multiview (Fullscreen)` → Monitor 2. Beenden mit `Esc`.
+5. **Keine zusätzliche Szene:** Multiview wird nicht mehr gecaptured. Sie teilen direkt den Multiview-Ausgang via Monitor 2, sodass die vier Perspektiven live bleiben.
 
-Statt der manuellen Szene **S6 - 4up Grid** können Sie das OBS-Multiview nutzen und als fertiges 4er-Layout ausgeben:
-
-1. Scenes vorbereiten: `P02_DT_Shopfloor_Full`, `P03_UI_Process_Full`, `P04_UI_Orders_Full`, `P05_UI_TrackTrace_Full` müssen alle funktionieren.
-2. **OBS → Settings → General → Multiview**:
-   - **Multiview Layout:** `Top 8 (2×4)` (zeigt vier Slots oben nebeneinander – restliche Slots bleiben leer)
-   - **Disable Preview/Program:** aktivieren, damit nur die vier Szenen sichtbar sind.
-3. **View → Multiview (Windowed)** öffnen. Das Fenster zeigt nun die vier aktiven Szenen gleichzeitig.
-4. Für den Stream neue Szene `S8 - Multiview Quad` anlegen → **Sources → + → Window Capture** → Fenster `Multiview` auswählen → **Transform → Fit to Screen**.
-5. Diese Szene können Sie wie jede andere Szene testen oder auf Monitor 2 projizieren (zunächst als Windowed Projector teilen, später `View → Multiview (Fullscreen)` auf Monitor 2).
-6. Vorteile: kein manuelles Pixel-Layout, Szenen bleiben interaktiv; Tests funktionieren auch ohne zweiten Monitor, weil das Multiview-Fenster auf dem Laptop verbleibt.
+**Vorteil:** Kein separates Raster pflegen; die Slots folgen der Szenenliste. Für andere Vierer-Kombinationen nur die Reihenfolge der ersten vier Szenen neu sortieren.
 
 ---
 
 ## G. Multi-Layouts exakt bauen
 
-**Voraussetzung:** Output ist 1920×1080. Wenn Sie kein eigenes Grid bauen möchten, nutzen Sie stattdessen den in Abschnitt F3 beschriebenen Multiview-Ansatz (Szene `S8 - Multiview Quad`).
+**Voraussetzung:** Output bleibt 1920×1080. Für echte 4-fach-Ansichten nutzen Sie ausschließlich das Multiview aus Abschnitt F3. Lediglich Szene `S5 - Hero + 2` benötigt ein manuelles Layout.
 
-### G1) S6 - 4up Grid (4 gleich große Fenster)
+### G1) S5 - Hero + 2 (OSF Portrait + Shopfloor + Kamera)
 
-1. Szene **S6 - 4up Grid** wählen
-2. Vier Quellen hinzufügen (Browser oder Window Capture), z. B.:
-   - `OSF - Shopfloor`
-   - `OSF - Process`
-   - `OSF - Orders`
-   - `OSF - Track&Trace`
-3. Für jede Quelle: **Rechtsklick** → **Transform** → **Edit Transform**
+1. Szene **S5 - Hero + 2** wählen.
+2. Drei Quellen hinzufügen (direkt die Window Captures / Kameraquellen aus Abschnitt F2/F1):
+   - `Edge_OSF_Portrait`
+   - `Chrome_Priv_DigitalTwin`
+   - `CAM - USB` (oder `placeholder-camera`)
+3. **Transform → Edit Transform** und folgende Werte setzen (alles in Pixel):
 
-**Setzen Sie exakt:**
+- **OSF Portrait (links, hero):** `X=0`, `Y=0`, `W=720`, `H=1080` (bewahrt Portrait-Feeling, genug Platz für Tabs).
+- **Shopfloor Vollbild (rechts oben):** `X=720`, `Y=0`, `W=1200`, `H=540`.
+- **Kamera (rechts unten):** `X=720`, `Y=540`, `W=1200`, `H=540`.
 
-- **Oben links:** X=`0`, Y=`0`, W=`960`, H=`540`
-- **Oben rechts:** X=`960`, Y=`0`, W=`960`, H=`540`
-- **Unten links:** X=`0`, Y=`540`, W=`960`, H=`540`
-- **Unten rechts:** X=`960`, Y=`540`, W=`960`, H=`540`
+4. Optional Rahmen/Labels ergänzen (`GFX_Frame_Panel`, `TXT_SceneLabel`).
+5. Quellen sperren, sobald die Positionen stimmen. Falls Sie ein anderes Seitenverhältnis brauchen, passen Sie ausschließlich die Breite des Portrait-Bereichs an; die rechten Quellen teilen sich immer exakt 1200×540 px.
 
----
+### G2) Multiview ohne eigene Szene
 
-### G2) S7 - Hero + 3 (Hauptfenster + 3 rechts)
+Multiview rendert direkt aus den Szenen `S1–S4`. Sie müssen daher nichts im Canvas positionieren:
 
-1. Szene **S7 - Hero + 3** wählen
-2. Quellen hinzufügen:
-   - **Hero:** Shopfloor oder Kamera
-   - **3 kleine:** Process, Orders, Track&Trace
-3. **Transform-Werte exakt:**
+- Slots 1–4 übernehmen automatisch `S1` (Orders Edge), `S2` (Digital Twin Chrome), `S3` (OSF Chrome) und `S4` (Kamera).
+- Änderungen am Viererbild erledigen Sie, indem Sie die Reihenfolge der Szenen verschieben oder einzelne Szenen temporär deaktivieren.
+- Für Hero + 2 oder Portrait-Vollbild bleiben `S5` und `S6` unverändert und beeinflussen Multiview nicht.
 
-- **Hero links groß:** X=`0`, Y=`0`, W=`1280`, H=`1080`
-- **Rechts oben:** X=`1280`, Y=`0`, W=`640`, H=`360`
-- **Rechts Mitte:** X=`1280`, Y=`360`, W=`640`, H=`360`
-- **Rechts unten:** X=`1280`, Y=`720`, W=`640`, H=`360`
+Wichtig: Die vier Browserfenster müssen geöffnet bleiben, sonst liefert Multiview leere Slots.
 
 ---
 
@@ -293,12 +296,11 @@ Jetzt zeigt Monitor 2 nur das Sendebild.
 ### K3) Szenen-Test-Reihenfolge (mit kurzem Blick auf Lesbarkeit)
 
 1. **S1** Kamera Vollbild (FTS fährt)
-2. **S2** Shopfloor Vollbild
-3. **S3** Process Vollbild
-4. **S4** Orders Vollbild
-5. **S5** Track&Trace Vollbild
-6. **S7** Hero + 3 (entscheidend: kleine Panels lesbar?)
-7. **S6** 4up Grid (nur wenn lesbar genug)
+2. **S2** OSF Vollbild (Tabs durchklicken, Audio testen)
+3. **S3** Shopfloor Vollbild (Digital Twin, Kamera-Feed)
+4. **S4** OSF Portrait (responsive Darstellung prüfen)
+5. **S5** Hero + 2 (lesen sich alle drei Bereiche?)
+6. **Multiview:** `View → Multiview (Windowed)` (zeigen Slots 1–4 die richtigen Szenen?)
 
 ### K4) OBS-Performance prüfen
 
@@ -336,8 +338,8 @@ Jetzt zeigt Monitor 2 nur das Sendebild.
 
 - **Standardprofil:** `Teams-Demo-1080p60` (wenn OBS Stats sauber bleiben)
 - **Fallbackprofil:** `Teams-Demo-1080p30`
-- **Standard-Szene:** **S7 Hero + 3** (Hero = Shopfloor oder Kamera; rechts = Process/Orders/Track&Trace)
-- **Detail-Szenen:** Vollbild je Tab für Lesbarkeit
+- **Standard-Szene:** **S5 Hero + 2** (links OSF-Portrait, rechts Digital Twin + Kamera)
+- **Detail-Szenen:** `S3 - OSF Vollbild`, `S2 - Digital-Twin Vollbild`, `S6 - OSF Portrait`
 
 ---
 
@@ -345,32 +347,21 @@ Jetzt zeigt Monitor 2 nur das Sendebild.
 
 ### N1) Scene Collection Struktur (Scenes)
 
-**Empfehlung:** Szenennamen immer mit Prefix, damit sie sortiert sind.
+**Faustregel:** Alle Programmszenen erhalten das Prefix `S#`. Diese Reihenfolge muss stabil bleiben, weil Multiview Slots 1–4 daraus gebaut werden.
 
-#### N1.1 Hauptszenen (Program-Szenen)
+#### N1.1 Hauptszenen (Program)
 
-- **P01_Cam_Full** - Kamera Vollbild
-- **P02_DT_Shopfloor_Full** - Shopfloor Vollbild
-- **P03_UI_Process_Full** - Process Vollbild
-- **P04_UI_Orders_Full** - Orders Vollbild
-- **P05_UI_TrackTrace_Full** - Track&Trace Vollbild
-- **P06_UI_4Up** - 4-Up Grid Layout
-- **P07_UI_HeroPlus3** - Hero + 3 Layout (Standard)
-- **P08_PiP_CamOverUI** - Picture-in-Picture: Kamera über UI (optional)
-- **P09_PiP_UIOverCam** - Picture-in-Picture: UI über Kamera (optional)
-- **P99_Hold_Slate** - Standbild/Logo "Einen Moment…"
+- **S1 - Orders Vollbild (Edge InPrivate)** – OSF Orders/Track&Trace getrennt von den anderen Sessions
+- **S2 - Digital-Twin Vollbild (Chrome)** – Route `#/de/presentation` mit FTS/AGV und KPIs
+- **S3 - OSF Vollbild (Chrome)** – Hauptdashboard, alle Tabs vorbereiten
+- **S4 - Kamera Vollbild** – USB-Kamera oder Placeholder
+- **S5 - Hero + 2** – Komposition (Portrait links, Digital Twin + Kamera rechts)
+- **S6 - OSF Portrait (Edge)** – Portrait-Ansicht als Vollbildfallback und Quelle für S5
+- **S7 - Hold Slate** – Logo/Standbild für Pausen; als Browser Source mit [hold-slate.html](hold-slate.html) einbinden
 
-#### N1.2 Hilfsszenen (als Quelle wiederverwendbar, optional aber sehr nützlich)
+#### N1.2 Optionale Hilfsszenen
 
-Diese Szenen werden später in P06/P07 als "Scene Source" eingebunden:
-
-- **H01_UI_Process_Panel** - Process als Panel
-- **H02_UI_Orders_Panel** - Orders als Panel
-- **H03_UI_TrackTrace_Panel** - Track&Trace als Panel
-- **H04_DT_Shopfloor_Panel** - Shopfloor als Panel
-- **H05_Cam_Panel** - Kamera als Panel
-
-**Vorteil:** Sie ändern eine Panel-Quelle einmal, und alle Layouts profitieren.
+Wenn Sie komplexere Layouts bauen möchten, können Sie zusätzliche `H##_*` Szenen definieren, die die Browser-Fenster oder die Kamera kapseln. In diesem Setup ist das nicht nötig, weil Hero + 2 direkt auf die Window-Capture-Quellen zugreift. Nutzen Sie Hilfsszenen nur, wenn mehrere Layouts dieselben Crops/Overlays teilen sollen.
 
 ---
 
@@ -387,23 +378,14 @@ Wenn Sie mal Capture Card nutzen:
 
 - **VID_CAP_HDMI_Camlink** - Capture Card über HDMI
 
-#### N2.2 OSF / Web-UI (Browser Source)
+#### N2.2 OSF / Web-UI (Window Capture)
 
-Wenn möglich, je Ansicht eine Browser Source:
+- **Chrome_OSF_Landscape** – Chrome Standardprofil (1920×1080) mit allen Tabs für S3
+- **Chrome P Digital-Twin** – Chrome Incognito (1920×1080) nur für Route `#/de/presentation` (S2)
+- **Edge_P_OSF_ORDER** – Edge InPrivate (1920×1080) für Orders/Track&Trace (S1)
+- **Edge_OSF_Portrait** – Edge Business (1080×1920) für die Portrait-Ansicht (S6/S5)
 
-- **WEB_OSF_DT_Shopfloor** - Shopfloor-Ansicht (Browser Source)
-- **WEB_OSF_UI_Process** - Process-Tab (Browser Source)
-- **WEB_OSF_UI_Orders** - Orders-Tab (Browser Source)
-- **WEB_OSF_UI_TrackTrace** - Track&Trace-Tab (Browser Source)
-
-Wenn Sie Window Capture statt Browser Source nutzen müssen:
-
-- **WIN_Chrome_OSF_DT_Shopfloor** - Shopfloor (Window Capture)
-- **WIN_Chrome_OSF_UI_Process** - Process (Window Capture)
-- **WIN_Chrome_OSF_UI_Orders** - Orders (Window Capture)
-- **WIN_Chrome_OSF_UI_TrackTrace** - Track&Trace (Window Capture)
-
-**Wichtig:** Halten Sie die Variante (WEB_ vs WIN_) im Namen fest, sonst verlieren Sie später Zeit.
+Vier unterschiedliche Fenster stellen sicher, dass Logins/Geteilte Sessions sich nicht gegenseitig beeinflussen und dass Multiview keine Tabs vertauscht.
 
 #### N2.3 Overlays / Branding
 
@@ -441,54 +423,57 @@ Wenn Sie in Teams präsentieren, ist Audio oft "heikel". Empfehlung: eindeutige 
 
 ### N4) Szenenbelegung (konkret)
 
-#### P01_Cam_Full
-- `VID_CAM_USB_Main` (Fit to Screen)
-- optional `GFX_Logo_ORBIS`
+#### S1 - Orders Vollbild (Edge)
+- Quelle `Edge_P_OSF_ORDER`
+- Fit to Screen, danach sperren
 
-#### P02_DT_Shopfloor_Full
-- `WEB_OSF_DT_Shopfloor` (oder `WIN_…`)
-- optional `GFX_Logo_ORBIS`
+#### S2 - Digital-Twin Vollbild (Chrome)
+- Quelle `Chrome P Digital-Twin`
+- Keine Overlays, nur DT-Route
 
-#### P03_UI_Process_Full
-- `WEB_OSF_UI_Process`
+#### S3 - OSF Vollbild (Chrome)
+- Quelle `Chrome_OSF_Landscape`
+- Optional `GFX_Logo_ORBIS`
 
-#### P04_UI_Orders_Full
-- `WEB_OSF_UI_Orders`
+#### S4 - Kamera Vollbild
+- `CAM - USB` bzw. `placeholder-camera`
+- Transform → Fit to Screen
 
-#### P05_UI_TrackTrace_Full
-- `WEB_OSF_UI_TrackTrace`
+#### S5 - Hero + 2
+- Links (`X=0`, `W=720`): `Edge_OSF_Portrait`
+- Rechts oben (`X=720`, `Y=0`, `W=1200`, `H=540`): `Chrome P Digital-Twin`
+- Rechts unten (`X=720`, `Y=540`, `W=1200`, `H=540`): `CAM - USB`
+- Optional Rahmen/Text hinzufügen
 
-#### P06_UI_4Up
-- Entweder direkt die vier `WEB_/WIN_`-Quellen
-- oder besser: Scene Sources `H01..H04`
+#### S6 - OSF Portrait (Edge)
+- Quelle `Edge_OSF_Portrait` als Vollbild
+- Dient als Backup, falls Hero + 2 nicht reicht
 
-#### P07_UI_HeroPlus3
-- **Hero:** `WEB_OSF_DT_Shopfloor` oder `VID_CAM_USB_Main`
-- **rechts:** Process/Orders/TrackTrace (als Panels)
-
-#### P99_Hold_Slate
-- `GFX_Logo_ORBIS` + `TXT_SceneLabel` ("Einen Moment…")
+#### S7 - Hold Slate
+- **Quelle:** Browser Source → Local File → [hold-slate.html](hold-slate.html)
+- **Größe:** Auf Canvas-Größe setzen (z. B. 1920×1080)
+- **Option:** "Shutdown source when not visible" deaktivieren für sofortiges Umschalten
 
 ---
 
 ### N5) Hotkeys (schnell und konfliktarm)
 
-**Wichtig:** Wählen Sie Hotkeys, die nicht mit Teams kollidieren. Bewährt: `Ctrl + Alt + [Zahl]`.
+**Schema:** `Ctrl + Alt + [Zahl]` kollidiert nicht mit Teams und lässt sich blind bedienen.
 
 **OBS → Settings → Hotkeys:**
 
-- **Ctrl + Alt + 1** → Switch to `P01_Cam_Full`
-- **Ctrl + Alt + 2** → Switch to `P02_DT_Shopfloor_Full`
-- **Ctrl + Alt + 3** → Switch to `P03_UI_Process_Full`
-- **Ctrl + Alt + 4** → Switch to `P04_UI_Orders_Full`
-- **Ctrl + Alt + 5** → Switch to `P05_UI_TrackTrace_Full`
-- **Ctrl + Alt + 6** → Switch to `P07_UI_HeroPlus3` (Ihr Standard)
-- **Ctrl + Alt + 7** → Switch to `P06_UI_4Up`
-- **Ctrl + Alt + 0** → Switch to `P99_Hold_Slate`
+- **Ctrl + Alt + 1** → `S1 - Orders Vollbild`
+- **Ctrl + Alt + 2** → `S2 - Digital-Twin Vollbild`
+- **Ctrl + Alt + 3** → `S3 - OSF Vollbild`
+- **Ctrl + Alt + 4** → `S4 - Kamera Vollbild`
+- **Ctrl + Alt + 5** → `S5 - Hero + 2`
+- **Ctrl + Alt + 6** → `S6 - OSF Portrait`
+- **Ctrl + Alt + 7** → `S7 - Hold Slate`
 
 **Optional:**
 
-- **Ctrl + Alt + R** → Start/Stop Recording (für interne Tests)
+- **Ctrl + Alt + R** → Start/Stop Recording
+- **Ctrl + Alt + Shift + M** (frei belegbar) → `View → Multiview (Fullscreen)` toggeln, falls Sie einen Hotkey für das Viererbild möchten
 
 ---
 
@@ -499,20 +484,20 @@ Wenn Sie in Teams präsentieren, ist Audio oft "heikel". Empfehlung: eindeutige 
 - [ ] **OBS Profil:** `Teams-Demo-1080p60` (Fallback: `…30`)
 - [ ] **Studio Mode:** ON
 - [ ] **View → Stats** öffnen (Dauercheck auf Dropped/Skipped Frames)
-- [ ] **Szene P99_Hold_Slate** aktivieren (damit nicht "zufällig" etwas gezeigt wird)
-- [ ] **Kamera prüfen:** `P01_Cam_Full` (Bild steht, kein Flimmern)
-- [ ] **UI prüfen:** `P03/P04/P05` kurz aufrufen (Login ok, Daten sichtbar)
+- [ ] **Optional:** `S7 - Hold Slate` aktiv halten, damit kein Browser durchsickert
+- [ ] **Kamera prüfen:** `S4 - Kamera Vollbild` (Belichtung, Weißabgleich, Fokus)
+- [ ] **UI prüfen:** `S1/S2/S3/S6` kurz aufrufen (Tabs geladen, DT-Feed aktiv, Portrait responsive)
 - [ ] **Fullscreen Projector (Program)** auf Monitor 2 aktivieren
 
 ### O2) Meeting Start
 
 - [ ] **Teams:** Bildschirm Monitor 2 teilen
 - [ ] **Optimize** einschalten (wenn Bewegung)
-- [ ] **Einstieg:** `P07_UI_HeroPlus3` oder `P02_DT_Shopfloor_Full`
+- [ ] **Einstieg:** `S5 - Hero + 2` (Standard) oder `S3 - OSF Vollbild`
 
 ### O3) Wenn etwas klemmt
 
-- [ ] **Sofort auf P99_Hold_Slate** (`Ctrl+Alt+0`)
+- [ ] **Sofort auf S7 - Hold Slate** (`Ctrl+Alt+7`)
 - [ ] Dann Problem beheben (Browser neu laden, Kamera replug, Profil auf 30 fps)
 
 ### O4) Nach dem Meeting
@@ -598,48 +583,43 @@ Wenn Sie in Teams präsentieren, ist Audio oft "heikel". Empfehlung: eindeutige 
 
 ### R4) Standard-Szene
 
-- **Standard-Szene für Routine:** `P07_UI_HeroPlus3`
+- **Standard-Szene für Routine:** `S5 - Hero + 2`
 
 ---
 
 ## S. Standard-Runbook-Sequenz (Demo-Storyline)
 
-**Empfohlene 8–10 Minuten "Storyline" mit Szenenwechseln:**
+**Empfohlene 8–10 Minuten mit den sechs Szenen:**
 
-1. **Einstieg (30s):** `P07_UI_HeroPlus3` - Hero = Shopfloor, rechts = Process/Orders/Track&Trace
-   - "Willkommen zur ORBIS SmartFactory Demo"
+1. **Intro (30 s):** `S5 - Hero + 2`
+   - Begrüßung, kurze Einordnung der drei Fenster (Portrait links, Digital Twin + Kamera rechts).
 
-2. **Shopfloor-Übersicht (1-2 Min):** `P02_DT_Shopfloor_Full`
-   - Shopfloor-Layout erklären
-   - Module zeigen (HBW, DRILL, MILL, DPS, AIQS, FTS)
+2. **OSF Überblick (2 Min):** `S3 - OSF Vollbild`
+   - Durch vorbereitete Tabs klicken (Orders, Track&Trace, DSP, KPIs).
+   - Auf vorbereitete Browser-Hotkeys hinweisen.
 
-3. **Process-Tab (1-2 Min):** `P03_UI_Process_Full`
-   - Prozesse erläutern
-   - Inventory-Status
+3. **Shopfloor / Digital Twin (1–2 Min):** `S2 - Digital-Twin Vollbild`
+   - Modulkameras, FTS-Lauf, Sensorwerte erklären.
 
-4. **Orders (1-2 Min):** `P04_UI_Orders_Full`
-   - Order-Details
-   - Production Steps
+4. **Responsive Detail (1–2 Min):** `S6 - OSF Portrait`
+   - Mobile/Portrait-Ansicht zeigen, Order- oder KPI-Details scrollen.
 
-5. **Track&Trace (1-2 Min):** `P05_UI_TrackTrace_Full`
-   - Workpiece-History
-   - Event-Timeline
+5. **Kamera-Livebild (1 Min):** `S4 - Kamera Vollbild`
+   - Hardware/FTS in Echtzeit demonstrieren.
 
-6. **Kamera-Demo (1 Min):** `P01_Cam_Full`
-   - Live-FTS-Bewegung zeigen
-   - Falls FTS gerade fährt
+6. **Multiview Wrap-up (1 Min):** `View → Multiview (Fullscreen)` (Slots `S1–S4`)
+   - Vier Perspektiven parallel zeigen, Fragen beantworten, spontan Szenen wechseln.
 
-7. **Hero+3 Zusammenfassung (1-2 Min):** `P07_UI_HeroPlus3`
-   - Alle Ansichten gleichzeitig
-   - Fragen beantworten
-
-8. **Ausklang:** `P99_Hold_Slate` oder zurück zu `P07_UI_HeroPlus3`
+7. **Ausklang:** Zurück zu `S5 - Hero + 2` oder `S0 - Hold Slate` (falls vorhanden).
+7. **Ausklang:** Zurück zu `S5 - Hero + 2` oder `S7 - Hold Slate`.
 
 **Hotkeys während der Demo:**
-- `Ctrl+Alt+6` für Hero+3 (Standard)
-- `Ctrl+Alt+2` für Shopfloor
-- `Ctrl+Alt+3/4/5` für UI-Tabs
-- `Ctrl+Alt+0` für Hold-Slate (bei Problemen)
+- `Ctrl+Alt+5` → Hero + 2 (Intro & Wrap-up)
+- `Ctrl+Alt+3/2/6` → OSF Vollbild / Digital Twin / Portrait
+- `Ctrl+Alt+1` → Orders Vollbild (slot 1 ersetzen, falls nötig)
+- `Ctrl+Alt+4` → Kamera Vollbild
+- `Ctrl+Alt+0` → Hold-Slate bei Unterbrechungen
+- Optional: eigener Shortcut für `View → Multiview (Fullscreen)`
 
 ---
 
@@ -648,23 +628,27 @@ Wenn Sie in Teams präsentieren, ist Audio oft "heikel". Empfehlung: eindeutige 
 ### T1) Setup-Variation
 - **Geräte:** Konftel Cam50 (siehe Abschnitt F1) + separater Laptop für OBS, zweiter Monitor als Program-Ausgang.
 - **DSP-Animationen:** Zusätzliche Media Source (`GFX_DSP_Gedore`) mit kundenspezifischen SVG/MP4-Sequenzen (Edge xyz_2 → xyz_1/3 → Logo).
-- **Szenen:**
-   - `P07_UI_HeroPlus3` (Standard-Story, rechts Panel mit Kundendaten).
-   - `P10_DSP_Gedore` (nur DSP-Animation + Kamera PiP).
-   - `P11_Video_Presentation` (Full-Screen Video, fallback falls Browser ruckelt).
+- **Szenen aus dem Standard-Set:**
+   - `S5 - Hero + 2` (Intro/Wrap-up, rechtes Paneel mit kundenspezifischem Text oder KPI-Overlay).
+   - `S3 - OSF Vollbild` (Volle OSF-Ansicht für Edge/Device/DSP-Story, Tabs bereits vorbereitet).
+   - `S2 - Digital-Twin Vollbild` (Modulkameras + Process-Story im Digital Twin).
+   - `S6 - OSF Portrait` (Responsive Detailansicht für mobile KPI- oder Order-Screens).
+   - `S4 - Kamera Vollbild` (Q&A bzw. Hardware-Showcase am Ende).
+   - `View → Multiview (Fullscreen)` (Slot-Kombi aus `S1–S4` für Vier-Up Wrap-up).
+- **Optional:** Falls Sie eine eigenständige DSP-Animation brauchen, legen Sie eine zusätzliche Scene Collection-Version mit `Media Source + VID_CAM_USB_Main (Picture-in-Picture)` an, behalten aber die Hotkeys aus Abschnitt N5 bei.
 
 ### T2) Ablauf (Empfehlung)
-1. **Intro (Hero+3)** – Kamera + Shopfloor + zwei kundenspezifische Panels.
-2. **DSP-Erklärung (`P10`)** – Animationen durchklicken, dabei Edge/Device/ERP-Linking erklären.
-3. **Modul-Detail (`P02`/`P04`)** – Auf Kundenmodul zoomen, Statusanzeigen zeigen.
-4. **Process-Story (`P03` + OBS Text-Overlay)** – Customer/Purchase Orders erläutern.
-5. **Q&A (`P01`)** – Kamera Vollbild für Fragen.
+1. **Intro (`S5`)** – Kamera + Shopfloor + Portrait. Rechtes Textpaneel nutzt `TXT_SceneLabel` für Kunde/Agenda.
+2. **DSP-Erklärung (`S3` + `GFX_DSP_Gedore`)** – Animation starten, Edge/Device/ERP-Linking erklären.
+3. **Modul-Detail (`S2` oder `S6`)** – Auf Kundenmodul zoomen, Statusanzeigen hervorheben.
+4. **Process-Story (Multiview aus `S1–S4` oder erneut `S3` mit Overlay)** – Schritte im Vierer-Layout oder Vollbild erläutern.
+5. **Q&A (`S4 - Kamera Vollbild`)** – Kamera Vollbild für Fragen; optional zurück zu `S5` für Wrap-up.
 
 ### T3) OBS-spezifische Hinweise
 - **Studio Mode** aktiv, Szenenwechsel erst nach Preview.
-- **Hotkeys** ergänzen (`Ctrl+Alt+8` = `P10_DSP_Gedore`, `Ctrl+Alt+9` = `P11_Video_Presentation`).
+- **Hotkeys** entsprechen Abschnitt N5 (`Ctrl+Alt+1…6`). Zusätzliche DSP-Szene nur bei Bedarf auf freie Kombination (z. B. `Ctrl+Alt+7`).
 - **Audio:** Headset als einzige Audio-Quelle, Kamera-Mic muted.
-- **Teams**: Bildschirm „Monitor 2“ teilen, „Optimize“ aktiv; notiere im Chat, wenn Animationen starten.
+- **Teams:** Bildschirm „Monitor 2“ teilen, „Optimize“ aktiv; im Chat ankündigen, wenn Animationen starten.
 
 ### T4) Nachbereitung
 - Aufzeichnung (`Ctrl+Alt+R`) lokal speichern, um Highlights später in kundenspezifische Clips zu schneiden.

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Starter script to run the OMF3 Angular app (ccu-ui) in development.
+  Starter script to run the OSF Angular app (osf-ui) in development.
 
 .DESCRIPTION
   - Ensures we are in the repository root
@@ -19,7 +19,7 @@
 #>
 
 param(
-    [string]$Project = 'ccu-ui',
+    [string]$Project = 'osf-ui',
     [string]$Configuration = 'development'
 )
 
@@ -38,8 +38,8 @@ if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
 # Prepare logs
 $logsDir = Join-Path $repoRoot 'logs'
 if (-not (Test-Path $logsDir)) { New-Item -ItemType Directory -Path $logsDir | Out-Null }
-$diagnoseLog = Join-Path $logsDir 'omf3-diagnose.log'
-$serveLog = Join-Path $logsDir 'omf3.log'
+$diagnoseLog = Join-Path $logsDir 'osf-diagnose.log'
+$serveLog = Join-Path $logsDir 'osf.log'
 
 # If node_modules missing, run npm ci for reproducible install (with safe fallbacks)
 $nodeModulesPath = Join-Path $repoRoot 'node_modules'
