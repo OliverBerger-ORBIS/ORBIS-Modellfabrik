@@ -3,21 +3,6 @@
 **Letzte Aktualisierung:** 21.12.2025
 **Aktueller Status:** OSF (vormals OMF3) UI-Finishing & Kunden-Demos; OMF2 als Legacy eingefroren
 
-## 📋 Wichtige Erkenntnisse (Session-Notizen)
-
-### AIQS-Kamera-Daten Analyse (17.12.2025)
-- **Erkenntnis:** AIQS-Kamera-Daten (Photos von Workpieces) werden **NICHT über MQTT** übertragen
-- **Analyse:** `production_order_white_20251110_184459.log` Session vollständig analysiert
-- **Ergebnis:** 
-  - ❌ Keine Bilddaten in `module/v1/ff/SVR4H76530/state` Payloads
-  - ❌ Keine separaten Kamera-Topics für AIQS gefunden
-  - ✅ CHECK_QUALITY Commands enthalten nur `type` und `workpieceId` in Metadata
-- **Lösung:** Direkter HTTP-Zugriff auf TXT-Controller erforderlich
-  - **TXT-AIQS IP:** 192.168.0.103 (DHCP, kann variieren)
-  - **Web-Interface:** Port 80
-  - **API-Endpoint:** Muss noch ermittelt werden (TXT Controller Web-Interface prüfen)
-- **Referenz:** `docs/06-integrations/00-REFERENCE/module-serial-mapping.md` für Serial → IP Mapping
-
 > **Dokumentations-Strategie:** Dieses Dokument bündelt Projektstatus, Roadmap und Sprint-History; für Release-Versionen nutzen wir SemVer + die separate CHANGELOG.md.
 
 ## 🚀 Aktuelle Arbeiten (Dezember 2025)
@@ -108,7 +93,7 @@
    - i18n Keys für DE/FR hinzugefügt
    - Tests erstellt: `ModuleHardwareService` vollständig getestet, Configuration Tab Tests erweitert
 17. **Storytelling** , anschließende Blog-Serie zu OSF & DSP Story vorbereiten.
-18. **AIQS-Kamera-Integration (sf-system)** – Anzeige der Information aus der AIQS-Station: Photo des Workpieces. AIQS-Kamera-Daten werden nicht über MQTT übertragen, sondern müssen direkt vom TXT-Controller (IP: 192.168.0.103) via HTTP abgerufen werden. Integration in Shopfloor-Tab bei AIQS-Auswahl. API-Endpoint muss noch ermittelt werden (TXT Controller Web-Interface prüfen, Python-Code in `integrations/TXT-AIQS/lib/camera.py` analysieren).
+18. ⏸️ **AIQS-Kamera-Integration (sf-system)** – Anzeige der Kamera-Bilder von Workpieces aus der AIQS-Station im Shopfloor-Tab bei AIQS-Auswahl. **Strategie (23.12.2025):** Kamera-Bilder über MQTT-Topic publizieren (nicht HTTP). TXT-Controller anpassen: `lib/camera.py` oder `lib/machine_learning.py` erweitern, neues MQTT-Topic `module/v1/ff/SVR4H76530/camera` publizieren. OSF-UI: Topic abonnieren und Bild anzeigen. **Status:** ✅ Source-Dateien vom TXT-Controller kopiert (`integrations/TXT-AIQS/workspaces/FF_AI_24V/`). ⏳ ROBO Pro Coding Workflow erarbeiten (Sourcen ändern und deployen). **Referenz:** `docs/06-integrations/TXT-SOURCE-ACCESS.md`
 19. **Azure DevOps Migration** – Mirror/Move Repository inkl. Pipelines nach ORBIS Azure DevOps, Rechte & Secrets definieren.
 20. **OSF Deployment** – Docker-Setup für Hilcher-Box/RPi planen und durchführen
 
