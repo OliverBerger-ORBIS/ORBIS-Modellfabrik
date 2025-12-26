@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Check that all heading SVG files referenced in omf3 code exist.
+Check that all heading SVG files referenced in OSF code exist.
 Scans TypeScript files for 'headings/*.svg' references and verifies files exist.
 Exit non-zero on missing files.
 """
@@ -9,13 +9,13 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-OMF3_DIR = REPO_ROOT / "omf3"
-HEADINGS_DIR = OMF3_DIR / "apps" / "ccu-ui" / "public" / "headings"
+OSF_DIR = REPO_ROOT / "osf"
+HEADINGS_DIR = OSF_DIR / "apps" / "osf-ui" / "public" / "headings"
 
-# Find all TypeScript files in omf3
+# Find all TypeScript files in osf
 ts_files = []
 for pattern in ["**/*.ts", "**/*.html"]:
-    ts_files.extend(OMF3_DIR.rglob(pattern))
+    ts_files.extend(OSF_DIR.rglob(pattern))
 
 # Extract all heading icon references
 heading_refs = set()
@@ -36,7 +36,7 @@ for ts_file in ts_files:
         print(f"Warning: Could not read {ts_file}: {e}", file=sys.stderr)
 
 if not heading_refs:
-    print("No heading icon references found in omf3 code.")
+    print("No heading icon references found in OSF code.")
     sys.exit(0)
 
 # Check if all referenced files exist
@@ -47,12 +47,12 @@ for ref in sorted(heading_refs):
         missing.append(f"headings/{ref}")
 
 if missing:
-    print("Missing heading SVG files referenced in omf3 code:")
+    print("Missing heading SVG files referenced in OSF code:")
     for m in missing:
         print(f"  - {m}")
     print(f"\nExpected location: {HEADINGS_DIR}")
     sys.exit(1)
 
-print(f"✅ All {len(heading_refs)} heading SVG files referenced in omf3 code exist.")
+print(f"✅ All {len(heading_refs)} heading SVG files referenced in OSF code exist.")
 sys.exit(0)
 

@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# Script to build and serve the OMF3 Dashboard locally for testing
+# Script to build and serve the OSF Dashboard locally for testing
 # Usage: ./scripts/serve-local.sh [port]
 
 set -e
 
 PORT=${1:-4200}
-BUILD_DIR="dist/apps/ccu-ui/browser"
+BUILD_DIR="dist/apps/osf-ui/browser"
 
-echo "🔨 Building OMF3 Dashboard for local testing..."
+echo "🔨 Building OSF Dashboard for local testing..."
 npm run build:github-pages
 
 if [ ! -d "$BUILD_DIR" ]; then

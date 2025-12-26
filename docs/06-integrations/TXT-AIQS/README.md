@@ -73,34 +73,38 @@ integrations/TXT-AIQS/
 
 ### Camera Image Access
 
-**Finding (2025-12-22):**
-- AIQS camera images are **NOT sent via MQTT** (unlike DPS which uses `/j1/txt/1/i/cam`)
-- Python code reads frames directly: `TXT_SLD_M_USB1_1_camera.read_frame()`
-- **HTTP endpoint for camera images must be provided by TXT Controller firmware/web interface**
-- Standard TXT Controller web interface runs on Port 80
-- **API endpoint needs to be discovered** by testing common endpoints or checking TXT Controller web interface
+**Strategie (23.12.2025):** MQTT-Publikation (analog zu TXT-DPS)
 
-**Possible Endpoints to Test:**
-- `/cam.jpg`
-- `/camera.jpg`
-- `/camera`
-- `/cam`
-- `/api/camera`
-- `/jpg`
-- `/image.jpg`
-- Standard fischertechnik TXT Controller camera endpoint (check TXT Controller documentation or web interface)
+**Referenz-Implementierung (TXT-DPS):**
+- TXT-DPS publiziert Kamera-Bilder bereits über MQTT: `/j1/txt/1/i/cam`
+- Format: `{"ts":"...","data":"data:image/jpeg;base64,..."}`
+- Implementierung: `integrations/TXT-DPS/workspaces/FF_DPS_24V/lib/SSC_Publisher.py`
+  - `image_callback()` empfängt Kamera-Frames
+  - `publish_camera()` publiziert kontinuierlich (FPS-basiert)
+  - `frame_to_base64()` konvertiert Frame zu Base64-String
 
-**Endpoint Discovery via Web Interface:**
-1. Access TXT Controller web interface: `http://192.168.0.103` (login: `ft` / `fischertechnik`)
-2. Check for camera/image related endpoints or API documentation
-3. Test common camera endpoints programmatically via `AiqsCameraService` (automatically tests multiple endpoints)
+**TXT-AIQS Implementierung (geplant):**
+- Kamera-Frames abrufen: `TXT_SLD_M_USB1_1_camera.read_frame()` (bereits vorhanden in `machine_learning.py`)
+- Base64-Kodierung: Analog zu TXT-DPS `frame_to_base64()` Funktion
+- MQTT-Publikation: Topic `aiqs/camera` (eigenes Topic mit `aiqs/*` Präfix zur Kennzeichnung als "nicht-Standard" Erweiterung)
+- Integration: `lib/machine_learning.py` erweitern oder neue `lib/camera_publisher.py` erstellen
+
+**OSF-UI Integration (pausiert bis TXT-Controller Deployment erfolgreich):**
+- Gateway `aiqsCameraFrames$` Stream muss erstellt werden (analog zu `cameraFrames$`)
+- Topic-Abonnement `aiqs/#` muss hinzugefügt werden
+- Anzeige im AIQS-Tab oder als Detail im Shopfloor-Tab (bei AIQS-Station-Auswahl)
+- **WICHTIG:** OSF-UI Änderungen werden erst nach erfolgreichem TXT-Controller Deployment durchgeführt
+
+**Veralteter HTTP-Ansatz:**
+- ❌ HTTP-Endpoint-Ansatz wurde verworfen (Browser-Sicherheitsprobleme, CORS)
+- ❌ `AiqsCameraService` wurde gelöscht (nicht verwendet)
 
 ## MQTT Topics
 
 - **State:** `module/v1/ff/SVR4H76530/state`
 - **Connection:** `module/v1/ff/SVR4H76530/connection` (direct) and `module/v1/ff/NodeRed/SVR4H76530/connection` (enriched)
 - **Sensor Data:** `/j1/txt/1/i/bme680` (BME680 environmental sensor)
-- **Camera:** ❌ NOT via MQTT - HTTP access required
+- **Camera:** ⏳ `aiqs/camera` (geplant, eigenes Topic mit `aiqs/*` Präfix zur Kennzeichnung als "nicht-Standard" Erweiterung)
 
 ## Source-Zugriff
 
@@ -117,14 +121,25 @@ integrations/TXT-AIQS/
 
 **Strategie (23.12.2025):**
 1. ✅ **Source-Dateien kopiert:** `integrations/TXT-AIQS/workspaces/FF_AI_24V/`
-2. ⏳ **Analyse:** Kamera-Logik in `lib/camera.py` und `lib/machine_learning.py` verstehen
-3. ⏳ **MQTT-Topic implementieren:** Neues Topic `module/v1/ff/SVR4H76530/camera` auf TXT-Controller
-4. ⏳ **ROBO Pro Coding Workflow:** Wie ändert man Sourcen und deployed sie?
-5. ⏳ **OSF-UI Integration:** Topic abonnieren und Bild in Shopfloor-Tab anzeigen
+2. ✅ **Referenz-Implementierung identifiziert:** TXT-DPS MQTT-Kamera-Publikation (`/j1/txt/1/i/cam`)
+3. ✅ **HTTP-Ansatz verworfen:** `AiqsCameraService` gelöscht (nicht verwendet)
+4. ⏳ **ROBO Pro Coding Workflow erarbeiten** - **KRITISCH: Voraussetzung für alle weiteren Schritte**
+   - Wie ändert man Sourcen in ROBO Pro Coding?
+   - Wie deployed man geänderte Sourcen auf den Controller?
+5. ⏳ **TXT-AIQS MQTT-Publikation implementieren:** 
+   - `lib/machine_learning.py` erweitern oder `lib/camera_publisher.py` erstellen
+   - Analog zu TXT-DPS: `publish_camera()` Funktion, `frame_to_base64()` Helper
+   - Topic: `aiqs/camera` (eigenes Topic mit `aiqs/*` Präfix)
+6. ⏸️ **OSF-UI Integration (pausiert):** Wird erst nach erfolgreichem TXT-Controller Deployment durchgeführt
+   - Gateway `aiqsCameraFrames$` Stream erstellen
+   - Topic-Abonnement `aiqs/#` hinzufügen
+   - Anzeige im AIQS-Tab oder Shopfloor-Tab (bei AIQS-Auswahl)
 
-**Alternative (nicht gewählt):** HTTP-Endpoint → Browser-Sicherheitsprobleme (Private Network Access)
-  - Test TXT Controller web interface at `http://192.168.0.103` when available
-  - Currently blocked: OSF runs only in Mock-Mode, no access to real hardware
+**Referenz-Code:**
+- TXT-DPS Implementierung: `integrations/TXT-DPS/workspaces/FF_DPS_24V/lib/SSC_Publisher.py`
+  - Zeilen 78-87: `publish_camera()` Funktion
+  - Zeilen 171-176: `frame_to_base64()` Helper
+  - Zeile 100-102: `image_callback()` Event-Handler
 - [ ] Functional analysis of AIQS behavior
 - [ ] Image recognition workflow documentation
 - [ ] Quality control process mapping
@@ -137,17 +152,28 @@ integrations/TXT-AIQS/
 - ✅ **Analysis completed** (2025-12-22)
   - Code structure analyzed from source archive
   - Camera access method identified (`read_frame()` in Python)
-  - HTTP endpoint discovery approach documented
-- ✅ **Service created** (`AiqsCameraService`)
-  - Implements automatic endpoint testing
-  - Handles errors gracefully
-  - Ready for integration once endpoint is known
+- ✅ **Referenz-Implementierung identifiziert** (23.12.2025)
+  - TXT-DPS MQTT-Kamera-Publikation analysiert (`/j1/txt/1/i/cam`)
+  - Implementierungs-Pattern dokumentiert (`publish_camera()`, `frame_to_base64()`)
+- ✅ **HTTP-Ansatz verworfen** (23.12.2025)
+  - `AiqsCameraService` gelöscht (nicht verwendet, veralteter HTTP-Ansatz)
+  - MQTT-Ansatz bestätigt (analog zu TXT-DPS)
 - ✅ **Source files copied** (22.12.2025)
   - Complete source files from TXT-Controller (`192.168.0.158`)
   - All `lib/` files and `data/` directory copied
   - SSH access enabled and working
-- ⏸️ **Integration paused**
-  - HTTP endpoint discovery: All tested endpoints return 404
-  - Image likely only accessible via Web-Interface file browser (not direct HTTP endpoint)
-  - Requires further investigation: Browser DevTools → Network-Tab when opening image
-  - Can resume when HTTP endpoint is discovered
+- ✅ **OSF-UI vorbereitet**
+  - Gateway `cameraFrames$` Stream vorhanden
+  - Sensor-Tab zeigt bereits DPS-Kamera-Bilder an
+  - Topic `/j1/txt/1/i/cam` wird bereits abonniert
+- ⏳ **ROBO Pro Coding Workflow erarbeiten** - **KRITISCH: Voraussetzung für alle weiteren Schritte**
+  - Wie ändert man Sourcen in ROBO Pro Coding?
+  - Wie deployed man geänderte Sourcen auf den Controller?
+- ⏳ **TXT-AIQS MQTT-Publikation implementieren** (nach erfolgreichem ROBO Pro Coding Workflow)
+  - `lib/machine_learning.py` erweitern oder `lib/camera_publisher.py` erstellen
+  - Analog zu TXT-DPS Pattern implementieren
+  - Topic: `aiqs/camera` (eigenes Topic mit `aiqs/*` Präfix)
+- ⏸️ **OSF-UI Integration (pausiert):** Wird erst nach erfolgreichem TXT-Controller Deployment durchgeführt
+  - Gateway `aiqsCameraFrames$` Stream erstellen
+  - Topic-Abonnement `aiqs/#` hinzufügen
+  - Anzeige im AIQS-Tab oder Shopfloor-Tab (bei AIQS-Auswahl)

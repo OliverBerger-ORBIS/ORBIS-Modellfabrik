@@ -1,10 +1,10 @@
-# Publish Buttons Analysis: OMF3 vs OMF2
+# Publish Buttons Analysis: OSF vs OMF2
 
 ## Übersicht
 
-Diese Analyse vergleicht alle Buttons in OMF3, die MQTT Topics publishen sollten, mit der OMF2 (Streamlit) Implementierung.
+Diese Analyse vergleicht alle Buttons in OSF (vormals OMF3), die MQTT Topics publishen sollten, mit der OMF2 (Streamlit) Implementierung.
 
-## OMF3 Buttons - Status
+## OSF Buttons - Status
 
 ### ✅ Implementiert (publishen bereits Topics)
 
@@ -68,21 +68,21 @@ Diese Analyse vergleicht alle Buttons in OMF3, die MQTT Topics publishen sollten
 
 ### Topics die in OMF2 publisht werden:
 
-| Topic | OMF2 Location | OMF3 Status | OMF3 Location |
+| Topic | OMF2 Location | OSF Status | OSF Location |
 |-------|--------------|------------|---------------|
 | `ccu/set/reset` | `factory_steering_subtab.py:99` | ⚠️ Teilweise | `app.component.ts:252` (nur Mock) |
 | `ccu/set/emergency` | `factory_steering_subtab.py:122` | ❌ Fehlt | - |
-| `fts/v1/ff/{serial}/instantAction` | `factory_steering_subtab.py:154` | ✅ Implementiert | `module-tab.component.ts:251` |
-| `ccu/set/charge` | `factory_steering_subtab.py:176,198` | ✅ Implementiert | `module-tab.component.ts:260` |
+| `fts/v1/ff/{serial}/instantAction` | `factory_steering_subtab.py:154` | ✅ Implementiert | `shopfloor-tab.component.ts:251` |
+| `ccu/set/charge` | `factory_steering_subtab.py:176,198` | ✅ Implementiert | `shopfloor-tab.component.ts:260` |
 | `ccu/order/request` | `factory_steering_subtab.py:220` | ✅ Implementiert | `overview-tab.component.ts:159` |
 | `/j1/txt/1/o/ptu` | `sensor_data_subtab.py:802,821` | ❌ Fehlt | `sensor-tab.component.ts:123` (nur console.info) |
-| `ccu/set/calibration` | - | ✅ Implementiert | `module-tab.component.ts:217` |
+| `ccu/set/calibration` | - | ✅ Implementiert | `shopfloor-tab.component.ts:217` |
 
-## Fehlende Features in OMF3
+## Fehlende Features in OSF
 
 ### 1. Reset Factory (Live-Mode)
 - **Problem**: Funktioniert nur im Mock-Mode
-- **Lösung**: `dashboard.commands.resetFactory()` implementieren in `omf3/libs/business/src/index.ts`
+- **Lösung**: `dashboard.commands.resetFactory()` implementieren in `osf/libs/business/src/index.ts`
 - **Topic**: `ccu/set/reset`
 - **Payload**: `{ timestamp: ISO, withStorage: false }`
 
@@ -115,6 +115,6 @@ Diese Analyse vergleicht alle Buttons in OMF3, die MQTT Topics publishen sollten
 
 - OMF2 Factory Steering: `omf2/ui/admin/generic_steering/factory_steering_subtab.py`
 - OMF2 Camera Control: `omf2/ui/ccu/ccu_overview/sensor_data_subtab.py:799-833`
-- OMF3 Business Layer: `omf3/libs/business/src/index.ts:464-543`
-- OMF3 MQTT Topics Registry: `omf2/registry/mqtt_clients.yml:44-104`
+- OSF Business Layer: `osf/libs/business/src/index.ts:464-543`
+- OSF MQTT Topics Registry: `omf2/registry/mqtt_clients.yml:44-104` (historische Referenz)
 

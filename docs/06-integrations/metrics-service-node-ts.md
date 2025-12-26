@@ -2,13 +2,13 @@
 
 ## Übersicht
 
-Der **Metrics Service** ist ein Backend-Dienst, der MQTT-Telemetriedaten von der ORBIS Modellfabrik konsumiert und in eine Time-Series-Datenbank (InfluxDB) schreibt. Dies ermöglicht die Visualisierung von Produktions-KPIs, FTS-Metriken, Modulauslastung und Umweltdaten in Grafana-Dashboards.
+Der **Metrics Service** ist ein Backend-Dienst, der MQTT-Telemetriedaten von der Fischertechnik Modell-Fabrik (FMF) konsumiert und in eine Time-Series-Datenbank (InfluxDB) schreibt. Dies ermöglicht die Visualisierung von Produktions-KPIs, FTS-Metriken, Modulauslastung und Umweltdaten in Grafana-Dashboards.
 
 ### Architektur
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    ORBIS Modellfabrik                            │
+│              Fischertechnik Modell-Fabrik (FMF)                 │
 │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌──────────┐          │
 │  │   CCU   │  │   FTS   │  │ Module  │  │ Sensoren │          │
 │  │ Backend │  │  (5iO4) │  │ (DRILL, │  │ (BME680) │          │

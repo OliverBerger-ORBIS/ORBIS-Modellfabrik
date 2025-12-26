@@ -63,7 +63,7 @@
 11. ✅**DSP → Modules Link** – Klick auf Device im DSP-Architektur responsive Darstellung setzt Module-Tab (shopfloor-Tab) mit vorselektiertem Device (QueryParam/State Transfer, 1:1 Zuordnung).
 12. ✅ **DSP → ERP Link** – Klick auf BP-ERP öffnet den Process-Tab (Purchase/Customer Orders) und zeigt ERP-Bezug. Bei ausführen einer Purchase Order wird "fake-Info" zur Order angezeigt in einer ERP-BOX (Supplier-ID, Order-Amount (def. 1), Order-Date, planned delivery-Date). Bei Ausführen einer Customer-Order wird "fake-Info" angezeigt mit Customer-ID, ERP-Order-Number, Order-Amount (default = 1), Order-Date, planned delivery-date. -> Diese Info wird im Track-Trace-Scenario wieder aufgenommen und angezeigt. **(Erledigt: 20.12.2025 - ERP-Daten Verknüpfung, Order Status, zusätzliche Datenfelder, TURN LEFT/RIGHT Icons, i18n)**
 13. ✅ **OSF Rebranding** – Bezeichner OMF3 → OSF in Code, Assets, Doku; Angular Prefixes, ENV Variablen und README angleichen. Sowie konsequente Umbenennung der tabs-Komponenten (module-tab → shopfloor-tab, fts-tab → agv-tab, wobei fts nur bei der deutschen Übersetzung und bei den topics die von außen vorgegeben sind erhalten bleibt). Die app wurde zu osf-ui umbenannt (anstatt ccu-ui). Die Änderungen wurden durch den ganzen Workspace bis in GIT und die dortige Verwaltung durchgezogen. **(Erledigt: 20.12.2025 - App-Umbenennung ccu-ui → osf-ui, Workspace-Umbenennung omf3 → osf, Komponenten-Umbenennung module-tab → shopfloor-tab und fts-tab → agv-tab, package.json name aktualisiert, wichtigste Dokumentation aktualisiert)**
-14. ⏳ **Dokumentation** Mal wieder aufräumen in den docs. **(Teilweise erledigt: 21.12.2025 - DSP-Architektur-Diagramme und SVG-Inventory erstellt, Objects Reference aktualisiert, Business Applications erweitert (SCM, CRM), HOWTO_ADD_CUSTOMER aktualisiert; Dokumentation Cleanup folgt später)**
+14. ✅ **Dokumentation** Mal wieder aufräumen in den docs. **(Erledigt: 23.12.2025)**
    - ✅ **DSP-Architektur-Diagramme erstellt:**
      - `dsp-architecture-functional-view.svg` - Functional View mit allen Layern, Containern und Connections (Key-Namen statt Icons, L-Form Connections, bidirektional)
      - `dsp-architecture-edge-mc-functions.svg` - Edge & MC Functions Detailansicht
@@ -81,8 +81,12 @@
      - FMF_CONFIG als Template empfohlen (statt Default-Config)
      - Pfade korrigiert (omf3/ccu-ui → osf/osf-ui)
      - Business Processes Liste erweitert (bp-scm, bp-crm)
-   - ⏳ **Dokumentation Cleanup:** Folgt später (viele veraltete Planungsdokumente identifiziert, Schritt-für-Schritt Cleanup geplant)
-15. **OBS-Video** Testen und aufbau der OBS-Video präsentation auf Windows. Siehe doc obs-video-presentation-setup.md
+   - ✅ **Dokumentation Cleanup abgeschlossen:**
+     - `deployment-alternatives.md` aktualisiert (OMF3 → OSF, ccu-ui → osf-ui, GitHub Pages automatisch via CI/CD, Local Builds aus IDE, Docker/Rasp-Pi geplant)
+     - `github-pages-deployment.md` aktualisiert (automatisches Deployment via GitHub Actions dokumentiert)
+     - Alle OMF3/ccu-ui Referenzen in aktuellen Dokumentationen angepasst (build-commands-guide.md, analysis/README.md, publish-buttons-*.md, versioning.md, integration-testing-workflow.md)
+     - Sprint-Dokumentationen und Archive-Dokumentationen bleiben unverändert (historische Namen beibehalten)
+15. ⏳ **OBS-Video** Testen und aufbau der OBS-Video präsentation auf Windows. **Status:** ✅ Dokumentation erstellt (`docs/04-howto/presentation/obs-video-presentation-setup.md`). ✅ OBS Studio Setup und Tests auf Windows abgeschlossen. ⏳ **Angular-App Optimierung für Präsentation:** Resizing-Optimierung für Landscape und Portrait-Ausrichtung noch ausstehend (siehe Task 21). **Dokumentation:** Vollständige Anleitung für OBS Studio Setup mit Teams-Integration, Szenen-Konfiguration, Kamera-Setup, Hotkeys und Operator-Checkliste vorhanden.
 16. ✅ **Stations und OPC-UA-Module** Erweiterung der Konfiguration um Infos (aus omf2) **(Erledigt: 22.12.2025)**
    - `ModuleHardwareService` erstellt für Hardware-Konfiguration (OPC-UA Server, TXT Controller)
    - `modules_hardware.json` erstellt mit OMF2-Daten (englische Texte als Default)
@@ -93,11 +97,12 @@
    - i18n Keys für DE/FR hinzugefügt
    - Tests erstellt: `ModuleHardwareService` vollständig getestet, Configuration Tab Tests erweitert
 17. **Storytelling** , anschließende Blog-Serie zu OSF & DSP Story vorbereiten.
-18. ⏸️ **AIQS-Kamera-Integration (sf-system)** – Anzeige der Kamera-Bilder von Workpieces aus der AIQS-Station im Shopfloor-Tab bei AIQS-Auswahl. **Strategie (23.12.2025):** Kamera-Bilder über MQTT-Topic publizieren (nicht HTTP). TXT-Controller anpassen: `lib/camera.py` oder `lib/machine_learning.py` erweitern, neues MQTT-Topic `module/v1/ff/SVR4H76530/camera` publizieren. OSF-UI: Topic abonnieren und Bild anzeigen. **Status:** ✅ Source-Dateien vom TXT-Controller kopiert (`integrations/TXT-AIQS/workspaces/FF_AI_24V/`). ⏳ ROBO Pro Coding Workflow erarbeiten (Sourcen ändern und deployen). **Referenz:** `docs/06-integrations/TXT-SOURCE-ACCESS.md`
+18. ⏸️ **AIQS-Kamera-Integration (sf-system)** – Anzeige der Kamera-Bilder von Workpieces aus der AIQS-Station. **Strategie (23.12.2025):** Kamera-Bilder über MQTT-Topic publizieren (nicht HTTP). **Topic-Format:** `aiqs/camera` (eigenes Topic mit `aiqs/*` Präfix zur Kennzeichnung als "nicht-Standard" Erweiterung). **Referenz-Implementierung:** TXT-DPS verwendet bereits MQTT-Kamera-Publikation (`/j1/txt/1/i/cam` mit Base64-Format, siehe `integrations/TXT-DPS/workspaces/FF_DPS_24V/lib/SSC_Publisher.py`). **TXT-AIQS Anpassung:** `lib/machine_learning.py` erweitern (analog zu TXT-DPS `publish_camera()`), Kamera-Frames über `TXT_SLD_M_USB1_1_camera.read_frame()` abrufen, Base64-kodieren und auf Topic `aiqs/camera` publizieren. **OSF-UI Anzeige:** Kamera-Bilder werden im AIQS-Tab oder als Detail im Shopfloor-Tab angezeigt (bei AIQS-Station-Auswahl). **Status:** ✅ Source-Dateien vom TXT-Controller kopiert (`integrations/TXT-AIQS/workspaces/FF_AI_24V/`). ✅ HTTP-Ansatz verworfen, `AiqsCameraService` gelöscht (nicht verwendet). ⏳ **ROBO Pro Coding Workflow erarbeiten** (Sourcen ändern und deployen) - **KRITISCH: Voraussetzung für alle weiteren Schritte**. ⏳ TXT-AIQS MQTT-Publikation implementieren (analog TXT-DPS, Topic: `aiqs/camera`). ⏸️ **OSF-UI Integration pausiert** - Wird erst nach erfolgreichem TXT-Controller Deployment durchgeführt (Gateway `aiqsCameraFrames$` Stream, Topic-Abonnement `aiqs/#`, Anzeige im AIQS-Tab/Shopfloor-Tab). **Referenz:** `docs/06-integrations/TXT-SOURCE-ACCESS.md`, `integrations/TXT-DPS/workspaces/FF_DPS_24V/lib/SSC_Publisher.py` (Zeilen 78-87, 171-176)
 19. **Azure DevOps Migration** – Mirror/Move Repository inkl. Pipelines nach ORBIS Azure DevOps, Rechte & Secrets definieren.
 20. **OSF Deployment** – Docker-Setup für Hilcher-Box/RPi planen und durchführen
+21. ⏳ **Angular-App Optimierung für Präsentation** – Resizing-Optimierung für Landscape und Portrait-Ausrichtung in OBS-Präsentationen. **Ziel:** Optimale Raumausnutzung in beiden Ausrichtungen. **Status:** Manche Tabs bereits gut aufbereitet (z.B. AGV-Tab), DSP-Tab noch zu statisch. **Anforderungen:** Responsive Layouts für Landscape (1920×1080) und Portrait (1080×1920), optimale Raumausnutzung, dynamisches Resizing ohne Layout-Brüche. **Referenz:** `docs/04-howto/presentation/obs-video-presentation-setup.md`
 
-**Letzte Aktualisierung:** 22.12.2025
+**Letzte Aktualisierung:** 23.12.2025
 
 ## 📊 Sprint-Vorgehen
 
@@ -127,10 +132,11 @@
   - **DSP → ERP Link (Task 12):** ERP-Daten Verknüpfung zwischen Process-Tab und Track-Trace implementiert, `ErpOrderDataService` für Purchase/Customer Orders, ERP-Info-Box zeigt Supplier/Customer IDs, Order Dates, Planned Delivery Dates.
   - **Track-Trace Erweiterungen (Tasks 10-12):** TURN LEFT/RIGHT Icons basierend auf FTS Order Stream, Order Status (Active/Completed) aus dualen Order Streams, ERP-Daten Integration, zusätzliche Datenfelder (Raw Material Order Date, Delivery Date, Storage Date, Customer Order Date, Production Start Date, Delivery End Date), I18n mit englischen Defaults und DE/FR Übersetzungen, Architektur-Dokumentation erweitert.
   - **OSF Rebranding (Task 13):** Vollständige Umbenennung von OMF3 → OSF und ccu-ui → osf-ui durchgeführt. Workspace-Verzeichnis omf3 → osf umbenannt, alle Komponenten aktualisiert (module-tab → shopfloor-tab, fts-tab → agv-tab), package.json name aktualisiert, wichtigste Dokumentation aktualisiert, alle Referenzen in Code, Tests, CI/CD und Dokumentation angepasst.
-  - **DSP-Architektur-Dokumentation (Task 14, teilweise):** 4 neue SVG-Diagramme erstellt (functional-view, edge-mc-functions, component-view, deployment-view), SVG-Inventory nach `docs/02-architecture/` verschoben, Objects Reference aktualisiert mit SVG-Tiles für alle Icon-Kategorien, Business Applications erweitert (SCM, CRM), HOWTO_ADD_CUSTOMER aktualisiert (FMF als Template, Pfade korrigiert).
-  - **Dokumentation & Tests:** Track-Trace Architektur-Dokumentation aktualisiert, Tests für `WorkpieceHistoryService` und `ErpOrderDataService` erweitert/erstellt.
-  - **Demo-Vorbereitung:** Konftel Cam50 Settings + OBS-Doku aktualisiert, DSP-Mockup interaktiv geplant.
-- **Nachlauf:** kundenspezifische Animationen für Gedore-Präsentation, Dokumentation Cleanup (Task 14 Teil 2).
+  - **DSP-Architektur-Dokumentation (Task 14):** 4 neue SVG-Diagramme erstellt (functional-view, edge-mc-functions, component-view, deployment-view), SVG-Inventory nach `docs/02-architecture/` verschoben, Objects Reference aktualisiert mit SVG-Tiles für alle Icon-Kategorien, Business Applications erweitert (SCM, CRM), HOWTO_ADD_CUSTOMER aktualisiert (FMF als Template, Pfade korrigiert), Dokumentation Cleanup abgeschlossen (deployment-alternatives.md, github-pages-deployment.md, alle OMF3/ccu-ui Referenzen in aktuellen Dokumentationen angepasst).
+    - **Dokumentation & Tests:** Track-Trace Architektur-Dokumentation aktualisiert, Tests für `WorkpieceHistoryService` und `ErpOrderDataService` erweitert/erstellt.
+    - **Demo-Vorbereitung:** Konftel Cam50 Settings + OBS-Doku aktualisiert, DSP-Mockup interaktiv geplant.
+    - **OBS-Video Setup (Task 15, teilweise):** OBS Studio Setup und Tests auf Windows abgeschlossen, Angular-App Optimierung für Präsentation folgt (Task 21).
+- **Nachlauf:** kundenspezifische Animationen für Gedore-Präsentation, Angular-App Optimierung für OBS-Präsentationen (Task 21).
 
 ### Sprint 10 (28.11 - 11.12.2025) - **ABGESCHLOSSEN**
 - **Status:** ✅ Abgeschlossen

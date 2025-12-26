@@ -1,83 +1,67 @@
-# GitHub Pages Deployment - Aktueller Prozess
+# GitHub Pages Deployment - Automatisches CI/CD
 
-**Status:** ✅ Aktiv - Deployment erfolgt direkt in GitHub  
-**Datum:** 2025-12-13  
-**Methode:** Manuelles Deployment über GitHub UI
+**Status:** ✅ Aktiv - Deployment erfolgt automatisch via GitHub Actions  
+**Datum:** 2025-12-23  
+**Methode:** Automatisches Deployment bei erfolgreichen Commits auf `main` Branch
 
 ---
 
-## 🎯 Aktueller Deployment-Prozess
+## 🎯 Automatischer Deployment-Prozess
 
-### Schritt 1: Build lokal erstellen
+### GitHub Actions Workflow
 
-```bash
-npm run build:github-pages
-```
+**Workflow-Datei:** `.github/workflows/deploy.yml`
 
-**Build-Output:** `dist/apps/ccu-ui/browser/`
+**Trigger:**
+- ✅ Automatisch bei Push auf `main` Branch (wenn `osf/**`, `package.json` oder `.github/workflows/deploy.yml` geändert wurden)
+- ✅ Manuell via `workflow_dispatch` (GitHub Actions UI)
+
+**Prozess:**
+1. **Build:** Angular App wird mit allen Locales gebaut (`nx build osf-ui --configuration=production --localize`)
+2. **Prepare:** Build-Output wird für GitHub Pages vorbereitet (`_site/` Verzeichnis)
+3. **Deploy:** Automatisches Deployment zu GitHub Pages via `actions/deploy-pages@v4`
+
+**Deployment-URL:** `https://oliverberger-orbis.github.io/ORBIS-Modellfabrik/`
+
+**Build-Output:** `dist/apps/osf-ui/browser/` → `_site/`
 
 **Wichtig:** Der Build erstellt alle benötigten Dateien inklusive:
 - `index.html` (mit korrektem `baseHref="/ORBIS-Modellfabrik/"`)
 - Alle Assets (SVG, JSON, etc.)
 - Hash-basiertes Routing (funktioniert automatisch auf GitHub Pages)
-
-### Schritt 2: Build-Dateien hochladen (direkt in GitHub UI)
-
-1. **Gehe zu GitHub Repository:**
-   - `https://github.com/OliverBerger-ORBIS/ORBIS-Modellfabrik`
-
-2. **Navigiere zum `gh-pages` Branch:**
-   - Falls nicht vorhanden: Erstelle neuen Branch `gh-pages` (oder verwende `gh-pages-test` für Tests)
-
-3. **Lösche alle Dateien im Branch-Root:**
-   - Alle Dateien löschen (außer `.nojekyll`, falls vorhanden)
-   - Wichtig: Branch komplett leeren vor dem Upload
-
-4. **Lade Build-Dateien hoch:**
-   - **Upload-Methode:** "Add file" → "Upload files" in GitHub UI
-   - **Dateien:** Alle Dateien aus `dist/apps/ccu-ui/browser/` hochladen
-   - **Wichtig:** `.nojekyll` Datei muss vorhanden sein (für Angular - verhindert Jekyll-Processing)
-
-5. **Commit und Push:**
-   - Commit-Message: z.B. "Deploy: Update GitHub Pages - [Datum]"
-   - Commit direkt in GitHub UI
-
-### Schritt 3: GitHub Pages aktivieren/aktualisieren
-
-1. **Gehe zu Repository Settings:**
-   - `https://github.com/OliverBerger-ORBIS/ORBIS-Modellfabrik/settings/pages`
-
-2. **Konfiguration:**
-   - **Source:** "Deploy from a branch"
-   - **Branch:** `gh-pages` (oder `gh-pages-test` für Tests) / `/ (root)`
-   - **Save**
-
-3. **Warte 1-2 Minuten** bis GitHub Pages den Build verarbeitet
-   - Status wird in Settings angezeigt
-   - Oder: Prüfe "Actions" Tab für "pages build and deployment" Workflow
-
-4. **Teste die URL:**
-   - `https://oliverberger-orbis.github.io/ORBIS-Modellfabrik/`
-   - Hash-basierte URLs: `https://oliverberger-orbis.github.io/ORBIS-Modellfabrik/#/en/overview`
+- Alle Locales (de, en, fr)
 
 ---
 
 ## 📋 Build-Konfiguration
 
-### Aktuelle Konfiguration
+### CI/CD Build-Konfiguration
 
-**Build-Befehl:**
+**Build-Befehl (im Workflow):**
 ```bash
-npm run build:github-pages
+npx nx build osf-ui --configuration=production --localize --baseHref=/ORBIS-Modellfabrik/
 ```
 
-**Konfiguration:** `omf3/apps/ccu-ui/project.json` → `github-pages`
+**Konfiguration:** `osf/apps/osf-ui/project.json` → `production`
 
 **Wichtige Einstellungen:**
 - **Base Href:** `/ORBIS-Modellfabrik/`
 - **Routing:** Hash-basiert (`/#/en/overview`)
 - **i18n:** Runtime-Loading (keine Locale-Unterverzeichnisse)
-- **Output:** `dist/apps/ccu-ui/browser/`
+- **Output:** `dist/apps/osf-ui/browser/`
+- **Locales:** de, en, fr (alle werden gebaut)
+
+### Lokaler Build (für Tests)
+
+Für lokale Tests kann der Build manuell erstellt werden:
+
+```bash
+# Production Build mit allen Locales
+nx build osf-ui --configuration=production --localize --baseHref=/ORBIS-Modellfabrik/
+
+# Build-Output lokal testen
+npx serve dist/apps/osf-ui/browser -p 4200
+```
 
 ---
 
@@ -96,14 +80,28 @@ Nach dem Deployment prüfen:
 
 ## 🔧 Troubleshooting
 
-### Problem: GitHub Pages baut nicht automatisch neu
+### Problem: Deployment wird nicht automatisch ausgelöst
 
-**Lösung:** Manuell in GitHub Settings einen neuen Build triggern:
-1. Gehe zu: `https://github.com/OliverBerger-ORBIS/ORBIS-Modellfabrik/settings/pages`
-2. Ändere die Branch-Einstellung (z.B. von `gh-pages` zu einem anderen Branch und zurück)
-3. Oder: Warte auf den automatischen "pages build and deployment" Workflow
+**Prüfen:**
+1. **Workflow-Trigger:** Wurden `osf/**`, `package.json` oder `.github/workflows/deploy.yml` geändert?
+2. **GitHub Actions:** Prüfe den "Actions" Tab im Repository
+3. **Workflow-Status:** Ist der Workflow erfolgreich durchgelaufen?
 
-**Alternative:** Ein leerer Commit auf den `gh-pages` Branch kann auch einen neuen Build triggern.
+**Lösung:**
+- **Manueller Trigger:** Gehe zu "Actions" → "Deploy to GitHub Pages" → "Run workflow"
+- **Oder:** Leeren Commit auf `main` pushen (z.B. `git commit --allow-empty -m "Trigger deployment"`)
+
+### Problem: Deployment schlägt fehl
+
+**Prüfen:**
+1. **Build-Fehler:** Prüfe die Build-Logs im GitHub Actions Workflow
+2. **Dependencies:** Sind alle npm Dependencies korrekt installiert?
+3. **TypeScript-Fehler:** Gibt es TypeScript- oder Linting-Fehler?
+
+**Lösung:**
+- Fehler in den GitHub Actions Logs prüfen
+- Lokal testen: `nx build osf-ui --configuration=production --localize`
+- Pre-commit Hooks prüfen (Tests, Linting)
 
 ### Problem: Assets laden nicht
 
@@ -138,5 +136,5 @@ Nach dem Deployment prüfen:
 
 ---
 
-**Letzte Aktualisierung:** 2025-12-13  
-**Status:** ✅ Aktiv - Manuelles Deployment über GitHub UI
+**Letzte Aktualisierung:** 2025-12-23  
+**Status:** ✅ Aktiv - Automatisches Deployment via GitHub Actions CI/CD

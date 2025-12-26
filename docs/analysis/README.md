@@ -1,7 +1,7 @@
-# OMF3 Code Quality Analysis
+# OSF Code Quality Analysis
 
 **Analysis Date:** 2025-11-15  
-**Project:** OMF3 Angular Dashboard  
+**Project:** OSF Angular Dashboard (vormals OMF3)  
 **Status:** ✅ Complete
 
 ---
@@ -190,10 +190,10 @@ Code Optimization & Test Coverage Plan (vollständig umgesetzt, siehe [test-cove
 - ✅ Manual code review
 
 ### Scope
-- **App:** omf3/apps/ccu-ui (15 components, 5 services)
+- **App:** osf/apps/osf-ui (15 components, 5 services)
 - **Libs:** 5 libraries (business, entities, gateway, mqtt-client, testing-fixtures)
 - **Total:** 41 TypeScript files, ~7,267 lines of code
-- **Tests:** 28 passing tests in ccu-ui, 2 passing in mqtt-client
+- **Tests:** 28 passing tests in osf-ui, 2 passing in mqtt-client
 
 ### Metrics Collected
 - Lines of code: 7,267

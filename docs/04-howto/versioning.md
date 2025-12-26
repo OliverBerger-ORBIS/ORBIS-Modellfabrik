@@ -2,7 +2,7 @@
 
 ## Übersicht
 
-Das OMF3-Projekt verwendet Semantische Versionierung (SemVer) mit npm. Die Version wird in `package.json` verwaltet und automatisch in Builds injiziert.
+Das OSF-Projekt verwendet Semantische Versionierung (SemVer) mit npm. Die Version wird in `package.json` verwaltet und automatisch in Builds injiziert.
 
 ## Schnellstart
 
@@ -43,8 +43,8 @@ Fügen Sie Ihre Änderungen zum CHANGELOG.md hinzu:
 ### 3. Tests ausführen
 ```bash
 npm test
-# Oder spezifisch für ccu-ui:
-npm run test:ccu-ui
+# Oder spezifisch für osf-ui:
+nx test osf-ui
 ```
 
 ### 4. Version erhöhen
@@ -67,8 +67,8 @@ Das Script:
 
 ### 5. GitHub Release
 GitHub Actions erstellt automatisch ein Release, wenn ein Version-Tag gepusht wird:
-- Release-Name: `OMF3 Dashboard 0.3.1`
-- Release-Asset: `omf3-0.3.1.tar.gz`
+- Release-Name: `OSF Dashboard 0.3.1`
+- Release-Asset: `osf-0.3.1.tar.gz`
 - Link zu CHANGELOG.md
 
 ## Wann welche Version?
@@ -117,7 +117,7 @@ npm run version:major
 
 ## Version im Code verwenden
 
-Die Version wird automatisch während des Builds in `omf3/apps/ccu-ui/src/environments/version.ts` injiziert:
+Die Version wird automatisch während des Builds in `osf/apps/osf-ui/src/environments/version.ts` injiziert:
 
 ```typescript
 import { VERSION } from '../environments/version';
@@ -151,7 +151,7 @@ git tag | tail -5
 - Prüfen Sie, ob der Tag korrekt gepusht wurde: `git push --tags`
 
 ### Version wird nicht im Build angezeigt
-- Prüfen Sie `omf3/apps/ccu-ui/src/environments/version.ts`
+- Prüfen Sie `osf/apps/osf-ui/src/environments/version.ts`
 - Die Datei wird nur während GitHub Actions Build erstellt
 - Lokal zeigt sie Test-Werte
 

@@ -3,7 +3,7 @@
 ## ✅ Abgeschlossene Änderungen
 
 ### 1. Button-Label-Wechsel (bereits implementiert)
-- **Location**: `omf3/apps/ccu-ui/src/app/tabs/module-tab.component.ts:255-262`
+- **Location**: `osf/apps/osf-ui/src/app/tabs/shopfloor-tab.component.ts:255-262`
 - **Status**: ✅ Korrekt implementiert
 - Der Button zeigt:
   - "Charge" wenn `transport.charging === false`
@@ -19,7 +19,7 @@
 ### 2. Topic-Name korrigiert
 - **Vorher**: `ccu/order/raw_material` (existiert nicht im Original)
 - **Nachher**: `omf/order/raw_material` ✅
-- **Location**: `omf3/libs/business/src/index.ts:544`
+- **Location**: `osf/libs/business/src/index.ts:544`
 
 ### 3. Camera-Control implementiert
 - **Business Layer**: `moveCamera()` und `takeCameraPhoto()` hinzugefügt
@@ -30,7 +30,7 @@
   - Photo: `{ ts: ISO+Z, cmd: 'photo' }`
 
 ### 4. Test-Suite erstellt
-- **Datei**: `omf3/libs/business/src/__tests__/publish-commands.spec.ts`
+- **Datei**: `osf/libs/business/src/__tests__/publish-commands.spec.ts`
 - **Tests**: 17 Tests, alle bestehen ✅
 - **Coverage**: Alle Publish-Commands getestet
 

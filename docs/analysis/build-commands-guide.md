@@ -1,23 +1,23 @@
-# Build-Befehle für OMF3 ccu-ui
+# Build-Befehle für OSF osf-ui
 
 ## 📦 Production Build
 
 ### Standard Production Build (mit i18n)
 
 ```bash
-nx build ccu-ui --configuration=production
+nx build osf-ui --configuration=production
 ```
 
 **Oder:**
 ```bash
-nx build ccu-ui
+nx build osf-ui
 ```
 (Standard-Konfiguration ist bereits `production`)
 
 **Output:**
-- `dist/apps/ccu-ui/browser/en/` - Englische Version
-- `dist/apps/ccu-ui/browser/de/` - Deutsche Version
-- `dist/apps/ccu-ui/browser/fr/` - Französische Version
+- `dist/apps/osf-ui/browser/en/` - Englische Version
+- `dist/apps/osf-ui/browser/de/` - Deutsche Version
+- `dist/apps/osf-ui/browser/fr/` - Französische Version
 
 **Eigenschaften:**
 - ✅ Optimiert (Minification, Tree-Shaking)
@@ -29,13 +29,13 @@ nx build ccu-ui
 ### Production Build ohne i18n (nur Englisch)
 
 ```bash
-nx build ccu-ui --configuration=production --localize=false
+nx build osf-ui --configuration=production --localize=false
 ```
 
 **Oder:** Verwende `github-pages` Konfiguration:
 
 ```bash
-nx build ccu-ui --configuration=github-pages
+nx build osf-ui --configuration=github-pages
 ```
 
 ---
@@ -45,7 +45,7 @@ nx build ccu-ui --configuration=github-pages
 ### Development Build (für lokale Tests)
 
 ```bash
-nx build ccu-ui --configuration=development
+nx build osf-ui --configuration=development
 ```
 
 **Eigenschaften:**
@@ -56,12 +56,12 @@ nx build ccu-ui --configuration=development
 - ❌ Keine License Extraction
 
 **Output:**
-- `dist/apps/ccu-ui/browser/` - Einzelner Build ohne Locale-Unterordner
+- `dist/apps/osf-ui/browser/` - Einzelner Build ohne Locale-Unterordner
 
 ### Development Build mit Production-Optimierung
 
 ```bash
-nx build ccu-ui --configuration=production --localize=false
+nx build osf-ui --configuration=production --localize=false
 ```
 
 **Verwendung:** Wenn du Production-Build testen willst, aber ohne i18n
@@ -73,12 +73,12 @@ nx build ccu-ui --configuration=production --localize=false
 ### Standard Development Server
 
 ```bash
-nx serve ccu-ui
+nx serve osf-ui
 ```
 
 **Oder explizit:**
 ```bash
-nx serve ccu-ui --configuration=development
+nx serve osf-ui --configuration=development
 ```
 
 **Eigenschaften:**
@@ -91,7 +91,7 @@ nx serve ccu-ui --configuration=development
 ### Production Server (für Testing)
 
 ```bash
-nx serve ccu-ui --configuration=production
+nx serve osf-ui --configuration=production
 ```
 
 **Eigenschaften:**
@@ -153,15 +153,15 @@ nx serve ccu-ui --configuration=production
 
 ```bash
 # Nach dem Build
-ls -lh dist/apps/ccu-ui/browser/en/*.js
+ls -lh dist/apps/osf-ui/browser/en/*.js
 ```
 
 ### Bundle-Analyse (optional)
 
 ```bash
 # Bundle-Analyse mit webpack-bundle-analyzer
-nx build ccu-ui --configuration=production --stats-json
-npx webpack-bundle-analyzer dist/apps/ccu-ui/stats.json
+nx build osf-ui --configuration=production --stats-json
+npx webpack-bundle-analyzer dist/apps/osf-ui/stats.json
 ```
 
 ---
@@ -172,7 +172,7 @@ npx webpack-bundle-analyzer dist/apps/ccu-ui/stats.json
 
 ```bash
 # Development Server starten
-nx serve ccu-ui
+nx serve osf-ui
 # → Öffnet http://localhost:4200
 # → Fixtures verfügbar
 # → Live Reload aktiv
@@ -182,10 +182,10 @@ nx serve ccu-ui
 
 ```bash
 # Production Build erstellen
-nx build ccu-ui --configuration=production
+nx build osf-ui --configuration=production
 
 # Statischen Server starten
-nx serve-static ccu-ui
+nx serve-static osf-ui
 # → Öffnet http://localhost:4200
 # → Production Build wird serviert
 ```
@@ -194,22 +194,22 @@ nx serve-static ccu-ui
 
 ```bash
 # Production Build mit allen Sprachen
-nx build ccu-ui --configuration=production
+nx build osf-ui --configuration=production
 
 # Output liegt in:
-# dist/apps/ccu-ui/browser/en/
-# dist/apps/ccu-ui/browser/de/
-# dist/apps/ccu-ui/browser/fr/
+# dist/apps/osf-ui/browser/en/
+# dist/apps/osf-ui/browser/de/
+# dist/apps/osf-ui/browser/fr/
 ```
 
 ### 4. Development Build für schnelle Tests
 
 ```bash
 # Development Build (schnell, ohne Optimierung)
-nx build ccu-ui --configuration=development
+nx build osf-ui --configuration=development
 
 # Output liegt in:
-# dist/apps/ccu-ui/browser/
+# dist/apps/osf-ui/browser/
 ```
 
 ---
@@ -227,7 +227,7 @@ nx build ccu-ui --configuration=development
 // project.json - Production Configuration
 "production": {
   "assets": [
-    { "glob": "**/*", "input": "omf3/apps/ccu-ui/public" }
+    { "glob": "**/*", "input": "osf/apps/osf-ui/public" }
     // Fixtures hier entfernen
   ]
 }
@@ -247,8 +247,8 @@ nx build ccu-ui --configuration=development
 
 Vor dem Production Build:
 
-- [ ] Tests bestehen: `nx test ccu-ui`
-- [ ] Linting: `nx lint ccu-ui`
+- [ ] Tests bestehen: `nx test osf-ui`
+- [ ] Linting: `nx lint osf-ui`
 - [ ] Fixtures aus Production Build entfernt
 - [ ] Bundle Size Budgets eingehalten
 - [ ] i18n Übersetzungen vollständig
@@ -258,7 +258,7 @@ Nach dem Production Build:
 
 - [ ] Bundle-Größen prüfen
 - [ ] Alle 3 Sprachen gebaut (en, de, fr)
-- [ ] Statischen Server testen: `nx serve-static ccu-ui`
+- [ ] Statischen Server testen: `nx serve-static osf-ui`
 - [ ] Funktionalität in allen Sprachen testen
 
 ---
@@ -268,7 +268,7 @@ Nach dem Production Build:
 ### GitHub Pages
 
 ```bash
-nx build ccu-ui --configuration=github-pages
+nx build osf-ui --configuration=github-pages
 ```
 
 **Eigenschaften:**
@@ -282,27 +282,27 @@ nx build ccu-ui --configuration=github-pages
 
 1. **Schneller Development Build:**
    ```bash
-   nx build ccu-ui --configuration=development
+   nx build osf-ui --configuration=development
    ```
    → ~3-5x schneller als Production Build
 
 2. **Production Build ohne i18n (schneller):**
    ```bash
-   nx build ccu-ui --configuration=production --localize=false
+   nx build osf-ui --configuration=production --localize=false
    ```
    → Nur Englisch, aber optimiert
 
 3. **Build-Output prüfen:**
    ```bash
    # Nach dem Build
-   du -sh dist/apps/ccu-ui/browser/*
+   du -sh dist/apps/osf-ui/browser/*
    ```
 
 4. **Clean Build:**
    ```bash
    # Alten Build löschen
-   rm -rf dist/apps/ccu-ui
+   rm -rf dist/apps/osf-ui
    # Neuer Build
-   nx build ccu-ui --configuration=production
+   nx build osf-ui --configuration=production
    ```
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The session replay script allows you to replay recorded MQTT session logs for smoke testing, stability testing, and performance validation of the omf3 application. This is particularly useful for:
+The session replay script allows you to replay recorded MQTT session logs for smoke testing, stability testing, and performance validation of the OSF application. This is particularly useful for:
 
 - Testing application stability under realistic traffic patterns
 - Memory leak detection during long-running sessions
@@ -171,6 +171,6 @@ Potential improvements for future versions:
 
 ## See Also
 
-- [Message Monitor Service](../omf3/apps/ccu-ui/src/app/services/message-monitor.service.ts)
-- [Connection Service](../omf3/apps/ccu-ui/src/app/services/connection.service.ts)
-- [MQTT Client Library](../omf3/libs/mqtt-client/)
+- [Message Monitor Service](../osf/apps/osf-ui/src/app/services/message-monitor.service.ts)
+- [Connection Service](../osf/apps/osf-ui/src/app/services/connection.service.ts)
+- [MQTT Client Library](../osf/libs/mqtt-client/)

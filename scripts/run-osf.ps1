@@ -8,14 +8,14 @@
   - Starts the Nx dev server for the requested project
 
 .PARAMETER Project
-  The nx project name to serve (default: ccu-ui)
+  The nx project name to serve (default: osf-ui)
 
 .PARAMETER Configuration
   The build configuration to use (default: development)
 
 .EXAMPLE
-  .\scripts\run-omf3.ps1
-  .\scripts\run-omf3.ps1 -Project ccu-ui -Configuration development
+  .\scripts\run-osf.ps1
+  .\scripts\run-osf.ps1 -Project osf-ui -Configuration development
 #>
 
 param(

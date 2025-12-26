@@ -122,19 +122,33 @@ integrations/
 
 ### Strategie
 
-**Option 1: MQTT-Topic publizieren (Präferiert)**
-1. **TXT-Controller anpassen:** 
-   - `lib/camera.py` oder `lib/machine_learning.py` erweitern
-   - Neues MQTT-Topic `module/v1/ff/SVR4H76530/camera` publizieren
-   - Bild als Base64-String oder URL senden
-2. **OSF-UI anpassen:**
-   - Topic abonnieren
-   - Bild in Shopfloor-Tab anzeigen (bei AIQS-Auswahl)
+**MQTT-Topic publizieren (Bestätigt, analog zu TXT-DPS)**
+1. **Referenz-Implementierung (TXT-DPS):**
+   - TXT-DPS publiziert bereits Kamera-Bilder über MQTT: `/j1/txt/1/i/cam`
+   - Format: `{"ts":"...","data":"data:image/jpeg;base64,..."}`
+   - Implementierung: `integrations/TXT-DPS/workspaces/FF_DPS_24V/lib/SSC_Publisher.py`
+     - `publish_camera()` Funktion (Zeilen 78-87)
+     - `frame_to_base64()` Helper (Zeilen 171-176)
+     - `image_callback()` Event-Handler (Zeilen 100-102)
 
-**Option 2: HTTP-Endpoint (Nicht gewählt)**
+2. **TXT-AIQS Anpassung:**
+   - `lib/machine_learning.py` erweitern oder `lib/camera_publisher.py` erstellen
+   - Kamera-Frames abrufen: `TXT_SLD_M_USB1_1_camera.read_frame()` (bereits vorhanden)
+   - Base64-Kodierung: Analog zu TXT-DPS `frame_to_base64()` Funktion
+   - MQTT-Publikation: Topic `aiqs/camera` (eigenes Topic mit `aiqs/*` Präfix zur Kennzeichnung als "nicht-Standard" Erweiterung)
+   - Format: `{"ts":"...","data":"data:image/jpeg;base64,..."}`
+
+3. **OSF-UI Integration (pausiert bis TXT-Controller Deployment erfolgreich):**
+   - Gateway `aiqsCameraFrames$` Stream muss erstellt werden (analog zu `cameraFrames$`)
+   - Topic-Abonnement `aiqs/#` muss hinzugefügt werden
+   - Anzeige im AIQS-Tab oder als Detail im Shopfloor-Tab (bei AIQS-Station-Auswahl)
+   - **WICHTIG:** OSF-UI Änderungen werden erst nach erfolgreichem TXT-Controller Deployment durchgeführt
+
+**HTTP-Endpoint (Verworfen)**
 - ❌ Browser-Sicherheitsprobleme (Private Network Access)
 - ❌ Zusätzliche CORS-Konfiguration nötig
 - ❌ Komplexere Integration
+- ❌ `AiqsCameraService` wurde gelöscht (nicht verwendet)
 
 ### Workflow (Noch zu erarbeiten)
 

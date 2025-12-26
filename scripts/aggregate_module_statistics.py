@@ -169,7 +169,7 @@ Diese Daten werden verwendet, um:
 1. Modul-spezifische Beispiel-Anwendungen zu entwickeln
 2. Status-Visualisierungen zu erstellen
 3. Command-History-Features zu implementieren
-4. Integration in OMF3 Module-Tab vorzubereiten
+4. Integration in OSF Shopfloor-Tab vorzubereiten
 
 ## Verwandte Dokumentation
 

@@ -1,4 +1,4 @@
-# Integration Testing Workflow für OMF2
+# Integration Testing Workflow für OMF2 und OSF
 
 ## 🚨 KRITISCHE LEKTION: WERTLOSE TESTS VERMEIDEN
 
@@ -50,8 +50,8 @@ def test_ccu_order_active_routing():
 ### **1. VOR JEDER ÄNDERUNG: BASELINE-TESTS**
 
 ```bash
-# OMF3 Tests ausführen (Angular/Jest)
-nx test ccu-ui
+# OSF Tests ausführen (Angular/Jest)
+nx test osf-ui
 
 # Alle Tests
 nx run-many -t test
@@ -223,13 +223,13 @@ with patch('omf2.ccu.order_manager.get_order_manager') as mock_order_manager:
 
 ```bash
 # VOR Änderung: Baseline
-nx test ccu-ui
+nx test osf-ui
 
 # Änderung durchführen
 # ...
 
 # NACH Änderung: Verifizieren
-nx test ccu-ui
+nx test osf-ui
 ```
 
 ### **4. INTEGRATION-TESTS FÜR JEDE KOMPONENTE**
@@ -249,9 +249,9 @@ nx test ccu-ui
 
 ## ✅ ERFOLGREICH IMPLEMENTIERT
 
-**OMF3 Integration-Tests:**
-- ✅ **OMF3 Tests** - In `omf3/apps/ccu-ui/src/app/.../__tests__/`
-- ✅ **Angular/Jest Tests** - Vollständige Test-Coverage für OMF3 Komponenten
+**OSF Integration-Tests:**
+- ✅ **OSF Tests** - In `osf/apps/osf-ui/src/app/.../__tests__/`
+- ✅ **Angular/Jest Tests** - Vollständige Test-Coverage für OSF Komponenten
 - ✅ **Mocking korrekt** - Gateway-interne Methoden gemockt
 - ✅ **Funktionalität verifiziert** - Manager-Aufrufe getestet
 

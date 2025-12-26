@@ -350,7 +350,7 @@ google-chrome --disable-features=BlockInsecurePrivateNetworkRequests
 **Wichtig:**
 - ✅ **Safari funktioniert** → **Problem ist Chrome-spezifisch!**
 - ✅ Fischertechnik-UI funktioniert → **Problem ist OSF-spezifisch, NICHT Mosquitto!**
-- ⚠️ Seit Umstellung von OMF3 zu OSF noch nicht getestet → Möglicherweise Konfigurationsänderung nötig
+- ⚠️ Seit Umstellung von OMF3 zu OSF noch nicht getestet → Möglicherweise Konfigurationsänderung nötig (historische Referenz: OMF3 → OSF Migration)
 - ✅ APS läuft → Netzwerk-Verbindung funktioniert grundsätzlich
 
 **Chrome-spezifisches Problem (23.12.2025):**

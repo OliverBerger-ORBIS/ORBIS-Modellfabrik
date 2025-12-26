@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Utility script to extract compact MQTT fixture logs for the OMF3 dashboard.
+Utility script to extract compact MQTT fixture logs for the OSF dashboard.
 
 The script reads one or more recorded session logs (JSON lines), filters for
 topics relevant to the UI, and writes trimmed fixture files under
