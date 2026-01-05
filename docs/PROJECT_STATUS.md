@@ -86,7 +86,7 @@
      - `github-pages-deployment.md` aktualisiert (automatisches Deployment via GitHub Actions dokumentiert)
      - Alle OMF3/ccu-ui Referenzen in aktuellen Dokumentationen angepasst (build-commands-guide.md, analysis/README.md, publish-buttons-*.md, versioning.md, integration-testing-workflow.md)
      - Sprint-Dokumentationen und Archive-Dokumentationen bleiben unverändert (historische Namen beibehalten)
-15. ⏳ **OBS-Video** Testen und aufbau der OBS-Video präsentation auf Windows. **Status:** ✅ Dokumentation erstellt (`docs/04-howto/presentation/obs-video-presentation-setup.md`). ✅ OBS Studio Setup und Tests auf Windows abgeschlossen. ⏳ **Angular-App Optimierung für Präsentation:** Resizing-Optimierung für Landscape und Portrait-Ausrichtung noch ausstehend (siehe Task 21). **Dokumentation:** Vollständige Anleitung für OBS Studio Setup mit Teams-Integration, Szenen-Konfiguration, Kamera-Setup, Hotkeys und Operator-Checkliste vorhanden.
+15. ✅ **OBS-Video** Testen und Aufbau der OBS-Video Präsentation auf Windows. **Status:** Dokumentation erstellt (`docs/04-howto/presentation/obs-video-presentation-setup.md`). OBS Studio Setup und Tests auf Windows abgeschlossen. **Dokumentation:** Vollständige Anleitung für OBS Studio Setup mit Teams-Integration, Szenen-Konfiguration, Kamera-Setup, Hotkeys und Operator-Checkliste vorhanden.
 16. ✅ **Stations und OPC-UA-Module** Erweiterung der Konfiguration um Infos (aus omf2) **(Erledigt: 22.12.2025)**
    - `ModuleHardwareService` erstellt für Hardware-Konfiguration (OPC-UA Server, TXT Controller)
    - `modules_hardware.json` erstellt mit OMF2-Daten (englische Texte als Default)
@@ -102,14 +102,16 @@
 20. **OSF Deployment** – Docker-Setup für Hilcher-Box/RPi planen und durchführen
 21. ⏳ **Angular-App Optimierung für Präsentation** – Resizing-Optimierung für Landscape und Portrait-Ausrichtung in OBS-Präsentationen. **Ziel:** Optimale Raumausnutzung in beiden Ausrichtungen. **Status:** Manche Tabs bereits gut aufbereitet (z.B. AGV-Tab), DSP-Tab noch zu statisch. **Anforderungen:** Responsive Layouts für Landscape (1920×1080) und Portrait (1080×1920), optimale Raumausnutzung, dynamisches Resizing ohne Layout-Brüche. **Referenz:** `docs/04-howto/presentation/obs-video-presentation-setup.md`
 
-**Letzte Aktualisierung:** 23.12.2025
+**Letzte Aktualisierung:** 05.01.2026
 
 ## 📊 Sprint-Vorgehen
 
+
 ### **Sprint-Strategie:**
 - **2-Wochen-Zyklen** für kontinuierliche Entwicklung
-- **PROJECT_STATUS.md** = Zentrale Change-Dokumentation
-- **Sprint-Dokumentation** = Detaillierte Rückblicke in `docs/sprints/`
+- **Jeder Sprint erhält ein eigenes Dokument** im Format `sprint_nn.md` im Ordner `docs/sprints/` (siehe `sprint_template.md`).
+- **PROJECT_STATUS.md** = Zentrale Change-Dokumentation (nur aktueller Stand, keine Sprint-Details)
+- **Sprint-Dokumentation** = Detaillierte Rückblicke und Historie in den einzelnen Sprint-Dokumenten
 - **SemVer + CHANGELOG.md** = Release-Historie bleibt separat nachvollziehbar
 
 ### **Change-Management:**
@@ -119,10 +121,28 @@
 
 ## 📊 Sprint-Status
 
-### Sprint 11 (12.12 - 24.12.2025) - **IN BEARBEITUNG**
-- **Status:** 🔄 In Bearbeitung (Tasks 1-13 erledigt)
+
+
+### Sprint 12 (25.12 - 07.01.2026) - **IN BEARBEITUNG**
+- **Status:** 🔄 In Bearbeitung (Großteil der Tasks erledigt)
+- **Fokus:** Angular-App Optimierung für Präsentation, AIQS-Kamera-Integration, OSF Deployment, Azure DevOps Migration, Storytelling-Vorbereitung
+- **Erreicht:**
+  - **AIQS-Kamera-Integration (Task 18, teilweise):** Source-Dateien vom TXT-Controller kopiert, HTTP-Ansatz verworfen, MQTT-Publikation vorbereitet, OSF-UI Integration vorbereitet, Referenz-Implementierung dokumentiert.
+  - **OSF Deployment (Task 20, teilweise):** Docker-Setup für Hilcher-Box/RPi geplant, erste Schritte durchgeführt.
+  - **Azure DevOps Migration (Task 19, teilweise):** Migrationsstrategie und Rechte/Secrets definiert, Vorbereitung der Pipeline-Migration.
+  - **Storytelling (Task 17, in Vorbereitung):** Blog-Serie zu OSF & DSP Story konzipiert, Themen und Struktur vorbereitet.
+  - **Angular-App Optimierung für Präsentation (Task 21, teilweise):** Erste Layout-Optimierungen für Landscape/Portrait umgesetzt, DSP-Tab noch in Arbeit.
+- **Nachlauf:**
+  - AIQS-Kamera MQTT-Publikation finalisieren und OSF-UI Integration abschließen
+  - Docker-Deployment für OSF fertigstellen
+  - Azure DevOps Migration abschließen
+  - Storytelling-Blog starten
+  - Angular-App Resizing-Optimierung für alle Tabs
+
+### Sprint 11 (12.12 - 24.12.2025) - **ABGESCHLOSSEN**
+- **Status:** ✅ Abgeschlossen
 - **Fokus:** Shopfloor UX Refresh, Process-Tab Neuaufbau, Orders-Tab Klarstellung, DSP-Links, Track-Trace Erweiterungen, Gedore Remote-Präsentation Vorbereitung.
-- **Erreicht:** 
+- **Erreicht:**
   - **Module-Tab (Tasks 1-4):** Status-Erweiterung für alle Module (DPS/AIQS/HBW/DRILL/MILL) mit einheitlicher Struktur, Workpiece-Informationen, gebündelte Sequence Commands, HBW Stock-Grid optimiert, Shopfloor-Modul-Hervorhebung (selektiertes Modul mit blauem Rand), I18n für Details-Section (DE/EN/FR), Tab umbenannt zu "Shopfloor" und an Position 2 verschoben.
   - **Configuration-Tab (Task 5):** Layout mit CSS Grid (Shopfloor links, Module rechts, responsive Breakpoints).
   - **AGV-Tab (Task 6):** Layout-Review abgeschlossen (bestehendes Layout beibehalten).

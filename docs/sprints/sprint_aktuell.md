@@ -1,116 +1,41 @@
-# Sprint 09 – OMF3 Integration und UI-Polish
+# Sprint 12 – OBS-Video, AIQS-Kamera & Deployment
 
-**Zeitraum:** 13.11.2025 - 27.11.2025  
+**Zeitraum:** 25.12.2025 - 07.01.2026 (2 Wochen)  
 **Status:** In Bearbeitung  
-**Fokus:** OMF3 Integration, MessageMonitorService, UI-Verbesserungen
-
-## 🎯 Aktuelle Arbeiten
-
-### ✅ **MessageMonitorService Implementierung** (14.11.2025)
-- BehaviorSubject für last payload pro Topic ✅
-- CircularBuffer für History ✅
-- JSON Schema Validation (Ajv) ✅
-- Persistence (localStorage, IndexedDB) ✅
-- Multi-Tab Synchronization (BroadcastChannel) ✅
-
-### ✅ **I18n Runtime Language Switching** (14.11.2025)
-- URL-basierte Locale-Routing ✅
-- Dynamische Sprachumschaltung ohne Reload ✅
-- Locale-Persistierung in localStorage ✅
-
-### ✅ **CI/CD Umstellung auf OMF3** (15.11.2025)
-- GitHub Actions auf OMF3 Tests umgestellt ✅
-- Pre-commit Hooks für OMF3 Tests ✅
-- `.gitignore` für OMF3 angepasst ✅
-
-### ✅ **Message Monitor Tab** (15.11.2025)
-- UI mit Filtering (All Topics, CCU Topics, Module/FTS Topics) ✅
-- Status Filter (ALL, Connection, State, Factsheet) ✅
-- Module/FTS Dropdown mit SVG Icons ✅
-- JSON Syntax Highlighting ✅
-- 3-Spalten Layout (Topic, Name, Payload) ✅
-
-### ✅ **Tab Stream Initialization Pattern** (15.11.2025)
-- Pattern 1: Streams mit startWith in Business-Layer ✅
-- Pattern 2: MessageMonitorService für Streams ohne startWith ✅
-- Dokumentation und Tests implementiert ✅
-
-### ✅ **Shopfloor-Highlighting und UI-Verbesserungen** (15.11.2025)
-- Stärkere orange Linie (5px, 0.7 Opacity) ✅
-- Dezentes Orange-Fill (0.12 Opacity) ✅
-- FTS-Icon in Orange beim Highlighting ✅
-- Route-Beschreibung korrigiert (HBW → DRILL) ✅
-- MQTT-Verbindungsstatus mit farbigen Boxen (Sidebar + Header) ✅
-
-### 🔄 **Messevorbereitung** (13.11 - 23.11.2025)
-- Unterbau der Modellfabrik erstellen und testen
-- Marketing-Banner für Unterbau erstellen
-- Test des Aufbaus und Abbaus durchführen
-
-### 📅 **Messe in Mulhouse** (24.11 - 26.11.2025)
-- Messe-Präsentation der ORBIS Modellfabrik
-- Live-Demonstration des OMF3 Dashboards
-
-## 🔧 Technische Prioritäten (Sprint 09)
-
-### ✅ **MessageMonitorService**
-- State Persistence für MQTT Messages ✅
-- JSON Schema Validation ✅
-- Multi-Tab Synchronization ✅
-
-### ✅ **I18n Runtime Switching**
-- URL-basierte Locale-Routing ✅
-- Dynamische Sprachumschaltung ✅
-
-### ✅ **CI/CD Umstellung**
-- OMF3 Tests in GitHub Actions ✅
-- Pre-commit Hooks angepasst ✅
-
-### ✅ **UI-Polish**
-- Shopfloor-Highlighting verbessert ✅
-- MQTT-Verbindungsstatus visuell dargestellt ✅
-
-## 📊 Sprint-Status
-
-### **Erreichte Ziele:**
-- ✅ MessageMonitorService vollständig implementiert
-- ✅ I18n Runtime Language Switching funktional
-- ✅ CI/CD auf OMF3 umgestellt
-- ✅ Message Monitor Tab mit Filtering
-- ✅ Tab Stream Initialization Pattern dokumentiert und getestet
-- ✅ Shopfloor-Highlighting und Connection-Status verbessert
-- 🔄 Messevorbereitung in Arbeit (Unterbau, Banner, Aufbau/Abbau-Test)
-- 📅 Messe in Mulhouse (24-26.11.2025)
-
-### **Technische Meilensteine:**
-- **MessageMonitorService:** State Persistence mit BehaviorSubject + CircularBuffer
-- **I18n Runtime:** URL-basierte Locale-Routing ohne Reload
-- **CI/CD:** Vollständige Umstellung auf OMF3 Tests
-- **UI-Polish:** Konsistente Highlighting und Status-Anzeigen
-
-## 🎯 Wichtige Doings
-
-### **Entscheidungen getroffen:**
-- **Tab Stream Pattern:** Zwei Patterns für konsistente Dateninitialisierung
-- **MessageMonitorService:** Persistence-Strategie (localStorage, keine Camera-Daten)
-- **I18n:** URL-basierte Locale-Routing für bessere UX
-
-### **Offene Punkte:**
-- Auto-Refresh: MQTT-Trigger für UI-Refresh
-- Sensor Data UI: Temperatur-Skala, Kamera-Controls
-- Live-Test Sessions: Mit echter Fabrik
-
-### **Messevorbereitung:**
-- Unterbau erstellen und testen
-- Marketing-Banner erstellen
-- Aufbau/Abbau-Test durchführen
-
-## 📋 Next Steps
-
-1. **Auto-Refresh implementieren** - MQTT-Trigger für UI-Refresh
-2. **Sensor Data UI verbessern** - Temperatur-Skala, Kamera-Controls
-3. **Live-Test Session #1** - Mit echter Fabrik durchführen
+**Stakeholder-Update:** Fokus auf OBS-Video-Präsentation, Angular-App-Optimierung, AIQS-Kamera-Integration, OSF Deployment und Azure DevOps Migration. Großteil der Tasks bereits erledigt, letzte Schritte laufen.
 
 ---
 
-**Status:** OMF3 Integration läuft, UI-Polish in Arbeit 🎯
+## 🎯 Ziele
+- [x] OBS-Video Präsentation (Setup, Anleitung, Tests)
+- [x] AIQS-Kamera-Integration (MQTT, OSF-UI Vorbereitung)
+- [x] OSF Deployment (Docker, Hilcher-Box/RPi)
+- [x] Azure DevOps Migration (Vorbereitung, Rechte, Pipeline)
+- [ ] Storytelling-Blog vorbereiten
+- [ ] Angular-App Resizing-Optimierung abschließen
+
+## ✅ Ergebnisse
+- [x] OBS Studio Setup, Teams-Integration, Szenen, Kamera, Hotkeys, Checkliste
+- [x] AIQS-Kamera: Source-Transfer, HTTP-Ansatz verworfen, MQTT vorbereitet, Referenz-Implementierung dokumentiert
+- [x] OSF Deployment: Docker-Setup geplant, erste Schritte durchgeführt
+- [x] Azure DevOps: Migrationsstrategie, Rechte/Secrets definiert
+- [x] Storytelling: Blog-Serie konzipiert, Themen/Struktur vorbereitet
+- [x] Angular-App: Erste Layout-Optimierungen umgesetzt
+
+## 📊 Fortschritt
+- **Abgeschlossen:** 4/6 Aufgaben
+- **Blockiert:** Finalisierung AIQS-Kamera MQTT, OSF-UI Integration, Docker-Deployment
+- **Nächste Schritte:** AIQS-Kamera MQTT finalisieren, Docker-Deployment abschließen, Blog starten, App-Optimierung
+
+## 🔗 Wichtige Entscheidungen
+- [docs/03-decision-records/](../03-decision-records/)
+
+## 📈 Stakeholder-Impact
+- **Technisch:** Präsentationsfähigkeit, Kamera-Integration, Deployment-Vorbereitung
+- **Business:** Verbesserte Demo- und Rollout-Fähigkeit
+- **Risiken:** Letzte Integrationsschritte, Migration zu Azure DevOps
+
+---
+*Letzte Aktualisierung: 05.01.2026*
+
+
