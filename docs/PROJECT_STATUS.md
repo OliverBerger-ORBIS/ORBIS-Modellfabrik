@@ -1,21 +1,26 @@
 # ORBIS Modellfabrik - Projekt Status
 
-**Letzte Aktualisierung:** 21.12.2025
 **Aktueller Status:** OSF (vormals OMF3) UI-Finishing & Kunden-Demos; OMF2 als Legacy eingefroren
 
 > **Dokumentations-Strategie:** Dieses Dokument bündelt Projektstatus, Roadmap und Sprint-History; für Release-Versionen nutzen wir SemVer + die separate CHANGELOG.md.
 
-## 🚀 Aktuelle Arbeiten (Dezember 2025)
+## 🚀 Aktuelle Arbeiten (Januar 2026)
 
 ### ✅ OSF Kern stabil
-- Angular + Nx Workspace, MQTT/Gateway/Business/Entities Libraries sowie CCU-UI Grundrahmen sind produktionsreif und dienen als stabile Basis für Kunden-Demos.
+- Angular + Nx Workspace, MQTT/Gateway/Business/Entities Libraries sowie OSF-UI Grundrahmen sind produktionsreif und dienen als stabile Basis für Kunden-Demos.
 - MessageMonitorService, Tab Stream Pattern, i18n Runtime Switching und CI/CD-Pipeline laufen zuverlässig; OMF2 bleibt als Legacy-Referenz bestehen.
 
-### 🔄 Laufende Schwerpunkte
-- **Module-/Shopfloor-Tab** wird zum zentralen Einstiegspunkt ausgebaut: Status-Tiles pro Modul, Sequenz-Kommandos, HBW-Lageransicht und konsistentes UX-Pattern für weitere Tabs (AGV, Konfiguration).
-- **DSP-Storytelling**: Responsive `dsp-responsive-mockup.svg`, MC/EDGE-Animation mit gestaffelten Highlights sowie interaktive Verlinkungen vom DSP-Layer zu OSF-Ansichten.
-- **Remote Demo Pipeline**: OBS/Teams Setup mit Konftel Cam50, Video- und Präsentationsmodus für Kunden (z. B. Gedore) inkl. DSP-Animationen.
-- **OSF Rebranding & Migration**: Umbenennung von OMF3 → OSF, Vorbereitung des Azure DevOps Repos und Docker-basierten Deployments (Hilcher-Box/RPi) als Teil des DSP-Kastens.
+### ✅ Abgeschlossene Schwerpunkte (Sprint 11)
+- **Shopfloor-Tab** ist zentraler Einstiegspunkt: Status-Tiles pro Modul, Sequenz-Kommandos, HBW-Lageransicht und konsistentes UX-Pattern für weitere Tabs (AGV, Konfiguration). ✅
+- **DSP-Storytelling**: Responsive `dsp-responsive-mockup.svg`, MC/EDGE-Animation mit gestaffelten Highlights sowie interaktive Verlinkungen vom DSP-Layer zu OSF-Ansichten. ✅
+- **Remote Demo Pipeline**: OBS/Teams Setup mit Konftel Cam50, Video- und Präsentationsmodus für Kunden (Gedore, DSP-Kundentag) inkl. DSP-Animationen. ✅
+- **OSF Rebranding**: Umbenennung von OMF3 → OSF vollständig durchgeführt. ✅
+
+### 🔄 Laufende Schwerpunkte (Sprint 12)
+- **OSF Migration & Deployment**: Azure DevOps Migration, Docker-Setup für Hilcher-Box/RPi.
+- **Angular-App Optimierung**: Resizing-Optimierung für Landscape/Portrait in OBS-Präsentationen.
+- **AIQS-Kamera-Integration**: MQTT-Publikation und OSF-UI Integration (blockiert durch ROBO Pro Workflow).
+- **Storytelling**: Blog-Serie zu OSF & DSP Story in Vorbereitung.
 
 ## 📅 Externe Events (Q4 2025)
 
@@ -24,10 +29,10 @@
 - 04.12.: Live-Demo der OSF (Shopfloor, Module-Tab, DSP-Animation) gegenüber DSP-Kundenkreis; Feedback floss in die aktuellen UI-Todos ein.
 - Status DSP-Event: Erfolgreich abgeschlossen, Assets (Slides, OBS-Szenen, Videos) sind referenzfähig für weitere Kunden.
 
-### Kundenpräsentation Gedore (Dezember) – 🔄 In Arbeit
+### Kundenpräsentation Gedore (16.12.2025) – ✅ Abgeschlossen
 - Aufbau eines dedizierten OBS-/Teams-Setups inkl. Konftel Cam50, dedizierter Video- und DSP-Animationssequenzen.
 - Erstellung kundenspezifischer DSP-Animationen (Edge/Device Layer, Prozessketten) sowie Abstimmung der Moderationsstory.
-- Nachbereitung: Weitere Animationen & Linking-Konzepte, die direkt in OSF integriert werden.
+- Status Gedore-Präsentation: Erfolgreich abgeschlossen, kundenspezifische Animationen und OBS-Setup sind referenzfähig für weitere Kunden.
 
 ## 📦 Plattformzustand
 
@@ -41,13 +46,17 @@
 - OMF2 bleibt eingefroren als Dokumentationsbasis für Registry-Modelle und Topic-Schemas.
 - Node-RED/APS-Analysen liegen archiviert vor; Migrationswissen wird nur noch bei Bedarf referenziert.
 
-## 📋 Nächste Schritte (Roadmap Q1 2026)
+## 📋 Roadmap Q1 2026
 
-1. **Shopfloor UX Refresh** – Module-Tab als Startpunkt (Status-Kacheln, Sequenz-Controls, HBW-Lager) und konsistente Layouts für AGV & Konfiguration.
-2. **Process & DSP Story** – Neuer Process-Tab für Geschäftsprozesse (Customer Order, Purchase Order, Production, Storage) plus erweitert animierte DSP-Kette.
-3. **Interaktive Verlinkungen** – DSP-Architektur klickbar (AGV → AGV-Tab, Devices → Modules, ERP → Process) inkl. gestaffelter Edge-Animation.
-4. **OSF Rebranding & Migration** – Repos/Wording von OMF3 → OSF, Vorbereitung Azure DevOps Mirror, Containerisierung für Hilcher/RPi.
-5. **Demo Excellence** – OBS/Teams Playbooks, kundenspezifische Animationen (Gedore), Blog-Serie zu OSF & DSP zur Lead-Generierung.
+### ✅ Abgeschlossen (Sprint 11, Dezember 2025)
+1. ✅ **Shopfloor UX Refresh** – Module-Tab als Startpunkt (Status-Kacheln, Sequenz-Controls, HBW-Lager) und konsistente Layouts für AGV & Konfiguration. **(Erledigt: Sprint 11, Tasks 1-6)**
+2. ✅ **Process & DSP Story** – Process-Tab für Geschäftsprozesse (Customer Order, Purchase Order, Production, Storage) plus erweitert animierte DSP-Kette. **(Erledigt: Sprint 11, Tasks 7-8)**
+3. ✅ **Interaktive Verlinkungen** – DSP-Architektur klickbar (AGV → AGV-Tab, Devices → Modules, ERP → Process) inkl. gestaffelter Edge-Animation. **(Erledigt: Sprint 11, Tasks 10-12)**
+4. ✅ **OSF Rebranding** – Repos/Wording von OMF3 → OSF vollständig durchgeführt. **(Erledigt: Sprint 11, Task 13)**
+
+### 🔄 In Arbeit / Geplant
+4. ⏳ **OSF Migration & Deployment** – Azure DevOps Mirror, Containerisierung für Hilcher/RPi. **(In Arbeit: Tasks 19-20)**
+5. ⏳ **Demo Excellence** – OBS/Teams Playbooks erstellt, kundenspezifische Animationen (Gedore) abgeschlossen, Blog-Serie zu OSF & DSP in Vorbereitung. **(In Arbeit: Task 17)**
 
 ## 📝 Offene Todos
 1. ✅ **Module-Tab Status-Erweiterung** – Copilot/PR-Statusleisten (AIQS/DPS) in `osf/apps/osf-ui` übernehmen, Komponenten generalisieren und für HBW/DRILL/MILL identische Detailbereiche bereitstellen. **(Erledigt: 18.12.2025)**
@@ -96,13 +105,13 @@
    - TXT Controller IPs als DHCP markiert (dynamisch vergeben)
    - i18n Keys für DE/FR hinzugefügt
    - Tests erstellt: `ModuleHardwareService` vollständig getestet, Configuration Tab Tests erweitert
-17. **Storytelling** , anschließende Blog-Serie zu OSF & DSP Story vorbereiten.
-18. ⏸️ **AIQS-Kamera-Integration (sf-system)** – Anzeige der Kamera-Bilder von Workpieces aus der AIQS-Station. **Strategie (23.12.2025):** Kamera-Bilder über MQTT-Topic publizieren (nicht HTTP). **Topic-Format:** `aiqs/camera` (eigenes Topic mit `aiqs/*` Präfix zur Kennzeichnung als "nicht-Standard" Erweiterung). **Referenz-Implementierung:** TXT-DPS verwendet bereits MQTT-Kamera-Publikation (`/j1/txt/1/i/cam` mit Base64-Format, siehe `integrations/TXT-DPS/workspaces/FF_DPS_24V/lib/SSC_Publisher.py`). **TXT-AIQS Anpassung:** `lib/machine_learning.py` erweitern (analog zu TXT-DPS `publish_camera()`), Kamera-Frames über `TXT_SLD_M_USB1_1_camera.read_frame()` abrufen, Base64-kodieren und auf Topic `aiqs/camera` publizieren. **OSF-UI Anzeige:** Kamera-Bilder werden im AIQS-Tab oder als Detail im Shopfloor-Tab angezeigt (bei AIQS-Station-Auswahl). **Status:** ✅ Source-Dateien vom TXT-Controller kopiert (`integrations/TXT-AIQS/workspaces/FF_AI_24V/`). ✅ HTTP-Ansatz verworfen, `AiqsCameraService` gelöscht (nicht verwendet). ⏳ **ROBO Pro Coding Workflow erarbeiten** (Sourcen ändern und deployen) - **KRITISCH: Voraussetzung für alle weiteren Schritte**. ⏳ TXT-AIQS MQTT-Publikation implementieren (analog TXT-DPS, Topic: `aiqs/camera`). ⏸️ **OSF-UI Integration pausiert** - Wird erst nach erfolgreichem TXT-Controller Deployment durchgeführt (Gateway `aiqsCameraFrames$` Stream, Topic-Abonnement `aiqs/#`, Anzeige im AIQS-Tab/Shopfloor-Tab). **Referenz:** `docs/06-integrations/TXT-SOURCE-ACCESS.md`, `integrations/TXT-DPS/workspaces/FF_DPS_24V/lib/SSC_Publisher.py` (Zeilen 78-87, 171-176)
-19. **Azure DevOps Migration** – Mirror/Move Repository inkl. Pipelines nach ORBIS Azure DevOps, Rechte & Secrets definieren.
-20. **OSF Deployment** – Docker-Setup für Hilcher-Box/RPi planen und durchführen
-21. ⏳ **Angular-App Optimierung für Präsentation** – Resizing-Optimierung für Landscape und Portrait-Ausrichtung in OBS-Präsentationen. **Ziel:** Optimale Raumausnutzung in beiden Ausrichtungen. **Status:** Manche Tabs bereits gut aufbereitet (z.B. AGV-Tab), DSP-Tab noch zu statisch. **Anforderungen:** Responsive Layouts für Landscape (1920×1080) und Portrait (1080×1920), optimale Raumausnutzung, dynamisches Resizing ohne Layout-Brüche. **Referenz:** `docs/04-howto/presentation/obs-video-presentation-setup.md`
+17. ⏳ **Storytelling** – Blog-Serie zu OSF & DSP Story vorbereiten. **Status:** Blog-Serie konzipiert, Themen/Struktur vorbereitet. **Nächste Schritte:** Blog-Artikel erstellen und veröffentlichen.
+18. ⏳ **AIQS-Kamera-Integration (sf-system)** – Anzeige der Kamera-Bilder von Workpieces aus der AIQS-Station. **Strategie (23.12.2025):** Kamera-Bilder über MQTT-Topic publizieren (nicht HTTP). **Topic-Format:** `aiqs/camera` (eigenes Topic mit `aiqs/*` Präfix zur Kennzeichnung als "nicht-Standard" Erweiterung). **Referenz-Implementierung:** TXT-DPS verwendet bereits MQTT-Kamera-Publikation (`/j1/txt/1/i/cam` mit Base64-Format, siehe `integrations/TXT-DPS/workspaces/FF_DPS_24V/lib/SSC_Publisher.py`). **TXT-AIQS Anpassung:** `lib/machine_learning.py` erweitern oder `lib/camera_publisher.py` erstellen (analog zu TXT-DPS `publish_camera()`), Kamera-Frames über `TXT_SLD_M_USB1_1_camera.read_frame()` abrufen, Base64-kodieren und auf Topic `aiqs/camera` publizieren. **OSF-UI Anzeige:** Kamera-Bilder werden im AIQS-Tab oder als Detail im Shopfloor-Tab angezeigt (bei AIQS-Station-Auswahl). **Status:** ✅ Source-Dateien vom TXT-Controller kopiert (`integrations/TXT-AIQS/workspaces/FF_AI_24V/`). ✅ HTTP-Ansatz verworfen, `AiqsCameraService` gelöscht (nicht verwendet). ✅ **ROBO Pro Coding Workflow etabliert** (06.01.2026): ROBO Pro Coding als primäre Deployment-Methode dokumentiert. Decision Record: `docs/03-decision-records/18-txt-controller-deployment.md`. How-To: `docs/04-howto/txt-controller-deployment.md`. Verzeichnis-Struktur: `vendor/fischertechnik/` (Originale), `integrations/TXT-{MODULE}/archives/` (Varianten), `integrations/TXT-{MODULE}/workspaces/` (Entpackte Versionen). ⏳ **Nächste Schritte:** 1) Kamera-MQTT-Publikation in ROBO Pro Coding implementieren (Professional Modus), 2) Variante speichern, 3) Deployment und Testing. ⏸️ **OSF-UI Integration pausiert** - Wird erst nach erfolgreichem TXT-Controller Deployment durchgeführt (Gateway `aiqsCameraFrames$` Stream, Topic-Abonnement `aiqs/#`, Anzeige im AIQS-Tab/Shopfloor-Tab). **Referenz:** `docs/03-decision-records/18-txt-controller-deployment.md`, `docs/04-howto/txt-controller-deployment.md`, `integrations/TXT-DPS/workspaces/FF_DPS_24V/lib/SSC_Publisher.py` (Zeilen 78-87, 171-176)
+19. ⏳ **Azure DevOps Migration** – Mirror/Move Repository inkl. Pipelines nach ORBIS Azure DevOps, Rechte & Secrets definieren. **Status:** Migrationsstrategie erarbeitet, Rechte/Secrets definiert. **Nächste Schritte:** Migration durchführen, Pipelines migrieren.
+20. ⏳ **OSF Deployment** – Docker-Setup für Hilcher-Box/RPi planen und durchführen. **Status:** Docker-Setup geplant, erste Schritte durchgeführt. **Nächste Schritte:** Docker-Deployment finalisieren.
+21. ⏳ **Angular-App Optimierung für Präsentation** – Resizing-Optimierung für Landscape und Portrait-Ausrichtung in OBS-Präsentationen. **Ziel:** Optimale Raumausnutzung in beiden Ausrichtungen. **Status:** Erste Layout-Optimierungen umgesetzt. Manche Tabs bereits gut aufbereitet (z.B. AGV-Tab), DSP-Tab noch zu statisch. **Anforderungen:** Responsive Layouts für Landscape (1920×1080) und Portrait (1080×1920), optimale Raumausnutzung, dynamisches Resizing ohne Layout-Brüche. **Referenz:** `docs/04-howto/presentation/obs-video-presentation-setup.md`
 
-**Letzte Aktualisierung:** 05.01.2026
+**Letzte Aktualisierung:** 06.01.2026
 
 ## 📊 Sprint-Vorgehen
 
@@ -123,21 +132,22 @@
 
 
 
-### Sprint 12 (25.12 - 07.01.2026) - **IN BEARBEITUNG**
+### Sprint 12 (25.12.2025 - 07.01.2026) - **IN BEARBEITUNG**
 - **Status:** 🔄 In Bearbeitung (Großteil der Tasks erledigt)
-- **Fokus:** Angular-App Optimierung für Präsentation, AIQS-Kamera-Integration, OSF Deployment, Azure DevOps Migration, Storytelling-Vorbereitung
+- **Fokus:** OBS-Video-Präsentation, Angular-App Optimierung, AIQS-Kamera-Integration, OSF Deployment, Azure DevOps Migration, Storytelling-Vorbereitung
 - **Erreicht:**
-  - **AIQS-Kamera-Integration (Task 18, teilweise):** Source-Dateien vom TXT-Controller kopiert, HTTP-Ansatz verworfen, MQTT-Publikation vorbereitet, OSF-UI Integration vorbereitet, Referenz-Implementierung dokumentiert.
+  - **OBS-Video (Task 15, abgeschlossen):** OBS Studio Setup, Teams-Integration, Szenen, Kamera, Hotkeys, Checkliste dokumentiert.
+  - **AIQS-Kamera-Integration (Task 18, teilweise):** Source-Dateien vom TXT-Controller kopiert, HTTP-Ansatz verworfen, MQTT-Publikation vorbereitet, OSF-UI Integration vorbereitet, Referenz-Implementierung dokumentiert. ✅ **ROBO Pro Coding Workflow etabliert** (06.01.2026): ROBO Pro Coding als primäre Deployment-Methode dokumentiert, Decision Record und How-To erstellt, Verzeichnis-Struktur definiert, Konsolidierung abgeschlossen (25+ Dokumente → 2 Hauptdokumente). **Nächste Schritte:** Kamera-MQTT-Publikation in ROBO Pro Coding implementieren, Deployment und Testing.
   - **OSF Deployment (Task 20, teilweise):** Docker-Setup für Hilcher-Box/RPi geplant, erste Schritte durchgeführt.
-  - **Azure DevOps Migration (Task 19, teilweise):** Migrationsstrategie und Rechte/Secrets definiert, Vorbereitung der Pipeline-Migration.
+  - **Azure DevOps Migration (Task 19, teilweise):** Migrationsstrategie erarbeitet, Rechte/Secrets definiert, Vorbereitung der Pipeline-Migration.
   - **Storytelling (Task 17, in Vorbereitung):** Blog-Serie zu OSF & DSP Story konzipiert, Themen und Struktur vorbereitet.
   - **Angular-App Optimierung für Präsentation (Task 21, teilweise):** Erste Layout-Optimierungen für Landscape/Portrait umgesetzt, DSP-Tab noch in Arbeit.
 - **Nachlauf:**
-  - AIQS-Kamera MQTT-Publikation finalisieren und OSF-UI Integration abschließen
+  - AIQS-Kamera MQTT-Publikation finalisieren (nach ROBO Pro Workflow) und OSF-UI Integration abschließen
   - Docker-Deployment für OSF fertigstellen
   - Azure DevOps Migration abschließen
   - Storytelling-Blog starten
-  - Angular-App Resizing-Optimierung für alle Tabs
+  - Angular-App Resizing-Optimierung für alle Tabs abschließen
 
 ### Sprint 11 (12.12 - 24.12.2025) - **ABGESCHLOSSEN**
 - **Status:** ✅ Abgeschlossen

@@ -1,0 +1,885 @@
+<xml xmlns="https://developers.google.com/blockly/xml" version="21">
+  <variables>
+    <variable id="zjLH];S,_.~9qEgO@uQy">valid_actions</variable>
+    <variable id=")PNYv(s2O~YnF@%+=leH">ts</variable>
+    <variable id="@6Pg@HUqXZg(GlHk%`C=">order</variable>
+    <variable id="C3vx|YwdQZu^4@[rAf(S">load_type</variable>
+    <variable id="!=3@r0Sif`)ba1kV|_AD">action</variable>
+    <variable id=";a+tW_!.%}DF@P*o2;3L">status</variable>
+    <variable id="5ng.xmn~B6AFO0EIHZKU">result</variable>
+    <variable id="+*hCkwoo+Qj/AK7T_cjV">instant</variable>
+    <variable id="n}7s,{~CG0yYKRZYX:`4">vda_data</variable>
+    <variable id="rOa`HIP]_(H~EnCBH5=U">orderTopic</variable>
+    <variable id="*+@Y9zyeD,xq%NE+%Iv!">instantActionTopic</variable>
+    <variable id="Z`H#l;{@.2YSS!N_Pb+J">temp_file</variable>
+    <variable id="dlGL%G!#C=)V%3GWe3a)">temp</variable>
+    <variable id="~uwCr.-/Hf$%=6G|u;fk">vda_valid_actions</variable>
+    <variable id="#`MN[]okAB(Aa^jz(ux)">vda_namespace</variable>
+    <variable id="|!nTa8RTGZ:bRTS!(Qnn">vda_temp</variable>
+  </variables>
+  <block type="util_python_imports" id="0G%frn`VOk:i?T5}Y:;w" x="169" y="-342">
+    <field name="value">import datetime&amp;#10;import json&amp;#10;import atexit&amp;#10;import signal&amp;#10;import sys</field>
+  </block>
+  <block type="procedures_defnoreturn" id="~ra6kEmzjt=af1N(wrGU" x="160" y="-142">
+    <mutation>
+      <arg name="valid_actions" varid="zjLH];S,_.~9qEgO@uQy" argid="DyCiX?zX0[mq}|9Qp3]r"/>
+    </mutation>
+    <field name="NAME">vda_init</field>
+    <field name="DyCiX?zX0[mq}|9Qp3]r">valid_actions</field>
+    <statement name="STACK">
+      <block type="variables_set" id="DIJU|QKU,.S4FHD`YG/c">
+        <field name="VAR" id="n}7s,{~CG0yYKRZYX:`4">vda_data</field>
+        <value name="VALUE">
+          <block type="util_from_json" id="O@iymn$S68,4q|OHt{VW">
+            <value name="value">
+              <block type="text" id="4Hmpu7ba6v!DnjM,MJZp">
+                <field name="TEXT">{"stateId": 0, "orderId": "", "orderUpdateId": 0, "lastOrderId": "", "lastOrderTimestamp": 0, "actions":[], "errors": []}</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="variables_set" id="3Ib`/Z=;00G}VIQ3Lxue">
+            <field name="VAR" id="~uwCr.-/Hf$%=6G|u;fk">vda_valid_actions</field>
+            <value name="VALUE">
+              <block type="variables_get" id="a$kV).AK9}9iwK~*R#5C">
+                <field name="VAR" id="zjLH];S,_.~9qEgO@uQy">valid_actions</field>
+              </block>
+            </value>
+            <next>
+              <block type="variables_set" id="PG-%Nk)mavD:ypmOn%IY">
+                <field name="VAR" id="#`MN[]okAB(Aa^jz(ux)">vda_namespace</field>
+                <value name="VALUE">
+                  <block type="text_format" id="7eKoTs[2nLt,pcpI9~56">
+                    <mutation items="2"/>
+                    <value name="value">
+                      <shadow type="text" id="OE`R8;WUMcPMIYuuF6on">
+                        <field name="TEXT">module/v1/ff/{}/{}/</field>
+                      </shadow>
+                    </value>
+                    <value name="ADD0">
+                      <block type="text" id="6k(yy%^HkfKHV}.aRe*5">
+                        <field name="TEXT">NodeRed</field>
+                      </block>
+                    </value>
+                    <value name="ADD1">
+                      <block type="import_function_return" id="p4y86JxlYNB7#L$3XT4*">
+                        <mutation parentId="v3Qhbp#RhhN.I0`Zb^h%" parentFilename="lib/mqtt_utils.py"/>
+                        <field name="name">mqtt_get_id</field>
+                        <data>{"id":"v3Qhbp#RhhN.I0`Zb^h%","filename":"lib/mqtt_utils.py"}</data>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="R@Ds-}lX,Jb)nvtI~C@8" x="1056" y="75">
+    <field name="NAME">vda_publish_status</field>
+    <statement name="STACK">
+      <block type="util_python" id="/CTUr@Iy2}y4a^5//$j/">
+        <field name="value">vda_temp = {}&amp;#10;vda_data["stateId"] = vda_data["stateId"] + 1&amp;#10;vda_temp["headerId"] = vda_data["stateId"]&amp;#10;vda_temp["timestamp"] = vda_timestamp()&amp;#10;vda_temp["serialNumber"] = mqtt_get_id()&amp;#10;vda_temp["orderId"] = vda_data["lastOrderId"]&amp;#10;vda_temp["orderUpdateId"] = vda_data["orderUpdateId"]&amp;#10;vda_temp["paused"] = False&amp;#10;vda_temp["actionState"] = None&amp;#10;for _action in vda_data["actions"]:&amp;#10;    if not vda_temp["actionState"] or _action["state"] != "WAITING":&amp;#10;        vda_temp["actionState"] =  {&amp;#10;                "command": _action["command"],&amp;#10;                "id": _action.get("id"),&amp;#10;                "state":  _action["state"],&amp;#10;                "timestamp": _action.get("timestamp", vda_timestamp())&amp;#10;            }&amp;#10;        if "result" in _action:&amp;#10;            vda_temp["actionState"]["result"] = _action.get("result")&amp;#10;vda_temp["batteryState"] = {}&amp;#10;vda_temp["errors"] = vda_data["errors"]&amp;#10;for _action in vda_data["actions"]:&amp;#10;    if _action["state"] == "FAILED":&amp;#10;        _action_state = {&amp;#10;            "errorType": _action["command"] + "_error",&amp;#10;            "timestamp": _action.get("timestamp", vda_timestamp()),&amp;#10;            "errorLevel":  "FATAL"&amp;#10;        }&amp;#10;        if "result" in _action:&amp;#10;            _action_state["result"] = _action.get("result")&amp;#10;        vda_temp["errors"].append(_action_state)&amp;#10;if vda_data.get("loadType"): &amp;#10;    vda_temp["loads"] = [&amp;#10;        { "loadType": vda_data.get("loadType") }&amp;#10;    ]</field>
+        <next>
+          <block type="mqtt_publish" id="BEzBfSQFXJq_L{K%K)YT">
+            <value name="name">
+              <block type="import_function_return" id="(HLU%Y,,?n%QuGj{)W-p">
+                <mutation parentId="chYrntA?i;,e}ZeY|u(]" parentFilename="lib/mqtt_utils.py"/>
+                <field name="name">mqtt_get_client</field>
+                <data>{"id":"chYrntA?i;,e}ZeY|u(]","filename":"lib/mqtt_utils.py"}</data>
+              </block>
+            </value>
+            <value name="topic">
+              <shadow type="text" id="]813LjvxZR,FZK.ouJ.h">
+                <field name="TEXT">topic</field>
+              </shadow>
+              <block type="text_join" id=",urM@j_War-D8x@zs{RH">
+                <mutation items="2"/>
+                <value name="ADD0">
+                  <block type="variables_get" id="Dy;.@nfm/,U_cu9CksZP">
+                    <field name="VAR" id="#`MN[]okAB(Aa^jz(ux)">vda_namespace</field>
+                  </block>
+                </value>
+                <value name="ADD1">
+                  <block type="text" id="jI*-6ZQ!lF5lv?dy{|zP">
+                    <field name="TEXT">state</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="value">
+              <shadow type="logic_null" id="tljj-o0t%rcb0Es%$?uQ"/>
+              <block type="util_to_json" id=";guWd$`A1~IX3={/Rcfc">
+                <value name="value">
+                  <block type="variables_get" id="hU;PlXTsFc{/s6$l.S55">
+                    <field name="VAR" id="|!nTa8RTGZ:bRTS!(Qnn">vda_temp</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="qos">
+              <shadow type="math_number" id="8ZakUv]D3=%4,zXML%Lp">
+                <field name="NUM">2</field>
+              </shadow>
+            </value>
+            <value name="retain">
+              <shadow type="logic_boolean" id="cP78Yd;de^0N}$L;kb))">
+                <field name="BOOL">TRUE</field>
+              </shadow>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defreturn" id="$N9l]-t/U8#BZEOuY(J0" x="163" y="221">
+    <field name="NAME">vda_timestamp</field>
+    <statement name="STACK">
+      <block type="util_python" id="oY-,IBBiJr0u6:mHLB@p">
+        <field name="value">return datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")</field>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defreturn" id="Qfb5h83bQn/$m]Ee1?B-" x="168" y="345">
+    <mutation>
+      <arg name="ts" varid=")PNYv(s2O~YnF@%+=leH" argid="^0VuTS,:?aX,rUj5ix#y"/>
+    </mutation>
+    <field name="NAME">vda_parse_timestamp</field>
+    <field name="^0VuTS,:?aX,rUj5ix#y">ts</field>
+    <statement name="STACK">
+      <block type="util_python" id=".4;oY6ox-b=bt{GP_P.t">
+        <field name="value">if not ts:&amp;#10;&amp;#10;    return None&amp;#10;&amp;#10;return datetime.datetime.fromisoformat(ts.replace("Z", "+00:00"))</field>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defreturn" id="H(=),ml,Ni%%K1I{6Ha)" x="163" y="570">
+    <field name="NAME">vda_status_failed</field>
+    <value name="RETURN">
+      <block type="text" id="9BL~%UV+.0ZD~d=N`~4N">
+        <field name="TEXT">FAILED</field>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defreturn" id="GDQGaJTzYzJAKY_T]8Z." x="164" y="656">
+    <field name="NAME">vda_status_initializing</field>
+    <value name="RETURN">
+      <block type="text" id="zJdD.NU-U~oV7%Q:o7,S">
+        <field name="TEXT">INITIALIZING</field>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defreturn" id="Ton7qFrN}b7rqVIC9~`d" x="166" y="736">
+    <field name="NAME">vda_status_running</field>
+    <value name="RETURN">
+      <block type="text" id="_-iO{!$-i$-daHjVLaT6">
+        <field name="TEXT">RUNNING</field>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defreturn" id="J!_Qp;?IJZ:+_x$m9?($" x="166" y="824">
+    <field name="NAME">vda_status_finished</field>
+    <value name="RETURN">
+      <block type="text" id="h}x=Y-G9{)_WMA*lfH*Z">
+        <field name="TEXT">FINISHED</field>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defreturn" id="OfmTxMKTKuLV5|Gs49gk" x="162" y="989">
+    <mutation>
+      <arg name="order" varid="@6Pg@HUqXZg(GlHk%`C=" argid="{xfW[CVqnKCFXy!sQ%Nn"/>
+    </mutation>
+    <field name="NAME">vda_process_order</field>
+    <field name="{xfW[CVqnKCFXy!sQ%Nn">order</field>
+    <statement name="STACK">
+      <block type="util_python" id="hb]vEjwTw-sT2_R0rGy1">
+        <field name="value">vda_data["errors"] = []&amp;#10;print('Handling incoming order')&amp;#10;try:&amp;#10;    order = json.loads(order)&amp;#10;except:&amp;#10;    order = {} # the following check will send an error&amp;#10;&amp;#10;if not ("orderId" in order and "timestamp" in order and "action" in order ):&amp;#10;    vda_data["errors"].append({&amp;#10;        "errorType": "validationError",&amp;#10;        "errorLevel": "WARNING",&amp;#10;        "errorReferences": [ &amp;#10;            { "topic": "order" } ,&amp;#10;            { "headerId": order.get("headerId") } ,&amp;#10;            { "orderId": order.get("orderId") } ,&amp;#10;            { "orderUpdateId": order.get("orderUpdateId") } &amp;#10;        ]&amp;#10;    })&amp;#10;    return False&amp;#10;&amp;#10;if (order["orderId"] == vda_data["lastOrderId"]):&amp;#10;    if order.get("orderUpdateId", 0) &lt; vda_data["orderUpdateId"]:&amp;#10;        # send errors when update ID is older than our current update ID&amp;#10;        vda_data["errors"].append({&amp;#10;            "errorType": "orderUpdateError",&amp;#10;            "errorLevel": "WARNING",&amp;#10;            "errorReferences": [ &amp;#10;                { "topic": "order" } ,&amp;#10;                { "headerId": order.get("headerId") } ,&amp;#10;                { "orderId": order.get("orderId") } ,&amp;#10;                { "orderUpdateId": order.get("orderUpdateId") } &amp;#10;            ]&amp;#10;        })&amp;#10;        return False&amp;#10;    elif order.get("orderUpdateId", 0) == vda_data["orderUpdateId"]:&amp;#10;        # ignore duplicate orders&amp;#10;        return True&amp;#10;&amp;#10;_orderErrors=[]&amp;#10;if vda_data["orderId"]:&amp;#10;    # An order is already in progress, we cannot accept a second order or an update&amp;#10;    _orderErrors.append("")&amp;#10;&amp;#10;if order.get("zoneSetId"):&amp;#10;    _orderErrors.append("zoneSetId")&amp;#10;&amp;#10;if len(_orderErrors):&amp;#10;     vda_data["errors"].append({&amp;#10;        "errorType": "orderError",&amp;#10;        "errorLevel": "WARNING",&amp;#10;        "errorReferences": [ &amp;#10;           { "topic": "order" } ,&amp;#10;            { "headerId": order.get("headerId") } ,&amp;#10;            { "orderId": order.get("orderId") } ,&amp;#10;            { "orderUpdateId": order.get("orderUpdateId") } &amp;#10;        ] + [ {i, order.get(i)} for i in _orderErrors if i ]&amp;#10;    })&amp;#10;&amp;#10;&amp;#10;_action = order["action"]&amp;#10;&amp;#10;if _action.get("command") not in vda_valid_actions:&amp;#10;    vda_data["errors"].append({&amp;#10;        "errorType": "orderError",&amp;#10;        "errorLevel": "WARNING",&amp;#10;        "errorReferences": [ &amp;#10;            { "topic": "order" } ,&amp;#10;            { "headerId": order.get("headerId") } ,&amp;#10;            { "orderId": order.get("orderId") } ,&amp;#10;            { "orderUpdateId": order.get("orderUpdateId") },&amp;#10;            { "actionId": _action.get("id") },&amp;#10;            { "actionCommand": _action.get("command") },&amp;#10;        ]&amp;#10;    })&amp;#10;    return False&amp;#10;&amp;#10;vda_data["orderId"] = order["orderId"]&amp;#10;vda_data["orderUpdateId"] = order.get("orderUpdateId", 0)&amp;#10;vda_data["lastOrderId"] = order["orderId"]&amp;#10;vda_data["lastOrderTimestamp"] = order["timestamp"]&amp;#10;&amp;#10;_action["state"] = "WAITING"&amp;#10;_action["timestamp"] = vda_timestamp()&amp;#10;&amp;#10;vda_data["actions"] = [_action]&amp;#10;print('Handling incoming order done')&amp;#10;return True</field>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="s8cbFX;9}5f{i^qeh)QZ" x="627" y="1108">
+    <mutation>
+      <arg name="load_type" varid="C3vx|YwdQZu^4@[rAf(S" argid=":EK]]D+I@[D:LXuQimm/"/>
+    </mutation>
+    <field name="NAME">vda_set_load</field>
+    <field name=":EK]]D+I@[D:LXuQimm/">load_type</field>
+    <statement name="STACK">
+      <block type="util_python" id="EeBIr(/kgBiTf(DcZ3va">
+        <field name="value">vda_data["loadType"] = load_type</field>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defreturn" id="WF5E#4en2,1-C4%,zz@%" x="628" y="1294">
+    <field name="NAME">vda_get_order_topic</field>
+    <statement name="STACK">
+      <block type="variables_set" id="7h%l*yZ{YXyEQ1n!khNO">
+        <field name="VAR" id="rOa`HIP]_(H~EnCBH5=U">orderTopic</field>
+        <value name="VALUE">
+          <block type="text_join" id="fYQt,7GKv_bOg]R:C{1g">
+            <mutation items="2"/>
+            <value name="ADD0">
+              <block type="variables_get" id=":4vrK;;1XkowxORaxHv|">
+                <field name="VAR" id="#`MN[]okAB(Aa^jz(ux)">vda_namespace</field>
+              </block>
+            </value>
+            <value name="ADD1">
+              <block type="text" id="c$M)f;v,Q|aFmxjIC,i{">
+                <field name="TEXT">order</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="text_print" id="sofVD#W9c9Ld/7WprgWu">
+            <value name="TEXT">
+              <shadow type="text" id="EwiM^^z=U*Jwgj/hD=0q">
+                <field name="TEXT"/>
+              </shadow>
+              <block type="variables_get" id="1}8fLE8t8*7_$9.GgS^{">
+                <field name="VAR" id="rOa`HIP]_(H~EnCBH5=U">orderTopic</field>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="RETURN">
+      <block type="variables_get" id="tu)Z)E571?G.dq}5/hZ}">
+        <field name="VAR" id="rOa`HIP]_(H~EnCBH5=U">orderTopic</field>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defreturn" id="Po-lVXe,gHpe=lR-.UhT" x="628" y="1510">
+    <field name="NAME">vda_get_action</field>
+    <statement name="STACK">
+      <block type="util_python" id="EOPOOh2Uj**wE(k~vOm/">
+        <field name="value">for _action in vda_data["actions"]:&amp;#10;    if _action["state"] == "FAILED":&amp;#10;        return None&amp;#10;    if _action["state"] != "FINISHED":&amp;#10;        return _action</field>
+      </block>
+    </statement>
+    <value name="RETURN">
+      <block type="logic_null" id="bh;{~,o|3?X!t.P{*drM"/>
+    </value>
+  </block>
+  <block type="procedures_defnoreturn" id="zUG~l(N~@P9,z%U;Hz{D" x="620" y="1803">
+    <mutation>
+      <arg name="action" varid="!=3@r0Sif`)ba1kV|_AD" argid="S^:#=Op`l[Jb0l9dDVM:"/>
+      <arg name="status" varid=";a+tW_!.%}DF@P*o2;3L" argid="qdfufZP_6k.5[vC_jy#5"/>
+    </mutation>
+    <field name="NAME">vda_set_action_status</field>
+    <field name="S^:#=Op`l[Jb0l9dDVM:">action</field>
+    <field name="qdfufZP_6k.5[vC_jy#5">status</field>
+    <statement name="STACK">
+      <block type="util_python" id="RU$hb7?Uj!JcKI?7{7gm">
+        <field name="value">action["state"] = status&amp;#10;action["timestamp"] = vda_timestamp()&amp;#10;if status == "FAILED":&amp;#10;    _found = False&amp;#10;    for _action in vda_data["actions"]:&amp;#10;        if _action["id"] == action["id"] and _action["command"] == action["command"]:&amp;#10;            _found = True&amp;#10;        if _found == True:&amp;#10;            _action["state"] = "FAILED"&amp;#10;if not vda_get_action():&amp;#10;    vda_data["orderId"] = None</field>
+        <next>
+          <block type="procedures_callnoreturn" id="z@7(z]B*CbVGlIj%]tBA">
+            <mutation name="vda_publish_status"/>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="#ex*jYY}k~=+7k`H*r:_" x="622" y="2257">
+    <mutation>
+      <arg name="result" varid="5ng.xmn~B6AFO0EIHZKU" argid="qdfufZP_6k.5[vC_jy#5"/>
+    </mutation>
+    <field name="NAME">vda_set_current_action_result</field>
+    <field name="qdfufZP_6k.5[vC_jy#5">result</field>
+    <statement name="STACK">
+      <block type="variables_set" id="t%1^!#d-$I0qDBou=@YU">
+        <field name="VAR" id="!=3@r0Sif`)ba1kV|_AD">action</field>
+        <value name="VALUE">
+          <block type="procedures_callreturn" id="gaRlKr0j42IA8qLXV:|K">
+            <mutation name="vda_get_action"/>
+          </block>
+        </value>
+        <next>
+          <block type="procedures_ifreturn" id="elDWlvx(5!]pu{_-Ls0O">
+            <mutation value="0"/>
+            <value name="CONDITION">
+              <block type="logic_negate" id=".%jG9I(h]|)to,Zxw5SD">
+                <value name="BOOL">
+                  <block type="variables_get" id="NdzcC]9IR@A2|OZgfU)L">
+                    <field name="VAR" id="!=3@r0Sif`)ba1kV|_AD">action</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="util_python" id="-6AnEDT23=Q}h)2V6iOt">
+                <field name="value">action["result"] = result</field>
+                <next>
+                  <block type="procedures_callnoreturn" id=":eC]`Nk6nP}fOIzWM#/H">
+                    <mutation name="vda_publish_status"/>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="`U_8r$$@jY7w3OMZJ2$`" x="150" y="3191">
+    <field name="NAME">vda_setup_offline_notifications</field>
+    <comment pinned="false" h="73" w="416">registers a message to send when exiting the program 
+and requests the broker to publish a message when connection is lost
+
+has to be called before connecting to the mqtt broker
+    </comment>
+    <statement name="STACK">
+      <block type="mqtt_will_set" id=",~ZrJ/_(zq}*(K`w#,HL">
+        <value name="name">
+          <block type="import_function_return" id="71BheWa9:yUV/C44%/6a">
+            <mutation parentId="chYrntA?i;,e}ZeY|u(]" parentFilename="lib/mqtt_utils.py"/>
+            <field name="name">mqtt_get_client</field>
+            <data>{"id":"chYrntA?i;,e}ZeY|u(]","filename":"lib/mqtt_utils.py"}</data>
+          </block>
+        </value>
+        <value name="topic">
+          <shadow type="text" id="Lq`-uk(7KhybKA4k[-Ul">
+            <field name="TEXT">topic</field>
+          </shadow>
+          <block type="text_join" id="gMh3s];*h!yKq$@OcoQS">
+            <mutation items="2"/>
+            <value name="ADD0">
+              <block type="variables_get" id="r7D9G]?^+M|]PCyf2[/K">
+                <field name="VAR" id="#`MN[]okAB(Aa^jz(ux)">vda_namespace</field>
+              </block>
+            </value>
+            <value name="ADD1">
+              <block type="text" id="sb%i.A?iR{)rd{.ylg+s">
+                <field name="TEXT">connection</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <value name="value">
+          <shadow type="logic_null" id="+}TR}Q+gr`oH2j,c|lyN"/>
+          <block type="text_format" id="|)/~UM?czv4)Y[8wv,a2">
+            <mutation items="6"/>
+            <value name="value">
+              <shadow type="text" id="s:eO]x4#4,m7wonG=/K9">
+                <field name="TEXT">{{ "headerId": {}, "timestamp": "{}", "version": "{}", "manufacturer": "{}", "serialNumber": "{}", "connectionState": "{}" }}</field>
+              </shadow>
+            </value>
+            <value name="ADD0">
+              <block type="math_number" id="fK~(e|a1ijrb{6%vPy_z">
+                <field name="NUM">1</field>
+              </block>
+            </value>
+            <value name="ADD1">
+              <block type="procedures_callreturn" id="k*m(4Hfb/Ui6eb|V`xDS">
+                <mutation name="vda_timestamp"/>
+              </block>
+            </value>
+            <value name="ADD2">
+              <block type="text" id="tTryyY-5.@}NNe%}QUU)">
+                <field name="TEXT">1.0.0</field>
+              </block>
+            </value>
+            <value name="ADD3">
+              <block type="text" id="!/xXNyj[Wb4]#M0)@R*E">
+                <field name="TEXT">Fischertechnik</field>
+              </block>
+            </value>
+            <value name="ADD4">
+              <block type="import_function_return" id="#]FmUDbo0!|*o:fn/6H1">
+                <mutation parentId="v3Qhbp#RhhN.I0`Zb^h%" parentFilename="lib/mqtt_utils.py"/>
+                <field name="name">mqtt_get_id</field>
+                <data>{"id":"v3Qhbp#RhhN.I0`Zb^h%","filename":"lib/mqtt_utils.py"}</data>
+              </block>
+            </value>
+            <value name="ADD5">
+              <block type="text" id="C5stH@.w1=#$+}`WW!2G">
+                <field name="TEXT">CONNECTIONBROKEN</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <value name="qos">
+          <shadow type="math_number" id="nzQ2aH{KmnU-V7:1M1Ji">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="retain">
+          <shadow type="logic_boolean" id="mfMG%Aiv/VY]YqiyOU65">
+            <field name="BOOL">TRUE</field>
+          </shadow>
+        </value>
+        <next>
+          <block type="util_python" id="jV1V|xeh4*ssw[M-1Efl">
+            <field name="value"># atexit will be called when the program is stopped with the button on the touchscreen&amp;#10;atexit.register(vda_send_connection_offline)&amp;#10;&amp;#10;# handle stopping by system shutdown as well&amp;#10;signal.signal(signal.SIGINT, _vda_handle_signals_int_term)&amp;#10;signal.signal(signal.SIGTSTP, _vda_handle_signals_int_term)&amp;#10;signal.signal(signal.SIGTERM, _vda_handle_signals_int_term)</field>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="Da@S+9N,YX!$e^AIi[48" x="695" y="3490">
+    <field name="NAME">_vda_handle_signals_int_term</field>
+    <statement name="STACK">
+      <block type="util_python" id="fM~_ga`qZS2e85QwhSPU">
+        <field name="value"># Handle termination signals gracefully&amp;#10;# sys.exit will call the function registered with atexit.register(vda_send_connection_offline)&amp;#10;sys.exit(0)</field>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="liy/K,umS|{OGo{~3aP+" x="134" y="3740">
+    <field name="NAME">vda_send_connection_online</field>
+    <comment pinned="false" h="47" w="262">publishes the online status</comment>
+    <statement name="STACK">
+      <block type="text_print" id="G5LyWXiGI{VJ2%RjMTZS">
+        <value name="TEXT">
+          <shadow type="text" id="#]`l*k:2ou$1p~:11v@O">
+            <field name="TEXT">Sending online status</field>
+          </shadow>
+        </value>
+        <next>
+          <block type="mqtt_publish" id="hh$}DLMMPS.b/vDoQYA,">
+            <value name="name">
+              <block type="import_function_return" id="J/#QLPeM{cla/3Z5!/S(">
+                <mutation parentId="chYrntA?i;,e}ZeY|u(]" parentFilename="lib/mqtt_utils.py"/>
+                <field name="name">mqtt_get_client</field>
+                <data>{"id":"chYrntA?i;,e}ZeY|u(]","filename":"lib/mqtt_utils.py"}</data>
+              </block>
+            </value>
+            <value name="topic">
+              <shadow type="text" id="rz]Rh2|EYa:KcBxSNTCy">
+                <field name="TEXT">topic</field>
+              </shadow>
+              <block type="text_join" id="Tc,VMM{XVRSsfGx`pF(9">
+                <mutation items="2"/>
+                <value name="ADD0">
+                  <block type="variables_get" id="GZ:+Lv|s49[]js}JhKBj">
+                    <field name="VAR" id="#`MN[]okAB(Aa^jz(ux)">vda_namespace</field>
+                  </block>
+                </value>
+                <value name="ADD1">
+                  <block type="text" id="E!B]2ly9/b8PY8g0^K$Z">
+                    <field name="TEXT">connection</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="value">
+              <shadow type="logic_null" id="0SGbQGPArGGW|./bZ{PI"/>
+              <block type="text_format" id="-zSKEa|-`qK9y{]O$BTy">
+                <mutation items="6"/>
+                <value name="value">
+                  <shadow type="text" id="AmXy7;J?:mLJN=((om%/">
+                    <field name="TEXT">{{ "headerId": {}, "timestamp": "{}", "version": "{}", "manufacturer": "{}", "serialNumber": "{}", "connectionState": "{}" }}</field>
+                  </shadow>
+                </value>
+                <value name="ADD0">
+                  <block type="math_number" id="ZwMhNJ[yQQm;=)Ao9+#N">
+                    <field name="NUM">2</field>
+                  </block>
+                </value>
+                <value name="ADD1">
+                  <block type="procedures_callreturn" id="OhY2/jy!qNDs1xa2:!Ms">
+                    <mutation name="vda_timestamp"/>
+                  </block>
+                </value>
+                <value name="ADD2">
+                  <block type="text" id="b:7[Mq4!B81xod7J-*L)">
+                    <field name="TEXT">1.0.0</field>
+                  </block>
+                </value>
+                <value name="ADD3">
+                  <block type="text" id="AwFNfUF!M,Z@PU-gPE3B">
+                    <field name="TEXT">Fischertechnik</field>
+                  </block>
+                </value>
+                <value name="ADD4">
+                  <block type="import_function_return" id="tP(3I|4X{C?nvu~nrEq`">
+                    <mutation parentId="v3Qhbp#RhhN.I0`Zb^h%" parentFilename="lib/mqtt_utils.py"/>
+                    <field name="name">mqtt_get_id</field>
+                    <data>{"id":"v3Qhbp#RhhN.I0`Zb^h%","filename":"lib/mqtt_utils.py"}</data>
+                  </block>
+                </value>
+                <value name="ADD5">
+                  <block type="text" id="ZV|R7[R^af(N2sPYXy~L">
+                    <field name="TEXT">ONLINE</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="qos">
+              <shadow type="math_number" id="@1M]tJZ-eP2Onam*19Gk">
+                <field name="NUM">1</field>
+              </shadow>
+            </value>
+            <value name="retain">
+              <shadow type="logic_boolean" id="IQ/i5+8}XOc,48:3uRr_">
+                <field name="BOOL">TRUE</field>
+              </shadow>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="text" id="]xd_AgkMo@4Ai6FC]ng2" disabled="true" x="743" y="3735">
+    <field name="TEXT">module/v1/ff/NodeRed/</field>
+  </block>
+  <block type="procedures_defnoreturn" id="$Jv((k}|$S`1kH6*X.Q=" x="142" y="4063">
+    <field name="NAME">vda_send_connection_offline</field>
+    <statement name="STACK">
+      <block type="text_print" id="=|pkg8c8}nbJ+#D^q+I%">
+        <value name="TEXT">
+          <shadow type="text" id="JbZpvxV%Rj8Q,4#U).B4">
+            <field name="TEXT">Shutting down</field>
+          </shadow>
+        </value>
+        <next>
+          <block type="mqtt_publish" id="HY^*[md8Ls%^VBi$[^,x">
+            <value name="name">
+              <block type="import_function_return" id="w(LkFMWqzE)B;ht4LObm">
+                <mutation parentId="chYrntA?i;,e}ZeY|u(]" parentFilename="lib/mqtt_utils.py"/>
+                <field name="name">mqtt_get_client</field>
+                <data>{"id":"chYrntA?i;,e}ZeY|u(]","filename":"lib/mqtt_utils.py"}</data>
+              </block>
+            </value>
+            <value name="topic">
+              <shadow type="text" id="f5zXiz.+RYCWWd3hFQv=">
+                <field name="TEXT">topic</field>
+              </shadow>
+              <block type="text_join" id="OV,QBR|~#nXoi+.u1@d2">
+                <mutation items="2"/>
+                <value name="ADD0">
+                  <block type="variables_get" id="A3Wv`+O:EVM9|NL}jp+;">
+                    <field name="VAR" id="#`MN[]okAB(Aa^jz(ux)">vda_namespace</field>
+                  </block>
+                </value>
+                <value name="ADD1">
+                  <block type="text" id="Ln3wqqD2kD+S#8BEUfG`">
+                    <field name="TEXT">connection</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="value">
+              <shadow type="logic_null" id="m.iHn),w`5e}`ih@L(CO"/>
+              <block type="text_format" id="?FBHM1h.zWM/`[hzK(6~">
+                <mutation items="6"/>
+                <value name="value">
+                  <shadow type="text" id="|Haknwp1pi+hIkhE4z70">
+                    <field name="TEXT">{{ "headerId": {}, "timestamp": "{}", "version": "{}", "manufacturer": "{}", "serialNumber": "{}", "connectionState": "{}" }}</field>
+                  </shadow>
+                </value>
+                <value name="ADD0">
+                  <block type="math_number" id="_*8FcQC3T5U7!qO(u3sQ">
+                    <field name="NUM">3</field>
+                  </block>
+                </value>
+                <value name="ADD1">
+                  <block type="procedures_callreturn" id="ClZYW`swh9S-BW:OyhUb">
+                    <mutation name="vda_timestamp"/>
+                  </block>
+                </value>
+                <value name="ADD2">
+                  <block type="text" id=":Xvuno.0dn[u1p5|I7FC">
+                    <field name="TEXT">1.0.0</field>
+                  </block>
+                </value>
+                <value name="ADD3">
+                  <block type="text" id="o~)aSo5)1l9w4CFn5XAF">
+                    <field name="TEXT">Fischertechnik</field>
+                  </block>
+                </value>
+                <value name="ADD4">
+                  <block type="import_function_return" id="UV!A5mle={FF%n059*BW">
+                    <mutation parentId="v3Qhbp#RhhN.I0`Zb^h%" parentFilename="lib/mqtt_utils.py"/>
+                    <field name="name">mqtt_get_id</field>
+                    <data>{"id":"v3Qhbp#RhhN.I0`Zb^h%","filename":"lib/mqtt_utils.py"}</data>
+                  </block>
+                </value>
+                <value name="ADD5">
+                  <block type="text" id="1#s^3_.w}T`~;hPhou@_">
+                    <field name="TEXT">OFFLINE</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="qos">
+              <shadow type="math_number" id="Q;!k/[NPXOb#{Iih4`Oj">
+                <field name="NUM">1</field>
+              </shadow>
+            </value>
+            <value name="retain">
+              <shadow type="logic_boolean" id="so*ZE=J$[YbYfP.2zf84">
+                <field name="BOOL">TRUE</field>
+              </shadow>
+            </value>
+            <next>
+              <block type="mqtt_disconnect" id="L9j3S3b0iK[:j@x`5N1]">
+                <value name="name">
+                  <block type="import_function_return" id="u|TBk^`e1ev.,aK,lB;c">
+                    <mutation parentId="chYrntA?i;,e}ZeY|u(]" parentFilename="lib/mqtt_utils.py"/>
+                    <field name="name">mqtt_get_client</field>
+                    <data>{"id":"chYrntA?i;,e}ZeY|u(]","filename":"lib/mqtt_utils.py"}</data>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="text" id="Yqx3lheP/z_uz#..^++r" disabled="true" x="758" y="4048">
+    <field name="TEXT">module/v1/ff/NodeRed/</field>
+  </block>
+  <block type="procedures_defnoreturn" id="ftbfsATjdpW_+p=3F,?6" x="138" y="4414">
+    <mutation>
+      <arg name="instant" varid="+*hCkwoo+Qj/AK7T_cjV" argid="S^:#=Op`l[Jb0l9dDVM:"/>
+    </mutation>
+    <field name="NAME">vda_handle_instant_actions</field>
+    <field name="S^:#=Op`l[Jb0l9dDVM:">instant</field>
+    <statement name="STACK">
+      <block type="util_python" id="c8^LA0VXAQO^|uf2uR%L">
+        <field name="value">print("Executing instand action")&amp;#10;try:&amp;#10;    instant = json.loads(instant)&amp;#10;except:&amp;#10;    instant = {} # the following check will send an error&amp;#10;print(instant)&amp;#10;_actions = instant.get("actions", [])&amp;#10;for _action in _actions:&amp;#10;    if _action.get("actionType", "") == "factsheetRequest":&amp;#10;        vda_data["actions"].append({&amp;#10;            "command": _action.get("actionType"),&amp;#10;            "id": _action.get("actionId"),&amp;#10;            "state": "FINISHED"&amp;#10;        })&amp;#10;        vda_send_factsheet()&amp;#10;    else: &amp;#10;        vda_data["errors"].append({&amp;#10;            "errorType": "invalidInstantAction"&amp;#10;        })</field>
+        <next>
+          <block type="procedures_callnoreturn" id="K!LMB]{_p(%cJGU9O+)0">
+            <mutation name="vda_publish_status"/>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defreturn" id="?zyM,+:lBH0H+]v/1)lg" x="609" y="4437">
+    <field name="NAME">vda_get_instant_action_topic</field>
+    <statement name="STACK">
+      <block type="variables_set" id="h8!BYRSKpP[XF||7vl+k">
+        <field name="VAR" id="*+@Y9zyeD,xq%NE+%Iv!">instantActionTopic</field>
+        <value name="VALUE">
+          <block type="text_join" id="aw[]+lW-Wv1znD)Hk#4x">
+            <mutation items="2"/>
+            <value name="ADD0">
+              <block type="variables_get" id="T@u$jRPl`t3w#W2LlUO(">
+                <field name="VAR" id="#`MN[]okAB(Aa^jz(ux)">vda_namespace</field>
+              </block>
+            </value>
+            <value name="ADD1">
+              <block type="text" id="4JkV@KO~+wuzaM}W!{/M">
+                <field name="TEXT">instantAction</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="text_print" id="C2~n{!(b.Rr6/=mOd}E`">
+            <value name="TEXT">
+              <shadow type="text" id="w?i4h(4=M:!xYP8Is*_y">
+                <field name="TEXT">Sending fact sheet</field>
+              </shadow>
+              <block type="variables_get" id="[A=R7ki2|h_NXdDaPUU1">
+                <field name="VAR" id="*+@Y9zyeD,xq%NE+%Iv!">instantActionTopic</field>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="RETURN">
+      <block type="variables_get" id="Aox/Gn4;py96CSz:}Fld">
+        <field name="VAR" id="*+@Y9zyeD,xq%NE+%Iv!">instantActionTopic</field>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defnoreturn" id="j3SrKCuKDu6H9zwl+TM^" x="612" y="4661">
+    <field name="NAME">vda_send_factsheet</field>
+    <statement name="STACK">
+      <block type="text_print" id="ezVNIN)gd@F;RrjzEVLK">
+        <value name="TEXT">
+          <shadow type="text" id="jRpiw^}||@g%r!86BT_o">
+            <field name="TEXT">Sending fact sheet</field>
+          </shadow>
+        </value>
+        <next>
+          <block type="variables_set" id="^%JQ2A3r(]yvtT.thVgX">
+            <field name="VAR" id="Z`H#l;{@.2YSS!N_Pb+J">temp_file</field>
+            <value name="VALUE">
+              <block type="open_data_file" id="PQ$rtd+Xk;cWD^/m{!P?">
+                <field name="path">data/factsheet.json</field>
+                <field name="mode">r</field>
+              </block>
+            </value>
+            <next>
+              <block type="variables_set" id="sy6Q%*)mS^@MP~c*J@rX">
+                <field name="VAR" id="dlGL%G!#C=)V%3GWe3a)">temp</field>
+                <value name="VALUE">
+                  <block type="util_from_json" id="/cxO|@.?^~_WiOlrRXMR">
+                    <value name="value">
+                      <block type="read_file" id="FhYolUMKxBIJB*]*Qu*}">
+                        <value name="name">
+                          <block type="variables_get" id="S|]!@VA2mW1e:bv[cQGJ">
+                            <field name="VAR" id="Z`H#l;{@.2YSS!N_Pb+J">temp_file</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="dictionary_set_item" id="5-BdK!7:S(bw=rE3^:)u">
+                    <value name="DICT">
+                      <block type="variables_get" id="?Jn*L8S%]uLNo5sAejy*">
+                        <field name="VAR" id="dlGL%G!#C=)V%3GWe3a)">temp</field>
+                      </block>
+                    </value>
+                    <value name="KEY">
+                      <block type="text" id="1NNI-sga!`j=v:NI{nlx">
+                        <field name="TEXT">serialNumber</field>
+                      </block>
+                    </value>
+                    <value name="VALUE">
+                      <block type="import_function_return" id="%$0iG{.r_/-u/-cfZI$k">
+                        <mutation parentId="v3Qhbp#RhhN.I0`Zb^h%" parentFilename="lib/mqtt_utils.py"/>
+                        <field name="name">mqtt_get_id</field>
+                        <data>{"id":"v3Qhbp#RhhN.I0`Zb^h%","filename":"lib/mqtt_utils.py"}</data>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="dictionary_set_item" id=";V/pVy1;o{V1Bxc/}L5N">
+                        <value name="DICT">
+                          <block type="variables_get" id="b6,-p[kT4fHbzFlfJ^7^">
+                            <field name="VAR" id="dlGL%G!#C=)V%3GWe3a)">temp</field>
+                          </block>
+                        </value>
+                        <value name="KEY">
+                          <block type="text" id="=I)9_A[9(`,K)j8ZZm21">
+                            <field name="TEXT">timestamp</field>
+                          </block>
+                        </value>
+                        <value name="VALUE">
+                          <block type="procedures_callreturn" id="S*ijEH|~F%KX#jJsS7#W">
+                            <mutation name="vda_timestamp"/>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="close_file" id="JmK|OGWtFkBS](5na6M*">
+                            <value name="name">
+                              <block type="variables_get" id="H|Wb^5?$#mAoy5YijpE.">
+                                <field name="VAR" id="Z`H#l;{@.2YSS!N_Pb+J">temp_file</field>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="mqtt_publish" id="9T+R4I7)7q(XH!m@G?o}">
+                                <value name="name">
+                                  <block type="import_function_return" id="5;I^(elkayouscf-eer%">
+                                    <mutation parentId="chYrntA?i;,e}ZeY|u(]" parentFilename="lib/mqtt_utils.py"/>
+                                    <field name="name">mqtt_get_client</field>
+                                    <data>{"id":"chYrntA?i;,e}ZeY|u(]","filename":"lib/mqtt_utils.py"}</data>
+                                  </block>
+                                </value>
+                                <value name="topic">
+                                  <shadow type="text" id="i[t;+kH.iyRm[C4y,b:6">
+                                    <field name="TEXT">topic</field>
+                                  </shadow>
+                                  <block type="text_join" id="3uebLZ%:bjg03MRG}[al">
+                                    <mutation items="2"/>
+                                    <value name="ADD0">
+                                      <block type="variables_get" id="Vfoc^_E*h[i|M9)iopEK">
+                                        <field name="VAR" id="#`MN[]okAB(Aa^jz(ux)">vda_namespace</field>
+                                      </block>
+                                    </value>
+                                    <value name="ADD1">
+                                      <block type="text" id="(!T0z2mD{Z?J87|0e|#L">
+                                        <field name="TEXT">factsheet</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <value name="value">
+                                  <shadow type="logic_null" id="1MGG*A!gnVce[#CN#N{/"/>
+                                  <block type="util_to_json" id="i6QN~VT:aHpWmF`/Xf)_">
+                                    <value name="value">
+                                      <block type="variables_get" id="H2y],Sx$mQ:-MW!C4pu(">
+                                        <field name="VAR" id="dlGL%G!#C=)V%3GWe3a)">temp</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <value name="qos">
+                                  <shadow type="math_number" id="m`Iz:(8wqJJ|;c3(%;Jt">
+                                    <field name="NUM">2</field>
+                                  </shadow>
+                                </value>
+                                <value name="retain">
+                                  <shadow type="logic_boolean" id="x9Na4@gp-yF(qK]$-aE]">
+                                    <field name="BOOL">TRUE</field>
+                                  </shadow>
+                                </value>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defreturn" id="{VLvZd$=dZ#7U{~.T)@]" x="610" y="5054">
+    <field name="NAME">vda_get_factsheet_version</field>
+    <statement name="STACK">
+      <block type="variables_set" id="vH_b?n*6?=]DAJWyzs~9">
+        <field name="VAR" id="Z`H#l;{@.2YSS!N_Pb+J">temp_file</field>
+        <value name="VALUE">
+          <block type="open_data_file" id="Jsi^S+#-.ufkbC8!JE.)">
+            <field name="path">data/factsheet.json</field>
+            <field name="mode">r</field>
+          </block>
+        </value>
+        <next>
+          <block type="variables_set" id="+Lg2+,O^:m}68#q%{X)U">
+            <field name="VAR" id="dlGL%G!#C=)V%3GWe3a)">temp</field>
+            <value name="VALUE">
+              <block type="dictionary_get_item" id="g.J?3r/5ByY@g}J20;*$">
+                <value name="DICT">
+                  <block type="util_from_json" id="DH7:XMMvUn:hSgS3g!5D">
+                    <value name="value">
+                      <block type="read_file" id="Vq%4)F9pt%$wTI+:4uO]">
+                        <value name="name">
+                          <block type="variables_get" id="S2Lf}_%ZK*tq][Py|dRU">
+                            <field name="VAR" id="Z`H#l;{@.2YSS!N_Pb+J">temp_file</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <value name="KEY">
+                  <block type="text" id="PTgsi[EK=:(5H^jot8Ec">
+                    <field name="TEXT">version</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="close_file" id="w*Djbjh4V6#vLe4*gNe~">
+                <value name="name">
+                  <block type="variables_get" id="?*IQrfu]E71bW7D!jBkt">
+                    <field name="VAR" id="Z`H#l;{@.2YSS!N_Pb+J">temp_file</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="RETURN">
+      <block type="variables_get" id="ed::|vTMdv(x,CtVH%`3">
+        <field name="VAR" id="dlGL%G!#C=)V%3GWe3a)">temp</field>
+      </block>
+    </value>
+  </block>
+</xml>

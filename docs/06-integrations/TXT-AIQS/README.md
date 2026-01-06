@@ -9,8 +9,8 @@ TXT-AIQS is the AI Quality System TXT controller responsible for quality control
 ## Status
 
 - **Implementation:** Extracted from `FF_AI_24V` in `/integrations/TXT-AIQS/`
-- **Documentation:** Minimal (to be expanded)
-- **Analysis:** Code structure analyzed, HTTP endpoint discovery pending
+- **Documentation:** ✅ Vollständig dokumentiert
+- **Deployment:** ROBO Pro Coding Workflow etabliert (siehe [How-To](../../04-howto/txt-controller-deployment.md))
 
 ## Related Files
 
@@ -21,30 +21,29 @@ TXT-AIQS is the AI Quality System TXT controller responsible for quality control
 
 ## Project Structure
 
-**Aktuelle Struktur (23.12.2025):**
+**Aktuelle Struktur (06.01.2026):**
 ```
 integrations/TXT-AIQS/
-└── workspaces/              # Spiegelt Controller-Struktur (/opt/ft/workspaces/)
-    └── FF_AI_24V/           # ✅ Original-Dateien vom Controller (komplett)
-        ├── FF_AI_24V.py     # Haupt-Datei (15 Zeilen)
-        ├── lib/             # Alle lib/*.py Dateien (11 Dateien)
-        │   ├── camera.py        # Kamera-Konfiguration
-        │   ├── machine_learning.py  # ML & Qualitätsprüfung
-        │   ├── mqtt_utils.py    # MQTT-Utilities
-        │   ├── vda5050.py       # VDA5050-Protokoll
-        │   ├── controller.py    # Controller-Initialisierung
-        │   ├── display.py       # Display-Funktionen
-        │   ├── File.py          # File-Utilities
-        │   ├── iw_log.py        # Logging
-        │   ├── node_red.py      # Node-RED Integration
-        │   ├── sorting_line.py  # Sortierlinie
-        │   └── display.qml      # QML Display-Definition
-        └── data/            # Konfigurationen
-            ├── config.json      # MQTT-Konfiguration
-            └── factsheet.json   # VDA5050 Factsheet
+├── archives/                # Varianten als .ft Archive (für Deployment)
+│   └── FF_AI_24V_mod.ft    # Beispiel: Modifizierte Variante
+└── workspaces/              # Entpackte Versionen (für Analyse)
+    ├── FF_AI_24V/           # Original (entpackt aus vendor/)
+    │   ├── FF_AI_24V.py     # Haupt-Datei
+    │   ├── lib/             # Alle lib/*.py Dateien
+    │   │   ├── camera.py
+    │   │   ├── machine_learning.py
+    │   │   ├── mqtt_utils.py
+    │   │   └── ...
+    │   └── data/            # Konfigurationen
+    └── FF_AI_24V_mod/       # Variante (entpackt für Analyse)
 ```
 
-**Status:** ✅ Alle Original-Sourcen erfolgreich kopiert (23.12.2025)
+**Prinzip:**
+- `vendor/fischertechnik/` = Original `.ft` Archive (Git-Submodul, Workspace für ROBO Pro)
+- `archives/` = Varianten als `.ft` Archive (für Deployment)
+- `workspaces/` = Entpackte Versionen (für Code-Analyse)
+
+**Siehe:** [Decision Record](../../03-decision-records/18-txt-controller-deployment.md) für Details zur Verzeichnis-Struktur
 
 **Status (22.12.2025):**
 - ✅ Vollständige Source-Dateien vom Controller kopiert
@@ -106,14 +105,16 @@ integrations/TXT-AIQS/
 - **Sensor Data:** `/j1/txt/1/i/bme680` (BME680 environmental sensor)
 - **Camera:** ⏳ `aiqs/camera` (geplant, eigenes Topic mit `aiqs/*` Präfix zur Kennzeichnung als "nicht-Standard" Erweiterung)
 
-## Source-Zugriff
+## Deployment und Source-Zugriff
 
-**Siehe:** [TXT-SOURCE-ACCESS.md](../TXT-SOURCE-ACCESS.md) für vollständige Anleitung
+**Siehe:** 
+- [How-To: TXT-Controller Deployment](../../04-howto/txt-controller-deployment.md) - Vollständige Anleitung
+- [Decision Record: TXT-Controller Deployment](../../03-decision-records/18-txt-controller-deployment.md) - Entscheidungsgrundlagen
 
 **Kurzzusammenfassung:**
-- ✅ **SSH/SCP (verwendet):** Source-Dateien erfolgreich kopiert (23.12.2025)
-- ⚠️ **ROBO Pro Coding:** Workflow für Änderungen/Deployment noch zu erarbeiten
-- 📍 **IP-Adresse:** `192.168.0.158` (aktuell, DHCP-assigned)
+- ✅ **ROBO Pro Coding:** Workflow etabliert (06.01.2026)
+- ✅ **SSH/SCP (optional):** Für direkten Controller-Zugriff (muss am Controller aktiviert werden)
+- 📍 **IP-Adresse:** DHCP-Bereich `192.168.0.101-199` (automatisch gescannt)
 
 ## Task 18: Kamera-Bilder in OSF-UI anzeigen
 

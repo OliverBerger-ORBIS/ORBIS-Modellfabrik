@@ -1,0 +1,207 @@
+<xml xmlns="https://developers.google.com/blockly/xml" version="21">
+  <variables>
+    <variable id="ux+R95K/!]c!?nCXS~37">device_id</variable>
+    <variable id="ci+1y32K$6j`7dWX_mYH">file_device_id</variable>
+    <variable id="RcIv(_[qkbb|-?nK*8pH">device_id_json</variable>
+  </variables>
+  <block type="util_python_imports" id=")$V/5zYq|.xP:3X_2Fn$" x="203" y="-14">
+    <field name="value">import sys</field>
+  </block>
+  <block type="procedures_defreturn" id="9BD=:cmk3U.AAxu[/:RV" x="210" y="142">
+    <field name="NAME">readDeviceIdFromFile</field>
+    <statement name="STACK">
+      <block type="controls_if" id="WB;|wI:W^@o4N5k9I.Ja">
+        <mutation elseif="0" else="1"/>
+        <value name="IF0">
+          <block type="exist_file" id="YjVLR.*h=]`fx_?ERU|=">
+            <field name="path">/opt/ft/workspaces/deviceid.json</field>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="variables_set" id=".Y1LHCt,~6(sx+jQxTB4">
+            <field name="VAR" id="ci+1y32K$6j`7dWX_mYH">file_device_id</field>
+            <value name="VALUE">
+              <block type="open_file" id="-m*~+joVFkH#38HG8~`*">
+                <field name="path">/opt/ft/workspaces/deviceid.json</field>
+                <field name="mode">r</field>
+              </block>
+            </value>
+            <next>
+              <block type="variables_set" id="P.I9nw?lv0)[r/9(L%lz">
+                <field name="VAR" id="ux+R95K/!]c!?nCXS~37">device_id</field>
+                <value name="VALUE">
+                  <block type="dictionary_get_item" id="eADeI60EA~!ayzh.q}wY">
+                    <value name="DICT">
+                      <block type="util_from_json" id=",713lqe6t`Uz.y$INOEX">
+                        <value name="value">
+                          <block type="read_file" id="zDFdfL.sMtk62~^7e}Mw">
+                            <value name="name">
+                              <block type="variables_get" id="umD+^}[BjnQG{5;rUK,e">
+                                <field name="VAR" id="ci+1y32K$6j`7dWX_mYH">file_device_id</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="KEY">
+                      <block type="text" id="ZEbG@U:kK;If;gDf^urH">
+                        <field name="TEXT">deviceId</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="close_file" id="zqW.*aUda)1`fqeK-%rl">
+                    <value name="name">
+                      <block type="variables_get" id="pcEY30lwtZB|17lGuFz{">
+                        <field name="VAR" id="ci+1y32K$6j`7dWX_mYH">file_device_id</field>
+                      </block>
+                    </value>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
+        <statement name="ELSE">
+          <block type="variables_set" id="xmopZ^jD`ll1E$3O1jn]">
+            <field name="VAR" id="ci+1y32K$6j`7dWX_mYH">file_device_id</field>
+            <value name="VALUE">
+              <block type="open_data_file" id="=jUnE5|%kA!E`a1NX(N?">
+                <field name="path">data/config.json</field>
+                <field name="mode">r</field>
+              </block>
+            </value>
+            <next>
+              <block type="variables_set" id="T4PW-pY@3:D+mDPns~`.">
+                <field name="VAR" id="RcIv(_[qkbb|-?nK*8pH">device_id_json</field>
+                <value name="VALUE">
+                  <block type="dictionary_get_item" id="/7wtVs6G$6-;Q{Aw-i=p">
+                    <value name="DICT">
+                      <block type="util_from_json" id="nk+vd|1:o:oCLlZvhcM9">
+                        <value name="value">
+                          <block type="read_file" id="Zr|@pz^43^Y~3/B`)4tD">
+                            <value name="name">
+                              <block type="variables_get" id="!d2UIQd~R+Et:SLp/LC,">
+                                <field name="VAR" id="ci+1y32K$6j`7dWX_mYH">file_device_id</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="KEY">
+                      <block type="text" id="p=KD2|H_kw*b/n5N9M.Y">
+                        <field name="TEXT">mqtt</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="variables_set" id="E{HHJK#(~*n%];6==6Fk">
+                    <field name="VAR" id="ux+R95K/!]c!?nCXS~37">device_id</field>
+                    <value name="VALUE">
+                      <block type="dictionary_get_item" id="73)$]q`fTS1e]2$-WoW7">
+                        <value name="DICT">
+                          <block type="variables_get" id="O/C.Hi(_YZ1hK-,B7!t1">
+                            <field name="VAR" id="RcIv(_[qkbb|-?nK*8pH">device_id_json</field>
+                          </block>
+                        </value>
+                        <value name="KEY">
+                          <block type="text" id="`j.OUhy3s:QJN!vutb#i">
+                            <field name="TEXT">deviceId</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="close_file" id="R52h`QKb.TXr.zfcPk%_">
+                        <value name="name">
+                          <block type="variables_get" id="J=V]YNZ((T.h?JJ7|YS|">
+                            <field name="VAR" id="ci+1y32K$6j`7dWX_mYH">file_device_id</field>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="variables_set" id="o?[rHoWIDty*x)b1yB}^">
+                            <field name="VAR" id="ci+1y32K$6j`7dWX_mYH">file_device_id</field>
+                            <value name="VALUE">
+                              <block type="open_file" id="(B`~N-h-BFAse1Mg3f6p">
+                                <field name="path">/opt/ft/workspaces/deviceid.json</field>
+                                <field name="mode">w</field>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="write_file" id="0shi-)[,p6tnvBWLS%Rn">
+                                <field name="new line">TRUE</field>
+                                <value name="value">
+                                  <block type="text_format" id="y@Z$EFrK983+/Fq[~^KL">
+                                    <mutation items="1"/>
+                                    <value name="value">
+                                      <shadow type="text" id="k:As=%-HRaDfC+4OMNLg">
+                                        <field name="TEXT">{{"deviceId":"{}"}}</field>
+                                      </shadow>
+                                    </value>
+                                    <value name="ADD0">
+                                      <block type="variables_get" id="2mLu=^p%uf.(CK8#d66d">
+                                        <field name="VAR" id="ux+R95K/!]c!?nCXS~37">device_id</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <value name="name">
+                                  <block type="variables_get" id="1bmc[7Twf{05^c4G#KB:">
+                                    <field name="VAR" id="ci+1y32K$6j`7dWX_mYH">file_device_id</field>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block type="close_file" id="M0_zhIif/2GXKGwEJbnC">
+                                    <value name="name">
+                                      <block type="variables_get" id="ZVdrhG+=KFUBMRQ,s?QO">
+                                        <field name="VAR" id="ci+1y32K$6j`7dWX_mYH">file_device_id</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
+        <next>
+          <block type="controls_if" id="D0d{#a3sfm*5U4fCs(W1">
+            <value name="IF0">
+              <block type="logic_negate" id="oh-RoE}@e]jDa90%G8Bf">
+                <value name="BOOL">
+                  <block type="variables_get" id="[5xmf#=/oBH+Imit79]8">
+                    <field name="VAR" id="ux+R95K/!]c!?nCXS~37">device_id</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO0">
+              <block type="util_python" id="y^/+yWhkdAU8sI.x)bbX">
+                <field name="value">sys.exit("deviceId for sps missing")</field>
+              </block>
+            </statement>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="RETURN">
+      <block type="variables_get" id="`txAxeL2hGu^gO_.5TQs">
+        <field name="VAR" id="ux+R95K/!]c!?nCXS~37">device_id</field>
+      </block>
+    </value>
+  </block>
+  <block type="util_python" id="S`Qd]Oav;pYJY)Ox=#{Y" inline="true" disabled="true" x="688" y="156">
+    <field name="value">logging.log(logging.TRACE, '-')</field>
+  </block>
+</xml>

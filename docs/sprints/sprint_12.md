@@ -17,15 +17,16 @@
 ## ✅ Ergebnisse
 - [x] OBS Studio Setup, Teams-Integration, Szenen, Kamera, Hotkeys, Checkliste
 - [x] AIQS-Kamera: Source-Transfer, HTTP-Ansatz verworfen, MQTT vorbereitet, Referenz-Implementierung dokumentiert
+- [x] **ROBO Pro Coding Workflow etabliert** (06.01.2026): ROBO Pro Coding als primäre Deployment-Methode dokumentiert, Decision Record und How-To erstellt, Verzeichnis-Struktur definiert, Konsolidierung abgeschlossen (25+ Dokumente → 2 Hauptdokumente)
 - [x] OSF Deployment: Docker-Setup geplant, erste Schritte durchgeführt
 - [x] Azure DevOps: Migrationsstrategie, Rechte/Secrets definiert
 - [x] Storytelling: Blog-Serie konzipiert, Themen/Struktur vorbereitet
 - [x] Angular-App: Erste Layout-Optimierungen umgesetzt
 
 ## 📊 Fortschritt
-- **Abgeschlossen:** 4/6 Aufgaben
+- **Abgeschlossen:** 5/6 Aufgaben (inkl. ROBO Pro Coding Workflow)
 - **Blockiert:** Finalisierung AIQS-Kamera MQTT, OSF-UI Integration, Docker-Deployment
-- **Nächste Schritte:** AIQS-Kamera MQTT finalisieren, Docker-Deployment abschließen, Blog starten, App-Optimierung
+- **Nächste Schritte:** Kamera-MQTT-Publikation in ROBO Pro Coding implementieren, Docker-Deployment abschließen, Blog starten, App-Optimierung
 
 ## 🔗 Wichtige Entscheidungen
 - [docs/03-decision-records/](../03-decision-records/)
@@ -36,6 +37,6 @@
 - **Risiken:** Letzte Integrationsschritte, Migration zu Azure DevOps
 
 ---
-*Letzte Aktualisierung: 05.01.2026*
+*Letzte Aktualisierung: 06.01.2026*
 
 

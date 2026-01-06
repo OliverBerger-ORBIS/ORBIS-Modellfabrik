@@ -1,0 +1,32 @@
+<xml xmlns="https://developers.google.com/blockly/xml" version="21">
+  <block type="txt4_controller" id="[v6x3J=Tm+dMJAsQlQOi" x="558" y="-478">
+    <mutation>
+      <arg type="Input" name="Input-0" value="-"/>
+      <arg type="Output" name="Output-0" value="O4"/>
+      <arg type="Output" name="Output-1" value="-"/>
+      <arg type="Motor" name="Motor-0" value="-"/>
+      <arg type="Servomotor" name="Servomotor-0" value="-"/>
+      <arg type="Counter" name="Counter-0" value="-"/>
+      <arg type="I2C" name="I2C-0" value="-"/>
+      <arg type="USB" name="USB-0" value="USB1_1"/>
+      <arg type="USB" name="USB-1" value="-"/>
+    </mutation>
+    <field name="mode">0</field>
+    <field name="controller_name">TXT_SLD</field>
+    <field name="Input-0">-</field>
+    <field name="Output-0">O4</field>
+    <field name="Output-1">-</field>
+    <field name="Motor-0">-</field>
+    <field name="Servomotor-0">-</field>
+    <field name="Counter-0">-</field>
+    <field name="I2C-0">-</field>
+    <field name="USB-0">USB1_1</field>
+    <field name="USB-1">-</field>
+    <value name="Output-0">
+      <block type="led" id="4G:#]}^|MH)Pnp(AR=04"/>
+    </value>
+    <value name="USB-0">
+      <block type="camera" id=".[.Yo}=Loo#hh0Ws+A]i"/>
+    </value>
+  </block>
+</xml>

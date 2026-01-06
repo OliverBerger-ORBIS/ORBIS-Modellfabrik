@@ -1,0 +1,192 @@
+<xml xmlns="https://developers.google.com/blockly/xml" version="21">
+  <variables>
+    <variable id="@r#8KZ1!k9KdTNr$6rA3">log2</variable>
+    <variable id=",MaB$rGB##{?ks?Paf-W">log</variable>
+    <variable id="~^$sXeeOKji~veogO2Ho">line_raw</variable>
+    <variable id="y/35]wNG6U87gGY:~R:c">line_link</variable>
+  </variables>
+  <block type="util_python_imports" id="QK[K1u*t=FcT]*}cdv,q" x="243" y="-166">
+    <field name="value">import subprocess&amp;#10;import os</field>
+  </block>
+  <block type="procedures_defnoreturn" id="qHty|,bGIb+rs_RJL~0$" x="235" y="-37">
+    <field name="NAME">iw_start_threads</field>
+    <statement name="STACK">
+      <block type="util_thread" id="ieDUQH.Zigyg9e4*u$1n">
+        <field name="dropdown_event">{"id":"1H!b2P#6AAyHU@xv8%Rs","filename":"lib/iw_log.py"}</field>
+        <next>
+          <block type="util_thread" id="r%dZS+S{`2RfyevTTz;@">
+            <field name="dropdown_event">{"id":"J;G/FCQt%@rYjLx`+8`o","filename":"lib/iw_log.py"}</field>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="1H!b2P#6AAyHU@xv8%Rs" x="231" y="104">
+    <field name="NAME">thread_iw_link</field>
+    <statement name="STACK">
+      <block type="variables_set" id="GK|g/?%(rDrf8TqLld0,">
+        <field name="VAR" id="@r#8KZ1!k9KdTNr$6rA3">log2</field>
+        <value name="VALUE">
+          <block type="open_file" id="0wDp7EHV6hQniT4Z9E=r">
+            <field name="path">/opt/ft/workspaces/iw2.log</field>
+            <field name="mode">w</field>
+          </block>
+        </value>
+        <next>
+          <block type="util_python" id="]NFUUMN_JsF.QfGWI[X0">
+            <field name="value">#subprocess.Popen(['chown', 'ftgui:ftgui', '/opt/ft/workspaces/iw.log'])&amp;#10;subprocess.Popen(['chmod', '777', '/opt/ft/workspaces/iw2.log'])</field>
+            <next>
+              <block type="close_file" id="yyYC~^X$4!p(=`}[;g;F">
+                <value name="name">
+                  <block type="variables_get" id="~rMfU{:xK1fZd_/51=^5">
+                    <field name="VAR" id="@r#8KZ1!k9KdTNr$6rA3">log2</field>
+                  </block>
+                </value>
+                <next>
+                  <block type="loop_endless" id="X|k}=VVJy`!n=E}~15V[">
+                    <statement name="DO">
+                      <block type="util_python" id="latLKc@+Xdr^Wg?k:c+W">
+                        <field name="value">#/usr/sbin/iw dev mlan0 link&amp;#10;proc = subprocess.Popen(['/usr/sbin/iw','dev', 'mlan0', 'link'],stdout=subprocess.PIPE)</field>
+                        <next>
+                          <block type="loop_endless" id="N3A37^jwO9+M^~-KG:,M">
+                            <statement name="DO">
+                              <block type="util_python" id="g.QipIywZ1?m^D4r?]3-">
+                                <field name="value">line_link = proc.stdout.readline().decode()&amp;#10;if not line_link:&amp;#10;  break&amp;#10;#print(line_link.rstrip('\n'))</field>
+                                <next>
+                                  <block type="variables_set" id="v!_xF)@Ne;}.cV-=gmDI">
+                                    <field name="VAR" id="@r#8KZ1!k9KdTNr$6rA3">log2</field>
+                                    <value name="VALUE">
+                                      <block type="open_file" id="8-Z=!30_mbzi^A^#z%T{">
+                                        <field name="path">/opt/ft/workspaces/iw2.log</field>
+                                        <field name="mode">a</field>
+                                      </block>
+                                    </value>
+                                    <next>
+                                      <block type="write_file" id="fAcdf17xPu,+vOko0Zn)">
+                                        <field name="new line">FALSE</field>
+                                        <value name="value">
+                                          <block type="variables_get" id="W9F?/ME8k9l2[].FW5mM">
+                                            <field name="VAR" id="y/35]wNG6U87gGY:~R:c">line_link</field>
+                                          </block>
+                                        </value>
+                                        <value name="name">
+                                          <block type="variables_get" id="+MtUNUir+oWP3,7jezUw">
+                                            <field name="VAR" id="@r#8KZ1!k9KdTNr$6rA3">log2</field>
+                                          </block>
+                                        </value>
+                                        <next>
+                                          <block type="close_file" id="@%MO+CATjxbI8vM;bga8">
+                                            <value name="name">
+                                              <block type="variables_get" id="4gJpaxJgp{l/a-lG.(p3">
+                                                <field name="VAR" id="@r#8KZ1!k9KdTNr$6rA3">log2</field>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </statement>
+                            <next>
+                              <block type="util_wait_for" id="0N]Htp)`sz3.;f49~n6W">
+                                <field name="format">s</field>
+                                <value name="value">
+                                  <shadow type="math_number" id="e:!ox.f/!r=NO6$xSNw*">
+                                    <field name="NUM">1</field>
+                                  </shadow>
+                                </value>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </statement>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="J;G/FCQt%@rYjLx`+8`o" x="222" y="825">
+    <field name="NAME">thread_iw_event</field>
+    <statement name="STACK">
+      <block type="util_python" id="T%f7Ex_c8EskesSLylis">
+        <field name="value">#/usr/sbin/iw event -r -f&amp;#10;proc = subprocess.Popen(['/usr/sbin/iw','event', '-t', '-f'],stdout=subprocess.PIPE)</field>
+        <next>
+          <block type="variables_set" id="?Bfdc`cJ^f`v)+_[[L_N">
+            <field name="VAR" id=",MaB$rGB##{?ks?Paf-W">log</field>
+            <value name="VALUE">
+              <block type="open_file" id="j?w_m#EJ?wKj%}N[o_D#">
+                <field name="path">/opt/ft/workspaces/iw.log</field>
+                <field name="mode">w</field>
+              </block>
+            </value>
+            <next>
+              <block type="util_python" id="/L0Y_ca:n@-yIUKJKM*I">
+                <field name="value">#subprocess.Popen(['chown', 'ftgui:ftgui', '/opt/ft/workspaces/iw.log'])&amp;#10;subprocess.Popen(['chmod', '777', '/opt/ft/workspaces/iw.log'])</field>
+                <next>
+                  <block type="close_file" id="-Ilykm=eLpcfr8u],B+7">
+                    <value name="name">
+                      <block type="variables_get" id="gRqEtf^TyM$~IJf9w!28">
+                        <field name="VAR" id=",MaB$rGB##{?ks?Paf-W">log</field>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="loop_endless" id="7B_GBCHEJvP$;7~||Z)E">
+                        <statement name="DO">
+                          <block type="util_python" id="h.%dm!7M,;wqy43=$mAG">
+                            <field name="value">line_raw = proc.stdout.readline().decode()&amp;#10;if not line_raw:&amp;#10;  break&amp;#10;print(line_raw.rstrip('\n'))&amp;#10;line = line_raw.split(": ")&amp;#10;ts = line[0]&amp;#10;msg = line[2]&amp;#10;if len(line)&gt;3:&amp;#10;  args = line[3]&amp;#10;#print(ts, " # ", msg, " # ", args)</field>
+                            <next>
+                              <block type="variables_set" id="uCMKz3enCRuk|@q=jait">
+                                <field name="VAR" id=",MaB$rGB##{?ks?Paf-W">log</field>
+                                <value name="VALUE">
+                                  <block type="open_file" id="Cycu)CEtFuB]Tkf8q4Dp">
+                                    <field name="path">/opt/ft/workspaces/iw.log</field>
+                                    <field name="mode">a</field>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block type="write_file" id="y^tu;)twSrw}O(aw1x}E">
+                                    <field name="new line">FALSE</field>
+                                    <value name="value">
+                                      <block type="variables_get" id="fnKSXQU6V(W+f1$$QWbA">
+                                        <field name="VAR" id="~^$sXeeOKji~veogO2Ho">line_raw</field>
+                                      </block>
+                                    </value>
+                                    <value name="name">
+                                      <block type="variables_get" id="-Q!ENd|ha@|OqWB02R(-">
+                                        <field name="VAR" id=",MaB$rGB##{?ks?Paf-W">log</field>
+                                      </block>
+                                    </value>
+                                    <next>
+                                      <block type="close_file" id="lzZ2VNVxU?IV!f%agvA}">
+                                        <value name="name">
+                                          <block type="variables_get" id="hs;.Q1kIJye^|Q(o5R|K">
+                                            <field name="VAR" id=",MaB$rGB##{?ks?Paf-W">log</field>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </statement>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+</xml>
