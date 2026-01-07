@@ -745,7 +745,7 @@
                           <block type="text_print" id="aEbO23D`~jg-ib-OKPQO">
                             <value name="TEXT">
                               <shadow type="text" id="h^ER[80Y/w$yOYsTiFC6">
-                                <field name="TEXT">Check successful</field>
+                                <field name="TEXT">Check successful with sound</field>
                               </shadow>
                             </value>
                             <next>
@@ -759,22 +759,33 @@
                                   </block>
                                 </value>
                                 <next>
-                                  <block type="procedures_callnoreturn" id="(/6PbGLppSGcvw:Mrv5;">
-                                    <mutation name="complete_vda_action">
-                                      <arg name="success"/>
-                                    </mutation>
-                                    <value name="ARG0">
-                                      <block type="procedures_callreturn" id="C/(@zn^Y@bPe+25)B+h.">
-                                        <mutation name="set_status_check">
-                                          <arg name="status"/>
-                                        </mutation>
-                                        <value name="ARG0">
-                                          <block type="variables_get" id=".1*lOjT4iP2p_}Ka*gNv">
-                                            <field name="VAR" id="Ud:A]uXp#FMC@HzgJ9-H">STATE_IDLE</field>
+                                  <block type="util_comment" id="?mnK.BDmHczR:wIu!pw$">
+                                    <field name="value">Ton für erfolgreiche Prüfung abspielen</field>
+                                    <next>
+                                      <block type="sound_play_audio_file" id="nDE};1Mu!Q)5f8lkb,ko">
+                                        <field name="soundfile_name">06_Car_horn_short.wav</field>
+                                        <field name="checkbox">FALSE</field>
+                                        <next>
+                                          <block type="procedures_callnoreturn" id="(/6PbGLppSGcvw:Mrv5;">
+                                            <mutation name="complete_vda_action">
+                                              <arg name="success"/>
+                                            </mutation>
+                                            <value name="ARG0">
+                                              <block type="procedures_callreturn" id="C/(@zn^Y@bPe+25)B+h.">
+                                                <mutation name="set_status_check">
+                                                  <arg name="status"/>
+                                                </mutation>
+                                                <value name="ARG0">
+                                                  <block type="variables_get" id=".1*lOjT4iP2p_}Ka*gNv">
+                                                    <field name="VAR" id="Ud:A]uXp#FMC@HzgJ9-H">STATE_IDLE</field>
+                                                  </block>
+                                                </value>
+                                              </block>
+                                            </value>
                                           </block>
-                                        </value>
+                                        </next>
                                       </block>
-                                    </value>
+                                    </next>
                                   </block>
                                 </next>
                               </block>
@@ -802,15 +813,38 @@
                                   </block>
                                 </value>
                                 <next>
-                                  <block type="procedures_callnoreturn" id="sI=Dv$0fNQ=oM_g[VEp.">
-                                    <mutation name="complete_vda_action">
-                                      <arg name="success"/>
-                                    </mutation>
-                                    <value name="ARG0">
-                                      <block type="logic_boolean" id="br[V4xx0sKc=Q),}LbBl">
-                                        <field name="BOOL">TRUE</field>
+                                  <block type="util_comment" id="zRjOLQIC#+#rkq2b^(LP">
+                                    <field name="value">Ton für fehlgeschlagene Prüfung abspielen</field>
+                                    <next>
+                                      <block type="sound_play_audio_file" id="pEmRpuIE.w-y=Bh;ONed">
+                                        <field name="soundfile_name">02_Alarm.wav</field>
+                                        <field name="checkbox">FALSE</field>
+                                        <next>
+                                          <block type="import_function_noreturn" id="hCum16`8nU(S9.yXYvpH" inline="true">
+                                            <mutation parentId="#ex*jYY}k~=+7k`H*r:_" parentFilename="lib/vda5050.py"/>
+                                            <field name="name">vda_set_current_action_result</field>
+                                            <data>{"id":"#ex*jYY}k~=+7k`H*r:_","filename":"lib/vda5050.py"}</data>
+                                            <value name="result">
+                                              <block type="variables_get" id="d,A%#mY:$Y!95Hw+vU$4">
+                                                <field name="VAR" id="eSfNn_3ALu@`hGvxF/Zy">RESULT_FAILED</field>
+                                              </block>
+                                            </value>
+                                            <next>
+                                              <block type="procedures_callnoreturn" id="sI=Dv$0fNQ=oM_g[VEp.">
+                                                <mutation name="complete_vda_action">
+                                                  <arg name="success"/>
+                                                </mutation>
+                                                <value name="ARG0">
+                                                  <block type="logic_boolean" id="br[V4xx0sKc=Q),}LbBl">
+                                                    <field name="BOOL">TRUE</field>
+                                                  </block>
+                                                </value>
+                                              </block>
+                                            </next>
+                                          </block>
+                                        </next>
                                       </block>
-                                    </value>
+                                    </next>
                                   </block>
                                 </next>
                               </block>
@@ -1022,7 +1056,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id=";tvF+1(]no-yq0s8uqYW" x="-587" y="1265">
+  <block type="procedures_defnoreturn" id=";tvF+1(]no-yq0s8uqYW" x="-565" y="1285">
     <field name="NAME">clean_exit</field>
     <statement name="STACK">
       <block type="util_python" id="d.Pm3%!#W+uTu7Hihk=Q">

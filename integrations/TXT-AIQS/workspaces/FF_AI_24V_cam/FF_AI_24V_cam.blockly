@@ -30,7 +30,7 @@
           <block type="text_print" id="55elcE}wS|+hSYj%%u.#">
             <value name="TEXT">
               <shadow type="text" id="kEbh*k3p}d3@{jtapsuW">
-                <field name="TEXT">Starting Module</field>
+                <field name="TEXT">Starting Module with image</field>
               </shadow>
             </value>
             <next>
@@ -45,7 +45,7 @@
       </block>
     </statement>
   </block>
-  <block type="import_function_noreturn" id="OVV@+5Ej;CcjqV?j|Rr@" disabled="true" x="210" y="-251">
+  <block type="import_function_noreturn" id="OVV@+5Ej;CcjqV?j|Rr@" disabled="true" x="224" y="-229">
     <mutation parentId="qHty|,bGIb+rs_RJL~0$" parentFilename="lib/iw_log.py"/>
     <field name="name">iw_start_threads</field>
     <data>{"id":"qHty|,bGIb+rs_RJL~0$","filename":"lib/iw_log.py"}</data>

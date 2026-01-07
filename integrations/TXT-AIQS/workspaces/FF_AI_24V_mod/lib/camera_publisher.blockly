@@ -1,9 +1,0 @@
-<xml xmlns="https://developers.google.com/blockly/xml" version="21">
-  <variables>
-    <variable id="camera_frame_var">camera_frame</variable>
-    <variable id="camera_publisher_thread_var">_camera_publisher_thread</variable>
-  </variables>
-  <block type="util_python_imports" id="camera_pub_imports" x="0" y="0">
-    <field name="value">import base64&amp;#10;import cv2&amp;#10;import time&amp;#10;import threading&amp;#10;from lib.camera import *&amp;#10;from lib.controller import *&amp;#10;from lib.mqtt_utils import *</field>
-  </block>
-</xml>

@@ -1,0 +1,336 @@
+<xml xmlns="https://developers.google.com/blockly/xml" version="21">
+  <variables>
+    <variable id="`MV-?!eF)SR_+p^eyM)*">topic</variable>
+    <variable id="sgX3;Rh}XVHTSu?*CS,t">payload</variable>
+    <variable id="wAx{HxD[s#dR^tcEFE!C">result_code</variable>
+    <variable id="af7FVI4K~!qpb+?7!J]w">mqtt_connection</variable>
+    <variable id="eMLYIPe?b!;zZ6[@Jdxc">mqtt_config_file</variable>
+    <variable id="0$:#~tBiqasB2*,5T}eR">mqtt_controller_id</variable>
+    <variable id="#rED[7FBmeD`epq!9E-Q">temp</variable>
+    <variable id="jzRbi@@!X=Ido$WA0s/|">mqtt_config</variable>
+  </variables>
+  <block type="util_python_imports" id=".M9NE]YRi#D;uYcQU|)1" x="-77" y="-816">
+    <field name="value">import json&amp;#10;import os&amp;#10;import paho.mqtt.client as mqtt&amp;#10;import time&amp;#10;from fischertechnik.mqtt.MqttClient import MqttClient</field>
+  </block>
+  <block type="procedures_defreturn" id="chYrntA?i;,e}ZeY|u(]" x="-78" y="-628">
+    <field name="NAME">mqtt_get_client</field>
+    <statement name="STACK">
+      <block type="procedures_ifreturn" id="!g0MwpP.mfDHhv(o^aY[">
+        <mutation value="1"/>
+        <value name="CONDITION">
+          <block type="variables_get" id=")%6sM{x8tCh;qR}([rGI">
+            <field name="VAR" id="af7FVI4K~!qpb+?7!J]w">mqtt_connection</field>
+          </block>
+        </value>
+        <value name="VALUE">
+          <block type="variables_get" id="FO%0RVJZn@t#xT?`x5h(">
+            <field name="VAR" id="af7FVI4K~!qpb+?7!J]w">mqtt_connection</field>
+          </block>
+        </value>
+        <next>
+          <block type="procedures_callnoreturn" id="XzEoJHlM=i+9|SMlhg2F">
+            <mutation name="mqtt_load_config"/>
+            <next>
+              <block type="variables_set" id="Hw,C*+In*}b_zGuggSWa">
+                <field name="VAR" id="af7FVI4K~!qpb+?7!J]w">mqtt_connection</field>
+                <value name="VALUE">
+                  <block type="procedures_callreturn" id="xQn^dyf-]z#Rz#wUDHf[">
+                    <mutation name="_mqtt_create_client"/>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="RETURN">
+      <block type="variables_get" id="E|j1j|bpSLf*ULA?WljB">
+        <field name="VAR" id="af7FVI4K~!qpb+?7!J]w">mqtt_connection</field>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defreturn" id="M[~B@99Dv.)`Asl@6xXK" x="1166" y="-507">
+    <field name="NAME">_mqtt_create_client</field>
+    <statement name="STACK">
+      <block type="util_python" id="[!t,=3RqEuQ,6p6r1gPA">
+        <field name="value">class FFMqttClient(MqttClient):&amp;#10;    def __init__(self, client_id="", clean_session=True, userdata=None, protocol=mqtt.MQTTv311, transport="tcp", path="/"):&amp;#10;        MqttClient.__init__(self, client_id, clean_session, userdata, protocol, transport, path)&amp;#10;        self.connect_handler = None&amp;#10;        self.disconnect_handler = None&amp;#10;        self.connectionbroken = False&amp;#10;        self.__original_on_disconnect = self.paho_client.on_disconnect&amp;#10;        self.__original_on_connect = self.paho_client.on_connect&amp;#10;        self.paho_client.on_disconnect = self.__on_disconnect&amp;#10;        self.paho_client.on_connect = self.__on_connect&amp;#10;    &amp;#10;    def __del__(self):&amp;#10;        MqttClient.__del__(self)&amp;#10;&amp;#10;    # takes callback: connect_callback(result_code: int)&amp;#10;    def set_connect_callback(self, handler):&amp;#10;        self.connect_handler = handler&amp;#10;&amp;#10;    # takes callback: disconnect_callback(unexpected: bool)&amp;#10;    def set_disconnect_callback(self, handler):&amp;#10;        self.disconnect_handler = handler&amp;#10;&amp;#10;    def __on_connect(self, client, userdata, flags, rc):&amp;#10;        self.__original_on_connect(client, userdata, flags, rc)&amp;#10;        # the connection migh not be sucessfully established. rc will contain the reason as an error code&amp;#10;        print ("CONNECT", rc, mqtt_connect_result_to_string(rc))&amp;#10;        if rc == 0:&amp;#10;            self.connectionbroken = False&amp;#10;        if callable(self.connect_handler):&amp;#10;            self.connect_handler(rc)&amp;#10;&amp;#10;    def __on_disconnect(self, client, userdata, rc):&amp;#10;        self.__original_on_disconnect(client, userdata, rc)&amp;#10;        # according to documentation, rc != 0 is an unexpected disconnect.&amp;#10;        print ("DISCONNECT", rc)&amp;#10;        if rc != 0:&amp;#10;            self.connectionbroken = True&amp;#10;        if callable(self.disconnect_handler):&amp;#10;            self.disconnect_handler(rc != 0)&amp;#10;&amp;#10;return  FFMqttClient()</field>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="=R?`t~ogHG9OQqGKJ2J-" x="-76" y="-431">
+    <field name="NAME">mqtt_load_config</field>
+    <statement name="STACK">
+      <block type="variables_set" id="lxKyZqGAo]DMny:Jk2u{">
+        <field name="VAR" id="eMLYIPe?b!;zZ6[@Jdxc">mqtt_config_file</field>
+        <value name="VALUE">
+          <block type="open_data_file" id="wyj46O{n%FmcLhUS/UDv">
+            <field name="path">data/config.json</field>
+            <field name="mode">r</field>
+          </block>
+        </value>
+        <next>
+          <block type="variables_set" id="Hcg}X.Y3~!?QRnDszI3z">
+            <field name="VAR" id="jzRbi@@!X=Ido$WA0s/|">mqtt_config</field>
+            <value name="VALUE">
+              <block type="dictionary_get_item" id="W`]nqf#{^(=p;]dISxFI">
+                <value name="DICT">
+                  <block type="util_from_json" id="E0yXTBCz=fc:)fqqG*)Y">
+                    <value name="value">
+                      <block type="read_file" id="w6AKp2T0$pBR$R9lJYmh">
+                        <value name="name">
+                          <block type="variables_get" id="C+R!S0rtM@yNFz.wX?_m">
+                            <field name="VAR" id="eMLYIPe?b!;zZ6[@Jdxc">mqtt_config_file</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <value name="KEY">
+                  <block type="text" id="O)DfWcq*L#}l(WqeKdi}">
+                    <field name="TEXT">mqtt</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="close_file" id="CjZ2$2f{*3#dH4WGR0qj">
+                <value name="name">
+                  <block type="variables_get" id="rY7TN@Mks9ni;t@13JO~">
+                    <field name="VAR" id="eMLYIPe?b!;zZ6[@Jdxc">mqtt_config_file</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="~z+8n4]uwQenK!noK9^*" inline="true" x="-84" y="-152">
+    <field name="NAME">mqtt_connect</field>
+    <statement name="STACK">
+      <block type="procedures_callnoreturn" id="[w/|Q?(@|f5^{U),f5Wv">
+        <mutation name="mqtt_load_config"/>
+        <next>
+          <block type="mqtt_connect" id="QFGJNB#,p6p))^d)=@2%" inline="false">
+            <value name="name">
+              <block type="procedures_callreturn" id="dg1PWCgP[8005})E,SRE">
+                <mutation name="mqtt_get_client"/>
+              </block>
+            </value>
+            <value name="host">
+              <shadow type="text" id="f4?cyM:8_.(`IDh~q?Z(">
+                <field name="TEXT"/>
+              </shadow>
+              <block type="dictionary_get_item" id="sGLUYKat`FkTW2,FC[XL">
+                <value name="DICT">
+                  <block type="variables_get" id="hxPbf7Rm^G*f2:O2jAfk">
+                    <field name="VAR" id="jzRbi@@!X=Ido$WA0s/|">mqtt_config</field>
+                  </block>
+                </value>
+                <value name="KEY">
+                  <block type="text" id="9{x#e{Y1?}o(e7nO3#r1">
+                    <field name="TEXT">host</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="port">
+              <shadow type="math_number" id="v(ud?=#bbpkGulE.08;f">
+                <field name="NUM">1883</field>
+              </shadow>
+              <block type="dictionary_get_item" id="Vx/P4$hr72V?R:/7a$+|">
+                <value name="DICT">
+                  <block type="variables_get" id="5/__H6ea?$[cN,(C[!9x">
+                    <field name="VAR" id="jzRbi@@!X=Ido$WA0s/|">mqtt_config</field>
+                  </block>
+                </value>
+                <value name="KEY">
+                  <block type="text" id="Y7!5Gf(;/+gXCfJoN),L">
+                    <field name="TEXT">port</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="user">
+              <shadow type="text" id="0@iKeod`V4w,S!hXR*B*">
+                <field name="TEXT">default</field>
+              </shadow>
+              <block type="dictionary_get_item" id="7m:$EOim2q)mw=fKd,Sq">
+                <value name="DICT">
+                  <block type="variables_get" id="lyMp.^S$D[)SBi7-!3J~">
+                    <field name="VAR" id="jzRbi@@!X=Ido$WA0s/|">mqtt_config</field>
+                  </block>
+                </value>
+                <value name="KEY">
+                  <block type="text" id="`fixBc-T#G6?owu#v1j)">
+                    <field name="TEXT">username</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="password">
+              <shadow type="text" id="TK%]{Mrm%C-O36Esq)Lm">
+                <field name="TEXT">default</field>
+              </shadow>
+              <block type="dictionary_get_item" id="3~TVDup$iE6}Jx1/bH?X">
+                <value name="DICT">
+                  <block type="variables_get" id="0?TBAIjxrehe^IE1*Ptt">
+                    <field name="VAR" id="jzRbi@@!X=Ido$WA0s/|">mqtt_config</field>
+                  </block>
+                </value>
+                <value name="KEY">
+                  <block type="text" id="ka=AMrQB+Z*.s}SrFx%`">
+                    <field name="TEXT">password</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id=".Y#-MSBsqIg[)woJPpdS" inline="true" x="-81" y="138">
+    <mutation>
+      <arg name="topic" varid="`MV-?!eF)SR_+p^eyM)*" argid="qsTsz[m{B[;Zu6p(=h^z"/>
+      <arg name="payload" varid="sgX3;Rh}XVHTSu?*CS,t" argid="EY_dQ(;o`T8.G_#]|f9n"/>
+    </mutation>
+    <field name="NAME">mqtt_publish</field>
+    <field name="qsTsz[m{B[;Zu6p(=h^z">topic</field>
+    <field name="EY_dQ(;o`T8.G_#]|f9n">payload</field>
+    <statement name="STACK">
+      <block type="mqtt_publish" id="+vU,Q7}Hv:;/KMT-7$Oc" inline="false">
+        <value name="name">
+          <block type="variables_get" id="{ky6r`3_a0hWZVpn4:O%">
+            <field name="VAR" id="af7FVI4K~!qpb+?7!J]w">mqtt_connection</field>
+          </block>
+        </value>
+        <value name="topic">
+          <shadow type="text" id="iZ?3$e7`k8-hu+,-ld={">
+            <field name="TEXT">topic</field>
+          </shadow>
+          <block type="variables_get" id="2:uv!$_dLb2w^Fn~T|g,">
+            <field name="VAR" id="`MV-?!eF)SR_+p^eyM)*">topic</field>
+          </block>
+        </value>
+        <value name="value">
+          <shadow type="logic_null" id="Q;Dk6p77nsM]F8[K%T^H"/>
+          <block type="variables_get" id="L{]1:bMvt5lKupEv7L+r">
+            <field name="VAR" id="sgX3;Rh}XVHTSu?*CS,t">payload</field>
+          </block>
+        </value>
+        <value name="qos">
+          <shadow type="math_number" id=",K,{c%!kT?Yvy_NtwBIV">
+            <field name="NUM">2</field>
+          </shadow>
+        </value>
+        <value name="retain">
+          <shadow type="logic_boolean" id="H:}8??4}s~[^A%Wo/I~-">
+            <field name="BOOL">TRUE</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defreturn" id="v3Qhbp#RhhN.I0`Zb^h%" x="-81" y="363">
+    <field name="NAME">mqtt_get_id</field>
+    <statement name="STACK">
+      <block type="controls_if" id=",:8?6(OUKAf}af:WbfhI">
+        <value name="IF0">
+          <block type="logic_negate" id="O/Blb*${K#|Wz!%#WZqj">
+            <value name="BOOL">
+              <block type="variables_get" id="H9?4w7gB~A^!!{x(0lSt">
+                <field name="VAR" id="0$:#~tBiqasB2*,5T}eR">mqtt_controller_id</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="variables_set" id="6/Mz!Js5WdYdt-N:gfZn">
+            <field name="VAR" id="0$:#~tBiqasB2*,5T}eR">mqtt_controller_id</field>
+            <value name="VALUE">
+              <block type="import_function_return" id="1qbas6!WmLpl$:1^5s,x">
+                <mutation parentId="9BD=:cmk3U.AAxu[/:RV" parentFilename="lib/File.py"/>
+                <field name="name">readDeviceIdFromFile</field>
+                <data>{"id":"9BD=:cmk3U.AAxu[/:RV","filename":"lib/File.py"}</data>
+              </block>
+            </value>
+          </block>
+        </statement>
+      </block>
+    </statement>
+    <value name="RETURN">
+      <block type="variables_get" id=",NKD|X%$^~Euw-w3d{ys">
+        <field name="VAR" id="0$:#~tBiqasB2*,5T}eR">mqtt_controller_id</field>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defreturn" id="#8rfYNji7SDl1j$[6pE(" x="1171" y="550">
+    <mutation>
+      <arg name="result_code" varid="wAx{HxD[s#dR^tcEFE!C" argid="2+,1-5A%bdti_oq5Mbb2"/>
+    </mutation>
+    <field name="NAME">mqtt_connect_result_to_string</field>
+    <field name="2+,1-5A%bdti_oq5Mbb2">result_code</field>
+    <statement name="STACK">
+      <block type="util_python" id="Jk$eF%=/rNPZNVwk(pha">
+        <field name="value">_results = [&amp;#10;    ' ', &amp;#10;    'Connection refused – incorrect protocol version', &amp;#10;    'Connection refused – invalid client identifier', &amp;#10;    'Connection refused – server unavailable', &amp;#10;    'Connection refused – bad username or password', &amp;#10;    'Connection refused – not authorised'&amp;#10;]&amp;#10;if result_code &gt;= 0 and result_code &lt;= 5:&amp;#10;        return _results[int(result_code)]</field>
+      </block>
+    </statement>
+    <value name="RETURN">
+      <block type="text" id="*9*1WS06IT0c]]H:M8(p">
+        <field name="TEXT">Unknown connection error</field>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defnoreturn" id="[.gSF3;su9^^0;]FjPz=" x="-58" y="695">
+    <field name="NAME">mqtt_wait_connected</field>
+    <statement name="STACK">
+      <block type="variables_set" id="*bKhqM,otg)@(,bH:5[A">
+        <field name="VAR" id="#rED[7FBmeD`epq!9E-Q">temp</field>
+        <value name="VALUE">
+          <block type="procedures_callreturn" id="^cp`fRq0v`-]:W$$XvB|">
+            <mutation name="mqtt_get_client"/>
+          </block>
+        </value>
+        <next>
+          <block type="controls_whileUntil" id=":+P+qg9yse8T(ladnNgd">
+            <field name="MODE">UNTIL</field>
+            <value name="BOOL">
+              <block type="mqtt_is_connected" id="_!c/.j*nw9(-YHv6P#{j">
+                <value name="name">
+                  <block type="variables_get" id="lLrT*Ky3!-@FVOKBelVG">
+                    <field name="VAR" id="#rED[7FBmeD`epq!9E-Q">temp</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO">
+              <block type="util_wait_for" id="xX=)k*+bNd|KJ50~L:%W">
+                <field name="format">ms</field>
+                <value name="value">
+                  <shadow type="math_number" id="SsmRu51_z2BGOx.)}sY:">
+                    <field name="NUM">100</field>
+                  </shadow>
+                </value>
+              </block>
+            </statement>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id=")LjrNbiedL|Bm/;s7zIJ" x="-54" y="926">
+    <field name="NAME">mqtt_connect_and_wait</field>
+    <comment pinned="false" h="54" w="547">Retry until an initial connection has been accepted
+Do not abort on network errors, but repeat until the the server is found
+    </comment>
+    <statement name="STACK">
+      <block type="util_python" id="I4j|(4*bram.##2w/DrA">
+        <field name="value"># do not rely on mqtt_get_client().is_connected() to detect success.&amp;#10;# the documentation does not guarantee that the on_connect-callback is called before mqtt_connect returns&amp;#10;# that might cause a race condition resulting in continous reconnects.&amp;#10;_not_connected = True&amp;#10;while _not_connected == True:&amp;#10;    try:&amp;#10;        mqtt_connect()&amp;#10;        _not_connected = False&amp;#10;    except OSError as error:&amp;#10;        print("Error while connecting to mqtt. Retrying", error)&amp;#10;        time.sleep(1)</field>
+      </block>
+    </statement>
+  </block>
+</xml>

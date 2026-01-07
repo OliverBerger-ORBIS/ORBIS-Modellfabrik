@@ -10,5 +10,5 @@ from lib.sorting_line import *
 from lib.vda5050 import *
 
 display.set_attr("version_label.text", str('<h3>APS AI (Version: {})</h3>'.format(vda_get_factsheet_version())))
-print('Starting Module')
+print('Starting Module with sound')
 main_SLD()

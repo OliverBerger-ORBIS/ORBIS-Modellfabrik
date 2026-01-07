@@ -2,6 +2,7 @@ import logging
 import os
 import time
 from fischertechnik.mqtt.MqttClient import MqttClient
+from lib.controller import *
 from lib.display import *
 from lib.machine_learning import *
 from lib.mqtt_utils import *
@@ -48,18 +49,6 @@ def main_SLD():
   init_module_state_machine()
   print('Setup MQTT Connection')
   setup_mqtt_connection()
-  # Start camera publisher
-  try:
-    from lib.camera_publisher import start_camera_publisher
-    start_camera_publisher()
-    print('Camera publisher started')
-  except ImportError as e:
-    # camera_publisher.py nicht vorhanden
-    print(f'Camera publisher not available: {e}')
-  except Exception as e:
-    # Andere Fehler beim Starten des Camera Publishers
-    print(f'Error starting camera publisher: {e}')
-    # Programm soll trotzdem weiterlaufen
   print('Setup hardware config')
   MovementSpeed = 300
   PositionPASSED = -132
@@ -132,11 +121,20 @@ def mainSLDexternal_th():
     num = MakePictureRunKiReturnFoundPart()
     print(num)
     if num == 1 or num == 2 or num == 3:
-      print('Check successful')
+      print('Check successful with sound')
       vda_set_current_action_result(RESULT_PASSED)
+      """
+      Ton für erfolgreiche Prüfung abspielen
+      """
+      TXT_SLD_M.get_loudspeaker().play("06_Car_horn_short.wav", False)
       complete_vda_action(set_status_check(STATE_IDLE))
     else:
       set_status(STATE_RESET)
+      vda_set_current_action_result(RESULT_FAILED)
+      """
+      Ton für fehlgeschlagene Prüfung abspielen
+      """
+      TXT_SLD_M.get_loudspeaker().play("02_Alarm.wav", False)
       vda_set_current_action_result(RESULT_FAILED)
       complete_vda_action(True)
   elif current_status == STATE_IDLE:
