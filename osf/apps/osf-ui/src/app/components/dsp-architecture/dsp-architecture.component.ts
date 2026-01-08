@@ -64,8 +64,8 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
 
   // Zoom state
   protected zoom = 1;
-  protected readonly minZoom = 0.6;
-  protected readonly maxZoom = 1.6;
+  protected readonly minZoom = 0.4;
+  protected readonly maxZoom = 1.8;
   protected readonly zoomStep = 0.1;
   private readonly zoomStorageKey = 'dsp-architecture-zoom';
 
