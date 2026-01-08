@@ -80,6 +80,7 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   protected dynamicViewBoxWidth = VIEWBOX_WIDTH;
   protected dynamicViewBoxHeight = VIEWBOX_HEIGHT;
   private readonly heroModeBreakpoint = 1000; // < 1000px = Hero-Modus
+  private readonly heroModeWidth = 960; // Hero mode viewport width (960px for OBS)
 
   // i18n labels - English default with translation keys
   protected readonly title = $localize`:@@dspArchTitle:DISTRIBUTED SHOP FLOOR PROCESSING (DSP)`;
@@ -154,12 +155,12 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
     const viewportWidth = window.innerWidth;
     
     if (viewportWidth < this.heroModeBreakpoint) {
-      // Hero-Modus: Skaliere ViewBox auf 960px
-      const scaleFactor = 960 / VIEWBOX_WIDTH; // 960 / 1200 = 0.8
-      this.dynamicViewBoxWidth = 960;
+      // Hero mode: Scale ViewBox to 960px
+      const scaleFactor = this.heroModeWidth / VIEWBOX_WIDTH; // 960 / 1200 = 0.8
+      this.dynamicViewBoxWidth = this.heroModeWidth;
       this.dynamicViewBoxHeight = VIEWBOX_HEIGHT * scaleFactor;
     } else {
-      // Landscape-Modus: Nutze volle Breite
+      // Landscape mode: Use full width
       this.dynamicViewBoxWidth = VIEWBOX_WIDTH;
       this.dynamicViewBoxHeight = VIEWBOX_HEIGHT;
     }
