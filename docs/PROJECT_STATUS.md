@@ -48,15 +48,37 @@
 
 ## 📋 Roadmap Q1 2026
 
-### ✅ Abgeschlossen (Sprint 11, Dezember 2025)
+### ✅ Abgeschlossen (Sprint 11-12, Dezember 2025 - Januar 2026)
 1. ✅ **Shopfloor UX Refresh** – Module-Tab als Startpunkt (Status-Kacheln, Sequenz-Controls, HBW-Lager) und konsistente Layouts für AGV & Konfiguration. **(Erledigt: Sprint 11, Tasks 1-6)**
 2. ✅ **Process & DSP Story** – Process-Tab für Geschäftsprozesse (Customer Order, Purchase Order, Production, Storage) plus erweitert animierte DSP-Kette. **(Erledigt: Sprint 11, Tasks 7-8)**
 3. ✅ **Interaktive Verlinkungen** – DSP-Architektur klickbar (AGV → AGV-Tab, Devices → Modules, ERP → Process) inkl. gestaffelter Edge-Animation. **(Erledigt: Sprint 11, Tasks 10-12)**
 4. ✅ **OSF Rebranding** – Repos/Wording von OMF3 → OSF vollständig durchgeführt. **(Erledigt: Sprint 11, Task 13)**
+5. ✅ **ROBO Pro Coding Workflow** – Deployment-Workflow für TXT-Controller etabliert, AIQS-Kamera Archive erstellt. **(Erledigt: Sprint 12)**
 
 ### 🔄 In Arbeit / Geplant
-4. ⏳ **OSF Migration & Deployment** – Azure DevOps Mirror, Containerisierung für Hilcher/RPi. **(In Arbeit: Tasks 19-20)**
-5. ⏳ **Demo Excellence** – OBS/Teams Playbooks erstellt, kundenspezifische Animationen (Gedore) abgeschlossen, Blog-Serie zu OSF & DSP in Vorbereitung. **(In Arbeit: Task 17)**
+
+**Produkt-Integrationen:**
+- ⏳ **ORBIS-MES Integration** – Integration von ORBIS-MES in OSF
+- ⏳ **SAP-ERP Integration** – Integration von SAP-ERP für Business-Prozesse
+  - Purchase-Order Integration
+  - Customer-Order Integration
+  - Quality-Check failure Event an SAP Rückmelden
+
+**Kundenprojekte:**
+- ⏳ **Georg Fischer** – Verwendung von OSF als Demo für Kundenprojekt Georg Fischer
+
+**Messeveranstaltungen:**
+- ⏳ **LogiMAT-Messe** – Ende März 2026
+- ⏳ **Hannover-Messe** – Ende April 2026
+
+**Kommunikation:**
+- ⏳ **Storytelling-Blog-Serie** – Blog-Serie mit 3-4 Blogs zu OSF & DSP Story (stärker hervorheben)
+  - Themen und Struktur vorbereitet
+  - Start in Sprint 13+
+
+**Technische Aufgaben:**
+- ⏳ **OSF Migration & Deployment** – Azure DevOps Mirror, Containerisierung für Hilcher/RPi. **(In Arbeit: Tasks 19-20)**
+- ⏳ **AIQS-Kamera** – Deployment und Testing beider Varianten (_wav.ft, _cam.ft), OSF-UI Integration
 
 ## 📝 Offene Todos
 1. ✅ **Module-Tab Status-Erweiterung** – Copilot/PR-Statusleisten (AIQS/DPS) in `osf/apps/osf-ui` übernehmen, Komponenten generalisieren und für HBW/DRILL/MILL identische Detailbereiche bereitstellen. **(Erledigt: 18.12.2025)**
