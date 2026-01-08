@@ -91,7 +91,7 @@
     position: relative;
     overflow: auto;
     max-height: 99vh;
-    min-height: 1100px;
+    min-height: auto;
     border: 1px solid rgba(23, 43, 77, 0.08);
     border-radius: 1.25rem;
     background: linear-gradient(135deg, rgba(var(--orbis-blue-light-rgb), 0.06) 0%, var(--neutral-lightgrey) 100%);
