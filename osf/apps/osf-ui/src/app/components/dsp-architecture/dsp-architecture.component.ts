@@ -4,6 +4,7 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
+  HostListener,
   Input,
   OnDestroy,
   OnInit,
@@ -75,6 +76,11 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   protected readonly viewBoxWidth = VIEWBOX_WIDTH;
   protected readonly viewBoxHeight = VIEWBOX_HEIGHT;
 
+  // Responsive ViewBox dimensions
+  protected dynamicViewBoxWidth = VIEWBOX_WIDTH;
+  protected dynamicViewBoxHeight = VIEWBOX_HEIGHT;
+  private readonly heroModeBreakpoint = 1000; // < 1000px = Hero-Modus
+
   // i18n labels - English default with translation keys
   protected readonly title = $localize`:@@dspArchTitle:DISTRIBUTED SHOP FLOOR PROCESSING (DSP)`;
   protected readonly subtitle = $localize`:@@dspArchSubtitle:Reference Architecture`;
@@ -124,10 +130,41 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
     this.initializeDiagram();
     this.initializeLabelsFromView();
     this.initializeUrlsFromView();
+    this.calculateResponsiveViewBox();
   }
 
   ngOnDestroy(): void {
     this.stopAutoPlay();
+  }
+
+  /**
+   * Handle window resize events to recalculate responsive ViewBox.
+   */
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    this.calculateResponsiveViewBox();
+  }
+
+  /**
+   * Calculate responsive viewBox dimensions based on viewport width.
+   * Hero mode (< 1000px): Scale down to 960px width
+   * Landscape mode (>= 1000px): Use full 1200px width
+   */
+  private calculateResponsiveViewBox(): void {
+    const viewportWidth = window.innerWidth;
+    
+    if (viewportWidth < this.heroModeBreakpoint) {
+      // Hero-Modus: Skaliere ViewBox auf 960px
+      const scaleFactor = 960 / VIEWBOX_WIDTH; // 960 / 1200 = 0.8
+      this.dynamicViewBoxWidth = 960;
+      this.dynamicViewBoxHeight = VIEWBOX_HEIGHT * scaleFactor;
+    } else {
+      // Landscape-Modus: Nutze volle Breite
+      this.dynamicViewBoxWidth = VIEWBOX_WIDTH;
+      this.dynamicViewBoxHeight = VIEWBOX_HEIGHT;
+    }
+    
+    this.cdr.markForCheck();
   }
 
   /**
