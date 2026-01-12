@@ -12,10 +12,10 @@
 - [x] Projekt-Phasenabschlussbericht (Grundlage: [Sprints 1-12 Bericht](projekt_phasen_abschlussbericht_sprints_01-12.md) - Finalisierung in externem Tool)
 - [x] Projektantrag für neue Phase Q1 + Q2 2026
 - [ ] Testen der TXT-AIQS Varianten für Check_quality nach Deployment (aus Sprint 12 übernommen)
-- [ ] OBS-Setup auf Windows-Rechner prüfen und dokumentierte Dimensionen verifizieren
+- [x] OBS-Setup auf Windows-Rechner prüfen und dokumentierte Dimensionen verifizieren
 
 ## 📊 Fortschritt
-- **Abgeschlossen:** 2/6 Aufgaben
+- **Abgeschlossen:** 3/6 Aufgaben
 - **Blockiert:** Noch keine Blocker
 - **Nächste Schritte:** Aufgaben priorisieren, Zeitplan für Abschluss und Antrag erstellen
 
