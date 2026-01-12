@@ -40,10 +40,10 @@
   </header>
 
   <!-- SVG Diagram - wrapped in scrollable container -->
-  <div class="dsp-architecture__diagram-wrapper">
+  <div class="dsp-architecture__diagram-wrapper" [style.height]="diagramWrapperHeight">
     <div class="dsp-architecture__diagram" [style.transform]="'scale(' + zoom + ')'">
     <svg
-      [attr.viewBox]="'0 0 ' + viewBoxWidth + ' ' + viewBoxHeight"
+      [attr.viewBox]="'0 0 ' + dynamicViewBoxWidth + ' ' + dynamicViewBoxHeight"
       preserveAspectRatio="xMidYMid meet"
       class="diagram-svg"
       role="img"

@@ -1,6 +1,6 @@
 .dsp-use-cases {
   padding: 2.5rem 0 2rem;
-  max-width: 1320px;
+  max-width: 100%;
   margin: 0 auto;
 
   &__title {
@@ -87,7 +87,7 @@
 }
 
 .dsp-use-case-detail {
-  max-width: 1320px;
+  max-width: 100%;
   margin: 0 auto;
   background: white;
   border: 1px solid var(--orbis-blue-light);

@@ -4,6 +4,7 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
+  HostListener,
   Input,
   OnDestroy,
   OnInit,
@@ -63,8 +64,8 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
 
   // Zoom state
   protected zoom = 1;
-  protected readonly minZoom = 0.6;
-  protected readonly maxZoom = 1.6;
+  protected readonly minZoom = 0.4;
+  protected readonly maxZoom = 1.8;
   protected readonly zoomStep = 0.1;
   private readonly zoomStorageKey = 'dsp-architecture-zoom';
 
@@ -74,6 +75,18 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   // ViewBox dimensions
   protected readonly viewBoxWidth = VIEWBOX_WIDTH;
   protected readonly viewBoxHeight = VIEWBOX_HEIGHT;
+
+  // Responsive ViewBox dimensions
+  protected dynamicViewBoxWidth = VIEWBOX_WIDTH;
+  protected dynamicViewBoxHeight = VIEWBOX_HEIGHT;
+  private readonly heroModeBreakpoint = 1000; // < 1000px = Hero-Modus
+  private readonly heroModeWidth = 960; // Hero mode viewport width (960px for OBS)
+
+  // Dynamic height calculation for diagram wrapper
+  protected diagramWrapperHeight = 'auto'; // Will be set to exact SVG height
+  private controlsHeight = 200; // Default height, will be measured
+  private headerHeight = 100; // Default height, will be measured
+  private svgElement: SVGSVGElement | null = null;
 
   // i18n labels - English default with translation keys
   protected readonly title = $localize`:@@dspArchTitle:DISTRIBUTED SHOP FLOOR PROCESSING (DSP)`;
@@ -124,10 +137,132 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
     this.initializeDiagram();
     this.initializeLabelsFromView();
     this.initializeUrlsFromView();
+    // Measure header and controls heights after view init, then calculate ViewBox and wrapper height
+    setTimeout(() => {
+      this.measureHeights();
+      this.calculateResponsiveViewBox();
+      // Calculate wrapper height after ViewBox is set, SVG is rendered, and transform is applied
+      // Option 4: Mehrfache Berechnung um sicherzustellen, dass alles gerendert ist
+      setTimeout(() => {
+        this.calculateDiagramWrapperHeight();
+        // Zweite Berechnung nach kurzer Verzögerung für sicherere Messung
+        setTimeout(() => {
+          this.calculateDiagramWrapperHeight();
+        }, 100);
+      }, 150);
+    }, 0);
   }
 
   ngOnDestroy(): void {
     this.stopAutoPlay();
+  }
+
+  /**
+   * Handle window resize events to recalculate responsive ViewBox and heights.
+   */
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    this.measureHeights();
+    this.calculateResponsiveViewBox();
+    // Recalculate wrapper height after ViewBox update
+    setTimeout(() => {
+      this.calculateDiagramWrapperHeight();
+    }, 100);
+  }
+
+  /**
+   * Calculate responsive viewBox dimensions based on viewport width.
+   * Hero mode (< 1000px): Scale down to 960px width
+   * Landscape mode (>= 1000px): Use full 1200px width
+   * ViewBox height stays constant to avoid distortion - container height is adjusted instead
+   */
+  private calculateResponsiveViewBox(): void {
+    const viewportWidth = window.innerWidth;
+    
+    if (viewportWidth < this.heroModeBreakpoint) {
+      // Hero mode: Scale ViewBox to 960px width, height scales proportionally
+      const scaleFactor = this.heroModeWidth / VIEWBOX_WIDTH; // 960 / 1200 = 0.8
+      this.dynamicViewBoxWidth = this.heroModeWidth;
+      this.dynamicViewBoxHeight = VIEWBOX_HEIGHT * scaleFactor;
+    } else {
+      // Landscape mode: Use full width and height
+      this.dynamicViewBoxWidth = VIEWBOX_WIDTH;
+      this.dynamicViewBoxHeight = VIEWBOX_HEIGHT;
+    }
+    
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Measure actual heights of header and controls elements.
+   */
+  private measureHeights(): void {
+    // Use ViewChild or direct DOM access would be better, but for now use querySelector
+    // Note: This requires elements to be in the DOM, so call after view init
+    const headerElement = document.querySelector('.dsp-architecture__header') as HTMLElement;
+    const controlsElement = document.querySelector('.dsp-architecture__controls') as HTMLElement;
+    const mainContainer = document.querySelector('.dsp-architecture') as HTMLElement;
+    
+    if (headerElement) {
+      this.headerHeight = headerElement.offsetHeight;
+    }
+    if (controlsElement) {
+      this.controlsHeight = controlsElement.offsetHeight;
+    }
+    
+    // Account for container padding and gaps
+    const containerPadding = mainContainer ? 
+      parseFloat(window.getComputedStyle(mainContainer).paddingTop) * 2 : 24; // 1.5rem * 2
+    const gap = mainContainer ? 
+      parseFloat(window.getComputedStyle(mainContainer).gap || '24px') : 24; // 1.5rem
+    
+    // Total overhead = header + controls + padding + gap
+    const totalOverhead = this.headerHeight + this.controlsHeight + containerPadding + gap;
+    
+    // Store for use in height calculation
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Calculate diagram wrapper height to ensure diagram + controls fit in viewport.
+   * Option 4: Container-Höhe wird exakt auf skalierte SVG-Höhe gesetzt.
+   * Dies eliminiert den grauen Leerraum komplett.
+   * 
+   * Strategie: SVG-Höhe OHNE Transform messen (SVG hat keinen Transform),
+   * dann mit Zoom multiplizieren. Das gibt uns die skalierte Höhe.
+   */
+  private calculateDiagramWrapperHeight(): void {
+    // Wait for SVG to render, then measure natural height and calculate scaled height
+    setTimeout(() => {
+      const svgElement = document.querySelector('.diagram-svg') as SVGSVGElement;
+      const wrapperElement = document.querySelector('.dsp-architecture__diagram-wrapper') as HTMLElement;
+      
+      if (!svgElement || !wrapperElement) {
+        return;
+      }
+      
+      // WICHTIG: Das SVG selbst hat KEINEN Transform!
+      // Der Transform ist auf .dsp-architecture__diagram (dem Parent)
+      // getBoundingClientRect() auf dem SVG gibt die natürliche Höhe zurück
+      const svgRect = svgElement.getBoundingClientRect();
+      const naturalSvgHeight = svgRect.height;
+      
+      // Skalierte SVG-Höhe = natürliche Höhe * Zoom-Faktor
+      const scaledSvgHeight = naturalSvgHeight * this.zoom;
+      
+      // Account for diagram padding (0.5rem = 8px top + 8px bottom = 16px)
+      const diagramPadding = 16;
+      
+      // Container-Höhe = skalierte SVG-Höhe + Padding
+      // Dies eliminiert den grauen Leerraum komplett
+      const exactContainerHeight = scaledSvgHeight + diagramPadding;
+      
+      // Setze exakte Höhe - Container soll exakt so groß sein wie das skalierte Diagramm
+      // Minimum 400px für sehr kleine Zooms
+      this.diagramWrapperHeight = `${Math.max(400, exactContainerHeight)}px`;
+      
+      this.cdr.markForCheck();
+    }, 200); // Delay to ensure SVG is fully rendered
   }
 
   /**
@@ -518,26 +653,41 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
 
   /**
    * Zoom in.
+   * Option 4: Container-Höhe wird nach Zoom neu berechnet.
    */
   protected zoomIn(): void {
     this.zoom = Math.min(this.maxZoom, this.zoom + this.zoomStep);
     this.saveZoom();
+    // Warte auf Transform-Animation, dann Container-Höhe neu berechnen
+    setTimeout(() => {
+      this.calculateDiagramWrapperHeight();
+    }, 200);
   }
 
   /**
    * Zoom out.
+   * Option 4: Container-Höhe wird nach Zoom neu berechnet.
    */
   protected zoomOut(): void {
     this.zoom = Math.max(this.minZoom, this.zoom - this.zoomStep);
     this.saveZoom();
+    // Warte auf Transform-Animation, dann Container-Höhe neu berechnen
+    setTimeout(() => {
+      this.calculateDiagramWrapperHeight();
+    }, 200);
   }
 
   /**
    * Reset zoom to 100%.
+   * Option 4: Container-Höhe wird nach Reset neu berechnet.
    */
   protected resetZoom(): void {
     this.zoom = 1;
     this.clearSavedZoom();
+    // Warte auf Transform-Animation, dann Container-Höhe neu berechnen
+    setTimeout(() => {
+      this.calculateDiagramWrapperHeight();
+    }, 200);
   }
 
   /**
