@@ -106,8 +106,8 @@ Links unten im **"Scenes"**-Panel nacheinander **+** klicken und anlegen. Die er
 - **S2 - Digital-Twin Vollbild (Chrome)** – Route `#/de/presentation` inkl. FTS/AGV-Feed
 - **S3 - OSF Vollbild (Chrome)** – Hauptdashboard mit allen Tabs (Overview, DSP, KPIs)
 - **S4 - Kamera Vollbild** – USB-Kamera oder Placeholder
-- **S5 - Hero + 2** – Komposition aus Portrait + Digital Twin + Kamera
-- **S6 - OSF Portrait (Edge)** – Responsive/Portrait-Version, dient als Vollbildfallback und als Quelle für S5
+- **S5 - Hero + 2** – Komposition aus OSF Hero (960×1080) + Digital Twin (960×540) + Kamera (960×540)
+- **S6 - OSF Hero (Edge)** – Spezielle Ansicht für Hero-Bereich (960×1080), dient als Vollbildfallback und als Quelle für S5
 - **S7 - Hold Slate** – Pausen-/Wartebild über Browser Source (siehe `hold-slate.html`)
 
 ---
@@ -165,20 +165,20 @@ Alle UI-Szenen laufen über Window Capture. Wir nutzen **zwei Chrome-** und **zw
    - **Chrome Fenster A (Landscape, S3):** Standardprofil (1920×1080) mit allen acht Demo-Tabs (DSP, Shopfloor, Process, Orders, Environment Data, Configuration, AGV, Track&Trace). Sprache immer `DE`, Environment `Live`, Sidebar eingeklappt.
    - **Chrome Fenster B (Digital Twin, S2):** Incognito/Privat-Fenster (1920×1080) mit Route `#/de/presentation` und aktivem FTS-/AGV-Feed, nur ein Tab.
    - **Edge Fenster A (Orders, S1):** InPrivate-Session (1920×1080) für Orders/Track&Trace, nur ein Tab.
-   - **Edge Fenster B (Portrait, S6):** Business-Profil, via `Ctrl+Shift+M` oder DevTools-Device-Toolbar auf 1080×1920 gestellt.
+   - **Edge Fenster B (Hero, S6):** Business-Profil, auf 960×1080 gestellt (entspricht Hero-Bereich in S5).
    Nutzen Sie `Win + Pfeil` und `Alt + Space → S`, um exakt zu skalieren. Zoom immer mit `Ctrl + 0` zurücksetzen.
 2. **Tabs je Fenster fixieren:** Jede Route/Tab einmal laden, dann nicht mehr ändern. Bookmark-Bar ausblenden (`Ctrl+Shift+B`), damit nix flackert.
 3. **Window Capture hinzufügen:**
    - **S1 - Orders Vollbild:** Quelle `Edge_Priv_OSF_ORDER` (Edge InPrivate Fenster A).
    - **S2 - Digital-Twin Vollbild:** Quelle `Chrome_Priv_DigitalTwin` (Chrome Fenster B).
    - **S3 - OSF Vollbild:** Quelle `Chrome_OSF_Landscape` (Chrome Fenster A).
-   - **S6 - OSF Portrait:** Quelle `Edge_OSF_Portrait` (Edge Fenster B).
+   - **S6 - OSF Hero:** Quelle `Edge_OSF_Hero` (Edge Fenster B, 960×1080).
    Quellen nach dem Positionieren auf `Fit to Screen` setzen und sofort sperren.
 4. **Naming im Sources-Panel:**
    - `Edge_Priv_OSF_ORDER` (Edge InPrivate → Orders/Track&Trace)
    - `Chrome_Priv_DigitalTwin` (Chrome Incognito → DT)
    - `Chrome_OSF_Landscape` (Chrome Standard → Dashboard)
-   - `Edge_OSF_Portrait` (Edge Business → Portrait)
+   - `Edge_OSF_Hero` (Edge Business → Hero, 960×1080)
    Nutzen Sie exakt diese Namen, damit Hero + 2 und Multiview immer auf dieselben Assets verweisen.
 5. **Kein zweiter Monitor?** Fenster minimieren reicht. OBS rendert minimierte Fenster weiter, solange sie nicht geschlossen werden.
 
@@ -200,7 +200,7 @@ Statt einer zusätzlichen Szene nutzen wir das native Multiview und füttern Slo
 
 **Voraussetzung:** Output bleibt 1920×1080. Für echte 4-fach-Ansichten nutzen Sie ausschließlich das Multiview aus Abschnitt F3. Lediglich Szene `S5 - Hero + 2` benötigt ein manuelles Layout.
 
-### G1) S5 - Hero + 2 (OSF Portrait + Shopfloor + Kamera)
+### G1) S5 - Hero + 2 (OSF Hero + Digital Twin + Kamera)
 
 1. Szene **S5 - Hero + 2** wählen.
 2. Drei Quellen hinzufügen (direkt die Window Captures / Kameraquellen aus Abschnitt F2/F1):
@@ -209,12 +209,18 @@ Statt einer zusätzlichen Szene nutzen wir das native Multiview und füttern Slo
    - `CAM - USB` (oder `placeholder-camera`)
 3. **Transform → Edit Transform** und folgende Werte setzen (alles in Pixel):
 
-- **OSF Portrait (links, hero):** `X=0`, `Y=0`, `W=720`, `H=1080` (bewahrt Portrait-Feeling, genug Platz für Tabs).
-- **Shopfloor Vollbild (rechts oben):** `X=720`, `Y=0`, `W=1200`, `H=540`.
-- **Kamera (rechts unten):** `X=720`, `Y=540`, `W=1200`, `H=540`.
+- **OSF Hero (links):** `X=0`, `Y=0`, `W=960`, `H=1080` (nutzt verfügbaren Platz optimal aus).
+- **Digital Twin (rechts oben):** `X=960`, `Y=0`, `W=960`, `H=540`.
+- **Kamera (rechts unten):** `X=960`, `Y=540`, `W=960`, `H=540` (16:9 Verhältnis für Konftel Cam50 beibehalten).
+
+**Berechnung:**
+- OBS Output: 1920×1080px
+- Kamera (16:9): 960×540px (960/540 = 1.78 = 16:9)
+- Hero-Bereich: 1920 - 960 = 960px Breite, volle Höhe 1080px = 960×1080px
+- Digital Twin: 960×540px (gleiche Größe wie Kamera)
 
 4. Optional Rahmen/Labels ergänzen (`GFX_Frame_Panel`, `TXT_SceneLabel`).
-5. Quellen sperren, sobald die Positionen stimmen. Falls Sie ein anderes Seitenverhältnis brauchen, passen Sie ausschließlich die Breite des Portrait-Bereichs an; die rechten Quellen teilen sich immer exakt 1200×540 px.
+5. Quellen sperren, sobald die Positionen stimmen. Die rechten Quellen (Digital Twin + Kamera) teilen sich exakt 960×540px und behalten das 16:9 Verhältnis der Kamera bei.
 
 ### G2) Multiview ohne eigene Szene
 
@@ -222,7 +228,7 @@ Multiview rendert direkt aus den Szenen `S1–S4`. Sie müssen daher nichts im C
 
 - Slots 1–4 übernehmen automatisch `S1` (Orders Edge), `S2` (Digital Twin Chrome), `S3` (OSF Chrome) und `S4` (Kamera).
 - Änderungen am Viererbild erledigen Sie, indem Sie die Reihenfolge der Szenen verschieben oder einzelne Szenen temporär deaktivieren.
-- Für Hero + 2 oder Portrait-Vollbild bleiben `S5` und `S6` unverändert und beeinflussen Multiview nicht.
+- Für Hero + 2 oder Hero-Vollbild bleiben `S5` und `S6` unverändert und beeinflussen Multiview nicht.
 
 Wichtig: Die vier Browserfenster müssen geöffnet bleiben, sonst liefert Multiview leere Slots.
 
@@ -338,8 +344,8 @@ Jetzt zeigt Monitor 2 nur das Sendebild.
 
 - **Standardprofil:** `Teams-Demo-1080p60` (wenn OBS Stats sauber bleiben)
 - **Fallbackprofil:** `Teams-Demo-1080p30`
-- **Standard-Szene:** **S5 Hero + 2** (links OSF-Portrait, rechts Digital Twin + Kamera)
-- **Detail-Szenen:** `S3 - OSF Vollbild`, `S2 - Digital-Twin Vollbild`, `S6 - OSF Portrait`
+- **Standard-Szene:** **S5 Hero + 2** (links OSF Hero 960×1080, rechts Digital Twin + Kamera je 960×540)
+- **Detail-Szenen:** `S3 - OSF Vollbild`, `S2 - Digital-Twin Vollbild`, `S6 - OSF Hero`
 
 ---
 
@@ -355,8 +361,8 @@ Jetzt zeigt Monitor 2 nur das Sendebild.
 - **S2 - Digital-Twin Vollbild (Chrome)** – Route `#/de/presentation` mit FTS/AGV und KPIs
 - **S3 - OSF Vollbild (Chrome)** – Hauptdashboard, alle Tabs vorbereiten
 - **S4 - Kamera Vollbild** – USB-Kamera oder Placeholder
-- **S5 - Hero + 2** – Komposition (Portrait links, Digital Twin + Kamera rechts)
-- **S6 - OSF Portrait (Edge)** – Portrait-Ansicht als Vollbildfallback und Quelle für S5
+- **S5 - Hero + 2** – Komposition (OSF Hero 960×1080 links, Digital Twin + Kamera je 960×540 rechts)
+- **S6 - OSF Hero (Edge)** – Hero-Ansicht (960×1080) als Vollbildfallback und Quelle für S5
 - **S7 - Hold Slate** – Logo/Standbild für Pausen; als Browser Source mit [hold-slate.html](hold-slate.html) einbinden
 
 #### N1.2 Optionale Hilfsszenen
@@ -383,7 +389,7 @@ Wenn Sie mal Capture Card nutzen:
 - **Chrome_OSF_Landscape** – Chrome Standardprofil (1920×1080) mit allen Tabs für S3
 - **Chrome P Digital-Twin** – Chrome Incognito (1920×1080) nur für Route `#/de/presentation` (S2)
 - **Edge_P_OSF_ORDER** – Edge InPrivate (1920×1080) für Orders/Track&Trace (S1)
-- **Edge_OSF_Portrait** – Edge Business (1080×1920) für die Portrait-Ansicht (S6/S5)
+- **Edge_OSF_Hero** – Edge Business (960×1080) für die Hero-Ansicht (S6/S5)
 
 Vier unterschiedliche Fenster stellen sicher, dass Logins/Geteilte Sessions sich nicht gegenseitig beeinflussen und dass Multiview keine Tabs vertauscht.
 
@@ -440,13 +446,13 @@ Wenn Sie in Teams präsentieren, ist Audio oft "heikel". Empfehlung: eindeutige 
 - Transform → Fit to Screen
 
 #### S5 - Hero + 2
-- Links (`X=0`, `W=720`): `Edge_OSF_Portrait`
-- Rechts oben (`X=720`, `Y=0`, `W=1200`, `H=540`): `Chrome P Digital-Twin`
-- Rechts unten (`X=720`, `Y=540`, `W=1200`, `H=540`): `CAM - USB`
+- Links (`X=0`, `Y=0`, `W=960`, `H=1080`): `Edge_OSF_Hero` (Hero-Bereich)
+- Rechts oben (`X=960`, `Y=0`, `W=960`, `H=540`): `Chrome_Priv_DigitalTwin` (Digital Twin)
+- Rechts unten (`X=960`, `Y=540`, `W=960`, `H=540`): `CAM - USB` (Konftel Cam50, 16:9)
 - Optional Rahmen/Text hinzufügen
 
-#### S6 - OSF Portrait (Edge)
-- Quelle `Edge_OSF_Portrait` als Vollbild
+#### S6 - OSF Hero (Edge)
+- Quelle `Edge_OSF_Hero` (960×1080) als Vollbild
 - Dient als Backup, falls Hero + 2 nicht reicht
 
 #### S7 - Hold Slate
@@ -467,7 +473,7 @@ Wenn Sie in Teams präsentieren, ist Audio oft "heikel". Empfehlung: eindeutige 
 - **Ctrl + Alt + 3** → `S3 - OSF Vollbild`
 - **Ctrl + Alt + 4** → `S4 - Kamera Vollbild`
 - **Ctrl + Alt + 5** → `S5 - Hero + 2`
-- **Ctrl + Alt + 6** → `S6 - OSF Portrait`
+- **Ctrl + Alt + 6** → `S6 - OSF Hero`
 - **Ctrl + Alt + 7** → `S7 - Hold Slate`
 
 **Optional:**
@@ -486,7 +492,7 @@ Wenn Sie in Teams präsentieren, ist Audio oft "heikel". Empfehlung: eindeutige 
 - [ ] **View → Stats** öffnen (Dauercheck auf Dropped/Skipped Frames)
 - [ ] **Optional:** `S7 - Hold Slate` aktiv halten, damit kein Browser durchsickert
 - [ ] **Kamera prüfen:** `S4 - Kamera Vollbild` (Belichtung, Weißabgleich, Fokus)
-- [ ] **UI prüfen:** `S1/S2/S3/S6` kurz aufrufen (Tabs geladen, DT-Feed aktiv, Portrait responsive)
+- [ ] **UI prüfen:** `S1/S2/S3/S6` kurz aufrufen (Tabs geladen, DT-Feed aktiv, Hero-Ansicht responsive)
 - [ ] **Fullscreen Projector (Program)** auf Monitor 2 aktivieren
 
 ### O2) Meeting Start
@@ -601,8 +607,8 @@ Wenn Sie in Teams präsentieren, ist Audio oft "heikel". Empfehlung: eindeutige 
 3. **Shopfloor / Digital Twin (1–2 Min):** `S2 - Digital-Twin Vollbild`
    - Modulkameras, FTS-Lauf, Sensorwerte erklären.
 
-4. **Responsive Detail (1–2 Min):** `S6 - OSF Portrait`
-   - Mobile/Portrait-Ansicht zeigen, Order- oder KPI-Details scrollen.
+4. **Responsive Detail (1–2 Min):** `S6 - OSF Hero`
+   - Hero-Ansicht (960×1080) zeigen, Order- oder KPI-Details scrollen.
 
 5. **Kamera-Livebild (1 Min):** `S4 - Kamera Vollbild`
    - Hardware/FTS in Echtzeit demonstrieren.
@@ -615,7 +621,7 @@ Wenn Sie in Teams präsentieren, ist Audio oft "heikel". Empfehlung: eindeutige 
 
 **Hotkeys während der Demo:**
 - `Ctrl+Alt+5` → Hero + 2 (Intro & Wrap-up)
-- `Ctrl+Alt+3/2/6` → OSF Vollbild / Digital Twin / Portrait
+- `Ctrl+Alt+3/2/6` → OSF Vollbild / Digital Twin / Hero
 - `Ctrl+Alt+1` → Orders Vollbild (slot 1 ersetzen, falls nötig)
 - `Ctrl+Alt+4` → Kamera Vollbild
 - `Ctrl+Alt+0` → Hold-Slate bei Unterbrechungen
@@ -632,7 +638,7 @@ Wenn Sie in Teams präsentieren, ist Audio oft "heikel". Empfehlung: eindeutige 
    - `S5 - Hero + 2` (Intro/Wrap-up, rechtes Paneel mit kundenspezifischem Text oder KPI-Overlay).
    - `S3 - OSF Vollbild` (Volle OSF-Ansicht für Edge/Device/DSP-Story, Tabs bereits vorbereitet).
    - `S2 - Digital-Twin Vollbild` (Modulkameras + Process-Story im Digital Twin).
-   - `S6 - OSF Portrait` (Responsive Detailansicht für mobile KPI- oder Order-Screens).
+   - `S6 - OSF Hero` (Hero-Ansicht 960×1080 für KPI- oder Order-Screens).
    - `S4 - Kamera Vollbild` (Q&A bzw. Hardware-Showcase am Ende).
    - `View → Multiview (Fullscreen)` (Slot-Kombi aus `S1–S4` für Vier-Up Wrap-up).
 - **Optional:** Falls Sie eine eigenständige DSP-Animation brauchen, legen Sie eine zusätzliche Scene Collection-Version mit `Media Source + VID_CAM_USB_Main (Picture-in-Picture)` an, behalten aber die Hotkeys aus Abschnitt N5 bei.
