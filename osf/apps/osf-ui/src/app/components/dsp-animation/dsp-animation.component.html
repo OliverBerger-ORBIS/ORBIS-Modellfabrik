@@ -1,5 +1,5 @@
 <div class="dsp-architecture">
-  <!-- Header with title, navigation controls, and zoom controls -->
+  <!-- Header with title, navigation controls, step navigation, and zoom controls -->
   <header class="dsp-architecture__header">
     <div class="header__title">
       <h2>{{ title }}</h2>
@@ -46,6 +46,21 @@
       >
         ▶
       </button>
+    </div>
+    <div class="header__step-info">
+      <span class="step-counter">{{ currentStepIndex + 1 }} / {{ steps.length }}</span>
+      <div class="step-dots">
+        <button
+          *ngFor="let step of steps; let i = index"
+          type="button"
+          class="step-dot"
+          [class.step-dot--active]="i === currentStepIndex"
+          [class.step-dot--completed]="i < currentStepIndex"
+          (click)="goToStep(i)"
+          [attr.aria-label]="step.label"
+          [attr.title]="step.label"
+        ></button>
+      </div>
     </div>
     <div class="header__zoom">
       <button

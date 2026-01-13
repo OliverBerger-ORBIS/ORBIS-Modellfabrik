@@ -11,7 +11,7 @@
   // Header
   &__header {
     display: grid;
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: 1fr auto auto auto;
     align-items: center;
     gap: 1rem;
     position: sticky;
@@ -84,6 +84,51 @@
       }
     }
 
+    .header__step-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+
+      .step-counter {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--orbis-nightblue);
+        white-space: nowrap;
+      }
+
+      .step-dots {
+        display: flex;
+        gap: 0.35rem;
+
+        .step-dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          border: 2px solid rgba(var(--orbis-blue-strong-rgb), 0.3);
+          background: transparent;
+          cursor: pointer;
+          padding: 0;
+          transition: all 0.2s ease;
+
+          &:hover {
+            border-color: var(--orbis-blue-strong);
+          }
+
+          &--active {
+            background: var(--orbis-blue-strong);
+            border-color: var(--orbis-blue-strong);
+            transform: scale(1.15);
+          }
+
+          &--completed {
+            background: rgba(var(--orbis-blue-strong-rgb), 0.3);
+            border-color: rgba(var(--orbis-blue-strong-rgb), 0.3);
+          }
+        }
+      }
+    }
+
     .header__zoom {
       display: flex;
       align-items: center;
@@ -135,7 +180,7 @@
   &__diagram-wrapper {
     position: relative;
     overflow: auto;
-    max-height: 70vh;
+    max-height: 85vh;
     min-height: auto;
     border: 1px solid rgba(23, 43, 77, 0.08);
     border-radius: 1.25rem;
