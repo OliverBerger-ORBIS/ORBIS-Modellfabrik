@@ -129,7 +129,7 @@ def mainSLDexternal_th():
       """
       Ton für erfolgreiche Prüfung abspielen
       """
-      TXT_SLD_M.get_loudspeaker().play("06_Car_horn_short.wav", False)
+      TXT_SLD_M.get_loudspeaker().play("01_Airplane.wav", False)
       publish_quality_check_image(RESULT_PASSED, num)
       complete_vda_action(set_status_check(STATE_IDLE))
     else:
@@ -172,25 +172,25 @@ def publish_quality_check_image(result, num):
   """
   filename = '/opt/ft/workspaces/last-image.png'
   try:
-    with open(filename, "rb") as img_file:
-      img_data = base64.b64encode(img_file.read()).decode('utf-8')
-    payload_obj = {
-      "ts": vda_timestamp(),
-      "result": result,
-      "num": num,
-      "data": "data:image/png;base64," + img_data
-    }
+      with open(filename, "rb") as img_file:
+          img_data = base64.b64encode(img_file.read()).decode('utf-8')
+      payload_obj = {
+          "ts": vda_timestamp(),
+          "result": result,
+          "num": num,
+          "data": "data:image/png;base64," + img_data
+      }
 
-    mqtt_get_client().publish(
-      topic='/j1/txt/1/i/quality_check',
-      payload=json.dumps(payload_obj),
-      qos=2,
-      retain=True
-    )
-    print(f'Quality check image published ({result})')
+      mqtt_get_client().publish(
+          topic='/j1/txt/1/i/quality_check',
+          payload=json.dumps(payload_obj),
+          qos=2,
+          retain=True
+      )
+      print('Quality check image published')
 
   except Exception as e:
-      print(f"Error publishing quality check image ({result}): {e}")
+      print("Error publishing quality check image")
 
 
 def set_status(status):

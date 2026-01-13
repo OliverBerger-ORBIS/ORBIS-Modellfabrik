@@ -28,6 +28,7 @@ const RETENTION_CONFIG: Record<string, number> = {
   '/j1/txt/1/i/cam': 0,       // Camera frames: bypass mode (no buffer)
   '/j1/txt/1/i/bme680': 100,  // BME680 sensor: high retention
   '/j1/txt/1/i/ldr': 100,     // LDR sensor: high retention
+  '/j1/txt/1/i/quality_check': 50, // Quality check images: moderate retention
 };
 
 @Injectable({ providedIn: 'root' })

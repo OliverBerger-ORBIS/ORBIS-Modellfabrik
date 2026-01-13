@@ -642,6 +642,25 @@
 
         <!-- AIQS Section -->
         <div class="module-specific-section" *ngIf="selectedModuleMeta?.moduleType === 'AIQS' && selectedModuleMeta?.aiqsData as aiqsState">
+          <!-- Quality Check Image Section -->
+          <div class="module-specific-section__quality-image" *ngIf="qualityCheckImage$ | async as qualityImage">
+            <div class="module-specific-section__header">
+              <h4>
+                <img src="assets/svg/ui/heading-camera.svg" alt="Quality Check Image" class="section-icon-img" width="20" height="20" />
+                <span i18n="@@aiqsLabelLastImage">Last Image</span>
+              </h4>
+            </div>
+            <div class="quality-image-content">
+              <div class="quality-image-wrapper">
+                <img [src]="qualityImage.dataUrl" alt="Quality check image" />
+                <p class="quality-image-timestamp">
+                  <span i18n="@@aiqsLabelImageTimestamp">Last image update</span>:
+                  {{ formatQualityCheckTimestamp(qualityImage.timestamp) }}
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div class="module-specific-section__header">
             <h4>
               <img src="assets/svg/ui/heading-sensors.svg" alt="Check Quality" class="section-icon-img" width="20" height="20" />

@@ -1,18 +1,18 @@
 <xml xmlns="https://developers.google.com/blockly/xml" version="21">
   <variables>
-    <variable id="]89|)R[%p@dV22z_{u#%">status</variable>
-    <variable id="2*ahAr@W0eCWbpJTS[zK">unexpected</variable>
-    <variable id="1$Z?mgc#!ZD_rk8r|w~;">success</variable>
-    <variable id="[A-*=be/_)r[`8N@lA6V">result_code</variable>
+    <variable id="szDb)oX.3?UM_LQ{X-X?">result</variable>
+    <variable id="E%bpr=oJ$[~BqmwXff10">num</variable>
     <variable id="Cuw4xH3-/1vnRXwzF|U_">action</variable>
     <variable id="nyulr^Oa#V%b|V3R;{(g">parameter</variable>
     <variable id="kaRw-)xc#l$tb,2;QURi">default_value</variable>
-    <variable id="szDb)oX.3?UM_LQ{X-X?">result</variable>
-    <variable id="E%bpr=oJ$[~BqmwXff10">num</variable>
+    <variable id="]89|)R[%p@dV22z_{u#%">status</variable>
+    <variable id="1$Z?mgc#!ZD_rk8r|w~;">success</variable>
+    <variable id="2*ahAr@W0eCWbpJTS[zK">unexpected</variable>
+    <variable id="[A-*=be/_)r[`8N@lA6V">result_code</variable>
     <variable id="ba@E,-+~Wy?*rzkRmwOv">ACTION_PICK</variable>
     <variable id="Ud:A]uXp#FMC@HzgJ9-H">STATE_IDLE</variable>
-    <variable id="3S6d_k1%_df#]tJj`@0^">has_order</variable>
     <variable id="tV.3(.qCUvb?pzL`cGfB">_unused</variable>
+    <variable id="3S6d_k1%_df#]tJj`@0^">has_order</variable>
     <variable id="(O._(}};TTTHm98Nk!R@">ACTION_DROP</variable>
     <variable id="[!W]F0V#-VQ*Dz0^clIF">STATE_PICKING</variable>
     <variable id=",O0E{=@LT4UyWT^~L*}-">controllerid</variable>
@@ -764,7 +764,7 @@
                                     <field name="value">Ton für erfolgreiche Prüfung abspielen</field>
                                     <next>
                                       <block type="sound_play_audio_file" id="nDE};1Mu!Q)5f8lkb,ko">
-                                        <field name="soundfile_name">06_Car_horn_short.wav</field>
+                                        <field name="soundfile_name">01_Airplane.wav</field>
                                         <field name="checkbox">FALSE</field>
                                         <next>
                                           <block type="procedures_callnoreturn" id="jSUq*G:9dUMKY?{]a#4T" inline="true">
@@ -1079,7 +1079,7 @@
         <field name="value">Publiziert das zuletzt gespeicherte AIQS-Bild als Base64 (data URL) zusammen mit Result/Num. result: "PASSED" | "FAILED"</field>
         <next>
           <block type="util_python" id="]E^$hv=h7)uA0?!jCuXj">
-            <field name="value">filename = '/opt/ft/workspaces/last-image.png'&amp;#10;try:&amp;#10;  with open(filename, "rb") as img_file:&amp;#10;    img_data = base64.b64encode(img_file.read()).decode('utf-8')&amp;#10;  payload_obj = {&amp;#10;    "ts": vda_timestamp(),&amp;#10;    "result": result,&amp;#10;    "num": num,&amp;#10;    "data": "data:image/png;base64," + img_data&amp;#10;  }&amp;#10;&amp;#10;  mqtt_get_client().publish(&amp;#10;    topic='/j1/txt/1/i/quality_check',&amp;#10;    payload=json.dumps(payload_obj),&amp;#10;    qos=2,&amp;#10;    retain=True&amp;#10;  )&amp;#10;  print(f'Quality check image published ({result})')&amp;#10;&amp;#10;except Exception as e:&amp;#10;    print(f"Error publishing quality check image ({result}): {e}")</field>
+            <field name="value">filename = '/opt/ft/workspaces/last-image.png'&amp;#10;try:&amp;#10;    with open(filename, "rb") as img_file:&amp;#10;        img_data = base64.b64encode(img_file.read()).decode('utf-8')&amp;#10;    payload_obj = {&amp;#10;        "ts": vda_timestamp(),&amp;#10;        "result": result,&amp;#10;        "num": num,&amp;#10;        "data": "data:image/png;base64," + img_data&amp;#10;    }&amp;#10;&amp;#10;    mqtt_get_client().publish(&amp;#10;        topic='/j1/txt/1/i/quality_check',&amp;#10;        payload=json.dumps(payload_obj),&amp;#10;        qos=2,&amp;#10;        retain=True&amp;#10;    )&amp;#10;    print('Quality check image published')&amp;#10;&amp;#10;except Exception as e:&amp;#10;    print("Error publishing quality check image")</field>
           </block>
         </next>
       </block>

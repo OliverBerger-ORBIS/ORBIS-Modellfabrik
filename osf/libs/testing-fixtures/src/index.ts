@@ -440,6 +440,7 @@ export { loadDspActionFixtures, createDspActionFixtureStream } from './dsp-actio
 export { loadModuleStatusFixtures, createModuleStatusFixtureStream } from './module-status-fixtures';
 export { loadModuleShopfloorStatusFixtures, createModuleShopfloorStatusFixtureStream } from './module-shopfloor-status-fixtures';
 export { createModuleActionHistoryFixtureStream } from './module-action-history-fixtures';
+export { loadQualityCheckFixtures, createQualityCheckFixtureStream } from './quality-check-fixtures';
 
 export const createSensorFixtureStream = (
   name: SensorFixtureName,

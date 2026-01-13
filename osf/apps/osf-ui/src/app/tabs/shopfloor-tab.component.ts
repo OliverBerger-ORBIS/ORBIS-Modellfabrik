@@ -35,6 +35,7 @@ const DPS_STATE_TOPIC = `module/v1/ff/${DPS_SERIAL}/state`;
 const DPS_CONNECTION_TOPIC = `module/v1/ff/${DPS_SERIAL}/connection`;
 const AIQS_STATE_TOPIC = `module/v1/ff/${AIQS_SERIAL}/state`;
 const AIQS_CONNECTION_TOPIC = `module/v1/ff/${AIQS_SERIAL}/connection`;
+const QUALITY_CHECK_TOPIC = '/j1/txt/1/i/quality_check';
 
 // DPS/AIQS Types
 type ActionStateType = 'WAITING' | 'INITIALIZING' | 'RUNNING' | 'FINISHED' | 'FAILED' | string;
@@ -106,6 +107,18 @@ interface AiqsState {
   };
   paused?: boolean;
   errors?: unknown[];
+}
+
+interface QualityCheckPayload {
+  num?: number;
+  result?: 'PASSED' | 'FAILED';
+  ts?: string;
+  data?: string; // base64 encoded image: "data:image/png;base64,..."
+}
+
+interface QualityCheckImage {
+  dataUrl: string;
+  timestamp: string;
 }
 
 interface ModuleCommand {
@@ -335,6 +348,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   // Observable streams for DPS/AIQS
   dpsState$!: Observable<DpsState | null>;
   aiqsState$!: Observable<AiqsState | null>;
+  qualityCheckImage$!: Observable<QualityCheckImage | null>;
 
   // Shopfloor layout config for serial number lookup
   private layoutConfig: ShopfloorLayoutConfig | null = null;
@@ -516,6 +530,9 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         
         // Also load module status fixtures (for testing availability and FTS position)
         await this.loadModuleStatusFixture();
+        
+        // Load quality check fixture for AIQS image display
+        await this.loadQualityCheckFixture();
       }
     } catch (error) {
       console.warn('Failed to load module fixture', fixture, error);
@@ -619,6 +636,35 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     }
   }
 
+  private async loadQualityCheckFixture(): Promise<void> {
+    if (!this.isMockMode) {
+      return;
+    }
+    try {
+      const { createQualityCheckFixtureStream } = await import('@osf/testing-fixtures');
+      const stream$ = createQualityCheckFixtureStream({ intervalMs: 0 });
+      
+      const sub = stream$.subscribe((message) => {
+        if (this.dashboard.injectMessage) {
+          this.dashboard.injectMessage(message);
+        }
+        try {
+          const payload = typeof message.payload === 'string' 
+            ? JSON.parse(message.payload) 
+            : message.payload;
+          this.messageMonitor.addMessage(message.topic, payload, message.timestamp);
+        } catch (error) {
+          console.error('[module-tab] Failed to parse quality check payload:', error);
+        }
+      });
+      
+      this.fixtureSubscriptions.add(sub);
+    } catch (error) {
+      console.error('[module-tab] Failed to load quality check fixture:', error);
+      // Don't throw - let loadFixture handle the error state
+    }
+  }
+
   private initializeStreams(): void {
     const controller = getDashboardController();
     this.dashboard = controller;
@@ -650,6 +696,45 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
           return msg.payload as AiqsState;
         }
         return null;
+      }),
+      startWith(null),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+
+    // Initialize Quality Check Image stream
+    this.qualityCheckImage$ = this.messageMonitor.getLastMessage<QualityCheckPayload>(QUALITY_CHECK_TOPIC).pipe(
+      map((msg) => {
+        if (!msg || !msg.valid) {
+          return null;
+        }
+        
+        // Payload can be a string (JSON) or already parsed object
+        let payload: QualityCheckPayload;
+        if (typeof msg.payload === 'string') {
+          try {
+            payload = JSON.parse(msg.payload);
+          } catch {
+            return null;
+          }
+        } else {
+          payload = msg.payload as QualityCheckPayload;
+        }
+        
+        // Extract image data from payload
+        const imageData = payload?.data;
+        if (!imageData || typeof imageData !== 'string') {
+          return null;
+        }
+        
+        // Validate that it's a data URL
+        if (!imageData.startsWith('data:image/')) {
+          return null;
+        }
+        
+        return {
+          dataUrl: imageData,
+          timestamp: payload.ts || msg.timestamp,
+        };
       }),
       startWith(null),
       shareReplay({ bufferSize: 1, refCount: false })
@@ -1761,6 +1846,21 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         return timestamp; // Return original if invalid
       }
       return date.toLocaleTimeString();
+    } catch {
+      return timestamp;
+    }
+  }
+
+  formatQualityCheckTimestamp(timestamp: string | undefined): string {
+    if (!timestamp) {
+      return $localize`:@@aiqsLabelNoTimestamp:No timestamp`;
+    }
+    try {
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) {
+        return timestamp;
+      }
+      return date.toLocaleString();
     } catch {
       return timestamp;
     }

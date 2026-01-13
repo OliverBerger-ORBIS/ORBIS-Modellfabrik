@@ -184,6 +184,7 @@ export class ConnectionService {
       '/j1/txt/1/i/bme680',    // Sensor: BME680
       '/j1/txt/1/i/ldr',       // Sensor: LDR
       '/j1/txt/1/i/cam',       // Sensor: Camera
+      '/j1/txt/1/i/quality_check', // AIQS: Quality check images
     ];
 
     console.log('[connection] Subscribing to MQTT topics...');

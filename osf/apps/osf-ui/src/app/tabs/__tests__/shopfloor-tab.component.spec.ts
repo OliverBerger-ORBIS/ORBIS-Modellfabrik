@@ -1,4 +1,5 @@
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, Observable } from 'rxjs';
+import { skip, take } from 'rxjs/operators';
 import type { ModuleOverviewState, ModuleOverviewStatus, TransportOverviewStatus } from '@osf/entities';
 import { ShopfloorTabComponent } from '../shopfloor-tab.component';
 import type { EnvironmentService } from '../../services/environment.service';
@@ -19,18 +20,19 @@ jest.mock('../../mock-dashboard', () => {
   };
 
   return {
-    getDashboardController: jest.fn(() => ({
-      streams: {
-        moduleOverview$: {
-          pipe: jest.fn(() => ({
-            pipe: jest.fn(),
-          })),
+    getDashboardController: jest.fn(() => {
+      // Import rxjs inside the mock function to ensure it's available
+      const { of } = require('rxjs');
+      return {
+        streams: {
+          moduleOverview$: of(null),
+          ftsStates$: of({}),
         },
-      },
-      commands: mockCommands,
-      loadFixture: jest.fn(),
-      getCurrentFixture: jest.fn(() => 'startup'),
-    })),
+        commands: mockCommands,
+        loadFixture: jest.fn(),
+        getCurrentFixture: jest.fn(() => 'startup'),
+      };
+    }),
   };
 });
 
@@ -678,6 +680,253 @@ Payload:
       component.selectedModuleSerialId = null;
       
       expect(component.selectedModuleSerialId).toBeNull();
+    });
+  });
+
+  describe('Quality Check Image functionality', () => {
+    const QUALITY_CHECK_TOPIC = '/j1/txt/1/i/quality_check';
+    const mockBase64Image = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
+    const createComponentWithStreams = () => {
+      const component = createComponent();
+      // Restore initializeStreams to allow actual initialization
+      const initSpy = jest.spyOn(ShopfloorTabComponent.prototype as any, 'initializeStreams');
+      initSpy.mockRestore();
+      return component;
+    };
+
+    it('should extract image from valid quality check payload', (done) => {
+      const component = createComponentWithStreams();
+      const messageMonitorStub = (component as any).messageMonitor as MessageMonitorService;
+      
+      const mockMessage = {
+        topic: QUALITY_CHECK_TOPIC,
+        payload: {
+          num: 2,
+          result: 'PASSED',
+          ts: '2026-01-13T08:13:53.167440Z',
+          data: mockBase64Image,
+        },
+        timestamp: '2026-01-13T08:13:53.167440Z',
+        valid: true,
+      };
+
+      const subject = new BehaviorSubject(mockMessage);
+      jest.spyOn(messageMonitorStub, 'getLastMessage').mockReturnValue(subject.asObservable());
+
+      // Initialize streams to set up qualityCheckImage$
+      (component as any).initializeStreams();
+
+      component.qualityCheckImage$.subscribe((image) => {
+        expect(image).not.toBeNull();
+        expect(image?.dataUrl).toBe(mockBase64Image);
+        expect(image?.timestamp).toBe('2026-01-13T08:13:53.167440Z');
+        done();
+      });
+    });
+
+    it('should extract image from string payload', (done) => {
+      const component = createComponentWithStreams();
+      const messageMonitorStub = (component as any).messageMonitor as MessageMonitorService;
+      
+      const payloadString = JSON.stringify({
+        num: 1,
+        result: 'FAILED',
+        ts: '2026-01-13T08:10:00.000000Z',
+        data: mockBase64Image,
+      });
+
+      const mockMessage = {
+        topic: QUALITY_CHECK_TOPIC,
+        payload: payloadString,
+        timestamp: '2026-01-13T08:10:00.000000Z',
+        valid: true,
+      };
+
+      const subject = new BehaviorSubject(mockMessage);
+      jest.spyOn(messageMonitorStub, 'getLastMessage').mockReturnValue(subject.asObservable());
+
+      (component as any).initializeStreams();
+
+      component.qualityCheckImage$.subscribe((image) => {
+        expect(image).not.toBeNull();
+        expect(image?.dataUrl).toBe(mockBase64Image);
+        expect(image?.timestamp).toBe('2026-01-13T08:10:00.000000Z');
+        done();
+      });
+    });
+
+    it('should return null for invalid message', (done) => {
+      const component = createComponentWithStreams();
+      const messageMonitorStub = (component as any).messageMonitor as MessageMonitorService;
+      
+      const mockMessage = {
+        topic: QUALITY_CHECK_TOPIC,
+        payload: {},
+        timestamp: '2026-01-13T08:13:53.167440Z',
+        valid: false,
+      };
+
+      const subject = new BehaviorSubject(mockMessage);
+      jest.spyOn(messageMonitorStub, 'getLastMessage').mockReturnValue(subject.asObservable());
+
+      (component as any).initializeStreams();
+
+      component.qualityCheckImage$.pipe(skip(1), take(1)).subscribe((image) => {
+        expect(image).toBeNull();
+        done();
+      });
+    });
+
+    it('should return null for payload without image data', (done) => {
+      const component = createComponentWithStreams();
+      const messageMonitorStub = (component as any).messageMonitor as MessageMonitorService;
+      
+      const mockMessage = {
+        topic: QUALITY_CHECK_TOPIC,
+        payload: {
+          num: 1,
+          result: 'PASSED',
+          ts: '2026-01-13T08:13:53.167440Z',
+          // No data field
+        },
+        timestamp: '2026-01-13T08:13:53.167440Z',
+        valid: true,
+      };
+
+      const subject = new BehaviorSubject(mockMessage);
+      jest.spyOn(messageMonitorStub, 'getLastMessage').mockReturnValue(subject.asObservable());
+
+      (component as any).initializeStreams();
+
+      component.qualityCheckImage$.pipe(skip(1), take(1)).subscribe((image) => {
+        expect(image).toBeNull();
+        done();
+      });
+    });
+
+    it('should return null for invalid image data URL', (done) => {
+      const component = createComponentWithStreams();
+      const messageMonitorStub = (component as any).messageMonitor as MessageMonitorService;
+      
+      const mockMessage = {
+        topic: QUALITY_CHECK_TOPIC,
+        payload: {
+          num: 1,
+          result: 'PASSED',
+          ts: '2026-01-13T08:13:53.167440Z',
+          data: 'invalid-image-data', // Not a data URL
+        },
+        timestamp: '2026-01-13T08:13:53.167440Z',
+        valid: true,
+      };
+
+      const subject = new BehaviorSubject(mockMessage);
+      jest.spyOn(messageMonitorStub, 'getLastMessage').mockReturnValue(subject.asObservable());
+
+      (component as any).initializeStreams();
+
+      component.qualityCheckImage$.pipe(skip(1), take(1)).subscribe((image) => {
+        expect(image).toBeNull();
+        done();
+      });
+    });
+
+    it('should use message timestamp when payload ts is missing', (done) => {
+      const component = createComponentWithStreams();
+      const messageMonitorStub = (component as any).messageMonitor as MessageMonitorService;
+      
+      const messageTimestamp = '2026-01-13T08:15:00.000000Z';
+      const mockMessage = {
+        topic: QUALITY_CHECK_TOPIC,
+        payload: {
+          num: 1,
+          result: 'PASSED',
+          data: mockBase64Image,
+          // No ts field
+        },
+        timestamp: messageTimestamp,
+        valid: true,
+      };
+
+      const subject = new BehaviorSubject(mockMessage);
+      jest.spyOn(messageMonitorStub, 'getLastMessage').mockReturnValue(subject.asObservable());
+
+      (component as any).initializeStreams();
+
+      component.qualityCheckImage$.subscribe((image) => {
+        expect(image).not.toBeNull();
+        expect(image?.timestamp).toBe(messageTimestamp);
+        done();
+      });
+    });
+
+    it('should format quality check timestamp correctly', () => {
+      const component = createComponent();
+      
+      const isoTimestamp = '2026-01-13T08:13:53.167440Z';
+      const formatted = component.formatQualityCheckTimestamp(isoTimestamp);
+      
+      expect(formatted).toBeTruthy();
+      expect(typeof formatted).toBe('string');
+      // Should be a valid date string
+      expect(() => new Date(formatted)).not.toThrow();
+    });
+
+    it('should handle undefined timestamp in formatQualityCheckTimestamp', () => {
+      const component = createComponent();
+      
+      const formatted = component.formatQualityCheckTimestamp(undefined);
+      
+      expect(formatted).toBeTruthy();
+      expect(typeof formatted).toBe('string');
+    });
+
+    it('should handle invalid timestamp in formatQualityCheckTimestamp', () => {
+      const component = createComponent();
+      
+      const invalidTimestamp = 'invalid-date-string';
+      const formatted = component.formatQualityCheckTimestamp(invalidTimestamp);
+      
+      // Should return the original string if parsing fails
+      expect(formatted).toBe(invalidTimestamp);
+    });
+
+    it('should handle null message', (done) => {
+      const component = createComponentWithStreams();
+      const messageMonitorStub = (component as any).messageMonitor as MessageMonitorService;
+      
+      const subject = new BehaviorSubject(null);
+      jest.spyOn(messageMonitorStub, 'getLastMessage').mockReturnValue(subject.asObservable());
+
+      (component as any).initializeStreams();
+
+      component.qualityCheckImage$.pipe(skip(1), take(1)).subscribe((image) => {
+        expect(image).toBeNull();
+        done();
+      });
+    });
+
+    it('should handle invalid JSON string payload', (done) => {
+      const component = createComponentWithStreams();
+      const messageMonitorStub = (component as any).messageMonitor as MessageMonitorService;
+      
+      const mockMessage = {
+        topic: QUALITY_CHECK_TOPIC,
+        payload: 'invalid-json-string{',
+        timestamp: '2026-01-13T08:13:53.167440Z',
+        valid: true,
+      };
+
+      const subject = new BehaviorSubject(mockMessage);
+      jest.spyOn(messageMonitorStub, 'getLastMessage').mockReturnValue(subject.asObservable());
+
+      (component as any).initializeStreams();
+
+      component.qualityCheckImage$.pipe(skip(1), take(1)).subscribe((image) => {
+        expect(image).toBeNull();
+        done();
+      });
     });
   });
 });
