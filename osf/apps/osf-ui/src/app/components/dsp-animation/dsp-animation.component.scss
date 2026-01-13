@@ -112,6 +112,8 @@
   }
 
   // Controls - sticky at bottom so they don't get covered by zoom
+  // Grid layout: Column 1 (left) = navigation buttons stacked vertically
+  //              Column 2 (right) = step info (row 1) + step dots (row 2)
   &__controls {
     display: grid;
     grid-template-columns: auto 1fr;

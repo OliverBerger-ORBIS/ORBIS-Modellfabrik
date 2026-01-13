@@ -1003,6 +1003,12 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   // Zoom methods
+  /**
+   * Calculate zoom step size based on current zoom level.
+   * Uses smaller steps (5%) for fine control when zoomed out (≤100%),
+   * and larger steps (10%) when zoomed in (>100%).
+   * @returns The zoom step increment/decrement value
+   */
   private getZoomStep(): number {
     // Use 5% steps when below or at 100%, 10% steps when above
     return this.zoom <= 1 ? 0.05 : 0.1;
