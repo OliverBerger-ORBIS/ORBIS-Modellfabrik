@@ -1015,14 +1015,20 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
 
   // Zoom methods
   /**
+   * Get the appropriate zoom step size based on current zoom level.
+   * @returns 5% for zoom < 100%, 10% for zoom ≥ 100%
+   */
+  private getZoomStep(): number {
+    return this.zoom < 1.0 ? this.ZOOM_STEP_FINE : this.ZOOM_STEP_COARSE;
+  }
+
+  /**
    * Zoom in with dynamic step size.
    * Uses finer steps (5%) when zoom < 100%, coarser steps (10%) when zoom ≥ 100%.
    */
   protected zoomIn(): void {
     if (this.zoom < this.maxZoom) {
-      // Use current zoom to determine step (before change)
-      const step = this.zoom < 1.0 ? this.ZOOM_STEP_FINE : this.ZOOM_STEP_COARSE;
-      this.zoom = Math.min(this.zoom + step, this.maxZoom);
+      this.zoom = Math.min(this.zoom + this.getZoomStep(), this.maxZoom);
       this.cdr.markForCheck();
     }
   }
@@ -1033,9 +1039,7 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
    */
   protected zoomOut(): void {
     if (this.zoom > this.minZoom) {
-      // Use current zoom to determine step (before change)
-      const step = this.zoom < 1.0 ? this.ZOOM_STEP_FINE : this.ZOOM_STEP_COARSE;
-      this.zoom = Math.max(this.zoom - step, this.minZoom);
+      this.zoom = Math.max(this.zoom - this.getZoomStep(), this.minZoom);
       this.cdr.markForCheck();
     }
   }
