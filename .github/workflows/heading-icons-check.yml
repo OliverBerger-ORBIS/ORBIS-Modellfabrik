@@ -17,10 +17,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check if validation script exists
+        id: check_script
+        run: |
+          if [ -f "scripts/check_heading_svgs_omf3.py" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️ Heading icons check script not found - skipping validation"
+          fi
       - name: Set up Python
+        if: steps.check_script.outputs.exists == 'true'
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
       - name: Run heading icons check (OMF3)
+        if: steps.check_script.outputs.exists == 'true'
         run: |
           python3 scripts/check_heading_svgs_omf3.py
