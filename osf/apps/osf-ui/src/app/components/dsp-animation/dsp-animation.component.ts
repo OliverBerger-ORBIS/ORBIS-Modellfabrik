@@ -77,7 +77,17 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   protected zoom = 1;
   protected readonly minZoom = 0.4;
   protected readonly maxZoom = 1.8;
-  protected readonly zoomStep = 0.1;
+  
+  /**
+   * Fine zoom step for zoom levels < 100% (5% increments for precise control)
+   */
+  private readonly ZOOM_STEP_FINE = 0.05;
+  
+  /**
+   * Coarse zoom step for zoom levels ≥ 100% (10% increments)
+   */
+  private readonly ZOOM_STEP_COARSE = 0.1;
+  
   protected readonly functionIconRadius = 120; // base radius for circular layout
   protected readonly functionIconScale = 1.0;
   protected readonly functionIconHighlightScale = 1.92; // 1.6 * 1.2 = 20% additional enlargement for highlighted function icons
@@ -1004,16 +1014,32 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   // Zoom methods
+  /**
+   * Get the appropriate zoom step size based on current zoom level.
+   * @returns 5% for zoom < 100%, 10% for zoom ≥ 100%
+   */
+  private getZoomStep(): number {
+    return this.zoom < 1.0 ? this.ZOOM_STEP_FINE : this.ZOOM_STEP_COARSE;
+  }
+
+  /**
+   * Zoom in with dynamic step size.
+   * Uses finer steps (5%) when zoom < 100%, coarser steps (10%) when zoom ≥ 100%.
+   */
   protected zoomIn(): void {
     if (this.zoom < this.maxZoom) {
-      this.zoom = Math.min(this.zoom + this.zoomStep, this.maxZoom);
+      this.zoom = Math.min(this.zoom + this.getZoomStep(), this.maxZoom);
       this.cdr.markForCheck();
     }
   }
 
+  /**
+   * Zoom out with dynamic step size.
+   * Uses finer steps (5%) when zoom < 100%, coarser steps (10%) when zoom ≥ 100%.
+   */
   protected zoomOut(): void {
     if (this.zoom > this.minZoom) {
-      this.zoom = Math.max(this.zoom - this.zoomStep, this.minZoom);
+      this.zoom = Math.max(this.zoom - this.getZoomStep(), this.minZoom);
       this.cdr.markForCheck();
     }
   }
