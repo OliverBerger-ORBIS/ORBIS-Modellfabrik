@@ -1006,14 +1006,18 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   // Zoom methods
   protected zoomIn(): void {
     if (this.zoom < this.maxZoom) {
-      this.zoom = Math.min(this.zoom + this.zoomStep, this.maxZoom);
+      // Use 5% steps when below 100%, 10% steps when above
+      const step = this.zoom < 1 ? 0.05 : 0.1;
+      this.zoom = Math.min(this.zoom + step, this.maxZoom);
       this.cdr.markForCheck();
     }
   }
 
   protected zoomOut(): void {
     if (this.zoom > this.minZoom) {
-      this.zoom = Math.max(this.zoom - this.zoomStep, this.minZoom);
+      // Use 5% steps when below 100%, 10% steps when above
+      const step = this.zoom <= 1 ? 0.05 : 0.1;
+      this.zoom = Math.max(this.zoom - step, this.minZoom);
       this.cdr.markForCheck();
     }
   }
