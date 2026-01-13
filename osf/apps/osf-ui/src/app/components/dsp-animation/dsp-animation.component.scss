@@ -10,19 +10,20 @@
 
   // Header
   &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
     gap: 0.75rem;
+    align-items: center;
     position: sticky;
     top: 0;
     z-index: 10;
     background: #fff;
-    padding-bottom: 0.35rem;
+    padding-bottom: 0.5rem;
     margin-bottom: -0.35rem;
 
     .header__title {
+      grid-column: 1;
+      
       h2 {
         margin: 0;
         font-size: 1.25rem;
@@ -39,7 +40,55 @@
       }
     }
 
+    .header__navigation {
+      grid-column: 2;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: var(--neutral-lightgrey);
+      border-radius: 999px;
+      padding: 0.2rem;
+
+      .nav-btn--compact {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border: none;
+        border-radius: 50%;
+        background: #fff;
+        color: var(--orbis-blue-strong);
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background: rgba(var(--orbis-blue-light-rgb), 0.2);
+        }
+
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+
+        &--primary {
+          background: var(--orbis-blue-strong);
+          color: #fff;
+          border-color: var(--orbis-blue-strong);
+
+          &:hover:not(:disabled) {
+            background: var(--orbis-blue-strong);
+            opacity: 0.9;
+          }
+        }
+      }
+    }
+
     .header__zoom {
+      grid-column: 3;
       display: flex;
       align-items: center;
       gap: 0.4rem;
@@ -108,132 +157,6 @@
       height: auto;
       min-height: 300px;
       max-height: none;  // Allow full height when zoomed
-    }
-  }
-
-  // Controls - sticky at bottom so they don't get covered by zoom
-  // Grid layout: Column 1 (left) = navigation buttons stacked vertically
-  //              Column 2 (right) = step info (row 1) + step dots (row 2)
-  &__controls {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    grid-template-rows: auto auto;
-    gap: 0.75rem;
-    position: sticky;
-    bottom: 0;
-    z-index: 10;
-    background: #fff;
-    padding: 0.75rem 0 0.5rem 0;
-    margin-top: -0.5rem;
-
-    .controls__step-indicator {
-      grid-column: 2;
-      grid-row: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      align-self: center;
-      gap: 0.25rem;
-      text-align: left;
-      padding: 0.4rem 0.75rem;
-      background: var(--neutral-lightgrey);
-      border-radius: 0.5rem;
-      max-width: 100%;
-
-      .step-label {
-        font-weight: 600;
-        font-size: 0.875rem;
-        color: var(--orbis-nightblue);
-      }
-
-      .step-count {
-        font-size: 0.875rem;
-        color: var(--orbis-blue-light);
-      }
-
-      .step-description {
-        margin: 0.5rem 0 0;
-        font-size: 0.875rem;
-        color: var(--orbis-blue-medium);
-        line-height: 1.5;
-        font-style: italic;
-      }
-    }
-
-    .controls__buttons {
-      grid-column: 1;
-      grid-row: 1 / 3;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      align-self: stretch;
-
-      .nav-btn {
-        padding: 0.5rem 1rem;
-        border-radius: 999px;
-        border: 1px solid rgba(var(--orbis-blue-strong-rgb), 0.35);
-        background: transparent;
-        color: var(--orbis-blue-strong);
-        font-weight: 600;
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        white-space: nowrap;
-
-        &:hover:not(:disabled) {
-          background: rgba(var(--orbis-blue-strong-rgb), 0.08);
-        }
-
-        &:disabled {
-          opacity: 0.4;
-          cursor: not-allowed;
-        }
-
-        &--primary {
-          background: var(--orbis-blue-strong);
-          color: #fff;
-          border-color: var(--orbis-blue-strong);
-
-          &:hover:not(:disabled) {
-            background: var(--orbis-blue-strong);
-          }
-        }
-      }
-    }
-
-    .controls__step-dots {
-      grid-column: 2;
-      grid-row: 2;
-      display: flex;
-      gap: 0.4rem;
-      align-self: start;
-      justify-self: start;
-
-      .step-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        border: 2px solid rgba(var(--orbis-blue-strong-rgb), 0.3);
-        background: transparent;
-        cursor: pointer;
-        padding: 0;
-        transition: all 0.2s ease;
-
-        &:hover {
-          border-color: var(--orbis-blue-strong);
-        }
-
-        &--active {
-          background: var(--orbis-blue-strong);
-          border-color: var(--orbis-blue-strong);
-          transform: scale(1.2);
-        }
-
-        &--completed {
-          background: rgba(var(--orbis-blue-strong-rgb), 0.3);
-          border-color: rgba(var(--orbis-blue-strong-rgb), 0.3);
-        }
-      }
     }
   }
 
