@@ -77,7 +77,6 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   protected zoom = 1;
   protected readonly minZoom = 0.4;
   protected readonly maxZoom = 1.8;
-  protected readonly zoomStep = 0.1;
   protected readonly functionIconRadius = 120; // base radius for circular layout
   protected readonly functionIconScale = 1.0;
   protected readonly functionIconHighlightScale = 1.92; // 1.6 * 1.2 = 20% additional enlargement for highlighted function icons
