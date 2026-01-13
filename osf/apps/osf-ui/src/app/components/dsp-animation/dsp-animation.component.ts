@@ -77,6 +77,8 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   protected zoom = 1;
   protected readonly minZoom = 0.4;
   protected readonly maxZoom = 1.8;
+  private readonly ZOOM_STEP_FINE = 0.05; // 5% for zoom ≤ 100%
+  private readonly ZOOM_STEP_COARSE = 0.1; // 10% for zoom > 100%
   protected readonly functionIconRadius = 120; // base radius for circular layout
   protected readonly functionIconScale = 1.0;
   protected readonly functionIconHighlightScale = 1.92; // 1.6 * 1.2 = 20% additional enlargement for highlighted function icons
@@ -1010,8 +1012,7 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
    * @returns The zoom step increment/decrement value
    */
   private getZoomStep(): number {
-    // Use 5% steps when below or at 100%, 10% steps when above
-    return this.zoom <= 1 ? 0.05 : 0.1;
+    return this.zoom <= 1 ? this.ZOOM_STEP_FINE : this.ZOOM_STEP_COARSE;
   }
 
   protected zoomIn(): void {
