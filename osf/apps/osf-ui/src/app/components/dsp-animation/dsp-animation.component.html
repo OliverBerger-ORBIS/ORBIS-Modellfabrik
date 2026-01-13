@@ -48,7 +48,7 @@
       </button>
     </div>
     <div class="header__step-info">
-      <span class="step-counter">{{ currentStepIndex + 1 }} / {{ steps.length }}</span>
+      <span class="step-counter" aria-live="polite" [attr.aria-label]="'Step ' + (currentStepIndex + 1) + ' of ' + steps.length">{{ currentStepIndex + 1 }} / {{ steps.length }}</span>
       <div class="step-dots">
         <button
           *ngFor="let step of steps; let i = index"
