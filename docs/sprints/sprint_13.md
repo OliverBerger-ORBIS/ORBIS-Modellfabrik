@@ -14,10 +14,11 @@
 - [x] Testen der TXT-AIQS Varianten für Check_quality nach Deployment (aus Sprint 12 übernommen)
 - [x] OBS-Setup auf Windows-Rechner prüfen und dokumentierte Dimensionen verifizieren
 - [x] AIQS-Modul im Shopfloor-Tab erweitern: Darstellung des letzten Quality-Check-Bildes (Topic: `/j1/txt/1/i/quality_check`)
-- [ ] UC-06 Vorbereitung: Interoperability Card und Content in DSP-Tab einfügen
+- [x] UC-06 Vorbereitung: Interoperability Card und Content in DSP-Tab einfügen
+- [ ] UC-06 Vorbereitung: docs/assets/use-cases/uc-06/ svgs animierbar machen
 
 ## 📊 Fortschritt
-- **Abgeschlossen:** 7/8 Aufgaben
+- **Abgeschlossen:** 8/9 Aufgaben
 - **Blockiert:** Noch keine Blocker
 - **Nächste Schritte:** Aufgaben priorisieren, Zeitplan für Abschluss und Antrag erstellen
 
@@ -30,7 +31,10 @@
 - **Risiken:** Verzögerungen bei Abschluss oder Antrag
 
 ---
-*Letzte Aktualisierung: 13.01.2026*
+*Letzte Aktualisierung: 16.01.2026*
+
+## ✅ Abgeschlossene Änderungen v0.7.4
+- **DSP Tab: USE-Case Interoperability** `
 
 ## ✅ Abgeschlossene Änderungen v0.7.3
 

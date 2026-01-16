@@ -1,0 +1,239 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <style>
+      :root { --stroke:#154194; --muted:#7a8aa0; --bg:#ffffff; --panel:#f6f8fb; --accent:#7fbf7a; }
+      .frame { fill: var(--bg); }
+      .panel { fill: var(--panel); stroke: #d7dee8; stroke-width: 2; rx: 18; ry: 18; }
+      .title { font: 700 56px "Segoe UI", Arial, sans-serif; fill:#1b2b3c; }
+      .subtitle { font: 400 24px "Segoe UI", Arial, sans-serif; fill: var(--muted); }
+      .h2 { font: 700 26px "Segoe UI", Arial, sans-serif; fill:#1b2b3c; }
+      .p { font: 400 20px "Segoe UI", Arial, sans-serif; fill:#1b2b3c; }
+      .small { font: 400 18px "Segoe UI", Arial, sans-serif; fill:#1b2b3c; }
+      .muted { fill: var(--muted); }
+      .iconStroke { fill:none; stroke: var(--stroke); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+      .chip { fill:#ffffff; stroke:#d7dee8; stroke-width:2; rx:14; ry:14; }
+      .arrow { fill:none; stroke:#c2cbd8; stroke-width:10; stroke-linecap:round; }
+      .stepBox { fill:#ffffff; stroke:#d7dee8; stroke-width:2; rx:16; ry:16; }
+      .stepBar { fill:#ffffff; stroke:#d7dee8; stroke-width:2; rx:14; ry:14; }
+      .check { fill:#eaf5ea; stroke:#bfe3bf; stroke-width:2; rx:14; ry:14; }
+      .hl { filter:none; } /* OSF setzt Highlight via CSS/Classes */
+      .dim { opacity:0.28; }
+      .hidden { opacity:0; }
+    </style>
+  </defs>
+
+  <!-- ROOT -->
+  <g id="uc06_root">
+    <rect class="frame" x="0" y="0" width="1920" height="1080"/>
+
+    <!-- Title -->
+    <g id="uc06_title">
+      <text x="960" y="110" text-anchor="middle" class="title">Interoperabilität: Event-to-Process Map</text>
+    </g>
+    <g id="uc06_subtitle">
+      <text x="960" y="155" text-anchor="middle" class="subtitle">
+        Shopfloor-Events werden durch Normalisierung und Kontext zu einem prozessfähigen Gesamtbild.
+      </text>
+    </g>
+
+    <!-- 3 Columns -->
+    <g id="uc06_columns">
+
+      <!-- LEFT: Sources -->
+      <g id="uc06_col_sources">
+        <rect class="panel" x="80" y="220" width="560" height="760"/>
+        <text x="120" y="270" class="h2" id="uc06_sources_header">Quellen: Events & Signale</text>
+
+        <!-- Lane: Business context (TOP) -->
+        <g id="uc06_lane_business_context">
+          <rect class="stepBox" x="110" y="300" width="500" height="150"/>
+          <text x="160" y="345" class="p">Business-Kontext (ERP/MES)</text>
+          <!-- Icon placeholder -->
+          <g id="uc06_lane_business_context_icon" transform="translate(520,318)">
+            <rect width="70" height="70" rx="12" ry="12" fill="#ffffff" stroke="#d7dee8" stroke-width="2"/>
+            <path class="iconStroke" d="M18 22h34M18 34h34M18 46h24"/>
+          </g>
+          <g id="uc06_lane_business_context_events">
+            <rect class="chip" x="160" y="365" width="210" height="34"/>
+            <text x="175" y="389" class="small">Produktionsauftrag</text>
+            <rect class="chip" x="380" y="365" width="200" height="34"/>
+            <text x="395" y="389" class="small">Material / Kunde</text>
+            <rect class="chip" x="160" y="405" width="220" height="34"/>
+            <text x="175" y="429" class="small">Arbeitsplan / Vorgang</text>
+          </g>
+        </g>
+
+        <!-- Lane: Machine / Station -->
+        <g id="uc06_lane_machine_station">
+          <rect class="stepBox" x="110" y="470" width="500" height="120"/>
+          <text x="160" y="515" class="p">Maschine / Station</text>
+          <g id="uc06_lane_machine_station_icon" transform="translate(520,488)">
+            <rect width="70" height="70" rx="12" ry="12" fill="#ffffff" stroke="#d7dee8" stroke-width="2"/>
+            <path class="iconStroke" d="M20 50h30M25 50V28m20 22V28M22 28h36"/>
+          </g>
+          <g id="uc06_lane_machine_station_events">
+            <rect class="chip" x="160" y="535" width="210" height="34"/>
+            <text x="175" y="559" class="small" id="uc06_ev_machine_start">START Bearbeitung</text>
+            <rect class="chip" x="380" y="535" width="210" height="34"/>
+            <text x="395" y="559" class="small" id="uc06_ev_machine_status">STATUS (Running/Idle/Fault)</text>
+          </g>
+        </g>
+
+        <!-- Lane: AGV / AMR -->
+        <g id="uc06_lane_agv_amr">
+          <rect class="stepBox" x="110" y="610" width="500" height="120"/>
+          <text x="160" y="655" class="p">FTS / AGV</text>
+          <g id="uc06_lane_agv_amr_icon" transform="translate(520,628)">
+            <rect width="70" height="70" rx="12" ry="12" fill="#ffffff" stroke="#d7dee8" stroke-width="2"/>
+            <path class="iconStroke" d="M18 44h44m-40 0l6-16h22l6 16M28 54a6 6 0 1 0 0.1 0M52 54a6 6 0 1 0 0.1 0"/>
+          </g>
+          <g id="uc06_lane_agv_amr_events">
+            <rect class="chip" x="160" y="675" width="170" height="34"/>
+            <text x="175" y="699" class="small" id="uc06_ev_agv_pick">PICK</text>
+            <rect class="chip" x="340" y="675" width="250" height="34"/>
+            <text x="355" y="699" class="small">TRANSFER / DROP</text>
+          </g>
+        </g>
+
+        <!-- Lane: Quality (AIQS) -->
+        <g id="uc06_lane_quality_aiqs">
+          <rect class="stepBox" x="110" y="750" width="500" height="120"/>
+          <text x="160" y="795" class="p">Qualität (AIQS)</text>
+          <g id="uc06_lane_quality_aiqs_icon" transform="translate(520,768)">
+            <rect width="70" height="70" rx="12" ry="12" fill="#ffffff" stroke="#d7dee8" stroke-width="2"/>
+            <path class="iconStroke" d="M26 26l10 10 20-20M22 54h40"/>
+          </g>
+          <g id="uc06_lane_quality_aiqs_events">
+            <rect class="chip" x="160" y="815" width="240" height="34"/>
+            <text x="175" y="839" class="small" id="uc06_ev_quality_check">CHECK_QUALITY (Pass/Fail)</text>
+          </g>
+        </g>
+
+        <!-- Lane: Environment / Sensors (optional) -->
+        <g id="uc06_lane_env_sensors">
+          <rect class="stepBox" x="110" y="890" width="500" height="70"/>
+          <text x="160" y="935" class="p">Umwelt / Sensorik (optional)</text>
+          <g id="uc06_lane_env_sensors_icon" transform="translate(520,900)">
+            <rect width="70" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d7dee8" stroke-width="2"/>
+            <path class="iconStroke" d="M22 28c10-12 22 12 32 0"/>
+          </g>
+        </g>
+      </g>
+
+      <!-- CENTER: DSP Pipeline -->
+      <g id="uc06_col_dsp">
+        <rect class="panel" x="680" y="220" width="560" height="760"/>
+        <text x="720" y="270" class="h2" id="uc06_dsp_header">DSP: Normalisieren + Kontext + Korrelation</text>
+
+        <!-- Arrows from sources to DSP -->
+        <path id="uc06_arrow_sources_to_dsp" class="arrow" d="M640 600 C 660 600, 660 600, 680 600"/>
+
+        <!-- Steps -->
+        <g id="uc06_step_normalize">
+          <rect class="stepBox" x="720" y="320" width="480" height="110"/>
+          <text x="960" y="365" text-anchor="middle" class="p"><tspan font-weight="700">Normalisieren</tspan> (Semantik &amp; Format)</text>
+          <text x="960" y="398" text-anchor="middle" class="small muted">Protokolle/Datenmodelle angleichen, Events kanonisieren</text>
+        </g>
+
+        <g id="uc06_step_enrich">
+          <rect class="stepBox" x="720" y="460" width="480" height="110"/>
+          <text x="960" y="505" text-anchor="middle" class="p"><tspan font-weight="700">Kontext anreichern</tspan> (Order, Werkstück, Station, Zeit)</text>
+          <text x="960" y="538" text-anchor="middle" class="small muted">Events mit Prozesskontext verknüpfen</text>
+        </g>
+
+        <g id="uc06_step_correlate">
+          <rect class="stepBox" x="720" y="600" width="480" height="110"/>
+          <text x="960" y="645" text-anchor="middle" class="p"><tspan font-weight="700">Korrelation</tspan> (Event-Kette → Prozessschritt)</text>
+          <text x="960" y="678" text-anchor="middle" class="small muted">Event Chains zu interpretierbaren Schritten mappen</text>
+        </g>
+
+        <!-- Summary bars -->
+        <g id="uc06_bar_process_ready">
+          <rect class="stepBar" x="760" y="745" width="400" height="56" fill="#eaf5ea" stroke="#bfe3bf"/>
+          <text x="960" y="782" text-anchor="middle" class="p">Events + Kontext = Prozessfähigkeit</text>
+        </g>
+        <g id="uc06_bar_reusable">
+          <rect class="stepBar" x="760" y="815" width="400" height="56"/>
+          <text x="960" y="852" text-anchor="middle" class="p">Wiederverwendbar statt Punkt-zu-Punkt</text>
+        </g>
+        <g id="uc06_bar_basis">
+          <rect class="stepBar" x="760" y="885" width="400" height="56"/>
+          <text x="960" y="922" text-anchor="middle" class="p">Basis für Traceability, KPIs &amp; Closed Loops</text>
+        </g>
+      </g>
+
+      <!-- RIGHT: Process view & targets -->
+      <g id="uc06_col_targets">
+        <rect class="panel" x="1280" y="220" width="560" height="760"/>
+        <text x="1320" y="270" class="h2" id="uc06_targets_header">Process view &amp; Zielsysteme</text>
+
+        <!-- Process view box -->
+        <g id="uc06_process_view_box">
+          <rect class="stepBox" x="1320" y="310" width="480" height="220"/>
+          <text x="1560" y="355" text-anchor="middle" class="p" font-weight="700">Event-to-Process Map</text>
+
+          <!-- Timeline -->
+          <g id="uc06_process_timeline">
+            <line x1="1380" y1="430" x2="1740" y2="430" stroke="#c2cbd8" stroke-width="12" stroke-linecap="round"/>
+            <circle cx="1420" cy="430" r="10" fill="#7fbf7a"/>
+            <circle cx="1500" cy="430" r="10" fill="#7fbf7a"/>
+            <circle cx="1580" cy="430" r="10" fill="#7fbf7a"/>
+            <circle cx="1660" cy="430" r="10" fill="#7fbf7a"/>
+            <circle cx="1740" cy="430" r="10" fill="#7fbf7a"/>
+          </g>
+
+          <!-- Icons + labels -->
+          <g id="uc06_process_icons">
+            <text x="1420" y="470" text-anchor="middle" class="small">Station</text>
+            <text x="1500" y="470" text-anchor="middle" class="small">FTS/AGV</text>
+            <text x="1580" y="470" text-anchor="middle" class="small">Transfer</text>
+            <text x="1660" y="470" text-anchor="middle" class="small">Qualität</text>
+            <text x="1740" y="470" text-anchor="middle" class="small">Abschluss</text>
+          </g>
+        </g>
+
+        <!-- Targets -->
+        <g id="uc06_targets_systems">
+          <g id="uc06_target_erp">
+            <rect class="stepBox" x="1320" y="550" width="150" height="90"/>
+            <text x="1395" y="605" text-anchor="middle" class="p">ERP</text>
+          </g>
+          <g id="uc06_target_mes">
+            <rect class="stepBox" x="1495" y="550" width="150" height="90"/>
+            <text x="1570" y="605" text-anchor="middle" class="p">MES</text>
+          </g>
+          <g id="uc06_target_analytics_ai">
+            <rect class="stepBox" x="1670" y="550" width="170" height="90"/>
+            <text x="1755" y="605" text-anchor="middle" class="p">Analytics / KI</text>
+          </g>
+          <text id="uc06_target_note_best_of_breed" x="1320" y="660" class="small muted">
+            Best-of-Breed: SAP kann ein Beispiel sein, ist aber keine Voraussetzung.
+          </text>
+        </g>
+
+        <!-- Outcomes -->
+        <g id="uc06_outcomes">
+          <g id="uc06_outcome_traceability">
+            <rect class="check" x="1320" y="710" width="480" height="70"/>
+            <text x="1380" y="755" class="p">Traceability / Genealogy</text>
+          </g>
+          <g id="uc06_outcome_kpi">
+            <rect class="check" x="1320" y="790" width="480" height="70"/>
+            <text x="1380" y="835" class="p">KPI-Berechnung (Lead Time, Downtime, OEE-Bausteine)</text>
+          </g>
+          <g id="uc06_outcome_closed_loop">
+            <rect class="check" x="1320" y="870" width="480" height="70"/>
+            <text x="1380" y="915" class="p">Closed-Loop-Orchestrierung (optional)</text>
+          </g>
+        </g>
+      </g>
+    </g>
+
+    <!-- Footer -->
+    <g id="uc06_footer">
+      <text x="960" y="1030" text-anchor="middle" class="subtitle">
+        Kombiniert Events aus Maschinen, FTS/AGVs, Qualität und Business-Kontext zu einem gemeinsamen Prozessbild.
+      </text>
+    </g>
+  </g>
+</svg>
