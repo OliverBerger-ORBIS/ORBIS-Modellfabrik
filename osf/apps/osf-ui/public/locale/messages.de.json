@@ -687,6 +687,17 @@
     "@@dspPhase4Title": "Choreografie",
     "@@dspPhase5SummaryNew": "Autonome Entscheidungen, ML/AI, Data Lake + ERP + Edge",
     "@@dspPhaseAutonomousAdaptiveBadge": "🚀 Autonomes & Adaptives Unternehmen",
+    "@@dspUseCaseInteroperabilityTitle": "Interoperabilität (Event-to-Process)",
+    "@@dspUseCaseInteroperabilityDesc": "Shopfloor-Events normalisieren und mit Kontext anreichern – als gemeinsames Prozessbild für OT und IT.",
+    "@@dspUseCaseInteroperabilityH1": "Events über Maschinen, Stationen, FTS/AGVs und Qualitätssysteme harmonisieren",
+    "@@dspUseCaseInteroperabilityH2": "Kontext ergänzen (Order, Werkstück, Station, Zeit), damit Events prozessfähig werden",
+    "@@dspUseCaseInteroperabilityH3": "Event-Ketten zu interpretierbaren Prozessschritten korrelieren (Event-to-Process Mapping)",
+    "@@dspUseCaseInteroperabilityH4": "Wiederverwendbarkeit statt Punkt-zu-Punkt-Verdrahtung je Use Case",
+    "@@orbisUseCaseInteroperabilityHighlight1": "Gemeinsames Prozessbild als Brücke zwischen OT-Signalen und IT-Prozesskontext",
+    "@@orbisUseCaseInteroperabilityHighlight2": "Konsistente Grundlage für Traceability, KPIs und Closed-Loop-Orchestrierung",
+    "@@orbisUseCaseInteroperabilityHighlight3": "Best-of-breed Zielsysteme (ERP / MES / Analytics) integrieren, ohne Shopfloor-Integration neu zu bauen",
+    "@@orbisUseCaseInteroperabilityHighlight4": "SAP kann ein Zielbeispiel sein, ist aber keine Voraussetzung",
+    "@@dspUseCaseInteroperabilityFooter": "OSF ist ein Demonstrator, der Integrationsprinzipien zeigt; produktive Implementierungen hängen von der Zielumgebung des Kunden ab.",
     "@@navTrackTrace": "Track & Trace"
   }
 }

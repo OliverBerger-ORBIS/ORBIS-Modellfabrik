@@ -50,6 +50,10 @@
           </ul>
         </section>
       </div>
+
+      <p *ngIf="useCase.footer" class="dsp-use-case-detail__footer">
+        {{ useCase.footer }}
+      </p>
     </article>
   </ng-container>
 </div>

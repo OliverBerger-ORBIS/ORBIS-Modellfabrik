@@ -1,8 +1,16 @@
 # Changelog
 
-All notable changes to OMF3 Dashboard will be documented here.
+All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
+
+## [0.7.4] - 2026-01-16
+
+### Added
+- **UC-06 (Edge Interoperability):** Added `edge-interoperability` icon as part of Use Case 06 implementation.
+
+### Changed
+- **Documentation:** Updated `dsp-svg-inventory.md` and refreshed the full inventory.
 
 ## [0.6.0] - 2025-12-22
 

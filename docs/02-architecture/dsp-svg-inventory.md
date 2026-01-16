@@ -169,6 +169,11 @@ Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Archit
 <div style="font-size: 0.9em; color: #666;">edge-data-storage.svg</div>
 </div>
 <div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/dsp/functions/edge-interoperability.svg" alt="edge-interoperability.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`edge-interoperability`</div>
+<div style="font-size: 0.9em; color: #666;">edge-interoperability.svg</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
 <img src="../../osf/apps/osf-ui/src/assets/svg/dsp/functions/edge-process-logic.svg" alt="edge-process-logic.svg" width="64" height="64" />
 <div style="font-weight: 600; margin-top: 8px;">`edge-process-logic`</div>
 <div style="font-size: 0.9em; color: #666;">edge-process-logic.svg</div>

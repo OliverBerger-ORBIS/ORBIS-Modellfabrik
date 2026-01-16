@@ -8,6 +8,7 @@ interface UseCase {
   actions: string[];
   smartFactory: string[];
   icon: string;
+  footer?: string;
 }
 
 /**
@@ -109,6 +110,25 @@ export class DspUseCasesComponent {
         $localize`:@@orbisUseCaseOptimizationHighlight6:Closed-loop improvements via DSP executors and MES/DSP workflows.`,
       ],
       icon: 'assets/svg/dsp/use-cases/use-case-process-optimization.svg',
+    },
+    {
+      id: 'interoperability',
+      title: $localize`:@@dspUseCaseInteroperabilityTitle:Interoperability (Event-to-Process)`,
+      description: $localize`:@@dspUseCaseInteroperabilityDesc:Normalize shopfloor events and enrich them with context to create a shared process view for OT and IT.`,
+      actions: [
+        $localize`:@@dspUseCaseInteroperabilityH1:Normalize and harmonize events across machines, stations, AGVs, and quality systems`,
+        $localize`:@@dspUseCaseInteroperabilityH2:Add context (order, workpiece, station, time) to make events “process-ready”`,
+        $localize`:@@dspUseCaseInteroperabilityH3:Correlate event chains into interpretable process steps (event-to-process mapping)`,
+        $localize`:@@dspUseCaseInteroperabilityH4:Enable reuse: one integration pattern for multiple use cases instead of point-to-point wiring`,
+      ],
+      smartFactory: [
+        $localize`:@@orbisUseCaseInteroperabilityHighlight1:Create a shared process view that aligns OT signals with IT process context`,
+        $localize`:@@orbisUseCaseInteroperabilityHighlight2:Provide a consistent basis for traceability, KPIs, and closed-loop orchestration`,
+        $localize`:@@orbisUseCaseInteroperabilityHighlight3:Integrate best-of-breed target systems (ERP / MES / analytics) without rebuilding shopfloor integration`,
+        $localize`:@@orbisUseCaseInteroperabilityHighlight4:SAP can be a target example, but is not a prerequisite`,
+      ],
+      footer: $localize`:@@dspUseCaseInteroperabilityFooter:OSF is a demonstrator showcasing integration principles; productive implementations depend on the customer’s target landscape.`,
+      icon: 'assets/svg/dsp/functions/edge-interoperability.svg', // Reusing the icon from DSP architecture, step 4
     },
   ];
 

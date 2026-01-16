@@ -7,16 +7,17 @@
 ---
 
 ## 🎯 Ziele
-- [] Storytelling-Blog vorbereiten (aus Sprint 12 übernommen)
+- [x] Storytelling-Blog vorbereiten ([Dokumentation in ADO Modellfabrik](https://dev.azure.com/ORBIS-AG-SAP/Modellfabrik/_wiki/wikis/Modellfabrik.wiki/8387/blog-series-2026)
 - [x] Angular-App Resizing-Optimierung abschließen (aus Sprint 12 übernommen) - [Task-Beschreibung](../04-howto/presentation/app-resizing-optimization-task.md)
 - [x] Projekt-Phasenabschlussbericht (Grundlage: [Sprints 1-12 Bericht](projekt_phasen_abschlussbericht_sprints_01-12.md) - Finalisierung in externem Tool)
 - [x] Projektantrag für neue Phase Q1 + Q2 2026
 - [x] Testen der TXT-AIQS Varianten für Check_quality nach Deployment (aus Sprint 12 übernommen)
 - [x] OBS-Setup auf Windows-Rechner prüfen und dokumentierte Dimensionen verifizieren
 - [x] AIQS-Modul im Shopfloor-Tab erweitern: Darstellung des letzten Quality-Check-Bildes (Topic: `/j1/txt/1/i/quality_check`)
+- [ ] UC-06 Vorbereitung: Interoperability Card und Content in DSP-Tab einfügen
 
 ## 📊 Fortschritt
-- **Abgeschlossen:** 5/7 Aufgaben
+- **Abgeschlossen:** 7/8 Aufgaben
 - **Blockiert:** Noch keine Blocker
 - **Nächste Schritte:** Aufgaben priorisieren, Zeitplan für Abschluss und Antrag erstellen
 
