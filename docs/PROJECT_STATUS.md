@@ -1,29 +1,24 @@
 # ORBIS Modellfabrik – Projektstatus (Kompakt)
 
-**Letzte Aktualisierung:** 08.01.2026
+**Letzte Aktualisierung:** 21.01.2026
 
 ## 🚦 Aktueller Status
 - OSF (vormals OMF3) produktionsreif für Kunden-Demos
 - OMF2 als Legacy eingefroren
-- Aktuelle Entwicklung: OSF Migration & Deployment, Angular-App Optimierung, AIQS-Kamera-Integration, Storytelling-Blog
+- Aktuelle Entwicklung: Azure DevOps Migration, Storytelling-Blog-Umsetzung, MES/ERP-Integration (geplant)
 
 ## 🔥 Aktuelle Schwerpunkte
 - Azure DevOps Migration & Docker-Setup (Hilcher-Box/RPi)
-- Angular-App Resizing für Präsentationen
-- AIQS-Kamera MQTT/OSF-UI Integration
-- Storytelling-Blog-Serie (Vorbereitung)
+- Storytelling-Blog-Serie umsetzen (Schritt für Schritt)
+- ORBIS-MES Integration (als Feature vermutlich erst in Sprint 15 ff)
+- SAP-Integration (als Feature vermutlich erst in Sprint 15 ff)
 
 ## 🚧 Blocker / Risiken
-- ROBO Pro Coding Workflow für AIQS-Kamera-Integration noch nicht abgeschlossen
 - Letzte Integrationsschritte für Deployment und Migration offen
 
-## ⏭️ Nächste Schritte
-- Offene Tasks aus Sprint 12/13 abschließen (siehe Sprint-Dokumente)
-- Projekt-Phasenabschlussbericht erstellen
-- Projektantrag für neue Phase Q1/Q2 2026 vorbereiten
-
 ## 📅 Sprint-Übersicht
-- [Sprint 13 (aktuell)](sprints/sprint_13.md)
+- [Sprint 14 (aktuell)](sprints/sprint_14.md)
+- [Sprint 13 (abgeschlossen)](sprints/sprint_13.md)
 - [Sprint 12](sprints/sprint_12.md)
 - [Sprint 11](sprints/sprint_11.md)
 - [Sprint 10](sprints/sprint_10.md)
