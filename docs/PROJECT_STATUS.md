@@ -34,8 +34,8 @@
 - [Phasen-Abschlussbericht Sprints 1-12](sprints/projekt_phasen_abschlussbericht_sprints_01-12.md)
 
 ## 📆 Wichtige Events (Ausblick)
-- LogiMAT-Messe: Ende März 2026
-- Hannover-Messe: Ende April 2026
+- LogiMAT-Messe: 24-26. März 2026
+- Hannover-Messe: 20-24. April 2026
 - Weitere Kundenpräsentationen und Integrationen geplant
 
 ## 📚 Weitere Dokumentation

@@ -1,0 +1,74 @@
+.interoperability-use-case {
+  padding: 2rem;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border, #e0e0e0);
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+  }
+
+  &__icon {
+    width: 32px;
+    height: 32px;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+
+  &__subtitle {
+    margin: 0.25rem 0 0 0;
+    color: var(--color-text-secondary, #666);
+    font-size: 0.875rem;
+  }
+
+  &__content {
+    width: 100%;
+    margin-top: 2rem;
+  }
+
+  &__diagram {
+    width: 100%;
+    overflow-x: auto;
+    background: var(--orbis-white, #ffffff);
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  &__loading {
+    padding: 2rem;
+    text-align: center;
+    color: var(--orbis-grey-medium, #666);
+  }
+
+  &__svg-wrapper {
+    width: 100%;
+    display: block;
+
+    :deep(svg) {
+      width: 100%;
+      height: auto;
+      display: block;
+      max-width: 1920px; // Original SVG width
+      min-width: 800px; // Minimum width for readability
+      max-height: 1300px; // Updated SVG height
+    }
+  }
+}

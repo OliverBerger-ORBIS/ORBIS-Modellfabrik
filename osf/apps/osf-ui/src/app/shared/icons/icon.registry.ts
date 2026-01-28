@@ -55,6 +55,9 @@ export const ICONS = {
       chargingActive: 'assets/svg/shopfloor/shared/charging-active.svg',
       locationMarker: 'assets/svg/shopfloor/shared/location-marker.svg',
       orderTracking: 'assets/svg/shopfloor/shared/order-tracking.svg',
+      temperatureSensor: 'assets/svg/shopfloor/shared/temperature-sensor.svg',
+      vibrationSensor: 'assets/svg/shopfloor/shared/vibration-sensor.svg',
+      pressureSensor: 'assets/svg/shopfloor/shared/pressure-sensor.svg',
     },
     workpieces: {
       blue: {

@@ -1,6 +1,6 @@
 # DSP SVG Inventory
 
-_Generated: 2025-12-21T13:13:31.088Z_
+_Generated: 2026-01-28T15:30:31.425Z_
 
 Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Architecture Objects Reference](../../osf/apps/osf-ui/src/app/components/dsp-animation/configs/DSP_Architecture_Objects_Reference.md) dokumentiert sind.
 
@@ -169,11 +169,6 @@ Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Archit
 <div style="font-size: 0.9em; color: #666;">edge-data-storage.svg</div>
 </div>
 <div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
-<img src="../../osf/apps/osf-ui/src/assets/svg/dsp/functions/edge-interoperability.svg" alt="edge-interoperability.svg" width="64" height="64" />
-<div style="font-weight: 600; margin-top: 8px;">`edge-interoperability`</div>
-<div style="font-size: 0.9em; color: #666;">edge-interoperability.svg</div>
-</div>
-<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
 <img src="../../osf/apps/osf-ui/src/assets/svg/dsp/functions/edge-process-logic.svg" alt="edge-process-logic.svg" width="64" height="64" />
 <div style="font-weight: 600; margin-top: 8px;">`edge-process-logic`</div>
 <div style="font-size: 0.9em; color: #666;">edge-process-logic.svg</div>
@@ -287,6 +282,11 @@ Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Archit
 <div style="font-size: 0.9em; color: #666;">charging-active.svg</div>
 </div>
 <div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/customer.svg" alt="customer.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`customer`</div>
+<div style="font-size: 0.9em; color: #666;">customer.svg</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
 <img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/dock-event.svg" alt="dock-event.svg" width="64" height="64" />
 <div style="font-weight: 600; margin-top: 8px;">`dock-event`</div>
 <div style="font-size: 0.9em; color: #666;">dock-event.svg</div>
@@ -327,6 +327,11 @@ Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Archit
 <div style="font-size: 0.9em; color: #666;">pick-event.svg</div>
 </div>
 <div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/pressure-sensor.svg" alt="pressure-sensor.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`pressure-sensor`</div>
+<div style="font-size: 0.9em; color: #666;">pressure-sensor.svg</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
 <img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/process-event.svg" alt="process-event.svg" width="64" height="64" />
 <div style="font-weight: 600; margin-top: 8px;">`process-event`</div>
 <div style="font-size: 0.9em; color: #666;">process-event.svg</div>
@@ -340,6 +345,16 @@ Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Archit
 <img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/stopped-status.svg" alt="stopped-status.svg" width="64" height="64" />
 <div style="font-weight: 600; margin-top: 8px;">`stopped-status`</div>
 <div style="font-size: 0.9em; color: #666;">stopped-status.svg</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/temperature-sensor.svg" alt="temperature-sensor.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`temperature-sensor`</div>
+<div style="font-size: 0.9em; color: #666;">temperature-sensor.svg</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/tuning-fork.svg" alt="tuning-fork.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`tuning-fork`</div>
+<div style="font-size: 0.9em; color: #666;">tuning-fork.svg</div>
 </div>
 <div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
 <img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/turn-event.svg" alt="turn-event.svg" width="64" height="64" />
@@ -356,6 +371,11 @@ Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Archit
 <div style="font-weight: 600; margin-top: 8px;">`turn-right-event`</div>
 <div style="font-size: 0.9em; color: #666;">turn-right-event.svg</div>
 </div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/vibration-sensor.svg" alt="vibration-sensor.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`vibration-sensor`</div>
+<div style="font-size: 0.9em; color: #666;">vibration-sensor.svg</div>
+</div>
 
 </div>
 
@@ -367,6 +387,16 @@ Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Archit
 <img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/stations/mixer.svg" alt="mixer.svg" width="64" height="64" />
 <div style="font-weight: 600; margin-top: 8px;">`mixer`</div>
 <div style="font-size: 0.9em; color: #666;">mixer.svg</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/stations/opc-ua-server.svg" alt="opc-ua-server.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`opc-ua-server`</div>
+<div style="font-size: 0.9em; color: #666;">opc-ua-server.svg</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/stations/txt-controller.svg" alt="txt-controller.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`txt-controller`</div>
+<div style="font-size: 0.9em; color: #666;">txt-controller.svg</div>
 </div>
 
 </div>
@@ -578,6 +608,23 @@ Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Archit
 <img src="../../osf/apps/osf-ui/src/assets/svg/ui/process-flow.svg" alt="process-flow.svg" width="64" height="64" />
 <div style="font-weight: 600; margin-top: 8px;">`process-flow`</div>
 <div style="font-size: 0.9em; color: #666;">process-flow.svg</div>
+</div>
+
+</div>
+
+### svg/use-cases
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; margin: 16px 0;">
+
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/use-cases/uc-06-event-to-process-map-DE.svg" alt="uc-06-event-to-process-map-DE.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`uc-06-event-to-process-map-DE`</div>
+<div style="font-size: 0.9em; color: #666;">uc-06-event-to-process-map-DE.svg</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/use-cases/uc-06-event-to-process-map-EN.svg" alt="uc-06-event-to-process-map-EN.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`uc-06-event-to-process-map-EN`</div>
+<div style="font-size: 0.9em; color: #666;">uc-06-event-to-process-map-EN.svg</div>
 </div>
 
 </div>

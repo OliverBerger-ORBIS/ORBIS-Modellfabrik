@@ -241,6 +241,12 @@ export class SettingsTabComponent implements OnInit {
       available: true,
     },
     {
+      label: 'Interoperability: Event-to-Process Map (Use Case)',
+      path: '/#/en/dsp/use-case/interoperability',
+      description: 'Interoperability use case page showing how shopfloor events are normalized and enriched with context to create a shared process view for OT and IT.',
+      available: true,
+    },
+    {
       label: 'DSP Customer Architecture',
       path: '/#/en/dsp/customer',
       description: 'Select and view customer-specific DSP architecture demonstrations (FMF, ECME).',

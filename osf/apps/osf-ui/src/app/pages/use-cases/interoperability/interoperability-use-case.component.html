@@ -1,0 +1,27 @@
+<section class="interoperability-use-case">
+  <header class="interoperability-use-case__header">
+    <div class="interoperability-use-case__title">
+      <img
+        src="assets/svg/dsp/functions/edge-interoperability.svg"
+        alt="Interoperability"
+        class="interoperability-use-case__icon"
+        width="32"
+        height="32"
+      />
+      <div>
+        <h1 i18n="@@interoperabilityUseCaseHeadline">Interoperability: Event-to-Process Map</h1>
+        <p class="interoperability-use-case__subtitle" i18n="@@interoperabilityUseCaseDescription">
+          Normalize shopfloor events and enrich them with context to create a shared process view for OT and IT.
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <div class="interoperability-use-case__content">
+    <div class="interoperability-use-case__diagram">
+      <div *ngIf="isLoading" class="interoperability-use-case__loading" i18n="@@loadingSvg">Loading SVG...</div>
+      <div *ngIf="!isLoading && svgContent" class="interoperability-use-case__svg-wrapper" [innerHTML]="svgContent"></div>
+      <div *ngIf="!isLoading && !svgContent" class="interoperability-use-case__loading" i18n="@@svgLoadError">Failed to load SVG.</div>
+    </div>
+  </div>
+</section>

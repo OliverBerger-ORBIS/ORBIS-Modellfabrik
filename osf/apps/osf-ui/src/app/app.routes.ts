@@ -25,6 +25,13 @@ export const appRoutes: Routes = [
           import('./tabs/track-trace-tab.component').then((m) => m.TrackTraceTabComponent),
       },
       {
+        path: 'dsp/use-case/interoperability',
+        loadComponent: () =>
+          import('./pages/use-cases/interoperability/interoperability-use-case.component').then(
+            (m) => m.InteroperabilityUseCaseComponent
+          ),
+      },
+      {
         path: 'order',
         loadComponent: () =>
           import('./tabs/order-tab.component').then((m) => m.OrderTabComponent),
