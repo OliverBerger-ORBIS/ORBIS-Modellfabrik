@@ -20,6 +20,11 @@ export const appRoutes: Routes = [
           import('./pages/dsp/dsp-page.component').then((m) => m.DspPageComponent),
       },
       {
+        path: 'dsp/use-case',
+        loadComponent: () =>
+          import('./pages/use-cases/use-case-selector-page.component').then((m) => m.UseCaseSelectorPageComponent),
+      },
+      {
         path: 'dsp/use-case/track-trace',
         loadComponent: () =>
           import('./tabs/track-trace-tab.component').then((m) => m.TrackTraceTabComponent),

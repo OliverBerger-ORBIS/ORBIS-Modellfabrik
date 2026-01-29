@@ -37,6 +37,13 @@
 - **Routing:** Use-Cases werden unter `dsp/use-case/xyz` erreichbar sein (analog zu `dsp/use-case/track-trace`)
 - **Aufgabenteilung:** Jeder Use-Case und jeder Artikel wird als separater Task umgesetzt
 - **Zeitplan:** Blog-Serie und Use-Case-Bibliothek werden schrittweise über mehrere Sprints umgesetzt
+- **Konsistenz DSP-Tab ↔ Direct-Access:** 
+  - **Option 2 umgesetzt:** Direct-Access-Page (`dsp/use-case`) verwendet `DspUseCasesComponent` direkt (Wiederverwendung statt Duplizierung)
+  - **Navigation:** 
+    - **Einfacher Klick:** Use-Case highlighten und Details anzeigen
+    - **Doppelklick:** Zu Detail-Seite navigieren (nur für implementierte Use-Cases: Track & Trace, Interoperability)
+    - **"View Details" Button:** Im Detail-Bereich für implementierte Use-Cases
+  - **Vorteile:** Single Source of Truth, keine Duplizierung, einfache Wartung, konsistente Datenquelle
 
 ## 📈 Stakeholder-Impact
 - **Technisch:** Use-Case-Bibliothek schafft wiederverwendbare Komponenten für DSP-Demonstrationen
@@ -69,6 +76,9 @@
 - Jeder Use-Case wird als separate Angular-Komponente implementiert
 - SVG-Animationen werden pro Use-Case umgesetzt (wenn Steps-Definition vorhanden)
 - Routing wird in `app.routes.ts` ergänzt (analog zu track-trace)
+- **Konsistenz:** `DspUseCasesComponent` wird sowohl im DSP-Tab als auch auf der Direct-Access-Page (`dsp/use-case`) verwendet
+  - `enableNavigation` Input steuert, ob Navigation aktiviert ist (nur auf Direct-Access-Page)
+  - Use-Cases mit `detailRoute` können zu Detail-Seiten navigieren
 
 ---
 
@@ -88,6 +98,20 @@
 - [ ] OSF Proof Screenshots auswählen und croppen (DE/EN)
 - [ ] SAP-Beispiele konsistent prüfen
 - [ ] Finale Links zu ADO Wiki Use-Cases eintragen
+
+---
+
+---
+
+## ✅ Abgeschlossene Aufgaben (Sprint 14)
+
+### Use-Case-Bibliothek Konsistenz (Option 2)
+- [x] **DspUseCasesComponent erweitert:** Router, LanguageService, Doppelklick-Navigation, "View Details" Button
+- [x] **use-case-selector-page.component.ts angepasst:** Verwendet jetzt `DspUseCasesComponent` direkt (Wiederverwendung)
+- [x] **I18n-Keys hinzugefügt:** `dspUseCaseViewDetails`, `dspUseCaseDoubleClickHint`
+- [x] **Dokumentation aktualisiert:** Option 2 in `sprint_14.md` dokumentiert
+
+**Ergebnis:** Konsistenz zwischen DSP-Tab Section "Use Cases" und Direct-Access-Page `dsp/use-case` durch Wiederverwendung der gleichen Komponente. Keine Duplizierung, Single Source of Truth.
 
 ---
 

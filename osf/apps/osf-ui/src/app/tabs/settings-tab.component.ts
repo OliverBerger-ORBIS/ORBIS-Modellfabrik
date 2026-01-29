@@ -235,27 +235,15 @@ export class SettingsTabComponent implements OnInit {
       available: true,
     },
     {
-      label: 'Track & Trace (Use Case)',
-      path: '/#/en/dsp/use-case/track-trace',
-      description: 'Track & Trace use case page, accessible via direct URL (not in tab navigation). Fixtures available in mock mode.',
-      available: true,
-    },
-    {
-      label: 'Interoperability: Event-to-Process Map (Use Case)',
-      path: '/#/en/dsp/use-case/interoperability',
-      description: 'Interoperability use case page showing how shopfloor events are normalized and enriched with context to create a shared process view for OT and IT.',
+      label: 'DSP Use Cases',
+      path: '/#/en/dsp/use-case',
+      description: 'Select and view use case demonstrations (Track & Trace, Interoperability, and more).',
       available: true,
     },
     {
       label: 'DSP Customer Architecture',
       path: '/#/en/dsp/customer',
       description: 'Select and view customer-specific DSP architecture demonstrations (FMF, ECME).',
-      available: true,
-    },
-    {
-      label: 'Overview',
-      path: '/#/en/overview',
-      description: 'Overview tab with orders, FTS status, and inventory information. Moved from main navigation.',
       available: true,
     },
   ];

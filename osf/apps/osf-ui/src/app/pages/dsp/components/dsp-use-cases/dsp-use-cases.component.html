@@ -8,7 +8,10 @@
       class="use-case-card"
       type="button"
       [class.use-case-card--active]="useCase.id === activeUseCaseId"
+      [class.use-case-card--navigable]="enableNavigation && hasDetailPage(useCase)"
+      [title]="enableNavigation && hasDetailPage(useCase) ? doubleClickHint : ''"
       (click)="setActiveUseCase(useCase.id)"
+      (dblclick)="onUseCaseDoubleClick(useCase)"
     >
       <div class="use-case-card__icon">
         <img [src]="useCase.icon" [alt]="useCase.title" />
@@ -54,6 +57,17 @@
       <p *ngIf="useCase.footer" class="dsp-use-case-detail__footer">
         {{ useCase.footer }}
       </p>
+
+      <div *ngIf="enableNavigation && hasDetailPage(useCase)" class="dsp-use-case-detail__actions">
+        <button
+          type="button"
+          class="dsp-use-case-detail__view-details-btn"
+          (click)="navigateToDetail(useCase.detailRoute!)"
+          i18n="@@dspUseCaseViewDetails"
+        >
+          View Details
+        </button>
+      </div>
     </article>
   </ng-container>
 </div>

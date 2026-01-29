@@ -333,11 +333,16 @@ describe('SettingsTabComponent', () => {
       expect(dspAnimationPage?.available).toBe(true);
     });
 
-    it('should have Track & Trace page configured', () => {
-      const trackTracePage = component.directPages.find(p => p.label === 'Track & Trace (Use Case)');
-      expect(trackTracePage).toBeDefined();
-      expect(trackTracePage?.path).toBe('/#/en/dsp/use-case/track-trace');
-      expect(trackTracePage?.available).toBe(true);
+    it('should have DSP Use Cases page configured', () => {
+      const useCasePage = component.directPages.find(p => p.label === 'DSP Use Cases');
+      expect(useCasePage).toBeDefined();
+      expect(useCasePage?.path).toBe('/#/en/dsp/use-case');
+      expect(useCasePage?.available).toBe(true);
+    });
+
+    it('should not have Overview page configured', () => {
+      const overviewPage = component.directPages.find(p => p.label === 'Overview');
+      expect(overviewPage).toBeUndefined();
     });
   });
 });

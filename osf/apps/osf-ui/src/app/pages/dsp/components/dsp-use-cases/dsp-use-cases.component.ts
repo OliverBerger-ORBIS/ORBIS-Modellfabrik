@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
+import { LanguageService } from '../../../../services/language.service';
 
 interface UseCase {
   id: string;
@@ -9,16 +11,23 @@ interface UseCase {
   smartFactory: string[];
   icon: string;
   footer?: string;
+  detailRoute?: string; // Route to detail page if implemented
 }
 
 /**
  * DSP Use Cases Component
  * 
- * Displays the four main DSP use cases:
+ * Displays the main DSP use cases:
  * 1. Data Aggregation
  * 2. Track & Trace
  * 3. Predictive Maintenance
  * 4. Process Optimization
+ * 5. Interoperability (Event-to-Process)
+ * 
+ * Supports:
+ * - Single click: Highlight and show details
+ * - Double click: Navigate to detail page (if implemented)
+ * - "View Details" button: Navigate to detail page (if implemented)
  */
 @Component({
   standalone: true,
@@ -29,10 +38,19 @@ interface UseCase {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DspUseCasesComponent {
+  @Input() enableNavigation = false; // Enable double-click navigation and "View Details" button
+
   readonly sectionTitle = $localize`:@@dspUseCasesTitle:DSP Use Cases`;
   readonly sectionSubtitle = $localize`:@@dspUseCasesSubtitle:Practical applications of DSP in smart manufacturing environments.`;
+  readonly doubleClickHint = $localize`:@@dspUseCaseDoubleClickHint:Double-click to view details`;
 
   activeUseCaseId = 'data-aggregation';
+
+  // Mapping of use case IDs to their detail routes
+  private readonly useCaseRoutes: Record<string, string> = {
+    'track-trace': '/dsp/use-case/track-trace',
+    'interoperability': '/dsp/use-case/interoperability',
+  };
 
   useCases: UseCase[] = [
     {
@@ -71,6 +89,7 @@ export class DspUseCasesComponent {
         $localize`:@@orbisUseCaseTrackTraceHighlight3:Sensor and telemetry data linked to quality outcomes, rework decisions, and root-cause analysis.`,
       ],
       icon: 'assets/svg/dsp/use-cases/use-case-track-trace.svg',
+      detailRoute: '/dsp/use-case/track-trace',
     },
     {
       id: 'predictive-maintenance',
@@ -127,13 +146,45 @@ export class DspUseCasesComponent {
         $localize`:@@orbisUseCaseInteroperabilityHighlight3:Integrate best-of-breed target systems (ERP / MES / analytics) without rebuilding shopfloor integration`,
         $localize`:@@orbisUseCaseInteroperabilityHighlight4:SAP can be a target example, but is not a prerequisite`,
       ],
-      footer: $localize`:@@dspUseCaseInteroperabilityFooter:OSF is a demonstrator showcasing integration principles; productive implementations depend on the customer’s target landscape.`,
+      footer: $localize`:@@dspUseCaseInteroperabilityFooter:OSF is a demonstrator showcasing integration principles; productive implementations depend on the customer's target landscape.`,
       icon: 'assets/svg/dsp/functions/edge-interoperability.svg', // Reusing the icon from DSP architecture, step 4
+      detailRoute: '/dsp/use-case/interoperability',
     },
   ];
 
+  constructor(
+    private readonly router: Router,
+    private readonly languageService: LanguageService
+  ) {}
+
   setActiveUseCase(id: string): void {
     this.activeUseCaseId = id;
+  }
+
+  /**
+   * Handle double-click on use case card to navigate to detail page
+   */
+  onUseCaseDoubleClick(useCase: UseCase): void {
+    if (!this.enableNavigation || !useCase.detailRoute) {
+      return;
+    }
+    this.navigateToDetail(useCase.detailRoute);
+  }
+
+  /**
+   * Navigate to use case detail page
+   */
+  navigateToDetail(route: string): void {
+    const locale = this.languageService.current;
+    const routeParts = route.split('/').filter(Boolean);
+    this.router.navigate([locale, ...routeParts]);
+  }
+
+  /**
+   * Check if a use case has a detail page
+   */
+  hasDetailPage(useCase: UseCase): boolean {
+    return !!useCase.detailRoute;
   }
 
   trackById(_index: number, useCase: UseCase): string {
