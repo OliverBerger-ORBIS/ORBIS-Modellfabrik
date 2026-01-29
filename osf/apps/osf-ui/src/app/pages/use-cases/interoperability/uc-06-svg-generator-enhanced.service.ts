@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { getAssetPath } from '../../../assets/detail-asset-map';
 import { createUc06Structure, type Uc06Structure, type Uc06Chip, type Uc06Lane } from './uc-06-structure.config';
 import { ICONS } from '../../../shared/icons/icon.registry';
+import { ORBIS_COLORS } from '../../../assets/color-palette';
 
 /**
- * Enhanced Service for generating UC-06 SVG with improved visual design
- * This is a copy for EN version with visual improvements
+ * Service for generating UC-06 SVG dynamically with I18n support
+ * Uses improved visual design with ORBIS-CI colors
  */
 @Injectable({ providedIn: 'root' })
-export class Uc06SvgGeneratorEnhancedService {
+export class Uc06SvgGeneratorService {
   /**
    * Generate SVG string from structure with I18n text replacements
    */

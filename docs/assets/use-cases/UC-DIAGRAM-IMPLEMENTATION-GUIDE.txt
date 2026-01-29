@@ -268,6 +268,12 @@ export class Uc06SvgGeneratorService {
 - `preserveAspectRatio="xMidYMid meet"` für korrekte Skalierung
 - Icon-Pfade relativ zu `assets/` (ohne führendes `/`)
 
+**Farben:**
+- **NICHT:** Direkte Hex-Codes (`#154194`, `#7fbf7a`, etc.)
+- **SONDERN:** CSS-Variablen aus ORBIS-CI Palette (`var(--orbis-blue-strong)`)
+- In TypeScript: `ORBIS_COLORS.orbisBlue.strong` aus `color-palette.ts`
+- Siehe Abschnitt "Design-Richtlinien → Farben" für Details
+
 **Text-Positionierung:**
 - `x`, `y` für Text-Baseline
 - Für vertikale Zentrierung: `y = containerY + containerHeight/2 + fontSize/3`
@@ -411,17 +417,60 @@ directPages = [
 
 ### Farben (ORBIS-CI)
 
+**WICHTIG:** Farben werden über **Namen aus der ORBIS-CI Palette** zugeordnet, **NICHT** als Hex-Codes!
+
+**Zentrale Farbpalette:**
+- **TypeScript:** `osf/apps/osf-ui/src/app/assets/color-palette.ts` → `ORBIS_COLORS`
+- **SCSS:** `osf/apps/osf-ui/src/app/assets/_color-palette.scss` → CSS-Variablen
+
+**Verwendung in SVG (CSS-Variablen):**
 ```css
-:root {
-  --stroke: #154194;              /* ORBIS Blue */
-  --muted: #6b7a8f;               /* ORBIS Grey */
-  --bg: #ffffff;                  /* White */
-  --panel: #f8f9fa;               /* Light Grey */
-  --accent: #7fbf7a;              /* ORBIS Green */
-  --uc-col-dsp-bg: rgba(232, 240, 254, 0.6);  /* Light Blue */
-  --uc-col-dsp-border: rgba(22, 65, 148, 0.2);
-}
+<style>
+  :root {
+    --stroke: var(--orbis-blue-strong);        /* NICHT: #154194 */
+    --muted: var(--orbis-grey-medium);         /* NICHT: #6b7a8f */
+    --bg: #ffffff;                              /* White bleibt OK */
+    --panel: var(--orbis-grey-light);          /* NICHT: #f8f9fa */
+    --accent: var(--highlight-green-medium);    /* NICHT: #7fbf7a */
+    --uc-col-dsp-bg: rgba(var(--orbis-blue-strong-rgb), 0.1);
+    --uc-col-dsp-border: rgba(var(--orbis-blue-strong-rgb), 0.2);
+  }
+</style>
 ```
+
+**Verwendung in TypeScript:**
+```typescript
+import { ORBIS_COLORS } from '../../../assets/color-palette';
+
+// RICHTIG:
+const strokeColor = ORBIS_COLORS.orbisBlue.strong;  // '#154194'
+const accentColor = ORBIS_COLORS.highlightGreen.medium;  // '#99cd57'
+
+// FALSCH:
+const strokeColor = '#154194';  // ❌ Direkter Hex-Code
+```
+
+**Verfügbare ORBIS-CI Farben:**
+- `orbis-blue-strong` / `--orbis-blue-strong` → `#154194`
+- `orbis-blue-medium` / `--orbis-blue-medium` → `#5071af`
+- `orbis-blue-light` / `--orbis-blue-light` → `#8aa0ca`
+- `orbis-grey-strong` / `--orbis-grey-strong` → `#a7a8aa`
+- `orbis-grey-medium` / `--orbis-grey-medium` → `#bbbcbc`
+- `orbis-grey-light` / `--orbis-grey-light` → `#d0d0ce`
+- `highlight-green-strong` / `--highlight-green-strong` → `#64a70b`
+- `highlight-green-medium` / `--highlight-green-medium` → `#99cd57`
+- `highlight-green-light` / `--highlight-green-light` → `#bbde8f`
+- `solution-petrol-strong` / `--solution-petrol-strong` → `#009681`
+- `status-success-strong` / `--status-success-strong` → `#047857`
+- `status-error-strong` / `--status-error-strong` → `#dc2626`
+- `status-warning-strong` / `--status-warning-strong` → `#b45309`
+
+**Für Opacity:** Verwende RGB-Variablen:
+```css
+background: rgba(var(--orbis-blue-strong-rgb), 0.1);
+```
+
+**Referenz:** `docs/03-decision-records/14-orbis-ci-usage.md`
 
 ### Typografie
 
@@ -578,12 +627,20 @@ directPages = [
 - [ ] Icons in `icon-registry.ts` eingetragen (falls neu)
 - [ ] Icon-Pfade korrekt (relativ zu `assets/`)
 
+### Farben (ORBIS-CI)
+- [ ] **KEINE direkten Hex-Codes** (`#154194`, `#7fbf7a`, etc.)
+- [ ] CSS-Variablen aus ORBIS-CI Palette verwendet (`var(--orbis-blue-strong)`)
+- [ ] In TypeScript: `ORBIS_COLORS` aus `color-palette.ts` verwendet
+- [ ] Für Opacity: RGB-Variablen verwendet (`rgba(var(--orbis-blue-strong-rgb), 0.1)`)
+- [ ] Referenz: `docs/03-decision-records/14-orbis-ci-usage.md`
+
 ### Testing
 - [ ] Route funktioniert
 - [ ] SVG wird korrekt generiert
 - [ ] I18n funktioniert (DE/EN)
 - [ ] Responsive Verhalten getestet
 - [ ] Icons werden korrekt geladen
+- [ ] Farben entsprechen ORBIS-CI Vorgaben (über Palette, nicht Hex-Codes)
 
 ---
 

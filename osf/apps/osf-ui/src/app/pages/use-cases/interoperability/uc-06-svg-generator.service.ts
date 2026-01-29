@@ -2,9 +2,11 @@ import { Injectable } from '@angular/core';
 import { getAssetPath } from '../../../assets/detail-asset-map';
 import { createUc06Structure, type Uc06Structure, type Uc06Chip, type Uc06Lane } from './uc-06-structure.config';
 import { ICONS } from '../../../shared/icons/icon.registry';
+import { ORBIS_COLORS } from '../../../assets/color-palette';
 
 /**
  * Service for generating UC-06 SVG dynamically with I18n support
+ * Uses improved visual design with ORBIS-CI colors
  */
 @Injectable({ providedIn: 'root' })
 export class Uc06SvgGeneratorService {
@@ -23,20 +25,48 @@ export class Uc06SvgGeneratorService {
     // Root group
     svg += '<g id="uc06_root">';
     
-    // Frame
-    svg += `<rect class="frame" x="0" y="0" width="${structure.viewBox.width}" height="${structure.viewBox.height}"/>`;
+    // Frame with subtle gradient
+    svg += `<defs>
+      <linearGradient id="frameGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" style="stop-color:#fafbfc;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#ffffff;stop-opacity:1" />
+      </linearGradient>
+    </defs>`;
+    svg += `<rect class="frame" x="0" y="0" width="${structure.viewBox.width}" height="${structure.viewBox.height}" fill="url(#frameGradient)"/>`;
     
     // Title
     svg += `<g id="uc06_title"><text x="${structure.title.x}" y="${structure.title.y}" text-anchor="middle" class="title">${this.escapeXml(getText(structure.title.key))}</text></g>`;
     
-    // Subtitle
+    // Subtitle (only shown in step 0)
     svg += `<g id="uc06_subtitle"><text x="${structure.subtitle.x}" y="${structure.subtitle.y}" text-anchor="middle" class="subtitle">${this.escapeXml(getText(structure.subtitle.key))}</text></g>`;
+    
+    // Step description overlay (shown from step 1 onwards, replaces subtitle)
+    // Initially hidden, will be shown/hidden and updated by component based on current step
+    const sd = structure.stepDescription;
+    const highlightGreenStrong = ORBIS_COLORS.highlightGreen.strong;
+    svg += `<g id="uc06_step_description" class="step-description-overlay" style="display: none;">`;
+    svg += `<rect x="${sd.x - sd.width / 2}" y="${sd.y}" width="${sd.width}" height="${sd.height}" rx="8" ry="8" fill="${highlightGreenStrong}" opacity="0.95" class="step-description__bg"/>`;
+    svg += `<text id="uc06_step_description_title" x="${sd.x}" y="${sd.y + 30}" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff" class="step-description__title"></text>`;
+    svg += `<text id="uc06_step_description_text" x="${sd.x}" y="${sd.y + 70}" text-anchor="middle" font-size="16" font-weight="400" fill="#ffffff" class="step-description__text"></text>`;
+    svg += '</g>';
     
     // Columns
     svg += '<g id="uc06_columns">';
     
     // Sources Column
     svg += this.generateSourcesColumn(structure.columns.sources, getText);
+    
+    // Arrow from Sources to DSP (for animation)
+    svg += `<g id="uc06_arrow_sources_to_dsp">`;
+    const sourcesCol = structure.columns.sources;
+    const dspCol = structure.columns.dsp.column;
+    const arrowX1 = sourcesCol.x + sourcesCol.width;
+    const arrowY1 = sourcesCol.y + sourcesCol.height / 2;
+    const arrowX2 = dspCol.x;
+    const arrowY2 = dspCol.y + dspCol.height / 2;
+    const orbisBlueStrong = ORBIS_COLORS.orbisBlue.strong;
+    svg += `<line x1="${arrowX1}" y1="${arrowY1}" x2="${arrowX2}" y2="${arrowY2}" stroke="${orbisBlueStrong}" stroke-width="4" stroke-dasharray="8 4" opacity="0.6" marker-end="url(#arrow-down)"/>`;
+    svg += '</g>';
     
     // DSP Column
     svg += this.generateDspColumn(structure.columns.dsp, getText);
@@ -46,8 +76,7 @@ export class Uc06SvgGeneratorService {
     
     svg += '</g>'; // uc06_columns
     
-    // Footer
-    svg += `<g id="uc06_footer"><text x="${structure.footer.x}" y="${structure.footer.y}" text-anchor="middle" class="subtitle">${this.escapeXml(getText(structure.footer.key))}</text></g>`;
+    // Footer removed (as per requirements)
     
     svg += '</g>'; // uc06_root
     svg += '</svg>';
@@ -56,54 +85,93 @@ export class Uc06SvgGeneratorService {
   }
   
   private generateDefs(): string {
+    // Use ORBIS-CI colors from palette
+    const orbisBlueStrong = ORBIS_COLORS.orbisBlue.strong;
+    const orbisGreyMedium = ORBIS_COLORS.orbisGrey.medium;
+    const orbisGreyLight = ORBIS_COLORS.orbisGrey.light;
+    const highlightGreenMedium = ORBIS_COLORS.highlightGreen.medium;
+    const statusSuccessStrong = ORBIS_COLORS.statusSuccess.strong;
+    const statusWarningMedium = ORBIS_COLORS.statusWarning.medium;
+    const statusErrorStrong = ORBIS_COLORS.statusError.strong;
+    
     return `
   <defs>
     <marker id="arrow-down" markerWidth="12" markerHeight="12" refX="6" refY="6" orient="auto">
-      <polygon points="0,0 12,6 0,12" fill="#154194"/>
+      <polygon points="0,0 12,6 0,12" fill="${orbisBlueStrong}"/>
     </marker>
+    <!-- Subtle shadows for depth -->
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="2" dy="2" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.15"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="shadow-light" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="1" dy="1" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.1"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
     <style>
       :root {
-        --stroke: #154194;
-        --muted: #7a8aa0;
+        --stroke: var(--orbis-blue-strong);
+        --muted: var(--orbis-grey-medium);
         --bg: #ffffff;
-        --panel: #f6f8fb;
-        --accent: #7fbf7a;
-        --uc-col-dsp-bg: rgba(207, 230, 255, 0.5);
-        --uc-col-dsp-border: rgba(22, 65, 148, 0.15);
+        --panel: var(--orbis-grey-light);
+        --accent: var(--highlight-green-medium);
+        --uc-col-dsp-bg: rgba(var(--orbis-blue-strong-rgb), 0.1);
+        --uc-col-dsp-border: rgba(var(--orbis-blue-strong-rgb), 0.2);
         --uc-col-sources-bg: #ffffff;
         --uc-col-targets-bg: #ffffff;
-        --uc-col-border: rgba(22, 65, 148, 0.1);
-        --uc-panel-bg: rgba(241, 243, 247, 0.8);
-        --uc-panel-border: rgba(31, 54, 91, 0.12);
+        --uc-col-border: rgba(var(--orbis-blue-strong-rgb), 0.1);
+        --uc-panel-bg: rgba(var(--orbis-grey-light-rgb), 0.9);
+        --uc-panel-border: rgba(var(--orbis-grey-medium-rgb), 0.1);
+        --uc-lane-bg: rgba(255, 255, 255, 0.6);
+        --uc-lane-border: rgba(var(--orbis-blue-strong-rgb), 0.08);
       }
       .frame { fill: var(--bg); }
-      .panel { fill: var(--panel); stroke: #d7dee8; stroke-width: 2; rx: 18; ry: 18; }
-      .panel-dsp { fill: var(--uc-col-dsp-bg); stroke: var(--uc-col-dsp-border); stroke-width: 2; rx: 18; ry: 18; }
-      .title { font: 700 56px "Segoe UI", Arial, sans-serif; fill:#1b2b3c; }
+      .panel { fill: var(--panel); stroke: var(--orbis-grey-light); stroke-width: 1.5; filter: url(#shadow-light); }
+      .panel-dsp { fill: var(--uc-col-dsp-bg); stroke: var(--uc-col-dsp-border); stroke-width: 1.5; filter: url(#shadow-light); }
+      .title { font: 700 56px "Segoe UI", Arial, sans-serif; fill: var(--orbis-nightblue); letter-spacing: -0.5px; }
       .subtitle { font: 400 24px "Segoe UI", Arial, sans-serif; fill: var(--muted); }
-      .h2 { font: 700 26px "Segoe UI", Arial, sans-serif; fill:#1b2b3c; }
-      .p { font: 400 20px "Segoe UI", Arial, sans-serif; fill:#1b2b3c; }
-      .small { font: 400 18px "Segoe UI", Arial, sans-serif; fill:#1b2b3c; }
-      .chipText { font: 400 16px "Segoe UI", Arial, sans-serif; fill:#1b2b3c; }
+      .h2 { font: 700 26px "Segoe UI", Arial, sans-serif; fill: var(--orbis-nightblue); letter-spacing: -0.3px; }
+      .p { font: 400 20px "Segoe UI", Arial, sans-serif; fill: var(--orbis-nightblue); }
+      .small { font: 400 18px "Segoe UI", Arial, sans-serif; fill: var(--orbis-nightblue); }
+      .chipText { font: 400 16px "Segoe UI", Arial, sans-serif; fill: var(--orbis-nightblue); }
       .muted { fill: var(--muted); }
-      .chip { fill:#ffffff; stroke:#d7dee8; stroke-width:2; rx:14; ry:14; }
-      .statusDot { r:6; }
-      .statusRunning { fill:#4caf50; }
-      .statusIdle { fill:#ff9800; }
-      .statusFail { fill:#f44336; }
-      .badgePass { fill:#e8f5e9; stroke:#4caf50; stroke-width:2; rx:8; ry:8; }
-      .badgeFail { fill:#ffebee; stroke:#f44336; stroke-width:2; rx:8; ry:8; }
-      .arrow { fill:none; stroke:#154194; stroke-width:12; stroke-linecap:round; }
-      .stepBox { fill:#ffffff; stroke:#d7dee8; stroke-width:2; rx:16; ry:16; }
-      .stepBar { fill:#ffffff; stroke:#d7dee8; stroke-width:2; rx:14; ry:14; }
-      .check { fill:#eaf5ea; stroke:#bfe3bf; stroke-width:2; rx:14; ry:14; }
+      .chip { fill: #ffffff; stroke: var(--orbis-grey-light); stroke-width: 1.5; filter: url(#shadow-light); }
+      .lane { fill: var(--uc-lane-bg); stroke: var(--uc-lane-border); stroke-width: 1; }
+      .statusDot { r: 5; }
+      .statusRunning { fill: var(--status-success-strong); }
+      .statusIdle { fill: var(--status-warning-medium); }
+      .statusFail { fill: var(--status-error-strong); }
+      .badgePass { fill: rgba(var(--status-success-strong-rgb), 0.1); stroke: var(--status-success-strong); stroke-width: 1.5; }
+      .badgeFail { fill: rgba(var(--status-error-strong-rgb), 0.1); stroke: var(--status-error-strong); stroke-width: 1.5; }
+      .arrow { fill: none; stroke: var(--stroke); stroke-width: 12; stroke-linecap: round; }
+      .stepBox { fill: #ffffff; stroke: var(--orbis-grey-light); stroke-width: 1.5; filter: url(#shadow-light); }
+      .stepBar { fill: #ffffff; stroke: var(--orbis-grey-light); stroke-width: 1.5; }
+      .check { fill: rgba(var(--status-success-strong-rgb), 0.1); stroke: rgba(var(--status-success-strong-rgb), 0.3); stroke-width: 1.5; }
+      /* Animation classes */
+      .hl { opacity: 1; filter: drop-shadow(0 4px 12px rgba(var(--orbis-blue-strong-rgb), 0.2)); }
+      .dim { opacity: 0.3; }
+      .hidden { display: none; }
     </style>
   </defs>`;
   }
   
   private generateSourcesColumn(column: any, getText: (key: string) => string): string {
     let svg = `<g id="uc06_col_sources">`;
-    svg += `<rect class="panel" x="${column.x}" y="${column.y}" width="${column.width}" height="${column.height}" rx="18" ry="18"/>`;
+    svg += `<rect class="panel" x="${column.x}" y="${column.y}" width="${column.width}" height="${column.height}" rx="20" ry="20"/>`;
     svg += `<text x="${column.headerX}" y="${column.headerY}" class="h2">${this.escapeXml(getText(column.headerKey))}</text>`;
     
     column.lanes.forEach((lane: Uc06Lane) => {
@@ -117,19 +185,20 @@ export class Uc06SvgGeneratorService {
   private generateLane(lane: Uc06Lane, getText: (key: string) => string): string {
     let svg = `<g id="uc06_lane_${lane.id}">`;
     
-    // Lane box (with rounded corners)
-    svg += `<rect class="stepBox" x="${lane.x}" y="${lane.y}" width="${lane.width}" height="${lane.height}" rx="16" ry="16"/>`;
+    // Lane box (with rounded corners and subtle background)
+    svg += `<rect class="lane" x="${lane.x}" y="${lane.y}" width="${lane.width}" height="${lane.height}" rx="14" ry="14"/>`;
     
     // Lane title (shifted 10px down)
-    svg += `<text x="${lane.x! + 50}" y="${lane.y! + 30}" class="p">${this.escapeXml(getText(lane.titleKey))}</text>`;
+    svg += `<text x="${lane.x! + 50}" y="${lane.y! + 30}" class="p" font-weight="600">${this.escapeXml(getText(lane.titleKey))}</text>`;
     
     // Lane icon (position relative to lane, shifted 10px down with title)
     const iconPath = getAssetPath(lane.iconPath.replace(/^\//, ''));
     const iconX = lane.x! + lane.width! - lane.iconWidth - 10; // Right side with padding
     const iconY = lane.y! + 28; // Align with title (shifted 10px down)
     svg += `<g id="uc06_lane_${lane.id}_icon" transform="translate(${iconX},${iconY})">`;
-    svg += `<rect width="${lane.iconWidth}" height="${lane.iconHeight}" rx="12" ry="12" fill="#ffffff" stroke="#d7dee8" stroke-width="2"/>`;
-    svg += `<image href="${iconPath}" x="10" y="10" width="${lane.iconWidth - 20}" height="${lane.iconHeight - 20}" preserveAspectRatio="xMidYMid meet"/>`;
+    const orbisGreyLight = ORBIS_COLORS.orbisGrey.light;
+    svg += `<rect width="${lane.iconWidth}" height="${lane.iconHeight}" rx="12" ry="12" fill="#ffffff" stroke="${orbisGreyLight}" stroke-width="1.5"/>`;
+    svg += `<image href="${iconPath}" x="10" y="10" width="${lane.iconWidth - 20}" height="${lane.iconHeight - 20}" preserveAspectRatio="xMidYMid meet" opacity="0.9"/>`;
     svg += '</g>';
     
     // Chips
@@ -144,7 +213,7 @@ export class Uc06SvgGeneratorService {
   }
   
   private generateChip(chip: Uc06Chip, lane: Uc06Lane, getText: (key: string) => string): string {
-    let svg = '';
+    let svg = `<g id="uc06_chip_${chip.id}">`;
     
     // Chip positions are already relative to lane after calculateLaneLayout
     // But chip.x is absolute from original structure, so we need to adjust
@@ -153,20 +222,24 @@ export class Uc06SvgGeneratorService {
     
     // Special handling for badges (quality lane)
     if (chip.fill && chip.stroke) {
+      const statusSuccessStrong = ORBIS_COLORS.statusSuccess.strong;
+      const statusErrorStrong = ORBIS_COLORS.statusError.strong;
       const fillClass = chip.fill === '#e8f5e9' ? 'badgePass' : 'badgeFail';
       svg += `<rect class="${fillClass}" x="${chipX}" y="${chipY}" width="${chip.width}" height="${chip.height}"/>`;
-      svg += `<text x="${chipX + chip.width / 2}" y="${chipY + chip.height / 2 + 5}" text-anchor="middle" class="chipText" fill="${chip.fill === '#e8f5e9' ? '#4caf50' : '#f44336'}">${this.escapeXml(getText(chip.textKey))}</text>`;
+      svg += `<text x="${chipX + chip.width / 2}" y="${chipY + chip.height / 2 + 5}" text-anchor="middle" class="chipText" fill="${chip.fill === '#e8f5e9' ? statusSuccessStrong : statusErrorStrong}">${this.escapeXml(getText(chip.textKey))}</text>`;
+      svg += '</g>';
       return svg;
     }
     
     // Label-only chips (like CHECK_QUALITY)
     if (chip.width === 0 && chip.height === 0) {
       svg += `<text x="${chipX}" y="${chipY}" class="chipText">${this.escapeXml(getText(chip.textKey))}</text>`;
+      svg += '</g>';
       return svg;
     }
     
     // Regular chips (with rounded corners)
-    svg += `<rect class="chip" x="${chipX}" y="${chipY}" width="${chip.width}" height="${chip.height}" rx="14" ry="14"/>`;
+    svg += `<rect class="chip" x="${chipX}" y="${chipY}" width="${chip.width}" height="${chip.height}" rx="12" ry="12"/>`;
     
     // Status dots (for state chip) - special handling: only show heading + dots with labels
     if (chip.statusDots && chip.statusLabels && chip.statusLabels.length > 0) {
@@ -207,7 +280,7 @@ export class Uc06SvgGeneratorService {
               // offsetY is relative to baseline (positive = below, negative = above)
               // For vertical centering: offsetY should be negative (e.g., -8) to move icon up to text center
               const iconYAligned = lineY + operationIcon.offsetY;
-              svg += `<image href="${iconPath}" x="${iconXAligned}" y="${iconYAligned}" width="${operationIcon.iconWidth}" height="${operationIcon.iconHeight}" preserveAspectRatio="xMidYMid meet"/>`;
+              svg += `<image href="${iconPath}" x="${iconXAligned}" y="${iconYAligned}" width="${operationIcon.iconWidth}" height="${operationIcon.iconHeight}" preserveAspectRatio="xMidYMid meet" opacity="0.9"/>`;
             }
           }
         });
@@ -223,21 +296,27 @@ export class Uc06SvgGeneratorService {
       // Calculate relative position: iconX - chipX gives offset from chip left
       const iconOffsetX = chip.iconX - chipX;
       const iconOffsetY = chip.iconY - chipY;
-      svg += `<image href="${iconPath}" x="${chipX + iconOffsetX}" y="${chipY + iconOffsetY}" width="${chip.iconWidth}" height="${chip.iconHeight}" preserveAspectRatio="xMidYMid meet"/>`;
+      svg += `<image href="${iconPath}" x="${chipX + iconOffsetX}" y="${chipY + iconOffsetY}" width="${chip.iconWidth}" height="${chip.iconHeight}" preserveAspectRatio="xMidYMid meet" opacity="0.85"/>`;
     }
     
+    // Badges (for quality chip)
+    if (chip.fill && chip.stroke) {
+      // Badge is already rendered as chip with special fill/stroke
+    }
+    
+    svg += '</g>';
     return svg;
   }
   
   private generateDspColumn(dsp: any, getText: (key: string) => string): string {
     let svg = `<g id="uc06_col_dsp">`;
-    svg += `<rect class="panel-dsp" x="${dsp.column.x}" y="${dsp.column.y}" width="${dsp.column.width}" height="${dsp.column.height}" rx="18" ry="18"/>`;
+    svg += `<rect class="panel-dsp" x="${dsp.column.x}" y="${dsp.column.y}" width="${dsp.column.width}" height="${dsp.column.height}" rx="20" ry="20"/>`;
     svg += `<text x="${dsp.column.headerX}" y="${dsp.column.headerY}" class="h2">${this.escapeXml(getText(dsp.column.headerKey))}</text>`;
     
     // Steps with arrows between them
     dsp.steps.forEach((step: any, stepIndex: number) => {
       svg += `<g id="uc06_step_${step.id}">`;
-      svg += `<rect class="stepBox" x="${step.x}" y="${step.y}" width="${step.width}" height="${step.height}" rx="16" ry="16"/>`;
+      svg += `<rect class="stepBox" x="${step.x}" y="${step.y}" width="${step.width}" height="${step.height}" rx="14" ry="14"/>`;
       svg += `<text x="${step.x + step.width / 2}" y="${step.y + 50}" text-anchor="middle" class="p"><tspan font-weight="700">${this.escapeXml(getText(step.titleKey))}</tspan></text>`;
       svg += `<text x="${step.x + step.width / 2}" y="${step.y + 85}" text-anchor="middle" class="small muted">${this.escapeXml(getText(step.descriptionKey))}</text>`;
       svg += '</g>';
@@ -263,52 +342,64 @@ export class Uc06SvgGeneratorService {
         
         // Draw triangle arrowhead (pointing down)
         // Triangle tip at bottom (arrowBottomY), base at top (arrowTopY)
-        svg += `<polygon points="${arrowX},${arrowBottomY} ${arrowX - arrowheadBaseWidth / 2},${arrowTopY} ${arrowX + arrowheadBaseWidth / 2},${arrowTopY}" fill="#154194"/>`;
+        const orbisBlueStrong = ORBIS_COLORS.orbisBlue.strong;
+        svg += `<polygon points="${arrowX},${arrowBottomY} ${arrowX - arrowheadBaseWidth / 2},${arrowTopY} ${arrowX + arrowheadBaseWidth / 2},${arrowTopY}" fill="${orbisBlueStrong}" opacity="0.9"/>`;
       }
     });
     
-    // Bars
-    dsp.bars.forEach((bar: any) => {
-      svg += `<g id="uc06_bar_${bar.id}">`;
-      const fillAttr = bar.fill ? `fill="${bar.fill}"` : '';
-      const strokeAttr = bar.stroke ? `stroke="${bar.stroke}"` : '';
-      svg += `<rect class="stepBar" x="${bar.x}" y="${bar.y}" width="${bar.width}" height="${bar.height}" rx="14" ry="14" ${fillAttr} ${strokeAttr}/>`;
-      if (bar.multiline && bar.textLines) {
-        bar.textLines.forEach((lineKey: string, index: number) => {
-          const lineY = bar.y + 27 + (index * 30);
-          svg += `<text x="${bar.x + bar.width / 2}" y="${lineY}" text-anchor="middle" class="p">${this.escapeXml(getText(lineKey))}</text>`;
-        });
-      } else {
-        svg += `<text x="${bar.x + bar.width / 2}" y="${bar.y + 37}" text-anchor="middle" class="p">${this.escapeXml(getText(bar.textKey))}</text>`;
-      }
-      svg += '</g>';
-    });
+    // Summary bars
+    if (dsp.bars) {
+      dsp.bars.forEach((bar: any) => {
+        svg += this.generateBar(bar, getText);
+      });
+    }
     
+    svg += '</g>';
+    return svg;
+  }
+  
+  private generateBar(bar: any, getText: (key: string) => string): string {
+    // Map 'foundation' id to 'basis' for steps definition compatibility
+    const barId = bar.id === 'foundation' ? 'basis' : bar.id;
+    let svg = `<g id="uc06_bar_${barId}">`;
+    svg += `<rect class="stepBar" x="${bar.x}" y="${bar.y}" width="${bar.width}" height="${bar.height}" rx="12" ry="12"/>`;
+    if (bar.multiline && bar.textLines) {
+      bar.textLines.forEach((lineKey: string, index: number) => {
+        const lineY = bar.y + 27 + (index * 30);
+        svg += `<text x="${bar.x + bar.width / 2}" y="${lineY}" text-anchor="middle" class="small">${this.escapeXml(getText(lineKey))}</text>`;
+      });
+    } else {
+      svg += `<text x="${bar.x + bar.width / 2}" y="${bar.y + bar.height / 2 + 5}" text-anchor="middle" class="small">${this.escapeXml(getText(bar.textKey))}</text>`;
+    }
     svg += '</g>';
     return svg;
   }
   
   private generateTargetsColumn(targets: any, getText: (key: string) => string): string {
     let svg = `<g id="uc06_col_targets">`;
-    svg += `<rect class="panel" x="${targets.column.x}" y="${targets.column.y}" width="${targets.column.width}" height="${targets.column.height}" rx="18" ry="18"/>`;
+    svg += `<rect class="panel" x="${targets.column.x}" y="${targets.column.y}" width="${targets.column.width}" height="${targets.column.height}" rx="20" ry="20"/>`;
     svg += `<text x="${targets.column.headerX}" y="${targets.column.headerY}" class="h2">${this.escapeXml(getText(targets.column.headerKey))}</text>`;
     
-    // Process view box
+    // Process view box (with white background)
     const pv = targets.processViewBox;
     svg += `<g id="uc06_process_view_box">`;
-    svg += `<rect class="stepBox" x="${pv.x}" y="${pv.y}" width="${pv.width}" height="${pv.height}" rx="16" ry="16"/>`;
+    svg += `<rect class="stepBox" x="${pv.x}" y="${pv.y}" width="${pv.width}" height="${pv.height}" rx="14" ry="14" fill="#ffffff"/>`;
     svg += `<text x="${pv.x + pv.width / 2}" y="${pv.y + 35}" text-anchor="middle" class="p" font-weight="700">${this.escapeXml(getText(pv.titleKey))}</text>`;
     
     // Timeline
     svg += `<g id="uc06_process_timeline">`;
-    svg += `<line x1="${pv.timeline.lineX1}" y1="${pv.timeline.lineY}" x2="${pv.timeline.lineX2}" y2="${pv.timeline.lineY}" stroke="#c2cbd8" stroke-width="12" stroke-linecap="round"/>`;
+    const orbisGreyLight = ORBIS_COLORS.orbisGrey.light;
+    const highlightGreenMedium = ORBIS_COLORS.highlightGreen.medium;
+    svg += `<line x1="${pv.timeline.lineX1}" y1="${pv.timeline.lineY}" x2="${pv.timeline.lineX2}" y2="${pv.timeline.lineY}" stroke="${orbisGreyLight}" stroke-width="10" stroke-linecap="round" opacity="0.6"/>`;
+    svg += `<g id="uc06_process_icons">`;
     pv.timeline.points.forEach((point: any) => {
       const iconPath = getAssetPath(point.iconPath.replace(/^\//, ''));
-      svg += `<circle cx="${point.x}" cy="${point.y}" r="10" fill="#7fbf7a"/>`;
-      svg += `<image href="${iconPath}" x="${point.iconX}" y="${point.iconY}" width="${point.iconWidth}" height="${point.iconHeight}" preserveAspectRatio="xMidYMid meet"/>`;
+      svg += `<circle cx="${point.x}" cy="${point.y}" r="10" fill="${highlightGreenMedium}" opacity="0.9"/>`;
+      svg += `<image href="${iconPath}" x="${point.iconX}" y="${point.iconY}" width="${point.iconWidth}" height="${point.iconHeight}" preserveAspectRatio="xMidYMid meet" opacity="0.9"/>`;
       svg += `<text x="${point.x}" y="${point.labelY}" text-anchor="middle" class="small">${this.escapeXml(getText(point.labelKey))}</text>`;
     });
-    svg += '</g>';
+    svg += '</g>'; // uc06_process_icons
+    svg += '</g>'; // uc06_process_timeline
     svg += '</g>'; // process_view_box
     
     // Targets
@@ -316,27 +407,78 @@ export class Uc06SvgGeneratorService {
       targets.targets.forEach((target: any) => {
         const iconPath = getAssetPath(target.iconPath.replace(/^\//, ''));
         svg += `<g id="uc06_target_${target.id}">`;
-        svg += `<rect class="stepBox" x="${target.x}" y="${target.y}" width="${target.width}" height="${target.height}" rx="16" ry="16"/>`;
-      svg += `<image href="${iconPath}" x="${target.iconX}" y="${target.iconY}" width="${target.iconWidth}" height="${target.iconHeight}" preserveAspectRatio="xMidYMid meet"/>`;
+        svg += `<rect class="stepBox" x="${target.x}" y="${target.y}" width="${target.width}" height="${target.height}" rx="14" ry="14"/>`;
+      svg += `<image href="${iconPath}" x="${target.iconX}" y="${target.iconY}" width="${target.iconWidth}" height="${target.iconHeight}" preserveAspectRatio="xMidYMid meet" opacity="0.85"/>`;
       svg += `<text x="${target.x + target.width / 2}" y="${target.labelY}" text-anchor="middle" class="p">${this.escapeXml(getText(target.labelKey))}</text>`;
       svg += '</g>';
     });
-    svg += `<text x="${targets.noteX}" y="${targets.noteY}" class="small muted">${this.escapeXml(getText(targets.noteKey))}</text>`;
+    svg += `<text id="uc06_target_note_best_of_breed" x="${targets.noteX}" y="${targets.noteY}" class="small muted">${this.escapeXml(getText(targets.noteKey))}</text>`;
     svg += '</g>';
     
-    // Outcomes
+    // Outcomes - fix text overflow by using proper text wrapping
     svg += `<g id="uc06_outcomes">`;
       targets.outcomes.forEach((outcome: any) => {
         svg += `<g id="uc06_outcome_${outcome.id}">`;
-        svg += `<rect class="check" x="${outcome.x}" y="${outcome.y}" width="${outcome.width}" height="${outcome.height}" rx="14" ry="14"/>`;
-      if (outcome.multiline && outcome.textLines) {
-        outcome.textLines.forEach((lineKey: string, index: number) => {
-          const lineY = outcome.y + 35 + (index * 30);
-          svg += `<text x="${outcome.x + 60}" y="${lineY}" class="p">${this.escapeXml(getText(lineKey))}</text>`;
-        });
-      } else {
-        svg += `<text x="${outcome.x + 60}" y="${outcome.y + 45}" class="p">${this.escapeXml(getText(outcome.textKey))}</text>`;
-      }
+        svg += `<rect class="check" x="${outcome.x}" y="${outcome.y}" width="${outcome.width}" height="${outcome.height}" rx="12" ry="12"/>`;
+        // Checkmark icon
+        const statusSuccessStrong = ORBIS_COLORS.statusSuccess.strong;
+        svg += `<path d="M ${outcome.x + 15} ${outcome.y + outcome.height / 2 - 3} L ${outcome.x + 18} ${outcome.y + outcome.height / 2} L ${outcome.x + 23} ${outcome.y + outcome.height / 2 - 6}" stroke="${statusSuccessStrong}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+        
+        // Text with proper wrapping - leave padding on left (60px for checkmark) and right (20px)
+        const textStartX = outcome.x + 60;
+        const textWidth = outcome.width - 80; // 60px left padding + 20px right padding
+        const maxCharsPerLine = Math.floor(textWidth / 8); // Approximate 8px per character
+        
+        if (outcome.multiline && outcome.textLines) {
+          outcome.textLines.forEach((lineKey: string, index: number) => {
+            const lineY = outcome.y + 35 + (index * 30);
+            const text = this.escapeXml(getText(lineKey));
+            // Wrap long text if needed
+            if (text.length > maxCharsPerLine) {
+              const words = text.split(' ');
+              let currentLine = '';
+              let lineIndex = 0;
+              words.forEach((word: string) => {
+                const testLine = currentLine ? `${currentLine} ${word}` : word;
+                if (testLine.length > maxCharsPerLine && currentLine) {
+                  svg += `<text x="${textStartX}" y="${outcome.y + 35 + (lineIndex * 30)}" class="p">${currentLine}</text>`;
+                  currentLine = word;
+                  lineIndex++;
+                } else {
+                  currentLine = testLine;
+                }
+              });
+              if (currentLine) {
+                svg += `<text x="${textStartX}" y="${outcome.y + 35 + (lineIndex * 30)}" class="p">${currentLine}</text>`;
+              }
+            } else {
+              svg += `<text x="${textStartX}" y="${lineY}" class="p">${text}</text>`;
+            }
+          });
+        } else {
+          const text = this.escapeXml(getText(outcome.textKey));
+          // Wrap long text if needed
+          if (text.length > maxCharsPerLine) {
+            const words = text.split(' ');
+            let currentLine = '';
+            let lineIndex = 0;
+            words.forEach((word: string) => {
+              const testLine = currentLine ? `${currentLine} ${word}` : word;
+              if (testLine.length > maxCharsPerLine && currentLine) {
+                svg += `<text x="${textStartX}" y="${outcome.y + 35 + (lineIndex * 30)}" class="p">${currentLine}</text>`;
+                currentLine = word;
+                lineIndex++;
+              } else {
+                currentLine = testLine;
+              }
+            });
+            if (currentLine) {
+              svg += `<text x="${textStartX}" y="${outcome.y + 35 + (lineIndex * 30)}" class="p">${currentLine}</text>`;
+            }
+          } else {
+            svg += `<text x="${textStartX}" y="${outcome.y + 45}" class="p">${text}</text>`;
+          }
+        }
       svg += '</g>';
     });
     svg += '</g>';

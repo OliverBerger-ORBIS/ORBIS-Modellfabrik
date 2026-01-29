@@ -1,7 +1,7 @@
 # UC-06 Implementation Status
 
 **Erstellt:** 21.01.2026  
-**Status:** ✅ Phase 1 abgeschlossen, Phase 2 (Animation) ausstehend
+**Status:** ✅ Phase 1 & Phase 2 (Step-Animation) abgeschlossen
 
 ---
 
@@ -62,10 +62,11 @@
 ## 🎨 Design-Anpassungen
 
 ### Farben (ORBIS-CI)
-- ✅ Primary: `#154194` (ORBIS Blue)
-- ✅ Secondary: `#7fbf7a` (ORBIS Green)
-- ✅ Neutral: `#6b7a8f` (ORBIS Grey)
-- ✅ CSS-Variablen verwendet
+- ⚠️ **TODO:** Aktuell noch Hex-Codes direkt verwendet (`#154194`, `#7fbf7a`, etc.)
+- ✅ **SOLL:** CSS-Variablen aus ORBIS-CI Palette (`var(--orbis-blue-strong)`)
+- ✅ **SOLL:** In TypeScript: `ORBIS_COLORS.orbisBlue.strong` aus `color-palette.ts`
+- 📝 **Referenz:** `docs/03-decision-records/14-orbis-ci-usage.md`
+- 📝 **Zentrale Palette:** `osf/apps/osf-ui/src/app/assets/color-palette.ts` und `_color-palette.scss`
 
 ### SVG-Größen
 - ✅ ViewBox: `1920x1300` (erweitert für bessere Darstellung)
@@ -150,17 +151,30 @@
 
 ---
 
-## ⏳ Ausstehend
+## ✅ Phase 2: Step-Animation (Abgeschlossen)
 
-### Phase 2: Step-Animation
+### Implementierte Features:
+- ✅ Steps-Definition geladen aus `uc-06-event-to-process-map.steps.json`
+- ✅ SVG-IDs für Animation implementiert (`uc06_*`)
+- ✅ Step-State Management mit `currentStepIndex`
+- ✅ CSS-Klassen für Highlight/Dim/Hidden (`.hl`, `.dim`, `.hidden`)
+- ✅ Animation-Controls UI (Prev/Next, Auto-Play, Loop, Step-Dots, Zoom)
+- ✅ Step-Description Overlay (ersetzt Subtitle ab Step 1)
+- ✅ Zoom-Funktionalität (0.4x - 1.8x)
 
-**Vorbereitung:**
-- [ ] Steps-Definition analysieren (`uc-06-event-to-process-map.steps.json`)
-- [ ] SVG-IDs für Animation prüfen
-- [ ] Animation-Komponente planen (analog zu `DspAnimationComponent`)
-- [ ] Step-State Management implementieren
-- [ ] CSS-Klassen für Highlight/Dim/Hidden
-- [ ] Animation-Controls UI
+### Step-Description Box:
+- ✅ Position: Innerhalb des SVG-Bereichs (y: 155, nutzt Subtitle-Platz)
+- ✅ Größe: 1400px Breite × 100px Höhe (reduzierte Breite, erhöhte Höhe)
+- ✅ Font-Größen: Titel 24px, Text 16px
+- ✅ Hintergrund: ORBIS-CI Highlight-Green mit 95% Opacity
+- ✅ Sichtbarkeit: Versteckt in Step 0, sichtbar ab Step 1
+
+### Layout-Anpassungen:
+- ✅ Sources Column: Header-Position innerhalb der Column (headerY: 320)
+- ✅ DSP Column: Normalize-Step nach oben verschoben (y: 400) für sichtbare Pfeile
+- ✅ Process View Box: Weißer Hintergrund statt grün
+- ✅ Subtitle-Text aktualisiert: "Turn shopfloor events into a process-ready view through normalization and context."
+- ✅ Alle y-Koordinaten konsistent angepasst (+80px für Column-Verschiebung)
 
 **Referenz:**
 - `osf/apps/osf-ui/src/app/components/dsp-animation/dsp-animation.component.ts`
@@ -186,8 +200,8 @@ osf/apps/osf-ui/src/app/pages/use-cases/interoperability/
 ## 🎯 Nächste Schritte
 
 1. ✅ Phase 1 abgeschlossen
-2. ⏳ Commit vorbereiten
-3. ⏳ Phase 2: Step-Animation implementieren
+2. ✅ Phase 2: Step-Animation implementiert
+3. ⏳ Weitere Use-Cases implementieren (UC-07, UC-08, etc.)
 
 ---
 

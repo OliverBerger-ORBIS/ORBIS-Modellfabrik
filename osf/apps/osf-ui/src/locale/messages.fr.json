@@ -371,7 +371,7 @@
     "@@configurationOpcUaSectionTitle": "Serveur OPC-UA",
     "@@configurationTxtControllerSectionTitle": "Contrôleur TXT 4.0",
     "@@interoperabilityUseCaseHeadline": "Interopérabilité: Event-to-Process Map",
-    "@@interoperabilityUseCaseDescription": "Normaliser les événements d'atelier et les enrichir de contexte pour créer une vue de processus partagée pour OT et IT.",
+    "@@interoperabilityUseCaseDescription": "Transformer les événements d'atelier en vue de processus prête à l'emploi grâce à la normalisation et au contexte.",
     "@@uc06.title": "Interopérabilité: Event-to-Process Map",
     "@@uc06.subtitle": "Transformer les événements d'atelier en vue de processus prête à l'emploi grâce à la normalisation et au contexte.",
     "@@uc06.sources.header": "Sources: événements et signaux",

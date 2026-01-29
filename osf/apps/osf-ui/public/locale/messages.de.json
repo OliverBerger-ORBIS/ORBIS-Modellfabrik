@@ -700,7 +700,7 @@
     "@@dspUseCaseInteroperabilityFooter": "OSF ist ein Demonstrator, der Integrationsprinzipien zeigt; produktive Implementierungen hängen von der Zielumgebung des Kunden ab.",
     "@@navTrackTrace": "Track & Trace",
     "@@interoperabilityUseCaseHeadline": "Interoperabilität: Event-to-Process Map",
-    "@@interoperabilityUseCaseDescription": "Shopfloor-Events normalisieren und mit Kontext anreichern – als gemeinsames Prozessbild für OT und IT.",
+    "@@interoperabilityUseCaseDescription": "Shopfloor-Events werden durch Normalisierung und Kontext zu einem prozessfähigen Gesamtbild.",
     "@@uc06.title": "Interoperabilität: Event-to-Process Map",
     "@@uc06.subtitle": "Shopfloor-Events werden durch Normalisierung und Kontext zu einem prozessfähigen Gesamtbild.",
     "@@uc06.sources.header": "Quellen: Events & Signale",
