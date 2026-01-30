@@ -88,6 +88,42 @@ export const ORBIS_COLORS = {
     medium: '#f59e0b',  // RGB: 245, 158, 11 - Medium warning emphasis
     light: '#fde68a',   // RGB: 253, 230, 138 - Light warning background
   },
+
+  // ========== Track & Trace Event Colors (osf-weit) ==========
+  // Used for Pick, Process, Drop events and Order types in Track & Trace components
+  trackTrace: {
+    pick: {
+      main: '#9c27b0',  // RGB: 156, 39, 176 - Pick events, Storage Orders
+      rgb: [156, 39, 176] as const,
+      background: 'rgba(156, 39, 176, 0.05)',
+    },
+    process: {
+      main: '#f97316',  // RGB: 249, 115, 22 - Process events (uses shopfloor-highlight-strong)
+      background: 'rgba(249, 115, 22, 0.08)',
+    },
+    drop: {
+      main: '#4caf50',  // RGB: 76, 175, 80 - Drop events, Production Orders
+      rgb: [76, 175, 80] as const,
+      background: 'rgba(76, 175, 80, 0.05)',
+    },
+    storageOrder: {
+      main: '#9c27b0',  // RGB: 156, 39, 176 - Storage Order highlighting
+      rgb: [156, 39, 176] as const,
+      background: 'rgba(156, 39, 176, 0.05)',
+    },
+    productionOrder: {
+      main: '#4caf50',  // RGB: 76, 175, 80 - Production Order highlighting
+      rgb: [76, 175, 80] as const,
+      background: 'rgba(76, 175, 80, 0.05)',
+    },
+    timeline: {
+      dock: '#4caf50',  // RGB: 76, 175, 80 - Dock timeline marker
+      turn: '#f97316',  // RGB: 249, 115, 22 - Turn timeline marker
+      pass: '#5071af',  // RGB: 80, 113, 175 - Pass timeline marker (orbis-blue-medium)
+      pick: '#9c27b0',  // RGB: 156, 39, 176 - Pick timeline marker
+      drop: '#e91e63',  // RGB: 233, 30, 99 - Drop timeline marker
+    },
+  },
 } as const;
 
 /**
@@ -127,7 +163,17 @@ export type OrbisColorKey =
   | 'status-success-light'
   | 'status-warning-strong'
   | 'status-warning-medium'
-  | 'status-warning-light';
+  | 'status-warning-light'
+  | 'track-trace-pick'
+  | 'track-trace-process'
+  | 'track-trace-drop'
+  | 'track-trace-storage-order'
+  | 'track-trace-production-order'
+  | 'track-trace-timeline-dock'
+  | 'track-trace-timeline-turn'
+  | 'track-trace-timeline-pass'
+  | 'track-trace-timeline-pick'
+  | 'track-trace-timeline-drop';
 
 /**
  * Helper function to get a color value by key
@@ -170,6 +216,16 @@ export function getOrbisColor(key: OrbisColorKey): string {
     'status-warning-strong': ORBIS_COLORS.statusWarning.strong,
     'status-warning-medium': ORBIS_COLORS.statusWarning.medium,
     'status-warning-light': ORBIS_COLORS.statusWarning.light,
+    'track-trace-pick': ORBIS_COLORS.trackTrace.pick.main,
+    'track-trace-process': ORBIS_COLORS.trackTrace.process.main,
+    'track-trace-drop': ORBIS_COLORS.trackTrace.drop.main,
+    'track-trace-storage-order': ORBIS_COLORS.trackTrace.storageOrder.main,
+    'track-trace-production-order': ORBIS_COLORS.trackTrace.productionOrder.main,
+    'track-trace-timeline-dock': ORBIS_COLORS.trackTrace.timeline.dock,
+    'track-trace-timeline-turn': ORBIS_COLORS.trackTrace.timeline.turn,
+    'track-trace-timeline-pass': ORBIS_COLORS.trackTrace.timeline.pass,
+    'track-trace-timeline-pick': ORBIS_COLORS.trackTrace.timeline.pick,
+    'track-trace-timeline-drop': ORBIS_COLORS.trackTrace.timeline.drop,
   };
   return map[key];
 }

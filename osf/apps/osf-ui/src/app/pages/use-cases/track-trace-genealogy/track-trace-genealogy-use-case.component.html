@@ -1,0 +1,115 @@
+<section class="track-trace-genealogy-use-case">
+  <!-- Header with title, navigation controls, step navigation, and zoom controls -->
+  <header class="track-trace-genealogy-use-case__header">
+    <div class="header__title">
+      <h2 i18n="@@trackTraceGenealogyUseCaseHeadline">Track & Trace Genealogy</h2>
+    </div>
+    <div class="header__navigation">
+      <button
+        type="button"
+        class="nav-btn-icon"
+        (click)="prevStep()"
+        [disabled]="currentStepIndex === 0"
+        [attr.aria-label]="btnPrev"
+        [attr.title]="btnPrev"
+      >
+        ◀
+      </button>
+      <button
+        type="button"
+        class="nav-btn-icon nav-btn-icon--primary"
+        (click)="toggleAutoPlay()"
+        [attr.aria-label]="isAutoPlaying ? btnStopPlay : btnAutoPlay"
+        [attr.title]="isAutoPlaying ? btnStopPlay : btnAutoPlay"
+      >
+        {{ isAutoPlaying ? '⏸' : '▶' }}
+      </button>
+      <button
+        type="button"
+        class="nav-btn-icon"
+        (click)="toggleLoop()"
+        [class.nav-btn-icon--active]="loopToStart"
+        [attr.aria-pressed]="loopToStart"
+        [attr.aria-label]="'Loop ' + (loopToStart ? 'On' : 'Off')"
+        [attr.title]="'Loop ' + (loopToStart ? 'On' : 'Off')"
+      >
+        ↺
+      </button>
+      <button
+        type="button"
+        class="nav-btn-icon"
+        (click)="nextStep()"
+        [disabled]="currentStepIndex === steps.length - 1"
+        [attr.aria-label]="btnNext"
+        [attr.title]="btnNext"
+      >
+        ▶
+      </button>
+    </div>
+    <div class="header__step-info">
+      <span class="step-counter" aria-live="polite" [attr.aria-label]="'Step ' + (currentStepIndex + 1) + ' of ' + steps.length">
+        {{ currentStepIndex + 1 }} / {{ steps.length }}
+      </span>
+      <div class="step-dots">
+        <button
+          *ngFor="let step of steps; let i = index"
+          type="button"
+          class="step-dot"
+          [class.step-dot--active]="i === currentStepIndex"
+          [class.step-dot--completed]="i < currentStepIndex"
+          (click)="goToStep(i)"
+          [attr.aria-label]="getCurrentStepTitle()"
+          [attr.title]="getCurrentStepTitle()"
+        ></button>
+      </div>
+    </div>
+    <div class="header__zoom">
+      <button
+        type="button"
+        class="zoom-btn"
+        (click)="zoomOut()"
+        [disabled]="zoom <= minZoom"
+        [attr.title]="zoomOutLabel"
+        [attr.aria-label]="zoomOutLabel"
+      >
+        −
+      </button>
+      <span class="zoom-level">{{ (zoom * 100) | number:'1.0-0' }}%</span>
+      <button
+        type="button"
+        class="zoom-btn"
+        (click)="zoomIn()"
+        [disabled]="zoom >= maxZoom"
+        [attr.title]="zoomInLabel"
+        [attr.aria-label]="zoomInLabel"
+      >
+        +
+      </button>
+      <button
+        type="button"
+        class="zoom-btn zoom-btn--reset"
+        (click)="resetZoom()"
+        [attr.title]="resetZoomLabel"
+        [attr.aria-label]="resetZoomLabel"
+      >
+        ↺
+      </button>
+    </div>
+  </header>
+
+  <!-- SVG Diagram -->
+  <div class="track-trace-genealogy-use-case__content">
+    <div class="track-trace-genealogy-use-case__diagram-wrapper">
+      <div class="track-trace-genealogy-use-case__diagram" [style.transform]="'scale(' + zoom + ')'">
+        <div *ngIf="isLoading" class="track-trace-genealogy-use-case__loading" i18n="@@loadingSvg">Loading SVG...</div>
+        <div
+          #svgContainer
+          *ngIf="!isLoading && svgContent"
+          class="track-trace-genealogy-use-case__svg-wrapper"
+          [innerHTML]="svgContent"
+        ></div>
+        <div *ngIf="!isLoading && !svgContent" class="track-trace-genealogy-use-case__loading" i18n="@@svgLoadError">Failed to load SVG.</div>
+      </div>
+    </div>
+  </div>
+</section>

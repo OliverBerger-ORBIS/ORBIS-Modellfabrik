@@ -73,8 +73,8 @@ export class DspUseCasesComponent {
       icon: 'assets/svg/dsp/use-cases/use-case-data-aggregation.svg',
     },
     {
-      id: 'track-trace',
-      title: $localize`:@@dspUseCaseTrackTraceTitle:Track & Trace`,
+      id: 'track-trace-live',
+      title: $localize`:@@dspUseCaseTrackTraceLiveTitle:Track & Trace (Live Demo)`,
       description: $localize`:@@dspUseCaseTrackTraceDesc:Workpiece tracking via Digital Twin including AGV positions, stations, and events for complete traceability.`,
       actions: [
         $localize`:@@dspUseCaseTrackTraceH1:Real-time workpiece location tracking`,
@@ -90,6 +90,25 @@ export class DspUseCasesComponent {
       ],
       icon: 'assets/svg/dsp/use-cases/use-case-track-trace.svg',
       detailRoute: '/dsp/use-case/track-trace',
+    },
+    {
+      id: 'track-trace-genealogy',
+      title: $localize`:@@dspUseCaseTrackTraceGenealogyTitle:Track & Trace (Schema)`,
+      description: $localize`:@@dspUseCaseTrackTraceGenealogyDesc:Conceptual diagram showing how events are correlated along a unique workpiece ID to create a complete genealogy.`,
+      actions: [
+        $localize`:@@dspUseCaseTrackTraceGenealogyH1:Business events (Supplier Order, Customer Order) with material/batch information`,
+        $localize`:@@dspUseCaseTrackTraceGenealogyH2:Production plan vs. actual path visualization`,
+        $localize`:@@dspUseCaseTrackTraceGenealogyH3:NFC tag as join key for event correlation`,
+        $localize`:@@dspUseCaseTrackTraceGenealogyH4:Complete correlated timeline with order context`,
+      ],
+      smartFactory: [
+        $localize`:@@orbisUseCaseTrackTraceGenealogyDescription:Visual explanation of the Track & Trace concept through event correlation and genealogy formation.`,
+        $localize`:@@orbisUseCaseTrackTraceGenealogyHighlight1:Business events (Supplier Order, Storage Order, Customer Order) linked to workpiece via NFC tag.`,
+        $localize`:@@orbisUseCaseTrackTraceGenealogyHighlight2:Production plan (theoretical sequence) compared with actual FTS route (real path).`,
+        $localize`:@@orbisUseCaseTrackTraceGenealogyHighlight3:Correlated timeline showing all events combined into a complete genealogy with order context.`,
+      ],
+      icon: 'assets/svg/dsp/use-cases/use-case-track-trace.svg',
+      detailRoute: '/dsp/use-case/track-trace-genealogy',
     },
     {
       id: 'predictive-maintenance',

@@ -20,9 +20,11 @@ export const appRoutes: Routes = [
           import('./pages/dsp/dsp-page.component').then((m) => m.DspPageComponent),
       },
       {
-        path: 'dsp/use-case',
+        path: 'dsp/use-case/track-trace-genealogy',
         loadComponent: () =>
-          import('./pages/use-cases/use-case-selector-page.component').then((m) => m.UseCaseSelectorPageComponent),
+          import('./pages/use-cases/track-trace-genealogy/track-trace-genealogy-use-case.component').then(
+            (m) => m.TrackTraceGenealogyUseCaseComponent
+          ),
       },
       {
         path: 'dsp/use-case/track-trace',
@@ -35,6 +37,11 @@ export const appRoutes: Routes = [
           import('./pages/use-cases/interoperability/interoperability-use-case.component').then(
             (m) => m.InteroperabilityUseCaseComponent
           ),
+      },
+      {
+        path: 'dsp/use-case',
+        loadComponent: () =>
+          import('./pages/use-cases/use-case-selector-page.component').then((m) => m.UseCaseSelectorPageComponent),
       },
       {
         path: 'order',

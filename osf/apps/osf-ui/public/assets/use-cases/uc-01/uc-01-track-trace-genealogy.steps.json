@@ -1,0 +1,65 @@
+[
+  {
+    "id": "uc01-00-overview",
+    "title": {"de": "Übersicht", "en": "Overview"},
+    "description": {"de": "Das komplette Track & Trace Genealogie-Diagramm wird dargestellt.", "en": "The complete Track & Trace Genealogy diagram is displayed."},
+    "highlightIds": ["uc01_col_business_events", "uc01_col_production_plan", "uc01_col_actual_path", "uc01_col_correlated_timeline"],
+    "dimIds": [],
+    "showIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc01-01-business-events",
+    "title": {"de": "Business-Events", "en": "Business Events"},
+    "description": {"de": "Business-Events (Supplier Order, Customer Order) werden mit Material/Batch-Informationen verknüpft.", "en": "Business events (Supplier Order, Customer Order) are linked with material/batch information."},
+    "highlightIds": ["uc01_col_business_events", "uc01_lane_supplier_order", "uc01_lane_storage_order", "uc01_lane_customer_order"],
+    "dimIds": ["uc01_col_production_plan", "uc01_col_actual_path", "uc01_col_correlated_timeline"],
+    "showIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc01-02-nfc-tag",
+    "title": {"de": "NFC-Tag als Join-Key", "en": "NFC Tag as Join Key"},
+    "description": {"de": "Der NFC-Tag des Werkstücks dient als Join-Key zur Korrelation aller Events.", "en": "The workpiece NFC tag serves as the join key to correlate all events."},
+    "highlightIds": ["uc01_nfc_tag", "uc01_conn_supplier-to-nfc", "uc01_conn_storage-to-nfc", "uc01_conn_customer-to-nfc"],
+    "dimIds": ["uc01_col_production_plan", "uc01_col_actual_path"],
+    "showIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc01-03-production-plan",
+    "title": {"de": "Produktionsplan", "en": "Production Plan"},
+    "description": {"de": "Der Produktionsplan definiert die theoretische Sequenz der Stationen.", "en": "The production plan defines the theoretical sequence of stations."},
+    "highlightIds": ["uc01_col_production_plan", "uc01_plan_sequence"],
+    "dimIds": ["uc01_col_actual_path"],
+    "showIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc01-04-actual-path",
+    "title": {"de": "Tatsächlicher Weg", "en": "Actual Path"},
+    "description": {"de": "Der tatsächliche Weg des Werkstücks kann vom Plan abweichen.", "en": "The actual path of the workpiece may deviate from the plan."},
+    "highlightIds": ["uc01_col_actual_path", "uc01_fts_route"],
+    "dimIds": ["uc01_col_production_plan"],
+    "showIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc01-05-correlation",
+    "title": {"de": "Korrelation", "en": "Correlation"},
+    "description": {"de": "Shopfloor-Events werden über den NFC-Tag korreliert.", "en": "Shopfloor events are correlated via the NFC tag."},
+    "highlightIds": ["uc01_conn_actual-to-timeline", "uc01_conn_nfc-to-timeline", "uc01_event_timeline"],
+    "dimIds": ["uc01_col_business_events", "uc01_col_production_plan"],
+    "showIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc01-06-complete-genealogy",
+    "title": {"de": "Vollständige Genealogie", "en": "Complete Genealogy"},
+    "description": {"de": "Die vollständige Genealogie kombiniert Business-Kontext, Plan, tatsächlichen Weg und korrelierte Events.", "en": "The complete genealogy combines business context, plan, actual path, and correlated events."},
+    "highlightIds": ["uc01_event_timeline", "uc01_order_context"],
+    "dimIds": ["uc01_col_business_events", "uc01_col_production_plan", "uc01_col_actual_path"],
+    "showIds": [],
+    "hideIds": []
+  }
+]

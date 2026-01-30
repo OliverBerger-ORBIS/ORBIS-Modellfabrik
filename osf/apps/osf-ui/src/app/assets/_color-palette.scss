@@ -139,5 +139,33 @@
   --status-warning-strong-rgb: 180, 83, 9;
   --status-warning-medium-rgb: 245, 158, 11;
   --status-warning-light-rgb: 253, 230, 138;
+
+  // ========== Track & Trace Event Colors (osf-weit) ==========
+  // Used for Pick, Process, Drop events and Order types in Track & Trace components
+  --track-trace-pick: #9c27b0;
+  --track-trace-pick-rgb: 156, 39, 176;
+  --track-trace-pick-bg: rgba(156, 39, 176, 0.05);
+
+  --track-trace-process: var(--shopfloor-highlight-strong);
+  --track-trace-process-bg: rgba(249, 115, 22, 0.08);
+
+  --track-trace-drop: #4caf50;
+  --track-trace-drop-rgb: 76, 175, 80;
+  --track-trace-drop-bg: rgba(76, 175, 80, 0.05);
+
+  --track-trace-storage-order: #9c27b0;
+  --track-trace-storage-order-rgb: 156, 39, 176;
+  --track-trace-storage-order-bg: rgba(156, 39, 176, 0.05);
+
+  --track-trace-production-order: #4caf50;
+  --track-trace-production-order-rgb: 76, 175, 80;
+  --track-trace-production-order-bg: rgba(76, 175, 80, 0.05);
+
+  // Timeline marker colors
+  --track-trace-timeline-dock: #4caf50;
+  --track-trace-timeline-turn: var(--shopfloor-highlight-strong);
+  --track-trace-timeline-pass: var(--orbis-blue-medium);
+  --track-trace-timeline-pick: #9c27b0;
+  --track-trace-timeline-drop: #e91e63;
 }
 

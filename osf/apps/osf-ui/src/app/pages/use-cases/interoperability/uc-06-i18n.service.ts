@@ -30,7 +30,10 @@ export class Uc06I18nService {
       // Load messages.json for current locale (fallback to DE for EN)
       const loadLocale = locale === 'en' ? 'de' : locale;
       const messagesPath = `locale/messages.${loadLocale}.json`;
-      const messages = await firstValueFrom(this.http.get<Record<string, string>>(messagesPath));
+      const messagesResponse = await firstValueFrom(this.http.get<{ locale: string; translations: Record<string, string> }>(messagesPath));
+      
+      // Extract translations object (messages.json has nested structure)
+      const messages = messagesResponse.translations || messagesResponse as unknown as Record<string, string>;
       
       // Extract UC-06 keys (keys starting with @@uc06)
       const uc06Texts: Record<string, string> = {};
