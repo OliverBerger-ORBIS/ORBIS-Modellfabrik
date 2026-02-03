@@ -7,6 +7,10 @@
 - Referenziert in: A2 (DE/EN Draft) #69078 und #69079
 - Feature: #69067
 - User Stories: #69087
+- **⚠️ AKTUELLER STATUS: WIRD UMGEARBEITET** (Stand: 2026-01-21)
+  - SVG-Diagramm-Implementierung wird überarbeitet
+  - Layout-Planung erfolgt in visuellen Tools (Draw.io) vor Code-Implementierung
+  - Siehe Abschnitt "Umarbeitung & Verbesserungsvorschläge" unten
 
 ---
 
@@ -140,4 +144,99 @@ UC-01 macht Track & Trace als Werkstück-Genealogie sichtbar: eine Timeline aus 
 ## Visuals / Assets
 - OSF Track & Trace Live Screen (DE): ![UC-01-Trrack-Trace-DE.png](/.attachments/UC-01-Trrack-Trace-DE-c3340b70-01c3-4d29-a5b9-892e740f9af7.png)
 - OSF Track & Trace Live Screen (EN): ![UC-01-Trrack-Trace-EN.png](/.attachments/UC-01-Trrack-Trace-EN-d487b1a0-6ac8-472f-a051-a23f9d3df22d.png)
-- Hinweis: Die Screens werden als „Proof Visual“ primär in Artikel A2 verwendet.
+- Hinweis: Die Screens werden als „Proof Visual" primär in Artikel A2 verwendet.
+
+---
+
+## Umarbeitung & Verbesserungsvorschläge (2026-01-21)
+
+### Kontext
+Nach Konsultation von ChatGPT und dem Erstellen mehrerer Draw.io-Diagramme (noch nicht im Repo) wurde eine umfassende Analyse durchgeführt, um die Darstellung von Track & Trace in der Fischertechnik-Modellfabrik zu optimieren.
+
+### Zielsetzung
+Darstellung von "Events", die während der Lebenszeit eines SingleParts (durch NFC identifiziert) während eines Einlagerungs-Auftrages und eines Fertigungs-Auftrages auftreten. Dabei gibt es eine Beziehung zu:
+- Übergeordneten Business-Prozessen (aus ERP-System)
+- Aufträgen (durch z.B. Lagersystem oder MES-System gesteuert)
+- ORBIS-DSP als zentraler Korrelator
+
+**Wichtig:** Die "geplanten" Ereignisse werden durch ungeplante Ereignisse überlagert. Ein SinglePart nimmt nicht den direkten Pfad/Route durch den Shopfloor, da Transporte über AGV/FTS dazu führen, dass auch andere Stationen/Maschinen angefahren werden.
+
+### Hauptproblem im aktuellen Ansatz
+Im ursprünglichen Draw.io-Konzept wurden gleichzeitig dargestellt:
+1. **Business-Prozesse** (Procurement/Production/Delivery)
+2. **Orders** (Purchase/Customer/Storage/Production Order)
+3. **Routen & Schrittfolgen** (Pick/Drop/Transfer-Sequenzen)
+4. **Physische Ressourcen** (HBW/DRILL/AIQS/DPS/FTS)
+5. **(implizite) Events**, aber ohne klaren „Event-Hub" als Datenobjekt
+
+**Ergebnis:** Visuell führt dies zu "Spaghetti-Edges", weil ein einzelnes Diagramm zugleich **Plan (Soll)** *und* **Ist (Events)** *und* **Objektmodell** abbilden soll.
+
+### Verbesserungsvorschläge (aus ChatGPT-Analyse)
+
+#### 1. Explizit machen: "Plan vs. Ist"
+**Konzept:**
+- **Plan** kommt aus Orders/Prozessmodell (ERP/MES/WMS/Dispatch): erwartete Soll-Schritte + Zielzustand
+- **Ist** kommt als Event-Stream (Station/FTS/HBW/Qualität): realer Verlauf inkl. Umwege, Wartezeiten, Rework, Störungen
+- **Genealogy** ist *nicht* "die geplante Route", sondern die **Korrelation** von Ist-Events zu Plan-Objekten (Order/Operation/Material/Batch) über den Join-Key (NFC)
+
+#### 2. "Join-Key" als Hero-Element
+Workpiece-ID/NFC muss im Visual an mindestens 3 Stellen identisch auftauchen:
+- Workpiece-Liste
+- Timeline-Header
+- Order-Context-Panel
+
+#### 3. Zwei getrennte Visuals statt einem
+**Visual 1: "Objekt-Geflecht" (ER/Domain-Mesh – ohne Attribute)**
+- Workpiece (NFC) als Zentrum
+- Event als Hub
+- An Event hängen: Station/AGV/Location, Quality Result, Measurements
+- Business-Kontext: Production/Customer/Purchase Order, Material/Batch
+- DSP als Korrelator/Enricher zwischen Event-Stream und Kontext
+
+**Visual 2: "Event-Flow mit Soll/Ist-Overlay" (Timeline)**
+- Eine horizontale Zeitachse (Ist-Events)
+- Darüber eine "dotted" Soll-Sequenz (Order-Plan)
+- Abweichungen als seitliche "branches" (Reroute via AGV/FTS, Stop, Rework)
+- Jeder Event-Knoten trägt mini-Badges: `workpieceId`, `station`, optional `orderId`
+
+#### 4. UI-Verbesserungen für OSF-Screen
+1. **"Pinned Join-Key Header"**
+   - Oben im Event-History-Panel eine feste Zeile:
+   - `Workpiece-ID: <NFC> | Production Order: <ID> | Current Location: <Station>`
+
+2. **"Plan-Next vs. Actual-Next" Indikator**
+   - Expected next step (aus Plan/Route/Order)
+   - Observed last event (aus Timeline)
+   - Deviation badge, wenn mismatch / reroute
+
+3. **Domain-Filter + Missing-Event Marker**
+   - Timeline: Toggle **Shopfloor / Logistics / Quality**
+   - "missing/late" Marker (z. B. wenn Start ohne End)
+
+#### 5. Datenmodell-Schärfung
+**Event (canonical)**
+- `eventId, ts, domain (shopfloor|logistics|quality), type`
+- `workpieceId (NFC)` **(mandatory join key)**
+- `assetId/stationId` (optional)
+- `locationId` (optional)
+- `orderRefs[]` (productionOrderId, storageOrderId, transportOrderId …)
+- `payloadRef` (QualityResultId, MeasurementSetId, ErrorId …)
+
+#### 6. Terminologie-Glättung
+Konsistente Benennung:
+- **SinglePart = Workpiece** (ein physisches Teil, identifiziert durch NFC)
+- **HU** nur, wenn wirklich "Container-Trace" gezeigt werden soll (sonst optional)
+- **Transport Order** (Order) vs. **Mission/Step** (Ausführung) klar trennen
+- **Production Order** (Business/ERP/MES) vs. **Shopfloor Events** (Ist)
+
+### Nächste Schritte
+1. ✅ Planungsvorlage erstellt (`UC-01-TIMELINE-PLANNING.txt`)
+2. 🔄 Layout in Tool planen (Figma/Draw.io/Inkscape) mit Timeline-Synchronisation
+3. ⏳ Zwei getrennte Visuals erstellen (Objekt-Geflecht + Event-Flow)
+4. ⏳ UI-Verbesserungen im OSF-Screen umsetzen
+5. ⏳ Datenmodell-Schärfung implementieren
+
+### Referenzen
+- Planungsvorlage: `docs/assets/use-cases/uc-01/UC-01-TIMELINE-PLANNING.txt`
+- ChatGPT-Analyse: Siehe User-Query vom 2026-01-21
+- Draw.io-Diagramme: (noch nicht im Repo, werden nach Planung hinzugefügt)

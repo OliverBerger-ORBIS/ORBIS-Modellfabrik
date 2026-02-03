@@ -26,6 +26,8 @@ export interface Uc01Chip {
   // Special properties for badges
   fill?: string;
   stroke?: string;
+  // Timeline synchronization
+  timeIndex?: number; // Index in the global timeline (0, 1, 2, ...)
 }
 
 export interface Uc01Lane {
@@ -81,6 +83,27 @@ export interface Uc01Connection {
   toX: number;
   toY: number;
   dashed?: boolean; // Use dashed line
+}
+
+/**
+ * Timeline definition for synchronizing events across columns
+ * Each time point represents a moment in the process flow
+ */
+export interface Uc01Timeline {
+  timePoints: Uc01TimePoint[];
+  timeStep: number; // Vertical spacing between time points (in pixels)
+  baseY: number; // Base Y coordinate for the first time point
+}
+
+export interface Uc01TimePoint {
+  index: number; // 0, 1, 2, ... (chronological order)
+  label?: string; // Optional label for debugging
+  // Events that occur at this time point (across all columns)
+  events: {
+    column: 'businessEvents' | 'productionPlan' | 'actualPath' | 'correlatedTimeline';
+    laneId: string;
+    chipId: string;
+  }[];
 }
 
 export interface Uc01Structure {
@@ -147,22 +170,224 @@ function calculateLaneLayout(column: Uc01Column): void {
     }
     
     // Adjust chip positions to be relative to lane
-    const baseChipY = Math.min(...lane.chips.map(c => c.y));
-    const offsetY = currentY - baseChipY + 60;
+    // If chips have timeIndex (timeline-synchronized), preserve their absolute Y coordinates
+    const hasTimelineSync = lane.chips.some(c => c.timeIndex !== undefined);
+    let offsetY: number | undefined;
     
-    lane.chips.forEach((chip) => {
-      chip.y = chip.y + offsetY;
-      if (chip.iconY !== undefined) {
-        chip.iconY = chip.iconY + offsetY;
-      }
-    });
+    if (hasTimelineSync) {
+      // For timeline-synchronized lanes, Y coordinates are absolute (from timeline)
+      // Don't adjust Y coordinates, they are already synchronized across columns
+      // Only ensure lane position encompasses all chips
+      const minChipY = Math.min(...lane.chips.map(c => c.y));
+      const maxChipY = Math.max(...lane.chips.map(c => c.y + c.height));
+      
+      // Adjust lane Y to start at the first chip (with some padding)
+      lane.y = Math.min(lane.y, minChipY - 60);
+      lane.height = Math.max(lane.height, maxChipY - lane.y + 80);
+    } else {
+      // For non-timeline lanes, use original behavior (relative positioning)
+      const baseChipY = Math.min(...lane.chips.map(c => c.y));
+      offsetY = currentY - baseChipY + 60;
+      
+      lane.chips.forEach((chip) => {
+        chip.y = chip.y + offsetY!;
+        if (chip.iconY !== undefined) {
+          chip.iconY = chip.iconY + offsetY!;
+        }
+      });
+    }
     
-    // Adjust lane icon position
-    if (lane.iconY !== undefined) {
+    // Adjust lane icon position (only if offsetY was calculated)
+    if (lane.iconY !== undefined && offsetY !== undefined) {
       lane.iconY = lane.iconY + offsetY;
     }
     
     currentY += lane.height + gapSize;
+  });
+}
+
+/**
+ * Creates the global timeline definition
+ * This timeline synchronizes events across all columns
+ * Y coordinates are calculated to fit within column boundaries
+ */
+function createTimeline(columnY: number, columnHeight: number, headerHeight: number = 50): Uc01Timeline {
+  // Calculate available height for timeline (within column bounds)
+  const paddingTop = 60;
+  const paddingBottom = 40;
+  const availableHeight = columnHeight - headerHeight - paddingTop - paddingBottom;
+  
+  // baseY will be set after we know the number of time points
+  let baseY = columnY + headerHeight + paddingTop;
+  
+  // Define time points in chronological order
+  // Each time point contains events that occur simultaneously across columns
+  const timePoints: Uc01TimePoint[] = [
+    {
+      index: 0,
+      label: 'Purchase Order Created',
+      events: [
+        { column: 'businessEvents', laneId: 'purchase-order', chipId: 'purchase-order-chip' },
+      ],
+    },
+    {
+      index: 1,
+      label: 'Storage Order: Goods Receipt (DPS)',
+      events: [
+        { column: 'productionPlan', laneId: 'storage-order', chipId: 'storage-plan-dps' },
+      ],
+    },
+    {
+      index: 2,
+      label: 'Storage Order: NFC Read',
+      events: [
+        { column: 'productionPlan', laneId: 'storage-order', chipId: 'storage-plan-nfc' },
+      ],
+    },
+    {
+      index: 3,
+      label: 'Storage Order: Order Created',
+      events: [
+        { column: 'productionPlan', laneId: 'storage-order', chipId: 'storage-plan-order' },
+      ],
+    },
+    {
+      index: 4,
+      label: 'Storage Order: Transport to Warehouse',
+      events: [
+        { column: 'productionPlan', laneId: 'storage-order', chipId: 'storage-plan-transport' },
+        { column: 'correlatedTimeline', laneId: 'event-timeline', chipId: 'timeline-1' }, // START TRANSFER
+      ],
+    },
+    {
+      index: 5,
+      label: 'Storage Order: Warehouse Storage',
+      events: [
+        { column: 'productionPlan', laneId: 'storage-order', chipId: 'storage-plan-warehouse' },
+        { column: 'actualPath', laneId: 'fts-route', chipId: 'actual-warehouse' },
+        { column: 'correlatedTimeline', laneId: 'event-timeline', chipId: 'timeline-2' }, // WAREHOUSE MOVE
+      ],
+    },
+    {
+      index: 6,
+      label: 'Customer Order Created',
+      events: [
+        { column: 'businessEvents', laneId: 'customer-order', chipId: 'customer-order-id' },
+      ],
+    },
+    {
+      index: 7,
+      label: 'Production Order: Warehouse',
+      events: [
+        { column: 'productionPlan', laneId: 'production-order', chipId: 'production-plan-warehouse' },
+      ],
+    },
+    {
+      index: 8,
+      label: 'Production Order: Drill - PICK',
+      events: [
+        { column: 'productionPlan', laneId: 'production-order', chipId: 'production-plan-drill' },
+        { column: 'actualPath', laneId: 'fts-route', chipId: 'actual-drill' },
+        { column: 'correlatedTimeline', laneId: 'event-timeline', chipId: 'timeline-3' }, // DRILL PICK
+      ],
+    },
+    {
+      index: 9,
+      label: 'Production Order: Drill - PROCESS',
+      events: [
+        { column: 'correlatedTimeline', laneId: 'event-timeline', chipId: 'timeline-4' }, // DRILL PROCESS
+      ],
+    },
+    {
+      index: 10,
+      label: 'Production Order: Drill - DROP',
+      events: [
+        { column: 'correlatedTimeline', laneId: 'event-timeline', chipId: 'timeline-5' }, // DRILL DROP
+      ],
+    },
+    {
+      index: 11,
+      label: 'Production Order: Quality - PICK',
+      events: [
+        { column: 'productionPlan', laneId: 'production-order', chipId: 'production-plan-quality' },
+        { column: 'actualPath', laneId: 'fts-route', chipId: 'actual-quality' },
+        { column: 'correlatedTimeline', laneId: 'event-timeline', chipId: 'timeline-6' }, // QUALITY PICK
+      ],
+    },
+    {
+      index: 12,
+      label: 'Production Order: Quality - PROCESS',
+      events: [
+        { column: 'correlatedTimeline', laneId: 'event-timeline', chipId: 'timeline-7' }, // QUALITY PROCESS
+      ],
+    },
+    {
+      index: 13,
+      label: 'Production Order: Quality - DROP',
+      events: [
+        { column: 'correlatedTimeline', laneId: 'event-timeline', chipId: 'timeline-8' }, // QUALITY DROP
+      ],
+    },
+    {
+      index: 14,
+      label: 'Production Order: DPS',
+      events: [
+        { column: 'productionPlan', laneId: 'production-order', chipId: 'production-plan-dps' },
+        { column: 'actualPath', laneId: 'fts-route', chipId: 'actual-dps' },
+      ],
+    },
+  ];
+  
+  // Calculate timeStep to fit all time points within available height
+  const numTimePoints = timePoints.length;
+  const numGaps = Math.max(1, numTimePoints - 1); // Number of gaps between time points
+  const timeStep = availableHeight / numGaps; // Distribute available height evenly
+  
+  return {
+    timePoints,
+    timeStep,
+    baseY,
+  };
+}
+
+/**
+ * Applies timeline synchronization to structure
+ * Sets timeIndex on chips and calculates Y coordinates based on timeline
+ */
+function applyTimelineSync(structure: Uc01Structure, timeline: Uc01Timeline): void {
+  // First pass: Set timeIndex on chips based on timeline
+  timeline.timePoints.forEach((timePoint) => {
+    timePoint.events.forEach((event) => {
+      const column = structure.columns[event.column];
+      const lane = column.lanes.find((l) => l.id === event.laneId);
+      if (lane) {
+        const chip = lane.chips.find((c) => c.id === event.chipId);
+        if (chip) {
+          chip.timeIndex = timePoint.index;
+        }
+      }
+    });
+  });
+  
+  // Second pass: Calculate Y coordinates based on timeIndex
+  Object.values(structure.columns).forEach((column) => {
+    column.lanes.forEach((lane) => {
+      lane.chips.forEach((chip) => {
+        if (chip.timeIndex !== undefined) {
+          // Calculate Y coordinate based on timeline
+          const newY = timeline.baseY + (chip.timeIndex * timeline.timeStep);
+          
+          // Preserve relative icon offset
+          if (chip.iconY !== undefined) {
+            const iconOffset = chip.iconY - chip.y;
+            chip.y = newY;
+            chip.iconY = newY + iconOffset;
+          } else {
+            chip.y = newY;
+          }
+        }
+      });
+    });
   });
 }
 
@@ -358,7 +583,13 @@ export function createUc01Structure(): Uc01Structure {
     ],
   };
   
-  // Calculate layout for all columns
+  // Create and apply timeline synchronization
+  // Use the first column's dimensions as reference (all columns have same y and height)
+  const referenceColumn = structure.columns.businessEvents;
+  const timeline = createTimeline(referenceColumn.y, referenceColumn.height);
+  applyTimelineSync(structure, timeline);
+  
+  // Calculate layout for all columns (after timeline sync)
   calculateLaneLayout(structure.columns.businessEvents);
   calculateLaneLayout(structure.columns.productionPlan);
   calculateLaneLayout(structure.columns.actualPath);
