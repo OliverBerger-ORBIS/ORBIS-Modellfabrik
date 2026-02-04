@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+    tags:
+      - 'v*.*.*'
     paths:
       - 'osf/**'
       - 'package.json'
@@ -41,7 +43,12 @@ jobs:
     
     - name: Inject Version
       run: |
-        VERSION=$(node -p "require('./package.json').version")
+        # Extract version from tag if triggered by tag, otherwise from package.json
+        if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+          VERSION=${GITHUB_REF#refs/tags/v}
+        else
+          VERSION=$(node -p "require('./package.json').version")
+        fi
         GIT_HASH=$(git rev-parse --short HEAD)
         BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
         
