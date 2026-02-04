@@ -345,7 +345,7 @@
                 />
                 <!-- Connection from center to edge icons (Step 18: solid orange, Step 19: solid orange) -->
                 <line
-                  *ngIf="container.id === 'dsp-mc' && (isCurrentStep('step-18') || isCurrentStep('step-19')) && icon.iconKey.startsWith('logo-edge-')"
+                  *ngIf="container.id === 'dsp-mc' && (isCurrentStep('step-17') || isCurrentStep('step-18') || isCurrentStep('step-19')) && icon.iconKey.startsWith('logo-edge-')"
                   [attr.x1]="container.width / 2"
                   [attr.y1]="container.height / 2"
                   [attr.x2]="getFunctionIconCenter(container, i, { iconKey: icon.iconKey, size: getFunctionIconSize(icon.iconKey) }).cx"
@@ -356,8 +356,8 @@
                   stroke-dasharray="none"
                 />
               </ng-container>
-              <!-- Connections between edge icons (Step 19 only) - similar to orbis-dsp-logo.svg -->
-              <ng-container *ngIf="container.id === 'dsp-mc' && isCurrentStep('step-19')">
+              <!-- Connections between edge icons (Step 18 only) - similar to orbis-dsp-logo.svg -->
+              <ng-container *ngIf="container.id === 'dsp-mc' && isCurrentStep('step-18')">
                 <ng-container *ngFor="let icon1 of getVisibleFunctionIcons(container); let i1 = index">
                   <ng-container *ngFor="let icon2 of getVisibleFunctionIcons(container); let i2 = index">
                     <line

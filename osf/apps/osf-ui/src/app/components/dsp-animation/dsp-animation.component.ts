@@ -1078,37 +1078,88 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   ): { x: number; y: number } {
     const currentStep = this.steps[this.currentStepIndex];
     const isMc = container.id === 'dsp-mc';
-    // layout set: all slots to keep angles stable
-    const layoutIcons = isMc
-      ? (container.functionIcons ?? []).filter((fi) => {
-          if (currentStep?.id === 'step-18') {
-            return fi.iconKey === 'logo-edge-b'; // Only central icon in step 18
+    
+    if (isMc) {
+      const isEdgeIcon = icon.iconKey.startsWith('logo-edge-');
+      const isMcIcon = icon.iconKey.startsWith('mc-');
+      
+      if (isEdgeIcon) {
+        // Edge Icons: Position in 120° segment (120°, 180°, 240°)
+        // Use the same logic as before: filter layoutIcons to get correct slot index
+        const edgeLayoutIcons = (container.functionIcons ?? []).filter((fi) => {
+          if (currentStep?.id === 'step-17') {
+            return fi.iconKey === 'logo-edge-b'; // Only logo-edge-b in step 17
           }
-          if (currentStep?.id === 'step-19') {
-            return fi.iconKey.startsWith('logo-edge-'); // All three icons in step 19
+          if (currentStep?.id === 'step-18' || currentStep?.id === 'step-19') {
+            return fi.iconKey.startsWith('logo-edge-'); // All three edge icons in step 18 and 19
           }
-          return !fi.iconKey.startsWith('logo-edge-');
-        })
-      : container.functionIcons ?? [];
+          return false;
+        });
+        const edgeTotal = edgeLayoutIcons.length;
+        if (edgeTotal === 0) {
+          return { x: container.width / 2, y: container.height / 2 };
+        }
+        // For Step 17 with only one icon, center it in the 120° segment (at 180°)
+        // For Step 18/19 with three icons, distribute them across the 120° segment starting at 120°
+        const startDeg = (currentStep?.id === 'step-17' && edgeTotal === 1) ? 180 : 120;
+        const spanDeg = 120;
+        const edgeLayoutIndex = edgeLayoutIcons.findIndex((fi) => fi.iconKey === icon.iconKey);
+        const edgeSlotIndex = edgeLayoutIndex >= 0 ? edgeLayoutIndex : index;
+        const step = edgeTotal > 1 ? spanDeg / (edgeTotal - 1) : 0;
+        const angleRad = ((startDeg + edgeSlotIndex * step) * Math.PI) / 180;
+        const cx = container.width / 2;
+        const cy = container.height / 2;
+        const maxRadius = Math.max(
+          0,
+          Math.min(this.functionIconRadius, Math.min(container.width, container.height) / 2 - icon.size / 2 - 4)
+        );
+        return {
+          x: cx + maxRadius * Math.cos(angleRad) - icon.size / 2,
+          y: cy + maxRadius * Math.sin(angleRad) - icon.size / 2,
+        };
+      } else if (isMcIcon) {
+        // MC Function Icons: Position in 120° segment (300°, 0°, 60°)
+        // Use the same logic as before: filter layoutIcons to get correct slot index
+        const mcLayoutIcons = (container.functionIcons ?? []).filter((fi) => fi.iconKey.startsWith('mc-'));
+        const mcTotal = mcLayoutIcons.length;
+        if (mcTotal === 0) {
+          return { x: container.width / 2, y: container.height / 2 };
+        }
+        const startDeg = 300; // Start at 300° (120° segment: 300°, 0°, 60°)
+        const spanDeg = 120; // 120° span for 3 icons
+        const mcLayoutIndex = mcLayoutIcons.findIndex((fi) => fi.iconKey === icon.iconKey);
+        const mcSlotIndex = mcLayoutIndex >= 0 ? mcLayoutIndex : index;
+        const step = mcTotal > 1 ? spanDeg / (mcTotal - 1) : 0;
+        // Handle wrap-around: 300° + 120° = 420° = 60° (mod 360)
+        let angleDeg = startDeg + mcSlotIndex * step;
+        if (angleDeg >= 360) {
+          angleDeg = angleDeg - 360; // Wrap around: 420° -> 60°
+        }
+        const angleRad = (angleDeg * Math.PI) / 180;
+        const cx = container.width / 2;
+        const cy = container.height / 2;
+        const maxRadius = Math.max(
+          0,
+          Math.min(this.functionIconRadius, Math.min(container.width, container.height) / 2 - icon.size / 2 - 4)
+        );
+        return {
+          x: cx + maxRadius * Math.cos(angleRad) - icon.size / 2,
+          y: cy + maxRadius * Math.sin(angleRad) - icon.size / 2,
+        };
+      }
+    }
+    
+    // Default positioning for other containers (dsp-edge, etc.)
+    const layoutIcons = container.functionIcons ?? [];
     const total = layoutIcons.length;
     if (total === 0) {
       return { x: container.width / 2, y: container.height / 2 };
     }
-    // For Step 18 with only one icon, center it in the 120° segment (at 180°)
-    // For Step 19 with three icons, distribute them across the 120° segment starting at 120°
-    const startDeg = isMc
-      ? (currentStep?.id === 'step-18' || currentStep?.id === 'step-19')
-        ? (currentStep?.id === 'step-18' && total === 1) ? 180 : 120 // Center single icon in step 18, start at 120° for step 19
-        : 300
-      : 90;
-    const spanDeg = isMc ? 120 : 360;
+    const startDeg = 90;
+    const spanDeg = 360;
     const layoutIndex = layoutIcons.findIndex((fi) => fi.iconKey === icon.iconKey);
     const slotIndex = layoutIndex >= 0 ? layoutIndex : index;
-    const step = isMc
-      ? total > 1
-        ? spanDeg / (total - 1)
-        : 0 // Single icon: no step needed, position at startDeg
-      : spanDeg / total; // edge: distribute evenly over full circle (9 icons -> 40°)
+    const step = spanDeg / total;
     const angleRad = ((startDeg + slotIndex * step) * Math.PI) / 180;
     const cx = container.width / 2;
     const cy = container.height / 2;
@@ -1147,13 +1198,23 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     }
     const step = this.steps[this.currentStepIndex];
     if (container.id === 'dsp-mc') {
+      if (step?.id === 'step-17') {
+        // Step 17: Show logo-edge-b and all MC function icons (mc-hierarchical-structure, mc-orchestration, mc-governance)
+        return container.functionIcons.filter(
+          (fi) => fi.iconKey === 'logo-edge-b' || fi.iconKey.startsWith('mc-')
+        );
+      }
       if (step?.id === 'step-18') {
-        // Step 18: Only show central edge icon (logo-edge-b)
-        return container.functionIcons.filter((fi) => fi.iconKey === 'logo-edge-b');
+        // Step 18: Show all three edge icons and all MC function icons
+        return container.functionIcons.filter(
+          (fi) => fi.iconKey.startsWith('logo-edge-') || fi.iconKey.startsWith('mc-')
+        );
       }
       if (step?.id === 'step-19') {
-        // Step 19: Show all three edge icons
-        return container.functionIcons.filter((fi) => fi.iconKey.startsWith('logo-edge-'));
+        // Step 19: Show only MC function icons (no logo-edge-a,b,c), no highlighting
+        return container.functionIcons.filter(
+          (fi) => fi.iconKey.startsWith('mc-')
+        );
       }
       return container.functionIcons.filter(
         (fi) => !fi.iconKey.startsWith('logo-edge-') && this.revealedFunctionIcons.has(fi.iconKey)

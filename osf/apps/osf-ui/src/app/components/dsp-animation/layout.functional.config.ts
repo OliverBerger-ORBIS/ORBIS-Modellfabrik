@@ -375,9 +375,10 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       highlightedFunctionIcons: ['edge-autonomous-enterprise'],
     },
 
-    // Step 14: Management Cockpit (full context, all objects visible, MC highlighted)
+    // Step 13: Management Cockpit (full context, all objects visible, MC highlighted) - moved from Step 14
+    // Keine Darstellung von dsp-ux
     {
-      id: 'step-14',
+      id: 'step-13',
       label: $localize`:@@dspArchStep9:Management Cockpit`,
       description: $localize`:@@dspArchStep9Desc:Model processes, manage organization, and orchestrate all Edge nodes from the cloud.`,
       visibleContainerIds: [
@@ -391,10 +392,12 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
+        // Explicitly exclude dsp-ux to ensure it's hidden
       ],
       highlightedContainerIds: ['dsp-mc'],
       visibleConnectionIds: [
         conn('dsp-edge', 'dsp-mc'),
+        // Explicitly exclude conn('dsp-ux', 'dsp-edge') to ensure dsp-ux is hidden
         ...bpConnections,
         ...baseShopfloorConnections,
       ],
@@ -402,9 +405,10 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       showFunctionIcons: true,
     },
 
-    // Step 15: Organization & Asset Modeling (MC)
+    // Step 14: Organization & Asset Modeling (MC) - moved from Step 15
+    // Keine Darstellung von dsp-ux
     {
-      id: 'step-15',
+      id: 'step-14',
       label: $localize`:@@dspMcStepOrg:Organization & Asset Modeling`,
       description: $localize`:@@dspMcStepOrgDesc:The Management Cockpit centrally models shopfloor structures, assets and connected systems across all sites.`,
       visibleContainerIds: [
@@ -418,10 +422,12 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
+        // Explicitly exclude dsp-ux to ensure it's hidden
       ],
       highlightedContainerIds: ['dsp-mc'],
       visibleConnectionIds: [
         conn('dsp-edge', 'dsp-mc'),
+        // Explicitly exclude conn('dsp-ux', 'dsp-edge') to ensure dsp-ux is hidden
         ...bpConnections,
         ...baseShopfloorConnections,
       ],
@@ -430,9 +436,10 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       highlightedFunctionIcons: ['mc-hierarchical-structure'],
     },
 
-    // Step 16: Process & Data Flow Configuration (MC)
+    // Step 15: Process & Data Flow Configuration (MC) - moved from Step 16
+    // Keine Darstellung von dsp-ux
     {
-      id: 'step-16',
+      id: 'step-15',
       label: $localize`:@@dspMcStepFlow:Process & Data Flow Configuration`,
       description: $localize`:@@dspMcStepFlowDesc:The Management Cockpit defines process models and controls how events and data are routed between shopfloor, business and cloud systems.`,
       visibleContainerIds: [
@@ -446,10 +453,12 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
+        // Explicitly exclude dsp-ux to ensure it's hidden
       ],
       highlightedContainerIds: ['dsp-mc'],
       visibleConnectionIds: [
         conn('dsp-edge', 'dsp-mc'),
+        // Explicitly exclude conn('dsp-ux', 'dsp-edge') to ensure dsp-ux is hidden
         ...bpConnections,
         ...baseShopfloorConnections,
       ],
@@ -458,9 +467,10 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       highlightedFunctionIcons: ['mc-orchestration'],
     },
 
-    // Step 17: Central Governance & Orchestration (MC)
+    // Step 16: Central Governance & Orchestration (MC) - moved from Step 17
+    // Keine Darstellung von dsp-ux
     {
-      id: 'step-17',
+      id: 'step-16',
       label: $localize`:@@dspMcStepGov:Central Governance & Orchestration`,
       description: $localize`:@@dspMcStepGovDesc:The Management Cockpit centrally governs, configures and orchestrates all DSP Edge nodes across locations and environments.`,
       visibleContainerIds: [
@@ -474,10 +484,12 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
+        // Explicitly exclude dsp-ux to ensure it's hidden
       ],
       highlightedContainerIds: ['dsp-mc'],
       visibleConnectionIds: [
         conn('dsp-edge', 'dsp-mc'),
+        // Explicitly exclude conn('dsp-ux', 'dsp-edge') to ensure dsp-ux is hidden
         ...bpConnections,
         ...baseShopfloorConnections,
       ],
@@ -486,9 +498,12 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       highlightedFunctionIcons: ['mc-governance'],
     },
 
-    // Step 18: MC Edge Segment - Central Edge Node (first edge box)
+    // Step 17: MC Edge Segment - Central Edge Node (first edge box) - moved from Step 18
+    // logo-edge-b wird gehighlighted, Connection zu zentralem logo-mc wird gehighlighted
+    // Die zuvor gezeigten functional icons von dsp-mc sollen noch angezeigt werden
+    // DSP-UX wird NICHT dargestellt
     {
-      id: 'step-18',
+      id: 'step-17',
       label: $localize`:@@dspMcStepEdge:Edge Node Visualization`,
       description: $localize`:@@dspMcStepEdgeDesc:Management Cockpit displaying the central DSP Edge node connected to the Management Cockpit.`,
       visibleContainerIds: [
@@ -502,21 +517,27 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
+        // Explicitly exclude dsp-ux to ensure it's hidden
       ],
       highlightedContainerIds: ['dsp-mc', 'dsp-edge'],
       visibleConnectionIds: [
         conn('dsp-edge', 'dsp-mc'),
+        // Explicitly exclude conn('dsp-ux', 'dsp-edge') to ensure dsp-ux is hidden
         ...bpConnections,
         ...baseShopfloorConnections,
       ],
       highlightedConnectionIds: [conn('dsp-edge', 'dsp-mc')],
       showFunctionIcons: true,
-      highlightedFunctionIcons: ['logo-edge-b'], // Only central edge icon
+      highlightedFunctionIcons: ['logo-edge-b'], // logo-edge-b gehighlighted, Connection zu zentralem logo-mc gehighlighted
     },
 
-    // Step 19: MC Edge Segment - Complete (all 3 edge boxes with connections)
+    // Step 18: MC Edge Segment - Complete (all 3 edge boxes with connections) - moved from Step 19
+    // Highlight von logo-edge-a, logo-edge-b, logo-edge-c
+    // Gestrichelte Verbindung zwischen logo-edge-abc untereinander
+    // Highlight zu zentralem logo-mc
+    // Es wird kein dsp-ux dargestellt
     {
-      id: 'step-19',
+      id: 'step-18',
       label: $localize`:@@dspMcStepEdgeComplete:Edge Node Visualization Complete`,
       description: $localize`:@@dspMcStepEdgeCompleteDesc:Management Cockpit displaying three DSP Edge nodes within a 120° segment, all connected to the Management Cockpit and interconnected.`,
       visibleContainerIds: [
@@ -527,26 +548,29 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         'bp-cloud',
         'bp-analytics',
         'bp-data-lake',
-        'dsp-ux',
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
+        // Explicitly exclude dsp-ux to ensure it's hidden
       ],
       highlightedContainerIds: ['dsp-mc', 'dsp-edge'],
       visibleConnectionIds: [
-        conn('dsp-ux', 'dsp-edge'),
         conn('dsp-edge', 'dsp-mc'),
+        // Connections between edge icons are handled by function icons rendering (dashed lines)
         ...bpConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: [conn('dsp-edge', 'dsp-mc')],
+      highlightedConnectionIds: [conn('dsp-edge', 'dsp-mc')], // Connection to central dsp-mc-Icon highlighted
       showFunctionIcons: true,
-      highlightedFunctionIcons: ['logo-edge-a', 'logo-edge-b', 'logo-edge-c'], // All three edge icons
+      highlightedFunctionIcons: ['logo-edge-a', 'logo-edge-b', 'logo-edge-c'], // All three edge icons highlighted
     },
 
-    // Step 20: SmartFactory Dashboard (moved from Step 13)
+    // Step 19: SmartFactory Dashboard - moved from Step 13
+    // Highlight von dsp-ux + connection zu dsp-edge
+    // In dsp-mc werden nur MC Function Icons dargestellt (keine logo-edge-a,b,c), keine Connection von logo-edge zu logo-mc
+    // In dsp-edge werden alle functional icons dargestellt, aber kein highlighting
     {
-      id: 'step-20',
+      id: 'step-19',
       label: $localize`:@@dspArchStep11:SmartFactory Dashboard`,
       description: $localize`:@@dspArchStep11Desc:Visualization of the digital twin, real-time processes, and track & trace in the shopfloor.`,
       visibleContainerIds: [
@@ -555,21 +579,24 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         'layer-dsp',
         'dsp-ux',
         'dsp-edge',
+        'dsp-mc', // Only MC Function Icons shown (no logo-edge-a,b,c), no highlighting
         ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: ['dsp-ux'], // Highlight dsp-ux
+      highlightedContainerIds: ['dsp-ux'], // Only highlight dsp-ux, not dsp-edge or dsp-mc
       visibleConnectionIds: [
         conn('dsp-ux', 'dsp-edge'),
+        // Explicitly exclude conn('dsp-edge', 'dsp-mc') - no connection from logo-edge to logo-mc
         ...bpConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: [conn('dsp-ux', 'dsp-edge')], // Highlight conn_dsp-ux_dsp-edge
+      highlightedConnectionIds: [conn('dsp-ux', 'dsp-edge')], // Highlight connection from dsp-ux to dsp-edge
       showFunctionIcons: true,
+      // No highlightedFunctionIcons - all functional icons shown but not highlighted
     },
 
-    // Step 21: Autonomous & Adaptive Enterprise (Zielbild) - Final overview with all components visible
+    // Step 20: Autonomous & Adaptive Enterprise (Zielbild) - Final overview with all components visible
     {
-      id: 'step-21',
+      id: 'step-20',
       label: $localize`:@@dspArchStep12:Autonomous & Adaptive Enterprise`,
       description: $localize`:@@dspArchStep12Desc:Data from shopfloor, Edge, ERP, analytics, and data lakes enable autonomous workflows, predictive decisions, and continuous process optimization.`,
       visibleContainerIds: [

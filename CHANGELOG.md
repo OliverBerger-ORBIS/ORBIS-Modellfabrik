@@ -4,6 +4,16 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.7.6] - 2026-02-04
+
+### Changed
+- **DSP Architecture (Functional View):** Refined step visibility and icon positioning for Steps 13-19
+  - **Steps 13-18:** SmartFactory (UX) box (`dsp-ux`) is now hidden in steps 13-18, only visible from step 19 onwards
+  - **Step 17:** Middle Edge icon (`logo-edge-b`) highlighted with connection to central MC icon; MC function icons visible
+  - **Step 18:** All three Edge icons (`logo-edge-a`, `logo-edge-b`, `logo-edge-c`) highlighted with dashed connections between them; MC function icons visible
+  - **Step 19:** SmartFactory (UX) box highlighted with connection to Edge; MC container shows only MC function icons (no Edge icons), no connection from Edge to MC
+  - **Icon Positioning:** Edge icons positioned in 120° segment (120°, 180°, 240°), MC function icons in separate 120° segment (300°, 0°, 60°) to prevent overlap
+
 ## [0.7.5] - 2026-02-04
 
 ### Changed
