@@ -39,6 +39,17 @@
       <button
         type="button"
         class="nav-btn-icon"
+        (click)="toggleDescription()"
+        [class.nav-btn-icon--active]="showDescription"
+        [attr.aria-pressed]="showDescription"
+        [attr.aria-label]="'Show Description ' + (showDescription ? 'On' : 'Off')"
+        [attr.title]="'Show Description ' + (showDescription ? 'On' : 'Off')"
+      >
+        ℹ
+      </button>
+      <button
+        type="button"
+        class="nav-btn-icon"
         (click)="nextStep()"
         [disabled]="currentStepIndex === steps.length - 1"
         [attr.aria-label]="btnNext"
@@ -508,7 +519,7 @@
       </g>
 
       <!-- Step Description Overlay (displayed prominently in the diagram) -->
-      <g *ngIf="getCurrentStep()?.description" class="step-overlay">
+      <g *ngIf="showDescription && getCurrentStep()?.description" class="step-overlay">
         <!-- Semi-transparent background box -->
         <rect
           [attr.x]="20"

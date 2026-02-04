@@ -72,6 +72,7 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   protected isAutoPlaying = false;
   private autoPlayInterval: ReturnType<typeof setInterval> | null = null;
   protected loopToStart = true;
+  protected showDescription = true; // Toggle for step title and description display
 
   // Zoom state
   protected zoom = 1;
@@ -966,6 +967,11 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
 
   protected toggleLoop(): void {
     this.loopToStart = !this.loopToStart;
+    this.cdr.markForCheck();
+  }
+
+  protected toggleDescription(): void {
+    this.showDescription = !this.showDescription;
     this.cdr.markForCheck();
   }
 

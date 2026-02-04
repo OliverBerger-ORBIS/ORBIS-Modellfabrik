@@ -4,6 +4,15 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.7.5] - 2026-02-04
+
+### Changed
+- **DSP Architecture (Functional View):** SmartFactory Dashboard step moved to the end (now after Edge Node Visualization Complete); SmartFactory (UX) box is visible starting from step 19.
+- **DSP Architecture (Component View):** Business Process layer connections now point to the DSP Edge box (instead of DISC).
+
+### Added
+- **DSP Architecture:** Info toggle (ℹ) to show/hide step title + description overlay.
+
 ## [0.7.4] - 2026-01-16
 
 ### Added

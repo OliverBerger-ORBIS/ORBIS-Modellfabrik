@@ -375,29 +375,6 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       highlightedFunctionIcons: ['edge-autonomous-enterprise'],
     },
 
-    // Step 13: SmartFactory Dashboard
-    {
-      id: 'step-13',
-      label: $localize`:@@dspArchStep11:SmartFactory Dashboard`,
-      description: $localize`:@@dspArchStep11Desc:Visualization of the digital twin, real-time processes, and track & trace in the shopfloor.`,
-      visibleContainerIds: [
-        'layer-bp',
-        ...getBusinessContainerIds(),
-        'layer-dsp',
-        'dsp-ux',
-        'dsp-edge',
-        ...baseShopfloorContainers,
-      ],
-      highlightedContainerIds: ['dsp-ux'], // Highlight dsp-ux
-      visibleConnectionIds: [
-        conn('dsp-ux', 'dsp-edge'),
-        ...bpConnections,
-        ...baseShopfloorConnections,
-      ],
-      highlightedConnectionIds: [conn('dsp-ux', 'dsp-edge')], // Highlight conn_dsp-ux_dsp-edge
-      showFunctionIcons: true,
-    },
-
     // Step 14: Management Cockpit (full context, all objects visible, MC highlighted)
     {
       id: 'step-14',
@@ -411,14 +388,12 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         'bp-cloud',
         'bp-analytics',
         'bp-data-lake',
-        'dsp-ux',
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
       ],
       highlightedContainerIds: ['dsp-mc'],
       visibleConnectionIds: [
-        conn('dsp-ux', 'dsp-edge'),
         conn('dsp-edge', 'dsp-mc'),
         ...bpConnections,
         ...baseShopfloorConnections,
@@ -440,14 +415,12 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         'bp-cloud',
         'bp-analytics',
         'bp-data-lake',
-        'dsp-ux',
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
       ],
       highlightedContainerIds: ['dsp-mc'],
       visibleConnectionIds: [
-        conn('dsp-ux', 'dsp-edge'),
         conn('dsp-edge', 'dsp-mc'),
         ...bpConnections,
         ...baseShopfloorConnections,
@@ -470,14 +443,12 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         'bp-cloud',
         'bp-analytics',
         'bp-data-lake',
-        'dsp-ux',
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
       ],
       highlightedContainerIds: ['dsp-mc'],
       visibleConnectionIds: [
-        conn('dsp-ux', 'dsp-edge'),
         conn('dsp-edge', 'dsp-mc'),
         ...bpConnections,
         ...baseShopfloorConnections,
@@ -500,14 +471,12 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         'bp-cloud',
         'bp-analytics',
         'bp-data-lake',
-        'dsp-ux',
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
       ],
       highlightedContainerIds: ['dsp-mc'],
       visibleConnectionIds: [
-        conn('dsp-ux', 'dsp-edge'),
         conn('dsp-edge', 'dsp-mc'),
         ...bpConnections,
         ...baseShopfloorConnections,
@@ -530,14 +499,12 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         'bp-cloud',
         'bp-analytics',
         'bp-data-lake',
-        'dsp-ux',
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
       ],
       highlightedContainerIds: ['dsp-mc', 'dsp-edge'],
       visibleConnectionIds: [
-        conn('dsp-ux', 'dsp-edge'),
         conn('dsp-edge', 'dsp-mc'),
         ...bpConnections,
         ...baseShopfloorConnections,
@@ -577,9 +544,32 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       highlightedFunctionIcons: ['logo-edge-a', 'logo-edge-b', 'logo-edge-c'], // All three edge icons
     },
 
-    // Step 20: Autonomous & Adaptive Enterprise (Zielbild) - Final overview with all components visible
+    // Step 20: SmartFactory Dashboard (moved from Step 13)
     {
       id: 'step-20',
+      label: $localize`:@@dspArchStep11:SmartFactory Dashboard`,
+      description: $localize`:@@dspArchStep11Desc:Visualization of the digital twin, real-time processes, and track & trace in the shopfloor.`,
+      visibleContainerIds: [
+        'layer-bp',
+        ...getBusinessContainerIds(),
+        'layer-dsp',
+        'dsp-ux',
+        'dsp-edge',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: ['dsp-ux'], // Highlight dsp-ux
+      visibleConnectionIds: [
+        conn('dsp-ux', 'dsp-edge'),
+        ...bpConnections,
+        ...baseShopfloorConnections,
+      ],
+      highlightedConnectionIds: [conn('dsp-ux', 'dsp-edge')], // Highlight conn_dsp-ux_dsp-edge
+      showFunctionIcons: true,
+    },
+
+    // Step 21: Autonomous & Adaptive Enterprise (Zielbild) - Final overview with all components visible
+    {
+      id: 'step-21',
       label: $localize`:@@dspArchStep12:Autonomous & Adaptive Enterprise`,
       description: $localize`:@@dspArchStep12Desc:Data from shopfloor, Edge, ERP, analytics, and data lakes enable autonomous workflows, predictive decisions, and continuous process optimization.`,
       visibleContainerIds: [

@@ -118,11 +118,11 @@ export function createComponentView(customerConfig?: import('./configs/types').C
       showFunctionIcons: false,
     },
     
-    // Step 4: DISC connection to Business layer ERP
+    // Step 4: Business layer ERP/MES connection to DSP Edge Box
     {
       id: 'component-step-4',
       label: $localize`:@@componentStep4:Business Integration`,
-      description: $localize`:@@componentStep4Desc:DISC integrates with business ERP for data synchronization.`,
+      description: $localize`:@@componentStep4Desc:Business Process Layer (ERP and MES) connects to DSP Edge Box for data synchronization.`,
       visibleContainerIds: [
         'layer-bp',
         'bp-mes',
@@ -138,13 +138,13 @@ export function createComponentView(customerConfig?: import('./configs/types').C
         'edge-comp-disi',
         'edge-comp-database',
       ],
-      highlightedContainerIds: ['edge-comp-disc', 'bp-mes', 'bp-erp'],
+      highlightedContainerIds: ['dsp-edge', 'bp-mes', 'bp-erp'],
       visibleConnectionIds: [
         ...allEdgeComponentConnections,
-        'conn-ec-disc-bp-mes',
-        'conn-ec-disc-bp-erp',
+        'conn_bp-mes_dsp-edge',
+        'conn_bp-erp_dsp-edge',
       ],
-      highlightedConnectionIds: ['conn-ec-disc-bp-mes', 'conn-ec-disc-bp-erp'],
+      highlightedConnectionIds: ['conn_bp-mes_dsp-edge', 'conn_bp-erp_dsp-edge'],
       showFunctionIcons: false,
     },
     
