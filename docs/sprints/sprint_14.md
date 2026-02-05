@@ -1,7 +1,7 @@
 # Sprint 14 – Use-Case-Bibliothek & Blog-Serie Umsetzung
 
 **Zeitraum:** 22.01.2026 - 04.02.2026 (2 Wochen)  
-**Status:** In Planung  
+**Status:** ✅ Abgeschlossen  
 **Stakeholder-Update:** Fokus auf Umsetzung der Use-Case-Bibliothek und schrittweise Blog-Serie-Implementierung. Use-Cases werden als separate Route `dsp/use-case/xyz` implementiert (analog zu track-trace).
 
 ---
@@ -9,17 +9,24 @@
 ## 🎯 Ziele
 
 ### Use-Case-Bibliothek Implementierung
+- [x] **UC-06:** Interoperability Event-to-Process Map - Route `dsp/use-case/interoperability` implementieren
+  - ✅ SVG-Animation implementiert (Steps-Definition vorhanden)
+  - ✅ Dynamische SVG-Generierung aus Struktur-Konfiguration
+  - ✅ I18n-Unterstützung (DE/EN/FR)
+  - ✅ Step-Animation mit Controls (Prev/Next, Auto-Play, Loop, Step-Dots, Zoom)
 - [ ] **UC-01:** Track & Trace Genealogy - Route `dsp/use-case/track-trace-genealogy` implementieren
+  - 🔄 In Arbeit: SVG-Generator-Service erstellt, Diagramm-Umarbeitung in Planung
 - [ ] **UC-02:** 3 Datentöpfe - Route `dsp/use-case/three-data-pools` implementieren
 - [ ] **UC-03:** AI Lifecycle - Route `dsp/use-case/ai-lifecycle` implementieren
 - [ ] **UC-04:** Closed Loop Quality - Route `dsp/use-case/closed-loop-quality` implementieren
 - [ ] **UC-05:** Predictive Maintenance - Route `dsp/use-case/predictive-maintenance` implementieren
-- [ ] **UC-06:** Interoperability Event-to-Process Map - Route `dsp/use-case/interoperability` implementieren
-  - SVG-Animation implementieren (Steps-Definition vorhanden)
 
 ### Blog-Serie Umsetzung (Schritt für Schritt)
-- [ ] **A1:** Interoperabilität als Fundament - Review & Finalisierung
+- [x] **A1:** Interoperabilität als Fundament - Review & Finalisierung
+  - ✅ Draft erstellt (`docs/assets/articles/a1-DE.md`)
+  - ✅ Review durch externes Team
 - [ ] **A2:** Track & Trace Genealogie - Review & Finalisierung
+  - 🔄 In Arbeit: Draft erstellt (`docs/assets/articles/a2-DE.md`)
 - [ ] **A3:** Drei Datentöpfe für KPIs - Review & Finalisierung
 - [ ] **A4:** Closed Loops für Qualität & Maintenance - Review & Finalisierung
 
@@ -29,9 +36,10 @@
 - [ ] Projektantrag für neue Phase Q1/Q2 2026 finalisieren
 
 ## 📊 Fortschritt
-- **Abgeschlossen:** 0/X Aufgaben
-- **In Arbeit:** Use-Case-Bibliothek & Blog-Serie Umsetzung
-- **Blockiert:** Noch keine Blocker
+- **Abgeschlossen:** 2/10 Aufgaben (UC-06, Artikel-01)
+- **In Arbeit:** UC-01, Artikel-02
+- **Übernommen in Sprint 15:** UC-01, Artikel-02, UC-02-05, Artikel-03-04
+- **Blockiert:** Keine Blocker
 
 ## 🔗 Wichtige Entscheidungen
 - **Routing:** Use-Cases werden unter `dsp/use-case/xyz` erreichbar sein (analog zu `dsp/use-case/track-trace`)
@@ -91,6 +99,8 @@
 - **A4-DE.md:** Closed Loops für Qualität & Maintenance (`docs/assets/articles/a4-DE.md`)
 
 ### Review-Schritte (pro Artikel)
+- [x] **Artikel-01:** Review durch externes Team abgeschlossen
+- [ ] **Artikel-02:** Review durch externes Team (in Arbeit)
 - [ ] Tech Reviewer Review
 - [ ] MES-ERP Reviewer Review
 - [ ] Redaktion Review
@@ -113,6 +123,41 @@
 
 **Ergebnis:** Konsistenz zwischen DSP-Tab Section "Use Cases" und Direct-Access-Page `dsp/use-case` durch Wiederverwendung der gleichen Komponente. Keine Duplizierung, Single Source of Truth.
 
+### UC-06: Interoperability Event-to-Process Map
+- [x] **Route implementiert:** `dsp/use-case/interoperability`
+- [x] **Komponente erstellt:** `InteroperabilityUseCaseComponent`
+- [x] **SVG-Generator-Service:** Dynamische SVG-Generierung aus Struktur-Konfiguration
+- [x] **I18n-Service:** UC-spezifische Texte (DE/EN/FR)
+- [x] **Step-Animation:** Vollständige Animation mit Controls (Prev/Next, Auto-Play, Loop, Step-Dots, Zoom)
+- [x] **Assets:** SVG-Dateien, Steps-JSON, Dokumentation vorhanden
+
+**Ergebnis:** UC-06 vollständig implementiert und produktionsreif. Dynamische SVG-Generierung ermöglicht einfache Wartung und I18n-Unterstützung.
+
+### Artikel-01: Interoperabilität als Fundament
+- [x] **Draft erstellt:** `docs/assets/articles/a1-DE.md`
+- [x] **Review durch externes Team:** Abgeschlossen
+
+**Ergebnis:** Artikel-01 bereit für finale Review-Schritte (Tech Reviewer, MES-ERP Reviewer, Redaktion).
+
 ---
 
-*Letzte Aktualisierung: 21.01.2026*
+---
+
+## 📦 Assets erstellt (Sprint 14)
+
+### Use-Case Assets
+- **UC-06:**
+  - `uc-06-event-to-process-map-DE.svg` / `-EN.svg` (SVG-Dateien)
+  - `uc-06-event-to-process-map.steps.json` (Animation-Steps)
+  - `UC-06-SVG-Template-DE.png` / `-EN.png` (Templates)
+  - `UC-06-Interoperability-Shopfloor-first.png` / `-Business-first.png` (Screenshots)
+  - `uc-06-interoperability.md` (Dokumentation)
+  - `UC-06-IMPLEMENTATION-STATUS.txt` (Status-Dokumentation)
+
+### Artikel Assets
+- **Artikel-01:** `a1-DE.md` (Draft, Review abgeschlossen)
+- **Artikel-02:** `a2-DE.md` (Draft, in Arbeit)
+
+---
+
+*Letzte Aktualisierung: 04.02.2026*
