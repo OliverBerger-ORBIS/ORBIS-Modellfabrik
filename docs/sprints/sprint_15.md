@@ -17,7 +17,11 @@
   - ✅ Domain-Model (Object Mesh) erstellt
   - ✅ Wiki-Doku aktualisiert (`UC-01_Track_Trace-genealogy.md`)
   - *Hinweis: Technische OSF-Implementierung (SVG, Timeline) erfolgt separat.*
-- [ ] **UC-02:** 3 Datentöpfe - Konzept & Visuals
+- [x] **UC-02:** 3 Datentöpfe - Konzept & Visuals
+  - ✅ Textsynchronisation mit Artikel A3 (Begriffe harmonisiert)
+  - ✅ Visuelle Assets erstellt (Concept.drawio & Architecture.drawio)
+  - [ ] **Entscheidung:** Finalisierung Layout (Vertical Concept vs. Horizontal Lanes)
+  - ✅ Status auf "Konzept Finalisiert" gesetzt
 - [ ] **UC-03:** AI Lifecycle - Konzept & Visuals
 - [ ] **UC-04:** Closed Loop Quality - Konzept & Visuals
 - [ ] **UC-05:** Predictive Maintenance - Konzept & Visuals
@@ -28,16 +32,10 @@
   - ✅ Visual 1 (Partitur) erstellt
   - ✅ Visual 3 (Object Mesh) erstellt
   - [ ] Start Review-Prozess (extern/redaktionell)
-- [ ] **A3:** Drei Datentöpfe für KPIs - Review & Finalisierung
-  - [ ] Draft erstellen
-  - [ ] Review durch externes Team
-  - [ ] Tech Reviewer Review
-  - [ ] MES-ERP Reviewer Review
-  - [ ] Redaktion Review
-  - [ ] CTA-Optionen finalisieren
-  - [ ] OSF Proof Screenshots auswählen und croppen (DE/EN)
-  - [ ] SAP-Beispiele konsistent prüfen
-  - [ ] Finale Links zu ADO Wiki Use-Cases eintragen
+- [x] **A3:** Drei Datentöpfe für KPIs - Draft & Visuals fertig
+  - ✅ Draft harmonisiert (`docs/assets/articles/a3-DE.md`)
+  - ✅ Visuals referenziert (PNGs vorhanden)
+  - [ ] Start Review-Prozess (extern/redaktionell)
 - [ ] **A4:** Closed Loops für Qualität & Maintenance - Review & Finalisierung
   - [ ] Draft erstellen
   - [ ] Review durch externes Team

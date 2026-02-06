@@ -27,10 +27,10 @@ Viele Fertigungsunternehmen messen viel – und entscheiden dennoch zu langsam. 
 ### 2. Drei Datentöpfe – ein Kontextmodell: der Unterschied zwischen Messen und Verstehen
 Belastbare KPIs entstehen, wenn drei Datenwelten zusammengeführt werden:
 - **Business-Kontext**: Kunden-/Produktionsaufträge, Material/Charge, Plan/Vorgang, ERP-Referenzen (z. B. Supplier/PO)
-- **Shopfloor-Prozessdaten**: Stations-Events, Zustände, Zeiten, Qualität (AIQS), Transfers (FTS/AGV), Lagerbewegungen
+- **Shopfloor-Prozessdaten**: Stations-Events, Zustände, Zeiten, Qualität (AIQS), FTS-Transfers, Lagerbewegungen
 - **Umwelt/Sensorik (optional)**: Energie, Temperatur/Feuchte, Vibration
 
-Der entscheidende Schritt ist das **gemeinsame Kontextmodell**: Order ↔ Werkstück (z. B. NFC) ↔ Station ↔ Zeit. Erst dadurch werden Zahlen erklärbar.
+Der entscheidende Schritt ist das **gemeinsame Kontextmodell**: Order ↔ Werkstück-ID (NFC) ↔ Station ↔ Zeit. Erst dadurch werden Zahlen erklärbar.
 
 ### 3. DSP als Vermittler: Harmonisierte Streams statt Insellösungen
 DSP übernimmt die vermittelnde Rolle zwischen Quellen und Konsumenten:
@@ -76,26 +76,28 @@ Call to Action: Sprechen Sie uns an für einen KPI & Data Readiness Check – wi
 
 ## Visuals (Einbindung)
 
-### Visual 1: UC-02 (Wiki-Template)
-- Link: [UC-02 — 3 Datentöpfe (A3) - Overview](https://dev.azure.com/ORBIS-AG-SAP/Modellfabrik/_wiki/wikis/Modellfabrik.wiki/8412/UC-02-%E2%80%94-3-Datent%C3%B6pfe-(A3)))
-- Caption DE: Drei Datenwelten (Business, Shopfloor, Umwelt) werden über DSP in ein gemeinsames Kontextmodell geführt und zielsystemoffen bereitgestellt – als Grundlage für KPIs und Analytik.
-- Alt-Text DE: Diagramm zeigt drei Datenpools als Datenbanken, DSP als Mediation Layer und Best-of-Breed Zielplattformen.
+### Visual 1: Die Architektur (3 Datentöpfe & DSP)
+Dieses Hauptdiagramm visualisiert den Kern des Artikels: Business, Shopfloor und Environment fließen zusammen.
+- **Variante A (Konzept):** `docs/assets/use-cases/uc-02/diagrams/UC-02_3-Data-Pools_Concept.drawio` (Export als PNG)
+- **Variante B (Lanes):** `docs/assets/use-cases/uc-02/diagrams/UC-02_3-Data-Pools_Architecture_Lanes.drawio` (Export als PNG)
+- **Caption DE:** Best-of-Breed Datenaggregation: DSP vermittelt zwischen Datenpools und Zielplattformen – KPIs werden erklärbar und steuerbar.
+- **Alt-Text DE:** Schematische Darstellung von Business/Shopfloor/Umwelt-Datenbanken, DSP-Kontextschicht und auswählbaren Zielplattformen.
 
-### Visual 2: UC-02 Diagramm (DE) – Attachment
-- Datei/Link: ![UC-02-3-Data-Pools-DE-v2.png](/.attachments/UC-02-3-Data-Pools-DE-v2-f5c73c69-16b9-4137-b3e0-fc2b1af80f86.png)
-- Hinweis: verwende die v2-Grafik (DB-Zylinder + DSP Mediation + Target Selection)
-- Caption DE: Best-of-Breed Datenaggregation: DSP vermittelt zwischen Datenpools und Zielplattformen – KPIs werden erklärbar und steuerbar.
-- Alt-Text DE: Schematische Darstellung von Business/Shopfloor/Umwelt-Datenbanken, DSP-Kontextschicht und auswählbaren Zielplattformen.
+### Visual 2: Die Logik (Das Objekt-Geflecht)
+Hier greifen wir den Gedanken aus Artikel 2 auf: Die Daten ergeben nur Sinn, wenn sie über Order, Werkstück und Station verknüpft sind.
+- **Datei:** `docs/assets/use-cases/uc-01/diagrams/ObjectMesh_ER.drawio` (oder `ObjectMesh_ER_simplified.png`)
+- **Caption DE:** Das Kontextmodell verbindet die Welten: Eine Order besteht aus Werkstücken (Shopfloor), die an Stationen bearbeitet werden (Environment/Energy).
+- **Alt-Text DE:** Entity-Relationship-Darstellung der Verbindungen zwischen Order, Batch, Unit, Station und Sensor-Events.
 
-### Visual 3: OSF Proof Screens (optional, DE)
-- Orders / Process / Environment Data / Message Monitor (je nachdem, was am besten passt)
-- Datei/Link: <DE-OSF-PROOF-ATTACHMENT-1>
-- Datei/Link: <DE-OSF-PROOF-ATTACHMENT-2>
-- Caption DE: OSF zeigt das Prinzip: Datenströme werden sichtbar und bilden die Grundlage für Kontextmodell, KPIs und Analytik.
-- Alt-Text DE: OSF-Screenshots, die Datenquellen und Zustände als Basis für KPI/Analytics zeigen.
+### Visual 3: Der Beweis (OSF Screenshot)
+Wir zeigen, dass die Theorie in der Praxis (OSF) als echter Datenstrom existiert.
+- **Motiv:** "OSF Message Monitor" oder "Order Detail View"
+- **Warum:** Der Message Monitor zeigt live, wie Sensor-Werte und Order-IDs in einer JSON-Nachricht (DSP Result) zusammenkommen.
+- **Caption DE:** Ein Blick in den Maschinenraum: OSF zeigt live, wie Prozess-Events mit Order-Kontext angereichert werden.
+- **Alt-Text DE:** Screenshot des OSF Message Monitors mit JSON-Payloads, die Temperatur, Sensorwerte und Auftragsnummern enthalten.
 
 ## Offene Punkte / Review Notes
 - [ ] CTA-Entscheidung: Option 1 / 2 / 3
 - [ ] Auswahl der OSF Proof Screens (DE/EN) und Cropping festlegen
-- [ ] Begrifflichkeiten konsistent (FTS/AGV, Environment/Sensorik)
+- [ ] Begrifflichkeiten konsistent (FTS, Werkstück-ID, Environment/Sensorik) - ✅
 - [ ] SAP-Beispiele prüfen („SAP als Beispiel“ konsistent)

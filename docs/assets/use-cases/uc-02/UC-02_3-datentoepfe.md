@@ -1,5 +1,17 @@
 # UC-02 — 3 Datentöpfe (A3)
 
+## Status
+- Owner: @<Oliver Berger>
+- Scope: OSF-BLOG-2026
+- Messe-Tag: LOGIMAT
+- Referenziert in: A3 (DE/EN Draft) #69081
+- Feature: #69068
+- **STATUS: KONZEPT FINALISIERT** (Stand: 2026-02-06)
+  - Konzept und Artikel A3 sind synchronisiert.
+  - Visuals liegen bereit (PNG).
+
+---
+
 ## DE
 
 **Titel:** Datenaggregation: 3 Datentöpfe für belastbare KPIs  
@@ -17,11 +29,15 @@
 
 **Datenquellen:**
 - **Business:** Kundenaufträge, Produktionspläne, Material/Chargen, Stammdaten, Supplier/PO-Entities
-- **Shopfloor:** Events, Zustände, Parameter, Qualitätsresultate (AIQS), Transfers (FTS/AGV), Lagerbewegungen
+- **Shopfloor:** Events, Zustände, Parameter, Qualitätsresultate (AIQS), FTS-Transfers, Lagerbewegungen
 - **Umwelt/Sensorik:** Temperatur/Feuchte/Luftqualität/Energie (optional: Vibration)
 
 **KPI/Outcome-Bezug:** OEE, Stillstandsgründe, FPY, Energie pro Werkstück/Los, Durchlaufzeit/WIP, Traceability Coverage (als Enabler)  
-**Orchestrierung / Systeminteraktion:** DSP harmonisiert und kontextualisiert die Streams (Semantik + IDs + Zeit), stellt sie für BI/Analytics/AI bereit (Best-of-Breed; SAP als Beispiel) und ermöglicht optional Rückkopplungen in MES/ERP (Closed Loop).  
+**Orchestrierung / Systeminteraktion (DSP):**  
+- **Normalize:** Semantik und Formate harmonisieren  
+- **Enrich:** Kontext anreichern (Order, Werkstück/NFC, Station, Zeit)  
+- **Correlate:** Events zu Prozessschritten verbinden  
+DSP stellt die Daten zielsystemoffen für BI/Analytics/AI bereit (Best-of-Breed; SAP als Beispiel) und ermöglicht optional Rückkopplungen (Closed Loop).  
 **Demonstrator vs produktive Lösung (Pflicht):**  
 „Die ORBIS SmartFactory (OSF) dient als Demonstrator, um Datenflüsse, Zustände und Integrationsprinzipien anschaulich zu machen. Die dargestellten Use Cases sind konzeptionell und werden je nach Systemlandschaft (ERP/MES/Analytics) kundenspezifisch umgesetzt.“  
 **CTA:** KPI Readiness Check (Workshop)  
@@ -51,7 +67,11 @@
 - **Environment/Sensors:** temperature/humidity/air quality/energy (optional: vibration)
 
 **KPI/Outcome:** OEE, downtime reasons, FPY, energy per unit/batch, lead time/WIP, traceability coverage (as enabler)  
-**Orchestration / interaction:** DSP harmonizes and contextualizes streams (semantics + IDs + time), provisions them to BI/analytics/AI (best-of-breed; SAP as an example) and optionally enables feedback to MES/ERP (closed loop).  
+**Orchestration / interaction (DSP):**  
+- **Normalize:** harmonize semantics and formats  
+- **Enrich:** add context (order, workpiece/NFC, station, time)  
+- **Correlate:** link events to process steps  
+DSP provisions data to BI/analytics/AI (best-of-breed; SAP as an example) and optionally enables feedback (closed loop).  
 **Disclaimer (required):**  
 “The ORBIS SmartFactory (OSF) is a demonstrator used to showcase data flows, states, and integration principles. The depicted use cases are conceptual and are implemented customer-specifically depending on the target landscape (ERP/MES/analytics).”  
 **CTA:** KPI readiness check (workshop)  
@@ -62,19 +82,17 @@
 
 ## Visuals / Assets
 
-### Visual 1: UC-02 Diagram (DE)
-- Datei/Link Vorschlag: ![UC-02-3-Data-Pools-DE.png](/.attachments/UC-02-3-Data-Pools-DE-174436e5-2ce4-4f5c-8ea5-a3eaf7319d21.png)
-- potentielle Änderungen (Datentöpfe als Zylinder = Datenbank), potentiell: vermittelnde Rolle von DSP, Auswahl in Analytic-App , beliebige Cloud oder IIot-Plattform
+### Visual 1: UC-02 Diagram (Concept View)
+- Datei: [UC-02_3-Data-Pools_Concept.drawio](diagrams/UC-02_3-Data-Pools_Concept.drawio)
 - Caption DE: Drei Datenwelten werden zu einem gemeinsamen Kontextmodell verbunden – als Grundlage für KPIs, Analytik und AI.
 - Alt-Text DE: Diagramm, das Business-, Shopfloor- und Umweltdaten in ein gemeinsames Kontextmodell und KPI/Analytics-Ergebnisse zusammenführt.
-- Version 2: ![UC-02-3-Data-Pools-DE-v2.png](/.attachments/UC-02-3-Data-Pools-DE-v2-05fdbcc0-19f3-4fd8-a1ba-69339a4ecf8c.png)
 
-### Visual 2: UC-02 Diagram (EN)
-- Datei/Link: ![UC-02-3-Data-Pools-EN.png](/.attachments/UC-02-3-Data-Pools-EN-fa602cb1-58ff-4e02-b937-954578de748c.png)
-- potentielle Änderung s.o.
-- Caption EN: Three data worlds are unified into one context model—enabling KPIs, analytics, and AI.
-- Alt text EN: Diagram combining business, shopfloor, and environment data into a shared context model and KPI/analytics outcomes.
-- Version 2: ![UC-02-3-Data-Pools-EN-v2.png](/.attachments/UC-02-3-Data-Pools-EN-v2-a7f90102-bad5-45d1-8269-5da6a673f40d.png)
+### Visual 2: UC-02 Diagram (Architecture View - Lanes)
+- Datei: [UC-02_3-Data-Pools_Architecture_Lanes.drawio](diagrams/UC-02_3-Data-Pools_Architecture_Lanes.drawio)
+- Beschreibung: Technische Sicht in 3 Lanes.
+  - Bottom: Data Pools (Sources)
+  - Center: DSP Mediation (Normalize -> Enrich -> Correlate)
+  - Top: Analytics & Value Targets
 
 ### Optional: OSF Proof Screenshot(s)
 Hinweis: In OSF existieren bereits passende Einstiegspunkte (z. B. Orders/Environment Data/Message Monitor). Sensor-Korrelation ist für UC-02 optional und kann später ergänzt werden.
@@ -95,9 +113,9 @@ UC-02 visualisiert **das Konzept** „3 Datentöpfe → Kontextmodell → KPI/An
 
 ### Inhalte / Elemente (statisch modelliert)
 - **Datenpool 1 (Business)**: Order/Customer/Material/Plan (inkl. PO/Supplier Entities)
-- **Datenpool 2 (Shopfloor)**: Station Events, AGV/FTS Transfers, Quality (AIQS), Warehouse moves
+- **Datenpool 2 (Shopfloor)**: Station Events, FTS Transfers, Quality (AIQS), Warehouse moves
 - **Datenpool 3 (Umwelt/Sensorik)**: Temperature/Humidity/Energy (optional Vibration)
-- **Shared Context Model**: Verknüpfung über IDs + Zeit + Semantik (Order ↔ Workpiece/NFC ↔ Station ↔ Time)
+- **Shared Context Model**: Verknüpfung über IDs + Zeit + Semantik (Order ↔ Werkstück-ID (NFC) ↔ Station ↔ Time)
 - **Outcomes**: KPIs, RCA, Analytics/AI enablement, optional closed loop to MES/ERP
 
 ### Farb-/Icon-Konventionen (für Konsistenz)
