@@ -1,0 +1,221 @@
+<mxfile host="app.diagrams.net" modified="2026-02-05T00:00:00.000Z" agent="GPT-5.2" version="22.1.0" type="device">
+  <diagram id="tt-white-2proc" name="Track&amp;Trace WHITE — 2 Prozesse (Soll/Ist)">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Header -->
+        <mxCell id="10" value="Track &amp; Trace — Produkt WHITE: Korrelation von 2 Business-Prozessen (Soll/Ist)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="1840" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="11" value="Workpiece-ID / NFC: WHITE-Part (Beispiel)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#dae8fc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="90" width="360" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="12" value="Klammern = Station/Device wird wegen paralleler Transport-Orders (Produkt RED) durch das AGV angefahren." style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="420" y="90" width="880" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="13" value="Wording: Das AGV erhält Transport-Orders und bedient diese ggf. parallel (führt zu Detours)." style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="90" width="560" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Panel Titles -->
+        <mxCell id="20" value="Prozess 1: Purchase-Order -> Storage-Order (PLAN WHITE: DPS -> HBW)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#d5e8d4;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="150" width="900" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="21" value="Prozess 2: Customer-Order -> Production-Order (PLAN WHITE: HBW -> DRILL -> AIQS -> DPS)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#d5e8d4;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="980" y="150" width="900" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Lanes (Left / Process 1) -->
+        <mxCell id="30" value="SOLL (Plan)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="215" width="900" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="31" value="IST (Events)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#e1d5e7;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="335" width="900" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="32" value="UNGEPLANT (Overlay)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="495" width="900" height="120" as="geometry"/>
+        </mxCell>
+
+        <!-- Lanes (Right / Process 2) -->
+        <mxCell id="40" value="SOLL (Plan)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="980" y="215" width="900" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="41" value="IST (Events)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#e1d5e7;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="980" y="335" width="900" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="42" value="UNGEPLANT (Overlay)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="980" y="495" width="900" height="120" as="geometry"/>
+        </mxCell>
+
+        <!-- ========================= -->
+        <!-- Process 1: PLAN (DPS -> HBW) -->
+        <!-- ========================= -->
+        <mxCell id="100" value="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="255" width="34" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="101" value="DPS" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="160" y="292" width="120" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="102" value="2" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="740" y="255" width="34" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="103" value="HBW" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="700" y="292" width="120" height="24" as="geometry"/>
+        </mxCell>
+
+        <!-- Process 1: ACTUAL (DPS -> (MILL) -> HBW) -->
+        <mxCell id="110" value="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="170" y="395" width="34" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="111" value="DPS" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="130" y="432" width="120" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="112" value="2" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="455" y="395" width="34" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="113" value="(MILL)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="410" y="432" width="140" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="114" value="3" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="740" y="395" width="34" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="115" value="HBW" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="700" y="432" width="120" height="24" as="geometry"/>
+        </mxCell>
+
+        <!-- Sequence edges (Process 1 actual) -->
+        <mxCell id="120" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;endArrow=none;startArrow=none;" edge="1" parent="1" source="110" target="112">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="121" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;endArrow=none;startArrow=none;" edge="1" parent="1" source="112" target="114">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Mapping (Process 1 plan -> actual) -->
+        <mxCell id="122" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;dashed=1;endArrow=none;startArrow=none;" edge="1" parent="1" source="100" target="110">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="123" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;dashed=1;endArrow=none;startArrow=none;" edge="1" parent="1" source="102" target="114">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Overlay callout (Process 1) -->
+        <mxCell id="124" value="Detour: (MILL) weil AGV parallel Transport-Order RED bedient" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="190" y="530" width="330" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="125" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="112" target="124">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ========================= -->
+        <!-- Process 2: PLAN (HBW -> DRILL -> AIQS -> DPS) -->
+        <!-- ========================= -->
+        <mxCell id="200" value="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="255" width="34" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="201" value="HBW" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="292" width="140" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="202" value="2" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="255" width="34" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="203" value="DRILL" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1210" y="292" width="140" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="204" value="3" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="255" width="34" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="205" value="AIQS" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="292" width="140" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="206" value="4" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1640" y="255" width="34" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="207" value="DPS" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1600" y="292" width="140" height="24" as="geometry"/>
+        </mxCell>
+
+        <!-- Process 2: ACTUAL (HBW -> (AIQS-RED) -> DRILL -> (DPS-RED) -> AIQS -> DPS) -->
+        <mxCell id="210" value="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="395" width="34" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="211" value="HBW" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="432" width="160" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="212" value="2" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="395" width="34" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="213" value="(AIQS - RED)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="432" width="220" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="214" value="3" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="395" width="34" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="215" value="DRILL" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="432" width="160" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="216" value="4" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1460" y="395" width="34" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="217" value="(DPS - RED)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="432" width="220" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="218" value="5" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1600" y="395" width="34" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="219" value="AIQS" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1550" y="432" width="160" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="220" value="6" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1740" y="395" width="34" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="221" value="DPS" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1690" y="432" width="160" height="24" as="geometry"/>
+        </mxCell>
+
+        <!-- Sequence edges (Process 2 actual) -->
+        <mxCell id="230" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;endArrow=none;startArrow=none;" edge="1" parent="1" source="210" target="212"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="231" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;endArrow=none;startArrow=none;" edge="1" parent="1" source="212" target="214"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="232" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;endArrow=none;startArrow=none;" edge="1" parent="1" source="214" target="216"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="233" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;endArrow=none;startArrow=none;" edge="1" parent="1" source="216" target="218"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="234" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;endArrow=none;startArrow=none;" edge="1" parent="1" source="218" target="220"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Mapping (Process 2 plan -> actual) -->
+        <mxCell id="240" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;dashed=1;endArrow=none;startArrow=none;" edge="1" parent="1" source="200" target="210"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="241" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;dashed=1;endArrow=none;startArrow=none;" edge="1" parent="1" source="202" target="214"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="242" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;dashed=1;endArrow=none;startArrow=none;" edge="1" parent="1" source="204" target="218"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="243" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;dashed=1;endArrow=none;startArrow=none;" edge="1" parent="1" source="206" target="220"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Overlay callouts (Process 2) -->
+        <mxCell id="250" value="Detour: (AIQS - RED) weil AGV parallel Transport-Order RED bedient" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="530" width="360" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="251" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="212" target="250"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="252" value="Detour: (DPS - RED) weil AGV parallel Transport-Order RED bedient" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="530" width="360" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="253" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="216" target="252"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Legend -->
+        <mxCell id="300" value="Legende: SOLL = Plan (gelb) | IST = Events (violett) | Detours wegen parallel RED = rot (Klammern)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="40" y="635" width="1840" height="45" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

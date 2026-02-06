@@ -1,0 +1,154 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.3.0 Chrome/140.0.7339.249 Electron/38.7.2 Safari/537.36" version="29.3.0">
+  <diagram id="dsp_er_01" name="DSP ER">
+    <mxGraphModel dx="772" dy="547" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;ProductionOrder (Fertigungsauftrag)&lt;/b&gt;&lt;br/&gt;production_order_id : String (PK)&lt;br/&gt;status : String (TBD)&lt;br/&gt;created_at : DateTime&lt;br/&gt;updated_at : DateTime&lt;/div&gt;" vertex="1">
+          <mxGeometry height="170" width="300" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;ProductionOperation (Vorgang)&lt;/b&gt;&lt;br/&gt;operation_id : String (PK)&lt;br/&gt;production_order_id : String (FK)&lt;br/&gt;sequence : Integer&lt;br/&gt;asset_id : String (FK)&lt;br/&gt;planned_start : DateTime (TBD)&lt;br/&gt;planned_end : DateTime (TBD)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="210" width="300" x="40" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;ProductionComponent (Komponente)&lt;/b&gt;&lt;br/&gt;component_id : String (PK)&lt;br/&gt;production_order_id : String (FK)&lt;br/&gt;material_number : String&lt;br/&gt;quantity : Number (TBD)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="170" width="300" x="40" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;SinglePart (Einzelteil)&lt;/b&gt;&lt;br/&gt;id : String (PK)&lt;br/&gt;ext_id : String (Part DMC)&lt;br/&gt;nfc_code : String (unique)&lt;br/&gt;wip_state : String&lt;br/&gt;type : String&lt;br/&gt;material_number : String&lt;br/&gt;org_unit : String&lt;br/&gt;prio : String (Fastlane)&lt;br/&gt;status_list[n] : Status...&lt;br/&gt;created_at : DateTime&lt;br/&gt;updated_at : DateTime&lt;/div&gt;" vertex="1">
+          <mxGeometry height="280" width="310" x="360" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;HandlingUnit (HU)&lt;/b&gt;&lt;br/&gt;id : String (PK)&lt;br/&gt;ext_id : String (Part DMC)&lt;br/&gt;type : String&lt;br/&gt;status : String&lt;br/&gt;created_at : DateTime&lt;br/&gt;updated_at : DateTime&lt;/div&gt;" vertex="1">
+          <mxGeometry height="200" width="310" x="360" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;HU_Content (Zuordnung)&lt;/b&gt;&lt;br/&gt;hu_id : String (FK)&lt;br/&gt;part_id : String (FK)&lt;br/&gt;PK = (hu_id, part_id)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="130" width="310" x="360" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;TransportRequest&lt;/b&gt;&lt;br/&gt;id : String (PK)&lt;br/&gt;source : String (Source bin)&lt;br/&gt;target : String (Target bin)&lt;br/&gt;type : String (Request type)&lt;br/&gt;prio : String&lt;br/&gt;requester : String&lt;br/&gt;additional_tags[n] : key/value&lt;/div&gt;" vertex="1">
+          <mxGeometry height="220" width="320" x="700" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;TransportRequestTag (AdditionalTag)&lt;/b&gt;&lt;br/&gt;request_id : String (FK)&lt;br/&gt;key : String&lt;br/&gt;value : String&lt;/div&gt;" vertex="1">
+          <mxGeometry height="140" width="320" x="700" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;TransportOrder&lt;/b&gt;&lt;br/&gt;order_id : String (PK)&lt;br/&gt;request_id : String (FK)&lt;br/&gt;created_at : DateTime&lt;br/&gt;updated_at : DateTime&lt;br/&gt;started_at : DateTime&lt;br/&gt;status : String&lt;br/&gt;current_mission_id : String (FK)&lt;br/&gt;agv_id : String (FK -&gt; Asset)&lt;br/&gt;error_id : String (FK)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="250" width="320" x="700" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="11" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;Mission&lt;/b&gt;&lt;br/&gt;mission_id : String (PK)&lt;br/&gt;order_id : String (FK)&lt;br/&gt;step : Integer&lt;br/&gt;created_at : DateTime&lt;br/&gt;updated_at : DateTime&lt;br/&gt;started_at : DateTime&lt;/div&gt;" vertex="1">
+          <mxGeometry height="190" width="320" x="700" y="740" as="geometry" />
+        </mxCell>
+        <mxCell id="12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;TransportError&lt;/b&gt;&lt;br/&gt;error_id : String (PK)&lt;br/&gt;error_code : String&lt;br/&gt;error_text : String&lt;br/&gt;created_at : DateTime&lt;/div&gt;" vertex="1">
+          <mxGeometry height="160" width="320" x="700" y="960" as="geometry" />
+        </mxCell>
+        <mxCell id="13" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;TransportItem (Transportgut)&lt;/b&gt;&lt;br/&gt;order_id : String (FK)&lt;br/&gt;hu_id : String (FK, nullable)&lt;br/&gt;part_id : String (FK, nullable)&lt;br/&gt;Hinweis: genau eins von hu_id/part_id belegt&lt;/div&gt;" vertex="1">
+          <mxGeometry height="180" width="320" x="620" y="1200" as="geometry" />
+        </mxCell>
+        <mxCell id="14" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;ProcessData&lt;/b&gt;&lt;br/&gt;process_data_id : String (PK)&lt;br/&gt;key : String&lt;br/&gt;value : String/Number&lt;br/&gt;units : String&lt;br/&gt;asset_id : String (FK)&lt;br/&gt;created_at : DateTime&lt;br/&gt;part_id : String (FK, nullable)&lt;br/&gt;hu_id : String (FK, nullable)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="220" width="330" x="40" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="15" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;LocationEvent (Locations)&lt;/b&gt;&lt;br/&gt;location_event_id : String (PK)&lt;br/&gt;asset_id : String (FK)&lt;br/&gt;timestamp_in : DateTime&lt;br/&gt;timestamp_out : DateTime&lt;br/&gt;part_id : String (FK, nullable)&lt;br/&gt;hu_id : String (FK, nullable)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="200" width="330" x="400" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="16" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;LinkEvent (Links)&lt;/b&gt;&lt;br/&gt;link_event_id : String (PK)&lt;br/&gt;target_type : String (Transport/HU/ProdOrder/...)&lt;br/&gt;target_id : String&lt;br/&gt;created_at : DateTime&lt;br/&gt;part_id : String (FK, nullable)&lt;br/&gt;hu_id : String (FK, nullable)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="200" width="330" x="760" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="17" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;Measurement (Messwert)&lt;/b&gt;&lt;br/&gt;measurement_id : String (PK)&lt;br/&gt;metric_key : String&lt;br/&gt;metric_value : String/Number&lt;br/&gt;units : String&lt;br/&gt;measured_at : DateTime&lt;br/&gt;part_id : String (FK)&lt;br/&gt;operation_id : String (FK, nullable)&lt;br/&gt;asset_id : String (FK)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="230" width="330" x="1120" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="18" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;Asset (Anlage/Equipment/AGV)&lt;/b&gt;&lt;br/&gt;asset_id : String (PK)&lt;br/&gt;name : String&lt;br/&gt;type : String&lt;/div&gt;" vertex="1">
+          <mxGeometry height="150" width="320" x="1040" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="19" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;MachineStatus&lt;/b&gt;&lt;br/&gt;status_id : String (PK)&lt;br/&gt;asset_id : String (FK)&lt;br/&gt;status_code : String&lt;br/&gt;status_text : String&lt;br/&gt;timestamp : DateTime&lt;/div&gt;" vertex="1">
+          <mxGeometry height="190" width="320" x="1040" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="20" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;div style=&#39;font-family:Helvetica; font-size:12px; line-height:1.25;&#39;&gt;&lt;b&gt;Hinweis&lt;/b&gt;&lt;br/&gt;Felder mit (TBD) sind Platzhalter.&lt;br/&gt;Felder aus den Screenshots wurden übernommen.&lt;br/&gt;Kardinalitäten stehen als Labels an den Kanten.&lt;/div&gt;" vertex="1">
+          <mxGeometry height="140" width="320" x="1040" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="200" edge="1" parent="1" source="2" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="3" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;1 ──&lt; n&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="201" edge="1" parent="1" source="2" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="4" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;1 ──&lt; n&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="202" edge="1" parent="1" source="2" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;dashed=1;" target="5" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;1 ──&lt; n (produced parts)&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="203" edge="1" parent="1" source="3" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="18" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;n &gt;── 1 (work center)&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="204" edge="1" parent="1" source="18" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="19" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;1 ──&lt; n&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="205" edge="1" parent="1" source="5" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="7" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;1 ──&lt; n&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="206" edge="1" parent="1" source="6" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="7" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;1 ──&lt; n&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="207" edge="1" parent="1" source="5" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;dashed=1;" target="6" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;n &gt;── 0..1 (aktuelles HU)&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="208" edge="1" parent="1" source="8" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="9" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;1 ──&lt; n&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="209" edge="1" parent="1" source="8" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="10" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;1 ──&lt; n (Orders)&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="210" edge="1" parent="1" source="10" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="11" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;1 ──&lt; n (Missions)&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="211" edge="1" parent="1" source="10" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="12" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;0..1 &gt;── 1 (Error)&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="212" edge="1" parent="1" source="10" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="18" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;n &gt;── 0..1 (AGV)&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="213" edge="1" parent="1" source="10" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="13" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;1 ──&lt; n (Transportgut)&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="214" edge="1" parent="1" source="13" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="6" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;n &gt;── 0..1 (HU)&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="215" edge="1" parent="1" source="13" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="5" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;n &gt;── 0..1 (Part)&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="216" edge="1" parent="1" source="5" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="14" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;1 ──&lt; n&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="217" edge="1" parent="1" source="5" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="15" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;1 ──&lt; n&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="218" edge="1" parent="1" source="5" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="16" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;1 ──&lt; n&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="219" edge="1" parent="1" source="6" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;dashed=1;" target="14" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;1 ──&lt; n&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="220" edge="1" parent="1" source="6" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;dashed=1;" target="15" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;1 ──&lt; n&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="221" edge="1" parent="1" source="6" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;dashed=1;" target="16" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;1 ──&lt; n&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="222" edge="1" parent="1" source="14" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="18" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;n &gt;── 1&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="223" edge="1" parent="1" source="15" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="18" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;n &gt;── 1&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="224" edge="1" parent="1" source="17" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="18" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;n &gt;── 1&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="225" edge="1" parent="1" source="17" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="5" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;n &gt;── 1&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="226" edge="1" parent="1" source="17" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;" target="3" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;n &gt;── 0..1&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="227" edge="1" parent="1" source="16" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;dashed=1;" target="10" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;target_id (optional)&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="228" edge="1" parent="1" source="16" style="endArrow=none;startArrow=none;html=1;strokeWidth=1;dashed=1;" target="2" value="&lt;div style=&#39;font-family:Helvetica; font-size:11px;&#39;&gt;target_id (optional)&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -7,10 +7,9 @@
 - Referenziert in: A2 (DE/EN Draft) #69078 und #69079
 - Feature: #69067
 - User Stories: #69087
-- **⚠️ AKTUELLER STATUS: WIRD UMGEARBEITET** (Stand: 2026-01-21)
-  - SVG-Diagramm-Implementierung wird überarbeitet
-  - Layout-Planung erfolgt in visuellen Tools (Draw.io) vor Code-Implementierung
-  - Siehe Abschnitt "Umarbeitung & Verbesserungsvorschläge" unten
+- **STATUS: KONZEPT FINALISIERT** (Stand: 2026-02-06)
+  - Strategie: Trennung in "Partitur" (Konzept) und "Live-Snapshot" (OSF)
+  - Siehe Abschnitt "Konzept-Evolution" und Artikel A2
 
 ---
 
@@ -23,25 +22,25 @@
 Werkstückgenealogie in (nahezu) Echtzeit: Wo ist was passiert – und warum?
 
 ### Kundennutzen (3)
-- End-to-End Traceability über Stationen, FTS/AGV, Lagerbewegungen und Qualität
+- End-to-End Traceability über Stationen, FTS, Lagerbewegungen und Qualität
 - Schnellere Ursachenanalyse bei Qualitätsabweichungen, Reklamationen und Störungen
 - Basis für Compliance, Rückrufmanagement und kontinuierliche Prozessoptimierung
 
 ### Pain Points (3)
 - Werkstückdaten sind verteilt und zeitlich nicht konsistent synchronisiert
 - Shopfloor-Events fehlen oder sind nicht eindeutig einem Werkstück zuordenbar
-- Qualitätsinformationen liegen vor, sind aber nicht sauber mit Prozess- und Logistikereignissen korreliert
+- Qualitätsinformationen liegen vor, sind aber nicht sauber mit PROZESS- und Logistikereignissen korreliert
 
 ### Datenquellen
 - **Business (ERP/MES):** Produktionsauftrag / Customer Order, Material/Batch, Qualitätsanforderungen, relevante Entitäten (z. B. ERP-ID, Kunde, Lieferant, Purchase Order / Wareneingang)
-- **Shopfloor:** eindeutige Werkstück-/NFC-Identifikation, Stations-Events (Start/Ende/Status), Bearbeitungszeiten, FTS/AGV-Transfers, Lagerbewegungen (z. B. HBW), Qualitätsereignisse (z. B. AIQS)
+- **Shopfloor:** eindeutige Werkstück-ID (NFC), Stations-Events (Start/Ende/Status), Bearbeitungszeiten, FTS-Transfers, Lagerbewegungen (z. B. HBW), Qualitätsereignisse (z. B. AIQS)
 - **Sensorik / Umwelt (optional, nicht Kern von UC-01):** Korrelation wird in UC-02 (Datenaggregation) vertieft
 
 ### KPI / Outcome-Bezug
 FPY / Ausschussquote, Reklamationskosten, Durchlaufzeit, Rückverfolgbarkeitsabdeckung (Traceability Coverage)
 
 ### Orchestrierung / Systeminteraktion
-Kernprinzip ist die eindeutige Identifikation des Werkstücks (z. B. NFC-Tag/Workpiece-ID) als „Join-Key“.  
+Kernprinzip ist die eindeutige Identifikation des Werkstücks (z. B. Werkstück-ID/NFC) als „Join-Key“.  
 Shopfloor-Events (Station/FTS/Lager/Qualität) werden entlang dieser ID zu einer lückenlosen Timeline korreliert und mit Business-Kontext (Order, Material/Batch, Kunde/Lieferant, ERP-IDs) angereichert.  
 Ergebnis ist eine Genealogie (Werkstück → Prozess-/Logistikschritte → Prüfungen → Entscheidungen), die Ursachenanalysen, Compliance/Rückruf und Rückmeldungen in Zielsysteme (ERP/MES/Analytics) ermöglicht.
 
@@ -107,20 +106,23 @@ OSF view showing a workpiece list, event history (timeline), and order context l
 ## Screen Spec / Implementation Notes (UC-01) — DE/EN
 
 ### Ziel
-UC-01 macht Track & Trace als Werkstück-Genealogie sichtbar: eine Timeline aus Shopfloor-Events, Logistikbewegungen und Qualitätsresultaten, angereichert mit Business-Kontext.
+UC-01 macht Track & Trace als Werkstück-Genealogie sichtbar.
+Wir unterscheiden (siehe A2):
+1. **Konzept-Ebene (Partitur):** Horizontaler Ist-Verlauf vs. Plan-Spur (FTS-Optimierungen, Puffer).
+2. **OSF-Screen (Live-Snapshot):** Vertikale Historie der Events für das aktuelle Werkstück.
 
 ### OSF-Umsetzung (Live statt statisch)
-- UC-01 ist **kein statisches Mock**, sondern zeigt **jeweils aktuelle Systeminformationen** (Live oder Replay-Session, abhängig vom OSF-Environment).
-- Der Screen dient als Proof, dass Events und Kontext über eine Workpiece-ID/NFC „joinbar“ sind und damit echte Traceability möglich wird.
+- UC-01 ist **kein statisches Mock**, sondern zeigt **jeweils aktuelle Systeminformationen**.
+- Der Screen dient als Proof, dass Events und Kontext über die **Werkstück-ID (NFC)** „joinbar“ sind.
 
 ### UI-Pattern (bestehender Screen)
-1) **Tracked Workpieces (Liste)**: Workpiece-ID, aktueller Ort/Station, Anzahl Events  
-2) **Event History**: Timeline/Swimlane, gruppiert nach Domain (Shopfloor/Logistik/Qualität), inkl. Zeitstempel  
+1) **Tracked Workpieces (Liste)**: Werkstück-ID, aktueller Ort/Station, Anzahl Events  
+2) **Event History**: Timeline (vertikal), wächst von oben nach unten (Chat-Pattern), sichert Auditierbarkeit.
 3) **Order Context**: Production/Customer Order, ERP-ID, Kunde, Start/Delivery, relevante Felder
 
 ### Join-Key-Prinzip (Pflicht)
-- Workpiece-ID/NFC muss als verbindendes Element zwischen Timeline und Order Context klar erkennbar sein (Badges/Chips/Labels).
-- In Events sollten referenzierte IDs (Workpiece, Order, Station) konsistent dargestellt werden.
+- **Werkstück-ID (NFC)** muss als verbindendes Element zwischen Timeline und Order Context klar erkennbar sein.
+- In Events sollten referenzierte IDs (Werkstück, Order, Station) konsistent dargestellt werden.
 
 ### Scope-Abgrenzung
 - **In Scope UC-01:** Timeline + Business-Panel + Korrelationsprinzip (Workpiece-ID/NFC → Order Context).
@@ -136,22 +138,23 @@ UC-01 macht Track & Trace als Werkstück-Genealogie sichtbar: eine Timeline aus 
 
 ### Acceptance Criteria
 - UC-01 Screen funktioniert im Live- und Replay-Environment und zeigt aktuelle Timeline/Order Context.
-- Workpiece-ID/NFC und Order-IDs sind nachvollziehbar verknüpft.
+- Werkstück-ID/NFC und Order-IDs sind nachvollziehbar verknüpft.
 - DE/EN Labels sind konsistent; Wiki/BLog nutzen sprachspezifische Screenshots.
 
 ---
 
 ## Visuals / Assets
-- OSF Track & Trace Live Screen (DE): ![UC-01-Trrack-Trace-DE.png](/.attachments/UC-01-Trrack-Trace-DE-c3340b70-01c3-4d29-a5b9-892e740f9af7.png)
-- OSF Track & Trace Live Screen (EN): ![UC-01-Trrack-Trace-EN.png](/.attachments/UC-01-Trrack-Trace-EN-d487b1a0-6ac8-472f-a051-a23f9d3df22d.png)
+- **Konzept-Diagramm (Partiture):** `docs/assets/use-cases/uc-01/diagrams/Track-Trace_Concept_Partiture.drawio`
+- OSF Track & Trace Live Screen (DE): ![UC-01-Track-Trace-DE.png](/.attachments/UC-01-Track-Trace-DE-c3340b70-01c3-4d29-a5b9-892e740f9af7.png)
+- OSF Track & Trace Live Screen (EN): ![UC-01-Track-Trace-EN.png](/.attachments/UC-01-Track-Trace-EN-d487b1a0-6ac8-472f-a051-a23f9d3df22d.png)
 - Hinweis: Die Screens werden als „Proof Visual" primär in Artikel A2 verwendet.
 
 ---
 
-## Umarbeitung & Verbesserungsvorschläge (2026-01-21)
+## Konzept-Evolution (2026-01-21)
 
 ### Kontext
-Nach Konsultation von ChatGPT und dem Erstellen mehrerer Draw.io-Diagramme (noch nicht im Repo) wurde eine umfassende Analyse durchgeführt, um die Darstellung von Track & Trace in der Fischertechnik-Modellfabrik zu optimieren.
+Nach Konsultation von ChatGPT und dem Erstellen mehrerer Draw.io-Diagramme wurde eine umfassende Analyse durchgeführt, um die Darstellung von Track & Trace in der Fischertechnik-Modellfabrik zu optimieren.
 
 ### Zielsetzung
 Darstellung von "Events", die während der Lebenszeit eines SingleParts (durch NFC identifiziert) während eines Einlagerungs-Auftrages und eines Fertigungs-Auftrages auftreten. Dabei gibt es eine Beziehung zu:
@@ -237,6 +240,12 @@ Konsistente Benennung:
 5. ⏳ Datenmodell-Schärfung implementieren
 
 ### Referenzen
-- Planungsvorlage: `docs/assets/use-cases/uc-01/UC-01-TIMELINE-PLANNING.txt`
+- Planungsvorlage: `docs/assets/use-cases/uc-01/UC-01-TIMELINE-PLANNING.md`
 - ChatGPT-Analyse: Siehe User-Query vom 2026-01-21
-- Draw.io-Diagramme: (noch nicht im Repo, werden nach Planung hinzugefügt)
+
+### ✅ Ergebnis / Status (2026-01-21)
+Das Konzept wurde finalisiert.
+- **Strategie:** Trennung in "Horizontal Partiture" (Konzept/Logik) und "Vertical Snapshot" (OSF Live-Screen).
+- **Master-Diagramm:** `docs/assets/use-cases/uc-01/diagrams/Track-Trace_Concept_Partiture.drawio`
+- **Domänen-Modell:** `docs/assets/products/common/domain-model/ObjectMesh_ER.drawio`
+- **Artikel:** `docs/assets/articles/a2-DE.md` wurde aktualisiert.

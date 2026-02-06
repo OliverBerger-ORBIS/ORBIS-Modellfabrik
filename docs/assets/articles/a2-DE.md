@@ -1,7 +1,7 @@
 # A2 – Artikel (DE Draft)
 
 ## Status
-- Version: v1
+- Version: v2
 - Owner: @<Oliver Berger>
 - Review: <Tech Reviewer> / <MES-ERP Reviewer> / <Redaktion>
 - Zieltermin: <Datum>
@@ -11,10 +11,10 @@
 
 ## Executive Summary (5 bullets)
 - Track & Trace wird erst belastbar, wenn Shopfloor-Events eindeutig einem Werkstück zugeordnet und mit Business-Kontext verknüpft sind.
-- Ohne konsistente Identitäten (z. B. NFC/Workpiece-ID) entstehen Lücken, Doppelwahrheiten und hoher manueller Abstimmungsaufwand.
+- **Konzept vs. Realität:** Wir unterscheiden zwischen der konzeptionellen "Partitur" (horizontaler Ablaufplan) und dem operativen "Live-Snapshot" (vertikale Historie).
+- Der Schlüssel ist eine eindeutige Identität als Join-Key (z. B. Werkstück-ID/NFC), die wie der "Rote Faden" durch alle Systeme läuft.
 - Genealogie bedeutet mehr als „Position“: Prozessschritte, Transfers, Lagerbewegungen und Qualität müssen zu einer Timeline korreliert werden.
-- Best-of-Breed bleibt zentral: ERP/MES/Analytics können variieren; SAP ist ein Beispiel, nicht Voraussetzung.
-- OSF zeigt Track & Trace bewusst als Live-Sicht (aktueller Systemzustand) – produktive Implementierungen werden kundenspezifisch entlang der Zielarchitektur umgesetzt.
+- OSF zeigt Track & Trace bewusst als Live-Sicht – produktive Implementierungen werden kundenspezifisch entlang der Zielarchitektur umgesetzt.
 
 ## Arbeitstitel
 Track & Trace, das trägt: Werkstückgenealogie durch Event-Korrelation und Business-Kontext
@@ -24,28 +24,32 @@ Track & Trace, das trägt: Werkstückgenealogie durch Event-Korrelation und Busi
 ### 1. Warum Track & Trace in der Fertigung oft scheitert
 Viele Unternehmen starten Track & Trace mit dem Ziel, Rückverfolgbarkeit schnell „sichtbar“ zu machen. In der Praxis bleibt es jedoch häufig bei Insellösungen: einzelne Stationen loggen Daten, Lagerbewegungen werden separat erfasst, Qualitätsprüfung dokumentiert Ergebnisse – aber ohne durchgängige Klammer. Das Ergebnis sind Lücken, Medienbrüche und im Reklamationsfall manuelle Ursachenanalyse.
 
-### 2. Was „Genealogie“ wirklich bedeutet – und warum Identitäten entscheidend sind
-Echte Genealogie beantwortet nicht nur „wo ist das Werkstück“, sondern:
-- **Welche Prozessschritte** hat es durchlaufen?
-- **Welche Transfers/Lagerbewegungen** gab es (FTS/AGV, HBW etc.)?
-- **Welche Qualitätsentscheidungen** wurden getroffen – und auf Basis welcher Daten?
+### 2. Die Identität als roter Faden (Der NFC-Thread)
+Echte Genealogie beantwortet nicht nur „wo ist das Werkstück“, sondern erzählt dessen ganze Geschichte.
+Der Schlüssel ist eine eindeutige Identität als Join-Key – die **Werkstück-ID (NFC)**. 
+Man kann sich das wie den "Roten Faden" in einem **Objekt-Gewebe** (siehe Visual 3) vorstellen: 
+- Die Systeme (ERP, MES, WMS) bilden die Schichten oder Lanes.
+- Die Werkstück-ID (NFC) ist der Faden, der diese Schichten verbindet.
+Nur wo sich diese Ebenen und ID kreuzen (Events), entsteht ein belastbarer Knotenpunkt für die Timeline.
 
-Der Schlüssel ist eine eindeutige Identität als Join-Key – z. B. **NFC/Workpiece-ID**. Nur wenn Events konsistent entlang dieser ID korreliert werden, entsteht eine belastbare Timeline.
-
-### 3. Vom Shopfloor-Event zur Werkstück-Timeline
-Track & Trace entsteht durch Korrelation:
-- **Shopfloor-Events** (Start/Ende/Status), Bearbeitungszeiten, Transfers
-- **Logistikbewegungen** (Pick/Drop, Lager ein/aus)
-- **Qualitätsereignisse** (z. B. AIQS Checks)
-- **Business-Kontext** (Production Order, Customer Order, Material/Batch, ERP-IDs)
-
-Damit wird aus „Signalen“ ein Prozessbild, das IT und OT gleichermaßen verstehen.
+### 3. Die Partitur des Werkstücks: Plan vs. Realität
+Um Track & Trace konzeptionell zu verstehen, nutzen wir das Bild einer **Partitur (Horizontaler Flow)**:
+- **Events als Noten:** Jedes Ereignis ist ein fester Punkt auf dem Zeitstrahl. Architektonisch ist das Minimalset: `Timestamp + Station + Werkstück-ID + Result`.
+- **Die Notenzeilen (Lanes):** Repräsentieren Systeme und Ressourcen (Stationen, FTS, Lager, Qualitätsprüfungen).
+- **Die Melodie (Trace):** Der tatsächliche Weg des Werkstücks durch diese Zeilen.
+- **Plan vs. Ist:** Im Idealfall folgt die Melodie genau den Noten (Plan/Order). In der Realität gibt es "Improvisationen": Umwege über ein FTS, Puffer-Zeiten im Lager oder Rework-Schleifen.
+Unsere Genealogie-Lösung muss fähig sein, diese Abweichungen (Detours) nicht als Fehler, sondern als validen Teil der Historie ("Ist-Spur") abzubilden, während der ursprüngliche Plan ("Soll-Spur") als Referenz erhalten bleibt.
 
 ### 4. Integration in ERP/MES/Analytics – Best-of-Breed als Prinzip
 Genealogie wird besonders wertvoll, wenn sie mit Business-Kontext verbunden ist: Customer Order, Lieferant/Purchase Order, ERP-IDs, Qualitätsanforderungen. Welche Zielsysteme genutzt werden (ERP, MES, Analytics) ist kundenspezifisch – entscheidend ist, dass die Shopfloor-Korrelation wiederverwendbar bleibt. SAP kann ein Zielsystem-Beispiel sein, ist aber keine Voraussetzung.
 
-### 5. OSF als Proof: Live-Track-&-Trace statt statischem Mock
-In OSF wird Track & Trace nicht nur als Konzeptfolie gezeigt, sondern als **Live-Sicht**: eine Werkstückliste mit Ereignishistorie und Order-Kontext macht die Kopplung von Shopfloor-Events und Business-Daten unmittelbar sichtbar. Wichtig bleibt die Abgrenzung: OSF ist ein Demonstrator – produktive End-to-End-Lösungen werden entlang der Systemlandschaft des Kunden umgesetzt.
+### 5. OSF als Proof: Der Live-Snapshot
+Während die "Partitur" (Visual 1) das Konzept und die Logik erklärt, zeigt der **OSF Live-Screen** (Visual 2) die Realität im "Hier und Jetzt".
+Hier wechseln wir die Perspektive von horizontal (Prozess) auf vertikal (Historie):
+- Eine **Werkstückliste** zeigt den aktuellen Status.
+- Die **Event-Timeline** wächst stetig von oben nach unten (wie ein Chat-Verlauf). Die unveränderliche Historie sichert dabei die Auditierbarkeit.
+- Der **Order-Kontext** ist fest angeheftet.
+Dies dient als Proof, dass Events und Kontext über die Werkstück-ID (NFC) live „joinbar“ sind. Wichtig bleibt die Abgrenzung: OSF ist ein Demonstrator – produktive End-to-End-Lösungen werden entlang der Systemlandschaft des Kunden umgesetzt.
 
 ### 6. Ausblick: Sensorik und „3 Datentöpfe“ (UC-02)
 Sensor- und Umweltdaten (z. B. Temperatur, Vibration, Energie) erhöhen den Mehrwert in der Ursachenanalyse – sie gehören jedoch nicht in die Kernlogik der Genealogie. Dieses Thema wird als Datenaggregation/Korrelation in **UC-02 (3 Datentöpfe)** behandelt.
@@ -72,18 +76,23 @@ Call to Action: Sprechen Sie uns an für einen Track & Trace Readiness Check –
 
 ## Visuals (Einbindung)
 
-### Visual 1: UC-01 (Wiki-Template)
-- Link: [UC-01 — Track & Trace Genealogy (A2) - Overview](https://dev.azure.com/ORBIS-AG-SAP/Modellfabrik/_wiki/wikis/Modellfabrik.wiki/8416/UC-01-%E2%80%94-Track-Trace-Genealogy-(A2))
-- Caption DE: Track & Trace Genealogie entsteht durch Korrelation von Station-, Logistik- und Qualitätsereignissen entlang einer eindeutigen Werkstück-ID – angereichert um Business-Kontext.
-- Alt-Text DE: Konzeptbeschreibung von Track & Trace Genealogie als Timeline pro Werkstück mit Order-Kontext.
-- vorläufige Version ![UC-01-Track-Trace-Schema.png](/.attachments/UC-01-Track-Trace-Schema-75c953d7-4e2d-488c-8585-8393349b88ec.png)
+### Visual 1: Die Konzept-Partitur (Concept Diagram)
+- **Datei:** `docs/assets/use-cases/uc-01/diagrams/Track-Trace_Concept_Partiture.drawio` (Export als PNG)
+- **Bildunterschrift:** Die "Partitur" eines Werkstücks: Der horizontale Pfad (Ist-Spur) zeigt den Verlauf durch Stationen, Lager und FTS-Transporte, korreliert mit den geplanten Business-Phasen und Orders (Soll-Spur).
+- **Zweck:** Zeigt die komplexe Logik von Plan vs. Ist und die Rolle des NFC-Tags als verbindendes Element.
 
 ### Visual 2: OSF Proof – Track & Trace Live Screen (DE)
-- Datei/Link: ![UC-01-Trrack-Trace-DE.png](/.attachments/UC-01-Trrack-Trace-DE-c90e6006-233c-403d-88ba-ad686733a654.png)
-- Caption DE: OSF Track & Trace (Live): Werkstückliste, Ereignishistorie und Order-Kontext zeigen die Kopplung von Shopfloor-Events und Business-Daten.
-- Alt-Text DE: Screenshot aus OSF mit Workpiece-Liste, Event History und Order Context.
+- **Datei:** `/.attachments/UC-01-Track-Trace-DE-c90e6006-233c-403d-88ba-ad686733a654.png`
+- **Bildunterschrift:** Die operative Sicht im OSF: Eine vertikale Timeline zeigt Events in Echtzeit, verknüpft mit dem Business-Kontext (rechts).
+- **Zweck:** Beweis der technischen Machbarkeit (Live-Demo).
+
+### Visual 3: Das Objekt-Gewebe (Domain Model)
+- **Datei:** `docs/assets/products/common/domain-model/ObjectMesh_ER_simplified.drawio` (Export als PNG)
+- **Bildunterschrift:** Das "Gewebe" unter der Oberfläche: Die SinglePart-Identität (NFC) verbindet Aufträge (Manufacturing Order), Transporte (Transport Order) und Qualitätsdaten.
+- **Zweck:** Zeigt IT-Architekten das Datenmodell hinter der Timeline.
 
 ## Offene Punkte / Review Notes
+
 - [ ] CTA-Entscheidung: Option 1 / 2 / 3
 - [ ] Finaler OSF Track&Trace Screenshot (DE) auswählen und Cropping festlegen
 - [ ] EN-Screenshot counterpart prüfen (Labels im Bild)

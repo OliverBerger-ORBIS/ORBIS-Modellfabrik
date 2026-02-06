@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mxfile host="app.diagrams.net" modified="2026-02-05T00:00:00.000Z" agent="GPT-5.2" version="22.1.0" type="device">
+  <diagram id="tt-vertical-thread-v2" name="Timeline vertical — NFC Thread (WHITE) v2">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="H1" value="Track &amp; Trace — Timeline (Vertical) | Produkt WHITE" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="1840" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="H2" value="NFC / Workpiece-ID (Join-Key): [NFC-UID]   |   Zeitraum: [t0..tN]" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="90" width="760" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="H3" value="Interpretation: PLAN = erwartete Schritte; TRACE = ausgeführte Route. Transport-Orders/Scheduling erzeugen Routing-Varianten." style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="820" y="90" width="1060" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="ERP" value="ERP
+PO/CO" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="160" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="WMS" value="WMS
+Storage-Order" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#d5e8d4;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="160" width="160" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="MES" value="MES
+Production-Order
++ Config" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#d5e8d4;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="160" width="170" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="IOT" value="IIoT/Shopfloor
+Events + Sensors" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#e1d5e7;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="570" y="160" width="190" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="DSP" value="ORBIS DSP
+Korrelation + Enrichment
+(Join-Key = NFC)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#dae8fc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="235" width="320" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="E_ERP_DSP" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="ERP" target="DSP">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="E_WMS_DSP" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="WMS" target="DSP">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="E_MES_DSP" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="MES" target="DSP">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="E_IOT_DSP" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="IOT" target="DSP">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="THREAD" value="" style="strokeColor=#00bcd4;rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#00bcd4;" vertex="1" parent="1">
+          <mxGeometry x="950" y="190" width="10" height="720" as="geometry"/>
+        </mxCell>
+        <mxCell id="THREAD_LBL" value="NFC-ID: [NFC-UID] (SinglePart-Thread)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="970" y="180" width="360" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="PH1" value="Phase 1: Purchase-Order → Storage-Order" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="165" width="520" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="PH2" value="Phase 2: Customer-Order → Production-Order" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="405" width="520" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="S_DPS_START" value="DPS" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="220" width="150" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="S_MILL_DET" value="(MILL)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="290" width="150" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="S_HBW" value="HBW" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="360" width="150" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="S_AIQS_DET" value="(AIQS)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="460" width="150" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="S_DRILL" value="DRILL" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="530" width="150" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="S_DPS_DET" value="(DPS)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="600" width="150" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="S_AIQS" value="AIQS" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="670" width="150" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="S_DPS_END" value="DPS" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="740" width="150" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="SEQ_1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=2;endArrow=none;startArrow=none;" edge="1" parent="1" source="S_DPS_START" target="S_MILL_DET">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="SEQ_2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=2;endArrow=none;startArrow=none;" edge="1" parent="1" source="S_MILL_DET" target="S_HBW">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="SEQ_3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=2;endArrow=none;startArrow=none;" edge="1" parent="1" source="S_HBW" target="S_AIQS_DET">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="SEQ_4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=2;endArrow=none;startArrow=none;" edge="1" parent="1" source="S_AIQS_DET" target="S_DRILL">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="SEQ_5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=2;endArrow=none;startArrow=none;" edge="1" parent="1" source="S_DRILL" target="S_DPS_DET">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="SEQ_6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=2;endArrow=none;startArrow=none;" edge="1" parent="1" source="S_DPS_DET" target="S_AIQS">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="SEQ_7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=2;endArrow=none;startArrow=none;" edge="1" parent="1" source="S_AIQS" target="S_DPS_END">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="PLAN_P1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#6b6b6b;strokeWidth=1;dashed=1;endArrow=none;startArrow=none;" edge="1" parent="1" source="S_DPS_START" target="S_HBW">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="PLAN_P2_1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#6b6b6b;strokeWidth=1;dashed=1;endArrow=none;startArrow=none;" edge="1" parent="1" source="S_HBW" target="S_DRILL">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="PLAN_P2_2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#6b6b6b;strokeWidth=1;dashed=1;endArrow=none;startArrow=none;" edge="1" parent="1" source="S_DRILL" target="S_AIQS">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="PLAN_P2_3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#6b6b6b;strokeWidth=1;dashed=1;endArrow=none;startArrow=none;" edge="1" parent="1" source="S_AIQS" target="S_DPS_END">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="PLAN_LEG" value="PLAN-Overlay (Expected Route)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="1055" y="255" width="210" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="PLAN_LEG_E" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#6b6b6b;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="PLAN_LEG" target="S_HBW">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="TAG_RED_1" value="RED" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="298" width="50" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="TAG_RED_2" value="RED" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="468" width="50" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="TAG_RED_3" value="RED" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="608" width="50" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="NFC_ICON_1" value="NFC" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#dae8fc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="670" y="228" width="50" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="NFC_CALL_1" value="Initial Read / Association" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="730" y="224" width="200" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="NFC_E1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="NFC_CALL_1" target="S_DPS_START">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CH_PO" value="PO-ID: [PO-ID]" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="670" y="188" width="150" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="CH_PO_E" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="CH_PO" target="S_DPS_START">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="DB1" value="" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=18;rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="670" y="362" width="60" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="HBW_CALL" value="Linked to Bin: [BIN-ID]
+(z.B. Bin 03)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="740" y="356" width="210" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="HBW_E1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="HBW_CALL" target="S_HBW">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CH_SO" value="SO-ID: [SO-ID]" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="670" y="328" width="150" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="CH_SO_E" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="CH_SO" target="S_HBW">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CH_CO" value="CO-ID: [CO-ID]" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="670" y="428" width="150" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="CH_CO_E" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="CH_CO" target="S_AIQS_DET">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CH_PROD" value="PROD-ID: [PROD-ID]" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="670" y="498" width="170" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="CH_PROD_E" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="CH_PROD" target="S_DRILL">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="NFC_ICON_2" value="NFC" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#dae8fc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="670" y="748" width="50" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="NFC_CALL_2" value="Verification Read" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="730" y="744" width="200" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="NFC_E2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="NFC_CALL_2" target="S_DPS_END">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="TO_WHITE" value="Transport-Order(s)
+WHITE" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="330" width="220" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="TO_RED" value="Parallel Transport-Order(s)
+RED" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="330" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="TO_NOTE" value="Scheduling führt zu zusätzlichen Stops (Routing-Varianten)." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="395" width="520" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="TO_RED_MILL" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="TO_RED" target="S_MILL_DET">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="TO_RED_AIQS" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="TO_RED" target="S_AIQS_DET">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="TO_RED_DPS" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="TO_RED" target="S_DPS_DET">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="EN_ENV" value="Umgebungswerte
+(T, Humidity, ...)
+→ SinglePart" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="560" width="250" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="EN_MS" value="MachineStatus
+(Errors, OEE)
+→ Asset" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="650" width="250" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="EN_Q" value="Quality Result
+(AIQS Output, Images)
+→ SinglePart" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="740" width="250" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="EN_HU" value="HU/Container (optional)
+→ HU enthält SingleParts" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="830" width="250" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="EN_ENV_E" value="measured at" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="EN_ENV" target="S_AIQS">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="EN_MS_E" value="asset data" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="EN_MS" target="S_DRILL">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="EN_Q_E" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="EN_Q" target="S_AIQS">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="EN_HU_E" value="optional" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="EN_HU" target="S_DPS_START">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="GLOSS" value="Glossary (Abkürzungen)
+HBW = High Bay Warehouse
+DPS = Delivery &amp; Pickup Station
+DRILL = Drilling Station
+MILL = Milling Station
+AIQS = AI Quality Station
+
+Overlays:
+rot = zusätzlicher Stop (parallel Transport-Order)
+cyan = SinglePart-Thread (NFC)
+grau gestrichelt = PLAN (Expected Route)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="780" width="520" height="270" as="geometry"/>
+        </mxCell>
+        <mxCell id="LEG2" value="Der cyanfarbene Thread ist das physische SinglePart.
+Stationen sind Haltestellen, an denen Events/Daten „andocken“.
+PLAN-Overlay zeigt die erwartete Route (ohne Scheduling-Stopps)." style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="580" y="860" width="720" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="DSP_TO_THREAD" value="correlates trace by NFC" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="DSP" target="S_DPS_START">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

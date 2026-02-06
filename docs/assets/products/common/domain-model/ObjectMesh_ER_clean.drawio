@@ -1,0 +1,105 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.3.0 Chrome/140.0.7339.249 Electron/38.7.2 Safari/537.36" version="29.3.0">
+  <diagram id="dsp-object-mesh-clean" name="DSP Object Mesh (Clean)">
+    <mxGraphModel dx="1544" dy="1094" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="N_PART" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="SinglePart" vertex="1">
+          <mxGeometry height="60" width="210" x="820" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="N_HU" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="HandlingUnit (HU)" vertex="1">
+          <mxGeometry height="60" width="210" x="650" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="N_MO" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="ManufacturingOrder" vertex="1">
+          <mxGeometry height="60" width="210" x="1180" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="N_COMP" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="Component / BOM Item" vertex="1">
+          <mxGeometry height="60" width="210" x="1180" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="N_MACHINE" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="Machine / Asset" vertex="1">
+          <mxGeometry height="60" width="210" x="1480" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="N_MSTATUS" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="MachineStatus" vertex="1">
+          <mxGeometry height="60" width="210" x="1480" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="N_LOC" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="LocationEvent" vertex="1">
+          <mxGeometry height="60" width="210" x="650" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="N_TRQ" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="TransportRequest" vertex="1">
+          <mxGeometry height="60" width="210" x="340" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="N_TRO" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="TransportOrder" vertex="1">
+          <mxGeometry height="60" width="210" x="340" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="N_MIS" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="Mission" vertex="1">
+          <mxGeometry height="60" width="210" x="340" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="E1" edge="1" parent="1" source="N_HU" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="N_PART" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E2" edge="1" parent="1" source="N_MO" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="N_PART" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E3" edge="1" parent="1" source="N_MO" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="N_OP" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E4" edge="1" parent="1" source="N_OP" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="N_COMP" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E5" edge="1" parent="1" source="N_OP" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="N_MACHINE" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E6" edge="1" parent="1" source="N_MACHINE" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="N_MSTATUS" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E7" edge="1" parent="1" source="N_PART" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="N_LOC" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E8" edge="1" parent="1" source="N_MEAS" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="N_MACHINE" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1585" y="550" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E9" edge="1" parent="1" source="N_PART" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="N_MEAS" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E10" edge="1" parent="1" source="N_MEAS" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="N_MACHINE" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E11" edge="1" parent="1" source="N_TRQ" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="N_TRO" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E12" edge="1" parent="1" source="N_TRO" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="N_MIS" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E13" edge="1" parent="1" source="N_TRO" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="N_PART" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E14" edge="1" parent="1" source="N_TRO" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="N_HU" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vHMxdk_4SSgF9b1VtN84-1" edge="1" parent="1" source="N_LOC" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="N_MEAS" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+            <mxPoint x="860" y="550" as="sourcePoint" />
+            <mxPoint x="1585" y="410" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N_MEAS" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="ProcessMeasurement" vertex="1">
+          <mxGeometry height="60" width="210" x="930" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="vHMxdk_4SSgF9b1VtN84-2" edge="1" parent="1" source="N_MO" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="N_OP" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1285" y="300" as="sourcePoint" />
+            <mxPoint x="1285" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N_OP" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="Operation / WorkStep" vertex="1">
+          <mxGeometry height="60" width="210" x="1180" y="350" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

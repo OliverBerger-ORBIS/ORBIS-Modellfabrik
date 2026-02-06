@@ -7,8 +7,10 @@ UC-01 Track & Trace Genealogy - Timeline Planning Template
 Dieses Dokument dient als Vorlage für die Planung der Timeline-Synchronisation in einem visuellen Tool (Figma, Draw.io, Inkscape, etc.).
 
 **WICHTIG:** Basierend auf ChatGPT-Analyse werden zwei getrennte Visuals empfohlen:
-1. Objekt-Geflecht (ER/Domain-Mesh) - zeigt Korrelationen
-2. Event-Flow mit Soll/Ist-Overlay (Timeline) - zeigt Plan vs. Ist
+1. **Objekt-Geflecht (ER/Domain-Mesh)** - zeigt Korrelationen
+   - *Speicherort:* [`../../products/common/domain-model/`](../../products/common/domain-model/) (Gemeinsames Datenmodell)
+2. **Event-Flow mit Soll/Ist-Overlay (Timeline)** - zeigt Plan vs. Ist
+   - *Speicherort:* [`diagrams/`](diagrams/) (Use-Case spezifisch)
 
 Siehe auch: `UC-01_Track_Trace-genealogy.md` → Abschnitt "Umarbeitung & Verbesserungsvorschläge"
 

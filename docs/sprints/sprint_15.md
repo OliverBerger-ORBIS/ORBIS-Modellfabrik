@@ -2,34 +2,32 @@
 
 **Zeitraum:** 05.02.2026 - 18.02.2026 (2 Wochen)  
 **Status:** In Planung  
-**Stakeholder-Update:** Fortsetzung der Use-Case-Bibliothek und Blog-Serie. UC-01 und Artikel-02 wurden in Sprint 14 begonnen und werden hier fortgesetzt.
+**Stakeholder-Update:** 
+- **Fokus im Repo:** Erstellung der Artikel-Drafts und Visuals (Konzept-Diagramme) als Grundlage für die Blog-Serie.
+- **Out of Scope (Repo):** Die technische Umsetzung der Use-Cases (OSF-Routes, Animationen) und der redaktionelle Publishing-Prozess erfolgen separat.
+- **Status:** UC-01 und Artikel-02 sind konzeptionell abgeschlossen (Text + Visuals).
 
 ---
 
 ## 🎯 Ziele
 
-### Use-Case-Bibliothek Implementierung (Fortsetzung)
-- [ ] **UC-01:** Track & Trace Genealogy - Route `dsp/use-case/track-trace-genealogy` implementieren
-  - 🔄 In Arbeit: SVG-Generator-Service erstellt, Diagramm-Umarbeitung in Planung
-  - [ ] Diagramm-Struktur finalisieren (basierend auf ChatGPT-Analyse)
-  - [ ] Timeline-Synchronisation implementieren
-  - [ ] I18n-Integration vervollständigen
-- [ ] **UC-02:** 3 Datentöpfe - Route `dsp/use-case/three-data-pools` implementieren
-- [ ] **UC-03:** AI Lifecycle - Route `dsp/use-case/ai-lifecycle` implementieren
-- [ ] **UC-04:** Closed Loop Quality - Route `dsp/use-case/closed-loop-quality` implementieren
-- [ ] **UC-05:** Predictive Maintenance - Route `dsp/use-case/predictive-maintenance` implementieren
+### Use-Case-Bibliothek (Konzept & Assets)
+- [x] **UC-01:** Track & Trace Genealogy - Konzept & Visuals
+  - ✅ Diagramm-Struktur finalisiert (Partitur vs. Snapshot)
+  - ✅ Domain-Model (Object Mesh) erstellt
+  - ✅ Wiki-Doku aktualisiert (`UC-01_Track_Trace-genealogy.md`)
+  - *Hinweis: Technische OSF-Implementierung (SVG, Timeline) erfolgt separat.*
+- [ ] **UC-02:** 3 Datentöpfe - Konzept & Visuals
+- [ ] **UC-03:** AI Lifecycle - Konzept & Visuals
+- [ ] **UC-04:** Closed Loop Quality - Konzept & Visuals
+- [ ] **UC-05:** Predictive Maintenance - Konzept & Visuals
 
-### Blog-Serie Umsetzung (Fortsetzung)
-- [ ] **A2:** Track & Trace Genealogie - Review & Finalisierung
-  - 🔄 In Arbeit: Draft erstellt (`docs/assets/articles/a2-DE.md`)
-  - [ ] Review durch externes Team
-  - [ ] Tech Reviewer Review
-  - [ ] MES-ERP Reviewer Review
-  - [ ] Redaktion Review
-  - [ ] CTA-Optionen finalisieren
-  - [ ] OSF Proof Screenshots auswählen und croppen (DE/EN)
-  - [ ] SAP-Beispiele konsistent prüfen
-  - [ ] Finale Links zu ADO Wiki Use-Cases eintragen
+### Blog-Serie (Drafts & Visuals)
+- [x] **A2:** Track & Trace Genealogie - Draft & Visuals fertig
+  - ✅ Draft finalisiert (`docs/assets/articles/a2-DE.md`)
+  - ✅ Visual 1 (Partitur) erstellt
+  - ✅ Visual 3 (Object Mesh) erstellt
+  - [ ] Start Review-Prozess (extern/redaktionell)
 - [ ] **A3:** Drei Datentöpfe für KPIs - Review & Finalisierung
   - [ ] Draft erstellen
   - [ ] Review durch externes Team
@@ -50,6 +48,12 @@
   - [ ] OSF Proof Screenshots auswählen und croppen (DE/EN)
   - [ ] SAP-Beispiele konsistent prüfen
   - [ ] Finale Links zu ADO Wiki Use-Cases eintragen
+
+### Events / Demos
+- [ ] **Kunde Glaston:** OSF-Präsentation am 10.02.2026
+  - ✅ Zielsetzung und Fokus abstimmen
+  - [ ] Drehbuch festlegen und OSF-UI ggf anpassen
+  - [ ] Demo-Umgebung (Shadow-Mode) checken
 
 ### Weitere Aufgaben (aus Sprint 14 übernommen)
 - [ ] Azure DevOps Migration & Docker-Setup (Hilcher-Box/RPi) - Fortsetzung

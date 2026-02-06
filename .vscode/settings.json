@@ -51,6 +51,10 @@
   "gitlens.views.search.enabled": true,
   "gitlens.views.compare.enabled": true,
   "gitlens.graph.enabled": true,
+
+  // Fix für Terminal-Probleme (keine Eingabe/falscher Cursor)
+  "terminal.integrated.gpuAcceleration": "off",
+  "terminal.integrated.windowsEnableConpty": false,
   
   // TypeScript: Nur Projekt-Dateien indexieren
   "typescript.preferences.includePackageJsonAutoImports": "off",

@@ -1,0 +1,232 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.3.0 Chrome/140.0.7339.249 Electron/38.7.2 Safari/537.36" version="29.3.0">
+  <diagram id="tt-white-2proc-v2" name="Track&amp;Trace WHITE — 2 Prozesse (Soll/Ist) v2">
+    <mxGraphModel dx="2068" dy="942" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="HDR" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="Track &amp; Trace — Produkt WHITE: Korrelation von 2 Business-Prozessen (Soll/Ist)" vertex="1">
+          <mxGeometry height="50" width="1880" x="40" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="WP" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#dae8fc;fontStyle=1;" value="Workpiece-ID / NFC: WHITE-Part (Beispiel)" vertex="1">
+          <mxGeometry height="40" width="360" x="40" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="NOTE" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;" value="Klammern = Station/Device wird angefahren, weil FTS/AGV parallel andere Transport-Orders (z.B. Produkt RED) bedient." vertex="1">
+          <mxGeometry height="40" width="940" x="420" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="CTX1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#d5e8d4;" value="Prozess 1 Kontext: Purchase-Order (ERP) ID: [PO-ID]  |  Storage-Order (WMS) ID: [SO-ID]" vertex="1">
+          <mxGeometry height="40" width="920" x="40" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="CTX2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#d5e8d4;" value="Prozess 2 Kontext: Customer-Order (ERP) ID: [CO-ID]  |  Production-Order (MES) ID: [PROD-ID]" vertex="1">
+          <mxGeometry height="40" width="940" x="980" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="P1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" value="Prozess 1: Purchase-Order → Storage-Order (WHITE)  |  PLAN: DPS → HBW" vertex="1">
+          <mxGeometry height="55" width="910" x="40" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="P2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" value="Prozess 2: Customer-Order → Production-Order (WHITE)  |  PLAN: HBW → DRILL → AIQS → DPS" vertex="1">
+          <mxGeometry height="55" width="910" x="970" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="A_SOLL" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;" value="SOLL (Plan / erwartete Stationen)" vertex="1">
+          <mxGeometry height="110" width="910" x="40" y="275" as="geometry" />
+        </mxCell>
+        <mxCell id="A_IST" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#e1d5e7;fontStyle=1;verticalAlign=top;" value="IST (Events / tatsächlich angefahrene Stationen)" vertex="1">
+          <mxGeometry height="155" width="910" x="40" y="395" as="geometry" />
+        </mxCell>
+        <mxCell id="A_UNP" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;verticalAlign=top;" value="UNGEPLANT (Overlay / Detours durch parallele Transport-Orders)" vertex="1">
+          <mxGeometry height="125" width="910" x="40" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="B_SOLL" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;verticalAlign=top;" value="SOLL (Plan / erwartete Stationen)" vertex="1">
+          <mxGeometry height="110" width="910" x="970" y="275" as="geometry" />
+        </mxCell>
+        <mxCell id="B_IST" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#e1d5e7;fontStyle=1;verticalAlign=top;" value="IST (Events / tatsächlich angefahrene Stationen)" vertex="1">
+          <mxGeometry height="155" width="910" x="970" y="395" as="geometry" />
+        </mxCell>
+        <mxCell id="B_UNP" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;verticalAlign=top;" value="UNGEPLANT (Overlay / Detours durch parallele Transport-Orders)" vertex="1">
+          <mxGeometry height="125" width="910" x="970" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="A_A0" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#ffffff;" value="" vertex="1">
+          <mxGeometry height="8" width="8" x="150" y="472" as="geometry" />
+        </mxCell>
+        <mxCell id="A_A1" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#ffffff;" value="" vertex="1">
+          <mxGeometry height="8" width="8" x="880" y="472" as="geometry" />
+        </mxCell>
+        <mxCell id="A_LINE" edge="1" parent="1" source="A_A0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=2;endArrow=none;startArrow=none;" target="A_A1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="A_ACT_1" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="1" vertex="1">
+          <mxGeometry height="34" width="34" x="332" y="459" as="geometry" />
+        </mxCell>
+        <mxCell id="A_ACT_L_1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="DPS (Delivery &amp; Pickup Station)" vertex="1">
+          <mxGeometry height="30" width="300" x="212" y="502" as="geometry" />
+        </mxCell>
+        <mxCell id="A_ACT_2" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" value="2" vertex="1">
+          <mxGeometry height="34" width="34" x="515" y="459" as="geometry" />
+        </mxCell>
+        <mxCell id="A_ACT_L_2" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="(MILL (Milling Station))" vertex="1">
+          <mxGeometry height="30" width="300" x="395" y="502" as="geometry" />
+        </mxCell>
+        <mxCell id="A_ACT_E_2" edge="1" parent="1" source="A_ACT_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;endArrow=none;startArrow=none;" target="A_ACT_2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="A_ACT_3" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="3" vertex="1">
+          <mxGeometry height="34" width="34" x="697" y="459" as="geometry" />
+        </mxCell>
+        <mxCell id="A_ACT_L_3" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="HBW (High Bay Warehouse)" vertex="1">
+          <mxGeometry height="30" width="300" x="577" y="502" as="geometry" />
+        </mxCell>
+        <mxCell id="A_ACT_E_3" edge="1" parent="1" source="A_ACT_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;endArrow=none;startArrow=none;" target="A_ACT_3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="A_PLAN_1" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" value="1" vertex="1">
+          <mxGeometry height="34" width="34" x="393" y="314" as="geometry" />
+        </mxCell>
+        <mxCell id="A_PLAN_L_1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="DPS (Delivery &amp; Pickup Station)" vertex="1">
+          <mxGeometry height="28" width="300" x="273" y="357" as="geometry" />
+        </mxCell>
+        <mxCell id="A_PLAN_2" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" value="2" vertex="1">
+          <mxGeometry height="34" width="34" x="636" y="314" as="geometry" />
+        </mxCell>
+        <mxCell id="A_PLAN_L_2" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="HBW (High Bay Warehouse)" vertex="1">
+          <mxGeometry height="28" width="300" x="516" y="357" as="geometry" />
+        </mxCell>
+        <mxCell id="A_PLAN_E_2" edge="1" parent="1" source="A_PLAN_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=none;startArrow=none;" target="A_PLAN_2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="A_MAP_A_PLAN_1" edge="1" parent="1" source="A_PLAN_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=none;startArrow=none;" target="A_ACT_1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="A_MAP_A_PLAN_2" edge="1" parent="1" source="A_PLAN_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=none;startArrow=none;" target="A_ACT_3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="A_DEV_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;" value="Detour via (MILL (Milling Station)) (parallel: Transport-Order RED)" vertex="1">
+          <mxGeometry height="50" width="270" x="397" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="A_DEV_E_1" edge="1" parent="1" source="A_ACT_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" target="A_DEV_1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B_A0" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#ffffff;" value="" vertex="1">
+          <mxGeometry height="8" width="8" x="1080" y="472" as="geometry" />
+        </mxCell>
+        <mxCell id="B_A1" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#ffffff;" value="" vertex="1">
+          <mxGeometry height="8" width="8" x="1810" y="472" as="geometry" />
+        </mxCell>
+        <mxCell id="B_LINE" edge="1" parent="1" source="B_A0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=2;endArrow=none;startArrow=none;" target="B_A1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_1" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="1" vertex="1">
+          <mxGeometry height="34" width="34" x="1184" y="459" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_L_1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="HBW (High Bay Warehouse)" vertex="1">
+          <mxGeometry height="30" width="300" x="1064" y="502" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_2" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" value="2" vertex="1">
+          <mxGeometry height="34" width="34" x="1288" y="459" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_L_2" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="(AIQS (AI Quality Station) — RED)" vertex="1">
+          <mxGeometry height="30" width="300" x="1168" y="502" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_E_2" edge="1" parent="1" source="B_ACT_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;endArrow=none;startArrow=none;" target="B_ACT_2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_3" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="3" vertex="1">
+          <mxGeometry height="34" width="34" x="1392" y="459" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_L_3" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="DRILL (Drilling Station)" vertex="1">
+          <mxGeometry height="30" width="300" x="1272" y="502" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_E_3" edge="1" parent="1" source="B_ACT_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;endArrow=none;startArrow=none;" target="B_ACT_3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_4" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" value="4" vertex="1">
+          <mxGeometry height="34" width="34" x="1497" y="459" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_L_4" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="(DPS (Delivery &amp; Pickup Station) — RED)" vertex="1">
+          <mxGeometry height="30" width="300" x="1377" y="502" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_E_4" edge="1" parent="1" source="B_ACT_3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;endArrow=none;startArrow=none;" target="B_ACT_4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_5" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="5" vertex="1">
+          <mxGeometry height="34" width="34" x="1601" y="459" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_L_5" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="AIQS (AI Quality Station)" vertex="1">
+          <mxGeometry height="30" width="300" x="1481" y="502" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_E_5" edge="1" parent="1" source="B_ACT_4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;endArrow=none;startArrow=none;" target="B_ACT_5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_6" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="6" vertex="1">
+          <mxGeometry height="34" width="34" x="1705" y="459" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_L_6" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="DPS (Delivery &amp; Pickup Station)" vertex="1">
+          <mxGeometry height="30" width="300" x="1585" y="502" as="geometry" />
+        </mxCell>
+        <mxCell id="B_ACT_E_6" edge="1" parent="1" source="B_ACT_5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;endArrow=none;startArrow=none;" target="B_ACT_6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B_PLAN_1" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" value="1" vertex="1">
+          <mxGeometry height="34" width="34" x="1226" y="314" as="geometry" />
+        </mxCell>
+        <mxCell id="B_PLAN_L_1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="HBW (High Bay Warehouse)" vertex="1">
+          <mxGeometry height="28" width="300" x="1106" y="357" as="geometry" />
+        </mxCell>
+        <mxCell id="B_PLAN_2" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" value="2" vertex="1">
+          <mxGeometry height="34" width="34" x="1372" y="314" as="geometry" />
+        </mxCell>
+        <mxCell id="B_PLAN_L_2" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="DRILL (Drilling Station)" vertex="1">
+          <mxGeometry height="28" width="300" x="1252" y="357" as="geometry" />
+        </mxCell>
+        <mxCell id="B_PLAN_E_2" edge="1" parent="1" source="B_PLAN_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=none;startArrow=none;" target="B_PLAN_2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B_PLAN_3" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" value="3" vertex="1">
+          <mxGeometry height="34" width="34" x="1518" y="314" as="geometry" />
+        </mxCell>
+        <mxCell id="B_PLAN_L_3" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="AIQS (AI Quality Station)" vertex="1">
+          <mxGeometry height="28" width="300" x="1398" y="357" as="geometry" />
+        </mxCell>
+        <mxCell id="B_PLAN_E_3" edge="1" parent="1" source="B_PLAN_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=none;startArrow=none;" target="B_PLAN_3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B_PLAN_4" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" value="4" vertex="1">
+          <mxGeometry height="34" width="34" x="1664" y="314" as="geometry" />
+        </mxCell>
+        <mxCell id="B_PLAN_L_4" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="DPS (Delivery &amp; Pickup Station)" vertex="1">
+          <mxGeometry height="28" width="300" x="1544" y="357" as="geometry" />
+        </mxCell>
+        <mxCell id="B_PLAN_E_4" edge="1" parent="1" source="B_PLAN_3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=none;startArrow=none;" target="B_PLAN_4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B_MAP_B_PLAN_1" edge="1" parent="1" source="B_PLAN_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=none;startArrow=none;" target="B_ACT_1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B_MAP_B_PLAN_2" edge="1" parent="1" source="B_PLAN_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=none;startArrow=none;" target="B_ACT_3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B_MAP_B_PLAN_3" edge="1" parent="1" source="B_PLAN_3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=none;startArrow=none;" target="B_ACT_5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B_MAP_B_PLAN_4" edge="1" parent="1" source="B_PLAN_4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=none;startArrow=none;" target="B_ACT_6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B_DEV_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;" value="Detour via (AIQS (AI Quality Station) — RED) (parallel: Transport-Order RED)" vertex="1">
+          <mxGeometry height="50" width="270" x="1170" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="B_DEV_E_1" edge="1" parent="1" source="B_ACT_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" target="B_DEV_1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B_DEV_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;" value="Detour via (DPS (Delivery &amp; Pickup Station) — RED) (parallel: Transport-Order RED)" vertex="1">
+          <mxGeometry height="50" width="270" x="1496" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="B_DEV_E_2" edge="1" parent="1" source="B_ACT_4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" target="B_DEV_2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="LEG" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;" value="Legende: gelb = SOLL (Plan) | violett = IST (Events) | rot = ungeplant/Detour durch parallele Transport-Orders" vertex="1">
+          <mxGeometry height="45" width="1880" x="40" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="WORD" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;" value="Hinweis fürs Wording im Blog: FTS/AGV erhält Transport-Orders (TransportOrder). Die Ist-Timeline zeigt die tatsächlich angefahrenen Stationen pro Workpiece-ID." vertex="1">
+          <mxGeometry height="45" width="1880" x="40" y="770" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

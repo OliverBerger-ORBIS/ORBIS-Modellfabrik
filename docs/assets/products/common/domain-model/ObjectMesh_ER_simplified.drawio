@@ -1,0 +1,117 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.3.0 Chrome/140.0.7339.249 Electron/38.7.2 Safari/537.36" version="29.3.0">
+  <diagram id="dsp-object-mesh" name="DSP Object Mesh">
+    <mxGraphModel dx="1540" dy="1092" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="E_PART" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#dae8fc;fontStyle=1;" value="SinglePart" vertex="1">
+          <mxGeometry height="70" width="220" x="820" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="E_HU" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#d5e8d4;fontStyle=1;" value="HandlingUnit (HU)" vertex="1">
+          <mxGeometry height="70" width="220" x="670" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="E_MO" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffe6cc;fontStyle=1;" value="ManufacturingOrder" vertex="1">
+          <mxGeometry height="70" width="220" x="1090" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="E_OP" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffe6cc;fontStyle=1;" value="Operation / WorkStep" vertex="1">
+          <mxGeometry height="70" width="220" x="1340" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="E_COMP" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffe6cc;fontStyle=1;" value="Component / BOM Item" vertex="1">
+          <mxGeometry height="70" width="220" x="1090" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="E_MACHINE" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" value="Machine / Asset" vertex="1">
+          <mxGeometry height="70" width="220" x="1520" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="E_MSTATUS" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#f8cecc;fontStyle=1;" value="MachineStatus" vertex="1">
+          <mxGeometry height="70" width="220" x="1650" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="E_LOC" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#e1d5e7;fontStyle=1;" value="LocationEvent" vertex="1">
+          <mxGeometry height="70" width="220" x="670" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="E_MEAS" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#e1d5e7;fontStyle=1;" value="ProcessMeasurement" vertex="1">
+          <mxGeometry height="70" width="220" x="920" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="E_TRQ" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" value="TransportRequest" vertex="1">
+          <mxGeometry height="70" width="220" x="340" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="E_TRO" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" value="TransportOrder" vertex="1">
+          <mxGeometry height="70" width="220" x="340" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="E_MIS" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#fff2cc;fontStyle=1;" value="Mission" vertex="1">
+          <mxGeometry height="70" width="220" x="340" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="E_EXT" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#ffffff;fontStyle=1;" value="ExternalReference" vertex="1">
+          <mxGeometry height="70" width="220" x="480" y="690" as="geometry" />
+        </mxCell>
+        <mxCell id="N_NFC" parent="1" style="shape=note;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#fff2cc;" value="Identifikation: SinglePart wird eindeutig über NFC-UID zugeordnet." vertex="1">
+          <mxGeometry height="70" width="420" x="730" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="N_TT" parent="1" style="shape=note;whiteSpace=wrap;html=1;strokeColor=#1f1f1f;fillColor=#fff2cc;" value="Track &amp; Trace: Events + Messwerte werden pro SinglePart (optional HU) entlang des Prozessflusses gespeichert." vertex="1">
+          <mxGeometry height="90" width="650" x="760" y="690" as="geometry" />
+        </mxCell>
+        <mxCell id="R_HU_PART" edge="1" parent="1" source="E_HU" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="E_PART" value="contains (1..n)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_MO_PART" edge="1" parent="1" source="E_MO" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="E_PART" value="produces / references (1..n)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_MO_OP" edge="1" parent="1" source="E_MO" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="E_OP" value="has (1..n)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_MO_COMP" edge="1" parent="1" source="E_MO" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="E_COMP" value="consumes (0..n)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_OP_MACHINE" edge="1" parent="1" source="E_OP" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="E_MACHINE" value="executed on (1)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_MACHINE_STATUS" edge="1" parent="1" source="E_MACHINE" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="E_MSTATUS" value="emits (0..n)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_PART_LOC" edge="1" parent="1" source="E_PART" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="E_LOC" value="has (0..n)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_LOC_MACHINE" edge="1" parent="1" source="E_LOC" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="E_MACHINE" value="at (1)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_PART_MEAS" edge="1" parent="1" source="E_PART" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="E_MEAS" value="has (0..n)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_MEAS_MACHINE" edge="1" parent="1" source="E_MEAS" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="E_MACHINE" value="at (1)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_TRQ_TRO" edge="1" parent="1" source="E_TRQ" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="E_TRO" value="creates (0..1)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_TRO_MIS" edge="1" parent="1" source="E_TRO" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="E_MIS" value="consists of (1..n)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_TRO_LOAD_PART" edge="1" parent="1" source="E_TRO" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="E_PART" value="transports (0..1)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_TRO_LOAD_HU" edge="1" parent="1" source="E_TRO" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;" target="E_HU" value="transports (0..1)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_EXT_0" edge="1" parent="1" source="E_PART" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;dashed=1;" target="E_EXT" value="maps to (0..n)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_EXT_1" edge="1" parent="1" source="E_HU" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;dashed=1;" target="E_EXT" value="maps to (0..n)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_EXT_2" edge="1" parent="1" source="E_MO" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;dashed=1;" target="E_EXT" value="maps to (0..n)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1290" y="200" />
+              <mxPoint x="630" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="R_EXT_3" edge="1" parent="1" source="E_TRO" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;dashed=1;" target="E_EXT" value="maps to (0..n)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_NOTE_NFC" edge="1" parent="1" source="N_NFC" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f1f1f;dashed=1;endArrow=none;" target="E_PART" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
