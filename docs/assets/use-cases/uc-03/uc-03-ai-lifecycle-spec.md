@@ -53,7 +53,7 @@ EN:
 ## Farben / CI-Logik
 - DSP Layer Hintergrund: Blau (wie DSP-Tab)
 - Shopfloor Layer Hintergrund: Grau (wie OSF)
-- Process Layer Hintergrund/Container: Highlight-Green (deutlich als Prozess erkennbar)
+- Process Layer Hintergrund/Container: Highlight-Green (ORBIS CI, deutlich als Prozess erkennbar)
 - Pfeile:
   - Prozesspfeile: Highlight-Green
   - Deployment/Provisioning: DSP-Blau
