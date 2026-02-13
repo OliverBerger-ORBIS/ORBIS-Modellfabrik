@@ -46,6 +46,13 @@ export const appRoutes: Routes = [
           ),
       },
       {
+        path: 'dsp/use-case/ai-lifecycle',
+        loadComponent: () =>
+          import('./pages/use-cases/ai-lifecycle/ai-lifecycle-use-case.component').then(
+            (m) => m.AiLifecycleUseCaseComponent
+          ),
+      },
+      {
         path: 'dsp/use-case',
         loadComponent: () =>
           import('./pages/use-cases/use-case-selector-page.component').then((m) => m.UseCaseSelectorPageComponent),

@@ -1,0 +1,49 @@
+[
+  {
+    "id": "uc03-00-overview",
+    "title": {"de": "Übersicht", "en": "Overview"},
+    "highlightIds": ["uc03_col_process", "uc03_container_dsp", "uc03_col_shopfloor"],
+    "dimIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc03-01-data-capture",
+    "title": {"de": "Data Capture", "en": "Data Capture"},
+    "description": {"de": "Erfassen von Shopfloor-Events, Signalen und Sensordaten als Basis für ML-ready Pipelines.", "en": "Capture shopfloor events, signals and sensor data as the foundation for ML-ready pipelines."},
+    "highlightIds": ["uc03_proc_capture", "uc03_conn_edge1_sf1", "uc03_conn_edge2_sf2", "uc03_sf_systems_devices_edge1", "uc03_sf_systems_devices_edge2"],
+    "dimIds": ["uc03_container_dsp", "uc03_proc_context", "uc03_proc_train", "uc03_proc_validate", "uc03_proc_monitor"],
+    "hideIds": []
+  },
+  {
+    "id": "uc03-02-context",
+    "title": {"de": "Kontext anreichern", "en": "Context enrichment"},
+    "description": {"de": "Anreicherung mit Order-, Werkstück- und Stationskontext für interpretierbare ML-Features.", "en": "Enrich with order, workpiece and station context for interpretable ML features."},
+    "highlightIds": ["uc03_proc_context", "uc03_dsp_edge_1", "uc03_dsp_edge_2", "uc03_conn_edge1_sf1", "uc03_conn_edge2_sf2"],
+    "dimIds": ["uc03_proc_capture", "uc03_proc_train", "uc03_proc_validate", "uc03_proc_monitor", "uc03_dsp_cockpit"],
+    "hideIds": []
+  },
+  {
+    "id": "uc03-03-train-validate",
+    "title": {"de": "Train & Validate (Cloud)", "en": "Train & Validate (Cloud)"},
+    "description": {"de": "Zentrales Training und Validierung in der Cloud. Model registry und Freigabe.", "en": "Central training and validation in the cloud. Model registry and approval."},
+    "highlightIds": ["uc03_proc_train", "uc03_proc_validate", "uc03_dsp_cockpit", "uc03_conn_train_cockpit", "uc03_conn_cockpit_edge1", "uc03_conn_cockpit_edge2"],
+    "dimIds": ["uc03_proc_capture", "uc03_proc_context", "uc03_proc_monitor", "uc03_sf_systems_devices_edge1", "uc03_sf_systems_devices_edge2"],
+    "hideIds": []
+  },
+  {
+    "id": "uc03-04-rollout",
+    "title": {"de": "Rollout an Stationen", "en": "Rollout to stations"},
+    "description": {"de": "Deploy über DSP Cockpit und Edge an mehrere Stationen. Inference an der Edge.", "en": "Deploy via DSP Cockpit and Edge to multiple stations. Inference at the edge."},
+    "highlightIds": ["uc03_dsp_cockpit", "uc03_dsp_edge_1", "uc03_dsp_edge_2", "uc03_conn_cockpit_edge1", "uc03_conn_cockpit_edge2", "uc03_conn_edge1_sf1", "uc03_conn_edge2_sf2", "uc03_sf_systems_devices_edge1", "uc03_sf_systems_devices_edge2"],
+    "dimIds": ["uc03_proc_capture", "uc03_proc_context", "uc03_proc_train", "uc03_proc_validate", "uc03_proc_monitor"],
+    "hideIds": []
+  },
+  {
+    "id": "uc03-05-monitor-feedback",
+    "title": {"de": "Monitor & Feedback", "en": "Monitor & Feedback"},
+    "description": {"de": "Betrieb überwachen, Feedback sammeln und Retraining auslösen. Kontinuierliche Verbesserung.", "en": "Monitor operations, collect feedback and trigger retraining. Continuous improvement."},
+    "highlightIds": ["uc03_proc_monitor", "uc03_feedback", "uc03_proc_train"],
+    "dimIds": ["uc03_proc_capture", "uc03_proc_context", "uc03_proc_validate", "uc03_dsp_edge_1", "uc03_dsp_edge_2", "uc03_sf_systems_devices_edge1", "uc03_sf_systems_devices_edge2"],
+    "hideIds": []
+  }
+]

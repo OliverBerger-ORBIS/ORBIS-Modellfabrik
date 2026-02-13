@@ -51,6 +51,7 @@ export class DspUseCasesComponent {
     'track-trace': '/dsp/use-case/track-trace',
     'interoperability': '/dsp/use-case/interoperability',
     'data-aggregation': '/dsp/use-case/three-data-pools',
+    'ai-lifecycle': '/dsp/use-case/ai-lifecycle',
   };
 
   useCases: UseCase[] = [
@@ -73,6 +74,26 @@ export class DspUseCasesComponent {
       ],
       icon: 'assets/svg/dsp/use-cases/use-case-data-aggregation.svg',
       detailRoute: '/dsp/use-case/three-data-pools',
+    },
+    {
+      id: 'ai-lifecycle',
+      title: $localize`:@@dspUseCaseAiLifecycleTitle:AI Lifecycle`,
+      description: $localize`:@@dspUseCaseAiLifecycleDesc:Industrial AI as a lifecycle: data capture, cloud training, governed rollout to multiple stations, and continuous improvement through monitoring and feedback.`,
+      actions: [
+        $localize`:@@dspUseCaseAiLifecycleH1:Real-time inference at the edge where decisions are needed`,
+        $localize`:@@dspUseCaseAiLifecycleH2:Governed deployment with versioning, approval, rollout and rollback`,
+        $localize`:@@dspUseCaseAiLifecycleH3:Data capture and context enrichment for ML-ready pipelines`,
+        $localize`:@@dspUseCaseAiLifecycleH4:Monitor, feedback and retraining loop`,
+      ],
+      smartFactory: [
+        $localize`:@@orbisUseCaseAiLifecycleDescription:Train centrally, deploy to multiple stations via DSP Management Cockpit and DSP Edge.`,
+        $localize`:@@orbisUseCaseAiLifecycleHighlight1:Data capture & context from shopfloor events, business context and sensors.`,
+        $localize`:@@orbisUseCaseAiLifecycleHighlight2:Cloud training and validation with model packaging.`,
+        $localize`:@@orbisUseCaseAiLifecycleHighlight3:DSP Edge for model runtime and provisioning to stations.`,
+        $localize`:@@orbisUseCaseAiLifecycleHighlight4:Monitoring, telemetry and retrain triggers for continuous improvement.`,
+      ],
+      icon: 'assets/svg/dsp/methodology/phase4-automation-orchestration.svg',
+      detailRoute: '/dsp/use-case/ai-lifecycle',
     },
     {
       id: 'track-trace-live',
