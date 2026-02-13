@@ -40,6 +40,7 @@ export class TrackTraceGenealogyUseCaseComponent implements OnInit, AfterViewIni
   currentStepIndex = 0;
   isAutoPlaying = false;
   loopToStart = true;
+  showDescription = false;
   private autoPlayInterval: ReturnType<typeof setInterval> | null = null;
   
   // Zoom state
@@ -160,6 +161,12 @@ export class TrackTraceGenealogyUseCaseComponent implements OnInit, AfterViewIni
     this.cdr.markForCheck();
   }
 
+  protected toggleDescription(): void {
+    this.showDescription = !this.showDescription;
+    this.applyStep(this.currentStepIndex);
+    this.cdr.markForCheck();
+  }
+
   private stopAutoPlay(): void {
     this.isAutoPlaying = false;
     if (this.autoPlayInterval) {
@@ -183,34 +190,34 @@ export class TrackTraceGenealogyUseCaseComponent implements OnInit, AfterViewIni
         return;
       }
 
-      // Step 0 (Overview): No highlighting, show everything, show subtitle, hide step description
+      const titleEl = svgElement.querySelector('#uc01_title');
+      const subtitle = svgElement.querySelector('#uc01_subtitle');
+      const stepDesc = svgElement.querySelector('#uc01_step_description');
+
       if (index === 0) {
         svgElement.querySelectorAll('[id^="uc01_"]').forEach((el) => {
           el.classList.remove('hl', 'dim', 'hidden');
         });
-        const subtitle = svgElement.querySelector('#uc01_subtitle');
-        if (subtitle) {
-          (subtitle as HTMLElement).style.display = '';
-        }
-        const stepDesc = svgElement.querySelector('#uc01_step_description');
-        if (stepDesc) {
-          (stepDesc as HTMLElement).style.display = 'none';
-        }
+        if (titleEl) (titleEl as HTMLElement).style.display = '';
+        if (subtitle) (subtitle as HTMLElement).style.display = '';
+        if (stepDesc) (stepDesc as HTMLElement).style.display = 'none';
       } else {
-        // Hide subtitle, show step description
-        const subtitle = svgElement.querySelector('#uc01_subtitle');
-        if (subtitle) {
-          (subtitle as HTMLElement).style.display = 'none';
-        }
-        const stepDesc = svgElement.querySelector('#uc01_step_description');
-        if (stepDesc) {
-          (stepDesc as HTMLElement).style.display = '';
-          const stepTitleEl = svgElement.querySelector('#uc01_step_description_title');
-          const stepTextEl = svgElement.querySelector('#uc01_step_description_text');
-          if (stepTitleEl && stepTextEl) {
-            stepTitleEl.textContent = this.getCurrentStepTitle();
-            stepTextEl.textContent = this.getCurrentStepDescription();
+        if (this.showDescription) {
+          if (titleEl) (titleEl as HTMLElement).style.display = 'none';
+          if (subtitle) (subtitle as HTMLElement).style.display = 'none';
+          if (stepDesc) {
+            (stepDesc as HTMLElement).style.display = '';
+            const stepTitleEl = svgElement.querySelector('#uc01_step_description_title');
+            const stepTextEl = svgElement.querySelector('#uc01_step_description_text');
+            if (stepTitleEl && stepTextEl) {
+              stepTitleEl.textContent = this.getCurrentStepTitle();
+              stepTextEl.textContent = this.getCurrentStepDescription();
+            }
           }
+        } else {
+          if (titleEl) (titleEl as HTMLElement).style.display = '';
+          if (subtitle) (subtitle as HTMLElement).style.display = 'none';
+          if (stepDesc) (stepDesc as HTMLElement).style.display = 'none';
         }
         
         // Reset all elements

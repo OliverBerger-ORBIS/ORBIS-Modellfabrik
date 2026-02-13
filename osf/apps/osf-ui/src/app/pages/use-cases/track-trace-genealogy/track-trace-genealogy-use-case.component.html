@@ -38,6 +38,17 @@
       <button
         type="button"
         class="nav-btn-icon"
+        (click)="toggleDescription()"
+        [class.nav-btn-icon--active]="showDescription"
+        [attr.aria-pressed]="showDescription"
+        [attr.aria-label]="'Show Description ' + (showDescription ? 'On' : 'Off')"
+        [attr.title]="'Show Description ' + (showDescription ? 'On' : 'Off')"
+      >
+        ℹ
+      </button>
+      <button
+        type="button"
+        class="nav-btn-icon"
         (click)="nextStep()"
         [disabled]="currentStepIndex === steps.length - 1"
         [attr.aria-label]="btnNext"
