@@ -50,6 +50,7 @@ export class DspUseCasesComponent {
   private readonly useCaseRoutes: Record<string, string> = {
     'track-trace': '/dsp/use-case/track-trace',
     'interoperability': '/dsp/use-case/interoperability',
+    'data-aggregation': '/dsp/use-case/three-data-pools',
   };
 
   useCases: UseCase[] = [
@@ -71,6 +72,7 @@ export class DspUseCasesComponent {
         $localize`:@@orbisUseCaseAggregationHighlight4:Process optimization via analysis of cycle times, takt variability, energy consumption, and machine utilization.`,
       ],
       icon: 'assets/svg/dsp/use-cases/use-case-data-aggregation.svg',
+      detailRoute: '/dsp/use-case/three-data-pools',
     },
     {
       id: 'track-trace-live',

@@ -46,8 +46,8 @@ export class Uc06SvgGeneratorService {
     const highlightGreenStrong = ORBIS_COLORS.highlightGreen.strong;
     svg += `<g id="uc06_step_description" class="step-description-overlay" style="display: none;">`;
     svg += `<rect x="${sd.x - sd.width / 2}" y="${sd.y}" width="${sd.width}" height="${sd.height}" rx="8" ry="8" fill="${highlightGreenStrong}" opacity="0.95" class="step-description__bg"/>`;
-    svg += `<text id="uc06_step_description_title" x="${sd.x}" y="${sd.y + 30}" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff" class="step-description__title"></text>`;
-    svg += `<text id="uc06_step_description_text" x="${sd.x}" y="${sd.y + 70}" text-anchor="middle" font-size="16" font-weight="400" fill="#ffffff" class="step-description__text"></text>`;
+    svg += `<text id="uc06_step_description_title" x="${sd.x}" y="${sd.y + 28}" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff" class="step-description__title"></text>`;
+    svg += `<text id="uc06_step_description_text" x="${sd.x}" y="${sd.y + 58}" text-anchor="middle" font-size="16" font-weight="400" fill="#ffffff" class="step-description__text"></text>`;
     svg += '</g>';
     
     // Columns

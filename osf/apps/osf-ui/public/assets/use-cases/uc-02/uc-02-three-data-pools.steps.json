@@ -1,0 +1,159 @@
+[
+  {
+    "id": "uc02-00-overview",
+    "title": {
+      "de": "Übersicht",
+      "en": "Overview"
+    },
+    "highlightIds": [
+      "uc02_col_sources",
+      "uc02_container_dsp",
+      "uc02_col_targets"
+    ],
+    "dimIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc02-01-business-pool",
+    "title": {
+      "de": "Business-Daten",
+      "en": "Business data"
+    },
+    "description": {
+      "de": "ERP, Aufträge und Materialdaten bilden den Business-Kontext für KPIs.",
+      "en": "ERP, orders, and material data provide the business context for KPIs."
+    },
+    "highlightIds": [
+      "uc02_src_business",
+      "uc02_conn_business_norm",
+      "uc02_conn_shopfloor_norm",
+      "uc02_conn_env_norm",
+      "uc02_step_normalize"
+    ],
+    "dimIds": [
+      "uc02_col_targets",
+      "uc02_src_shopfloor",
+      "uc02_src_env"
+    ],
+    "hideIds": []
+  },
+  {
+    "id": "uc02-02-shopfloor-pool",
+    "title": {
+      "de": "Shopfloor-Daten",
+      "en": "Shopfloor data"
+    },
+    "description": {
+      "de": "Events, FTS-Transfers und Qualitätsdaten werden mit Business-Kontext angereichert.",
+      "en": "Events, AGV transfers, and quality data are enriched with business context."
+    },
+    "highlightIds": [
+      "uc02_src_shopfloor",
+      "uc02_conn_business_enrich",
+      "uc02_conn_shopfloor_enrich",
+      "uc02_conn_env_enrich",
+      "uc02_step_enrich"
+    ],
+    "dimIds": [
+      "uc02_col_targets",
+      "uc02_src_business",
+      "uc02_src_env"
+    ],
+    "hideIds": []
+  },
+  {
+    "id": "uc02-03-environment-pool",
+    "title": {
+      "de": "Umwelt-Daten",
+      "en": "Environment data"
+    },
+    "description": {
+      "de": "Energie, Temperatur und Vibration werden mit Produktionskontext korreliert.",
+      "en": "Energy, temperature, and vibration are correlated with production context."
+    },
+    "highlightIds": [
+      "uc02_src_env",
+      "uc02_conn_business_corr",
+      "uc02_conn_shopfloor_corr",
+      "uc02_conn_env_corr",
+      "uc02_step_correlate"
+    ],
+    "dimIds": [
+      "uc02_col_targets",
+      "uc02_src_business",
+      "uc02_src_shopfloor"
+    ],
+    "hideIds": []
+  },
+  {
+    "id": "uc02-04-context-model",
+    "title": {
+      "de": "Kontextmodell",
+      "en": "Context model"
+    },
+    "description": {
+      "de": "Order ↔ Werkstück-ID ↔ Station verknüpft die drei Datenwelten zu einem gemeinsamen Kontextmodell.",
+      "en": "Order ↔ Workpiece-ID ↔ Station links the three data worlds into a shared context model."
+    },
+    "highlightIds": [
+      "uc02_container_dsp",
+      "uc02_step_normalize",
+      "uc02_step_enrich",
+      "uc02_step_correlate",
+      "uc02_conn_norm_enrich",
+      "uc02_conn_enrich_corr",
+      "uc02_note_context"
+    ],
+    "dimIds": [
+      "uc02_col_targets"
+    ],
+    "hideIds": []
+  },
+  {
+    "id": "uc02-05-outcomes",
+    "title": {
+      "de": "Ergebnisse",
+      "en": "Outcomes"
+    },
+    "description": {
+      "de": "Das prozessfähige Kontextmodell ermöglicht Analytics, BI und Closed-Loop-Integration.",
+      "en": "The process-ready context model enables analytics, BI, and closed-loop integration."
+    },
+    "highlightIds": [
+      "uc02_tgt_analytics",
+      "uc02_tgt_bi",
+      "uc02_tgt_closed_loop",
+      "uc02_conn_corr_analytics",
+      "uc02_conn_corr_bi",
+      "uc02_conn_corr_closed"
+    ],
+    "dimIds": [
+      "uc02_col_sources",
+      "uc02_container_dsp"
+    ],
+    "hideIds": []
+  },
+  {
+    "id": "uc02-06-closed-loop",
+    "title": {
+      "de": "Closed Loop",
+      "en": "Closed loop"
+    },
+    "description": {
+      "de": "Rückkopplung von Analytics/ERP in den Business-Prozess zur Steuerung.",
+      "en": "Feedback from analytics/ERP into the business process for control."
+    },
+    "highlightIds": [
+      "uc02_edge_feedback",
+      "uc02_tgt_closed_loop",
+      "uc02_src_business"
+    ],
+    "dimIds": [
+      "uc02_src_shopfloor",
+      "uc02_src_env",
+      "uc02_step_enrich",
+      "uc02_step_correlate"
+    ],
+    "hideIds": []
+  }
+]

@@ -15,3 +15,15 @@ body {
   font-weight: 400; // Regular
   text-align: left; // Linksbündiger Rausatz (außer bei Mengentext: Blocksatz)
 }
+
+/* UC-02 Step animation: highlight, dim, hidden - global fallback for dynamically inserted SVG */
+.three-data-pools-use-case svg .hl {
+  opacity: 1 !important;
+  filter: drop-shadow(0 4px 12px rgba(var(--orbis-blue-strong-rgb), 0.2));
+}
+.three-data-pools-use-case svg .dim {
+  opacity: 0.3 !important;
+}
+.three-data-pools-use-case svg .hidden {
+  display: none !important;
+}

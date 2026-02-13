@@ -39,6 +39,13 @@ export const appRoutes: Routes = [
           ),
       },
       {
+        path: 'dsp/use-case/three-data-pools',
+        loadComponent: () =>
+          import('./pages/use-cases/three-data-pools/three-data-pools-use-case.component').then(
+            (m) => m.ThreeDataPoolsUseCaseComponent
+          ),
+      },
+      {
         path: 'dsp/use-case',
         loadComponent: () =>
           import('./pages/use-cases/use-case-selector-page.component').then((m) => m.UseCaseSelectorPageComponent),

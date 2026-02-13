@@ -89,6 +89,40 @@ export const ORBIS_COLORS = {
     light: '#fde68a',   // RGB: 253, 230, 138 - Light warning background
   },
 
+  // ========== Diagram Colors (UC SVG Diagrams, DSP Architecture Views) ==========
+  // Shared palette for all programmatically generated SVG diagrams.
+  // When a UC diagram needs a lane, node, connection, or box color it should
+  // reference ORBIS_COLORS.diagram.* so that a single change here propagates
+  // consistently to every diagram (UC-01, UC-06, etc.).
+  diagram: {
+    // Lane backgrounds (semantic per domain area)
+    laneBusinessFill: '#d5e8d4',     // RGB: 213, 232, 212 — Light Green for Business Context lanes
+    laneBusinessStroke: '#82b366',   // RGB: 130, 179, 102 — Green border for Business lanes
+    laneTraceFill: '#dae8fc',        // RGB: 218, 232, 252 — Light Blue for Trace & Genealogy lanes
+    laneTraceStroke: '#6c8ebf',      // RGB: 108, 142, 191 — Blue border for Trace lanes
+    laneShopfloorFill: '#f5f5f5',    // RGB: 245, 245, 245 — Light Grey for Shopfloor lanes
+    laneShopfloorStroke: '#666666',  // RGB: 102, 102, 102 — Grey border for Shopfloor lanes
+    laneEnvironmentFill: '#e1d5e7',  // RGB: 225, 213, 231 — Light Purple for Environment/Sensor lanes
+    laneEnvironmentStroke: '#9673a6', // RGB: 150, 115, 166 — Purple border for Environment lanes
+    targetAnalyticsFill: '#ffe6cc',  // RGB: 255, 230, 204 — Light Orange for Analytics/Outcome boxes
+    targetAnalyticsStroke: '#d79b00', // RGB: 215, 155, 0 — Orange border for target boxes
+    // Station node colors
+    nodeDefault: '#ffffff',           // White — Standard station nodes
+    nodeParallel: '#f8cecc',          // RGB: 248, 206, 204 — Light Red for parallel/dimmed nodes
+    nodeStroke: '#1f1f1f',            // RGB: 31, 31, 31 — Dark Grey for node borders
+    // Connection colors
+    connectionStroke: '#1f1f1f',      // RGB: 31, 31, 31 — Standard connection/join lines
+    connectionAlert: '#b85450',       // RGB: 184, 84, 80 — Red for parallel/alert connections
+    // Thread colors
+    threadCyan: '#00bcd4',            // RGB: 0, 188, 212 — Cyan for NFC/data thread lines
+    // Box colors (business boxes, enrichment boxes)
+    boxFill: '#ffffff',               // White — Standard box background
+    boxStroke: '#1f1f1f',             // RGB: 31, 31, 31 — Standard box border
+    // SVG background gradient
+    bgGradientStart: '#fafbfc',       // RGB: 250, 251, 252 — Background gradient top
+    bgGradientEnd: '#ffffff',         // White — Background gradient bottom
+  },
+
   // ========== Track & Trace Event Colors (osf-weit) ==========
   // Used for Pick, Process, Drop events and Order types in Track & Trace components
   trackTrace: {
@@ -164,6 +198,26 @@ export type OrbisColorKey =
   | 'status-warning-strong'
   | 'status-warning-medium'
   | 'status-warning-light'
+  | 'diagram-lane-business-fill'
+  | 'diagram-lane-business-stroke'
+  | 'diagram-lane-trace-fill'
+  | 'diagram-lane-trace-stroke'
+  | 'diagram-lane-shopfloor-fill'
+  | 'diagram-lane-shopfloor-stroke'
+  | 'diagram-lane-environment-fill'
+  | 'diagram-lane-environment-stroke'
+  | 'diagram-target-analytics-fill'
+  | 'diagram-target-analytics-stroke'
+  | 'diagram-node-default'
+  | 'diagram-node-parallel'
+  | 'diagram-node-stroke'
+  | 'diagram-connection-stroke'
+  | 'diagram-connection-alert'
+  | 'diagram-thread-cyan'
+  | 'diagram-box-fill'
+  | 'diagram-box-stroke'
+  | 'diagram-bg-gradient-start'
+  | 'diagram-bg-gradient-end'
   | 'track-trace-pick'
   | 'track-trace-process'
   | 'track-trace-drop'
@@ -216,6 +270,26 @@ export function getOrbisColor(key: OrbisColorKey): string {
     'status-warning-strong': ORBIS_COLORS.statusWarning.strong,
     'status-warning-medium': ORBIS_COLORS.statusWarning.medium,
     'status-warning-light': ORBIS_COLORS.statusWarning.light,
+    'diagram-lane-business-fill': ORBIS_COLORS.diagram.laneBusinessFill,
+    'diagram-lane-business-stroke': ORBIS_COLORS.diagram.laneBusinessStroke,
+    'diagram-lane-trace-fill': ORBIS_COLORS.diagram.laneTraceFill,
+    'diagram-lane-trace-stroke': ORBIS_COLORS.diagram.laneTraceStroke,
+    'diagram-lane-shopfloor-fill': ORBIS_COLORS.diagram.laneShopfloorFill,
+    'diagram-lane-shopfloor-stroke': ORBIS_COLORS.diagram.laneShopfloorStroke,
+    'diagram-lane-environment-fill': ORBIS_COLORS.diagram.laneEnvironmentFill,
+    'diagram-lane-environment-stroke': ORBIS_COLORS.diagram.laneEnvironmentStroke,
+    'diagram-target-analytics-fill': ORBIS_COLORS.diagram.targetAnalyticsFill,
+    'diagram-target-analytics-stroke': ORBIS_COLORS.diagram.targetAnalyticsStroke,
+    'diagram-node-default': ORBIS_COLORS.diagram.nodeDefault,
+    'diagram-node-parallel': ORBIS_COLORS.diagram.nodeParallel,
+    'diagram-node-stroke': ORBIS_COLORS.diagram.nodeStroke,
+    'diagram-connection-stroke': ORBIS_COLORS.diagram.connectionStroke,
+    'diagram-connection-alert': ORBIS_COLORS.diagram.connectionAlert,
+    'diagram-thread-cyan': ORBIS_COLORS.diagram.threadCyan,
+    'diagram-box-fill': ORBIS_COLORS.diagram.boxFill,
+    'diagram-box-stroke': ORBIS_COLORS.diagram.boxStroke,
+    'diagram-bg-gradient-start': ORBIS_COLORS.diagram.bgGradientStart,
+    'diagram-bg-gradient-end': ORBIS_COLORS.diagram.bgGradientEnd,
     'track-trace-pick': ORBIS_COLORS.trackTrace.pick.main,
     'track-trace-process': ORBIS_COLORS.trackTrace.process.main,
     'track-trace-drop': ORBIS_COLORS.trackTrace.drop.main,

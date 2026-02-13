@@ -140,6 +140,29 @@
   --status-warning-medium-rgb: 245, 158, 11;
   --status-warning-light-rgb: 253, 230, 138;
 
+  // ========== Diagram Colors (UC SVG Diagrams, DSP Architecture Views) ==========
+  // Shared palette for all programmatically generated SVG diagrams
+  --diagram-lane-business-fill: #d5e8d4;
+  --diagram-lane-business-stroke: #82b366;
+  --diagram-lane-trace-fill: #dae8fc;
+  --diagram-lane-trace-stroke: #6c8ebf;
+  --diagram-lane-shopfloor-fill: #f5f5f5;
+  --diagram-lane-shopfloor-stroke: #666666;
+  --diagram-lane-environment-fill: #e1d5e7;
+  --diagram-lane-environment-stroke: #9673a6;
+  --diagram-target-analytics-fill: #ffe6cc;
+  --diagram-target-analytics-stroke: #d79b00;
+  --diagram-node-default: #ffffff;
+  --diagram-node-parallel: #f8cecc;
+  --diagram-node-stroke: #1f1f1f;
+  --diagram-connection-stroke: #1f1f1f;
+  --diagram-connection-alert: #b85450;
+  --diagram-thread-cyan: #00bcd4;
+  --diagram-box-fill: #ffffff;
+  --diagram-box-stroke: #1f1f1f;
+  --diagram-bg-gradient-start: #fafbfc;
+  --diagram-bg-gradient-end: #ffffff;
+
   // ========== Track & Trace Event Colors (osf-weit) ==========
   // Used for Pick, Process, Drop events and Order types in Track & Trace components
   --track-trace-pick: #9c27b0;
