@@ -1,6 +1,6 @@
 # DSP SVG Inventory
 
-_Generated: 2026-01-28T15:30:31.425Z_
+_Generated: 2026-02-13T14:36:34.266Z_
 
 Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Architecture Objects Reference](../../osf/apps/osf-ui/src/app/components/dsp-animation/configs/DSP_Architecture_Objects_Reference.md) dokumentiert sind.
 
@@ -272,9 +272,19 @@ Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Archit
 <div style="font-size: 0.9em; color: #666;">agv-vehicle.svg</div>
 </div>
 <div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/alarm.svg" alt="alarm.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`alarm`</div>
+<div style="font-size: 0.9em; color: #666;">alarm.svg</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
 <img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/battery.svg" alt="battery.svg" width="64" height="64" />
 <div style="font-weight: 600; margin-top: 8px;">`battery`</div>
 <div style="font-size: 0.9em; color: #666;">battery.svg</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/bell-alarm.svg" alt="bell-alarm.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`bell-alarm`</div>
+<div style="font-size: 0.9em; color: #666;">bell-alarm.svg</div>
 </div>
 <div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
 <img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/charging-active.svg" alt="charging-active.svg" width="64" height="64" />
@@ -350,6 +360,11 @@ Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Archit
 <img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/temperature-sensor.svg" alt="temperature-sensor.svg" width="64" height="64" />
 <div style="font-weight: 600; margin-top: 8px;">`temperature-sensor`</div>
 <div style="font-size: 0.9em; color: #666;">temperature-sensor.svg</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/tilt-sensor.svg" alt="tilt-sensor.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`tilt-sensor`</div>
+<div style="font-size: 0.9em; color: #666;">tilt-sensor.svg</div>
 </div>
 <div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
 <img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/tuning-fork.svg" alt="tuning-fork.svg" width="64" height="64" />

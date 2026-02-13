@@ -52,6 +52,7 @@ export class DspUseCasesComponent {
     'interoperability': '/dsp/use-case/interoperability',
     'data-aggregation': '/dsp/use-case/three-data-pools',
     'ai-lifecycle': '/dsp/use-case/ai-lifecycle',
+    'predictive-maintenance': '/dsp/use-case/predictive-maintenance',
   };
 
   useCases: UseCase[] = [
@@ -150,6 +151,7 @@ export class DspUseCasesComponent {
         $localize`:@@orbisUseCasePredictiveHighlight3:Predictive forecasts feeding SAP maintenance plans, spare-part logistics, and operator guidance.`,
       ],
       icon: 'assets/svg/dsp/use-cases/use-case-predictive-maintenance.svg',
+      detailRoute: '/dsp/use-case/predictive-maintenance',
     },
     {
       id: 'process-optimization',

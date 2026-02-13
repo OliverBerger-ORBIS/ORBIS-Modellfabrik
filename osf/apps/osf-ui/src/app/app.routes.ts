@@ -53,6 +53,13 @@ export const appRoutes: Routes = [
           ),
       },
       {
+        path: 'dsp/use-case/predictive-maintenance',
+        loadComponent: () =>
+          import('./pages/use-cases/predictive-maintenance/predictive-maintenance-use-case.component').then(
+            (m) => m.PredictiveMaintenanceUseCaseComponent
+          ),
+      },
+      {
         path: 'dsp/use-case',
         loadComponent: () =>
           import('./pages/use-cases/use-case-selector-page.component').then((m) => m.UseCaseSelectorPageComponent),

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "uc05-00-overview",
+    "title": { "de": "Übersicht", "en": "Overview" },
+    "description": { "de": "Process Data & Alarm Flow – Gesamtübersicht aller Komponenten.", "en": "Process Data & Alarm Flow – Overview of all components." },
+    "highlightIds": ["uc05_col_process", "uc05_container_mixed", "uc05_col_shopfloor"],
+    "dimIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc05-01-trigger-sensor",
+    "title": { "de": "Trigger & Sensor", "en": "Trigger & Sensor" },
+    "description": { "de": "Trigger aktiv, Signal-Dreieck und Vibration-Sensor erfassen Daten. Signale gehen an DSP Edge. Detect-Schritt hervorgehoben.", "en": "Trigger active, signal triangle and vibration sensor capture data. Signals go to DSP Edge. Detect step highlighted." },
+    "highlightIds": ["uc05_sf_trigger", "uc05_sf_signal_triangle", "uc05_sf_detector", "uc05_conn_sensor_dsp", "uc05_proc_detect"],
+    "dimIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc05-02-dsp-evaluate",
+    "title": { "de": "DSP & Bewerten", "en": "DSP & Evaluate" },
+    "description": { "de": "DSP Edge wertet Schwellwerte und Regeln aus und erkennt Anomalien.", "en": "DSP Edge evaluates thresholds and rules to detect anomalies." },
+    "highlightIds": ["uc05_mixed_dsp_edge", "uc05_proc_evaluate", "uc05_conn_sensor_dsp"],
+    "dimIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc05-03-alarm",
+    "title": { "de": "Alarm", "en": "Alarm" },
+    "description": { "de": "Bei Anomalie wird ein Alarm-Event emittiert. Alarm-Box und Alarm-Schritt – Connection als gepunktete Linie.", "en": "On anomaly, an alarm event is emitted. Alarm box and Alarm step – connection as dotted line." },
+    "highlightIds": ["uc05_proc_alarm", "uc05_mixed_alarm", "uc05_conn_alarm_process", "uc05_conn_dsp_alarm"],
+    "dimIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc05-04-act",
+    "title": { "de": "Aktion", "en": "Act" },
+    "description": { "de": "Reaktion: Produktion pausieren. Act-Schritt, Alarm-Box und Connection zu Systems & Devices.", "en": "Response: Production pause. Act step, Alarm box and connection to Systems & Devices." },
+    "highlightIds": ["uc05_proc_action", "uc05_mixed_alarm", "uc05_conn_alarm_systems", "uc05_sf_systems_devices"],
+    "dimIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc05-05-alarm-event",
+    "title": { "de": "Alarm Event", "en": "Alarm Event" },
+    "description": { "de": "Alarm-Event wird an Target-Systeme (MES/ERP/Analytics) weitergeleitet.", "en": "Alarm event is forwarded to target systems (MES/ERP/Analytics)." },
+    "highlightIds": ["uc05_conn_alarm_target", "uc05_mixed_alarm", "uc05_mixed_target"],
+    "dimIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc05-06-feedback",
+    "title": { "de": "Feedback", "en": "Feedback" },
+    "description": { "de": "Rückmeldung an Zielsysteme für Wartungsplanung. Target-Box, Connection zu Feedback und Feedback-Schritt.", "en": "Feedback to target systems for maintenance scheduling. Target box, connection to Feedback and Feedback step." },
+    "highlightIds": ["uc05_mixed_target", "uc05_feedback", "uc05_proc_feedback"],
+    "dimIds": [],
+    "hideIds": []
+  }
+]

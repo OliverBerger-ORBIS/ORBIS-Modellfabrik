@@ -57,7 +57,11 @@ export const ICONS = {
       orderTracking: 'assets/svg/shopfloor/shared/order-tracking.svg',
       temperatureSensor: 'assets/svg/shopfloor/shared/temperature-sensor.svg',
       vibrationSensor: 'assets/svg/shopfloor/shared/vibration-sensor.svg',
+      tiltSensor: 'assets/svg/shopfloor/shared/tilt-sensor.svg',
+      tuningFork: 'assets/svg/shopfloor/shared/tuning-fork.svg',
       pressureSensor: 'assets/svg/shopfloor/shared/pressure-sensor.svg',
+      alarm: 'assets/svg/shopfloor/shared/alarm.svg',
+      bellAlarm: 'assets/svg/shopfloor/shared/bell-alarm.svg',
     },
     workpieces: {
       blue: {

@@ -1,11 +1,10 @@
 # Sprint 15 – Use-Case-Bibliothek & Blog-Serie Fortsetzung
 
 **Zeitraum:** 05.02.2026 - 18.02.2026 (2 Wochen)  
-**Status:** In Planung  
+**Status:** Laufend  
 **Stakeholder-Update:** 
-- **Fokus im Repo:** Erstellung der Artikel-Drafts und Visuals (Konzept-Diagramme) als Grundlage für die Blog-Serie.
-- **Out of Scope (Repo):** Die technische Umsetzung der Use-Cases (OSF-Routes, Animationen) und der redaktionelle Publishing-Prozess erfolgen separat.
-- **Status:** UC-01 und Artikel-02 sind konzeptionell abgeschlossen (Text + Visuals).
+- **Fokus im Repo:** Use-Case-Darstellungen und Animationen; UC-01 bis UC-03, UC-05 und UC-06 haben OSF-Implementierung.
+- **Stand:** UC-05 Predictive Maintenance mit 7-Step-Animation implementiert. UC-04 (Closed Loop Quality) fehlt als einziger Use-Case.
 
 ---
 
@@ -22,9 +21,14 @@
   - ✅ Visuelle Assets erstellt (Concept.drawio & Architecture.drawio)
   - [ ] **Entscheidung:** Finalisierung Layout (Vertical Concept vs. Horizontal Lanes)
   - ✅ Status auf "Konzept Finalisiert" gesetzt
-- [ ] **UC-03:** AI Lifecycle - Konzept & Visuals
+- [x] **UC-03:** AI Lifecycle - Konzept & Visuals
+  - ✅ Layered Diagram DE/EN, Animation-Steps
+  - ✅ OSF-Darstellung und Animation implementiert
 - [ ] **UC-04:** Closed Loop Quality - Konzept & Visuals
-- [ ] **UC-05:** Predictive Maintenance - Konzept & Visuals
+  - *Fehlend: OSF-Darstellung und Animation (einziger Use-Case noch offen)*
+- [x] **UC-05:** Predictive Maintenance - Konzept & Visuals
+  - ✅ Diagramm-Struktur (Process, Mixed, Shopfloor), Icons (Alarm, Bell-Alarm, Vibration/Tilt-Sensor)
+  - ✅ OSF-Darstellung und 7-Step-Animation implementiert
 
 ### Blog-Serie (Drafts & Visuals)
 - [x] **A2:** Track & Trace Genealogie - Draft & Visuals fertig
@@ -50,8 +54,8 @@
 ### Events / Demos
 - [ ] **Kunde Glaston:** OSF-Präsentation am 10.02.2026
   - ✅ Zielsetzung und Fokus abstimmen
-  - [ ] Drehbuch festlegen und OSF-UI ggf anpassen
-  - [ ] Demo-Umgebung (Shadow-Mode) checken
+  - ✅  Drehbuch festlegen und OSF-UI ggf anpassen
+  - ✅  Demo-Umgebung (Shadow-Mode) checken
 
 ### Weitere Aufgaben (aus Sprint 14 übernommen)
 - [ ] Azure DevOps Migration & Docker-Setup (Hilcher-Box/RPi) - Fortsetzung
@@ -59,9 +63,9 @@
 - [ ] Projektantrag für neue Phase Q1/Q2 2026 finalisieren
 
 ## 📊 Fortschritt
-- **Abgeschlossen:** 0/X Aufgaben
-- **In Arbeit:** UC-01, Artikel-02
-- **Geplant:** UC-02-05, Artikel-03-04
+- **Abgeschlossen:** UC-02 Konzept, UC-03, UC-05 (Darstellung + Animation), Artikel A2/A3
+- **In Arbeit:** UC-01 Umarbeitung, UC-04 (einziger offener UC), Artikel A4
+- **Geplant:** UC-04 OSF-Implementierung, Review-Prozesse
 - **Blockiert:** Keine Blocker
 
 ## 🔗 Wichtige Entscheidungen
@@ -82,19 +86,27 @@
 ### Routing-Struktur
 - Basis-Route: `dsp/use-case/`
 - Einzelne Use-Cases:
-  - `dsp/use-case/track-trace-genealogy` (UC-01) - 🔄 In Arbeit
-  - `dsp/use-case/three-data-pools` (UC-02)
-  - `dsp/use-case/ai-lifecycle` (UC-03)
-  - `dsp/use-case/closed-loop-quality` (UC-04)
-  - `dsp/use-case/predictive-maintenance` (UC-05)
+  - `dsp/use-case/track-trace-genealogy` (UC-01) - 🔄 In Arbeit (Umarbeitung)
+  - `dsp/use-case/three-data-pools` (UC-02) - ✅ Darstellung + Animation
+  - `dsp/use-case/ai-lifecycle` (UC-03) - ✅ Darstellung + Animation
+  - `dsp/use-case/closed-loop-quality` (UC-04) - ⏳ Fehlend (nur Diagramm)
+  - `dsp/use-case/predictive-maintenance` (UC-05) - ✅ Darstellung + 7-Step-Animation
   - `dsp/use-case/interoperability` (UC-06) - ✅ Abgeschlossen (Sprint 14)
+
+### UC-Darstellung und Animationen (Status)
+- **UC-01:** ✅ Track & Trace – SVG-Generator, I18n, Komponente, Animation
+- **UC-02:** ✅ 3 Datentöpfe – Komponente, Animation
+- **UC-03:** ✅ AI Lifecycle – Layered Diagram DE/EN, Animation-Steps
+- **UC-04:** ⏳ Closed Loop Quality – *fehlend* (einziger UC ohne OSF-Implementierung)
+- **UC-05:** ✅ Predictive Maintenance – SVG-Generator, Icons (Alarm, Bell-Alarm, Vibration/Tilt-Sensor), 7-Step-Animation, globale Styles
+- **UC-06:** ✅ Interoperabilität – vollständig (Sprint 14)
 
 ### Assets vorhanden
 - **UC-01:** Schema, Screenshots DE/EN, Dokumentation (Umarbeitung in Planung)
-- **UC-02:** Diagramm DE v2
-- **UC-03:** Layered Diagram DE/EN, Animation-Steps
-- **UC-04:** Diagramm
-- **UC-05:** 2 Varianten
+- **UC-02:** Diagramm DE v2, OSF-Darstellung
+- **UC-03:** Layered Diagram DE/EN, Animation-Steps, OSF-Darstellung
+- **UC-04:** Diagramm (OSF-Implementierung offen)
+- **UC-05:** 2 Varianten, OSF-Darstellung mit 7-Step-Animation
 - **UC-06:** ✅ Vollständig implementiert (Sprint 14)
 
 ### Implementierungs-Ansatz
@@ -153,8 +165,15 @@
 
 ## ✅ Abgeschlossene Aufgaben (Sprint 15)
 
-*Wird während des Sprints aktualisiert*
+- **UC-05 Predictive Maintenance:** Vollständige OSF-Implementierung
+  - SVG-Generator mit Process-, Mixed- und Shopfloor-Lane
+  - Icons: Alarm, Bell-Alarm, Vibration-Sensor, Tilt-Sensor (icon.registry + dsp-svg-inventory)
+  - Target-Subboxen (MES/ERP/Analytics), Alarm-Box (quadratisch), DSP-Edge-Icon
+  - Connections: Vibration-Sensor→DSP (up-right-up), Alarm→Process nur gepunktet
+  - 7-Step-Animation (Übersicht → Trigger/Sensor → DSP/Evaluate → Alarm → Act → Alarm Event → Feedback)
+  - Globale Styles für Animation (hl, dim, dim-conn, hidden) in styles.scss
+  - Opacity-Kaskade-Fix: Vorfahren von Highlight-Elementen werden nicht mehr gedimmt
 
 ---
 
-*Letzte Aktualisierung: 04.02.2026*
+*Letzte Aktualisierung: 11.02.2026*

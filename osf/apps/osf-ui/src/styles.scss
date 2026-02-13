@@ -39,3 +39,18 @@ body {
 .ai-lifecycle-use-case svg .hidden {
   display: none !important;
 }
+
+/* UC-05 Predictive Maintenance: animation classes for step highlight/dim/hidden/dim-conn */
+.predictive-maintenance-use-case svg .hl {
+  opacity: 1 !important;
+  filter: drop-shadow(0 4px 12px rgba(var(--orbis-blue-strong-rgb), 0.2));
+}
+.predictive-maintenance-use-case svg .dim {
+  opacity: 0.3 !important;
+}
+.predictive-maintenance-use-case svg .dim-conn {
+  opacity: 0.15 !important;
+}
+.predictive-maintenance-use-case svg .hidden {
+  display: none !important;
+}
