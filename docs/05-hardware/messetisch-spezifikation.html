@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spezifikation: Messetisch</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            line-height: 1.6; 
+            max-width: 1000px; /* Increased max-width */
+            margin: 0 auto; 
+            padding: 2rem; 
+            color: #333; 
+        }
+        h1 { border-bottom: 2px solid #005a9c; padding-bottom: 0.5rem; color: #005a9c; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 0.3rem; margin-top: 2rem; color: #004080; }
+        h3 { color: #004080; margin-top: 1.5rem; }
+        ul { margin-bottom: 1rem; }
+        li { margin-bottom: 0.5rem; }
+        
+        /* Image handling - ensure it fits page */
+        img, svg { 
+            max-width: 100%; 
+            height: auto; 
+            border: 1px solid #ddd; 
+            padding: 5px; 
+            background: #fff; 
+            display: block;   
+            margin: 1rem auto; 
+        }
+
+        /* Container for diagram to allow scrolling if needed on small screens, but fit on print */
+        .diagram-container {
+            width: 100%;
+            overflow-x: auto;
+            text-align: center;
+        }
+        
+        code { background: #f5f5f5; padding: 2px 4px; border-radius: 3px; font-family: Consolas, monospace; }
+        .meta { color: #666; font-size: 0.9rem; margin-bottom: 2rem; border-bottom: 1px solid #eee; padding-bottom: 1rem;}
+        
+        @media print {
+            body { padding: 0.5cm; max-width: 100%; font-size: 11pt; }
+            h1 { margin-top: 0; font-size: 16pt; }
+            img, svg { max-width: 100% !important; page-break-inside: avoid; }
+            .diagram-container { overflow: visible; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Spezifikation: Messetisch (Modellfabrik Unterbau)</h1>
+
+    <div class="meta">
+        <strong>Status:</strong> Entwurf<br>
+        <strong>Datum:</strong> 2026-02-16
+    </div>
+
+    <p>Dieses Dokument beschreibt die Anforderungen und den Aufbau des Messetisches, der als physischer Unterbau für die ORBIS Modellfabrik dient.</p>
+
+    <h2>1. Übersicht</h2>
+    <p>Der Tisch muss stabil, transportabel (für Messen) und optisch ansprechend sein, um die Fischertechnik-Modelle sowie die IT-Infrastruktur (Edge Devices, Switches, Verkabelung) aufzunehmen.</p>
+
+    <h2>2. Anforderungen</h2>
+
+    <h3>2.1 Maße & Dimensionen</h3>
+    <ul>
+        <li><strong>Gesamthöhe:</strong> Verstellbar zwischen <strong>75 cm und 100 cm</strong> (Idealmaß aus Erfahrung: <strong>88 cm</strong> für Präsentationen).</li>
+        <li><strong>Grundplatten (Netto-Nutzfläche):</strong>
+            <ul>
+                <li><strong>Breite:</strong> 128 cm (Zusammengesetzt aus Segmenten: 36 + 72 + 20 cm)</li>
+                <li><strong>Länge:</strong> 184 cm (Zusammengesetzt aus Segmenten: 56 + 72 + 56 cm)</li>
+            </ul>
+        </li>
+        <li><strong>Gesamtfläche (inkl. Umrandung im Diagramm als rote Umrandung markiert):</strong> 200 cm x 152 cm (ermöglicht eine Aufteilung in 4 Platten à 100 x 76 cm).
+            <ul>
+                <li><strong>Breite:</strong> 152 cm : 128 cm Grundplatten + jeweils 8 cm unten und 16 cm oben bei den ORBIS-Platten</li>
+                <li><strong>Länge:</strong> 200 cm: 184 cm Grundplatte + jeweils 8 cm links und rechts</li>
+            </ul>
+        </li>
+        <li><strong>Auflagefläche:</strong> Muss absolut eben sein.</li>
+    </ul>
+
+    <h3>2.2 Umrahmung & Kabelmanagement</h3>
+    <ul>
+        <li><strong>Kabeldurchführung:</strong>
+            <ul>
+                <li>Abstand von Grundplatte: min. 2 cm.</li>
+                <li>Breite: 4 cm.</li>
+                <li>Durchlassgröße: 4 x 8 cm.</li>
+                <li>Die genauen Positionen sind im SVG Diagramm angegeben, Positionierung erfolgt mittig oder leicht versetzt entsprechend der Position der Platinen auf der jeweiligen Grundplatte.</li>
+            </ul>
+        </li>
+        <li><strong>Rahmenbreiten:</strong>
+            <ul>
+                <li><strong>Links & Rechts:</strong> 8 cm (für Kabeldurchlass).</li>
+                <li><strong>Oben (Bedienseite):</strong> <strong>16 cm</strong> (für Kabeldurchlass und als Laptop-Ablage/Präsentationsfläche).</li>
+                <li><strong>Unten:</strong> 8 cm für Beschriftung/Symmetrie (blaues Multiplex als Erweiterung geplant).</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>2.3 Transport & Modularität</h3>
+    <ul>
+        <li><strong>Modularität:</strong> Die Tischplatte sollte aus <strong>4 Einzelplatten</strong> bestehen (je ca. <strong>100 x 76 cm</strong>). Die Tischplatten werden nicht in die Koffer der Modellfabrik verpackt, allerdings sind die Koffer das relevante Maß für einen Transport per PKW/Transporter.</li>
+        <li><strong>Transportkoffer-Maße:</strong>
+            <ul>
+                <li>Länge: 116 cm</li>
+                <li>Breite: 78 cm (Mindestmaß für PKW-Transport)</li>
+                <li>Höhe: 30 bzw 42 cm.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>2.4 Weitere Anforderungen</h3>
+    <ul>
+        <li><strong>Stauraum:</strong> Der Unterbau muss Platz bieten, um die Transportkoffer (Stapelhöhe ca. 72 cm) darunter zu verstauen (wichtig für Verstauung der Koffer auf dem Messestand)</li>
+        <li><strong>Banner:</strong> Umlaufende Befestigungsmöglichkeit für ein Banner (Tischplatte bis ca. 10-20 cm über Boden).</li>
+        <li><strong>Zwischenablage:</strong> Optionale Ablage auf halber Höhe unter dem Tisch für größere Geräte ("ORBIS-Station"). Die Ablage muss nicht umlaufend sein, aber am "Oberen" Ende wo die ORBIS-Platten angebracht sind.</li>
+    </ul>
+
+    <h2>3. Schematischer Aufbau</h2>
+
+    <h3>Diagramm</h3>
+    <div class="diagram-container">
+        <img src="../assets/hardware/OSF-Messe-Tisch.drawio.svg" alt="Aufbau Schema">
+    </div>
+    
+    <p><em>(Originaldatei: <code>docs/assets/hardware/OSF-Messe-Tisch.drawio.svg</code>)</em></p>
+    <p>Die Maß-Angaben im Diagramm sind in cm.</p>
+
+    <h2>5. Transport & Montage</h2>
+    <ul>
+        <li>Der Tisch muss in Einzelteile zerlegbar sein.</li>
+        <li>Max. Länge eines Einzelteils sollte sich an den Maßen der Transportkoffer orientieren.</li>
+    </ul>
+
+</body>
+</html>
