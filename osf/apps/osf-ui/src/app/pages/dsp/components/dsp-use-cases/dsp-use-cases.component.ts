@@ -53,6 +53,7 @@ export class DspUseCasesComponent {
     'data-aggregation': '/dsp/use-case/three-data-pools',
     'ai-lifecycle': '/dsp/use-case/ai-lifecycle',
     'predictive-maintenance': '/dsp/use-case/predictive-maintenance',
+    'closed-loop-quality': '/dsp/use-case/closed-loop-quality',
   };
 
   useCases: UseCase[] = [
@@ -152,6 +153,26 @@ export class DspUseCasesComponent {
       ],
       icon: 'assets/svg/dsp/use-cases/use-case-predictive-maintenance.svg',
       detailRoute: '/dsp/use-case/predictive-maintenance',
+    },
+    {
+      id: 'closed-loop-quality',
+      title: $localize`:@@dspUseCaseClosedLoopQualityTitle:Closed Loop Quality`,
+      description: $localize`:@@dspUseCaseClosedLoopQualityDesc:Quality inspection events leading to decisions and actions – block, rework, rebuild, conditional release – with feedback to MES/ERP/Analytics.`,
+      actions: [
+        $localize`:@@dspUseCaseClosedLoopQualityH1:Inspection result as quality event`,
+        $localize`:@@dspUseCaseClosedLoopQualityH2:Context-enriched events (order, workpiece, station)`,
+        $localize`:@@dspUseCaseClosedLoopQualityH3:Rules and policies for decisions`,
+        $localize`:@@dspUseCaseClosedLoopQualityH4:Auditable feedback to target systems`,
+      ],
+      smartFactory: [
+        $localize`:@@orbisUseCaseClosedLoopQualityDescription:Quality becomes manageable when inspection result → decision → action is implemented as a closed loop.`,
+        $localize`:@@orbisUseCaseClosedLoopQualityHighlight1:AIQS and quality stations emit events with context.`,
+        $localize`:@@orbisUseCaseClosedLoopQualityHighlight2:DSP Edge normalizes and enriches events for process-ready integration.`,
+        $localize`:@@orbisUseCaseClosedLoopQualityHighlight3:Actions: block, rework, rebuild, conditional release – based on rules and context.`,
+        $localize`:@@orbisUseCaseClosedLoopQualityHighlight4:Feedback to MES/ERP/Analytics for traceability and maintenance scheduling.`,
+      ],
+      icon: 'assets/svg/dsp/functions/edge-analytics.svg',
+      detailRoute: '/dsp/use-case/closed-loop-quality',
     },
     {
       id: 'process-optimization',

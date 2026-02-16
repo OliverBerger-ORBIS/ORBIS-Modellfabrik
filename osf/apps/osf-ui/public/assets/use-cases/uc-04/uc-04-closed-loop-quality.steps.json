@@ -1,0 +1,58 @@
+[
+  {
+    "id": "uc04-00-overview",
+    "title": {"de": "Übersicht", "en": "Overview"},
+    "description": {"de": "Process Data & Quality Flow – Gesamtübersicht aller Komponenten.", "en": "Process Data & Quality Flow – Overview of all components."},
+    "highlightIds": ["uc04_col_process", "uc04_container_mixed", "uc04_col_shopfloor"],
+    "dimIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc04-01-source",
+    "title": {"de": "Quelle: Auftrag & AIQS", "en": "Source: Order & AIQS"},
+    "description": {"de": "Produktionsauftrag und AIQS-Station erzeugen Qualitätsprüfereignisse. Signale gehen an DSP Edge.", "en": "Production order and AIQS station generate quality inspection events. Signals go to DSP Edge."},
+    "highlightIds": ["uc04_sf_production_order", "uc04_sf_aiqs", "uc04_conn_aiqs_dsp", "uc04_proc_detect"],
+    "dimIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc04-02-dsp",
+    "title": {"de": "DSP Edge", "en": "DSP Edge"},
+    "description": {"de": "DSP Edge normalisiert Events und reichert sie mit Kontext an (Auftrag, Werkstück, Station).", "en": "DSP Edge normalizes events and enriches them with context (order, workpiece, station)."},
+    "highlightIds": ["uc04_mixed_dsp_edge", "uc04_proc_decide", "uc04_conn_aiqs_dsp"],
+    "dimIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc04-03-quality-event",
+    "title": {"de": "Quality Event", "en": "Quality Event"},
+    "description": {"de": "Prüfergebnis wird als Quality Event emittiert. Quality-Event-Box und Verbindung zum Act-Schritt.", "en": "Inspection result is emitted as Quality Event. Quality Event box and connection to Act step."},
+    "highlightIds": ["uc04_proc_act", "uc04_mixed_quality_event", "uc04_conn_quality_act", "uc04_conn_dsp_quality"],
+    "dimIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc04-04-act",
+    "title": {"de": "Aktion", "en": "Act"},
+    "description": {"de": "Reaktion: Sperre, Nacharbeit, Neubau oder bedingte Freigabe. Act-Schritt und Verbindung zu Systems & Devices.", "en": "Response: Block, rework, rebuild or conditional release. Act step and connection to Systems & Devices."},
+    "highlightIds": ["uc04_proc_act", "uc04_mixed_quality_event", "uc04_conn_quality_systems", "uc04_sf_systems_devices"],
+    "dimIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc04-05-target",
+    "title": {"de": "Quality Event an Zielsysteme", "en": "Quality Event to Targets"},
+    "description": {"de": "Quality Event wird an Zielsysteme (MES/ERP/Analytics) weitergeleitet.", "en": "Quality Event is forwarded to target systems (MES/ERP/Analytics)."},
+    "highlightIds": ["uc04_conn_quality_target", "uc04_mixed_quality_event", "uc04_mixed_target"],
+    "dimIds": [],
+    "hideIds": []
+  },
+  {
+    "id": "uc04-06-feedback",
+    "title": {"de": "Feedback", "en": "Feedback"},
+    "description": {"de": "Rückmeldung an Feedback-Schritt für auditierbare Nachvollziehbarkeit. Target-Box, gepunktete Feedback-Verbindung.", "en": "Feedback to Feedback step for auditable traceability. Target box, dotted feedback connection."},
+    "highlightIds": ["uc04_mixed_target", "uc04_feedback", "uc04_proc_feedback"],
+    "dimIds": [],
+    "hideIds": []
+  }
+]

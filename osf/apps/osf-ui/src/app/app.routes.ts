@@ -60,6 +60,13 @@ export const appRoutes: Routes = [
           ),
       },
       {
+        path: 'dsp/use-case/closed-loop-quality',
+        loadComponent: () =>
+          import('./pages/use-cases/closed-loop-quality/closed-loop-quality-use-case.component').then(
+            (m) => m.ClosedLoopQualityUseCaseComponent
+          ),
+      },
+      {
         path: 'dsp/use-case',
         loadComponent: () =>
           import('./pages/use-cases/use-case-selector-page.component').then((m) => m.UseCaseSelectorPageComponent),

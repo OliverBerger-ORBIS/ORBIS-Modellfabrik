@@ -3,8 +3,8 @@
 **Zeitraum:** 05.02.2026 - 18.02.2026 (2 Wochen)  
 **Status:** Laufend  
 **Stakeholder-Update:** 
-- **Fokus im Repo:** Use-Case-Darstellungen und Animationen; UC-01 bis UC-03, UC-05 und UC-06 haben OSF-Implementierung.
-- **Stand:** UC-05 Predictive Maintenance mit 7-Step-Animation implementiert. UC-04 (Closed Loop Quality) fehlt als einziger Use-Case.
+- **Fokus im Repo:** Use-Case-Darstellungen und Animationen; UC-01 bis UC-06 haben OSF-Implementierung.
+- **Stand:** In Sprint 15 wurden UC-01 bis UC-05 vollständig erstellt – jeweils mit Step-Animation.
 
 ---
 
@@ -14,8 +14,8 @@
 - [x] **UC-01:** Track & Trace Genealogy - Konzept & Visuals
   - ✅ Diagramm-Struktur finalisiert (Partitur vs. Snapshot)
   - ✅ Domain-Model (Object Mesh) erstellt
+  - ✅ OSF-Darstellung und Step-Animation implementiert
   - ✅ Wiki-Doku aktualisiert (`UC-01_Track_Trace-genealogy.md`)
-  - *Hinweis: Technische OSF-Implementierung (SVG, Timeline) erfolgt separat.*
 - [x] **UC-02:** 3 Datentöpfe - Konzept & Visuals
   - ✅ Textsynchronisation mit Artikel A3 (Begriffe harmonisiert)
   - ✅ Visuelle Assets erstellt (Concept.drawio & Architecture.drawio)
@@ -24,8 +24,10 @@
 - [x] **UC-03:** AI Lifecycle - Konzept & Visuals
   - ✅ Layered Diagram DE/EN, Animation-Steps
   - ✅ OSF-Darstellung und Animation implementiert
-- [ ] **UC-04:** Closed Loop Quality - Konzept & Visuals
-  - *Fehlend: OSF-Darstellung und Animation (einziger Use-Case noch offen)*
+- [x] **UC-04:** Closed Loop Quality - Konzept & Visuals
+  - ✅ Eigenständiges UC-04-Template erstellt (unabhängig von UC-05)
+  - ✅ OSF-Darstellung: 3 Lanes (Process Detect→Decide→Act→Feedback | Mixed DSP Edge | Quality-Event | Target | Shopfloor Production Order + AIQS | Systems & Devices)
+  - ✅ 7-Step-Animation, I18n, Route `dsp/use-case/closed-loop-quality`, DSP Use Cases Link
 - [x] **UC-05:** Predictive Maintenance - Konzept & Visuals
   - ✅ Diagramm-Struktur (Process, Mixed, Shopfloor), Icons (Alarm, Bell-Alarm, Vibration/Tilt-Sensor)
   - ✅ OSF-Darstellung und 7-Step-Animation implementiert
@@ -63,9 +65,9 @@
 - [ ] Projektantrag für neue Phase Q1/Q2 2026 finalisieren
 
 ## 📊 Fortschritt
-- **Abgeschlossen:** UC-02 Konzept, UC-03, UC-05 (Darstellung + Animation), Artikel A2/A3
-- **In Arbeit:** UC-01 Umarbeitung, UC-04 (einziger offener UC), Artikel A4
-- **Geplant:** UC-04 OSF-Implementierung, Review-Prozesse
+- **Abgeschlossen:** UC-01 bis UC-05 (jeweils mit Step-Animation), UC-02 Konzept, Artikel A2/A3
+- **In Arbeit:** UC-01 Diagramm-Umarbeitung (optional), Artikel A4
+- **Geplant:** Review-Prozesse
 - **Blockiert:** Keine Blocker
 
 ## 🔗 Wichtige Entscheidungen
@@ -86,10 +88,10 @@
 ### Routing-Struktur
 - Basis-Route: `dsp/use-case/`
 - Einzelne Use-Cases:
-  - `dsp/use-case/track-trace-genealogy` (UC-01) - 🔄 In Arbeit (Umarbeitung)
+  - `dsp/use-case/track-trace-genealogy` (UC-01) - ✅ Darstellung + Step-Animation
   - `dsp/use-case/three-data-pools` (UC-02) - ✅ Darstellung + Animation
   - `dsp/use-case/ai-lifecycle` (UC-03) - ✅ Darstellung + Animation
-  - `dsp/use-case/closed-loop-quality` (UC-04) - ⏳ Fehlend (nur Diagramm)
+  - `dsp/use-case/closed-loop-quality` (UC-04) - ✅ Darstellung + 7-Step-Animation
   - `dsp/use-case/predictive-maintenance` (UC-05) - ✅ Darstellung + 7-Step-Animation
   - `dsp/use-case/interoperability` (UC-06) - ✅ Abgeschlossen (Sprint 14)
 
@@ -97,7 +99,7 @@
 - **UC-01:** ✅ Track & Trace – SVG-Generator, I18n, Komponente, Animation
 - **UC-02:** ✅ 3 Datentöpfe – Komponente, Animation
 - **UC-03:** ✅ AI Lifecycle – Layered Diagram DE/EN, Animation-Steps
-- **UC-04:** ⏳ Closed Loop Quality – *fehlend* (einziger UC ohne OSF-Implementierung)
+- **UC-04:** ✅ Closed Loop Quality – SVG-Generator, Icons (Production Order, AIQS), 7-Step-Animation, Quality-Event-Box
 - **UC-05:** ✅ Predictive Maintenance – SVG-Generator, Icons (Alarm, Bell-Alarm, Vibration/Tilt-Sensor), 7-Step-Animation, globale Styles
 - **UC-06:** ✅ Interoperabilität – vollständig (Sprint 14)
 
@@ -105,7 +107,7 @@
 - **UC-01:** Schema, Screenshots DE/EN, Dokumentation (Umarbeitung in Planung)
 - **UC-02:** Diagramm DE v2, OSF-Darstellung
 - **UC-03:** Layered Diagram DE/EN, Animation-Steps, OSF-Darstellung
-- **UC-04:** Diagramm (OSF-Implementierung offen)
+- **UC-04:** Diagramm, OSF-Darstellung mit 7-Step-Animation
 - **UC-05:** 2 Varianten, OSF-Darstellung mit 7-Step-Animation
 - **UC-06:** ✅ Vollständig implementiert (Sprint 14)
 
@@ -165,6 +167,17 @@
 
 ## ✅ Abgeschlossene Aufgaben (Sprint 15)
 
+**UC-01 bis UC-05:** Alle Use-Cases in diesem Sprint erstellt – jeweils mit Step-Animation.
+
+- **UC-01 Track & Trace Genealogy:** SVG-Generator, I18n, Komponente, Step-Animation
+- **UC-02 3 Datentöpfe:** Komponente, Step-Animation
+- **UC-03 AI Lifecycle:** Layered Diagram DE/EN, Step-Animation
+- **UC-04 Closed Loop Quality (erste Version):** Eigenständiges Template
+  - Structure Config: 4 Process-Steps (Detect→Decide→Act→Feedback), Mixed (DSP Edge | Quality-Event | Target), Shopfloor (Production Order + AIQS | Systems & Devices)
+  - SVG-Generator mit uc04_ IDs, Mixed-Lane-Positionen/größen wie UC-05
+  - Connection Quality Event→Act: vertikal nach oben bis Mitte, dann rechts, dann nach oben zum Act-Step
+  - I18n-Service, Closed-Loop-Quality-Komponente, Route, Steps JSON, globale Styles, DSP Use Cases Eintrag
+
 - **UC-05 Predictive Maintenance:** Vollständige OSF-Implementierung
   - SVG-Generator mit Process-, Mixed- und Shopfloor-Lane
   - Icons: Alarm, Bell-Alarm, Vibration-Sensor, Tilt-Sensor (icon.registry + dsp-svg-inventory)
@@ -176,4 +189,4 @@
 
 ---
 
-*Letzte Aktualisierung: 11.02.2026*
+*Letzte Aktualisierung: 12.02.2026*
