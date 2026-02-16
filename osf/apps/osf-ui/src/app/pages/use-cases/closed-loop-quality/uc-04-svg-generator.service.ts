@@ -133,7 +133,7 @@ export class Uc04SvgGeneratorService {
 
   private mixedBox(box: Uc04MixedBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram, qualityFill: string, qualityStroke: string): string {
     const cx = box.x + box.width / 2;
-    const toAbs = (p: string) => (p.startsWith('/') ? p : '/' + p);
+    const toAbs = (p: string) => p;
 
     if (box.type === 'quality-event') {
       const iconSize = Math.min(56, box.width / 3, box.height / 2);
@@ -212,7 +212,7 @@ export class Uc04SvgGeneratorService {
   }
 
   private shopfloorIconBox(box: Uc04ShopfloorIconBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
-    const toAbs = (p: string) => (p.startsWith('/') ? p : '/' + p);
+    const toAbs = (p: string) => p;
     const path = box.iconKey === 'production-order'
       ? toAbs(ICONS.ui.orderProduction)
       : toAbs(ICONS.shopfloor.stations.aiqs);
@@ -230,7 +230,7 @@ export class Uc04SvgGeneratorService {
   }
 
   private shopfloorSystemsDevicesBox(box: Uc04ShopfloorBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
-    const toAbs = (p: string) => (p.startsWith('/') ? p : '/' + p);
+    const toAbs = (p: string) => p;
     const titlePad = 14;
     const stripPad = 14;
     const stripY = box.y + 44;
