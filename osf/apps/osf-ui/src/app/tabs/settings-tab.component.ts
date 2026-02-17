@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { getBaseHref } from '../assets/detail-asset-map';
 import { EnvironmentDefinition, EnvironmentService, EnvironmentKey } from '../services/environment.service';
 import { ConnectionService, ConnectionSettings } from '../services/connection.service';
 import { ExternalLinksService, ExternalLinksSettings } from '../services/external-links.service';
@@ -183,7 +184,7 @@ import { LanguageService, LocaleKey } from '../services/language.service';
               </span>
             </div>
             <div class="direct-page__url">
-              <a [href]="page.path" target="_blank" rel="noreferrer noopener">{{ page.path }}</a>
+              <a [href]="resolveUrl(page.path)" target="_blank" rel="noreferrer noopener">{{ resolveUrl(page.path) }}</a>
             </div>
             <p class="direct-page__desc">{{ page.description }}</p>
             <!-- Language links for each page -->
@@ -247,6 +248,14 @@ export class SettingsTabComponent implements OnInit {
       available: true,
     },
   ];
+
+  resolveUrl(path: string): string {
+    const baseHref = getBaseHref();
+    // Remove leading slash from path to avoid double slash if baseHref ends with /
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    const cleanBase = baseHref.endsWith('/') ? baseHref : `${baseHref}/`;
+    return `${cleanBase}${cleanPath}`;
+  }
 
   /**
    * Get language-specific URL for a given path

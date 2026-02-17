@@ -64,6 +64,12 @@
 - [ ] Projekt-Phasenabschlussbericht finalisieren
 - [ ] Projektantrag für neue Phase Q1/Q2 2026 finalisieren
 
+### Modellfabrik Erweiterung (Hardware)
+- [ ] **Vibrationsüberwachung:** Setup mit Arduino & Signalampel
+  - ✅ Grobplanung & Komponentenbestellung
+  - ✅ Projektplan erstellt: [arduino-vibrationssensor.md](../05-hardware/arduino-vibrationssensor.md)
+  - [ ] Aufbau & Test (siehe Projektplan)
+
 ## 📊 Fortschritt
 - **Abgeschlossen:** UC-01 bis UC-05 (jeweils mit Step-Animation), UC-02 Konzept, Artikel A2/A3, AIQS Quality-Check (Klassifikation & Beschreibung in MQTT + OSF-Anzeige)
 - **In Arbeit:** UC-01 Diagramm-Umarbeitung (optional), Artikel A4

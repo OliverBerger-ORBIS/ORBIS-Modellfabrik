@@ -151,7 +151,7 @@ export class Uc03SvgGeneratorService {
     const iconSize = 76; // ~35% larger than 56
     const iconPad = 10;
     const iconY = bulletH + iconPad;
-    const toAbs = (p: string) => (p.startsWith('/') ? p : '/' + p);
+    const toAbs = (p: string) => p;
     let out = `<g id="uc03_${box.id}">`;
     out += `<rect x="${box.x}" y="${box.y}" width="${box.width}" height="${box.height}" rx="10" ry="10" fill="${D.laneTraceFill}" stroke="${D.laneTraceStroke}" stroke-width="1.5"/>`;
     out += `<text x="${cx}" y="${titleY}" text-anchor="middle" class="uc03-dsp-title">${this.esc(t(box.titleKey))}</text>`;
@@ -168,7 +168,7 @@ export class Uc03SvgGeneratorService {
 
   /** Shopfloor box: title left-top; Systems/Devices labels bottom; icon figures 4:5 (w:h), square icon + caption */
   private shopfloorBox(box: Uc03ShopfloorBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
-    const toAbs = (p: string) => (p.startsWith('/') ? p : '/' + p);
+    const toAbs = (p: string) => p;
     const titlePad = 14;
     const stripPad = 14;
     const stripY = box.y + 44;

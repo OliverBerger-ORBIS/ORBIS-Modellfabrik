@@ -140,7 +140,7 @@ export class Uc05SvgGeneratorService {
 
   private mixedBox(box: Uc05MixedBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram, alarmFill: string, alarmStroke: string): string {
     const cx = box.x + box.width / 2;
-    const toAbs = (p: string) => (p.startsWith('/') ? p : '/' + p);
+    const toAbs = (p: string) => p;
 
     if (box.type === 'alarm') {
       const iconSize = Math.min(56, box.width / 3, box.height / 2);
@@ -257,7 +257,7 @@ export class Uc05SvgGeneratorService {
 
   /** Single icon box for Trigger; Detector shows vibration + tilt-sensor side by side */
   private shopfloorIconBox(box: Uc05ShopfloorIconBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
-    const toAbs = (p: string) => (p.startsWith('/') ? p : '/' + p);
+    const toAbs = (p: string) => p;
     const label = box.iconKey === 'trigger' ? t('uc05.sf.trigger') : t('uc05.sf.vibrationSensor');
     const figStroke = 'rgba(0,0,0,0.12)';
     let out = `<g id="uc05_${box.id}">`;
@@ -285,7 +285,7 @@ export class Uc05SvgGeneratorService {
 
   /** Systems+Devices box – same layout as UC-03 Shopfloor 2 (700x220) */
   private shopfloorSystemsDevicesBox(box: Uc05ShopfloorBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
-    const toAbs = (p: string) => (p.startsWith('/') ? p : '/' + p);
+    const toAbs = (p: string) => p;
     const titlePad = 14;
     const stripPad = 14;
     const stripY = box.y + 44;

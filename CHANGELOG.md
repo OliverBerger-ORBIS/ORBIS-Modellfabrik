@@ -15,6 +15,13 @@ All notable changes to OSF Dashboard will be documented here.
 ### Changed
 - **Locale-Dateien:** AIQS-Übersetzungen in `public/locale/` ergänzt (Runtime-Load)
 
+## [0.7.7] - 2026-02-16
+
+### Added
+- **Use Case Visualization:** Detail view now links to animated SVG graphics.
+- **Navigation:** Accessible via Use-Case in DSP tab or direct link `/#/en/dsp/use-case`.
+- **Settings:** Link added in settings page.
+
 ## [0.7.6] - 2026-02-04
 
 ### Changed
