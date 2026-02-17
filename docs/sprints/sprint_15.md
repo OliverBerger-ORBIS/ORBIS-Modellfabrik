@@ -65,7 +65,7 @@
 - [ ] Projektantrag für neue Phase Q1/Q2 2026 finalisieren
 
 ## 📊 Fortschritt
-- **Abgeschlossen:** UC-01 bis UC-05 (jeweils mit Step-Animation), UC-02 Konzept, Artikel A2/A3
+- **Abgeschlossen:** UC-01 bis UC-05 (jeweils mit Step-Animation), UC-02 Konzept, Artikel A2/A3, AIQS Quality-Check (Klassifikation & Beschreibung in MQTT + OSF-Anzeige)
 - **In Arbeit:** UC-01 Diagramm-Umarbeitung (optional), Artikel A4
 - **Geplant:** Review-Prozesse
 - **Blockiert:** Keine Blocker
@@ -167,6 +167,12 @@
 
 ## ✅ Abgeschlossene Aufgaben (Sprint 15)
 
+**AIQS Quality-Check (Klassifikation & Beschreibung):**
+- **TXT Controller AIQS:** Überträgt Ergebnisse der Qualitätsprüfung mit Klassifikation (ML-Label, z.B. BOHO, MIPO2) und Beschreibung (lesbar, z.B. „2x milled pocket“) via MQTT auf `/j1/txt/1/i/quality_check` – Vorbereitung für Rückmeldung an zentrales QS-System (MES, ERP, …)
+- **OSF-Anzeige:** Klassifikation, Beschreibung, Farbe (White/Red/Blue) und Ergebnis (passed/failed) werden in den Device-Details bei AIQS im Bereich „Last Image“ angezeigt
+- **I18n:** Alle neuen Labels und Werte in DE und FR übersetzt
+- **Dokumentation:** How-To `aiqs-quality-check-enumeration.md` mit RoboPro-Workflow (Blockly, kein Python-Edit, retain für UI)
+
 **UC-01 bis UC-05:** Alle Use-Cases in diesem Sprint erstellt – jeweils mit Step-Animation.
 
 - **UC-01 Track & Trace Genealogy:** SVG-Generator, I18n, Komponente, Step-Animation
@@ -189,4 +195,4 @@
 
 ---
 
-*Letzte Aktualisierung: 12.02.2026*
+*Letzte Aktualisierung: 18.02.2026*

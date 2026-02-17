@@ -13,10 +13,21 @@ Dieses How-To beschreibt den vollständigen Workflow für Deployment von Code au
 
 ---
 
+## ⚠️ Wichtige Hinweise
+
+| Punkt | Hinweis |
+|------|---------|
+| **Keine Änderungen im Repo** | Änderungen am TXT-Projekt erfolgen **ausschließlich in RoboPro Coding**. Die Quellen in `workspaces/` werden nicht direkt bearbeitet – sie dienen der Analyse (z.B. nach Entpacken des `.ft`-Archivs). |
+| **RoboPro erforderlich** | RoboPro Coding muss installiert sein. *Aktuell:* nur auf **Mac** verfügbar. |
+| **Blockly-Modus für Code** | Code-Anpassungen erfolgen im **Blockly-Editor** (grafischer Modus). Das Ergebnis wird über den generierten Python-Code verifiziert. |
+| **Vorsicht bei Python-Edit** | Direktes Bearbeiten des Python-Codes im Professional-Modus kann **problematisch** sein: Der TXT reagiert extrem empfindlich auf Leerzeichen und Einrückungen. |
+
+---
+
 ## 📋 Voraussetzungen
 
 ### Software
-- ✅ **ROBO Pro Coding** installiert (Mac/Windows)
+- ✅ **ROBO Pro Coding** installiert (*aktuell nur Mac*)
 - ✅ **TXT-Controller** im WLAN (DHCP-Bereich `192.168.0.101-199`)
 - ✅ **SSH optional:** Nur für direkten Controller-Zugriff (muss am Controller aktiviert werden)
 
@@ -82,14 +93,15 @@ integrations/TXT-{MODULE}/
 - ✅ Dateien modifizieren
 - ✅ ROBO Pro speichert automatisch
 
-**Wichtig:** Für Code-Änderungen **Professional Modus verwenden**!
+**Hinweis:** Für Änderungen an **bestehendem Code** (z.B. AIQS Quality-Check): **Blockly-Modus** bevorzugen. Der TXT reagiert empfindlich auf Leerzeichen; Änderungen über Blockly vermeiden Formatierungsprobleme. Professional Modus für neue Python-Dateien.
 
 ### Phase 3: Variante speichern
 
-1. **"Speichern unter..."** wählen:
+1. **"Speichern unter..."** wählen (sofort nach Öffnen, damit das Original unverändert bleibt):
    - `Datei → Speichern unter...` oder `Cmd+Shift+S`
    - Pfad: `integrations/TXT-AIQS/archives/FF_AI_24V_mod.ft`
    - ROBO Pro erstellt `.ft` Archiv automatisch
+   - **Projekt umbenennen** (falls gewünscht): Name in RoboPro auf den neuen Variantennamen setzen
 
 2. **Optional: Entpacken für Analyse:**
    ```bash
@@ -120,11 +132,12 @@ integrations/TXT-{MODULE}/
 
 1. **Projekt deployen:**
    - `Controller → Download` oder entsprechendes Menü
-   - Projekt wird auf Controller geladen
+   - Projekt wird auf den TXT-Controller übertragen
 
-2. **Programm starten:**
-   - Auf TXT-Controller: Programm auswählen
-   - Programm starten
+2. **Auf dem TXT-Controller:**
+   - Deploytes Programm in der Programmliste auswählen (**Load**)
+   - Als aktives Programm festlegen
+   - **Autostart** aktivieren (Programm startet beim Booten des Controllers)
 
 3. **Testen:**
    - Funktionalität prüfen

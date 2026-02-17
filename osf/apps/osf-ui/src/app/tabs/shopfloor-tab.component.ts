@@ -114,11 +114,17 @@ interface QualityCheckPayload {
   result?: 'PASSED' | 'FAILED';
   ts?: string;
   data?: string; // base64 encoded image: "data:image/png;base64,..."
+  classification?: string; // ML-Label (e.g. BOHO, MIPO2, CRACK)
+  classificationDesc?: string; // Human-readable description (e.g. "Round hole", "2x milled pocket")
 }
 
 interface QualityCheckImage {
   dataUrl: string;
   timestamp: string;
+  result?: 'passed' | 'failed';
+  color?: string; // From num: 1=White, 2=Red, 3=Blue
+  classification?: string;
+  classificationDesc?: string;
 }
 
 interface ModuleCommand {
@@ -731,9 +737,23 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
           return null;
         }
         
+        const num = payload.num;
+        const result = payload.result;
+        const resultDisplay: 'passed' | 'failed' | undefined =
+          result === 'PASSED' ? 'passed' : result === 'FAILED' ? 'failed' : undefined;
+
+        const color: string | undefined =
+          num === 1 ? 'White' :
+          num === 2 ? 'Red' :
+          num === 3 ? 'Blue' : undefined;
+
         return {
           dataUrl: imageData,
           timestamp: payload.ts || msg.timestamp,
+          result: resultDisplay,
+          color,
+          classification: payload.classification,
+          classificationDesc: payload.classificationDesc,
         };
       }),
       startWith(null),
@@ -1863,6 +1883,56 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       return date.toLocaleString();
     } catch {
       return timestamp;
+    }
+  }
+
+  /** Translates Quality Check result (passed/failed) for i18n. */
+  getQualityCheckResultLabel(result: 'passed' | 'failed' | undefined): string {
+    if (!result) return '';
+    return result === 'passed'
+      ? $localize`:@@aiqsQualityResultPassed:passed`
+      : $localize`:@@aiqsQualityResultFailed:failed`;
+  }
+
+  /** Translates Quality Check color (White/Red/Blue) for i18n. Reuses DPS color labels for consistency. */
+  getQualityCheckColorLabel(color: string | undefined): string {
+    if (!color) return '';
+    switch (color.toUpperCase()) {
+      case 'WHITE':
+        return $localize`:@@dpsColorWhite:White`;
+      case 'RED':
+        return $localize`:@@dpsColorRed:Red`;
+      case 'BLUE':
+        return $localize`:@@dpsColorBlue:Blue`;
+      default:
+        return color;
+    }
+  }
+
+  /** Translates classificationDesc (description of ML classification) for i18n. */
+  getQualityCheckDescriptionLabel(desc: string | undefined): string {
+    if (!desc) return '';
+    switch (desc) {
+      case 'Cracks in Workpiece':
+        return $localize`:@@aiqsDescCracks:Cracks in Workpiece`;
+      case '1x milled pocket':
+        return $localize`:@@aiqsDescMipo1:1x milled pocket`;
+      case '2x milled pocket':
+        return $localize`:@@aiqsDescMipo2:2x milled pocket`;
+      case 'Round hole':
+        return $localize`:@@aiqsDescBoho:Round hole`;
+      case 'Hole elyptical':
+        return $localize`:@@aiqsDescBohoel:Hole elyptical`;
+      case 'Hole and 1x milled pocket':
+        return $localize`:@@aiqsDescBohomipo1:Hole and 1x milled pocket`;
+      case 'Hole and 2x milled pocket':
+        return $localize`:@@aiqsDescBohomipo2:Hole and 2x milled pocket`;
+      case 'Workpiece without features':
+        return $localize`:@@aiqsDescBlank:Workpiece without features`;
+      case 'No feature found':
+        return $localize`:@@aiqsDescNoFeature:No feature found`;
+      default:
+        return desc;
     }
   }
 

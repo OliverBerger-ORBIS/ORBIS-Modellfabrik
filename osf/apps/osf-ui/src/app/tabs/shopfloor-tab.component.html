@@ -658,6 +658,24 @@
                   {{ formatQualityCheckTimestamp(qualityImage.timestamp) }}
                 </p>
               </div>
+              <div class="module-specific-section__details quality-check-details" *ngIf="qualityImage.result || qualityImage.color || qualityImage.classification || qualityImage.classificationDesc">
+                <div class="detail-row" *ngIf="qualityImage.result">
+                  <span class="detail-label" i18n="@@aiqsLabelQualityResult">Quality Check result</span>
+                  <span class="detail-value">{{ getQualityCheckResultLabel(qualityImage.result) }}</span>
+                </div>
+                <div class="detail-row" *ngIf="qualityImage.color">
+                  <span class="detail-label" i18n="@@aiqsLabelColor">Color</span>
+                  <span class="detail-value">{{ getQualityCheckColorLabel(qualityImage.color) }}</span>
+                </div>
+                <div class="detail-row" *ngIf="qualityImage.classification">
+                  <span class="detail-label" i18n="@@aiqsLabelClassification">Classification</span>
+                  <span class="detail-value mono">{{ qualityImage.classification }}</span>
+                </div>
+                <div class="detail-row" *ngIf="qualityImage.classificationDesc">
+                  <span class="detail-label" i18n="@@aiqsLabelDescription">Description</span>
+                  <span class="detail-value">{{ getQualityCheckDescriptionLabel(qualityImage.classificationDesc) }}</span>
+                </div>
+              </div>
             </div>
           </div>
 

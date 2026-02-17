@@ -4,6 +4,17 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.7.8] - 2026-02-18
+
+### Added
+- **AIQS Quality-Check (Klassifikation & Beschreibung):** TXT Controller überträgt Qualitätsprüf-Ergebnisse mit Klassifikation (ML-Label, z.B. BOHO, MIPO2, CRACK) und Beschreibung (lesbar, z.B. „2x milled pocket“) via MQTT auf `/j1/txt/1/i/quality_check` – Vorbereitung für Rückmeldung an zentrales QS-System (MES, ERP)
+- **OSF Shopfloor-Tab:** Anzeige von Quality Check Ergebnis (passed/failed), Farbe (White/Red/Blue), Klassifikation und Beschreibung in den Device-Details bei AIQS (Bereich „Last Image“)
+- **I18n:** Übersetzungen für alle neuen AIQS Quality-Check Labels und Werte in DE und FR
+- **Dokumentation:** How-To `aiqs-quality-check-enumeration.md` mit RoboPro-Workflow (Blockly-Modus, keine direkten Python-Änderungen im Repo)
+
+### Changed
+- **Locale-Dateien:** AIQS-Übersetzungen in `public/locale/` ergänzt (Runtime-Load)
+
 ## [0.7.6] - 2026-02-04
 
 ### Changed
