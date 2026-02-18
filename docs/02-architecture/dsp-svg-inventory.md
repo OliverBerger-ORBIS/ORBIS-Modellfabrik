@@ -1,10 +1,12 @@
 # DSP SVG Inventory
 
-_Generated: 2026-02-13T14:36:34.266Z_
+_Generated: 2026-02-18T09:25:04.355Z_
 
 Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Architecture Objects Reference](../../osf/apps/osf-ui/src/app/components/dsp-animation/configs/DSP_Architecture_Objects_Reference.md) dokumentiert sind.
 
 **Hinweis:** SVGs die bereits in der DSP Architecture Objects Reference dokumentiert sind, werden hier nicht angezeigt, um Redundanz zu vermeiden.
+
+**Use-Case-Karten und -Diagramme** (svg/dsp/use-cases, svg/use-cases) sind im [Use-Case Inventory](use-case-inventory.md) mit grafischer Übersicht dokumentiert.
 
 ## Verfügbare SVG-Assets (nach Verzeichnissen gruppiert)
 
@@ -204,33 +206,6 @@ Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Archit
 <img src="../../osf/apps/osf-ui/src/assets/svg/dsp/methodology/phase5-autonomous-enterprise.svg" alt="phase5-autonomous-enterprise.svg" width="64" height="64" />
 <div style="font-weight: 600; margin-top: 8px;">`phase5-autonomous-enterprise`</div>
 <div style="font-size: 0.9em; color: #666;">phase5-autonomous-enterprise.svg</div>
-</div>
-
-</div>
-
-### svg/dsp/use-cases
-
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; margin: 16px 0;">
-
-<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
-<img src="../../osf/apps/osf-ui/src/assets/svg/dsp/use-cases/use-case-data-aggregation.svg" alt="use-case-data-aggregation.svg" width="64" height="64" />
-<div style="font-weight: 600; margin-top: 8px;">`use-case-data-aggregation`</div>
-<div style="font-size: 0.9em; color: #666;">use-case-data-aggregation.svg</div>
-</div>
-<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
-<img src="../../osf/apps/osf-ui/src/assets/svg/dsp/use-cases/use-case-predictive-maintenance.svg" alt="use-case-predictive-maintenance.svg" width="64" height="64" />
-<div style="font-weight: 600; margin-top: 8px;">`use-case-predictive-maintenance`</div>
-<div style="font-size: 0.9em; color: #666;">use-case-predictive-maintenance.svg</div>
-</div>
-<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
-<img src="../../osf/apps/osf-ui/src/assets/svg/dsp/use-cases/use-case-process-optimization.svg" alt="use-case-process-optimization.svg" width="64" height="64" />
-<div style="font-weight: 600; margin-top: 8px;">`use-case-process-optimization`</div>
-<div style="font-size: 0.9em; color: #666;">use-case-process-optimization.svg</div>
-</div>
-<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
-<img src="../../osf/apps/osf-ui/src/assets/svg/dsp/use-cases/use-case-track-trace.svg" alt="use-case-track-trace.svg" width="64" height="64" />
-<div style="font-weight: 600; margin-top: 8px;">`use-case-track-trace`</div>
-<div style="font-size: 0.9em; color: #666;">use-case-track-trace.svg</div>
 </div>
 
 </div>
@@ -623,23 +598,6 @@ Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Archit
 <img src="../../osf/apps/osf-ui/src/assets/svg/ui/process-flow.svg" alt="process-flow.svg" width="64" height="64" />
 <div style="font-weight: 600; margin-top: 8px;">`process-flow`</div>
 <div style="font-size: 0.9em; color: #666;">process-flow.svg</div>
-</div>
-
-</div>
-
-### svg/use-cases
-
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; margin: 16px 0;">
-
-<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
-<img src="../../osf/apps/osf-ui/src/assets/svg/use-cases/uc-06-event-to-process-map-DE.svg" alt="uc-06-event-to-process-map-DE.svg" width="64" height="64" />
-<div style="font-weight: 600; margin-top: 8px;">`uc-06-event-to-process-map-DE`</div>
-<div style="font-size: 0.9em; color: #666;">uc-06-event-to-process-map-DE.svg</div>
-</div>
-<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
-<img src="../../osf/apps/osf-ui/src/assets/svg/use-cases/uc-06-event-to-process-map-EN.svg" alt="uc-06-event-to-process-map-EN.svg" width="64" height="64" />
-<div style="font-weight: 600; margin-top: 8px;">`uc-06-event-to-process-map-EN`</div>
-<div style="font-size: 0.9em; color: #666;">uc-06-event-to-process-map-EN.svg</div>
 </div>
 
 </div>

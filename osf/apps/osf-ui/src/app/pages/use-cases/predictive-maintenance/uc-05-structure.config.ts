@@ -81,6 +81,16 @@ export interface Uc05Structure {
   shopfloorSystemsDevicesBox: Uc05ShopfloorBox;
 }
 
+/** Connection element IDs for dim-conn styling (lighter opacity than dim) */
+export const UC05_CONNECTION_IDS: readonly string[] = [
+  'uc05_conn_sensor_dsp',
+  'uc05_conn_dsp_alarm',
+  'uc05_conn_alarm_target',
+  'uc05_conn_alarm_process',
+  'uc05_conn_alarm_systems',
+  'uc05_feedback',
+];
+
 const UC05_DESCRIPTION_HEIGHT = 50;
 
 export function createUc05Structure(): Uc05Structure {

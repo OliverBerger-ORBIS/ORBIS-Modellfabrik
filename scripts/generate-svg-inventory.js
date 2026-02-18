@@ -27,7 +27,7 @@ const REFERENCE_DOC = path.join(
   'osf/apps/osf-ui/src/app/components/dsp-animation/configs/DSP_Architecture_Objects_Reference.md'
 );
 
-// SVGs already documented in DSP_Architecture_Objects_Reference.md
+// SVGs documented elsewhere (DSP_Architecture_Objects_Reference.md or Use-Case Inventory)
 const DOCUMENTED_SVGS = new Set([
   'assets/svg/business/analytics-application.svg',
   'assets/svg/business/cloud-application.svg',
@@ -81,6 +81,13 @@ const DOCUMENTED_SVGS = new Set([
   'assets/svg/shopfloor/systems/pump-system.svg',
   'assets/svg/shopfloor/systems/scada-system.svg',
   'assets/svg/shopfloor/systems/warehouse-system.svg',
+  // Use-Case Karten und Diagramme → [Use-Case Inventory](use-case-inventory.md)
+  'assets/svg/dsp/use-cases/use-case-data-aggregation.svg',
+  'assets/svg/dsp/use-cases/use-case-predictive-maintenance.svg',
+  'assets/svg/dsp/use-cases/use-case-process-optimization.svg',
+  'assets/svg/dsp/use-cases/use-case-track-trace.svg',
+  'assets/svg/use-cases/uc-06-event-to-process-map-DE.svg',
+  'assets/svg/use-cases/uc-06-event-to-process-map-EN.svg',
 ]);
 
 function readDirSafe(dir) {
@@ -199,6 +206,8 @@ function generate() {
     'Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Architecture Objects Reference](../../osf/apps/osf-ui/src/app/components/dsp-animation/configs/DSP_Architecture_Objects_Reference.md) dokumentiert sind.',
     '',
     '**Hinweis:** SVGs die bereits in der DSP Architecture Objects Reference dokumentiert sind, werden hier nicht angezeigt, um Redundanz zu vermeiden.',
+    '',
+    '**Use-Case-Karten und -Diagramme** (svg/dsp/use-cases, svg/use-cases) sind im [Use-Case Inventory](use-case-inventory.md) mit grafischer Übersicht dokumentiert.',
     ''
   );
 

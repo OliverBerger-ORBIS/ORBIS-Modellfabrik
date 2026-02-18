@@ -20,6 +20,7 @@ Die Dokumente beschreiben den Systemkontext, die Message Flows, und die Namensko
 - [Naming Conventions](naming-conventions.md) – Topics, Template-Keys, IDs
 - [DSP Architecture Component Spec](dsp-architecture-component-spec.md) – DSP Architecture Component Specification
 - [DSP SVG Inventory](dsp-svg-inventory.md) – Übersicht aller verfügbaren SVG-Assets für die DSP-Architektur
+- [Use-Case Inventory](use-case-inventory.md) – Übersicht der animierten Use-Case-Diagramme (Step 1, Anleitung für Anpassungen)
 
 ### APS Physical Architecture
 - [APS Physical Architecture](../../06-integrations/APS-Ecosystem/system-overview.md) – Fischertechnik Netzwerk & Hardware

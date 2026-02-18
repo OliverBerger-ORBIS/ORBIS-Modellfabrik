@@ -251,26 +251,35 @@ function calculateLaneLayout(column: Uc06Column): void {
     });
 }
 
+/** Content starts after step description (y 20–120); einheitlich mit UC-01 bis UC-05 */
+const UC06_COLUMN_START_Y = 130;
+
+/** ViewBox 1920x1080 – einheitlich mit allen anderen Use-Cases */
+const UC06_VIEWBOX = { width: 1920, height: 1080 };
+
 /**
  * Creates the UC-06 structure configuration with all positions and I18n keys
  */
 export function createUc06Structure(): Uc06Structure {
+  const colY = UC06_COLUMN_START_Y;
+  const colH = UC06_VIEWBOX.height - colY;
+
   const structure: Uc06Structure = {
-    viewBox: { width: 1920, height: 1300 },
-    
-    title: { x: 960, y: 110, key: 'uc06.title' },
-    subtitle: { x: 960, y: 155, key: 'uc06.subtitle' },
-    stepDescription: { x: 960, y: 155, width: 1400, height: 100 }, // Position for step description overlay (replaces subtitle, narrower width, taller height)
-    
+    viewBox: UC06_VIEWBOX,
+
+    title: { x: 960, y: 42, key: 'uc06.title' },
+    subtitle: { x: 960, y: 74, key: 'uc06.subtitle' },
+    stepDescription: { x: 960, y: 20, width: 1400, height: 100 }, // Einheitlich mit UC-01, UC-03, UC-04, UC-05
+
     columns: {
       sources: {
         id: 'sources',
         x: 80,
-        y: 300, // Moved down from 220 to make room for step description
+        y: colY,
         width: 560,
-        height: 950,
+        height: colH,
         headerX: 120,
-        headerY: 340, // Adjusted to be within the column (column starts at y: 300)
+        headerY: colY + 40,
         headerKey: 'uc06.sources.header',
         lanes: [
           {
@@ -366,191 +375,78 @@ export function createUc06Structure(): Uc06Structure {
         column: {
           id: 'dsp',
           x: 680,
-          y: 300, // Moved down from 220 to make room for step description
+          y: colY,
           width: 560,
-          height: 950,
+          height: colH,
           headerX: 720,
-          headerY: 350, // Adjusted from 270
+          headerY: colY + 50,
           headerKey: 'uc06.dsp.header',
         },
         steps: [
-          {
-            id: 'normalize',
-            x: 720,
-            y: 380, // Moved up to make arrow visible (was 480)
-            width: 480,
-            height: 130,
-            titleKey: 'uc06.step.normalize.title',
-            descriptionKey: 'uc06.step.normalize.description',
-          },
-          {
-            id: 'enrich',
-            x: 720,
-            y: 550, // Adjusted to create space for arrow (normalize bottom: 530, arrow needs 10px gap)
-            width: 480,
-            height: 130,
-            titleKey: 'uc06.step.enrich.title',
-            descriptionKey: 'uc06.step.enrich.description',
-          },
-          {
-            id: 'correlate',
-            x: 720,
-            y: 720, // Adjusted to maintain spacing (enrich bottom: 680, arrow needs 10px gap)
-            width: 480,
-            height: 130,
-            titleKey: 'uc06.step.correlate.title',
-            descriptionKey: 'uc06.step.correlate.description',
-          },
+          { id: 'normalize', x: 720, y: colY + 80, width: 480, height: 130, titleKey: 'uc06.step.normalize.title', descriptionKey: 'uc06.step.normalize.description' },
+          { id: 'enrich', x: 720, y: colY + 250, width: 480, height: 130, titleKey: 'uc06.step.enrich.title', descriptionKey: 'uc06.step.enrich.description' },
+          { id: 'correlate', x: 720, y: colY + 420, width: 480, height: 130, titleKey: 'uc06.step.correlate.title', descriptionKey: 'uc06.step.correlate.description' },
         ],
         arrows: [
-          // Arrows are generated dynamically in generateDspColumn, these are placeholders
-          { x1: 960, y1: 535, x2: 960, y2: 545 }, // Between normalize (bottom: 530) and enrich (top: 550)
-          { x1: 960, y1: 685, x2: 960, y2: 695 }, // Between enrich (bottom: 680) and correlate (top: 710)
+          { x1: 960, y1: colY + 215, x2: 960, y2: colY + 225 },
+          { x1: 960, y1: colY + 385, x2: 960, y2: colY + 395 },
         ],
         bars: [
-          {
-            id: 'process_ready',
-            x: 760,
-            y: 910, // Adjusted from 830
-            width: 400,
-            height: 56,
-            textKey: 'uc06.bar.process_ready',
-            fill: '#eaf5ea',
-            stroke: '#bfe3bf',
-          },
-          {
-            id: 'reusable',
-            x: 760,
-            y: 1000, // Adjusted from 920
-            width: 400,
-            height: 56,
-            textKey: 'uc06.bar.reusable',
-          },
-          {
-            id: 'foundation',
-            x: 760,
-            y: 1090, // Adjusted from 1010
-            width: 400,
-            height: 70,
-            textKey: 'uc06.bar.foundation',
-            multiline: true,
-            textLines: ['uc06.bar.foundation.line1', 'uc06.bar.foundation.line2'],
-          },
+          { id: 'process_ready', x: 760, y: colY + 610, width: 400, height: 56, textKey: 'uc06.bar.process_ready', fill: '#eaf5ea', stroke: '#bfe3bf' },
+          { id: 'reusable', x: 760, y: colY + 700, width: 400, height: 56, textKey: 'uc06.bar.reusable' },
+          { id: 'foundation', x: 760, y: colY + 790, width: 400, height: 70, textKey: 'uc06.bar.foundation', multiline: true, textLines: ['uc06.bar.foundation.line1', 'uc06.bar.foundation.line2'] },
         ],
       },
       targets: {
         column: {
           id: 'targets',
           x: 1280,
-          y: 300, // Moved down from 220 to make room for step description
+          y: colY,
           width: 560,
-          height: 950,
+          height: colH,
           headerX: 1320,
-          headerY: 350, // Adjusted from 270
+          headerY: colY + 50,
           headerKey: 'uc06.targets.header',
         },
         processViewBox: {
           x: 1320,
-          y: 390, // Adjusted from 310
+          y: colY + 90,
           width: 480,
           height: 200,
           titleKey: 'uc06.process_view.title',
           timeline: {
             lineX1: 1350,
-            lineY: 500, // Adjusted from 420 (+80px to match column shift)
+            lineY: colY + 200,
             lineX2: 1770,
             points: [
-              // All y-values adjusted by +80px to match column shift from 220 to 300
-              { x: 1365, y: 500, iconPath: '/assets/svg/shopfloor/stations/hbw-station.svg', iconX: 1347.5, iconY: 445, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.warehouse', labelY: 540 },
-              { x: 1443, y: 500, iconPath: '/assets/svg/shopfloor/shared/agv-vehicle.svg', iconX: 1425.5, iconY: 445, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.agv', labelY: 540 },
-              { x: 1521, y: 500, iconPath: '/assets/svg/shopfloor/stations/drill-station.svg', iconX: 1503.5, iconY: 445, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.station', labelY: 540 },
-              { x: 1599, y: 500, iconPath: '/assets/svg/shopfloor/shared/pass-event.svg', iconX: 1581.5, iconY: 445, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.transfer', labelY: 540 },
-              { x: 1677, y: 500, iconPath: '/assets/svg/shopfloor/stations/aiqs-station.svg', iconX: 1659.5, iconY: 445, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.quality', labelY: 540 },
-              { x: 1755, y: 500, iconPath: '/assets/svg/shopfloor/shared/order-tracking.svg', iconX: 1737.5, iconY: 445, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.complete', labelY: 540 },
+              { x: 1365, y: colY + 200, iconPath: '/assets/svg/shopfloor/stations/hbw-station.svg', iconX: 1347.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.warehouse', labelY: colY + 240 },
+              { x: 1443, y: colY + 200, iconPath: '/assets/svg/shopfloor/shared/agv-vehicle.svg', iconX: 1425.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.agv', labelY: colY + 240 },
+              { x: 1521, y: colY + 200, iconPath: '/assets/svg/shopfloor/stations/drill-station.svg', iconX: 1503.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.station', labelY: colY + 240 },
+              { x: 1599, y: colY + 200, iconPath: '/assets/svg/shopfloor/shared/pass-event.svg', iconX: 1581.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.transfer', labelY: colY + 240 },
+              { x: 1677, y: colY + 200, iconPath: '/assets/svg/shopfloor/stations/aiqs-station.svg', iconX: 1659.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.quality', labelY: colY + 240 },
+              { x: 1755, y: colY + 200, iconPath: '/assets/svg/shopfloor/shared/order-tracking.svg', iconX: 1737.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.complete', labelY: colY + 240 },
             ],
           },
         },
         targets: [
-          {
-            id: 'erp',
-            x: 1320,
-            y: 620, // Adjusted from 540
-            width: 150,
-            height: 90,
-            iconPath: '/assets/svg/business/erp-application.svg',
-            iconX: 1365,
-            iconY: 635, // Adjusted from 555
-            iconWidth: 70,
-            iconHeight: 50,
-            labelKey: 'uc06.target.erp',
-            labelY: 705, // Adjusted from 625
-          },
-          {
-            id: 'mes',
-            x: 1495,
-            y: 620, // Adjusted from 540
-            width: 150,
-            height: 90,
-            iconPath: '/assets/svg/business/mes-application.svg',
-            iconX: 1540,
-            iconY: 635, // Adjusted from 555
-            iconWidth: 70,
-            iconHeight: 50,
-            labelKey: 'uc06.target.mes',
-            labelY: 705, // Adjusted from 625
-          },
-          {
-            id: 'analytics_ai',
-            x: 1670,
-            y: 620, // Adjusted from 540
-            width: 150,
-            height: 90,
-            iconPath: '/assets/svg/business/analytics-application.svg',
-            iconX: 1715,
-            iconY: 635, // Adjusted from 555
-            iconWidth: 70,
-            iconHeight: 50,
-            labelKey: 'uc06.target.analytics_ai',
-            labelY: 705, // Adjusted from 625
-          },
+          { id: 'erp', x: 1320, y: colY + 320, width: 150, height: 90, iconPath: '/assets/svg/business/erp-application.svg', iconX: 1365, iconY: colY + 335, iconWidth: 70, iconHeight: 50, labelKey: 'uc06.target.erp', labelY: colY + 405 },
+          { id: 'mes', x: 1495, y: colY + 320, width: 150, height: 90, iconPath: '/assets/svg/business/mes-application.svg', iconX: 1540, iconY: colY + 335, iconWidth: 70, iconHeight: 50, labelKey: 'uc06.target.mes', labelY: colY + 405 },
+          { id: 'analytics_ai', x: 1670, y: colY + 320, width: 150, height: 90, iconPath: '/assets/svg/business/analytics-application.svg', iconX: 1715, iconY: colY + 335, iconWidth: 70, iconHeight: 50, labelKey: 'uc06.target.analytics_ai', labelY: colY + 405 },
         ],
         noteKey: 'uc06.targets.note',
         noteX: 1320,
-        noteY: 730, // Adjusted from 650
+        noteY: colY + 430,
         outcomes: [
-          {
-            id: 'traceability',
-            x: 1320,
-            y: 830, // Adjusted from 750
-            width: 480,
-            height: 70,
-            textKey: 'uc06.outcome.traceability',
-          },
-          {
-            id: 'kpi',
-            x: 1320,
-            y: 920, // Adjusted from 840
-            width: 480,
-            height: 80,
-            textKey: 'uc06.outcome.kpi',
-            multiline: true,
-            textLines: ['uc06.outcome.kpi.line1', 'uc06.outcome.kpi.line2'],
-          },
-          {
-            id: 'closed_loop',
-            x: 1320,
-            y: 1020, // Adjusted from 940
-            width: 480,
-            height: 70,
-            textKey: 'uc06.outcome.closed_loop',
-          },
+          { id: 'traceability', x: 1320, y: colY + 530, width: 480, height: 70, textKey: 'uc06.outcome.traceability' },
+          { id: 'kpi', x: 1320, y: colY + 620, width: 480, height: 80, textKey: 'uc06.outcome.kpi', multiline: true, textLines: ['uc06.outcome.kpi.line1', 'uc06.outcome.kpi.line2'] },
+          { id: 'closed_loop', x: 1320, y: colY + 720, width: 480, height: 70, textKey: 'uc06.outcome.closed_loop' },
         ],
       },
     },
-    
+
     footer: {
       x: 960,
-      y: 1250,
+      y: UC06_VIEWBOX.height - 30,
       key: 'uc06.footer',
     },
   };

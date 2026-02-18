@@ -4,6 +4,19 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.7.9] - 2026-02-18
+
+### Added
+- **Use-Case SVG Export:** Script `node scripts/export-use-case-svgs.js` exportiert alle Use-Case-Diagramme (UC-01 bis UC-06) nach `assets/svg/use-cases/`
+  - Icons (DSP Edge, MILL, DRILL etc.) werden als Base64-Data-URIs eingebettet für standalone-Anzeige (Markdown, file://)
+  - CSS-Variablen-Fallbacks für UC-06 (ORBIS-Farben) bei eigenständigem SVG
+  - Puppeteer-Chrome erforderlich: `npx puppeteer browsers install chrome` bei Fehlermeldung
+- **Use-Case-Bibliothek:** Zentraldokumentation [use-case-library.md](docs/02-architecture/use-case-library.md) (Routing, Dateien, Steps)
+
+### Changed
+- **Use-Case-Inventory:** Hinweis auf Puppeteer-Installation, SVG-Export
+- **Sprint 15:** Verweis auf Use-Case-Bibliothek, gekürzte UC-Details
+
 ## [0.7.8] - 2026-02-18
 
 ### Added

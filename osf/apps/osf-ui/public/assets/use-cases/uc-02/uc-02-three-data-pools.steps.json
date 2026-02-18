@@ -10,7 +10,6 @@
       "uc02_container_dsp",
       "uc02_col_targets"
     ],
-    "dimIds": [],
     "hideIds": []
   },
   {
@@ -29,11 +28,6 @@
       "uc02_conn_shopfloor_norm",
       "uc02_conn_env_norm",
       "uc02_step_normalize"
-    ],
-    "dimIds": [
-      "uc02_col_targets",
-      "uc02_src_shopfloor",
-      "uc02_src_env"
     ],
     "hideIds": []
   },
@@ -54,11 +48,6 @@
       "uc02_conn_env_enrich",
       "uc02_step_enrich"
     ],
-    "dimIds": [
-      "uc02_col_targets",
-      "uc02_src_business",
-      "uc02_src_env"
-    ],
     "hideIds": []
   },
   {
@@ -77,11 +66,6 @@
       "uc02_conn_shopfloor_corr",
       "uc02_conn_env_corr",
       "uc02_step_correlate"
-    ],
-    "dimIds": [
-      "uc02_col_targets",
-      "uc02_src_business",
-      "uc02_src_shopfloor"
     ],
     "hideIds": []
   },
@@ -104,9 +88,6 @@
       "uc02_conn_enrich_corr",
       "uc02_note_context"
     ],
-    "dimIds": [
-      "uc02_col_targets"
-    ],
     "hideIds": []
   },
   {
@@ -127,10 +108,6 @@
       "uc02_conn_corr_bi",
       "uc02_conn_corr_closed"
     ],
-    "dimIds": [
-      "uc02_col_sources",
-      "uc02_container_dsp"
-    ],
     "hideIds": []
   },
   {
@@ -147,12 +124,6 @@
       "uc02_edge_feedback",
       "uc02_tgt_closed_loop",
       "uc02_src_business"
-    ],
-    "dimIds": [
-      "uc02_src_shopfloor",
-      "uc02_src_env",
-      "uc02_step_enrich",
-      "uc02_step_correlate"
     ],
     "hideIds": []
   }

@@ -118,7 +118,7 @@ export class Uc01SvgGeneratorService {
     .uc01-step-text { font: 400 14px "Segoe UI",Arial,sans-serif; fill: #ffffff; }
     /* Animation classes */
     .hl { opacity: 1; filter: drop-shadow(0 3px 8px rgba(21,65,148,0.18)); transition: opacity 0.3s, filter 0.3s; }
-    .dim { opacity: 0.25; transition: opacity 0.3s; }
+    .dim { opacity: 0.5; transition: opacity 0.3s; }
     .hidden { display: none; }
   </style>
 </defs>`;

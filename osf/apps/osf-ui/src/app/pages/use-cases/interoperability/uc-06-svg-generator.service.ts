@@ -142,8 +142,8 @@ export class Uc06SvgGeneratorService {
       .frame { fill: var(--bg); }
       .panel { fill: var(--panel); stroke: var(--orbis-grey-light); stroke-width: 1.5; filter: url(#shadow-light); }
       .panel-dsp { fill: var(--uc-col-dsp-bg); stroke: var(--uc-col-dsp-border); stroke-width: 1.5; filter: url(#shadow-light); }
-      .title { font: 700 56px "Segoe UI", Arial, sans-serif; fill: var(--orbis-nightblue); letter-spacing: -0.5px; }
-      .subtitle { font: 400 24px "Segoe UI", Arial, sans-serif; fill: var(--muted); }
+      .title { font: 700 40px "Segoe UI", Arial, sans-serif; fill: var(--orbis-nightblue); letter-spacing: -0.3px; }
+      .subtitle { font: 400 22px "Segoe UI", Arial, sans-serif; fill: var(--muted); }
       .h2 { font: 700 26px "Segoe UI", Arial, sans-serif; fill: var(--orbis-nightblue); letter-spacing: -0.3px; }
       .p { font: 400 20px "Segoe UI", Arial, sans-serif; fill: var(--orbis-nightblue); }
       .small { font: 400 18px "Segoe UI", Arial, sans-serif; fill: var(--orbis-nightblue); }
@@ -163,7 +163,7 @@ export class Uc06SvgGeneratorService {
       .check { fill: rgba(var(--status-success-strong-rgb), 0.1); stroke: rgba(var(--status-success-strong-rgb), 0.3); stroke-width: 1.5; }
       /* Animation classes */
       .hl { opacity: 1; filter: drop-shadow(0 4px 12px rgba(var(--orbis-blue-strong-rgb), 0.2)); }
-      .dim { opacity: 0.3; }
+      .dim { opacity: 0.5; }
       .hidden { display: none; }
     </style>
   </defs>`;

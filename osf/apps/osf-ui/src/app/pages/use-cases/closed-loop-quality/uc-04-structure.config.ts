@@ -62,6 +62,16 @@ export interface Uc04Structure {
   shopfloorSystemsDevicesBox: Uc04ShopfloorBox;
 }
 
+/** Connection element IDs for dim-conn styling (lighter opacity than dim) */
+export const UC04_CONNECTION_IDS: readonly string[] = [
+  'uc04_conn_aiqs_dsp',
+  'uc04_conn_dsp_quality',
+  'uc04_conn_quality_target',
+  'uc04_conn_quality_act',
+  'uc04_conn_quality_systems',
+  'uc04_feedback',
+];
+
 const UC04_DESCRIPTION_HEIGHT = 50;
 
 export function createUc04Structure(): Uc04Structure {

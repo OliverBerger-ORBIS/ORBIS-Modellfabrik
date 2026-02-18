@@ -56,6 +56,16 @@ export interface Uc03Structure {
   shopfloorBoxes: Uc03ShopfloorBox[];
 }
 
+/** Connection element IDs for dim-conn styling (lighter opacity than dim) */
+export const UC03_CONNECTION_IDS: readonly string[] = [
+  'uc03_conn_train_cockpit',
+  'uc03_conn_cockpit_edge1',
+  'uc03_conn_cockpit_edge2',
+  'uc03_conn_edge1_sf1',
+  'uc03_conn_edge2_sf2',
+  'uc03_feedback',
+];
+
 /** Vertical offset for step description – lanes start below, shifted up so Shopfloor fully visible */
 const UC03_DESCRIPTION_HEIGHT = 50;
 

@@ -1,6 +1,6 @@
 {
   "name": "osf-workspace",
-  "version": "0.7.8",
+  "version": "0.7.9",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -12,6 +12,7 @@
     "test:coverage": "nx test osf-ui --coverage",
     "test:coverage:check": "nx test osf-ui --coverage --coverageThreshold",
     "update-version": "node scripts/update-ui-version.js",
+    "export-use-case-svgs": "node scripts/export-use-case-svgs.js",
     "build": "npm run update-version && nx build mqtt-client",
     "build:fixtures": "python scripts/build_order_fixtures.py",
     "build:github-pages": "npm run update-version && nx build osf-ui --configuration=github-pages",
@@ -57,6 +58,8 @@
     "mqtt": "^5.14.1",
     "nx": "19.8.5",
     "prettier": "^2.6.2",
+    "puppeteer": "^23.11.1",
+    "serve-handler": "^6.1.6",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
     "tsconfig-paths": "^4.2.0",

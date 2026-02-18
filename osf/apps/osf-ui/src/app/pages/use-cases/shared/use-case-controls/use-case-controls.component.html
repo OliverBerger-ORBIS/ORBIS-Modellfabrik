@@ -1,0 +1,109 @@
+<div class="use-case-controls" [class.use-case-controls--with-view-toggle]="viewToggleTemplate">
+  <div class="use-case-controls__title">
+    <ng-content select="[use-case-title]"></ng-content>
+  </div>
+  <div class="use-case-controls__view-toggle" *ngIf="viewToggleTemplate">
+    <ng-container *ngTemplateOutlet="viewToggleTemplate"></ng-container>
+  </div>
+  <div class="use-case-controls__navigation">
+    <button
+      type="button"
+      class="nav-btn-icon"
+      (click)="prevStep.emit()"
+      [disabled]="currentStepIndex === 0"
+      [attr.aria-label]="btnPrev"
+      [attr.title]="btnPrev"
+    >
+      ◀
+    </button>
+    <button
+      type="button"
+      class="nav-btn-icon nav-btn-icon--primary"
+      (click)="toggleAutoPlay.emit()"
+      [attr.aria-label]="isAutoPlaying ? btnStopPlay : btnAutoPlay"
+      [attr.title]="isAutoPlaying ? btnStopPlay : btnAutoPlay"
+    >
+      {{ isAutoPlaying ? '⏸' : '▶' }}
+    </button>
+    <button
+      type="button"
+      class="nav-btn-icon"
+      (click)="toggleLoop.emit()"
+      [class.nav-btn-icon--active]="loopToStart"
+      [attr.aria-pressed]="loopToStart"
+      [attr.aria-label]="'Loop ' + (loopToStart ? 'On' : 'Off')"
+      [attr.title]="'Loop ' + (loopToStart ? 'On' : 'Off')"
+    >
+      ↺
+    </button>
+    <button
+      type="button"
+      class="nav-btn-icon"
+      (click)="toggleDescription.emit()"
+      [class.nav-btn-icon--active]="showDescription"
+      [attr.aria-pressed]="showDescription"
+      [attr.aria-label]="'Show Description ' + (showDescription ? 'On' : 'Off')"
+      [attr.title]="'Show Description ' + (showDescription ? 'On' : 'Off')"
+    >
+      ℹ
+    </button>
+    <button
+      type="button"
+      class="nav-btn-icon"
+      (click)="nextStep.emit()"
+      [attr.aria-label]="btnNext"
+      [attr.title]="btnNext"
+    >
+      ▶
+    </button>
+  </div>
+  <div class="use-case-controls__step-info">
+    <span class="step-counter" aria-live="polite" [attr.aria-label]="'Step ' + (currentStepIndex + 1) + ' of ' + steps.length">
+      {{ currentStepIndex + 1 }} / {{ steps.length }}
+    </span>
+    <div class="step-dots">
+      <button
+        *ngFor="let step of steps; let i = index"
+        type="button"
+        class="step-dot"
+        [class.step-dot--active]="i === currentStepIndex"
+        [class.step-dot--completed]="i < currentStepIndex"
+        (click)="goToStep.emit(i)"
+        [attr.aria-label]="getStepTitle(step)"
+        [attr.title]="getStepTitle(step)"
+      ></button>
+    </div>
+  </div>
+  <div class="use-case-controls__zoom">
+    <button
+      type="button"
+      class="zoom-btn"
+      (click)="zoomOut.emit()"
+      [disabled]="zoom <= minZoom"
+      [attr.title]="zoomOutLabel"
+      [attr.aria-label]="zoomOutLabel"
+    >
+      −
+    </button>
+    <span class="zoom-level">{{ (zoom * 100) | number:'1.0-0' }}%</span>
+    <button
+      type="button"
+      class="zoom-btn"
+      (click)="zoomIn.emit()"
+      [disabled]="zoom >= maxZoom"
+      [attr.title]="zoomInLabel"
+      [attr.aria-label]="zoomInLabel"
+    >
+      +
+    </button>
+    <button
+      type="button"
+      class="zoom-btn zoom-btn--reset"
+      (click)="resetZoom.emit()"
+      [attr.title]="resetZoomLabel"
+      [attr.aria-label]="resetZoomLabel"
+    >
+      ↺
+    </button>
+  </div>
+</div>

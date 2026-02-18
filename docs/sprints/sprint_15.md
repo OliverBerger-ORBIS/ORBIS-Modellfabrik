@@ -11,26 +11,13 @@
 ## 🎯 Ziele
 
 ### Use-Case-Bibliothek (Konzept & Assets)
-- [x] **UC-01:** Track & Trace Genealogy - Konzept & Visuals
-  - ✅ Diagramm-Struktur finalisiert (Partitur vs. Snapshot)
-  - ✅ Domain-Model (Object Mesh) erstellt
-  - ✅ OSF-Darstellung und Step-Animation implementiert
-  - ✅ Wiki-Doku aktualisiert (`UC-01_Track_Trace-genealogy.md`)
-- [x] **UC-02:** 3 Datentöpfe - Konzept & Visuals
-  - ✅ Textsynchronisation mit Artikel A3 (Begriffe harmonisiert)
-  - ✅ Visuelle Assets erstellt (Concept.drawio & Architecture.drawio)
-  - [ ] **Entscheidung:** Finalisierung Layout (Vertical Concept vs. Horizontal Lanes)
-  - ✅ Status auf "Konzept Finalisiert" gesetzt
-- [x] **UC-03:** AI Lifecycle - Konzept & Visuals
-  - ✅ Layered Diagram DE/EN, Animation-Steps
-  - ✅ OSF-Darstellung und Animation implementiert
-- [x] **UC-04:** Closed Loop Quality - Konzept & Visuals
-  - ✅ Eigenständiges UC-04-Template erstellt (unabhängig von UC-05)
-  - ✅ OSF-Darstellung: 3 Lanes (Process Detect→Decide→Act→Feedback | Mixed DSP Edge | Quality-Event | Target | Shopfloor Production Order + AIQS | Systems & Devices)
-  - ✅ 7-Step-Animation, I18n, Route `dsp/use-case/closed-loop-quality`, DSP Use Cases Link
-- [x] **UC-05:** Predictive Maintenance - Konzept & Visuals
-  - ✅ Diagramm-Struktur (Process, Mixed, Shopfloor), Icons (Alarm, Bell-Alarm, Vibration/Tilt-Sensor)
-  - ✅ OSF-Darstellung und 7-Step-Animation implementiert
+- [x] **UC-01** Track & Trace Genealogy – ✅ Implementiert
+- [x] **UC-02** 3 Datentöpfe – ✅ Implementiert
+- [x] **UC-03** AI Lifecycle – ✅ Implementiert
+- [x] **UC-04** Closed Loop Quality – ✅ Implementiert
+- [x] **UC-05** Predictive Maintenance – ✅ Implementiert
+  - Details: [Use-Case Bibliothek](../02-architecture/use-case-library.md)
+- [ ] **UC-02:** Entscheidung Layout Finalisierung (Vertical Concept vs. Horizontal Lanes)
 
 ### Blog-Serie (Drafts & Visuals)
 - [x] **A2:** Track & Trace Genealogie - Draft & Visuals fertig
@@ -44,14 +31,7 @@
   - [ ] Start Review-Prozess (extern/redaktionell)
 - [ ] **A4:** Closed Loops für Qualität & Maintenance - Review & Finalisierung
   - [ ] Draft erstellen
-  - [ ] Review durch externes Team
-  - [ ] Tech Reviewer Review
-  - [ ] MES-ERP Reviewer Review
-  - [ ] Redaktion Review
-  - [ ] CTA-Optionen finalisieren
-  - [ ] OSF Proof Screenshots auswählen und croppen (DE/EN)
-  - [ ] SAP-Beispiele konsistent prüfen
-  - [ ] Finale Links zu ADO Wiki Use-Cases eintragen
+
 
 ### Events / Demos
 - [ ] **Kunde Glaston:** OSF-Präsentation am 10.02.2026
@@ -91,39 +71,11 @@
 
 ## 📝 Use-Case-Bibliothek Details
 
-### Routing-Struktur
-- Basis-Route: `dsp/use-case/`
-- Einzelne Use-Cases:
-  - `dsp/use-case/track-trace-genealogy` (UC-01) - ✅ Darstellung + Step-Animation
-  - `dsp/use-case/three-data-pools` (UC-02) - ✅ Darstellung + Animation
-  - `dsp/use-case/ai-lifecycle` (UC-03) - ✅ Darstellung + Animation
-  - `dsp/use-case/closed-loop-quality` (UC-04) - ✅ Darstellung + 7-Step-Animation
-  - `dsp/use-case/predictive-maintenance` (UC-05) - ✅ Darstellung + 7-Step-Animation
-  - `dsp/use-case/interoperability` (UC-06) - ✅ Abgeschlossen (Sprint 14)
+**Vollständige technische Doku:** [Use-Case Bibliothek](../02-architecture/use-case-library.md) (Routing, Dateien, Steps, Konsistenz)
 
-### UC-Darstellung und Animationen (Status)
-- **UC-01:** ✅ Track & Trace – SVG-Generator, I18n, Komponente, Animation
-- **UC-02:** ✅ 3 Datentöpfe – Komponente, Animation
-- **UC-03:** ✅ AI Lifecycle – Layered Diagram DE/EN, Animation-Steps
-- **UC-04:** ✅ Closed Loop Quality – SVG-Generator, Icons (Production Order, AIQS), 7-Step-Animation, Quality-Event-Box
-- **UC-05:** ✅ Predictive Maintenance – SVG-Generator, Icons (Alarm, Bell-Alarm, Vibration/Tilt-Sensor), 7-Step-Animation, globale Styles
-- **UC-06:** ✅ Interoperabilität – vollständig (Sprint 14)
-
-### Assets vorhanden
-- **UC-01:** Schema, Screenshots DE/EN, Dokumentation (Umarbeitung in Planung)
-- **UC-02:** Diagramm DE v2, OSF-Darstellung
-- **UC-03:** Layered Diagram DE/EN, Animation-Steps, OSF-Darstellung
-- **UC-04:** Diagramm, OSF-Darstellung mit 7-Step-Animation
-- **UC-05:** 2 Varianten, OSF-Darstellung mit 7-Step-Animation
-- **UC-06:** ✅ Vollständig implementiert (Sprint 14)
-
-### Implementierungs-Ansatz
-- Jeder Use-Case wird als separate Angular-Komponente implementiert
-- SVG-Animationen werden pro Use-Case umgesetzt (wenn Steps-Definition vorhanden)
-- Routing wird in `app.routes.ts` ergänzt (analog zu track-trace)
-- **Konsistenz:** `DspUseCasesComponent` wird sowohl im DSP-Tab als auch auf der Direct-Access-Page (`dsp/use-case`) verwendet
-  - `enableNavigation` Input steuert, ob Navigation aktiviert ist (nur auf Direct-Access-Page)
-  - Use-Cases mit `detailRoute` können zu Detail-Seiten navigieren
+- **UC-01 bis UC-06:** Alle implementiert mit Step-Animation
+- **SVG-Export:** `node scripts/export-use-case-svgs.js` (Export nach `assets/svg/use-cases/`, Icons inlined als Data-URIs)
+- **Inventar:** [use-case-inventory.md](../02-architecture/use-case-inventory.md) für grafische Übersicht (Overview/Step 0)
 
 ---
 
@@ -149,25 +101,9 @@
 
 ## 📝 UC-01: Track & Trace Genealogy (In Arbeit)
 
-### Aktueller Status
-- ✅ SVG-Generator-Service erstellt (`uc-01-svg-generator.service.ts`)
-- ✅ I18n-Service erstellt (`uc-01-i18n.service.ts`)
-- ✅ Komponente erstellt (`track-trace-genealogy-use-case.component.ts`)
-- ✅ Route implementiert (`dsp/use-case/track-trace-genealogy`)
-- 🔄 Diagramm-Umarbeitung in Planung (basierend auf ChatGPT-Analyse)
-
-### Geplante Verbesserungen (aus ChatGPT-Analyse)
-1. **Plan vs. Ist:** Separate Darstellung von Plan und Ist-Pfad
-2. **Join-Key:** Klarere Darstellung der Korrelation zwischen Plan und Ist
-3. **Zwei Visuals:** Object Mesh + Event Flow als separate Visuals
-4. **UI-Verbesserungen:** Bessere Timeline-Sichtbarkeit, klarere Farben
-5. **Datenmodell:** Schärfung des Datenmodells
-6. **Terminologie:** Glättung der Terminologie
-
-### Dokumentation
-- `docs/assets/use-cases/uc-01/UC-01_Track_Trace-genealogy.md` - Hauptdokumentation
-- `docs/assets/use-cases/uc-01/UC-01-IMPROVEMENTS-CHECKLIST.md` - Verbesserungs-Checkliste
-- `docs/assets/use-cases/uc-01/UC-01-TIMELINE-PLANNING.md` - Timeline-Planung
+- ✅ Vollständig implementiert (siehe [Use-Case Bibliothek](../02-architecture/use-case-library.md))
+- 🔄 Diagramm-Umarbeitung in Planung (Plan vs. Ist, Join-Key, UI-Verbesserungen)
+- Doku: `docs/assets/use-cases/uc-01/`
 
 ---
 
@@ -181,23 +117,13 @@
 
 **UC-01 bis UC-05:** Alle Use-Cases in diesem Sprint erstellt – jeweils mit Step-Animation.
 
-- **UC-01 Track & Trace Genealogy:** SVG-Generator, I18n, Komponente, Step-Animation
-- **UC-02 3 Datentöpfe:** Komponente, Step-Animation
-- **UC-03 AI Lifecycle:** Layered Diagram DE/EN, Step-Animation
-- **UC-04 Closed Loop Quality (erste Version):** Eigenständiges Template
-  - Structure Config: 4 Process-Steps (Detect→Decide→Act→Feedback), Mixed (DSP Edge | Quality-Event | Target), Shopfloor (Production Order + AIQS | Systems & Devices)
-  - SVG-Generator mit uc04_ IDs, Mixed-Lane-Positionen/größen wie UC-05
-  - Connection Quality Event→Act: vertikal nach oben bis Mitte, dann rechts, dann nach oben zum Act-Step
-  - I18n-Service, Closed-Loop-Quality-Komponente, Route, Steps JSON, globale Styles, DSP Use Cases Eintrag
+- **UC-01** Track & Trace Genealogy – ✅
+- **UC-02** 3 Datentöpfe – ✅
+- **UC-03** AI Lifecycle – ✅
+- **UC-04** Closed Loop Quality – ✅
+- **UC-05** Predictive Maintenance – ✅
 
-- **UC-05 Predictive Maintenance:** Vollständige OSF-Implementierung
-  - SVG-Generator mit Process-, Mixed- und Shopfloor-Lane
-  - Icons: Alarm, Bell-Alarm, Vibration-Sensor, Tilt-Sensor (icon.registry + dsp-svg-inventory)
-  - Target-Subboxen (MES/ERP/Analytics), Alarm-Box (quadratisch), DSP-Edge-Icon
-  - Connections: Vibration-Sensor→DSP (up-right-up), Alarm→Process nur gepunktet
-  - 7-Step-Animation (Übersicht → Trigger/Sensor → DSP/Evaluate → Alarm → Act → Alarm Event → Feedback)
-  - Globale Styles für Animation (hl, dim, dim-conn, hidden) in styles.scss
-  - Opacity-Kaskade-Fix: Vorfahren von Highlight-Elementen werden nicht mehr gedimmt
+Details: [Use-Case Bibliothek](../02-architecture/use-case-library.md)
 
 ---
 

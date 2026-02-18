@@ -1,110 +1,27 @@
 <section class="ai-lifecycle-use-case">
   <header class="ai-lifecycle-use-case__header">
-    <div class="header__title">
-      <h2 i18n="@@aiLifecycleUseCaseHeadline">AI Lifecycle: Train centrally → Deploy to multiple stations</h2>
-    </div>
-    <div class="header__navigation">
-      <button
-        type="button"
-        class="nav-btn-icon"
-        (click)="prevStep()"
-        [disabled]="currentStepIndex === 0"
-        [attr.aria-label]="btnPrev"
-        [attr.title]="btnPrev"
-      >
-        ◀
-      </button>
-      <button
-        type="button"
-        class="nav-btn-icon nav-btn-icon--primary"
-        (click)="toggleAutoPlay()"
-        [attr.aria-label]="isAutoPlaying ? btnStopPlay : btnAutoPlay"
-        [attr.title]="isAutoPlaying ? btnStopPlay : btnAutoPlay"
-      >
-        {{ isAutoPlaying ? '⏸' : '▶' }}
-      </button>
-      <button
-        type="button"
-        class="nav-btn-icon"
-        (click)="toggleLoop()"
-        [class.nav-btn-icon--active]="loopToStart"
-        [attr.aria-pressed]="loopToStart"
-        [attr.aria-label]="'Loop ' + (loopToStart ? 'On' : 'Off')"
-        [attr.title]="'Loop ' + (loopToStart ? 'On' : 'Off')"
-      >
-        ↺
-      </button>
-      <button
-        type="button"
-        class="nav-btn-icon"
-        (click)="toggleDescription()"
-        [class.nav-btn-icon--active]="showDescription"
-        [attr.aria-pressed]="showDescription"
-        [attr.aria-label]="'Show Description ' + (showDescription ? 'On' : 'Off')"
-        [attr.title]="'Show Description ' + (showDescription ? 'On' : 'Off')"
-      >
-        ℹ
-      </button>
-      <button
-        type="button"
-        class="nav-btn-icon"
-        (click)="nextStep()"
-        [disabled]="currentStepIndex === steps.length - 1"
-        [attr.aria-label]="btnNext"
-        [attr.title]="btnNext"
-      >
-        ▶
-      </button>
-    </div>
-    <div class="header__step-info">
-      <span class="step-counter" aria-live="polite" [attr.aria-label]="'Step ' + (currentStepIndex + 1) + ' of ' + steps.length">
-        {{ currentStepIndex + 1 }} / {{ steps.length }}
-      </span>
-      <div class="step-dots">
-        <button
-          *ngFor="let step of steps; let i = index"
-          type="button"
-          class="step-dot"
-          [class.step-dot--active]="i === currentStepIndex"
-          [class.step-dot--completed]="i < currentStepIndex"
-          (click)="goToStep(i)"
-          [attr.aria-label]="getStepTitle(step)"
-          [attr.title]="getStepTitle(step)"
-        ></button>
-      </div>
-    </div>
-    <div class="header__zoom">
-      <button
-        type="button"
-        class="zoom-btn"
-        (click)="zoomOut()"
-        [disabled]="zoom <= minZoom"
-        [attr.title]="zoomOutLabel"
-        [attr.aria-label]="zoomOutLabel"
-      >
-        −
-      </button>
-      <span class="zoom-level">{{ (zoom * 100) | number:'1.0-0' }}%</span>
-      <button
-        type="button"
-        class="zoom-btn"
-        (click)="zoomIn()"
-        [disabled]="zoom >= maxZoom"
-        [attr.title]="zoomInLabel"
-        [attr.aria-label]="zoomInLabel"
-      >
-        +
-      </button>
-      <button
-        type="button"
-        class="zoom-btn zoom-btn--reset"
-        (click)="resetZoom()"
-        [attr.title]="resetZoomLabel"
-        [attr.aria-label]="resetZoomLabel"
-      >
-        ↺
-      </button>
-    </div>
+    <app-use-case-controls
+      [steps]="steps"
+      [currentStepIndex]="currentStepIndex"
+      [zoom]="zoom"
+      [minZoom]="minZoom"
+      [maxZoom]="maxZoom"
+      [showDescription]="showDescription"
+      [loopToStart]="loopToStart"
+      [isAutoPlaying]="isAutoPlaying"
+      [getStepTitle]="getStepTitle.bind(this)"
+      (prevStep)="prevStep()"
+      (nextStep)="nextStep()"
+      (goToStep)="goToStep($event)"
+      (toggleAutoPlay)="toggleAutoPlay()"
+      (toggleLoop)="toggleLoop()"
+      (toggleDescription)="toggleDescription()"
+      (zoomIn)="zoomIn()"
+      (zoomOut)="zoomOut()"
+      (resetZoom)="resetZoom()"
+    >
+      <h2 use-case-title i18n="@@aiLifecycleUseCaseHeadline">AI Lifecycle: Train centrally → Deploy to multiple stations</h2>
+    </app-use-case-controls>
   </header>
 
   <div class="ai-lifecycle-use-case__content">

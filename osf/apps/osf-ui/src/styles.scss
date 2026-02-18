@@ -22,7 +22,7 @@ body {
   filter: drop-shadow(0 4px 12px rgba(var(--orbis-blue-strong-rgb), 0.2));
 }
 .three-data-pools-use-case svg .dim {
-  opacity: 0.3 !important;
+  opacity: 0.5 !important;
 }
 .three-data-pools-use-case svg .hidden {
   display: none !important;
@@ -34,7 +34,7 @@ body {
   filter: drop-shadow(0 4px 12px rgba(var(--orbis-blue-strong-rgb), 0.2));
 }
 .ai-lifecycle-use-case svg .dim {
-  opacity: 0.3 !important;
+  opacity: 0.5 !important;
 }
 .ai-lifecycle-use-case svg .hidden {
   display: none !important;
@@ -46,10 +46,10 @@ body {
   filter: drop-shadow(0 4px 12px rgba(var(--orbis-blue-strong-rgb), 0.2));
 }
 .predictive-maintenance-use-case svg .dim {
-  opacity: 0.3 !important;
+  opacity: 0.5 !important;
 }
 .predictive-maintenance-use-case svg .dim-conn {
-  opacity: 0.15 !important;
+  opacity: 0.35 !important;
 }
 .predictive-maintenance-use-case svg .hidden {
   display: none !important;
@@ -61,10 +61,10 @@ body {
   filter: drop-shadow(0 4px 12px rgba(var(--orbis-blue-strong-rgb), 0.2));
 }
 .closed-loop-quality-use-case svg .dim {
-  opacity: 0.3 !important;
+  opacity: 0.5 !important;
 }
 .closed-loop-quality-use-case svg .dim-conn {
-  opacity: 0.15 !important;
+  opacity: 0.35 !important;
 }
 .closed-loop-quality-use-case svg .hidden {
   display: none !important;
