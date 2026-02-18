@@ -1,6 +1,6 @@
 # Use-Case Inventory
 
-**Zweck:** Übersicht aller animierten Use-Case-Diagramme mit Step 1 (erster Detail-Step) als Referenz. Unterstützt Anpassungen und die Vorbereitung neuer Use-Cases (z.B. **Process Optimization**, UC-07 geplant).
+**Zweck:** Übersicht aller animierten Use-Case-Diagramme mit Step 1 (erster Detail-Step) als Referenz. Unterstützt Anpassungen und die Vorbereitung neuer Use-Cases.
 
 **Aktualisierung:** Manuell bei Änderungen an Steps oder neuer Use-Case-Implementierung. Struktur ermöglicht spätere Script-Generierung aus `steps.json`.
 
@@ -16,42 +16,51 @@ Die Use-Case-Diagramme werden zur Laufzeit generiert. Export per `node scripts/e
 <tr>
 <td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 50%;">
 <strong>UC-01: Track & Trace Genealogie</strong><br/>
-<img src="../../osf/apps/osf-ui/src/assets/svg/use-cases/uc-01-track-trace-genealogy-EN.svg" alt="UC-01 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
+<img src="../assets/use-cases/uc-01/uc-01-track-trace-genealogy-EN.svg" alt="UC-01 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
 <small>Overview (Step 0), EN</small>
 </td>
 <td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 50%;">
 <strong>UC-02: Three Data Pools</strong><br/>
-<img src="../../osf/apps/osf-ui/src/assets/svg/use-cases/uc-02-three-data-pools-EN.svg" alt="UC-02 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
+<img src="../assets/use-cases/uc-02/uc-02-three-data-pools-EN.svg" alt="UC-02 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
 <small>Overview (Step 0), EN</small>
 </td>
 </tr>
 <tr>
 <td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
 <strong>UC-03: AI Lifecycle</strong><br/>
-<img src="../../osf/apps/osf-ui/src/assets/svg/use-cases/uc-03-ai-lifecycle-EN.svg" alt="UC-03 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
+<img src="../assets/use-cases/uc-03/uc-03-ai-lifecycle-EN.svg" alt="UC-03 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
 <small>Overview (Step 0), EN</small>
 </td>
 <td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
 <strong>UC-04: Closed Loop Quality</strong><br/>
-<img src="../../osf/apps/osf-ui/src/assets/svg/use-cases/uc-04-closed-loop-quality-EN.svg" alt="UC-04 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
+<img src="../assets/use-cases/uc-04/uc-04-closed-loop-quality-EN.svg" alt="UC-04 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
 <small>Overview (Step 0), EN</small>
 </td>
 </tr>
 <tr>
 <td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
 <strong>UC-05: Predictive Maintenance</strong><br/>
-<img src="../../osf/apps/osf-ui/src/assets/svg/use-cases/uc-05-predictive-maintenance-EN.svg" alt="UC-05 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
+<img src="../assets/use-cases/uc-05/uc-05-predictive-maintenance-EN.svg" alt="UC-05 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
 <small>Overview (Step 0), EN</small>
 </td>
 <td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
 <strong>UC-06: Interoperability (Event-to-Process)</strong><br/>
-<img src="../../osf/apps/osf-ui/src/assets/svg/use-cases/uc-06-event-to-process-map-EN.svg" alt="UC-06 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
+<img src="../assets/use-cases/uc-06/uc-06-event-to-process-map-EN.svg" alt="UC-06 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
 <small>Overview (Step 0), EN</small>
 </td>
+</tr>
+<tr>
+<td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+<strong>UC-07: Process Optimization</strong><br/>
+<img src="../assets/use-cases/uc-07/uc-07-process-optimization-EN.svg" alt="UC-07 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
+<small>Overview (Step 0), EN</small>
+</td>
+<td></td>
 </tr>
 </table>
 
 **Export:** `node scripts/export-use-case-svgs.js` – baut bei Bedarf, startet Server, exportiert mit Puppeteer.
+Schreibt nach `osf/.../assets/svg/use-cases/` und kopiert nach `docs/assets/use-cases/uc-XX/` (Referenz für diese Übersicht).
 
 **Voraussetzung:** Puppeteer benötigt Chrome. Falls Fehler „Could not find Chrome“:
 ```bash
@@ -70,6 +79,7 @@ npx puppeteer browsers install chrome
 | 04 | Closed Loop Quality | `closed-loop-quality` | 7 | Source: Order & AIQS | uc-04-structure.config |
 | 05 | Predictive Maintenance | `predictive-maintenance` | 7 | Trigger & Sensor | uc-05-structure.config |
 | 06 | Interoperability | `interoperability` | 9 | Shopfloor events | – |
+| 07 | Process Optimization | `process-optimization` | 7 | Observe | uc-07-structure.config |
 
 ---
 
@@ -192,6 +202,28 @@ npx puppeteer browsers install chrome
 ### Besonderheiten
 
 - Keine Connection-IDs
+
+---
+
+## UC-07: Process Optimization
+
+- **Route:** `dsp/use-case/process-optimization`
+- **Ordner:** `process-optimization/`
+- **Steps:** 7
+
+### Step 1: Observe
+
+| Feld | Wert |
+|------|------|
+| **ID** | `uc07-01-observe` |
+| **Titel (EN)** | Observe |
+| **Beschreibung (EN)** | KPIs, cycle times and machine utilization from the 3 data pools meet the observation baseline. |
+| **Connection-IDs** | `UC07_CONNECTION_IDS` in structure.config |
+
+### Besonderheiten
+
+- Prozess-Loop (Observe → Analyze → Recommend → Simulate → Execute → Feedback)
+- Referenziert in A3 (KPI-to-Action)
 
 ---
 

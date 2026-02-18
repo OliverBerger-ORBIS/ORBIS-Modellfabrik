@@ -103,7 +103,7 @@ export class Uc02SvgGeneratorLanesService {
         .uc02-subtitle { font: 400 22px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
         .uc02-source-title { font: 700 18px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
         .uc02-source-sub { font: 400 14px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; font-style: italic; }
-        .uc02-step-title { font: 700 16px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
+        .uc02-step-title { font: 700 22px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
         .uc02-step-sub { font: 400 12px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
         .uc02-target { font: 700 16px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
         .uc02-note { font: 400 12px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
@@ -206,10 +206,16 @@ export class Uc02SvgGeneratorLanesService {
   }
 
   private dspStepBox(step: Uc02LanesDspStep, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
+    const tipSize = Math.min(step.height * 0.35, step.width * 0.18);
+    const innerLeft = step.x + 2 * tipSize;
+    const innerRight = step.x + step.width - tipSize;
+    const innerCenterX = (innerLeft + innerRight) / 2;
+    const titleY = step.y + 42;
+    const subtitleY = titleY + 22;
     let out = `<g id="uc02_${step.id}">`;
     out += `<path d="${this.arrowStepPathHex(step.x, step.y, step.width, step.height)}" fill="${D.laneTraceFill}" stroke="${D.laneTraceStroke}" stroke-width="1.5"/>`;
-    out += `<text x="${step.x + step.width / 2}" y="${step.y + 24}" text-anchor="middle" class="uc02-step-title">${this.esc(t(step.titleKey))}</text>`;
-    out += `<text x="${step.x + step.width / 2}" y="${step.y + 44}" text-anchor="middle" class="uc02-step-sub">${this.esc(t(step.subtitleKey))}</text>`;
+    out += `<text x="${innerCenterX}" y="${titleY}" text-anchor="middle" class="uc02-step-title">${this.esc(t(step.titleKey))}</text>`;
+    out += `<text x="${innerCenterX}" y="${subtitleY}" text-anchor="middle" class="uc02-step-sub">${this.esc(t(step.subtitleKey))}</text>`;
     out += '</g>';
     return out;
   }

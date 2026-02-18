@@ -107,7 +107,7 @@ export class Uc03SvgGeneratorService {
         .uc03-title { font: 700 40px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
         .uc03-subtitle { font: 400 22px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
         .uc03-lane-label { font: 700 18px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
-        .uc03-step-title { font: 700 18px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
+        .uc03-step-title { font: 700 22px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
         .uc03-step-bullet { font: 400 13px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
         .uc03-dsp-title { font: 700 16px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
         .uc03-dsp-bullet { font: 400 12px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
@@ -130,13 +130,19 @@ export class Uc03SvgGeneratorService {
 
   private processStepBox(step: Uc03ProcessStep, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
     const bullets = (t(step.bulletsKey) || '').split(/\n/).filter(Boolean);
-    const titleY = step.y + 32;
+    const tipSize = Math.min(step.height * 0.35, step.width * 0.18);
+    const innerLeft = step.x + 2 * tipSize;
+    const innerRight = step.x + step.width - tipSize;
+    const innerCenterX = (innerLeft + innerRight) / 2;
+    const bulletPad = 8;
+    const titleY = step.y + 42;
     const lineH = 18;
+    const bulletStartY = titleY + 24;
     let out = `<g id="uc03_${step.id}">`;
     out += `<path d="${this.arrowStepPathHex(step.x, step.y, step.width, step.height)}" fill="${D.laneBusinessFill}" stroke="${D.laneBusinessStroke}" stroke-width="1.5"/>`;
-    out += `<text x="${step.x + step.width / 2}" y="${titleY}" text-anchor="middle" class="uc03-step-title">${this.esc(t(step.titleKey))}</text>`;
+    out += `<text x="${innerCenterX}" y="${titleY}" text-anchor="middle" class="uc03-step-title">${this.esc(t(step.titleKey))}</text>`;
     bullets.slice(0, 4).forEach((b, i) => {
-      out += `<text x="${step.x + step.width / 2}" y="${titleY + 22 + i * lineH}" text-anchor="middle" class="uc03-step-bullet">${this.esc(b.replace(/^[•\-\*]\s*/, ''))}</text>`;
+      out += `<text x="${innerLeft + bulletPad}" y="${bulletStartY + i * lineH}" text-anchor="start" class="uc03-step-bullet">${this.esc(b.replace(/^[•\-\*]\s*/, ''))}</text>`;
     });
     out += '</g>';
     return out;

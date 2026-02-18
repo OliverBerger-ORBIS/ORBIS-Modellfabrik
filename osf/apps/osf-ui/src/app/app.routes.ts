@@ -67,6 +67,13 @@ export const appRoutes: Routes = [
           ),
       },
       {
+        path: 'dsp/use-case/process-optimization',
+        loadComponent: () =>
+          import('./pages/use-cases/process-optimization/process-optimization-use-case.component').then(
+            (m) => m.ProcessOptimizationUseCaseComponent
+          ),
+      },
+      {
         path: 'dsp/use-case',
         loadComponent: () =>
           import('./pages/use-cases/use-case-selector-page.component').then((m) => m.UseCaseSelectorPageComponent),

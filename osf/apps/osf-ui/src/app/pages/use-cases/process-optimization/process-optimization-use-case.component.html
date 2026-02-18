@@ -1,0 +1,41 @@
+<section class="process-optimization-use-case">
+  <header class="process-optimization-use-case__header">
+    <app-use-case-controls
+      [steps]="steps"
+      [currentStepIndex]="currentStepIndex"
+      [zoom]="zoom"
+      [minZoom]="minZoom"
+      [maxZoom]="maxZoom"
+      [showDescription]="showDescription"
+      [loopToStart]="loopToStart"
+      [isAutoPlaying]="isAutoPlaying"
+      [getStepTitle]="getStepTitle.bind(this)"
+      (prevStep)="prevStep()"
+      (nextStep)="nextStep()"
+      (goToStep)="goToStep($event)"
+      (toggleAutoPlay)="toggleAutoPlay()"
+      (toggleLoop)="toggleLoop()"
+      (toggleDescription)="toggleDescription()"
+      (zoomIn)="zoomIn()"
+      (zoomOut)="zoomOut()"
+      (resetZoom)="resetZoom()"
+    >
+      <h2 use-case-title i18n="@@processOptimizationUseCaseHeadline">Process Optimization</h2>
+    </app-use-case-controls>
+  </header>
+
+  <div class="process-optimization-use-case__content">
+    <div class="process-optimization-use-case__diagram-wrapper">
+      <div class="process-optimization-use-case__diagram" [style.transform]="'scale(' + zoom + ')'">
+        <div *ngIf="isLoading" class="process-optimization-use-case__loading" i18n="@@loadingSvg">Loading SVG...</div>
+        <div
+          #svgContainer
+          *ngIf="!isLoading && svgContent"
+          class="process-optimization-use-case__svg-wrapper"
+          [innerHTML]="svgContent"
+        ></div>
+        <div *ngIf="!isLoading && !svgContent" class="process-optimization-use-case__loading" i18n="@@svgLoadError">Failed to load SVG.</div>
+      </div>
+    </div>
+  </div>
+</section>

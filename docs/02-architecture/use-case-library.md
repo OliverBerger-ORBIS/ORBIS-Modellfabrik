@@ -7,7 +7,7 @@
 
 ## 1. Übersicht
 
-Die **Use-Case Bibliothek** im OSF Dashboard präsentiert die DSP (Digital Shopfloor Platform) Use-Cases als interaktive Diagramme mit Schritt-für-Schritt-Animation. Jeder Use-Case visualisiert ein zentrales Konzept der Smart Factory (Datenaggregation, Track & Trace, AI Lifecycle, Closed Loop Quality, Predictive Maintenance, Interoperabilität).
+Die **Use-Case Bibliothek** im OSF Dashboard präsentiert die DSP (Digital Shopfloor Platform) Use-Cases als interaktive Diagramme mit Schritt-für-Schritt-Animation. Jeder Use-Case visualisiert ein zentrales Konzept der Smart Factory (Datenaggregation, Track & Trace, AI Lifecycle, Closed Loop Quality, Predictive Maintenance, Process Optimization, Interoperabilität).
 
 **SVG-Export:** `node scripts/export-use-case-svgs.js`. Bei Fehlermeldung zu Chrome: `npx puppeteer browsers install chrome` ausführen.
 
@@ -30,6 +30,7 @@ Die **Use-Case Bibliothek** im OSF Dashboard präsentiert die DSP (Digital Shopf
 | `dsp/use-case/ai-lifecycle` | AiLifecycleUseCaseComponent | UC-03 |
 | `dsp/use-case/closed-loop-quality` | ClosedLoopQualityUseCaseComponent | UC-04 |
 | `dsp/use-case/predictive-maintenance` | PredictiveMaintenanceUseCaseComponent | UC-05 |
+| `dsp/use-case/process-optimization` | ProcessOptimizationUseCaseComponent | UC-07 |
 | `dsp/use-case/interoperability` | InteroperabilityUseCaseComponent | UC-06 |
 
 ---
@@ -77,6 +78,13 @@ Die **Use-Case Bibliothek** im OSF Dashboard präsentiert die DSP (Digital Shopf
 - **Dateien:** Component, `uc-06-structure.config.ts`, `uc-06-svg-generator.service.ts`, `uc-06-i18n.service.ts`
 - **Steps:** `assets/use-cases/uc-06/uc-06-event-to-process-map.steps.json`
 - **Besonderheit:** Keine Connection-IDs (leeres Array)
+
+### UC-07: Process Optimization (KPI-to-Action)
+
+- **Ordner:** `process-optimization/`
+- **Dateien:** Component, `uc-07-structure.config.ts`, `uc-07-svg-generator.service.ts`, `uc-07-i18n.service.ts`
+- **Steps:** `assets/use-cases/uc-07/uc-07-process-optimization.steps.json`
+- **Besonderheit:** `UC07_CONNECTION_IDS` in `uc-07-structure.config.ts` für `dim-conn`; Prozess-Loop (Observe→Analyze→Recommend→Simulate→Execute→Feedback)
 
 ---
 
@@ -169,7 +177,7 @@ Reihenfolge: Title → [View-Toggle] → Nav → Step-Info → Zoom
 | Use-Case | highlightIds | hideIds | connectionIds | Quelle |
 |----------|--------------|---------|---------------|--------|
 | UC-01, 02, 06 | explizit | explizit | `[]` | `getConnectionIds()` in Component |
-| UC-03, 04, 05 | explizit | explizit | aus `uc-0n-structure.config.ts` | `UC0n_CONNECTION_IDS` exportiert, Component importiert |
+| UC-03, 04, 05, 07 | explizit | explizit | aus `uc-0n-structure.config.ts` | `UC0n_CONNECTION_IDS` exportiert, Component importiert |
 
 Shared: `applyStepToSvg()` in `shared/use-case-step-apply.ts`.
 
@@ -206,6 +214,7 @@ DspUseCasesComponent (Übersicht)
                 ├── UC-03 AiLifecycleUseCaseComponent
                 ├── UC-04 ClosedLoopQualityUseCaseComponent
                 ├── UC-05 PredictiveMaintenanceUseCaseComponent
+                ├── UC-07 ProcessOptimizationUseCaseComponent
                 └── UC-06 InteroperabilityUseCaseComponent
                         │
                         ├── [uc]-structure.config.ts

@@ -257,6 +257,13 @@ const UC06_COLUMN_START_Y = 130;
 /** ViewBox 1920x1080 – einheitlich mit allen anderen Use-Cases */
 const UC06_VIEWBOX = { width: 1920, height: 1080 };
 
+/** Column layout: 3 columns, gleichverteilt breiter für Target-Systeme wie UC-04 (subW 160) */
+const UC06_COLUMN_WIDTH = 600;
+const UC06_COLUMN_GAP = 40; // Größerer Abstand für bessere Sichtbarkeit der Connections
+const UC06_SOURCES_X = 20; // Gleicher Abstand links/rechts (je 20px)
+const UC06_DSP_X = UC06_SOURCES_X + UC06_COLUMN_WIDTH + UC06_COLUMN_GAP;
+const UC06_TARGETS_X = UC06_DSP_X + UC06_COLUMN_WIDTH + UC06_COLUMN_GAP;
+
 /**
  * Creates the UC-06 structure configuration with all positions and I18n keys
  */
@@ -274,11 +281,11 @@ export function createUc06Structure(): Uc06Structure {
     columns: {
       sources: {
         id: 'sources',
-        x: 80,
+        x: UC06_SOURCES_X,
         y: colY,
-        width: 560,
+        width: UC06_COLUMN_WIDTH,
         height: colH,
-        headerX: 120,
+        headerX: UC06_SOURCES_X + 40,
         headerY: colY + 40,
         headerKey: 'uc06.sources.header',
         lanes: [
@@ -374,72 +381,74 @@ export function createUc06Structure(): Uc06Structure {
       dsp: {
         column: {
           id: 'dsp',
-          x: 680,
+          x: UC06_DSP_X,
           y: colY,
-          width: 560,
+          width: UC06_COLUMN_WIDTH,
           height: colH,
-          headerX: 720,
+          headerX: UC06_DSP_X + 40,
           headerY: colY + 50,
           headerKey: 'uc06.dsp.header',
         },
         steps: [
-          { id: 'normalize', x: 720, y: colY + 80, width: 480, height: 130, titleKey: 'uc06.step.normalize.title', descriptionKey: 'uc06.step.normalize.description' },
-          { id: 'enrich', x: 720, y: colY + 250, width: 480, height: 130, titleKey: 'uc06.step.enrich.title', descriptionKey: 'uc06.step.enrich.description' },
-          { id: 'correlate', x: 720, y: colY + 420, width: 480, height: 130, titleKey: 'uc06.step.correlate.title', descriptionKey: 'uc06.step.correlate.description' },
+          { id: 'normalize', x: UC06_DSP_X + 40, y: colY + 80, width: 520, height: 130, titleKey: 'uc06.step.normalize.title', descriptionKey: 'uc06.step.normalize.description' },
+          { id: 'enrich', x: UC06_DSP_X + 40, y: colY + 250, width: 520, height: 130, titleKey: 'uc06.step.enrich.title', descriptionKey: 'uc06.step.enrich.description' },
+          { id: 'correlate', x: UC06_DSP_X + 40, y: colY + 420, width: 520, height: 130, titleKey: 'uc06.step.correlate.title', descriptionKey: 'uc06.step.correlate.description' },
         ],
         arrows: [
-          { x1: 960, y1: colY + 215, x2: 960, y2: colY + 225 },
-          { x1: 960, y1: colY + 385, x2: 960, y2: colY + 395 },
+          { x1: UC06_DSP_X + UC06_COLUMN_WIDTH / 2, y1: colY + 215, x2: UC06_DSP_X + UC06_COLUMN_WIDTH / 2, y2: colY + 225 },
+          { x1: UC06_DSP_X + UC06_COLUMN_WIDTH / 2, y1: colY + 385, x2: UC06_DSP_X + UC06_COLUMN_WIDTH / 2, y2: colY + 395 },
         ],
         bars: [
-          { id: 'process_ready', x: 760, y: colY + 610, width: 400, height: 56, textKey: 'uc06.bar.process_ready', fill: '#eaf5ea', stroke: '#bfe3bf' },
-          { id: 'reusable', x: 760, y: colY + 700, width: 400, height: 56, textKey: 'uc06.bar.reusable' },
-          { id: 'foundation', x: 760, y: colY + 790, width: 400, height: 70, textKey: 'uc06.bar.foundation', multiline: true, textLines: ['uc06.bar.foundation.line1', 'uc06.bar.foundation.line2'] },
+          { id: 'process_ready', x: UC06_DSP_X + 80, y: colY + 610, width: 440, height: 56, textKey: 'uc06.bar.process_ready', fill: '#eaf5ea', stroke: '#bfe3bf' },
+          { id: 'reusable', x: UC06_DSP_X + 80, y: colY + 700, width: 440, height: 56, textKey: 'uc06.bar.reusable' },
+          { id: 'foundation', x: UC06_DSP_X + 80, y: colY + 790, width: 440, height: 70, textKey: 'uc06.bar.foundation', multiline: true, textLines: ['uc06.bar.foundation.line1', 'uc06.bar.foundation.line2'] },
         ],
       },
       targets: {
         column: {
           id: 'targets',
-          x: 1280,
+          x: UC06_TARGETS_X,
           y: colY,
-          width: 560,
+          width: UC06_COLUMN_WIDTH,
           height: colH,
-          headerX: 1320,
+          headerX: UC06_TARGETS_X + 40,
           headerY: colY + 50,
           headerKey: 'uc06.targets.header',
         },
         processViewBox: {
-          x: 1320,
+          x: UC06_TARGETS_X + 40,
           y: colY + 90,
-          width: 480,
+          width: 520,
           height: 200,
           titleKey: 'uc06.process_view.title',
           timeline: {
-            lineX1: 1350,
+            lineX1: UC06_TARGETS_X + 70,
             lineY: colY + 200,
-            lineX2: 1770,
+            lineX2: UC06_TARGETS_X + UC06_COLUMN_WIDTH - 50,
             points: [
-              { x: 1365, y: colY + 200, iconPath: '/assets/svg/shopfloor/stations/hbw-station.svg', iconX: 1347.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.warehouse', labelY: colY + 240 },
-              { x: 1443, y: colY + 200, iconPath: '/assets/svg/shopfloor/shared/agv-vehicle.svg', iconX: 1425.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.agv', labelY: colY + 240 },
-              { x: 1521, y: colY + 200, iconPath: '/assets/svg/shopfloor/stations/drill-station.svg', iconX: 1503.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.station', labelY: colY + 240 },
-              { x: 1599, y: colY + 200, iconPath: '/assets/svg/shopfloor/shared/pass-event.svg', iconX: 1581.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.transfer', labelY: colY + 240 },
-              { x: 1677, y: colY + 200, iconPath: '/assets/svg/shopfloor/stations/aiqs-station.svg', iconX: 1659.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.quality', labelY: colY + 240 },
-              { x: 1755, y: colY + 200, iconPath: '/assets/svg/shopfloor/shared/order-tracking.svg', iconX: 1737.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.complete', labelY: colY + 240 },
+              { x: UC06_TARGETS_X + 85, y: colY + 200, iconPath: '/assets/svg/shopfloor/stations/hbw-station.svg', iconX: UC06_TARGETS_X + 67.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.warehouse', labelY: colY + 240 },
+              { x: UC06_TARGETS_X + 163, y: colY + 200, iconPath: '/assets/svg/shopfloor/shared/agv-vehicle.svg', iconX: UC06_TARGETS_X + 145.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.agv', labelY: colY + 240 },
+              { x: UC06_TARGETS_X + 241, y: colY + 200, iconPath: '/assets/svg/shopfloor/stations/drill-station.svg', iconX: UC06_TARGETS_X + 223.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.station', labelY: colY + 240 },
+              { x: UC06_TARGETS_X + 319, y: colY + 200, iconPath: '/assets/svg/shopfloor/shared/pass-event.svg', iconX: UC06_TARGETS_X + 301.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.transfer', labelY: colY + 240 },
+              { x: UC06_TARGETS_X + 397, y: colY + 200, iconPath: '/assets/svg/shopfloor/stations/aiqs-station.svg', iconX: UC06_TARGETS_X + 379.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.quality', labelY: colY + 240 },
+              { x: UC06_TARGETS_X + 475, y: colY + 200, iconPath: '/assets/svg/shopfloor/shared/order-tracking.svg', iconX: UC06_TARGETS_X + 457.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc06.timeline.complete', labelY: colY + 240 },
             ],
           },
         },
         targets: [
-          { id: 'erp', x: 1320, y: colY + 320, width: 150, height: 90, iconPath: '/assets/svg/business/erp-application.svg', iconX: 1365, iconY: colY + 335, iconWidth: 70, iconHeight: 50, labelKey: 'uc06.target.erp', labelY: colY + 405 },
-          { id: 'mes', x: 1495, y: colY + 320, width: 150, height: 90, iconPath: '/assets/svg/business/mes-application.svg', iconX: 1540, iconY: colY + 335, iconWidth: 70, iconHeight: 50, labelKey: 'uc06.target.mes', labelY: colY + 405 },
-          { id: 'analytics_ai', x: 1670, y: colY + 320, width: 150, height: 90, iconPath: '/assets/svg/business/analytics-application.svg', iconX: 1715, iconY: colY + 335, iconWidth: 70, iconHeight: 50, labelKey: 'uc06.target.analytics_ai', labelY: colY + 405 },
+          // Target-Größe wie UC-04: subW 160, subH 180, Icon 64×64 zentriert. +30px nach unten
+          { id: 'erp', x: UC06_TARGETS_X + 50, y: colY + 330, width: 160, height: 180, iconPath: '/assets/svg/business/erp-application.svg', iconX: UC06_TARGETS_X + 50 + 48, iconY: colY + 388, iconWidth: 64, iconHeight: 64, labelKey: 'uc06.target.erp', labelY: colY + 502 },
+          { id: 'mes', x: UC06_TARGETS_X + 220, y: colY + 330, width: 160, height: 180, iconPath: '/assets/svg/business/mes-application.svg', iconX: UC06_TARGETS_X + 220 + 48, iconY: colY + 388, iconWidth: 64, iconHeight: 64, labelKey: 'uc06.target.mes', labelY: colY + 502 },
+          { id: 'analytics_ai', x: UC06_TARGETS_X + 390, y: colY + 330, width: 160, height: 180, iconPath: '/assets/svg/business/analytics-application.svg', iconX: UC06_TARGETS_X + 390 + 48, iconY: colY + 388, iconWidth: 64, iconHeight: 64, labelKey: 'uc06.target.analytics_ai', labelY: colY + 502 },
         ],
         noteKey: 'uc06.targets.note',
-        noteX: 1320,
-        noteY: colY + 430,
+        noteX: UC06_TARGETS_X + 40,
+        noteY: colY + 525,
         outcomes: [
-          { id: 'traceability', x: 1320, y: colY + 530, width: 480, height: 70, textKey: 'uc06.outcome.traceability' },
-          { id: 'kpi', x: 1320, y: colY + 620, width: 480, height: 80, textKey: 'uc06.outcome.kpi', multiline: true, textLines: ['uc06.outcome.kpi.line1', 'uc06.outcome.kpi.line2'] },
-          { id: 'closed_loop', x: 1320, y: colY + 720, width: 480, height: 70, textKey: 'uc06.outcome.closed_loop' },
+          // +60px nach unten verschoben
+          { id: 'traceability', x: UC06_TARGETS_X + 40, y: colY + 590, width: 520, height: 70, textKey: 'uc06.outcome.traceability' },
+          { id: 'kpi', x: UC06_TARGETS_X + 40, y: colY + 680, width: 520, height: 80, textKey: 'uc06.outcome.kpi', multiline: true, textLines: ['uc06.outcome.kpi.line1', 'uc06.outcome.kpi.line2'] },
+          { id: 'closed_loop', x: UC06_TARGETS_X + 40, y: colY + 780, width: 520, height: 70, textKey: 'uc06.outcome.closed_loop' },
         ],
       },
     },

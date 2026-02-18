@@ -69,3 +69,18 @@ body {
 .closed-loop-quality-use-case svg .hidden {
   display: none !important;
 }
+
+/* UC-07 Process Optimization: animation classes for step highlight/dim/hidden/dim-conn */
+.process-optimization-use-case svg .hl {
+  opacity: 1 !important;
+  filter: drop-shadow(0 4px 12px rgba(var(--orbis-blue-strong-rgb), 0.2));
+}
+.process-optimization-use-case svg .dim {
+  opacity: 0.5 !important;
+}
+.process-optimization-use-case svg .dim-conn {
+  opacity: 0.35 !important;
+}
+.process-optimization-use-case svg .hidden {
+  display: none !important;
+}

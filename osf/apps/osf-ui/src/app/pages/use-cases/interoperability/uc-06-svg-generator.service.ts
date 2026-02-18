@@ -170,8 +170,9 @@ export class Uc06SvgGeneratorService {
   }
   
   private generateSourcesColumn(column: any, getText: (key: string) => string): string {
+    const sourcesFill = ORBIS_COLORS.diagram.laneShopfloorFill;
     let svg = `<g id="uc06_col_sources">`;
-    svg += `<rect class="panel" x="${column.x}" y="${column.y}" width="${column.width}" height="${column.height}" rx="20" ry="20"/>`;
+    svg += `<rect x="${column.x}" y="${column.y}" width="${column.width}" height="${column.height}" rx="20" ry="20" fill="${sourcesFill}" stroke="${ORBIS_COLORS.orbisGrey.light}" stroke-width="1.5"/>`;
     svg += `<text x="${column.headerX}" y="${column.headerY}" class="h2">${this.escapeXml(getText(column.headerKey))}</text>`;
     
     column.lanes.forEach((lane: Uc06Lane) => {
@@ -376,8 +377,10 @@ export class Uc06SvgGeneratorService {
   }
   
   private generateTargetsColumn(targets: any, getText: (key: string) => string): string {
+    const targetsFill = ORBIS_COLORS.diagram.targetAnalyticsFill;
+    const targetsStroke = ORBIS_COLORS.diagram.targetAnalyticsStroke;
     let svg = `<g id="uc06_col_targets">`;
-    svg += `<rect class="panel" x="${targets.column.x}" y="${targets.column.y}" width="${targets.column.width}" height="${targets.column.height}" rx="20" ry="20"/>`;
+    svg += `<rect x="${targets.column.x}" y="${targets.column.y}" width="${targets.column.width}" height="${targets.column.height}" rx="20" ry="20" fill="${targetsFill}" stroke="${targetsStroke}" stroke-width="1.5"/>`;
     svg += `<text x="${targets.column.headerX}" y="${targets.column.headerY}" class="h2">${this.escapeXml(getText(targets.column.headerKey))}</text>`;
     
     // Process view box (with white background)
@@ -402,12 +405,14 @@ export class Uc06SvgGeneratorService {
     svg += '</g>'; // uc06_process_timeline
     svg += '</g>'; // process_view_box
     
-    // Targets
+    // Targets - zart Orange wie UC-04 (rgba weiß 0.7 über orangem Column-Hintergrund = helleres Orange)
+    const targetBoxFill = 'rgba(255,255,255,0.7)';
+    const targetBoxStroke = 'rgba(0,0,0,0.12)';
     svg += `<g id="uc06_targets_systems">`;
       targets.targets.forEach((target: any) => {
         const iconPath = getAssetPath(target.iconPath.replace(/^\//, ''));
         svg += `<g id="uc06_target_${target.id}">`;
-        svg += `<rect class="stepBox" x="${target.x}" y="${target.y}" width="${target.width}" height="${target.height}" rx="14" ry="14"/>`;
+        svg += `<rect x="${target.x}" y="${target.y}" width="${target.width}" height="${target.height}" rx="14" ry="14" fill="${targetBoxFill}" stroke="${targetBoxStroke}" stroke-width="1"/>`;
       svg += `<image href="${iconPath}" x="${target.iconX}" y="${target.iconY}" width="${target.iconWidth}" height="${target.iconHeight}" preserveAspectRatio="xMidYMid meet" opacity="0.85"/>`;
       svg += `<text x="${target.x + target.width / 2}" y="${target.labelY}" text-anchor="middle" class="p">${this.escapeXml(getText(target.labelKey))}</text>`;
       svg += '</g>';
@@ -415,11 +420,13 @@ export class Uc06SvgGeneratorService {
     svg += `<text id="uc06_target_note_best_of_breed" x="${targets.noteX}" y="${targets.noteY}" class="small muted">${this.escapeXml(getText(targets.noteKey))}</text>`;
     svg += '</g>';
     
-    // Outcomes - fix text overflow by using proper text wrapping
+    // Outcomes - ORBIS-Highlight Farbe (highlightGreen), deckt Orange vollständig ab
+    const outcomeFill = ORBIS_COLORS.highlightGreen.light;
+    const outcomeStroke = ORBIS_COLORS.highlightGreen.medium;
     svg += `<g id="uc06_outcomes">`;
       targets.outcomes.forEach((outcome: any) => {
         svg += `<g id="uc06_outcome_${outcome.id}">`;
-        svg += `<rect class="check" x="${outcome.x}" y="${outcome.y}" width="${outcome.width}" height="${outcome.height}" rx="12" ry="12"/>`;
+        svg += `<rect x="${outcome.x}" y="${outcome.y}" width="${outcome.width}" height="${outcome.height}" rx="12" ry="12" fill="${outcomeFill}" stroke="${outcomeStroke}" stroke-width="1.5"/>`;
         // Checkmark icon
         const statusSuccessStrong = ORBIS_COLORS.statusSuccess.strong;
         svg += `<path d="M ${outcome.x + 15} ${outcome.y + outcome.height / 2 - 3} L ${outcome.x + 18} ${outcome.y + outcome.height / 2} L ${outcome.x + 23} ${outcome.y + outcome.height / 2 - 6}" stroke="${statusSuccessStrong}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;

@@ -17,12 +17,14 @@ interface UseCase {
 /**
  * DSP Use Cases Component
  * 
- * Displays the main DSP use cases:
- * 1. Data Aggregation
- * 2. Track & Trace
- * 3. Predictive Maintenance
- * 4. Process Optimization
- * 5. Interoperability (Event-to-Process)
+ * Displays the main DSP use cases (Reihenfolge wie im Blog-Artikel):
+ * 1. UC-06 Interoperability (Event-to-Process)
+ * 2. UC-01 Track & Trace (Genealogy, Live)
+ * 3. UC-02 Data Aggregation
+ * 4. UC-03 AI Lifecycle
+ * 5. UC-04 Closed Loop Quality
+ * 6. UC-05 Predictive Maintenance
+ * 7. UC-07 Process Optimization
  * 
  * Supports:
  * - Single click: Highlight and show details
@@ -44,7 +46,7 @@ export class DspUseCasesComponent {
   readonly sectionSubtitle = $localize`:@@dspUseCasesSubtitle:Practical applications of DSP in smart manufacturing environments.`;
   readonly doubleClickHint = $localize`:@@dspUseCaseDoubleClickHint:Double-click to view details`;
 
-  activeUseCaseId = 'data-aggregation';
+  activeUseCaseId = 'interoperability';
 
   // Mapping of use case IDs to their detail routes
   private readonly useCaseRoutes: Record<string, string> = {
@@ -54,9 +56,68 @@ export class DspUseCasesComponent {
     'ai-lifecycle': '/dsp/use-case/ai-lifecycle',
     'predictive-maintenance': '/dsp/use-case/predictive-maintenance',
     'closed-loop-quality': '/dsp/use-case/closed-loop-quality',
+    'process-optimization': '/dsp/use-case/process-optimization',
   };
 
   useCases: UseCase[] = [
+    {
+      id: 'interoperability',
+      title: $localize`:@@dspUseCaseInteroperabilityTitle:Interoperability (Event-to-Process)`,
+      description: $localize`:@@dspUseCaseInteroperabilityDesc:Normalize shopfloor events and enrich them with context to create a shared process view for OT and IT.`,
+      actions: [
+        $localize`:@@dspUseCaseInteroperabilityH1:Normalize and harmonize events across machines, stations, AGVs, and quality systems`,
+        $localize`:@@dspUseCaseInteroperabilityH2:Add context (order, workpiece, station, time) to make events "process-ready"`,
+        $localize`:@@dspUseCaseInteroperabilityH3:Correlate event chains into interpretable process steps (event-to-process mapping)`,
+        $localize`:@@dspUseCaseInteroperabilityH4:Enable reuse: one integration pattern for multiple use cases instead of point-to-point wiring`,
+      ],
+      smartFactory: [
+        $localize`:@@orbisUseCaseInteroperabilityHighlight1:Create a shared process view that aligns OT signals with IT process context`,
+        $localize`:@@orbisUseCaseInteroperabilityHighlight2:Provide a consistent basis for traceability, KPIs, and closed-loop orchestration`,
+        $localize`:@@orbisUseCaseInteroperabilityHighlight3:Integrate best-of-breed target systems (ERP / MES / analytics) without rebuilding shopfloor integration`,
+        $localize`:@@orbisUseCaseInteroperabilityHighlight4:SAP can be a target example, but is not a prerequisite`,
+      ],
+      footer: $localize`:@@dspUseCaseInteroperabilityFooter:OSF is a demonstrator showcasing integration principles; productive implementations depend on the customer's target landscape.`,
+      icon: 'assets/svg/dsp/functions/edge-interoperability.svg',
+      detailRoute: '/dsp/use-case/interoperability',
+    },
+    {
+      id: 'track-trace-genealogy',
+      title: $localize`:@@dspUseCaseTrackTraceGenealogyTitle:Track & Trace (Schema)`,
+      description: $localize`:@@dspUseCaseTrackTraceGenealogyDesc:Conceptual diagram showing how events are correlated along a unique workpiece ID to create a complete genealogy.`,
+      actions: [
+        $localize`:@@dspUseCaseTrackTraceGenealogyH1:Business events (Supplier Order, Customer Order) with material/batch information`,
+        $localize`:@@dspUseCaseTrackTraceGenealogyH2:Production plan vs. actual path visualization`,
+        $localize`:@@dspUseCaseTrackTraceGenealogyH3:NFC tag as join key for event correlation`,
+        $localize`:@@dspUseCaseTrackTraceGenealogyH4:Complete correlated timeline with order context`,
+      ],
+      smartFactory: [
+        $localize`:@@orbisUseCaseTrackTraceGenealogyDescription:Visual explanation of the Track & Trace concept through event correlation and genealogy formation.`,
+        $localize`:@@orbisUseCaseTrackTraceGenealogyHighlight1:Business events (Supplier Order, Storage Order, Customer Order) linked to workpiece via NFC tag.`,
+        $localize`:@@orbisUseCaseTrackTraceGenealogyHighlight2:Production plan (theoretical sequence) compared with actual FTS route (real path).`,
+        $localize`:@@orbisUseCaseTrackTraceGenealogyHighlight3:Correlated timeline showing all events combined into a complete genealogy with order context.`,
+      ],
+      icon: 'assets/svg/dsp/use-cases/use-case-track-trace.svg',
+      detailRoute: '/dsp/use-case/track-trace-genealogy',
+    },
+    {
+      id: 'track-trace-live',
+      title: $localize`:@@dspUseCaseTrackTraceLiveTitle:Track & Trace (Live Demo)`,
+      description: $localize`:@@dspUseCaseTrackTraceDesc:Workpiece tracking via Digital Twin including AGV positions, stations, and events for complete traceability.`,
+      actions: [
+        $localize`:@@dspUseCaseTrackTraceH1:Real-time workpiece location tracking`,
+        $localize`:@@dspUseCaseTrackTraceH2:AGV position monitoring`,
+        $localize`:@@dspUseCaseTrackTraceH3:Station event correlation`,
+        $localize`:@@dspUseCaseTrackTraceH4:Complete production genealogy`,
+      ],
+      smartFactory: [
+        $localize`:@@orbisUseCaseTrackTraceDescription:Complete object genealogy with real-time traceability and quality correlation.`,
+        $localize`:@@orbisUseCaseTrackTraceHighlight1:Object-level location tracking across conveyors, modules, and high-bay storage (HBW).`,
+        $localize`:@@orbisUseCaseTrackTraceHighlight2:Correlation of process parameters (DRILL, MILL, AIQS) with ERP/MES customer orders.`,
+        $localize`:@@orbisUseCaseTrackTraceHighlight3:Sensor and telemetry data linked to quality outcomes, rework decisions, and root-cause analysis.`,
+      ],
+      icon: 'assets/svg/dsp/use-cases/use-case-track-trace.svg',
+      detailRoute: '/dsp/use-case/track-trace',
+    },
     {
       id: 'data-aggregation',
       title: $localize`:@@dspUseCaseAggregationTitle:Data Aggregation`,
@@ -98,42 +159,24 @@ export class DspUseCasesComponent {
       detailRoute: '/dsp/use-case/ai-lifecycle',
     },
     {
-      id: 'track-trace-live',
-      title: $localize`:@@dspUseCaseTrackTraceLiveTitle:Track & Trace (Live Demo)`,
-      description: $localize`:@@dspUseCaseTrackTraceDesc:Workpiece tracking via Digital Twin including AGV positions, stations, and events for complete traceability.`,
+      id: 'closed-loop-quality',
+      title: $localize`:@@dspUseCaseClosedLoopQualityTitle:Closed Loop Quality`,
+      description: $localize`:@@dspUseCaseClosedLoopQualityDesc:Quality inspection events leading to decisions and actions – block, rework, rebuild, conditional release – with feedback to MES/ERP/Analytics.`,
       actions: [
-        $localize`:@@dspUseCaseTrackTraceH1:Real-time workpiece location tracking`,
-        $localize`:@@dspUseCaseTrackTraceH2:AGV position monitoring`,
-        $localize`:@@dspUseCaseTrackTraceH3:Station event correlation`,
-        $localize`:@@dspUseCaseTrackTraceH4:Complete production genealogy`,
+        $localize`:@@dspUseCaseClosedLoopQualityH1:Inspection result as quality event`,
+        $localize`:@@dspUseCaseClosedLoopQualityH2:Context-enriched events (order, workpiece, station)`,
+        $localize`:@@dspUseCaseClosedLoopQualityH3:Rules and policies for decisions`,
+        $localize`:@@dspUseCaseClosedLoopQualityH4:Auditable feedback to target systems`,
       ],
       smartFactory: [
-        $localize`:@@orbisUseCaseTrackTraceDescription:Complete object genealogy with real-time traceability and quality correlation.`,
-        $localize`:@@orbisUseCaseTrackTraceHighlight1:Object-level location tracking across conveyors, modules, and high-bay storage (HBW).`,
-        $localize`:@@orbisUseCaseTrackTraceHighlight2:Correlation of process parameters (DRILL, MILL, AIQS) with ERP/MES customer orders.`,
-        $localize`:@@orbisUseCaseTrackTraceHighlight3:Sensor and telemetry data linked to quality outcomes, rework decisions, and root-cause analysis.`,
+        $localize`:@@orbisUseCaseClosedLoopQualityDescription:Quality becomes manageable when inspection result → decision → action is implemented as a closed loop.`,
+        $localize`:@@orbisUseCaseClosedLoopQualityHighlight1:AIQS and quality stations emit events with context.`,
+        $localize`:@@orbisUseCaseClosedLoopQualityHighlight2:DSP Edge normalizes and enriches events for process-ready integration.`,
+        $localize`:@@orbisUseCaseClosedLoopQualityHighlight3:Actions: block, rework, rebuild, conditional release – based on rules and context.`,
+        $localize`:@@orbisUseCaseClosedLoopQualityHighlight4:Feedback to MES/ERP/Analytics for traceability and maintenance scheduling.`,
       ],
-      icon: 'assets/svg/dsp/use-cases/use-case-track-trace.svg',
-      detailRoute: '/dsp/use-case/track-trace',
-    },
-    {
-      id: 'track-trace-genealogy',
-      title: $localize`:@@dspUseCaseTrackTraceGenealogyTitle:Track & Trace (Schema)`,
-      description: $localize`:@@dspUseCaseTrackTraceGenealogyDesc:Conceptual diagram showing how events are correlated along a unique workpiece ID to create a complete genealogy.`,
-      actions: [
-        $localize`:@@dspUseCaseTrackTraceGenealogyH1:Business events (Supplier Order, Customer Order) with material/batch information`,
-        $localize`:@@dspUseCaseTrackTraceGenealogyH2:Production plan vs. actual path visualization`,
-        $localize`:@@dspUseCaseTrackTraceGenealogyH3:NFC tag as join key for event correlation`,
-        $localize`:@@dspUseCaseTrackTraceGenealogyH4:Complete correlated timeline with order context`,
-      ],
-      smartFactory: [
-        $localize`:@@orbisUseCaseTrackTraceGenealogyDescription:Visual explanation of the Track & Trace concept through event correlation and genealogy formation.`,
-        $localize`:@@orbisUseCaseTrackTraceGenealogyHighlight1:Business events (Supplier Order, Storage Order, Customer Order) linked to workpiece via NFC tag.`,
-        $localize`:@@orbisUseCaseTrackTraceGenealogyHighlight2:Production plan (theoretical sequence) compared with actual FTS route (real path).`,
-        $localize`:@@orbisUseCaseTrackTraceGenealogyHighlight3:Correlated timeline showing all events combined into a complete genealogy with order context.`,
-      ],
-      icon: 'assets/svg/dsp/use-cases/use-case-track-trace.svg',
-      detailRoute: '/dsp/use-case/track-trace-genealogy',
+      icon: 'assets/svg/dsp/functions/edge-analytics.svg',
+      detailRoute: '/dsp/use-case/closed-loop-quality',
     },
     {
       id: 'predictive-maintenance',
@@ -155,26 +198,6 @@ export class DspUseCasesComponent {
       detailRoute: '/dsp/use-case/predictive-maintenance',
     },
     {
-      id: 'closed-loop-quality',
-      title: $localize`:@@dspUseCaseClosedLoopQualityTitle:Closed Loop Quality`,
-      description: $localize`:@@dspUseCaseClosedLoopQualityDesc:Quality inspection events leading to decisions and actions – block, rework, rebuild, conditional release – with feedback to MES/ERP/Analytics.`,
-      actions: [
-        $localize`:@@dspUseCaseClosedLoopQualityH1:Inspection result as quality event`,
-        $localize`:@@dspUseCaseClosedLoopQualityH2:Context-enriched events (order, workpiece, station)`,
-        $localize`:@@dspUseCaseClosedLoopQualityH3:Rules and policies for decisions`,
-        $localize`:@@dspUseCaseClosedLoopQualityH4:Auditable feedback to target systems`,
-      ],
-      smartFactory: [
-        $localize`:@@orbisUseCaseClosedLoopQualityDescription:Quality becomes manageable when inspection result → decision → action is implemented as a closed loop.`,
-        $localize`:@@orbisUseCaseClosedLoopQualityHighlight1:AIQS and quality stations emit events with context.`,
-        $localize`:@@orbisUseCaseClosedLoopQualityHighlight2:DSP Edge normalizes and enriches events for process-ready integration.`,
-        $localize`:@@orbisUseCaseClosedLoopQualityHighlight3:Actions: block, rework, rebuild, conditional release – based on rules and context.`,
-        $localize`:@@orbisUseCaseClosedLoopQualityHighlight4:Feedback to MES/ERP/Analytics for traceability and maintenance scheduling.`,
-      ],
-      icon: 'assets/svg/dsp/functions/edge-analytics.svg',
-      detailRoute: '/dsp/use-case/closed-loop-quality',
-    },
-    {
       id: 'process-optimization',
       title: $localize`:@@dspUseCaseOptimizationTitle:Process Optimization`,
       description: $localize`:@@dspUseCaseOptimizationDesc:Event-based process control, dynamic planning, and autonomously responding systems for continuous optimization.`,
@@ -194,26 +217,7 @@ export class DspUseCasesComponent {
         $localize`:@@orbisUseCaseOptimizationHighlight6:Closed-loop improvements via DSP executors and MES/DSP workflows.`,
       ],
       icon: 'assets/svg/dsp/use-cases/use-case-process-optimization.svg',
-    },
-    {
-      id: 'interoperability',
-      title: $localize`:@@dspUseCaseInteroperabilityTitle:Interoperability (Event-to-Process)`,
-      description: $localize`:@@dspUseCaseInteroperabilityDesc:Normalize shopfloor events and enrich them with context to create a shared process view for OT and IT.`,
-      actions: [
-        $localize`:@@dspUseCaseInteroperabilityH1:Normalize and harmonize events across machines, stations, AGVs, and quality systems`,
-        $localize`:@@dspUseCaseInteroperabilityH2:Add context (order, workpiece, station, time) to make events “process-ready”`,
-        $localize`:@@dspUseCaseInteroperabilityH3:Correlate event chains into interpretable process steps (event-to-process mapping)`,
-        $localize`:@@dspUseCaseInteroperabilityH4:Enable reuse: one integration pattern for multiple use cases instead of point-to-point wiring`,
-      ],
-      smartFactory: [
-        $localize`:@@orbisUseCaseInteroperabilityHighlight1:Create a shared process view that aligns OT signals with IT process context`,
-        $localize`:@@orbisUseCaseInteroperabilityHighlight2:Provide a consistent basis for traceability, KPIs, and closed-loop orchestration`,
-        $localize`:@@orbisUseCaseInteroperabilityHighlight3:Integrate best-of-breed target systems (ERP / MES / analytics) without rebuilding shopfloor integration`,
-        $localize`:@@orbisUseCaseInteroperabilityHighlight4:SAP can be a target example, but is not a prerequisite`,
-      ],
-      footer: $localize`:@@dspUseCaseInteroperabilityFooter:OSF is a demonstrator showcasing integration principles; productive implementations depend on the customer's target landscape.`,
-      icon: 'assets/svg/dsp/functions/edge-interoperability.svg', // Reusing the icon from DSP architecture, step 4
-      detailRoute: '/dsp/use-case/interoperability',
+      detailRoute: '/dsp/use-case/process-optimization',
     },
   ];
 

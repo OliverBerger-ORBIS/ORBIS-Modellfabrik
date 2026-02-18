@@ -9,7 +9,9 @@
  *
  * If dist/ does not exist, the script builds osf-ui first.
  * Starts a static server, navigates to each Use-Case (Overview/Step 0),
- * extracts the SVG from the DOM, and saves to osf/apps/osf-ui/src/assets/svg/use-cases/
+ * extracts the SVG from the DOM, and saves to:
+ *   - osf/apps/osf-ui/src/assets/svg/use-cases/
+ *   - docs/assets/use-cases/uc-XX/ (für use-case-inventory.md)
  *
  * Referenced icons (DSP-Edge, MILL, DRILL etc.) are inlined as base64 data URIs
  * so the export works standalone (e.g. in Markdown, file://, GitHub).
@@ -23,7 +25,19 @@ const repoRoot = path.resolve(__dirname, '..');
 const distRoot = path.join(repoRoot, 'dist/apps/osf-ui/browser');
 const svgAssetsRoot = path.join(repoRoot, 'osf/apps/osf-ui/src/assets/svg');
 const outputDir = path.join(svgAssetsRoot, 'use-cases');
+const docsAssetsRoot = path.join(repoRoot, 'docs/assets/use-cases');
 const PORT = 4210;
+
+/** Mapping: export name -> docs subfolder */
+const USE_CASE_DOCS_FOLDERS = {
+  'uc-01-track-trace-genealogy': 'uc-01',
+  'uc-02-three-data-pools': 'uc-02',
+  'uc-03-ai-lifecycle': 'uc-03',
+  'uc-04-closed-loop-quality': 'uc-04',
+  'uc-05-predictive-maintenance': 'uc-05',
+  'uc-06-event-to-process-map': 'uc-06',
+  'uc-07-process-optimization': 'uc-07',
+};
 
 /** Normalize image hrefs to ../path form (relative to use-cases/) */
 function fixImageHrefs(html) {
@@ -93,6 +107,7 @@ const USE_CASES = [
   { id: 'uc-04', route: 'closed-loop-quality', name: 'uc-04-closed-loop-quality' },
   { id: 'uc-05', route: 'predictive-maintenance', name: 'uc-05-predictive-maintenance' },
   { id: 'uc-06', route: 'interoperability', name: 'uc-06-event-to-process-map' },
+  { id: 'uc-07', route: 'process-optimization', name: 'uc-07-process-optimization' },
 ];
 
 function run(cmd, args, opts = {}) {
@@ -179,6 +194,15 @@ async function exportWithPuppeteer() {
             const outPath = path.join(outputDir, `${uc.name}-${suffix}.svg`);
             fs.writeFileSync(outPath, processed, 'utf8');
             console.log(`  -> ${path.relative(repoRoot, outPath)}`);
+            // Kopie nach docs/assets/use-cases/uc-XX/ für use-case-inventory.md
+            const docsFolder = USE_CASE_DOCS_FOLDERS[uc.name];
+            if (docsFolder) {
+              const docsDir = path.join(docsAssetsRoot, docsFolder);
+              fs.mkdirSync(docsDir, { recursive: true });
+              const docsPath = path.join(docsDir, `${uc.name}-${suffix}.svg`);
+              fs.writeFileSync(docsPath, processed, 'utf8');
+              console.log(`  -> ${path.relative(repoRoot, docsPath)}`);
+            }
           } else {
             console.log(`  -> SVG not found`);
           }
@@ -192,10 +216,9 @@ async function exportWithPuppeteer() {
 }
 
 async function main() {
-  if (!fs.existsSync(distRoot)) {
-    console.log('Building osf-ui...');
-    await run('npx', ['nx', 'build', 'osf-ui']);
-  }
+  // Immer neu bauen, damit der Export die aktuellen UC-Änderungen erfasst
+  console.log('Building osf-ui...');
+  await run('npx', ['nx', 'build', 'osf-ui']);
 
   await exportWithPuppeteer();
   console.log('Done.');

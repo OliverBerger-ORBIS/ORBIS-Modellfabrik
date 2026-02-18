@@ -49,7 +49,7 @@ Mit einem gemeinsamen Kontextmodell werden KPIs nicht nur sichtbar, sondern inte
 - **FPY / Ausschussquote** und Nacharbeit
 - **Energie pro Werkstück/Los**
 - **Durchlaufzeit / WIP** und Engpassindikatoren
-Darauf aufbauend wird **Root-Cause Analysis** möglich – und perspektivisch AI-gestützte Mustererkennung, weil Daten und Kontext konsistent vorliegen.
+Darauf aufbauend wird **Root-Cause Analysis** möglich – und perspektivisch AI-gestützte Mustererkennung, weil Daten und Kontext konsistent vorliegen. **UC-07 Process Optimization** visualisiert den KPI-to-Action-Fluss: Observe → Analyze → Recommend → Simulate → Execute → Feedback – als geschlossenen Optimierungsregelkreis.
 
 ### 6. OSF als Proof: Prinzip zeigen, Umsetzung skalieren
 OSF ist ein Messe- und Kunden-Demonstrator. Er zeigt, wie die drei Datentöpfe zusammengeführt werden und wie DSP als Vermittler wirkt. Wichtig bleibt die Abgrenzung: OSF ist nicht die produktive KPI- oder Analytics-Anwendung – sondern macht die Architekturprinzipien greifbar, auf denen kundenspezifische Lösungen aufsetzen.
@@ -95,6 +95,11 @@ Wir zeigen, dass die Theorie in der Praxis (OSF) als echter Datenstrom existiert
 - **Warum:** Der Message Monitor zeigt live, wie Sensor-Werte und Order-IDs in einer JSON-Nachricht (DSP Result) zusammenkommen.
 - **Caption DE:** Ein Blick in den Maschinenraum: OSF zeigt live, wie Prozess-Events mit Order-Kontext angereichert werden.
 - **Alt-Text DE:** Screenshot des OSF Message Monitors mit JSON-Payloads, die Temperatur, Sensorwerte und Auftragsnummern enthalten.
+
+### Visual 4: UC-07 Process Optimization (KPI-to-Action)
+- **Link:** OSF Use-Case-Bibliothek → `dsp/use-case/process-optimization`
+- **Caption DE:** Von KPIs zu Maßnahmen: Der Process-Optimization-Loop (Observe → Analyze → Recommend → Simulate → Execute → Feedback) zeigt, wie belastbare Daten zu systematischer Prozessverbesserung führen.
+- **Alt-Text DE:** Diagramm mit Optimization Loop, DSP und Shopfloor-Quellen (DRILL, MILL, AIQS, FTS, HBW) sowie Zielsystemen (MES, ERP, Planning).
 
 ## Offene Punkte / Review Notes
 - [ ] CTA-Entscheidung: Option 1 / 2 / 3
