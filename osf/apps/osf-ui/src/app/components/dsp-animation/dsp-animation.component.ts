@@ -995,7 +995,20 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
       this.revealedFunctionIcons = new Set<IconKey>();
     }
 
-    (step.highlightedFunctionIcons || []).forEach((key) => this.revealedFunctionIcons.add(key as IconKey));
+    const toAdd = step.highlightedFunctionIcons || [];
+    if (toAdd.length === 0 && this.viewMode === 'functional' && step.showFunctionIcons) {
+      // Full overview step (e.g. last step): reveal all function icons for export/display
+      this.containers.forEach((c) => {
+        if (c.functionIcons && (c.id === 'dsp-edge' || c.id === 'dsp-mc')) {
+          c.functionIcons.forEach((fi) => {
+            if (c.id === 'dsp-mc' && fi.iconKey.startsWith('logo-edge-')) return;
+            this.revealedFunctionIcons.add(fi.iconKey as IconKey);
+          });
+        }
+      });
+    } else {
+      toAdd.forEach((key) => this.revealedFunctionIcons.add(key as IconKey));
+    }
 
     // Update container states for visibility/highlight
     this.containers.forEach((container) => {

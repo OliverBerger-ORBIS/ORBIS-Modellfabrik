@@ -1,34 +1,42 @@
 # Sprint X – [Titel]
 
 **Zeitraum:** [Datum] - [Datum] (2 Wochen)  
-**Status:** [Planning/Active/Completed]  
-**Stakeholder-Update:** [Kurze Zusammenfassung für externe Stakeholder]
+**Status:** [Laufend / ✅ Abgeschlossen]  
+**Stakeholder-Update:** [Kurze Zusammenfassung]
+
+**Übernommen aus Sprint X-1:** [Optional, siehe sprint_XX.md]
 
 ---
 
 ## 🎯 Ziele
-- [ ] Ziel 1
-- [ ] Ziel 2
-- [ ] Ziel 3
 
-## ✅ Ergebnisse
-- [x] Ergebnis 1
-- [x] Ergebnis 2
-- [ ] Ergebnis 3 (in Arbeit)
+### [Kategorie 1]
+- [ ] Task 1
+- [ ] Task 2
 
-## 📊 Fortschritt
-- **Abgeschlossen:** X/Y Aufgaben
-- **Blockiert:** [Blockierungen]
-- **Nächste Schritte:** [Kurze Liste]
-
-## 🔗 Wichtige Entscheidungen
-- [Link zu Decision Record 1]
-- [Link zu Decision Record 2]
-
-## 📈 Stakeholder-Impact
-- **Technisch:** [Was wurde entwickelt]
-- **Business:** [Welcher Nutzen entsteht]
-- **Risiken:** [Offene Punkte]
+### [Kategorie 2]
+- [ ] Task 3
 
 ---
+
+## 📋 Detail-Doku (nur wo nötig)
+
+[Nur bei Tasks mit technischer Erklärung oder How-To-Links]
+
+---
+
+## 🔗 Entscheidungen
+
+[Bei Bedarf]
+
+---
+
+## 📎 Referenzen
+
+[Links]
+
+---
+
 *Letzte Aktualisierung: [Datum]*
+
+**Vorgehen:** Siehe [sprints_README.md](sprints_README.md) – eine Checkliste, keine Doppelung.

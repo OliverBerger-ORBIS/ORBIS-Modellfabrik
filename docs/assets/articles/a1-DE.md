@@ -1,7 +1,8 @@
 # A1 – Artikel (DE Draft)
 
 ## Status
-- Version: v1
+- Version: v2
+- v2: UC-06 Visual-Verweis aktualisiert (Step-Animation umgesetzt, SVG-Export nutzbar)
 - Owner: @<Oliver Berger>
 - Review: <Tech Reviewer> / <MES-ERP Reviewer> / <Redaktion>
 - Zieltermin: <Datum>
@@ -104,7 +105,7 @@ In einer interoperablen Fertigungsarchitektur werden technische Events (z. B. St
 - Caption DE: Interoperabilität macht aus technischen Events ein verständliches Prozessbild – als gemeinsame Sprache zwischen Shopfloor und IT.
 - Alt-Text DE: Diagramm zeigt, wie Shopfloor-Events mit Prozesskontext zu einem End-to-End Prozessbild zusammengeführt werden.
 
-SVG DE (vorläufig)
+UC-06 ist in OSF mit Step-Animation verfügbar; SVG-Export via `node scripts/export-use-case-svgs.js` (siehe use-case-library).
 ![UC-06-SVG-Template-DE.png](/.attachments/UC-06-SVG-Template-DE-73d2c2d8-2542-4d0a-a337-94b0e304aec1.png)
 
 ### Visual 2: OSF Proof „Digital Twin Pair“ (50/50)

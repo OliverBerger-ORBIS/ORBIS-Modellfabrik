@@ -243,6 +243,36 @@ export function createComponentView(customerConfig?: import('./configs/types').C
       highlightedConnectionIds: disiShopfloorConnections,
       showFunctionIcons: false,
     },
+
+    // Step 8: Full overview - everything visible, nothing highlighted
+    {
+      id: 'component-step-8',
+      label: $localize`:@@componentStep8:Full Architecture`,
+      description: $localize`:@@componentStep8Desc:Complete DSP Edge component view with all connections.`,
+      visibleContainerIds: [
+        'layer-bp',
+        'bp-mes',
+        'bp-erp',
+        'layer-dsp',
+        'dsp-ux',
+        'dsp-edge',
+        'dsp-mc',
+        ...getEdgeComponentIds(),
+        'layer-sf',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: [],
+      visibleConnectionIds: [
+        ...allEdgeComponentConnections,
+        'conn-ec-disc-bp-mes',
+        'conn-ec-disc-bp-erp',
+        'conn-ux-ec-appserver',
+        'conn-ec-agent-management',
+        ...disiShopfloorConnections,
+      ],
+      highlightedConnectionIds: [],
+      showFunctionIcons: false,
+    },
   ];
   
   return new DiagramConfigBuilder(customerConfig)

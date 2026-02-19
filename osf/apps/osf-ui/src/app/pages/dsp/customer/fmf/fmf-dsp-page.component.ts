@@ -1,15 +1,22 @@
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { DspAnimationComponent } from '../../../../components/dsp-animation/dsp-animation.component';
 import { FMF_CONFIG } from '../../../../components/dsp-animation/configs/fmf/fmf-config';
 import { VIEW_MODES } from '../shared/view-modes.const';
 import { CUSTOMER_PAGE_STYLES } from '../shared/customer-page.styles';
 import type { ViewMode } from '../../../../components/dsp-animation/types';
 
+const VALID_VIEW_MODES: ViewMode[] = ['functional', 'component', 'deployment'];
+
 /**
  * FMF (Fischertechnik Modellfabrik) DSP Architecture Page
  * Displays DSP architecture customized for FMF's equipment and systems
- * Supports functional, component, and deployment view modes
+ * Supports functional, component, and deployment view modes.
+ *
+ * Query params (for export/embedding):
+ * - viewMode: functional | component | deployment
+ * - step: 0-based index, or -1 for last step (full overview)
  */
 @Component({
   standalone: true,
@@ -36,16 +43,38 @@ import type { ViewMode } from '../../../../components/dsp-animation/types';
       <app-dsp-animation
         [viewMode]="currentViewMode()"
         [customerConfig]="config"
+        [initialStep]="initialStep()"
       ></app-dsp-animation>
     </div>
   `,
   styles: [CUSTOMER_PAGE_STYLES],
 })
-export class FmfDspPageComponent {
+export class FmfDspPageComponent implements OnInit {
   config = FMF_CONFIG;
   currentViewMode = signal<ViewMode>('functional');
+  initialStep = signal<number>(0);
   viewModes = VIEW_MODES;
-  
+
+  constructor(private readonly route: ActivatedRoute) {}
+
+  ngOnInit(): void {
+    const applyParams = (params: Record<string, string>) => {
+      const vm = params['viewMode'];
+      if (vm && VALID_VIEW_MODES.includes(vm as ViewMode)) {
+        this.currentViewMode.set(vm as ViewMode);
+      }
+      const step = params['step'];
+      if (step !== undefined) {
+        const num = parseInt(step, 10);
+        if (!isNaN(num)) {
+          this.initialStep.set(num);
+        }
+      }
+    };
+    applyParams(this.route.snapshot.queryParams);
+    this.route.queryParams.subscribe(applyParams);
+  }
+
   setViewMode(mode: ViewMode): void {
     this.currentViewMode.set(mode);
   }

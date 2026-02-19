@@ -1,10 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, provideRouter } from '@angular/router';
 import { FmfDspPageComponent } from './fmf-dsp-page.component';
 import { DspAnimationComponent } from '../../../../components/dsp-animation/dsp-animation.component';
 import { DebugElement, Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { By } from '@angular/platform-browser';
+import { of } from 'rxjs';
 import type { CustomerDspConfig } from '../../../../components/dsp-animation/configs/types';
 import type { ViewMode } from '../../../../components/dsp-animation/types';
+
+const mockActivatedRoute = {
+  snapshot: { queryParams: {} },
+  queryParams: of({}),
+};
 
 // Mock DspAnimationComponent to avoid complex dependencies
 @Component({
@@ -16,6 +23,7 @@ import type { ViewMode } from '../../../../components/dsp-animation/types';
 class MockDspAnimationComponent {
   @Input() viewMode?: ViewMode;
   @Input() customerConfig?: CustomerDspConfig;
+  @Input() initialStep?: number;
 }
 
 describe('FmfDspPageComponent', () => {
@@ -26,6 +34,10 @@ describe('FmfDspPageComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [FmfDspPageComponent],
+      providers: [
+        provideRouter([]),
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+      ],
     })
       .overrideComponent(FmfDspPageComponent, {
         remove: { imports: [DspAnimationComponent] },

@@ -594,7 +594,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       // No highlightedFunctionIcons - all functional icons shown but not highlighted
     },
 
-    // Step 20: Autonomous & Adaptive Enterprise (Zielbild) - Final overview with all components visible
+    // Step 20: Full overview (Zielbild) - Everything visible, nothing highlighted
     {
       id: 'step-20',
       label: $localize`:@@dspArchStep12:Autonomous & Adaptive Enterprise`,
@@ -615,7 +615,8 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         ...baseShopfloorConnections,
       ],
       highlightedConnectionIds: [], // No highlighting in final step
-      showFunctionIcons: false, // No functional SVGs for dsp-edge and dsp-mc in final step
+      showFunctionIcons: true, // All Edge + MC function icons visible
+      highlightedFunctionIcons: [], // None highlighted
     },
   ];
 }

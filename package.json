@@ -13,6 +13,7 @@
     "test:coverage:check": "nx test osf-ui --coverage --coverageThreshold",
     "update-version": "node scripts/update-ui-version.js",
     "export-use-case-svgs": "node scripts/export-use-case-svgs.js",
+    "export-dsp-architecture-svgs": "node scripts/export-dsp-architecture-svgs.js",
     "build": "npm run update-version && nx build mqtt-client",
     "build:fixtures": "python scripts/build_order_fixtures.py",
     "build:github-pages": "npm run update-version && nx build osf-ui --configuration=github-pages",

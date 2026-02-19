@@ -226,12 +226,23 @@ DspUseCasesComponent (Übersicht)
 
 ---
 
-## 6. Referenzen
+## 6. ORBIS-CI und Farben (Vorgehen)
+
+Für Farben und Typografie gelten die ORBIS-CI Vorgaben:
+- **SCSS:** `var(--orbis-...)` / `var(--solution-petrol-...)` aus `_color-palette.scss`
+- **TypeScript (SVG-Generatoren):** `ORBIS_COLORS` bzw. `getOrbisColor()` aus `color-palette.ts`
+- **Quelle:** [DR 14 – ORBIS CI Usage](../03-decision-records/14-orbis-ci-usage.md)
+
+Neue Use-Cases und SVG-Generatoren nutzen ausschließlich die zentrale Palette; keine direkten Hexwerte.
+
+---
+
+## 7. Referenzen
 
 - **Use-Case Inventory:** [use-case-inventory.md](use-case-inventory.md) – Übersicht aller Use-Cases mit Step 1 und Anleitung für neue Use-Cases
 - **Implementierungs-Guide:** `docs/assets/use-cases/UC-DIAGRAM-IMPLEMENTATION-GUIDE.md`
 - **SVG-Struktur-Plan:** `docs/assets/use-cases/UC-USE-CASE-SVG-STRUCTURE-PLAN.md`
-- **ORBIS-CI Farben:** `docs/03-decision-records/14-orbis-ci-usage.md`
+- **ORBIS-CI (Details):** `docs/03-decision-records/14-orbis-ci-usage.md`
 - **Projekt-Struktur:** `docs/02-architecture/project-structure.md`
 
 ---

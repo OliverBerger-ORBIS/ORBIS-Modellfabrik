@@ -99,7 +99,7 @@ Diagram showing shopfloor events mapped to process steps and an end-to-end flow.
 ## Screen Spec / Implementation Notes (UC-06) — DE
 
 ### Ziel
-UC-06 visualisiert das Prinzip „Event-to-Process“: technische Shopfloor-Events werden normalisiert, mit Business-Kontext angereichert und als prozessfähige Sicht bereitgestellt. Die Umsetzung ist **zunächst statisch modelliert**; eine **SVG-Animation** kann später optional nachgezogen werden.
+UC-06 visualisiert das Prinzip „Event-to-Process“: technische Shopfloor-Events werden normalisiert, mit Business-Kontext angereichert und als prozessfähige Sicht bereitgestellt. **Umsetzung:** dynamische SVG-Generierung mit Step-Animation (analog zu UC-01 bis UC-07); siehe [use-case-library](../../../02-architecture/use-case-library.md).
 
 ### Platzierung & Verlinkung
 - **Primär:** DSP-Tab → Abschnitt „DSP Anwendungsfälle“ als zusätzlicher Use Case „Interoperabilität (Event-to-Process)“.
@@ -109,7 +109,7 @@ UC-06 visualisiert das Prinzip „Event-to-Process“: technische Shopfloor-Even
   - Wiki verlinkt zurück auf DSP-Tab (und umgekehrt), ohne OSF als „produktive Use-Case-App“ darzustellen.
 
 ### Visual Pattern (OSF/DSP konsistent)
-- **Statisches Pattern wie bestehende DSP Use Cases:**
+- **Pattern wie bestehende DSP Use Cases (mit Step-Animation):**
   - **Top:** Use-Case-Cards (Grid) inkl. Icon, Titel, One-liner.
   - **Detailbereich:** „Aktionen“ (links) + „Smart Factory“ (rechts) als Bullet-Listen.
   - **Footer-Disclaimer:** OSF ist Demonstrator (konzeptionell, kundenspezifische Umsetzung).
@@ -142,10 +142,9 @@ UC-06 visualisiert das Prinzip „Event-to-Process“: technische Shopfloor-Even
 - Inhalte werden als **statische Konfiguration** modelliert (z. B. JSON / i18n keys).
 - DE/EN über i18n; Bilder getrennt je Sprache, falls Labels im Bild.
 
-### Optional: SVG-Animation (später)
-- Ziel: Wiederverwendung der DSP-Architecture-Logik (Step-Controls, Highlighting).
-- Umsetzung: **ein SVG** mit benannten Element-IDs, Steps steuern Sichtbarkeit/Highlight.
-- Animation erst nach Fertigstellung der statischen Version.
+### Step-Animation (umgesetzt)
+- UC-06 nutzt wie alle Use-Cases die gemeinsame Step-Logik (Step-Controls, Highlighting, Auto-Dim).
+- SVG wird dynamisch aus `uc-06-structure.config.ts` generiert; Steps steuern Sichtbarkeit/Highlight über `uc-06-event-to-process-map.steps.json`.
 
 ### Acceptance Criteria (MVP)
 - UC-06 erscheint als zusätzliche Card im DSP Use-Case-Grid (DE/EN).
@@ -158,7 +157,7 @@ UC-06 visualisiert das Prinzip „Event-to-Process“: technische Shopfloor-Even
 ## Screen Spec / Implementation Notes (UC-06) — EN
 
 ### Goal
-UC-06 visualizes the “event-to-process” principle: raw shopfloor events are normalized, enriched with business context, and turned into a process-ready view. The first iteration is **statically modeled**; an **optional SVG animation** can be added later.
+UC-06 visualizes the “event-to-process” principle: raw shopfloor events are normalized, enriched with business context, and turned into a process-ready view. **Implementation:** dynamic SVG generation with step animation (aligned with UC-01–UC-07); see [use-case-library](../../../02-architecture/use-case-library.md).
 
 ### Placement & Linking
 - **Primary:** DSP tab → “DSP Use Cases” section as an additional use case: “Interoperability (Event-to-Process)”.
@@ -168,7 +167,7 @@ UC-06 visualizes the “event-to-process” principle: raw shopfloor events are 
   - Cross-link wiki ↔ DSP tab, without positioning OSF as the productive use-case application.
 
 ### Visual Pattern (consistent with OSF/DSP)
-- **Static pattern aligned with existing DSP use cases:**
+- **Pattern aligned with existing DSP use cases (including step animation):**
   - **Top:** Use-case cards (grid) with icon, title, one-liner.
   - **Detail panel:** “Actions” (left) + “Smart Factory” (right) as bullet lists.
   - **Footer disclaimer:** OSF is a demonstrator (conceptual; customer-specific implementation).
@@ -201,10 +200,9 @@ UC-06 visualizes the “event-to-process” principle: raw shopfloor events are 
 - Content is modeled as **static configuration** (e.g., JSON / i18n keys).
 - DE/EN via i18n; separate images per language if labels are embedded in the image.
 
-### Optional: SVG Animation (later)
-- Reuse the DSP architecture animation approach (step controls, highlighting).
-- Implementation: **single SVG** with named element IDs; steps control visibility/highlighting.
-- Animation follows after the static version is approved.
+### Step Animation (implemented)
+- UC-06 uses the shared step logic (step controls, highlighting, auto-dim) like all use cases.
+- SVG is generated dynamically from `uc-06-structure.config.ts`; steps control visibility/highlighting via `uc-06-event-to-process-map.steps.json`.
 
 ### Acceptance Criteria (MVP)
 - UC-06 appears as an additional card in the DSP use-case grid (DE/EN).
