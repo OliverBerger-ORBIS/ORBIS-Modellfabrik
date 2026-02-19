@@ -64,6 +64,17 @@ This document contains default login credentials and access information for the 
 - **Status**: ✅ **Funktioniert!** - Web-Interface erreichbar
 - **Beschreibung**: Netzwerk-Router für APS-Modellfabrik
 
+#### WLAN Configuration (Updated 17.02.2026)
+- **SSID (2.4GHz)**: `ORBIS-4711`
+- **SSID (5GHz)**: `ORBIS-4711_5G`
+- **Password**: `49117837`
+- **Modules Update Procedure**:
+  - Connect to TXT Controller (Touchscreen).
+  - Go to **Settings > Network > WLAN**.
+  - Select new SSID (`ORBIS-4711` or `ORBIS-4711_5G`).
+  - Enter Password.
+  - Apply to: **TXT-FTS**, **TXT-AIQS**, **TXT-DPS** (Cloud Gateway Controller).
+
 ### TXT 4.0 Controller - SSH
 - **Komponente**: TXT 4.0 Controller
 - **Software**: SSH
