@@ -1,85 +1,98 @@
-# OMF2 Project Roadmap
+# ORBIS SmartFactory – Roadmap & Entwicklungsphasen
 
-**Version:** 1.0  
-**Last updated:** 2025-10-16  
-**Author:** OMF Development Team  
+**Version:** 2.0  
+**Letzte Aktualisierung:** 2026-02-18  
 
 ---
 
 ## 🎯 Vision & Ziele
 
-Entwicklung einer modernen, modularen Web-Anwendung (OMF2) zur Steuerung und Überwachung der ORBIS Modellfabrik. OMF2 ersetzt das bestehende APS Fischertechnik System und bietet erweiterte Funktionalitäten für Produktionssteuerung, Monitoring und Analytics.
+Entwicklung einer modernen, modularen Web-Anwendung (OSF-UI) zur Steuerung und Überwachung der ORBIS SmartFactory. OSF-UI nutzt die Fischertechnik APS als Testumgebung und bietet erweiterte Funktionalitäten für Produktionssteuerung, Monitoring und Analytics.
 
 **Ziel-Architektur:**
 ```
-OMF CCU-Frontend ←→ OMF CCU-Backend ←→ OMF-NodeRED ←→ ORBIS-DSP ←→ OPC-UA Module
+OSF-UI ←→ APS-CCU ←→ APS-NodeRED ←→ ORBIS-DSP ←→ OPC-UA Module
 ```
 
 ---
 
 ## 🚀 Entwicklungsphasen
 
-### **Phase 1: CCU-Frontend Funktionalität** 🔄 **In Bearbeitung**
-- **Status:** Bis Messe 25.11.2025
-- **Ziel:** Vollständige CCU-Frontend Funktionalität
-- **Bereits implementiert:** CCU-Tabs, Production Order Manager, Storage Orders Logic, i18n-System, Drei-Schichten-Architektur
-- **Noch zu tun:** Letzter Schliff und Erweiterung der noch nicht funktionierenden Teile
-- **Konkrete ToDos:** Siehe [plan.md](../../plan.md)
-
-### **Phase 2: CCU-Backend Funktionalität** ⏳ **Geplant (Post-Messe)**
-- **Status:** ⏳ Geplant
-- **Ziel:** Logik zur Erstellung der MQTT Messages die das CCU-Backend versendet
-- **Ergebnis:** Theoretische Ablösung der Fischertechnik APS CCU-Anwendung
-- **Domäne:** CCU wird aufgeteilt in CCU Frontend (Phase 1) und CCU Backend (Phase 2)
-- **Konkrete Inhalte:** Siehe [plan.md](../../plan.md) - Task "Ausarbeitung der Roadmap"
-
-### **Phase 3: APS-NodeRED Ablösung** ⏳ **Geplant (Post-Messe)**
-- **Status:** ⏳ Geplant
-- **Ziel:** Abschalten der APS NodeRED Anwendung
-- **Übernahme:** Funktionalität durch ORBIS-DSP
-- **Integration:** Eigenen OMF-NodeRED Flow als Integrator zwischen OPC-UA Modulen und DSP
-- **Ergebnis:** Vollständige Ablösung der APS-Infrastruktur
-- **Konkrete Inhalte:** Siehe [plan.md](../../plan.md) - Task "Ausarbeitung der Roadmap"
-
-### **Phase 4: Erweiterungen** ⏳ **Geplant (Post-Messe)**
-- **Status:** ⏳ Geplant (teilweise nach Phase 1 einplanbar)
-- **ORBIS Cloud:** Verwaltung der Fabrik-Daten in der Cloud
-- **DSP-Zweig:** Parallel-Entwicklung durch anderes Team
-- **Timing:** Falls technisch möglich, auch nach Phase 1 einplanbar
-- **Konkrete Inhalte:** Siehe [plan.md](../../plan.md) - Task "Ausarbeitung der Roadmap"
+### **Phase 0: APS "as IS" – Fischertechnik-System verstehen**
+- **Status:** ✅ Abgeschlossen (bis Sprint 2, 22.08.2025)
+- **Ziel:** Das bestehende Fischertechnik APS-System vollständig verstehen
+- **Erreicht:**
+  - APS-Ecosystem dokumentiert (System-Übersicht, Komponenten-Mapping)
+  - Mosquitto Log-Analyse (MQTT-Kommunikation, Client-IDs, Topics)
+  - APS-NodeRED Flows analysiert (OPC-UA, State-Machine, VDA 5050)
+  - APS-CCU als Herz der Fabrik identifiziert
+- **Dokumentation:** `docs/06-integrations/APS-Ecosystem/`
 
 ---
 
-## 📋 Verweise auf konkrete Dokumentation
+### **Phase 1: OMF1/OMF2 – Streamlit Python-App**
+- **Status:** ✅ Abgeschlossen (abgelöst nach Sprint 3, 03.09.2025)
+- **Hintergrund:** Basierend auf OMF1 und OMF2 als Streamlit Python-App.
+- **Problem:** Keine WebSocket-Unterstützung – ungeeignet für Echtzeit-MQTT-Kommunikation.
+- **Folge:** Umstieg auf OMF3 (siehe Phase 2).
+
+---
+
+### **Phase 2: OMF3/OSF – Angular-App (CCU-Frontend)**
+- **Status:** ✅ Abgeschlossen (Sprint 9, 27.11.2025)
+- **Ziel:** OSF-UI als Angular-App etablieren (OMF3 = OSF).
+- **Erreicht:**
+  - CCU-Tabs, Production Order Manager, Storage Orders Logic
+  - i18n-System (DE, EN, FR)
+  - Drei-Schichten-Architektur (MQTT Client → Gateway → Business)
+  - **Messe BE5.0** (Mulhouse, Frankreich, 24–26.11.2025)
+
+---
+
+### **Phase 3: APS-NodeRED Ablösung**
+- **Status:** ⏳ Umpriorisiert (aktuell nicht geplant)
+- **Ziel:** APS-NodeRED durch ORBIS-DSP ersetzen.
+- **Hinweis:** Phase wurde nicht angegangen und umpriorisiert. Kann als optionale Phase erhalten bleiben.
+- **MQTT-Entkopplung:** APS-CCU und ORBIS-DSP können parallel arbeiten.
+
+---
+
+### **Phase 4: OSF-UI mit DSP-Fokus**
+- **Status:** ✅ Abgeschlossen (Sprint 15, 18.02.2026, Version v0.7.10)
+- **Ziel:** OSF-UI als Angular-App mit Konzentration auf DSP-Tab.
+- **Erreicht:**
+  - DSP-Architecture + animierte Diagramme
+  - DSP-Vorgehensweise
+  - DSP Use-Cases, DSP Customer Architekturen
+  - OSF-Demo per OBS
+  - Messe BE5.0 (November 2025), Use-Case-Bibliothek UC-01 bis UC-07
+
+---
+
+### **Phase 5: Erweiterbare Plattform – Messevorbereitung**
+- **Status:** 🔄 In Bearbeitung
+- **Ausgangslage:** Fischertechnik-Dokumentation liegt vor und erleichtert Erweiterungen.
+- **Erweiterungsrichtungen:**
+  - **Hardware:** z.B. Arduino Vibrationssensor → Use Case Predictive Maintenance (`docs/05-hardware/arduino-vibrationssensor.md`)
+  - **APS-CCU:** ERP/MES-Integration (geplant, ggf. temporär bis DSP CCU übernimmt; Parallelbetrieb möglich)
+- **Aktuelle Prioritäten:**
+  - **LogiMAT 2026**
+  - **Hannover Messe 2026**
+  - **ORBIS Customer-Connect Event 2026** (Ende April 2026)
+
+---
+
+## 📋 Verweise
 
 ### **Aktuelle Arbeiten:**
-- **[PROJECT_STATUS.md](../../PROJECT_STATUS.md)** - Sprint-Status und aktuelle Arbeiten
-- **[plan.md](../../plan.md)** - Messe-Vorbereitung und konkrete ToDos
-- **[docs/sprints/](../sprints/)** - Detaillierte Sprint-Dokumentation
+- [PROJECT_STATUS.md](../PROJECT_STATUS.md) – Sprint-Status, Tabelle Sprint ↔ ORBIS-Projekt ↔ OSF-Phase
+- [docs/sprints/](../sprints/) – Detaillierte Sprint-Dokumentation
+- [ORBIS-Projekt-Abschlussbericht Sprints 1-12](../sprints/ORBIS-Projekt-Abschlussbericht_sprints_01-12.md) – Erstes ORBIS-Projekt (ORBIS-Modellfabrik)
 
 ### **Strategische Dokumentation:**
-- **[project-overview.md](project-overview.md)** - Projekt-Übersicht
-- **[development-phases.md](development-phases.md)** - Detaillierte Phasen-Dokumentation
-- **[vision.md](vision.md)** - Projekt-Vision
+- [vision.md](vision.md) – Konzept, Scope
 
 ### **Technische Dokumentation:**
-- **[docs/02-architecture/](../02-architecture/)** - Implementierte Architektur
-- **[docs/03-decision-records/](../03-decision-records/)** - Architektur-Entscheidungen
-- **[docs/04-howto/](../04-howto/)** - Praktische Anleitungen
-
----
-
-## 🎯 Aktuelle Prioritäten
-
-### **Messe-Vorbereitung (bis 25.11.2025):**
-- **Fokus:** Phase 1 abschließen
-- **Status:** Auf Kurs für Messe-Demo
-- **Details:** Siehe [plan.md](../../plan.md)
-
-### **Post-Messe Entwicklung:**
-- **Fokus:** Phase 2-4 planen und implementieren
-- **Roadmap-Ausarbeitung:** Siehe [plan.md](../../plan.md) - Task "Ausarbeitung der Roadmap"
-
----
-
-*Letzte Aktualisierung: 2025-10-16*
+- [docs/02-architecture/](../02-architecture/) – Architektur
+- [docs/03-decision-records/](../03-decision-records/) – Architektur-Entscheidungen
+- [docs/04-howto/](../04-howto/) – Praktische Anleitungen

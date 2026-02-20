@@ -211,7 +211,7 @@ await mqtt.publish(topic, JSON.stringify(ledInstantAction), { qos: 2 });
 
 ```mermaid
 sequenceDiagram
-    participant Frontend as Frontend<br/>(Browser/omf2/Cloud)
+    participant Frontend as Frontend<br/>(Browser/OSF/Cloud)
     participant MQTT as MQTT Broker
     participant CCU as CCU-Backend<br/>(ff-central-control)
     participant FTS as FTS<br/>(5iO4)

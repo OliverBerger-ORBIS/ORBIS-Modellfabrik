@@ -1,6 +1,6 @@
 # Deployment Configurations
 
-This directory contains Docker Compose configurations for deploying the ORBIS Modellfabrik infrastructure.
+This directory contains Docker Compose configurations for deploying the ORBIS SmartFactory infrastructure.
 
 ## Available Configurations
 

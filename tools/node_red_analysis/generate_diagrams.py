@@ -181,7 +181,7 @@ def generate_all_diagrams():
         "system_overview.mermaid": generate_system_overview(),
     }
 
-    output_dir = Path("docs/analysis/node-red")
+    output_dir = Path("docs/07-analysis/node-red")
     output_dir.mkdir(exist_ok=True)
 
     for filename, content in diagrams.items():

@@ -52,9 +52,8 @@ Im DPS-Modul (`SVR4H73275`) gibt es **zwei** TXT-Controller:
 
 ## 📚 Dokumentation
 
-**Archivierte Analyse:**
-- **`docs/archive/analysis/dps/FF_DPS_24V_ANALYSIS.md`** - Vollständige Analyse
-- **`docs/archive/analysis/dps/DPS_ANALYSIS_PLAN.md`** - Analyse-Plan
+**Referenz:**
+- **`docs/06-integrations/00-REFERENCE/`** - Zentrale DPS-relevante Dokumentation (archive/analysis/dps aufgelöst)
 
 ## 📁 Projekt-Struktur
 

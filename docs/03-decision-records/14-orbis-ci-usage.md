@@ -5,7 +5,7 @@ Accepted
 
 ## Context
 - ORBIS CI definiert Farbwelt und Typografie im CI-Guide (PDF, Quelle: ORBIS Shared Folder).
-- In omf3 existiert eine zentrale Farbpalette (`omf3/apps/ccu-ui/src/app/assets/_color-palette.scss` und `color-palette.ts`) mit CI-Farben plus ergänzenden Statusfarben für UI-Zustände.
+- In OSF existiert eine zentrale Farbpalette (`osf/apps/osf-ui/src/app/assets/_color-palette.scss` und `color-palette.ts`) mit CI-Farben plus ergänzenden Statusfarben für UI-Zustände.
 - Open Sans ist als Hausschrift eingebunden (`index.html`, `styles.scss`). HR-Schmuckschrift (Grit Sans) ist im CI-PDF erwähnt, aber nicht produktrelevant für das UI.
 
 ## Decision

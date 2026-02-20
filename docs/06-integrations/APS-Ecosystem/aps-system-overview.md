@@ -9,7 +9,7 @@ Effizienz, Agilität und Flexibilität sind beim Aufbau aktueller und zukünftig
 > **🔗 Verwandte Dokumentation:**
 > - **[System Overview](./system-overview.md)** - Technische System-Übersicht
 > - **[APS-NodeRED](../APS-NodeRED/README.md)** - Node-RED Integration und Flows
-> - **[System Context](../../02-architecture/system-context.md)** - Gesamtarchitektur OMF Ecosystem
+> - **[Architektur-Übersicht](../../02-architecture/README.md)** – OSF-Systemkontext
 
 ## Systemkomponenten
 
@@ -52,10 +52,9 @@ Die Fabrik ist außerdem über einen WLAN-Router mit der fischertechnik Cloud ve
 Zur Simulation von Fernwartung werden die Bilder, die die bewegliche Kamera in der Fabrik aufnimmt, im Dashboard angezeigt, so dass der Zustand der Fabrik remote eingesehen werden kann.
 
 > **🔗 ORBIS-Integration:**
-> - **[OMF2 Architecture](../../02-architecture/omf2-architecture.md)** – Implementierte ORBIS Dashboard-Architektur
-> - **[Message Flow](../../02-architecture/message-flow.md)** - End-to-End Kommunikationsflüsse
-> - **[Registry Model](../../02-architecture/registry-model.md)** - Template-basierte Steuerung
-> - **[System Overview](./system-overview.md)** - APS "as IS" System-Übersicht
+> - **[Architektur-Übersicht](../../02-architecture/README.md)** – OSF-Systemkontext
+> - **[APS Data Flow](../../02-architecture/aps-data-flow.md)** – End-to-End Kommunikationsflüsse
+> - **[System Overview](./system-overview.md)** – APS „as IS“ System-Übersicht
 
 ## Physische Struktur
 

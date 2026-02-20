@@ -34,14 +34,14 @@
 ## 📚 Archivierte Analyse
 
 **Vollständige Analyse-Dokumente:**
-- **`docs/archive/analysis/dps/`** - Historische DPS-Analysen (separater Aufräumprozess geplant)
-- **Hinweis:** Inhalte werden in zukünftiger Analyse in APS-CCU/OMF-CCU Kontext eingeordnet
+- **`docs/06-integrations/00-REFERENCE/`** - Zentrale Referenz (DPS-relevante Infos konsolidiert)
+- **Hinweis:** Inhalte werden in zukünftiger Analyse in APS-CCU/APS-CCU Kontext eingeordnet
 
 ## 🚀 Nächste Schritte
 
 1. **Browser-Interface erkunden** - `http://192.168.0.102`
 2. **Dateien analysieren** - Code und Konfiguration
-3. **Integration testen** - Mit OMF-Dashboard
+3. **Integration testen** - Mit OSF-UI
 
 ---
 

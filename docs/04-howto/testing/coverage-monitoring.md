@@ -14,7 +14,7 @@ Das Coverage Monitoring System überwacht automatisch die Test-Abdeckung und ste
 
 ## 📊 Aktuelle Coverage-Schwellenwerte
 
-**Konfiguration:** `omf3/apps/ccu-ui/jest.config.ts`
+**Konfiguration:** `osf/apps/osf-ui/jest.config.ts`
 
 ```typescript
 coverageThreshold: {
@@ -49,20 +49,20 @@ npm run test:coverage:check
 ### Coverage Report anzeigen
 
 Nach `npm run test:coverage`:
-- **HTML Report:** `coverage/ccu-ui/index.html`
-- **JSON Report:** `coverage/ccu-ui/coverage-final.json`
-- **LCOV Report:** `coverage/ccu-ui/lcov.info`
+- **HTML Report:** `coverage/osf-ui/index.html`
+- **JSON Report:** `coverage/osf-ui/coverage-final.json`
+- **LCOV Report:** `coverage/osf-ui/lcov.info`
 
 **HTML Report öffnen:**
 ```bash
 # macOS
-open coverage/ccu-ui/index.html
+open coverage/osf-ui/index.html
 
 # Linux
-xdg-open coverage/ccu-ui/index.html
+xdg-open coverage/osf-ui/index.html
 
 # Windows
-start coverage/ccu-ui/index.html
+start coverage/osf-ui/index.html
 ```
 
 ---
@@ -103,9 +103,9 @@ start coverage/ccu-ui/index.html
   uses: codecov/codecov-action@v4
   if: always()
   with:
-    files: ./coverage/ccu-ui/coverage-final.json
-    flags: ccu-ui
-    name: ccu-ui-coverage
+    files: ./coverage/osf-ui/coverage-final.json
+    flags: osf-ui
+    name: osf-ui-coverage
     fail_ci_if_error: false
 ```
 
@@ -169,7 +169,7 @@ npm run test:coverage:check
 
 ```bash
 npm run test:coverage
-open coverage/ccu-ui/index.html
+open coverage/osf-ui/index.html
 ```
 
 ### 3. Uncovered Code identifizieren
@@ -239,8 +239,7 @@ Im HTML Report:
 
 ## 🔗 Verwandte Dokumentation
 
-- [Test Coverage Plan](../../analysis/code-optimization-test-coverage-plan.md)
-- [Test Coverage Status](../../analysis/test-coverage-status.md)
+- [Test Coverage Status](../07-analysis/test-coverage-status.md)
 - [Testing Strategy](testing-strategy.md)
 
 ---

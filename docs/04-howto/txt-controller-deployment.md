@@ -230,7 +230,7 @@ integrations/TXT-AIQS/workspaces/FF_AI_24V/
 
 ## 🔗 Verwandte Dokumentation
 
-- [Decision Record: TXT-Controller Deployment](../03-decision-records/18-txt-controller-deployment.md) - Entscheidungsgrundlagen
+- [Decision Record: TXT-Controller Deployment](../03-decision-records/17-txt-controller-deployment.md) - Entscheidungsgrundlagen
 - [ROBO Pro Connection Guide](../../06-integrations/TXT-AIQS/ROBO_PRO_CONNECTION_GUIDE.md) - Verbindungsanleitung
 - [ROBO Pro Troubleshooting](../../06-integrations/ROBO_PRO_TROUBLESHOOTING.md) - Problembehandlung
 

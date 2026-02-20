@@ -63,16 +63,15 @@
 - **[TXT-Controller](../TXT-*/README.md)** - TXT-DPS, TXT-AIQS, TXT-FTS
 
 ### **Architektur:**
-- **[System Context](../../02-architecture/system-context.md)** - OMF-Architektur-Kontext
-- **[Message Flow](../../02-architecture/message-flow.md)** - MQTT-Kommunikations-Patterns
-- **[Registry Model](../../02-architecture/registry-model.md)** - Message-Template-System
+- **[Architektur-Übersicht](../../02-architecture/README.md)** – OSF-Systemkontext
+- **[APS Data Flow](../../02-architecture/aps-data-flow.md)** – MQTT-Kommunikation
 
 ## 🚀 Nächste Schritte
 
 1. **Docker-Container analysieren** - Container-Konfiguration
 2. **Node-RED Flows dokumentieren** - Gateway-Logik
 3. **Dashboard-Integration testen** - Web-Interface
-4. **OMF-Integration vorbereiten** - Phase 1 Planung
+4. **OSF-Integration vorbereiten** - Phase 1 Planung
 
 ---
 

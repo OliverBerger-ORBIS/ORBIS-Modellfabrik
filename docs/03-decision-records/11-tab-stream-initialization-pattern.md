@@ -130,7 +130,7 @@ const lastSensorOverview = combineLatest([
 
 ## Referenzen
 
-- `omf3/libs/gateway/src/index.ts` - Gateway-Stream Definitionen
-- `omf3/libs/business/src/index.ts` - Business-Stream Definitionen mit `startWith`
-- `omf3/apps/ccu-ui/src/app/tabs/*.component.ts` - Tab-Implementierungen
+- `osf/libs/gateway/src/index.ts` - Gateway-Stream Definitionen
+- `osf/libs/business/src/index.ts` - Business-Stream Definitionen mit `startWith`
+- `osf/apps/osf-ui/src/app/tabs/*.component.ts` - Tab-Implementierungen
 

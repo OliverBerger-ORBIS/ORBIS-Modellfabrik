@@ -1,32 +1,26 @@
 # Strategy Documentation Index
 
-Version: 1.0  
-Last updated: 2025-10-16  
-Author: OMF Development Team  
+Version: 2.1  
+Letzte Aktualisierung: 2026-02-18  
 
 ---
 
-## 📑 Overview
-Dieses Verzeichnis enthält die strategische Dokumentation der ORBIS Modellfabrik (OMF2).  
-Die Dokumente beschreiben Projektziel, Vision, Entwicklungsphasen und strategische Entscheidungen.  
+## Übersicht
+
+Strategische Dokumentation auf zwei Ebenen:
+
+- **Vision** – Konzept, Ziel, Scope (Was, Warum). Produktgrenzen, MQTT-First, Projekt-Scope.
+- **Roadmap** – Entwicklungsphasen, Prioritäten (Wie, Wann). Phasen 0–5, Meilensteine, aktuelle Schwerpunkte.
 
 ---
 
-## 🔗 Dokumente
+## Dokumente
 
-### Strategy Documents
-- [Project Overview](project-overview.md) – Projektziel, Entwicklungsphasen, Teilprojekte
-- [Development Phases](development-phases.md) – Detaillierte Phasen-Dokumentation
-- [Vision](vision.md) – Projekt-Vision und Ziele
-- [Roadmap](roadmap.md) – Strategischer Überblick aller Entwicklungsphasen
+- [Vision](vision.md) – Konzept, OSF vs. APS, Projekt-Scope, MQTT-First
+- [Roadmap](roadmap.md) – Entwicklungsphasen, aktuelle Prioritäten, Verweise
 
 ---
 
-## 📌 Hinweise
-- Alle Dokumente sind strategische Grundlagen für die OMF2-Entwicklung.  
-- Änderungen an der Strategie sollen **immer auch hier dokumentiert** werden.  
-- Ziel: Strategie bleibt konsistent mit Implementierung und aktuellen Anforderungen.
-
----
-
-*Letzte Aktualisierung: 2025-10-16*
+## Hinweise
+- Strategische Grundlagen für die OSF-Entwicklung.  
+- Änderungen an Vision/Roadmap bei Sprint-Abschluss prüfen (siehe [Dokumenten-Workflow](../sprints/sprints_README.md#-dokumenten-workflow-aktualität-sicherstellen)).

@@ -7,10 +7,10 @@
 
 ## 📋 Gelöschte Examples
 
-Die folgenden Examples wurden gelöscht, da sie bereits in OMF3 integriert wurden oder veraltet sind:
+Die folgenden Examples wurden gelöscht, da sie bereits in OSF integriert wurden oder veraltet sind:
 
-1. ✅ `examples/shopfloor-angular/` - **Integriert in OMF3**
-2. ✅ `examples/fts-analysis-angular/` - **Features integriert in OMF3**
+1. ✅ `examples/shopfloor-angular/` - **Integriert in OSF**
+2. ✅ `examples/fts-analysis-angular/` - **Features integriert in OSF**
 3. ✅ `examples/shopfloor_test_app/` - **Veraltet (OMF2/Streamlit)**
 
 ---
@@ -44,7 +44,7 @@ git show <commit-hash>:examples/shopfloor-angular/README.md
 - Mock MQTT Service
 
 **Integration Status:**
-- ✅ Shopfloor-Preview in OMF3 integriert
+- ✅ Shopfloor-Preview in OSF (`osf/apps/osf-ui`) integriert
 - ⚠️ Details Sidebar: Nicht integriert (kann aus Git wiederhergestellt werden)
 - ⚠️ Incremental Component: Nicht integriert (kann aus Git wiederhergestellt werden)
 
@@ -76,9 +76,9 @@ git show <commit-hash>:examples/fts-analysis-angular/README.md
 - FTS Mock Service
 
 **Integration Status:**
-- ✅ Track & Trace in OMF3 integriert (`track-trace.component.ts`)
-- ✅ FTS Tab in OMF3 vorhanden (`fts-tab.component.ts`)
-- ✅ Workpiece History Service in OMF3 (`workpiece-history.service.ts`)
+- ✅ Track & Trace in OSF integriert (`track-trace.component.ts`)
+- ✅ FTS Tab in OSF vorhanden (`fts-tab.component.ts`)
+- ✅ Workpiece History Service in OSF (`workpiece-history.service.ts`)
 - ⚠️ FTS Analysis Components: Teilweise integriert (kann aus Git wiederhergestellt werden)
 
 ---
@@ -97,7 +97,7 @@ git show <commit-hash>:examples/shopfloor_test_app/README.md
 - Suche mit: `git log --oneline --all -- examples/shopfloor_test_app/`
 - **Hinweis:** Streamlit-basiert, OMF2-spezifisch, veraltet
 
-**Hinweis:** Diese App war OMF2/Streamlit-basiert und ist veraltet. Die Funktionalität ist in OMF3 `shopfloor-preview` integriert.
+**Hinweis:** Diese App war OMF2/Streamlit-basiert und ist veraltet. Die Funktionalität ist in OSF `shopfloor-preview` integriert.
 
 ---
 
@@ -134,19 +134,19 @@ git checkout <commit-hash> -- examples/shopfloor-angular/
 ## 📝 Warum wurden sie gelöscht?
 
 ### `examples/shopfloor-angular/`
-- ✅ Shopfloor-Preview bereits in OMF3 integriert
+- ✅ Shopfloor-Preview bereits in OSF integriert (`osf/apps/osf-ui`)
 - ✅ JSON Layout Format kompatibel
 - ⚠️ Details Sidebar und Incremental Component nicht integriert (können bei Bedarf aus Git wiederhergestellt werden)
 
 ### `examples/fts-analysis-angular/`
-- ✅ Track & Trace in OMF3 integriert
-- ✅ FTS Tab in OMF3 vorhanden
-- ✅ Workpiece History Service in OMF3 vorhanden
+- ✅ Track & Trace in OSF integriert
+- ✅ FTS Tab in OSF vorhanden
+- ✅ Workpiece History Service in OSF vorhanden
 - ⚠️ Einzelne FTS Analysis Components können bei Bedarf aus Git wiederhergestellt werden
 
 ### `examples/shopfloor_test_app/`
 - ❌ OMF2/Streamlit-basiert (veraltet)
-- ✅ Funktionalität in OMF3 `shopfloor-preview` integriert
+- ✅ Funktionalität in OSF `shopfloor-preview` integriert
 
 ---
 
@@ -156,15 +156,15 @@ Falls Features aus den Examples benötigt werden:
 
 1. **Details Sidebar** (`examples/shopfloor-angular/src/app/details-sidebar/`)
    - Aus Git wiederherstellen
-   - In OMF3 `shopfloor-preview` integrieren
+   - In OSF `osf/apps/osf-ui` shopfloor-preview integrieren
 
 2. **Incremental Component** (`examples/shopfloor-angular/src/app/incremental/`)
    - Aus Git wiederherstellen
-   - In OMF3 integrieren (z.B. in DSP Tab)
+   - In OSF integrieren (z.B. in DSP Tab)
 
 3. **FTS Analysis Components** (`examples/fts-analysis-angular/src/app/components/`)
    - Aus Git wiederherstellen
-   - In OMF3 `fts-tab` integrieren
+   - In OSF `fts-tab` integrieren
 
 ---
 

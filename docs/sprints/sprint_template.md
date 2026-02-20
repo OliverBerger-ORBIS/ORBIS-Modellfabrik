@@ -17,6 +17,12 @@
 ### [Kategorie 2]
 - [ ] Task 3
 
+### Sprint-Abschluss (Pflicht vor Neuanlage nächster Sprint)
+- [ ] Sprint-Dokument: Status → "Abgeschlossen", Abschlussdatum setzen
+- [ ] Neuer Sprint: Aus Template anlegen, offene `[ ]` übernehmen
+- [ ] PROJECT_STATUS: Neue Tabellenzeile (Sprint, Zeitraum, ORBIS-Projekt, OSF-Phase, Externe Events)
+- [ ] Roadmap prüfen: Phasen/Daten noch stimmig? (bei Bedarf anpassen)
+
 ---
 
 ## 📋 Detail-Doku (nur wo nötig)
@@ -39,4 +45,4 @@
 
 *Letzte Aktualisierung: [Datum]*
 
-**Vorgehen:** Siehe [sprints_README.md](sprints_README.md) – eine Checkliste, keine Doppelung.
+**Vorgehen:** Siehe [sprints_README.md](sprints_README.md) – Checkliste, Dokumenten-Workflow.

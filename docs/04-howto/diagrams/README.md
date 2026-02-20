@@ -1,6 +1,6 @@
 # Diagramm-Dokumentation
 
-**Zweck:** Anleitungen und Regeln für die Erstellung von Diagrammen in der OMF-Dokumentation
+**Zweck:** Anleitungen und Regeln für die Erstellung von Diagrammen in der OSF-Dokumentation
 
 ## 📋 Verfügbare Anleitungen
 
@@ -18,7 +18,7 @@
 
 ## 🎨 Farbpalette (Übersicht)
 
-- **ORBIS (Blau):** `#e3f2fd` - OMF Dashboard, Session Manager
+- **ORBIS (Blau):** `#e3f2fd` – OSF-UI, Session Manager
 - **FT Hardware (Gelb):** `#fff8e1` - DRILL, MILL, DPS Module
 - **FT Software (Rot):** `#ffebee` - Node-RED, VDA5050 (teilweise ersetzt)
 - **External (Lila):** `#f3e5f5` - MQTT Broker, APIs
@@ -54,4 +54,4 @@ npx mmdc -i _shared/diagrams/src/example.mermaid -o _shared/diagrams/svg/example
 
 ---
 
-*Teil der OMF-Dokumentation | [Zurück zur Hauptdokumentation](../../../README.md)*
+*Teil der OSF-Dokumentation | [Zurück zur Hauptdokumentation](../../../README.md)*

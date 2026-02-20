@@ -3,7 +3,7 @@
 > **Status:** Entwurf
 > **Datum:** 2026-02-16
 
-Dieses Dokument beschreibt die Anforderungen und den Aufbau des Messetisches, der als physischer Unterbau für die ORBIS Modellfabrik dient.
+Dieses Dokument beschreibt die Anforderungen und den Aufbau des Messetisches, der als physischer Unterbau für die ORBIS SmartFactory dient.
 
 ## 1. Übersicht
 

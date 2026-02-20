@@ -1,6 +1,6 @@
 # Session Manager
 
-**Standalone MQTT Session Management Tool** für die ORBIS Modellfabrik APS
+**Standalone MQTT Session Management Tool** für die ORBIS SmartFactory APS
 
 Ein eigenständiges Streamlit-Tool zur Verwaltung, Aufzeichnung und Analyse von MQTT-Sessions.
 
@@ -240,11 +240,11 @@ session_dir = PROJECT_ROOT / "data/omf-data/sessions"
 
 ## 📄 Lizenz
 
-ORBIS Modellfabrik Internal Tool
+ORBIS SmartFactory Internal Tool
 
 ---
 
 ## 👥 Kontakt
 
-ORBIS Modellfabrik Team
+ORBIS SmartFactory Team
 

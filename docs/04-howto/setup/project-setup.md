@@ -101,11 +101,11 @@ Path(__file__).parent.parent.parent.parent.parent
 ## 📋 Next Steps
 
 Nach erfolgreichem Setup:
-1. [Repository Structure](repository-structure.md) verstehen
-2. [Development Workflow](development/workflow.md) lernen
+1. [Projekt-Struktur (OSF)](../../02-architecture/project-structure.md) verstehen
+2. [.cursorrules](../../../.cursorrules) für Agent-Vorgehensweise und Regeln
 3. [Dashboard Components](development/dashboard-components.md) entwickeln
 4. [MQTT Integration](communication/mqtt/) implementieren
 
 ---
 
-*Teil der OMF-Dokumentation | [Zurück zur README](../../README.md)*
+*Teil der OSF-Dokumentation | [Zurück zur README](../../README.md)*

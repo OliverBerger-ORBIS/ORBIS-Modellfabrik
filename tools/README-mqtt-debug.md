@@ -201,12 +201,12 @@ When reporting WebSocket connection issues, please include:
 
 ## 🔗 Related Documentation
 
-- [MQTT Client Connection Guide](../docs/04-howto/mqtt_client_connection.md)
-- [MQTT Connection Loop Prevention](../docs/03-decision-records/13-mqtt-connection-loop-prevention.md)
+- [MQTT WebSocket Debug Guide](../docs/04-howto/mqtt-websocket-debug-guide.md)
+- MQTT-Verbindungsverwaltung (OSF-UI): [MessageMonitorService Storage](../docs/03-decision-records/12-message-monitor-service-storage.md)
 - [mqtt.js GitHub](https://github.com/mqttjs/MQTT.js)
 
 ---
 
 **Version**: 1.0  
 **Last Updated**: 2025-11-20  
-**Maintainer**: ORBIS Modellfabrik Team
+**Maintainer**: ORBIS SmartFactory Team

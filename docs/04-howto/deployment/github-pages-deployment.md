@@ -132,7 +132,7 @@ Nach dem Deployment prüfen:
 ## 🔗 Verwandte Dokumentation
 
 - [Deployment Alternatives](../../deployment-alternatives.md) - Weitere Deployment-Optionen
-- [Build Commands Guide](../../analysis/build-commands-guide.md) - Build-Konfiguration Details
+- [Build Commands Guide](../07-analysis/build-commands-guide.md) - Build-Konfiguration Details
 
 ---
 

@@ -1,4 +1,4 @@
-# ORBIS Modellfabrik Tests
+# ORBIS SmartFactory Tests
 
 Dieses Verzeichnis enthält Tests für die aktiven Komponenten des Projekts.
 

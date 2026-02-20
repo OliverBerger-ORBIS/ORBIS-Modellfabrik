@@ -49,4 +49,4 @@ npx mmdc -i diagrams/src/example.mermaid -o diagrams/svg/example.svg
 
 ---
 
-*Teil der OMF-Dokumentation | [Zurück zur README](../../README.md)*
+*Teil der OSF-Dokumentation | [Zurück zur README](../../README.md)*

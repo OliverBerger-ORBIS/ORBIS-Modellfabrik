@@ -2,12 +2,11 @@
 
 Version: 0.1 (Draft)  
 Last updated: 2025-09-14  
-Author: OMF Development Team  
 
 ---
 
 ## 📑 Overview
-Dieses Dokument beschreibt die Namenskonventionen im OMF Projekt.  
+Dieses Dokument beschreibt die Namenskonventionen im OSF-Projekt. Siehe [Glossary](../99-glossary.md) für Konzept-Begriffe (OSF, FMF, APS).  
 
 ---
 

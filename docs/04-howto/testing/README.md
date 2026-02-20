@@ -25,13 +25,6 @@
 
 **Status:** ✅ Aktiv seit 2025-12-13
 
-### 3. [Integration Testing Workflow](integration-testing-workflow.md)
-**Integration Tests für Component-Service Integration**
-
-- Integration Test Patterns
-- Component-Service Integration Tests
-- Test-Setup für komplexe Komponenten
-
 ---
 
 ## 🚀 Quick Start
@@ -42,8 +35,8 @@
 # Alle Tests
 npm test
 
-# Nur ccu-ui Tests
-npm run test:ccu-ui
+# Nur OSF-UI Tests
+nx test osf-ui
 
 # Mit Coverage Report
 npm run test:coverage
@@ -59,7 +52,7 @@ npm run test:coverage:check
 npm run test:coverage
 
 # HTML Report öffnen (macOS)
-open coverage/ccu-ui/index.html
+open coverage/osf-ui/index.html
 ```
 
 ---
@@ -95,9 +88,8 @@ open coverage/ccu-ui/index.html
 
 ## 🔗 Verwandte Dokumentation
 
-- [Test Coverage Plan](../../analysis/code-optimization-test-coverage-plan.md)
-- [Test Coverage Status](../../analysis/test-coverage-status.md)
-- [Test Coverage Summary](../../analysis/test-coverage-summary.md)
+- [Test Coverage Status](../07-analysis/test-coverage-status.md)
+- [Test Coverage Summary](../07-analysis/test-coverage-summary.md)
 
 ---
 

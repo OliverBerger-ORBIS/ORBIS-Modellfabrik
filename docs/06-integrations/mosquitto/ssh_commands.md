@@ -97,7 +97,7 @@ scp ff22@192.168.0.100:/var/log/mosquitto/mosquitto_aps_analysis.log /Users/oliv
 cd /Users/oliver/Projects/ORBIS-Modellfabrik/data/aps-data/mosquitto/
 
 # Log-Datei filtern (periodische Topics reduzieren)
-python ../../docs/analysis/mqtt/log_filter_script.py mosquitto_aps_analysis.log mosquitto_aps_analysis_filtered.log
+python ../../docs/06-integrations/mosquitto/log_filter_script.py mosquitto_aps_analysis.log mosquitto_aps_analysis_filtered.log
 ```
 
 ### 3. Log-Datei analysieren

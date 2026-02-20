@@ -4,6 +4,8 @@
 **Status:** [Proposed/Accepted/Deprecated]  
 **Kontext:** [Warum diese Entscheidung nötig war]
 
+> **Vorgehensweise:** Wann/Wie ein Decision Record erstellt wird → [README – Vorgehensweise](README.md#vorgehensweise-wann-wird-ein-decision-record-erstellt)
+
 ---
 
 ## Entscheidung

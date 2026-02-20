@@ -41,7 +41,7 @@ Diese Scripts:
 4. Pushen Commit und Tag (via `postversion` hook)
 
 ### Automatische Version-Injection
-Während des Builds (GitHub Actions) wird die Version automatisch in `omf3/apps/ccu-ui/src/environments/version.ts` injiziert:
+Während des Builds (GitHub Actions) wird die Version automatisch in `osf/apps/osf-ui/src/environments/version.ts` injiziert:
 
 ```typescript
 export const VERSION = {

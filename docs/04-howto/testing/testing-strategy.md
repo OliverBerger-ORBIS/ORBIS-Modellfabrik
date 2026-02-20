@@ -15,7 +15,7 @@ Begründung: Tests spiegeln das gewünschte Verhalten wider. Wenn sich die fachl
 
 **Verwandte Dokumentation:**
 - [Coverage Monitoring](coverage-monitoring.md) - Test Coverage Monitoring Setup
-- [Integration Testing Workflow](integration-testing-workflow.md) - Integration Tests
+- Integration Tests: siehe Testing-Strategie und Projekt-spezifische Patterns
 
 ## 🎯 Test-Philosophie
 
@@ -73,7 +73,7 @@ addopts = --cov=omf --cov-report=html --cov-report=term
 ### **Test-Directory Structure**
 ```
 tests_orbis/
-├── test_omf/                    # OMF-spezifische Tests
+├── test_osf/                    # OSF-spezifische Tests
 │   ├── test_dashboard/          # Dashboard-Tests
 │   ├── test_tools/              # Tools-Tests
 │   └── test_aps_integration/    # APS-Integration-Tests
@@ -115,7 +115,7 @@ def mock_streamlit():
 
 ### **UI-Test-Checkliste**
 - [ ] **Session Manager:** Graph-Visualisierung, alle Tabs funktional
-- [ ] **OMF-Dashboard:** Module Control, alle Komponenten laden
+- [ ] **OSF-UI:** Module Control, alle Komponenten laden
 - [ ] **Logging-System:** Keine Spam-Logs, saubere Ausgabe
 - [ ] **MQTT-Integration:** Nachrichten werden korrekt angezeigt
 - [ ] **APS-Integration:** APS-Tabs funktionieren
@@ -243,4 +243,4 @@ def test_stock_manager_inventory_update():
 
 ---
 
-*Teil der OMF-Dokumentation | [Zurück zur README](../../README.md)*
+*Teil der OSF-Dokumentation | [Zurück zur README](../../README.md)*

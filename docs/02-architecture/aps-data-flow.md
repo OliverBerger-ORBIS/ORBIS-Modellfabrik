@@ -1,37 +1,35 @@
-# APS Data Flow Architecture - Chat-A Version
+# APS Data Flow Architecture
 
-> **Chat-A Bearbeitung:** Formale Bereinigung mit korrekten Phasen-Informationen  
-> **Datum:** 2025-09-25  
-> **Status:** Neue Version mit OMF-Style-Guide und korrekten Phasen
+> **Autoritative Quelle für MQTT/APS:** [fischertechnik-official/](../06-integrations/fischertechnik-official/) – Abgleich empfohlen.
 
 ---
 
-## 📋 Architektur-Phasen (Korrekte Definition)
+## 📋 Architektur-Phasen
 
 ### **Phase 0: APS "as IS" - Fischertechnik-System verstehen**
 - **Status:** ✅ Abgeschlossen
-- **Ziel:** Das bestehende Fischertechnik APS-System vollständig verstehen
+- **Ziel:** Das bestehende Fischertechnik APS-System (FMF + APS) verstehen
 - **Erreicht:** APS-Ecosystem dokumentiert, Mosquitto-Analyse, APS-NodeRED Flows analysiert
 
-### **Phase 1: OMF-Dashboard mit APS-CCU Frontend-Funktionalität**
+### **Phase 1: OSF-UI mit APS-CCU Frontend-Funktionalität**
 - **Status:** 🔄 In Bearbeitung
-- **Ziel:** APS-Dashboard Funktionalität im OMF-Dashboard nachbauen
+- **Ziel:** APS-Dashboard Funktionalität in der OSF-UI nachbauen
 - **Erreicht:** APS Overview Tab, APS Control Tab, APS Steering Tab, APS Orders Tab
 - **Aktuell:** Sensor-Daten Integration testen, APS Configuration Tab implementieren
 
-### **Phase 2: OMF-Dashboard mit APS-NodeRED Funktionalität**
+### **Phase 2: OSF-UI mit APS-NodeRED Funktionalität**
 - **Status:** ⏳ Geplant
-- **Ziel:** APS-NodeRED Gateway-Funktionalität im OMF-Dashboard integrieren
-- **Geplant:** MQTT ↔ OPC-UA Gateway, VDA 5050 FTS-Standard, Registry-basierte Konfiguration
+- **Ziel:** APS-NodeRED Gateway-Funktionalität in der OSF-UI integrieren
+- **Geplant:** MQTT ↔ OPC-UA Gateway, VDA 5050 FTS-Standard
 
-### **Phase 3: Erweiterungen (Zukünftige Entwicklung)**
+### **Phase 3: Erweiterungen**
 - **Status:** ⏳ Geplant
-- **Ziel:** OMF-System um erweiterte Funktionalitäten ausbauen
-- **Geplant:** DSP-Anbindung, ORBIS Cloud, SAP/ERP, KI-Use-cases, erweiterte Analytics
+- **Ziel:** OSF-System um erweiterte Funktionalitäten ausbauen
+- **Geplant:** DSP-Anbindung, ORBIS Cloud, SAP/ERP, KI-Use-cases
 
 ---
 
-## 📊 Datenfluss-Diagramm (Phase 1: OMF-Dashboard Integration)
+## 📊 Datenfluss-Diagramm (Phase 1)
 
 ```mermaid
 %%{init: {'theme':'neutral'}}%%
@@ -60,7 +58,7 @@ classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
     
     subgraph "Data Consumers"
         FT_DASH[Fischertechnik Dashboard<br/>192.168.0.100<br/>Angular PWA]:::ftsoftware
-        OMF_DASH[OMF Dashboard<br/>Streamlit App]:::orbis
+        OSF_UI[OSF-UI<br/>Angular / OMF2 Streamlit]:::orbis
         SESSION[Session Manager<br/>Replay/Recording]:::orbis
         API[REST API<br/>External Systems]:::external
     end
@@ -77,11 +75,11 @@ classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
     CLOUD -->|Display| FT_DASH
     CLOUD -->|API| API
     LOCAL -->|Analyze| SESSION
-    MQTT -->|Real-time| OMF_DASH
+    MQTT -->|Real-time| OSF_UI
     MQTT -->|Record| SESSION
     
     FT_DASH -->|User Interaction| CG
-    OMF_DASH -->|Registry Commands| MQTT
+    OSF_UI -->|MQTT Commands| MQTT
     SESSION -->|Replay| MQTT
     API -->|External Commands| CG
 ```
@@ -259,19 +257,6 @@ Module → MQTT → Session Manager → Logs
 
 ---
 
-## 📋 Chat-A Änderungen
-
-### ✅ **Formale Bereinigung:**
-- **Phasen-Definition korrigiert** - Phase 0/1/2/3 statt Phase 1/2
-- **OMF-Style-Guide angewendet** - Konsistente Farben (Blau=ORBIS, Gelb=FT-Hardware, Rot=FT-Software, Grau=External)
-- **Namenskonventionen standardisiert** - APS-NodeRED, TXT-DPS, TXT-AIQS, TXT-FTS, mosquitto
-- **Mermaid-Diagramme standardisiert** - classDef-Definitionen, konsistente Farbzuordnung
-
-### ❌ **NICHT geändert (Chat-B Aufgabe):**
-- Inhaltliche Architektur-Updates
-- Aktuelle Implementierungsdetails
-- Technische Korrekturen
-
 ---
 
-**"Daten fließen über MQTT, werden in APS-NodeRED verarbeitet und in der Cloud visualisiert."** 🚀
+**"Daten fließen über MQTT, werden in APS-NodeRED verarbeitet und in der Cloud visualisiert."**

@@ -470,7 +470,7 @@ Für Production-Deployment können Sie:
 
 - [FTS Integration](./TXT-FTS/README.md) - FTS-Steuerung und VDA 5050
 - [MQTT Topic Conventions](./00-REFERENCE/mqtt-topic-conventions.md) - Topic-Naming-Patterns
-- [Pub/Sub Analysis](../../archive/analysis/aps-mqtt-logs/pub-sub-pattern-analysis-2025-09-28.md) - MQTT-Kommunikationsmuster
+- [00-REFERENCE - MQTT Topic Conventions](../00-REFERENCE/mqtt-topic-conventions.md) - MQTT-Kommunikationsmuster
 
 ## Lizenz
 

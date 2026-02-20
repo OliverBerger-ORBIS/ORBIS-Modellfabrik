@@ -27,7 +27,7 @@ graph TD
     
     D -->|Erkennt| G[Message Patterns]
     E -->|Erstellt| H[JSON Schemas]
-    F -->|Testet| I[OMF Dashboard]
+    F -->|Testet| I[OSF-UI]
     
     style A fill:#fff8e1
     style B fill:#90caf9,stroke:#1976d2,stroke-width:3px
@@ -45,7 +45,7 @@ graph TD
 ### **Farbnuancen-Erklärung:**
 - **🔵 Dunkelblau (`#90caf9`):** Session Recorder, Topic Recorder - **Zentrale Komponenten** (Aufnahme)
 - **🔵 Mittelblau (`#bbdefb`):** Session Analysis, Schema Analysis, Replay Station - **Kern-Funktionen**
-- **🔵 Hellblau (`#e3f2fd`):** Message Patterns, JSON Schemas, OMF Dashboard - **Ergebnisse/Output**
+- **🔵 Hellblau (`#e3f2fd`):** Message Patterns, JSON Schemas, OSF-UI - **Ergebnisse/Output**
 - **🟡 Gelb (`#fff8e1`):** APS-Fabrik - **FT Hardware (Input)**
 - **⚪ Grau (`#f5f5f5`):** Session Files, Topic Files - **Daten-Speicher**
 
@@ -94,7 +94,7 @@ streamlit run omf/helper_apps/session_manager/session_manager.py
 
 ## 🔗 Verwandte Dokumentation
 
-- [**OMF Dashboard**](../../development/dashboard-components.md) - Haupt-Dashboard
+- [**OSF-UI**](../../development/dashboard-components.md) - Haupt-Dashboard
 - [**MQTT Integration**](../../communication/mqtt/) - MQTT-Kommunikation
 - [**Template System**](../../../02-architecture/message-template-system.md) - Message-Templates
 - [**Mermaid Diagramm Regeln**](../../diagrams/cursor-ai-mermaid-rules.md) - Cursor AI Regeln für Diagramme

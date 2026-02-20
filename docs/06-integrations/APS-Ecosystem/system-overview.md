@@ -91,7 +91,7 @@ sequenceDiagram
     participant TXT_DPS as TXT-DPS Controller
     participant TXT_FTS as TXT-FTS Controller
     
-    Note over DASHBOARD,TXT_FTS: APS-System (Phase 0) - "as IS"<br/>TXT-Controller senden Connect + Will Messages<br/>Dashboard: APS (192.168.0.100) → OMF (172.18.0.5)
+    Note over DASHBOARD,TXT_FTS: APS-System (Phase 0) - "as IS"<br/>TXT-Controller senden Connect + Will Messages<br/>Dashboard: APS (192.168.0.100) → OSF (172.18.0.5)
     
     %% Initiale Verbindungen
     DASHBOARD->>MQTT_BROKER: Connect (QoS 2)

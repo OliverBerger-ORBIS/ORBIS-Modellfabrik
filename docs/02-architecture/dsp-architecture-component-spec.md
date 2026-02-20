@@ -379,7 +379,7 @@ In Kommentaren oder einer kurzen README-Sektion dokumentieren:
 
 ### 18. Asset-Pfade
 
-- **Absolute Imports für externe Libraries:** `from '@omf3/gateway'` ✅
+- **Absolute Imports für externe Libraries:** `from '@osf/gateway'` ✅
 - **Relative Imports für Paket-interne Module:** `from './component'` ✅
 - **Asset-Pfade:** Über `DETAIL_ASSET_MAP` (wie bestehende Komponente) ✅
 

@@ -1,4 +1,4 @@
-# Mermaid Style Guide - ORBIS Modellfabrik
+# Mermaid Style Guide – ORBIS SmartFactory
 
 **Zielgruppe:** Entwickler & Dokumentation  
 **Letzte Aktualisierung:** 20.09.2025
@@ -29,8 +29,8 @@
 * Rhombus = Entscheidung/Router
 * Abgerundetes Rechteck = Akteur/Gerät
 
-### **Farben (Color-blind-safe mit OMF-Farbpalette):**
-* **Blau** = ORBIS-Komponenten (OMF Dashboard, Session Manager, Helper Apps)
+### **Farben (Color-blind-safe mit OSF-Farbpalette):**
+* **Blau** = ORBIS-Komponenten (OSF Dashboard, Session Manager, Helper Apps)
 * **Gelb** = Fischertechnik Hardware (DRILL, MILL, DPS Module, TXT Controller, RPi)
 * **Rot** = Fischertechnik Software (Node-RED, VDA5050 - wird teilweise ersetzt)
 * **Grau** = Externe/Neutrale Systeme (MQTT Broker, Datenbanken, APIs)
@@ -62,7 +62,7 @@ Wählt **eine** Methode:
 
 ## 🎨 Mermaid-Basis (einmalige Styles)
 
-### **Style-Klassen im Diagramm (OMF-Farbpalette):**
+### **Style-Klassen im Diagramm (OSF-Farbpalette):**
 
 ```mermaid
 %%{init: {'theme':'neutral'}}%%
@@ -76,7 +76,7 @@ classDef removed fill:#ffebee,stroke:#ef5350,stroke-dasharray: 5 3,color:#7a1a14
 ```
 
 ### **Farbzuordnung:**
-- **ORBIS (Blau):** OMF Dashboard, Session Manager, MessageGenerator, Helper Apps
+- **ORBIS (Blau):** OSF Dashboard, Session Manager, MessageGenerator, Helper Apps
 - **FT Hardware (Gelb):** DRILL, MILL, DPS Module, TXT Controller, Raspberry Pi
 - **FT Software (Rot):** Node-RED Flows, VDA5050 Implementation, Legacy Software (teilweise ersetzt)
 - **External/Neutral (Grau):** MQTT Broker, Datenbanken, APIs, ERP/MES
@@ -140,7 +140,7 @@ NR -->|OPC-UA access| PLC
 
 ## 📋 Beispiel: **Sequenzdiagramm** (MQTT-Kommandokette)
 
-**Hinweis:** Sequenzdiagramme verwenden standardmäßig eine einheitliche Farbe für alle Akteure. Für OMF-Diagramme können wir die Farben optional anpassen, aber das ist nicht Standard.
+**Hinweis:** Sequenzdiagramme verwenden standardmäßig eine einheitliche Farbe für alle Akteure. Für OSF-Diagramme können wir die Farben optional anpassen, aber das ist nicht Standard.
 
 ```mermaid
 sequenceDiagram
@@ -211,4 +211,4 @@ UI -->|publish commands| MQTT
 
 ---
 
-*Teil der OMF-Dokumentation | [Zurück zur Hauptdokumentation](../../../README.md)*
+*Teil der OSF-Dokumentation | [Zurück zur Hauptdokumentation](../../../README.md)*

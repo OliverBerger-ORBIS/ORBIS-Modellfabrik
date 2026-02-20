@@ -5,7 +5,7 @@
 > **🔗 Verwandte Dokumentation:**
 > - **[APS Overview](../aps/README.md)** - Fischertechnik Agile Production Simulation
 > - **[Node-RED Integration](../node-red/README.md)** - Gateway zwischen OPC-UA und MQTT
-> - **[System Context](../../02-architecture/system-context.md)** - Gesamtarchitektur
+> - **[Architektur-Übersicht](../../02-architecture/README.md)** – Gesamtarchitektur
 
 Die Steuerung des fahrerlosen Transportsystems (FTS) bzw. Automated Guided Vehicle (AGV) nach dem VDA 5050 Standard erfolgt über MQTT-Topics (`fts/v1/ff/5iO4/*`).
 

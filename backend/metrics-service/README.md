@@ -1,6 +1,6 @@
 # OMF Metrics Service
 
-MQTT to InfluxDB metrics collection service for the ORBIS Modellfabrik.
+MQTT to InfluxDB metrics collection service for the ORBIS SmartFactory.
 
 ## Overview
 

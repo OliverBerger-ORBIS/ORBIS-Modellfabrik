@@ -1,6 +1,6 @@
-# 🔐 Orbis Modellfabrik - Credentials & Access
+# 🔐 ORBIS SmartFactory – Credentials & Access
 
-This document contains default login credentials and access information for the Orbis Modellfabrik system components.
+This document contains default login credentials and access information for the ORBIS SmartFactory system components.
 
 ## ⚠️ Security Notice
 

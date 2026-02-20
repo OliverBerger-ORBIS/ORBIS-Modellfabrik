@@ -6,7 +6,7 @@ Diese Konfigurationsdateien sind für die lokale Entwicklungsumgebung gedacht, w
 
 - **Session Manager**: Lokale MQTT-Broker für Session-Aufnahme und -Replay
 - **Replay Station**: Wiedergabe von aufgezeichneten Sessions
-- **OMF3 Dashboard**: Testing ohne reale Hardware-Verbindung
+- **OSF Dashboard**: Testing ohne reale Hardware-Verbindung
 - **Lokale Entwicklung**: Entwicklung und Testing ohne APS-Netzwerk
 
 ## 📋 Verfügbare Konfigurationen

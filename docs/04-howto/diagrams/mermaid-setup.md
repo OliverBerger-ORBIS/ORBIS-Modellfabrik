@@ -58,7 +58,7 @@ docs/
 
 ## 🎨 Styling-Standards
 
-### **OMF-Farbpalette (4-Farb-System):**
+### **OSF-Farbpalette (4-Farb-System):**
 ```mermaid
 graph TD
     A[ORBIS Komponenten] -->|Steuert| B[FT Hardware]
@@ -72,7 +72,7 @@ graph TD
 ```
 
 ### **Standard-Farben:**
-- **ORBIS-Komponenten:** `#e3f2fd` (Sehr helles Blau) - OMF Dashboard, Session Manager
+- **ORBIS-Komponenten:** `#e3f2fd` (Sehr helles Blau) - OSF Dashboard, Session Manager
 - **Fischertechnik Hardware (BEHALTEN):** `#fff8e1` (Sehr helles Gelb) - DRILL, MILL, DPS Module
 - **Fischertechnik Software (ERSETZEN):** `#ffebee` (Sehr helles Rot) - Node-RED, VDA5050
 - **Externe Systeme:** `#f3e5f5` (Sehr helles Lila) - MQTT Broker, Datenbanken
@@ -131,7 +131,7 @@ graph TD
 
 1. **Markdown-Datei erstellen:** `.md` Extension verwenden
 2. **Mermaid-Code in Code-Block** schreiben
-3. **Farben anwenden:** OMF-Farbpalette verwenden
+3. **Farben anwenden:** OSF-Farbpalette verwenden
 4. **Styling:** Konsistent mit Standards
 5. **Naming:** Kebab-case für Dateien
 
@@ -163,4 +163,4 @@ graph TD
 
 ---
 
-*Teil der OMF-Dokumentation | [Zurück zur Hauptdokumentation](../../../README.md)*
+*Teil der OSF-Dokumentation | [Zurück zur Hauptdokumentation](../../../README.md)*

@@ -1,6 +1,6 @@
 # 🔴 Node-RED Integration
 
-Node-RED Integration für die ORBIS Modellfabrik - Backup, Restore und Management der Node-RED Konfiguration.
+Node-RED Integration für die ORBIS SmartFactory - Backup, Restore und Management der Node-RED Konfiguration.
 
 ## 📁 Verzeichnisstruktur
 
@@ -145,7 +145,7 @@ ssh pi@192.168.0.100 "systemctl --user status nodered"
 - [Node-RED Integration Guide](../../docs/06-integrations/node-red/node-red.md)
 - [Node-RED Flows Overview](../../docs/06-integrations/node-red/flows-overview.md)
 - [Node-RED State Machine](../../docs/06-integrations/node-red/state-machine.md)
-- [Fischertechnik Dokumentation](../../docs/analysis/fischertechnik-dokumentation-analyse.md)
+- [Fischertechnik Dokumentation](../../docs/06-integrations/FISCHERTECHNIK-OFFICIAL.md)
 - [System Context](../../docs/02-architecture/system-context.md)
 
 ## ⚠️ Wichtige Hinweise

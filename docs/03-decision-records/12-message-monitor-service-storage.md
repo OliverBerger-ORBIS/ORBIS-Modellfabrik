@@ -114,7 +114,7 @@ const NO_PERSIST_TOPICS = ['/j1/txt/1/i/cam'];
 
 ### Datei
 
-`omf3/apps/ccu-ui/src/app/services/message-monitor.service.ts`
+`osf/apps/osf-ui/src/app/services/message-monitor.service.ts`
 
 ### Wichtige Konstanten
 
@@ -187,5 +187,5 @@ Die aktuelle Storage-Größe wird intern in `getStorageSize()` berechnet und vor
 
 ---
 
-*Entscheidung getroffen von: OMF-Entwicklungsteam*
+*Entscheidung getroffen von: Projektteam*
 

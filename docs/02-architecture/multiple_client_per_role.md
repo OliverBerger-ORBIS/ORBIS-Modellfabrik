@@ -1,8 +1,8 @@
-# Architektur: Mehrere MQTT-Clients für OMF Dashboard-Komponenten
+# Architektur: Mehrere MQTT-Clients für OSF-UI-Komponenten
 
 ## Motivation
 
-Im Rahmen der Steuerung der APS-Fabrik mit dem OMF Dashboard sollen verschiedene Systemrollen (Operator, Supervisor, Admin etc.) klar abgegrenzt Nachrichten senden und empfangen können.  
+Im Rahmen der Steuerung der APS-Fabrik mit der OSF-UI sollen verschiedene Systemrollen (Operator, Supervisor, Admin etc.) klar abgegrenzt Nachrichten senden und empfangen können.  
 Um Wartbarkeit, Sicherheit und Erweiterbarkeit zu gewährleisten, favorisieren wir eine **Trennung pro Rolle**, d.h. für jede Rolle wird ein eigener MQTT-Client als Singleton implementiert.
 
 **Vorteile dieses Ansatzes:**

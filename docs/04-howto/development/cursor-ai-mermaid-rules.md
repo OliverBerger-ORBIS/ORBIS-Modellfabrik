@@ -5,12 +5,12 @@
 
 ## 🎯 Ziel
 
-Konsistente Mermaid-Diagramme für die OMF-Dokumentation erstellen mit klarer Farbzuordnung zwischen ORBIS-Komponenten, Fischertechnik Hardware/Software und externen Systemen.
+Konsistente Mermaid-Diagramme für die OSF-Dokumentation erstellen mit klarer Farbzuordnung zwischen ORBIS-Komponenten, Fischertechnik Hardware/Software und externen Systemen.
 
 ## 🎨 Farbpalette (4-Farb-System)
 
 ### **1. ORBIS-Komponenten (Blau-Ton)**
-- `#e3f2fd` - Sehr helles Blau (OMF Dashboard, Session Manager)
+- `#e3f2fd` - Sehr helles Blau (OSF Dashboard, Session Manager)
 - `#bbdefb` - Mittleres Blau (Helper Apps, MessageGenerator)
 - `#90caf9` - Dunkleres Blau (Kritische ORBIS-Komponenten)
 
@@ -91,11 +91,11 @@ graph TD
 
 ### **Beispiel 2: Ziel-Architektur**
 ```markdown
-# Ziel-Architektur mit OMF
+# Ziel-Architektur mit OSF
 
 ```mermaid
 graph TD
-    A[OMF Dashboard] -->|Steuert| B[DRILL Module]
+    A[OSF Dashboard] -->|Steuert| B[DRILL Module]
     A -->|Steuert| C[MILL Module]
     A -->|Läuft auf| D[Raspberry Pi]
     
@@ -127,4 +127,4 @@ graph TD
 
 ---
 
-*Teil der OMF-Dokumentation | [Zurück zur Hauptdokumentation](../../../README.md)*
+*Teil der OSF-Dokumentation | [Zurück zur Hauptdokumentation](../../../README.md)*

@@ -1,5 +1,8 @@
 # GitHub Agent Instructions - PR-17 Message Monitor Service
 
+> ⚠️ **HISTORISCH** – PR-17 und PR-18 sind umgesetzt. Pfade: `omf3/` → `osf/`, `omf2/` entfernt.  
+> Aktuell: `osf/apps/osf-ui`, `osf/libs/gateway`, `osf/libs/business`.
+
 ## 🎯 Für den GitHub Agent
 
 **Branch:** `PR-17-message-monitor-service`  

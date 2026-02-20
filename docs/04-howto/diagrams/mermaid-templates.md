@@ -1,4 +1,4 @@
-# 🎨 Mermaid Templates - OMF Standard-Templates
+# 🎨 Mermaid Templates - OSF Standard-Templates
 
 **Zielgruppe:** Entwickler & Cursor AI  
 **Zweck:** Automatische Regel-Einhaltung durch vorgefertigte Templates
@@ -22,7 +22,7 @@ graph LR
 ```
 
 **Verwendung:**
-- **A (ORBIS):** OMF-Dashboard, Session Manager, Helper Apps
+- **A (ORBIS):** OSF-Dashboard, Session Manager, Helper Apps
 - **B (FT Hardware):** DRILL, MILL, DPS Module, TXT Controller, RPi
 - **C (External/Neutral):** MQTT Broker, Datenbanken, APIs
 
@@ -101,7 +101,7 @@ style [Zentrale Komponente] fill:#90caf9,stroke:#1976d2,stroke-width:3px  # Dunk
 style [Kern-Komponente] fill:#bbdefb  # Mittelblau
 style [Standard-Komponente] fill:#e3f2fd  # Hellblau
 ```
-- **Dunkelblau:** Zentrale/Haupt-Komponenten (Session Analysis, OMF Dashboard)
+- **Dunkelblau:** Zentrale/Haupt-Komponenten (Session Analysis, OSF Dashboard)
 - **Mittelblau:** Kern-Komponenten (Timeline, Graph, Statistics)
 - **Hellblau:** Standard-Komponenten (UI, Helper Apps, MessageGenerator)
 
@@ -138,7 +138,7 @@ style [Komponente] fill:#f5f5f5  # External/Neutral Grau
 1. **Passendes Template** auswählen
 2. **Komponenten-Namen** ersetzen
 3. **Verbindungen** anpassen
-4. **Farben** nach OMF-Standards verwenden
+4. **Farben** nach OSF-Standards verwenden
 
 ### **Automatische Regel-Einhaltung:**
 - **Maximal 4 Farben** pro Diagramm
@@ -156,11 +156,11 @@ style [Komponente] fill:#f5f5f5  # External/Neutral Grau
 
 - [ ] Passendes Template gewählt?
 - [ ] Komponenten-Namen ersetzt?
-- [ ] OMF-Farbpalette verwendet?
+- [ ] OSF-Farbpalette verwendet?
 - [ ] Maximal 4 Farben?
 - [ ] Hardware vs Software unterschieden?
 - [ ] Keine Kommentare in style-Zeilen?
 
 ---
 
-*Teil der OMF-Dokumentation | [Zurück zu Mermaid-Regeln](cursor-ai-mermaid-rules.md)*
+*Teil der OSF-Dokumentation | [Zurück zu Mermaid-Regeln](cursor-ai-mermaid-rules.md)*

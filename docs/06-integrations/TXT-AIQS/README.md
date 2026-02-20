@@ -43,7 +43,7 @@ integrations/TXT-AIQS/
 - `archives/` = Varianten als `.ft` Archive (für Deployment)
 - `workspaces/` = Entpackte Versionen (für Code-Analyse)
 
-**Siehe:** [Decision Record](../../03-decision-records/18-txt-controller-deployment.md) für Details zur Verzeichnis-Struktur
+**Siehe:** [Decision Record](../../03-decision-records/17-txt-controller-deployment.md) für Details zur Verzeichnis-Struktur
 
 **Status (22.12.2025):**
 - ✅ Vollständige Source-Dateien vom Controller kopiert
@@ -109,7 +109,7 @@ integrations/TXT-AIQS/
 
 **Siehe:** 
 - [How-To: TXT-Controller Deployment](../../04-howto/txt-controller-deployment.md) - Vollständige Anleitung
-- [Decision Record: TXT-Controller Deployment](../../03-decision-records/18-txt-controller-deployment.md) - Entscheidungsgrundlagen
+- [Decision Record: TXT-Controller Deployment](../../03-decision-records/17-txt-controller-deployment.md) - Entscheidungsgrundlagen
 
 **Kurzzusammenfassung:**
 - ✅ **ROBO Pro Coding:** Workflow etabliert (06.01.2026)

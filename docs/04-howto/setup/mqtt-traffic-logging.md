@@ -1,7 +1,7 @@
 # MQTT Traffic Logging Guide - Fischertechnik APS
 
-**Status:** Aktive Dokumentation für OMF3  
-**Quelle:** Archiviert von `docs/archive/04-howto_omf_legacy/communication/mqtt/setup/traffic-logging-guide.md`
+**Status:** Aktive Dokumentation für OSF  
+**Quelle:** Aus Legacy-Archiv übernommen (04-howto_omf_legacy entfernt 2026-02-18)
 
 Dieser Guide erklärt, wie du den MQTT-Traffic zwischen Fischertechnik Cloud und lokaler APS überwachen und analysieren kannst.
 

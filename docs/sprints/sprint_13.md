@@ -14,7 +14,7 @@
   - ⏳ Implementierung der Use-Case-Bibliothek ausstehend (separate Route, nicht im DSP-Tab)
   - ⏳ Review & Finalisierung der Artikel-Drafts ausstehend
 - [x] Angular-App Resizing-Optimierung abschließen (aus Sprint 12 übernommen) - [Task-Beschreibung](../04-howto/presentation/app-resizing-optimization-task.md)
-- [x] Projekt-Phasenabschlussbericht (Grundlage: [Sprints 1-12 Bericht](projekt_phasen_abschlussbericht_sprints_01-12.md) - Finalisierung in externem Tool)
+- [x] Projekt-Phasenabschlussbericht (Grundlage: [Sprints 1-12 Bericht](ORBIS-Projekt-Abschlussbericht_sprints_01-12.md) - Finalisierung in externem Tool)
 - [x] Projektantrag für neue Phase Q1 + Q2 2026
 - [x] Testen der TXT-AIQS Varianten für Check_quality nach Deployment (aus Sprint 12 übernommen)
 - [x] OBS-Setup auf Windows-Rechner prüfen und dokumentierte Dimensionen verifizieren

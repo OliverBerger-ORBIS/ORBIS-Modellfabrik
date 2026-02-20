@@ -1,11 +1,24 @@
-# OSF (ORBIS Shopfloor) - Cursor AI Regeln
+# OSF (ORBIS SmartFactory) - Cursor AI Regeln
+
+## AGENT-VORGEHENSWEISE (VOR JEDER AUFGABE)
+
+**Bei jeder neuen Anforderung:**
+1. **Zuerst zurückmelden:** Was hast du verstanden? Was planst du zu tun?
+2. **Warten auf "go":** Keine Implementierung, bis User "go" oder "ja" zum Plan sagt.
+3. **Nach "go":** Implementieren ohne weitere Freigaben – alle geplanten Schritte ausführen.
+4. **Ausnahme:** `git commit` und `git push` nur nach expliziter User-Freigabe.
+
+**Nicht:** Sofort mit search_replace/write/delete beginnen.
+**Nicht:** Nach jeder kleinen Änderung erneut fragen.
+
+---
 
 ## 🚨 KRITISCHE VERBOTE (POSITION 1 - HÖCHSTE PRIORITÄT)
 
 ### Angular-App-Verbot (ABSOLUT KRITISCH)
 - **NIEMALS Angular-Apps starten ohne User-Freigabe:** `nx serve osf-ui` ❌
 - **Grund:** Verursacht Port-Konflikte, Development-Server-Probleme
-- **Verboten:** `nx serve ccu-ui` ohne explizite User-Bestätigung
+- **Verboten:** `nx serve osf-ui` ohne explizite User-Bestätigung
 - **Erlaubt:** Nur User startet Angular-Apps
 - **Regel:** Agent startet KEINE Angular-Apps ohne explizite Freigabe!
 
@@ -27,7 +40,6 @@
 
 ### Projekt-Struktur
 - **Aktive Sourcen:** `osf/` (OSF Angular Dashboard - aktuell in Entwicklung)
-- **Legacy Sourcen:** `omf2/` (OMF2 Streamlit Dashboard - wird durch OSF ersetzt)
 - **Helper-Apps:** `session_manager/` (Session-Replay Helper-App)
 - **Dokumentation:** `docs/` (Alle Projekt-Dokumente)
 - **Session-Daten:** `data/omf-data/sessions/` (SQLite + Log-Dateien)
@@ -49,7 +61,7 @@
 - **Test-Imports:** Absolute Imports auch in Tests verwenden
 - **Test-Namen:** `*.spec.ts` oder `*_test.ts`
 - **Test-Ausführung:** `nx test <project>` oder `nx test --all`
-- **Pre-commit:** OMF3 Tests MÜSSEN vor jedem Commit bestehen
+- **Pre-commit:** OSF Tests MÜSSEN vor jedem Commit bestehen
 - **Virtual Environment:** Für Python-Tests (Session Manager) immer `.venv` aktivieren
 
 ### OSF-spezifische Regeln
@@ -60,11 +72,9 @@
 - **Component Lifecycle:** OnInit, OnDestroy korrekt implementieren
 
 ### Entwicklungsprozess-Regeln
-- **Neue Anforderungen:** Erst Analyse, dann Zusammenfassung, dann Implementierung
+- **Plan-→go-Flow:** Erst Verständnis + Plan zurückmelden, auf "go" warten, dann implementieren. Nach "go" keine weiteren Freigaben während der Umsetzung.
 - **Analyse-Phase:** Codebase durchsuchen, bestehende Komponenten verstehen
 - **Zusammenfassung:** Kurze Übersicht der geplanten Änderungen
-- **Freigabe:** Warten auf explizite Bestätigung vor Implementierung
-- **Keine direkte Implementierung** ohne vorherige Analyse und Freigabe
 
 ### Git-Workflow-Regeln
 - **Commits:** NUR nach expliziter Bestätigung des Users
@@ -83,8 +93,8 @@
 - **I18n:** `$localize` für Übersetzungen verwenden
 
 ### Vollständige Regeln
-- **Allgemein:** `docs/03-decision-records/` - OMF3 Decision Records
-- **Architektur:** `docs/02-architecture/project-structure.md` - OMF3 Project Structure
+- **Allgemein:** `docs/03-decision-records/` - OSF Decision Records
+- **Architektur:** `docs/02-architecture/project-structure.md` - OSF Project Structure
 - **Tab Stream Pattern:** `docs/03-decision-records/11-tab-stream-initialization-pattern.md`
 
 ## 🚨 AUTOMATISCHE REGEL-BEFOLGUNG (KRITISCH)
@@ -111,7 +121,7 @@
 2. **Regel-Check:** Alle relevanten Regeln prüfen
 3. **Implementierung:** Regeln automatisch befolgen
 4. **Validierung:** Pre-commit Hooks, Tests, Linting
-5. **Freigabe:** User-Bestätigung vor Commit
+5. **Commit:** Nur nach expliziter User-Freigabe (nicht vor Implementierung, sondern vor Commit)
 
 ### ZWINGENDE REGELN (NIEMALS IGNORIEREN)
 - **TypeScript:** Strikte Typisierung, keine `any` ohne Begründung
@@ -120,7 +130,7 @@
 - **RxJS:** Observable Patterns korrekt verwenden
 - **Tab Stream Pattern:** Pattern 1 oder Pattern 2 korrekt anwenden
 - **MessageMonitorService:** Für Timing-unabhängige Datenanzeige verwenden
-- **Pre-commit:** OMF3 Tests MÜSSEN bestehen, ESLint MUSS bestehen
+- **Pre-commit:** OSF Tests MÜSSEN bestehen, ESLint MUSS bestehen
 
 ## 🚨 WICHTIG
 Bei jeder Code-Änderung diese Regeln befolgen!

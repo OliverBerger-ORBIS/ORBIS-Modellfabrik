@@ -113,8 +113,8 @@ Diese Analyse vergleicht alle Buttons in OSF (vormals OMF3), die MQTT Topics pub
 
 ## Referenzen
 
-- OMF2 Factory Steering: `omf2/ui/admin/generic_steering/factory_steering_subtab.py`
-- OMF2 Camera Control: `omf2/ui/ccu/ccu_overview/sensor_data_subtab.py:799-833`
+- OMF2 Factory Steering: *(omf2/ entfernt – Referenz in Git-Historie)*
+- OMF2 Camera Control: *(omf2/ entfernt – Referenz in Git-Historie)*
 - OSF Business Layer: `osf/libs/business/src/index.ts:464-543`
-- OSF MQTT Topics Registry: `omf2/registry/mqtt_clients.yml:44-104` (historische Referenz)
+- OSF MQTT Topics Registry: *(omf2/registry entfernt – Referenz in docs/06-integrations/00-REFERENCE/)*
 

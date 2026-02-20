@@ -2,7 +2,7 @@
 
 **Quelle:** Session-Analyse von auftrag-*.db und *.log Sessions  
 **Datum:** 2025-10-08  
-**Analyse-Script:** `omf/analysis_tools/find_first_order_topic.py`
+**Analyse-Tool:** `session_manager/components/order_analyzer.py` (Order Analyzer Tab)
 
 ## 🎯 Order-Identifikation
 
@@ -162,12 +162,12 @@ def get_first_order_topic(order_id: str, messages: List) -> str:
 - `data/omf-data/sessions/auftrag-weiss_1.log` (gleiche Daten)
 - `data/omf-data/sessions/auftrag-rot-omf_20250915_104029.db` (94 msgs)
 
-### Analyse-Script
+### Analyse-Tool
 ```bash
-# Analysiert alle auftrag-*.db Sessions
-python omf/analysis_tools/find_first_order_topic.py
+# Session Manager starten – Order Analyzer Tab nutzen
+python -m session_manager
 
-# Funktioniert auch mit .log Dateien (Script unterstützt beide Formate)
+# Analysiert Session-Daten aus data/omf-data/sessions/ (auftrag-*.db, *.log)
 ```
 
 ## 🎯 Implementierungs-Prioritäten für Order Manager
@@ -205,9 +205,7 @@ python omf/analysis_tools/find_first_order_topic.py
 
 ## 🔗 Verwandte Dokumentation
 
-- **Analyse-Script:** `omf/analysis_tools/find_first_order_topic.py`
-- **Order-Tracking (bestehendes Tool):** `omf/analysis_tools/order_tracking_manager.py`
-- **Session-Analyse-Komponenten:** `omf/helper_apps/session_manager/components/order_analyzer.py`
+- **Analyse-Tool:** `session_manager/components/order_analyzer.py`
 
 ---
 

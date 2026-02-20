@@ -2,11 +2,11 @@
 
 ## 🎯 Zweck
 
-Die **Template Analysis** nutzt die bestehenden Template-Analyzer, um Message-Templates aus Session-Daten zu generieren und eine **OMF-Registry** aufzubauen.
+Die **Template Analysis** nutzt die bestehenden Template-Analyzer, um Message-Templates aus Session-Daten zu generieren und eine **OSF-Registry** aufzubauen.
 
 **Zweck der Analyser:**
 - **Aufbau einer Registry** mit standardisierten Message-Templates
-- **Registry wird von OMF-Dashboard-Komponenten genutzt** für:
+- **Registry wird von OSF-UI-Komponenten genutzt** für:
   - **MessageGenerator** - Automatische Message-Generierung
   - **Steering Components** - Template-basierte Steuerung
   - **Message Center** - Template-Validierung und -Parsing
@@ -14,7 +14,7 @@ Die **Template Analysis** nutzt die bestehenden Template-Analyzer, um Message-Te
 **Basis:** Automatische Erkennung von Message-Strukturen aus realen APS-Sessions
 
 **Verwandte Dokumentation:**
-- [**Registry Model**](../../../02-architecture/registry-model.md) - OMF-Registry System und 5 Kernprinzipien
+- [**Registry Model**](../../../02-architecture/registry-model.md) - OSF-Registry System und 5 Kernprinzipien
 - [**Message Template System**](../../../02-architecture/message-template-system.md) - Integration mit MessageGenerator
 
 ## 🏗️ Architektur
@@ -169,6 +169,6 @@ sequenceDiagram
 
 - [**Session Analysis**](session-analysis.md) - Basis für Template-Analyse
 - [**Session Recorder**](session-recorder.md) - Aufnahme der zu analysierenden Sessions
-- [**OMF Dashboard**](../../development/dashboard-components.md) - Nutzer der Registry-Templates
-- [**Registry Model**](../../../02-architecture/registry-model.md) - OMF-Registry System und Template-Speicherung
+- [**OSF-UI**](../../development/dashboard-components.md) - Nutzer der Registry-Templates
+- [**Registry Model**](../../../02-architecture/registry-model.md) - OSF-Registry System und Template-Speicherung
 - [**Message Template System**](../../../02-architecture/message-template-system.md) - Integration mit MessageGenerator

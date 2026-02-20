@@ -4,23 +4,22 @@ Dieses Verzeichnis enthält abgeschlossene Analysen und Planungsdokumente, die f
 
 ## 📁 Struktur
 
-### **analysis/**
-- **aps-mqtt-logs/** - Archivierte MQTT-Log-Analysen (README.md verweist auf finale Referenz)
-- **session-recording-guide.md** - Session Recording Anleitung
-- **req_for_copilot_shopfloor.md** - Requirements für Shopfloor Copilot
+### **ARCHIVE_ANALYSIS.md**
+- Archiv-Analyse: Welche Infos in 00-REFERENCE konsolidiert wurden (2025-11-17)
 
-### **omf2_archive/**
-- OMF2-spezifische Symbol-Entscheidungsmatrizen (historisch)
-
-### **github-issues/**
-- GitHub Agent Instructions (historisch)
+### **cursor-agent-structure-plan.md**
+- Doku-Struktur-Leitfaden für Cursor-Agent *(veraltet – Struktur abweichend)*
 
 ### **examples-git-references.md**
-- Git-Referenzen für gelöschte Examples (Wiederherstellung möglich)
+- Git-Referenzen für gelöschte Examples (Wiederherstellung aus Git-Historie möglich)
+
+### **github-issues/**
+- GitHub Agent Instructions (historisch – PR-17/PR-18 umgesetzt)
 
 ## 📋 Hinweise
 
 - **Bereinigt:** 2025-11-17 - Umgesetzte Analysen und Implementierungspläne wurden gelöscht
+- **Bereinigt:** 2026-02-18 - OMF2 Decision Records (Symbol-Matrizen) endgültig entfernt
 - **Gelöscht:** Phase Summaries, Implementation Roadmaps, Status-Dokumente, DPS-Analysen
 - **Gelöscht:** Risiko-Analysen und Strategien, die bereits umgesetzt wurden
 - **Verbleibend:** Nur noch historisch relevante Dokumentation

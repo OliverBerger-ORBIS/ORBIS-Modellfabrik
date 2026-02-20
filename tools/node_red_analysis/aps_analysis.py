@@ -766,7 +766,7 @@ def main():
     analysis_results = extract_aps_states(flows_file)
 
     # Generate all MD files
-    output_dir = Path("docs/analysis/node-red/aps_docs")
+    output_dir = Path("docs/07-analysis/node-red/aps_docs")
     output_dir.mkdir(exist_ok=True)
 
     # Generate flows.md

@@ -1,7 +1,7 @@
 # Remote MQTT Control Guide - Fischertechnik APS von macOS
 
-**Status:** Aktive Dokumentation für OMF3  
-**Quelle:** Archiviert von `docs/archive/04-howto_omf_legacy/communication/mqtt/setup/remote-control-guide.md`
+**Status:** Aktive Dokumentation für OSF  
+**Quelle:** Aus Legacy-Archiv übernommen (04-howto_omf_legacy entfernt 2026-02-18)
 
 Dieser Guide erklärt, wie du die Fischertechnik APS in der Firma von deinem macOS-Rechner aus steuern kannst.
 

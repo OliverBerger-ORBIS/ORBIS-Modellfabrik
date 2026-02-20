@@ -1,8 +1,13 @@
 # 📚 APS "as IS" - Zentrale Referenz
 
-**Single Source of Truth für die Fischertechnik APS-Architektur**
+**ORBIS-spezifische Ergänzung zur offiziellen Fischertechnik-Dokumentation**
 
-Diese Sektion enthält die **konsolidierte, verifizierte Dokumentation** der APS-Modellfabrik, basierend auf:
+> **📌 Offizielle Fischertechnik-Dokumentation (extern, öffentlich):**  
+> - **MQTT-Dokumentation:** [GitHub – docs](https://github.com/fischertechnik/Agile-Production-Simulation-24V-Dev/tree/release/docs)  
+> - **CCU (Anleitung + Source Code):** [GitHub – Agile-Production-Simulation-24V-Dev](https://github.com/fischertechnik/Agile-Production-Simulation-24V-Dev)  
+> → Siehe [FISCHERTECHNIK-OFFICIAL](../FISCHERTECHNIK-OFFICIAL.md) für Details.
+
+Diese Sektion ergänzt die offizielle Dokumentation mit **ORBIS-spezifischen, verifizierten Informationen**, basierend auf:
 - ✅ Session-Analysen (auftrag-*.db)
 - ✅ CCU-Backend Source-Code
 - ✅ NodeRed Flow-Analyse
@@ -63,8 +68,8 @@ Diese Sektion enthält die **konsolidierte, verifizierte Dokumentation** der APS
 - [TXT-Controller](../TXT-DPS/README.md) - TXT-DPS, TXT-AIQS, TXT-FTS
 
 ### **Architektur & System-Kontext:**
-- [System Context](../../02-architecture/system-context.md) - OMF-Ecosystem-Kontext
-- [Message Flow](../../02-architecture/message-flow.md) - End-to-End Kommunikation
+- [Architektur-Übersicht](../../02-architecture/README.md) – OSF-Systemkontext
+- [APS Data Flow](../../02-architecture/aps-data-flow.md) – Datenverarbeitung & Kommunikation
 
 ---
 
@@ -107,5 +112,6 @@ Alle Informationen in dieser Sektion sind **verifiziert** durch:
 ---
 
 **Erstellt:** 2025-10-08  
-**Status:** Zentrale APS "as IS" Referenz - Single Source of Truth
+**Aktualisiert:** 2025-02 – Verweis auf offizielle Fischertechnik-Dokumentation  
+**Status:** ORBIS-spezifische APS-Referenz – ergänzt offizielle Fischertechnik-Docs
 

@@ -1,23 +1,24 @@
 # Architecture Documentation Index
 
-Version: 0.2  
-Last updated: 2025-11-15  
-Author: OMF Development Team  
+Version: 0.3  
+Letzte Aktualisierung: 2026-02-18  
 
 ---
 
-## 📑 Overview
+## Übersicht
 
-Dieses Verzeichnis enthält die Architektur-Dokumentation der ORBIS Modellfabrik (OMF).  
-Die Dokumente beschreiben den Systemkontext, die Message Flows, und die Namenskonventionen.  
+Dieses Verzeichnis enthält die Architektur-Dokumentation der ORBIS SmartFactory (OSF).  
+Die Dokumente beschreiben den Systemkontext, Message Flows und Namenskonventionen.  
 
 ---
 
-## 🔗 Dokumente
+## Dokumente
 
-### OSF Architecture (aktuell)
-- [OSF Project Structure](project-structure.md) – Nx Workspace Struktur und OSF Architektur
+### OSF-Architektur
+- [OSF Project Structure](project-structure.md) – Nx Workspace Struktur und OSF-Architektur
 - [Naming Conventions](naming-conventions.md) – Topics, Template-Keys, IDs
+- [Shopfloor Route Calculation](shopfloor-route-calculation.md) – FtsRouteService, Routenberechnung
+- [Shopfloor Mapping Service](shopfloor-mapping-service.md) – Serial↔Modul↔Cell-Mapping
 - [DSP Architecture Component Spec](dsp-architecture-component-spec.md) – DSP Architecture Component Specification
 - [DSP SVG Inventory](dsp-svg-inventory.md) – Übersicht aller verfügbaren SVG-Assets für die DSP-Architektur
 - [Use-Case Inventory](use-case-inventory.md) – Übersicht der animierten Use-Case-Diagramme (Step 1, Anleitung für Anpassungen)
@@ -25,13 +26,6 @@ Die Dokumente beschreiben den Systemkontext, die Message Flows, und die Namensko
 ### APS Physical Architecture
 - [APS Physical Architecture](../../06-integrations/APS-Ecosystem/system-overview.md) – Fischertechnik Netzwerk & Hardware
 - [APS Data Flow](aps-data-flow.md) – Datenverarbeitung & Storage
-
-### Legacy Architecture (archiviert)
-- [OMF Dashboard Architecture](../archive/02-architecture_omf_legacy/omf-dashboard-architecture.md) – Legacy Dashboard-Architektur
-- [Per-Topic-Buffer Pattern](../archive/02-architecture_omf_legacy/per-topic-buffer-pattern.md) – Legacy MQTT-Pattern
-- [Singleton Pattern Compliance](../archive/02-architecture_omf_legacy/singleton-pattern-compliance.md) – Legacy Singleton Pattern
-- [System Context](../archive/02-architecture_omf_legacy/system-context.md) – Legacy System-Überblick
-- [Message Flow](../archive/02-architecture_omf_legacy/message-flow.md) – Legacy Message-Flows
 
 ---
 
@@ -63,7 +57,7 @@ classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
     NR["MQTT ↔ OPC-UA<br/>Protocol Translator"]:::ftsoftware
   end
 
-  subgraph OMF [OMF Umgebung]
+  subgraph OSF [OSF-Umgebung]
     DASH["OSF Dashboard<br/>Angular App"]:::orbis
     SM["Session Manager<br/>Replay/Recording"]:::orbis
   end

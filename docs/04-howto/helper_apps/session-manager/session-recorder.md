@@ -6,7 +6,7 @@ Der **Session Recorder** ermöglicht die Aufnahme von MQTT-Sessions der APS-Fabr
 
 1. **📊 Session Analysis** - Analyse der Nachrichten-Ströme und -Muster
 2. **🔍 Template Generierung** - Automatische Erkennung von Message-Templates
-3. **🎬 Replay Station** - Sessions für reproduzierbare Tests des OMF-Dashboards
+3. **🎬 Replay Station** - Sessions für reproduzierbare Tests des OSF-UI
 
 **Aufgenommene Sessions** werden als SQLite-Datenbank und Log-Datei gespeichert und dienen als Basis für alle weiteren Analysen und Tests.
 

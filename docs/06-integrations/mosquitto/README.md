@@ -13,12 +13,8 @@ Vollständige Analyse der APS-Modellfabrik Mosquitto-Komponente basierend auf ec
 
 ## 🗂️ Archivierte Analysen
 
-Historische MQTT-Log-Analysen (Prozess-Dokumente) wurden archiviert:
-→ `docs/archive/analysis/aps-mqtt-logs/`
-
-- `log-analysis-2025-09-24.md` - Initiale Log-Analyse
-- `startup-analysis-corrected-final-2025-09-28.md` - Startup-Sequenz-Analyse  
-- `pub-sub-pattern-analysis-2025-09-28.md` - Pub/Sub-Pattern-Analyse
+Historische MQTT-Log-Analysen wurden in die zentrale Referenz konsolidiert:
+→ [00-REFERENCE](../00-REFERENCE/README.md)
 
 ## 🔧 Technische Voraussetzungen
 
@@ -51,7 +47,7 @@ Historische MQTT-Log-Analysen (Prozess-Dokumente) wurden archiviert:
 ### Phase 2: System-Neustart
 - [ ] Raspberry Pi neu gestartet
 - [ ] Alle APS-Komponenten hochgefahren
-- [ ] System ohne OMF-Dashboard stabilisiert
+- [ ] System ohne OSF-UI stabilisiert
 
 ### Phase 3: Log-Analyse
 - [ ] Log-Datei vom RPi kopiert
@@ -74,6 +70,6 @@ Historische MQTT-Log-Analysen (Prozess-Dokumente) wurden archiviert:
 **✅ Abgeschlossen** - Mosquitto-Log-Analyse vollständig durchgeführt
 
 ## 📝 Notizen
-- **Wichtig:** Keine OMF-Dashboard Interaktion während der Analyse
+- **Wichtig:** Keine OSF-UI Interaktion während der Analyse
 - **Ziel:** Reine APS-System-Architektur verstehen
 - **Fokus:** Node-RED als zentrale Komponente

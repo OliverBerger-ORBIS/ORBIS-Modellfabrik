@@ -2,7 +2,7 @@
 
 ## 🎯 **Übersicht**
 
-Dieser Ordner dokumentiert das **Fischertechnik APS-System im aktuellen Zustand** (Phase 0) - bevor OMF-Integration.
+Dieser Ordner dokumentiert das **Fischertechnik APS-System im aktuellen Zustand** (Phase 0) - bevor OSF-Integration.
 
 ## 📁 **Struktur**
 
@@ -22,9 +22,8 @@ Dieser Ordner dokumentiert das **Fischertechnik APS-System im aktuellen Zustand*
 - **[TXT-Controller](../../06-integrations/TXT-*/)** - TXT-DPS, TXT-AIQS, TXT-FTS
 
 ### **Architektur-Prinzipien:**
-- **[System Context](../../02-architecture/system-context.md)** - OMF-Architektur-Kontext
-- **[Message Flow](../../02-architecture/message-flow.md)** - MQTT-Kommunikations-Patterns
-- **[Registry Model](../../02-architecture/registry-model.md)** - Message-Template-System
+- **[Architektur-Übersicht](../../02-architecture/README.md)** – OSF-Systemkontext
+- **[APS Data Flow](../../02-architecture/aps-data-flow.md)** – MQTT-Kommunikation
 
 ## 🚀 **Phase 0 Ziele**
 
@@ -52,7 +51,7 @@ Dieser Ordner dokumentiert das **Fischertechnik APS-System im aktuellen Zustand*
 1. **System-Overview** mit MQTT-Diagrammen erstellen
 2. **Component-Mapping** detailliert dokumentieren
 3. **UI-Interaktions-Patterns** analysieren
-4. **Vorbereitung für Phase 1** (OMF-Integration)
+4. **Vorbereitung für Phase 1** (OSF-Integration)
 
 ---
 

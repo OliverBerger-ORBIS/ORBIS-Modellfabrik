@@ -351,7 +351,7 @@ def main():
         "mqtt_topic_hierarchy_diagram.mermaid": generate_mqtt_topic_hierarchy_diagram(),
     }
 
-    output_dir = Path("docs/analysis/node-red/aps_docs")
+    output_dir = Path("docs/07-analysis/node-red/aps_docs")
     output_dir.mkdir(exist_ok=True)
 
     for filename, content in diagrams.items():

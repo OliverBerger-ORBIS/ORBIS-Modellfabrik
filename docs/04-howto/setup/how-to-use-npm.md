@@ -2,13 +2,13 @@
 
 Dieses How‑To erklärt auf Deutsch, wie du Node.js / npm so einrichtest, dass du in allen PowerShell‑Sitzungen (z. B. VS Code Integrated Terminal) zuverlässig `npm` verwenden kannst. Es enthält mehrere Optionen (winget, non‑admin Install, nvm, Scoop) und konkrete PowerShell‑Befehle, die in dieser Projekt‑Umgebung funktionieren.
 
-Zielgruppe: Entwickler*innen, die lokal an `ORBIS-Modellfabrik` arbeiten und die OMF3 (Angular/Nx) App `ccu-ui` entwickeln oder testen wollen.
+Zielgruppe: Entwickler*innen, die lokal an `ORBIS-Modellfabrik` arbeiten und die OSF (Angular/Nx) App `osf-ui` entwickeln oder testen wollen.
 
 Kurzversion (für Fortgeschrittene)
 - Überprüfen: `node --version` und `npm --version`
 - Wenn Node fehlt: Installieren mit `winget` (Admin) oder eine non‑admin Installation in `%USERPROFILE%\tools` und den Ordner zur User‑PATH hinzufügen
 - Terminal/VS Code neu starten
-- Im Repo-Root: `.\scripts\run-omf3.ps1` oder `npx nx serve ccu-ui --configuration=development`
+- Im Repo-Root: `.\scripts\run-omf3.ps1` oder `npx nx serve osf-ui --configuration=development`
 
 1) Prüfen, ob Node / npm verfügbar sind
 
@@ -85,11 +85,11 @@ npm ci --legacy-peer-deps
 npm install --legacy-peer-deps
 ```
 
-6) Dev‑Server starten (OMF3 — ccu-ui)
+6) Dev‑Server starten (OSF — osf-ui)
 
 ```powershell
 # Einfache Variante
-npx nx serve ccu-ui --configuration=development
+npx nx serve osf-ui --configuration=development
 
 # Oder mit dem projektspezifischen Launcher (legt Logs an)
 .\scripts\run-omf3.ps1

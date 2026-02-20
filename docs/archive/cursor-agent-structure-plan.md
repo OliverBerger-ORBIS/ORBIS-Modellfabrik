@@ -1,5 +1,8 @@
 # 🧠 Modellfabrik – Doku-Struktur für CURSOR-Agent
 
+> ⚠️ **VERALTET** – Dieses Dokument beschreibt eine ältere Projektstruktur. Aktuelle Regeln: [.cursorrules](../../.cursorrules), [docs/README.md](../README.md).  
+> Relevante Abweichungen: `/omf/` → `osf/`, `analysis/` aufgelöst → `07-analysis/`, `PROJECT_OVERVIEW.md` entfernt.
+
 Dieses Dokument dient als Leitfaden für die Dokumentationsstruktur der ORBIS-Modellfabrik innerhalb des Git-Projekts. Es unterstützt den CURSOR-Agenten dabei, Inhalte korrekt einzuordnen, bestehende Strukturen zu respektieren und neue Analyse- und Architektur-Informationen logisch abzulegen.
 
 ## 🎯 **Multi-Cursor-Koordination**
@@ -24,7 +27,7 @@ Dieses Dokument dient als Leitfaden für die Dokumentationsstruktur der ORBIS-Mo
 
 ```bash
 /omf/                    # Python-Code (DSP, MQTT-Komponenten, Cloud-Anbindung)
-├── dashboard/           # OMF-Dashboard Komponenten
+├── dashboard/           # OSF-UI Komponenten
 ├── helper_apps/         # Helper Apps (Session Manager, etc.)
 ├── analysis_tools/      # Analyse-Tools und Scripts
 ├── tools/               # Utility-Tools und Scripts

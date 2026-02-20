@@ -46,8 +46,8 @@
 - Lint/Typecheck: `nx test ccu-ui`/`nx lint ccu-ui`.
 
 ## Referenzen
-- `omf3/apps/ccu-ui/src/app/services/fts-route.service.ts`
-- `omf3/apps/ccu-ui/src/app/components/shopfloor-preview/shopfloor-preview.component.ts`
-- `omf3/apps/ccu-ui/src/app/services/fts-animation.service.ts`
-- Layout: `omf3/apps/ccu-ui/public/shopfloor/shopfloor_layout.json`
+- `osf/apps/osf-ui/src/app/services/fts-route.service.ts`
+- `osf/apps/osf-ui/src/app/components/shopfloor-preview/shopfloor-preview.component.ts`
+- `osf/apps/osf-ui/src/app/services/fts-animation.service.ts`
+- Layout: `osf/apps/osf-ui/public/shopfloor/shopfloor_layout.json`
 

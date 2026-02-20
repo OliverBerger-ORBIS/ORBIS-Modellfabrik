@@ -9,7 +9,7 @@ Diese Tools analysieren die Node-RED Flows der Fischertechnik APS (Agile Product
 **Hauptanalyse-Script** - Generiert die komplette APS-Dokumentation
 - Analysiert `flows.json` aus `integrations/node_red/backups/`
 - Fokussiert auf Module: MILL, DRILL, AIQS, DPS, HBW
-- Erstellt Markdown-Dokumentation in `docs/analysis/node-red/aps_docs/`
+- Erstellt Markdown-Dokumentation in `docs/07-analysis/node-red/aps_docs/`
 - Generiert Mermaid-Diagramme für System-Architektur, State Machines, OPC-UA, MQTT
 
 ### `generate_module_status_diagrams.py`
@@ -59,13 +59,13 @@ python generate_diagrams.py
 ## 🎯 Ausgabe
 
 Die Scripts generieren:
-- **Dokumentation**: `docs/analysis/node-red/aps_docs/`
+- **Dokumentation**: `docs/07-analysis/node-red/aps_docs/`
 - **Diagramme**: `.mermaid` Dateien
 - **Rohdaten**: `aps_analysis_data.json`
 
 ## 📝 Hinweise
 
 - Scripts analysieren nur die relevanten Module (MILL, DRILL, AIQS, DPS, HBW)
-- OVEN-Modul wird ignoriert (nicht vorhanden in der OMF)
+- OVEN-Modul wird ignoriert (nicht in unserer Konfiguration)
 - Alle Diagramme werden direkt in Markdown eingebettet
-- Dokumentation beschreibt das System **vor** OMF Dashboard Integration
+- Dokumentation beschreibt das System **vor** OSF-UI-Integration

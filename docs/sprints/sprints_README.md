@@ -1,13 +1,37 @@
 # Sprint Documentation Index
 
-Version: 0.3  
-Last updated: 2026-02-19  
+Version: 0.4  
+Letzte Aktualisierung: 2026-02-18  
 
 ---
 
-## 📑 Overview
-Dieses Verzeichnis enthält die Sprint-Dokumentationen des OMF Projekts.  
-Jeder Sprint beschreibt Ziele, Änderungen und offene Punkte.
+## 📑 Übersicht
+
+Dieses Verzeichnis enthält die Sprint-Dokumentationen des OSF-Projekts.  
+Jeder Sprint dokumentiert Ziele, Fortschritt (Checkliste) und offene Punkte.
+
+---
+
+## 🔄 Dokumenten-Workflow (Aktualität sicherstellen)
+
+### Sprint-Dokument (sprint_XX.md)
+- **Wird erfasst:** Ziele, Tasks (Checkliste), Detail-Doku nur wo nötig
+- **Aktualisierung:** Quasi täglich – Checkboxen abhaken, Status anpassen
+- **Bei Anlage eines neuen Sprints:** Siehe „Sprint-Abschluss“ unten
+
+### PROJECT_STATUS.md
+- **Tabelle:** Jeder Sprint eine Zeile (Zeitraum, ORBIS-Projekt, OSF-Phase, Externe Events)
+- **Aktualisierung:** Bei Sprint-Abschluss – neue Zeile für nächsten Sprint, Events ergänzen
+- **Keine separate Sprint-Übersicht** – die Tabelle ist die Übersicht
+
+### Strategy & Roadmap (01-strategy/)
+- **Aktualisierung:** Seltener; bei Sprint-Abschluss als impliziter Check: Sind Phasen/Daten noch stimmig?
+
+### Sprint-Abschluss (Pflicht ab Sprint 16)
+1. **Sprint-Dokument:** Status → „Abgeschlossen“, Abschlussdatum setzen
+2. **Neuer Sprint:** Aus Template anlegen (`sprint_XX.md`), offene `[ ]` übernehmen
+3. **PROJECT_STATUS:** Neue Tabellenzeile für nächsten Sprint, Externe Events eintragen
+4. **Roadmap prüfen:** Sind Phasen/Versionen/Daten noch aktuell? (bei Bedarf anpassen)
 
 ---
 
@@ -21,8 +45,6 @@ Jeder Sprint beschreibt Ziele, Änderungen und offene Punkte.
 | **Detail-Doku** | Nur wo technische Details nötig (How-To-Links, Optionen) | Keine Wiederholung der Checklisten-Inhalte |
 | **Übernommen** | Offene Tasks explizit in nächsten Sprint übernehmen | Kein separater "Fortschritt"-Block (redundant zur Checkliste) |
 | **Abgeschlossen** | Status auf "Abgeschlossen", Abschlussdatum, Verweis auf Nachfolge-Sprint | Kein eigener "Abgeschlossene Aufgaben"-Block (Checkboxen zeigen Status) |
-
-**Sprint abschließen:** Status → "Abgeschlossen", offene `[ ]` in nächsten Sprint übernehmen.
 
 ---
 
@@ -44,7 +66,8 @@ Jeder Sprint beschreibt Ziele, Änderungen und offene Punkte.
 - [Sprint 15](sprint_15.md) – Use-Case-Bibliothek & Blog-Serie Fortsetzung (05.02 - 18.02.2026) ✅
 - [Sprint 16](sprint_16.md) – Vibration-Sensor, Doku-Check, Marketing-Konsistenz (19.02 - 04.03.2026) ⏳ **AKTUELL**
 
-## 📊 Stakeholder-Reports
+## 📊 Berichte
+- [ORBIS-Projekt-Abschlussbericht Sprints 1-12](ORBIS-Projekt-Abschlussbericht_sprints_01-12.md) – Erstes ORBIS-Projekt (ORBIS-Modellfabrik)
 - [Sprint 01-04 Report](stakeholder_report_sprints_01-04.md) – Umfassender Bericht für Management
 - [Sprint 05-06 Report](stakeholder_report_sprints_05-06.md) – OMF2-Migration und Architektur-Refactoring
 

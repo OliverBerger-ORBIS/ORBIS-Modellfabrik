@@ -1,4 +1,4 @@
-# Archive-Analyse: Relevante Informationen für OMF3
+# Archive-Analyse: Relevante Informationen für OSF (ORBIS Shopfloor)
 
 **Datum:** 2025-11-17  
 **Zweck:** Identifikation relevanter APS/MQTT-Informationen, die noch nicht in `docs/06-integrations/00-REFERENCE/` konsolidiert sind
@@ -16,7 +16,7 @@ Die folgenden Informationen sind bereits in der zentralen Referenz dokumentiert:
 ## ⚠️ Relevante Informationen, die noch NICHT in 00-REFERENCE sind
 
 ### 1. **MQTT Message Examples** (HOCH RELEVANT)
-**Quelle:** `docs/archive/04-howto_omf_legacy/communication/mqtt/mqtt-control-summary.md`
+**Quelle:** *(archiviert – 04-howto_omf_legacy entfernt)*
 
 **Enthält:**
 - Konkrete JSON-Beispiele für PICK, DROP, STORE, CHECK_QUALITY Commands
@@ -28,7 +28,7 @@ Die folgenden Informationen sind bereits in der zentralen Referenz dokumentiert:
 **Empfehlung:** In `docs/06-integrations/00-REFERENCE/` integrieren als "MQTT Message Examples" oder "Module Control Messages"
 
 ### 2. **State Machine Notes** (RELEVANT)
-**Quelle:** `docs/archive/04-howto_omf_legacy/communication/mqtt/state-machine-notes.md`
+**Quelle:** *(archiviert – 04-howto_omf_legacy entfernt)*
 
 **Enthält:**
 - FTS State Machine Verhalten (findInitialDockPosition, startCharging/stopCharging)
@@ -38,7 +38,7 @@ Die folgenden Informationen sind bereits in der zentralen Referenz dokumentiert:
 **Empfehlung:** Prüfen ob bereits in `docs/06-integrations/APS-NodeRED/state-machine.md` - wenn nicht, integrieren
 
 ### 3. **Remote Control Guide** (NÜTZLICH)
-**Quelle:** `docs/archive/04-howto_omf_legacy/communication/mqtt/setup/remote-control-guide.md`
+**Quelle:** *(verschoben nach docs/04-howto/setup/remote-mqtt-control.md)*
 
 **Enthält:**
 - Anleitung für Remote-Steuerung der APS von macOS
@@ -48,7 +48,7 @@ Die folgenden Informationen sind bereits in der zentralen Referenz dokumentiert:
 **Empfehlung:** In `docs/04-howto/` verschieben (nicht löschen, noch nützlich)
 
 ### 4. **Traffic Logging Guide** (NÜTZLICH)
-**Quelle:** `docs/archive/04-howto_omf_legacy/communication/mqtt/setup/traffic-logging-guide.md`
+**Quelle:** *(verschoben nach docs/04-howto/setup/mqtt-traffic-logging.md)*
 
 **Enthält:**
 - MQTT Traffic Monitoring Setup
@@ -58,7 +58,7 @@ Die folgenden Informationen sind bereits in der zentralen Referenz dokumentiert:
 **Empfehlung:** In `docs/04-howto/` verschieben (nicht löschen, noch nützlich für Debugging)
 
 ### 5. **VDA5050 Implementation Details** (RELEVANT)
-**Quelle:** `docs/archive/analysis/dps/VDA5050_IMPLEMENTATION_PLAN.md`
+**Quelle:** *(archiviert – docs/archive/analysis/ aufgelöst, relevante Infos in 00-REFERENCE)*
 
 **Enthält:**
 - VDA5050 Standard-Struktur
@@ -75,21 +75,20 @@ Die folgenden Informationen sind bereits in der zentralen Referenz dokumentiert:
 - Keine Fakten, nur Diskussionen
 - **Empfehlung:** Löschen
 
-### 2. **APS-MQTT-Log Analysen** (`docs/archive/analysis/aps-mqtt-logs/`)
+### 2. **APS-MQTT-Log Analysen** *(gelöscht – archive/analysis/ aufgelöst)*
 - Bereits als "archiviert" markiert in README.md
 - Enthält Fehler (Serial-Number-Verwechslungen)
 - Finale Informationen in `docs/06-integrations/00-REFERENCE/`
 - **Empfehlung:** Löschen (README.md behalten als Verweis)
 
-### 3. **DPS Analysen** (`docs/archive/analysis/dps/`)
+### 3. **DPS Analysen** *(gelöscht – archive/analysis/ aufgelöst)*
 - Implementierungspläne und Analysen
 - Teilweise obsolet (OMF2-spezifisch)
 - **Empfehlung:** Prüfen ob noch relevante Details, dann löschen
 
 ### 4. **OMF2-spezifische Dokumentation**
-- `docs/archive/04-howto_omf_legacy/` - OMF2-spezifische Howtos
-- `docs/archive/02-architecture_omf_legacy/` - OMF2-Architektur
-- **Empfehlung:** Löschen (OMF2 ist Legacy)
+- ~~`docs/archive/04-howto_omf_legacy/`~~ - entfernt (2026-02-18)
+- ~~`docs/archive/02-architecture_omf_legacy/`~~ - OMF2-Architektur
 
 ## 📋 Empfohlene Aktionen
 
@@ -124,7 +123,7 @@ Die folgenden Informationen sind bereits in der zentralen Referenz dokumentiert:
 1. **Chat Activities** → `docs/archive/chat-activities/` gelöscht (13 Dateien)
 2. **APS-MQTT-Log Analysen** → Alle Analyse-Dateien gelöscht, README.md aktualisiert (4 Dateien)
 3. **OMF2-spezifische Dokumentation** → Gelöscht:
-   - `docs/archive/04-howto_omf_legacy/` (komplett)
+   - ~~`docs/archive/04-howto_omf_legacy/`~~ (bereits entfernt)
    - `docs/archive/02-architecture_omf_legacy/` (komplett)
    - `docs/archive/03-decision-records_omf_legacy/` (komplett)
 

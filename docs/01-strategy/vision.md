@@ -1,98 +1,100 @@
-# OMF Vision - MQTT-First Architecture
+# OSF Vision – Konzept & MQTT-First
 
-> **📋 Entwicklungsphasen:** [Development Phases](development-phases.md)
+> **📋 Entwicklungsphasen:** [Roadmap](roadmap.md)  
+> **Glossary:** [99-glossary.md](../99-glossary.md)
 
-## 🎯 Leitidee
+---
+
+## 🎯 Konzept
+
+### OSF (ORBIS-SmartFactory)
+Konzept und Vision – unsere Produkte (DSP, MES, …) und Leistungen demonstrierbar machen. Use Cases, Demos, Messeauftritte. OSF ist kein produktives System, sondern Demonstrator.
+
+### Fischertechnik APS 24V
+Produkt von Fischertechnik – physische Modellfabrik + Software. Wir nutzen es als Testumgebung.
+
+| Begriff | Bedeutung |
+|--------|-----------|
+| **FMF** (Fischertechnik-ModellFabrik) | Physische Komponenten – Shopfloor (HBW, DRILL, MILL, AIQS, DPS, FTS, …) |
+| **APS** | Software-Teil – CCU, Node-RED, Frontend, mosquitto, TXT-, PLC-Programme |
+
+### OSF-UI
+Unser Dashboard zur Visualisierung. Angular (`osf/`), ehemals OMF3.
+
+### Parallelbetrieb
+MQTT-Entkopplung ermöglicht: **APS-CCU** und **ORBIS-DSP** nebeneinander; **APS-Frontend** und **OSF-UI** nebeneinander. Bei Demonstrationen: nur ORBIS-Komponenten zeigen.
+
+### Projekt-Scope (dieses Repo)
+| Bereich | Änderung? |
+|---------|-----------|
+| ORBIS-DSP, ORBIS-MES | ❌ Nein (extern) |
+| OSF-UI | ✅ Ja |
+| FMF-Komponenten (z.B. AIQS-TXT) | ✅ Ja |
+| APS-CCU | ✅ Temporär (z.B. ERP-ID in MQTT) |
+
+Nicht: Alle APS-Komponenten ersetzen. Ziel: selektive Übernahme durch ORBIS (insbesondere CCU durch DSP).
+
+---
+
+## 🏗️ Leitidee: MQTT-First
 
 **Steuerung über MQTT-Kommandos, Node-RED vermittelt zu OPC-UA**
 
-Das OMF-System basiert auf der Prämisse, dass alle Steuerungslogik über MQTT-Nachrichten abgewickelt wird. Node-RED fungiert als intelligenter Vermittler zwischen der hochrangigen MQTT-Steuerung und der niedrigrangigen OPC-UA-Kommunikation mit den physischen Modulen.
+Das OSF-System basiert auf der Prämisse, dass Steuerungslogik über MQTT läuft. Node-RED vermittelt zwischen MQTT und OPC-UA zu den physischen Modulen (FMF).
 
 ## 🏗️ System-Namenskonvention
 
-### **APS (Agile Production Simulation) - As-Is System**
-- **Fischertechnik-Fabrik** mit Original-Komponenten
-- **APS-CCU** - Central Control Unit (Raspberry PI)
-- **APS-NodeRED** - Node-RED Flows für Steuerung
-- **APS-Module** - Physische Module (DRILL, HBW, etc.)
+### APS (As-Is) – Fischertechnik
+- **FMF** – physische Komponenten
+- **APS-CCU**, **APS-NodeRED**, **APS-Frontend**
 
-### **OMF (ORBIS-Modellfabrik) - To-Be System**
-- **OMF-Dashboard** - Streamlit-basierte Steuerung
-- **OMF-CCU** - Nachbau der APS-CCU Funktionalität
-- **OMF-NodeRED** - Ersatz für APS-NodeRED
-- **OMF-Module** - Software-Simulation der APS-Module
+### OSF (To-Be) – Unser System
+- **OSF-UI** – Angular-Dashboard
+- **Session Manager** – Replay Helper-App
 
-> **📋 Namenskonvention:** Groß-Schreibweise mit Bindestrich (z.B. APS-CCU, OMF-Dashboard)
+> **Namenskonvention:** Groß-Schreibweise mit Bindestrich (z.B. APS-CCU, OSF-UI)
+
+---
 
 ## 🏗️ Architektur-Prinzipien
 
 ### 1. MQTT als Steuerungsebene
-- **Alle Befehle** gehen über MQTT-Topics (`module/v1/ff/{serial}/order`)
-- **Alle Status-Updates** kommen über MQTT-Topics (`module/v1/ff/{serial}/state`)
-- **Keine direkte OPC-UA-Steuerung** aus dem OMF-Dashboard
+- Befehle über `module/v1/ff/{serial}/order`
+- Status über `module/v1/ff/{serial}/state`
+- Keine direkte OPC-UA-Steuerung aus der OSF-UI
 
 ### 2. Node-RED als Vermittler
-- **Übersetzt** MQTT-Befehle in OPC-UA-Calls
-- **Aggregiert** OPC-UA-Daten zu MQTT-Status-Nachrichten
-- **Implementiert** Modul-spezifische Logik (State-Machine, Error-Handling)
+- MQTT → OPC-UA, OPC-UA → MQTT
+- Modul-spezifische Logik (State-Machine, Error-Handling)
 
-### 3. Registry als Single Source of Truth
-- **Templates** definieren Nachrichtenstrukturen (topic-frei)
-- **Mappings** verbinden Topics mit Templates
-- **Enums** standardisieren Werte (Action-States, Workpiece-Types)
-
-## 🎯 v1 Erfolgskriterien
-
-### Funktionale Ziele
-- ✅ **OMF-Dashboard** kann DRILL mit `PICK → DRILL → DROP` anweisen
-- ✅ **HBW-Verwaltung** über MQTT-Befehle (STORE, PICK, DROP)
-- ✅ **AIQS-Bewertung** mit `CHECK_QUALITY` und `PASSED/FAILED` Results
-- ✅ **Tests via Replay** stabil und reproduzierbar
-
-### Qualitätsmerkmale
-- **Deterministischer Resolver:** Topic → Template-Mapping ist eindeutig
-- **Valide Templates:** Alle Nachrichten entsprechen Registry-Schema
-- **Reproduzierbare Replays:** Session-Manager ermöglicht deterministische Tests
-
-## 🔄 Message-Flow-Prinzip
-
-```
-User (Dashboard) → MQTT Order → Node-RED → OPC-UA → Modul
-Modul → OPC-UA → Node-RED → MQTT State → Dashboard
-```
-
-### Beispiel: DRILL-Befehl
-1. **Dashboard** sendet `module/v1/ff/SVR4H76449/order` mit `{"command": "DRILL", "type": "WHITE"}`
-2. **Node-RED** übersetzt zu OPC-UA-Call an DRILL-Modul
-3. **DRILL-Modul** führt Aktion aus
-4. **Node-RED** sammelt OPC-UA-Status und sendet `module/v1/ff/SVR4H76449/state`
-5. **Dashboard** zeigt Status-Update an
-
-## 🚀 v1.1/2.0 Ausblick
-
-### v1.1 - Erweiterte Module
-- **FTS-Integration** (Fahrerlose Transportsysteme)
-- **TXT-Controller** Integration
-- **Erweiterte Workflows** (Multi-Modul-Sequenzen)
-
-### v2.0 - Intelligente Steuerung
-- **KI-basierte Optimierung** von Produktionssequenzen
-- **Predictive Maintenance** basierend auf MQTT-Telemetrie
-- **Distributed Control** ohne zentrale CCU
-
-## 💡 Warum MQTT-First?
-
-### Vorteile
-- **Entkopplung:** Dashboard unabhängig von OPC-UA-Details
-- **Skalierbarkeit:** Neue Module über MQTT-Topics hinzufügbar
-- **Testbarkeit:** Replay-System für deterministische Tests
-- **Wartbarkeit:** Klare Trennung von Steuerung und Hardware
-
-### Trade-offs
-- **Komplexität:** Zusätzliche Schicht (Node-RED) erforderlich
-- **Latenz:** MQTT → Node-RED → OPC-UA → Hardware
-- **Abhängigkeiten:** Node-RED muss verfügbar sein
+### 3. Templates & Mappings
+- Templates definieren Nachrichtenstrukturen (topic-frei)
+- Mappings verbinden Topics mit Templates
 
 ---
 
-**"MQTT-First bedeutet: Alles was steuerbar ist, ist über MQTT steuerbar."**
+## 🎯 Erfolgskriterien
+
+- ✅ OSF-UI kann DRILL mit `PICK → DRILL → DROP` anweisen
+- ✅ HBW-Verwaltung, AIQS-Bewertung über MQTT
+- ✅ Tests via Replay stabil
+
+---
+
+## 🔄 Message-Flow
+
+```
+User (OSF-UI) → MQTT Order → Node-RED → OPC-UA → Modul (FMF)
+Modul → OPC-UA → Node-RED → MQTT State → OSF-UI
+```
+
+---
+
+## 💡 Warum MQTT-First?
+
+**Vorteile:** Entkopplung, Skalierbarkeit, Testbarkeit (Replay).  
+**Trade-offs:** Zusätzliche Schicht (Node-RED), Latenz, Abhängigkeiten.
+
+---
+
+*"MQTT-First bedeutet: Alles was steuerbar ist, ist über MQTT steuerbar."*

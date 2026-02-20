@@ -74,7 +74,7 @@ graph TB
 > **🔗 Verwandte Systeme:**
 > - **[APS-CCU](../APS-CCU/README.md)** - Fischertechnik Agile Production Simulation
 > - **[TXT-FTS VDA 5050](../TXT-FTS/README.md)** - Fahrerloses Transportsystem
-> - **[System Context](../../02-architecture/system-context.md)** - Gesamtarchitektur
+> - **[Architektur-Übersicht](../../02-architecture/README.md)** – Gesamtarchitektur
 
 ## 📋 Documentation Index
 
@@ -102,7 +102,7 @@ graph TB
 - SSH and Admin API management
 - Troubleshooting and maintenance
 
-### [System Architecture](../../02-architecture/system-context.md)
+### [Architektur-Übersicht](../../02-architecture/README.md)
 - Gesamtarchitektur und System-Kontext
 - Verlinkung zur zentralen Architektur-Dokumentation
 
@@ -194,7 +194,7 @@ graph TD
 
 ## 📁 Current Node-RED Structure
 
-Diese Dokumentation beschreibt die **aktuelle Fischertechnik APS Node-RED Struktur** vor der OMF Dashboard Integration. Die tatsächliche Integration und Anpassungen sind Teil des "großen Projektes" und werden separat dokumentiert.
+Diese Dokumentation beschreibt die **aktuelle Fischertechnik APS Node-RED Struktur** vor der OSF-UI-Integration. Die tatsächliche Integration und Anpassungen sind Teil des "großen Projektes" und werden separat dokumentiert.
 
 ### Current System Structure
 ```
@@ -211,7 +211,7 @@ docs/06-integrations/APS-NodeRED/  # Dokumentation der IST-Struktur
 └── integration-guide.md        # Backup/Restore Anleitung
 ```
 
-> **⚠️ Hinweis:** Diese Dokumentation beschreibt das **IST-System** (Fischertechnik APS). Die zukünftige Integration mit dem OMF Dashboard und eventuelle Anpassungen werden im Rahmen des "großen Projektes" geplant und dokumentiert.
+> **⚠️ Hinweis:** Diese Dokumentation beschreibt das **IST-System** (Fischertechnik APS). Die zukünftige Integration mit der OSF-UI und eventuelle Anpassungen werden im Rahmen des "großen Projektes" geplant und dokumentiert.
 
 ---
 

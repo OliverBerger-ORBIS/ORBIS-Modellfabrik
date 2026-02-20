@@ -5,7 +5,7 @@
 
 ## 🎯 Ziel
 
-Standardisierte Anweisungen für Cursor bei der Erstellung von Mermaid-Diagrammen im OMF-Projekt.
+Standardisierte Anweisungen für Cursor bei der Erstellung von Mermaid-Diagrammen im OSF-Projekt.
 
 ## 📋 Cursor-Anweisungen
 
@@ -21,16 +21,16 @@ Standardisierte Anweisungen für Cursor bei der Erstellung von Mermaid-Diagramme
    - **Beispiele:** `system-overview.md`, `message-flow.md`
    - **Versionierung:** `deployment_v2.md` oder `deployment_2025-09.md`
 
-3. **OMF-Farbpalette verwenden:**
+3. **OSF-Farbpalette verwenden:**
    ```mermaid
    graph TD
-       A[OMF-Komponenten] -->|Action| B[MQTT-Broker]
+       A[OSF-Komponenten] -->|Action| B[MQTT-Broker]
        style A fill:#e1f5fe  # Blau
        style B fill:#f3e5f5  # Lila
    ```
 
 4. **Standard-Farben:**
-   - **OMF-Komponenten:** `#e1f5fe` (Blau)
+   - **OSF-Komponenten:** `#e1f5fe` (Blau)
    - **MQTT-Broker:** `#f3e5f5` (Lila)
    - **Session-Tools:** `#e8f5e8` (Grün)
    - **Data-Storage:** `#fff3e0` (Orange)
@@ -60,7 +60,7 @@ Standardisierte Anweisungen für Cursor bei der Erstellung von Mermaid-Diagramme
    
    ---
    
-   *Teil der OMF-Dokumentation | [Zurück zur README](../../README.md)*
+   *Teil der OSF-Dokumentation | [Zurück zur README](../../README.md)*
    ```
 
 ## 🔧 Workflow
@@ -71,7 +71,7 @@ Standardisierte Anweisungen für Cursor bei der Erstellung von Mermaid-Diagramme
 - **Markdown-Template** verwenden
 
 ### **2. Mermaid-Code schreiben:**
-- **OMF-Farbpalette** verwenden
+- **OSF-Farbpalette** verwenden
 - **Konsistente Styling** anwenden
 - **Klare Beschriftungen** verwenden
 
@@ -95,7 +95,7 @@ graph TD
     C -->|SQLite + Logs| D[Sessions Directory]
     D -->|Session Files| E[Session Replay]
     E -->|MQTT Messages| B
-    B -->|Test Data| F[OMF-Dashboard]
+    B -->|Test Data| F[OSF-Dashboard]
     
     G[Session Analysis] -->|Read| D
     H[Template Analysis] -->|Read| D
@@ -129,4 +129,4 @@ graph LR
 
 ---
 
-*Teil der OMF-Dokumentation | [Zurück zur README](../../README.md)*
+*Teil der OSF-Dokumentation | [Zurück zur README](../../README.md)*

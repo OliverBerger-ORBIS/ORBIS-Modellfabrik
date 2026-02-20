@@ -2,11 +2,11 @@
 
 ## 🎯 Zweck
 
-Die **Replay Station** ermöglicht das Einspielen von aufgezeichneten MQTT-Sessions in das OMF-Dashboard im Replay-Modus. Dies ermöglicht das Testen des OMF-Dashboards, wenn die APS-Fabrik nicht verfügbar ist.
+Die **Replay Station** ermöglicht das Einspielen von aufgezeichneten MQTT-Sessions in das OSF-UI im Replay-Modus. Dies ermöglicht das Testen des OSF-UIs, wenn die APS-Fabrik nicht verfügbar ist.
 
 **Vorteile:**
 - **Definierte Abfolge** von Nachrichten
-- **Reproduzierbare Tests** des OMF-Dashboards
+- **Reproduzierbare Tests** des OSF-UIs
 - **Unabhängige Entwicklung** ohne APS-Verbindung
 - **Kontrollierte Test-Szenarien**
 
@@ -16,7 +16,7 @@ Die **Replay Station** ermöglicht das Einspielen von aufgezeichneten MQTT-Sessi
 graph LR
     A[Session Files] -->|Load| B[Replay Station]
     B -->|Publish| C[MQTT Broker]
-    C -->|Forward| D[OMF Dashboard]
+    C -->|Forward| D[OSF-UI]
     
     style A fill:#fff8e1
     style B fill:#90caf9,stroke:#1976d2,stroke-width:3px
@@ -98,7 +98,7 @@ sequenceDiagram
     participant R as Replay Engine
     participant DB as SQLite DB
     participant M as MQTT Broker
-    participant D as OMF Dashboard
+    participant D as OSF-UI
     
     U->>UI: Select Session
     UI->>DB: Load session data
@@ -150,4 +150,4 @@ sequenceDiagram
 
 - [**Session Recorder**](session-recorder.md) - Aufnahme der Sessions
 - [**Session Analysis**](session-analysis.md) - Analyse der Session-Daten
-- [**OMF Dashboard**](../../development/dashboard-components.md) - Empfänger der Replay-Nachrichten
+- [**OSF-UI**](../../development/dashboard-components.md) - Empfänger der Replay-Nachrichten

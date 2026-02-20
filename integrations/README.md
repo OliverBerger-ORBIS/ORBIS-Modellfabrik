@@ -1,6 +1,6 @@
 # TXT Controller Modules
 
-This directory contains the essential TXT controller programs extracted from the Fischertechnik APS Modellfabrik for our OMF (ORBIS Modellfabrik) project.
+This directory contains the essential TXT controller programs extracted from the Fischertechnik APS Modellfabrik for our OSF (ORBIS SmartFactory) project.
 
 ## Structure
 
