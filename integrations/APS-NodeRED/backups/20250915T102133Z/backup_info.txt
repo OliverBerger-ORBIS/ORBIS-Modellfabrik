@@ -1,7 +1,7 @@
 Node-RED Backup erstellt: Mon Sep 15 12:21:33 CEST 2025
 Node-RED URL: http://192.168.0.100:1880
 Backup-Methode: Admin API
-Backup-Verzeichnis: integrations/node_red/backups/20250915T102133Z
+Backup-Verzeichnis: integrations/APS-NodeRED/backups/20250915T102133Z
 
 Enthaltene Dateien:
 - flows.json: Node-RED Flow-Definitionen (via Admin API)
@@ -12,4 +12,4 @@ WICHTIG: flows_cred.json ist NICHT über Admin API verfügbar!
 Für vollständige Wiederherstellung SSH-Restore verwenden.
 
 Wiederherstellung:
-BASE=http://192.168.0.100:1880 TOKEN= FILE=integrations/node_red/backups/20250915T102133Z/flows.json ./nodered_restore_adminapi.sh
+BASE=http://192.168.0.100:1880 TOKEN= FILE=integrations/APS-NodeRED/backups/20250915T102133Z/flows.json ./nodered_restore_adminapi.sh

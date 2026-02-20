@@ -79,8 +79,12 @@ session_manager/
 │   ├── ui_refresh.py              # RerunController
 │   ├── session_logger.py          # Session-Logger
 │   └── streamlit_log_buffer.py    # Log-Ring-Buffer
-└── mqtt/                          # MQTT-Client
-    └── mqtt_client.py             # SessionManagerMQTTClient
+├── mqtt/                          # MQTT-Client
+│   └── mqtt_client.py             # SessionManagerMQTTClient
+└── tests/                         # Python-Tests (pytest)
+    ├── test_session_manager_logging.py
+    ├── test_session_logger.py
+    └── test_logging_cleanup.py
 ```
 
 ---

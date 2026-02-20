@@ -17,7 +17,8 @@ orbis_modellfabrik.egg-info/
 # Logs
 logs/omf2.log
 logs/session_manager.jsonl
-logs/session_manager/
+logs/
+logs/*.log
 coverage/
 
 # Backend metrics-service

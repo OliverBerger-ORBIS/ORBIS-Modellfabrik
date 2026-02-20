@@ -2,11 +2,11 @@
 set -euo pipefail
 
 # Node-RED Restore via SSH
-# Verwendung: HOST=ff22@192.168.0.100 SRC=integrations/node_red/backups/20250915T090000Z ./nodered_restore_ssh.sh
+# Verwendung: HOST=ff22@192.168.0.100 SRC=integrations/APS-NodeRED/backups/20250915T090000Z ./nodered_restore_ssh.sh
 # Oder mit SSH-Key: HOST=ff22@192.168.0.100 SRC=... SSH_KEY=~/.ssh/nodered_key ./nodered_restore_ssh.sh
 
 HOST="${HOST:?HOST required (e.g. ff22@192.168.0.100)}"
-SRC="${SRC:?SRC backup dir required (e.g. integrations/node_red/backups/20250915T090000Z)}"
+SRC="${SRC:?SRC backup dir required (e.g. integrations/APS-NodeRED/backups/20250915T090000Z)}"
 SSH_KEY="${SSH_KEY:-}"
 
 # SSH-Optionen vorbereiten

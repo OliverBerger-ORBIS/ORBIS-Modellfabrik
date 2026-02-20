@@ -6,7 +6,7 @@ set -euo pipefail
 # Oder mit SSH-Key: HOST=ff22@192.168.0.100 SSH_KEY=~/.ssh/nodered_key ./nodered_backup_ssh.sh
 
 HOST="${HOST:?HOST required (e.g. ff22@192.168.0.100)}"
-DEST="${DEST:-integrations/node_red/backups}"
+DEST="${DEST:-integrations/APS-NodeRED/backups}"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 SSH_KEY="${SSH_KEY:-}"
 

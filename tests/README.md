@@ -1,38 +1,22 @@
 # ORBIS SmartFactory Tests
 
-Dieses Verzeichnis enthält Tests für die aktiven Komponenten des Projekts.
-
-## Test-Struktur
-
-### ✅ Session Manager Tests
-- **`test_helper_apps/test_session_manager_logging.py`** - Session Manager Logging Tests
-- **`test_helper_apps/test_session_logger.py`** - Session Logger Tests
-- **`test_helper_apps/test_logging_cleanup.py`** - Logging Cleanup Tests
-
-### ✅ OMF3 Tests
-OMF3 Tests befinden sich in:
-- `omf3/apps/ccu-ui/src/app/.../__tests__/` - Angular/Jest Tests
+**Session Manager Tests** liegen jetzt im Paket: **`session_manager/tests/`**
 
 ## Test-Ausführung
 
-### Session Manager Tests
 ```bash
-# Alle Session Manager Tests
-python -m pytest tests/test_helper_apps/ -v
+# Session Manager Tests (Python/pytest)
+python -m pytest session_manager/tests/ -v
 
-# Einzelne Tests
-python -m pytest tests/test_helper_apps/test_session_manager_logging.py -v
+# OSF Angular/Jest Tests
+nx test osf-ui
 ```
 
-### OMF3 Tests
-```bash
-# Alle OMF3 Tests
-nx test ccu-ui
+## Verzeichnis
 
-# Alle Tests (OMF3 + MQTT Client)
-nx run-many -t test
-```
+- `session_manager/tests/` – Session Manager Python-Tests (Logging, Logger, Cleanup)
+- `osf/` – OSF Angular-Tests in `*.__tests__/` und `*.spec.ts`
 
-## Legacy Tests
+---
 
-**Hinweis:** OMF2/Streamlit Tests wurden entfernt, da OMF2 als Legacy markiert ist und durch OMF3 ersetzt wurde.
+*Hinweis: `tests/test_helper_apps/` wurde entfernt – Tests nach `session_manager/tests/` migriert.*

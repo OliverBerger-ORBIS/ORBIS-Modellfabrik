@@ -34,7 +34,7 @@ ssh -i ~/.ssh/nodered_key ff22@192.168.0.100 "echo 'SSH-Key funktioniert!'"
 make nodered-backup-ssh
 
 # Oder direkt
-HOST=ff22@192.168.0.100 SSH_KEY=~/.ssh/nodered_key ./integrations/node_red/scripts/nodered_backup_ssh.sh
+HOST=ff22@192.168.0.100 SSH_KEY=~/.ssh/nodered_key ./integrations/APS-NodeRED/scripts/nodered_backup_ssh.sh
 ```
 
 ## 🔧 Alternative: Passwort-basierte Authentifizierung
@@ -43,10 +43,10 @@ Falls SSH-Key nicht funktioniert, können die Skripte auch mit Passwort laufen:
 
 ```bash
 # Backup mit Passwort (interaktiv)
-HOST=ff22@192.168.0.100 ./integrations/node_red/scripts/nodered_backup_ssh.sh
+HOST=ff22@192.168.0.100 ./integrations/APS-NodeRED/scripts/nodered_backup_ssh.sh
 
 # Restore mit Passwort (interaktiv)
-HOST=ff22@192.168.0.100 SRC=integrations/node_red/backups/20250915T090000Z ./integrations/node_red/scripts/nodered_restore_ssh.sh
+HOST=ff22@192.168.0.100 SRC=integrations/APS-NodeRED/backups/20250915T090000Z ./integrations/APS-NodeRED/scripts/nodered_restore_ssh.sh
 ```
 
 ## 🛠️ Troubleshooting
@@ -100,7 +100,7 @@ ssh nodered "echo 'Test'"
 0 2 * * * cd /path/to/project && make nodered-backup-ssh
 
 # Oder mit SSH-Key
-0 2 * * * cd /path/to/project && HOST=ff22@192.168.0.100 SSH_KEY=~/.ssh/nodered_key ./integrations/node_red/scripts/nodered_backup_ssh.sh
+0 2 * * * cd /path/to/project && HOST=ff22@192.168.0.100 SSH_KEY=~/.ssh/nodered_key ./integrations/APS-NodeRED/scripts/nodered_backup_ssh.sh
 ```
 
 ## ⚠️ Sicherheitshinweise

@@ -5,7 +5,7 @@ set -euo pipefail
 # Verwendung: BASE=http://aps-host:1880 TOKEN=... ./nodered_backup_adminapi.sh
 
 BASE="${BASE:?BASE required (e.g. http://aps-host:1880)}"
-DEST="${DEST:-integrations/node_red/backups}"
+DEST="${DEST:-integrations/APS-NodeRED/backups}"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 TOKEN="${TOKEN:-}"
 

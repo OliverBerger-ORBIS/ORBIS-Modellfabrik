@@ -5,7 +5,7 @@ Node-RED Integration für die ORBIS SmartFactory - Backup, Restore und Managemen
 ## 📁 Verzeichnisstruktur
 
 ```
-integrations/node_red/
+integrations/APS-NodeRED/
 ├── backups/              # Zeitgestempelte Backups
 │   └── 20250915T090000Z/ # Beispiel-Backup
 │       ├── flows.json
@@ -35,7 +35,7 @@ integrations/node_red/
 BASE=http://192.168.0.100:1880 ./scripts/nodered_backup_adminapi.sh
 
 # Restore durchführen
-BASE=http://192.168.0.100:1880 FILE=integrations/node_red/backups/20250915T090000Z/flows.json ./scripts/nodered_restore_adminapi.sh
+BASE=http://192.168.0.100:1880 FILE=integrations/APS-NodeRED/backups/20250915T090000Z/flows.json ./scripts/nodered_restore_adminapi.sh
 ```
 
 ### SSH-Backup (Nur für native Installation)
@@ -44,7 +44,7 @@ BASE=http://192.168.0.100:1880 FILE=integrations/node_red/backups/20250915T09000
 HOST=ff22@192.168.0.100 SSH_KEY=~/.ssh/nodered_key ./scripts/nodered_backup_ssh.sh
 
 # Restore durchführen (mit SSH-Key)
-HOST=ff22@192.168.0.100 SRC=integrations/node_red/backups/20250915T090000Z SSH_KEY=~/.ssh/nodered_key ./scripts/nodered_restore_ssh.sh
+HOST=ff22@192.168.0.100 SRC=integrations/APS-NodeRED/backups/20250915T090000Z SSH_KEY=~/.ssh/nodered_key ./scripts/nodered_restore_ssh.sh
 ```
 
 ## 🔧 Makefile Integration
@@ -54,13 +54,13 @@ HOST=ff22@192.168.0.100 SRC=integrations/node_red/backups/20250915T090000Z SSH_K
 make nodered-backup-api NR_BASE=http://192.168.0.100:1880
 
 # Admin API-Restore
-make nodered-restore-api NR_BASE=http://192.168.0.100:1880 FILE=integrations/node_red/backups/20250915T090000Z/flows.json
+make nodered-restore-api NR_BASE=http://192.168.0.100:1880 FILE=integrations/APS-NodeRED/backups/20250915T090000Z/flows.json
 
 # SSH-Backup (Nur für native Installation)
 make nodered-backup-ssh NR_HOST=ff22@192.168.0.100
 
 # SSH-Restore (Nur für native Installation)
-make nodered-restore-ssh NR_HOST=ff22@192.168.0.100 SRC=integrations/node_red/backups/20250915T090000Z
+make nodered-restore-ssh NR_HOST=ff22@192.168.0.100 SRC=integrations/APS-NodeRED/backups/20250915T090000Z
 ```
 
 ## 🔐 Sicherheit
@@ -107,7 +107,7 @@ settings.local.js
 ### Regelmäßige Backups
 ```bash
 # Täglich um 2:00 Uhr (crontab)
-0 2 * * * cd /path/to/project && HOST=pi@192.168.0.100 ./integrations/node_red/scripts/nodered_backup_ssh.sh
+0 2 * * * cd /path/to/project && HOST=pi@192.168.0.100 ./integrations/APS-NodeRED/scripts/nodered_backup_ssh.sh
 ```
 
 ### Vor Änderungen
@@ -125,10 +125,10 @@ HOST=pi@192.168.0.100 ./scripts/nodered_backup_ssh.sh
 ### Disaster Recovery
 ```bash
 # 1. Neuestes Backup finden
-ls -la integrations/node_red/backups/ | tail -1
+ls -la integrations/APS-NodeRED/backups/ | tail -1
 
 # 2. Restore durchführen
-HOST=pi@192.168.0.100 SRC=integrations/node_red/backups/20250915T090000Z ./scripts/nodered_restore_ssh.sh
+HOST=pi@192.168.0.100 SRC=integrations/APS-NodeRED/backups/20250915T090000Z ./scripts/nodered_restore_ssh.sh
 
 # 3. Node-RED Status prüfen
 ssh pi@192.168.0.100 "systemctl --user status nodered"

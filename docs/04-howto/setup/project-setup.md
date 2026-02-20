@@ -47,7 +47,7 @@ pip install -r requirements.txt
 
 ### **Node-RED Setup**
 - **Port:** 1880 (Standard)
-- **Flows:** Import aus `integrations/node_red/`
+- **Flows:** Import aus `integrations/APS-NodeRED/`
 
 ## 🚨 Critical Development Rules
 

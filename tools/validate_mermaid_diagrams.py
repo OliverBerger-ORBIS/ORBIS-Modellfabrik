@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Mermaid Diagram Validator - OMF Projekt
-Validiert Mermaid-Diagramme auf Einhaltung der OMF-Standards
+Mermaid Diagram Validator - OSF Projekt
+Validiert Mermaid-Diagramme auf Einhaltung der OSF-Standards
 """
 
 import re
@@ -11,9 +11,9 @@ from typing import List
 
 
 class MermaidValidator:
-    """Validiert Mermaid-Diagramme auf OMF-Standards"""
+    """Validiert Mermaid-Diagramme auf OSF-Standards"""
 
-    # OMF-Farbpalette (erlaubte Farben)
+    # OSF-Farbpalette (erlaubte Farben)
     ALLOWED_COLORS = {
         # ORBIS (Blau)
         "#e3f2fd",
@@ -35,7 +35,7 @@ class MermaidValidator:
         "#fff",
     }
 
-    # Verbotene Farben (nicht in OMF-Palette)
+    # Verbotene Farben (nicht in OSF-Palette)
     FORBIDDEN_COLORS = {
         "#e8f5e8",  # Grün (nicht in Palette)
         "#fff3e0",  # Orange (nicht in Palette)
@@ -111,7 +111,7 @@ class MermaidValidator:
                         self.errors.append(
                             f"❌ {file_path}:{block_num}:{line_num} - "
                             f"Verbotene Farbe {color} gefunden. "
-                            f"Verwende OMF-Palette: {', '.join(sorted(self.ALLOWED_COLORS))}"
+                            f"Verwende OSF-Palette: {', '.join(sorted(self.ALLOWED_COLORS))}"
                         )
 
                     # Prüfe auf erlaubte Farben
@@ -119,7 +119,7 @@ class MermaidValidator:
                         self.warnings.append(
                             f"⚠️ {file_path}:{block_num}:{line_num} - "
                             f"Unbekannte Farbe {color}. "
-                            f"Prüfe OMF-Palette: {', '.join(sorted(self.ALLOWED_COLORS))}"
+                            f"Prüfe OSF-Palette: {', '.join(sorted(self.ALLOWED_COLORS))}"
                         )
 
                     # Prüfe auf Kommentare in style-Zeilen
@@ -158,7 +158,7 @@ class MermaidValidator:
             self.warnings.append(
                 f"⚠️ {file_path}:{block_num} - "
                 f"Zu viele Farben ({len(used_colors)}). "
-                f"OMF-Standard: maximal 4 Farben pro Diagramm"
+                f"OSF-Standard: maximal 4 Farben pro Diagramm"
             )
 
         # Prüfe auf zu viele Komponenten
@@ -166,12 +166,12 @@ class MermaidValidator:
             self.warnings.append(
                 f"⚠️ {file_path}:{block_num} - "
                 f"Viele Komponenten ({len(node_lines)}). "
-                f"OMF-Standard: maximal 7-10 primäre Elemente (Ausnahmen erlaubt)"
+                f"OSF-Standard: maximal 7-10 primäre Elemente (Ausnahmen erlaubt)"
             )
 
     def validate_project(self) -> bool:
         """Validiert alle Mermaid-Diagramme im Projekt"""
-        print("🔍 Validiere Mermaid-Diagramme im OMF-Projekt...")
+        print("🔍 Validiere Mermaid-Diagramme im OSF-Projekt...")
 
         # Finde alle Markdown-Dateien
         md_files = list(self.project_root.rglob("*.md"))

@@ -45,42 +45,43 @@ Dieses How-To beschreibt den vollständigen Workflow für Deployment von Code au
 
 ## 📁 Verzeichnis-Struktur
 
-### Prinzip
+**Alle OSF-Versionen liegen in integrations.**
 
 ```
-vendor/fischertechnik/              # Git-Submodul, Original .ft Archive
 integrations/TXT-{MODULE}/
-├── archives/                       # Varianten als .ft Archive (für Deployment)
-│   └── FF_AI_24V_mod.ft
-└── workspaces/                     # Entpackte Versionen (für Analyse)
-    ├── FF_AI_24V/                  # Original (entpackt)
-    └── FF_AI_24V_mod/              # Variante (entpackt)
+├── archives/                       # .ft Archive – für ROBO Pro öffnen/deployen
+│   ├── FF_AI_24V.ft               # Original
+│   ├── FF_AI_24V_wav.ft
+│   └── FF_AI_24V_cam.ft           # … weitere Varianten
+└── workspaces/                     # Entpackt für Code-Analyse (grep, diff)
+    └── FF_AI_24V_cam/              # unzip ../archives/FF_AI_24V_cam.ft -d .
 ```
 
-### Bedeutung
-
-- **`vendor/fischertechnik/`:** Original `.ft` Archive aus Git-Submodul, Workspace für ROBO Pro
-- **`integrations/TXT-{MODULE}/archives/`:** Varianten als `.ft` Archive, werden deployed
-- **`integrations/TXT-{MODULE}/workspaces/`:** Entpackte Versionen, für Code-Analyse
+**Originale/ältere Versionen** bei Bedarf aus dem [Fischertechnik-Repository](https://github.com/fischertechnik/Agile-Production-Simulation-24V) besorgen.
 
 ---
 
 ## 🔄 Workflow
 
-### Phase 1: Original öffnen
+**Öffnen → Umbenennen → Speichern → Ändern → Speichern → Zurück auf Controller**
+
+### Phase 1: Projekt öffnen
 
 1. **ROBO Pro Coding öffnen**
-2. **Projekt öffnen:**
-   - `Datei → Öffnen` oder `Cmd+O`
-   - `vendor/fischertechnik/FF_AI_24V.ft` auswählen
-   - Projekt wird geladen
-
+2. **Projekt öffnen** (zwei Quellen möglich):
+   - Aus **integrations:** `Datei → Öffnen` → `integrations/TXT-AIQS/archives/FF_AI_24V_cam.ft`
+   - Vom **Controller:** Controller verbinden → Projekt vom Controller laden
 3. **Modus wählen:**
    - **Grafischer Modus:** Für visuelle Programmierung (Blockly)
    - **Professional Modus:** Für Python-Code-Änderungen
      - `Ansicht → Art der Programmierung → Python-Programmierung`
 
-### Phase 2: Änderungen durchführen
+### Phase 2: Umbenennen & speichern (bei neuem Projekt)
+
+- **Projekt umbenennen** (falls neue Variante)
+- `Datei → Speichern unter...` → `integrations/TXT-AIQS/archives/FF_AI_24V_neu.ft`
+
+### Phase 3: Änderungen durchführen
 
 **Im Grafischen Modus:**
 - ✅ Visuelle Änderungen mit Blockly-Blöcken
@@ -95,21 +96,17 @@ integrations/TXT-{MODULE}/
 
 **Hinweis:** Für Änderungen an **bestehendem Code** (z.B. AIQS Quality-Check): **Blockly-Modus** bevorzugen. Der TXT reagiert empfindlich auf Leerzeichen; Änderungen über Blockly vermeiden Formatierungsprobleme. Professional Modus für neue Python-Dateien.
 
-### Phase 3: Variante speichern
+### Phase 4: Speichern
 
-1. **"Speichern unter..."** wählen (sofort nach Öffnen, damit das Original unverändert bleibt):
-   - `Datei → Speichern unter...` oder `Cmd+Shift+S`
-   - Pfad: `integrations/TXT-AIQS/archives/FF_AI_24V_mod.ft`
-   - ROBO Pro erstellt `.ft` Archiv automatisch
-   - **Projekt umbenennen** (falls gewünscht): Name in RoboPro auf den neuen Variantennamen setzen
+- Änderungen speichern (`Cmd+S`) – Datei bleibt in `archives/`
 
-2. **Optional: Entpacken für Analyse:**
-   ```bash
-   cd integrations/TXT-AIQS/workspaces/
-   unzip ../archives/FF_AI_24V_mod.ft -d .
-   ```
+**Optional – Entpacken für Analyse (grep, diff):**
+```bash
+cd integrations/TXT-AIQS/workspaces/
+unzip ../archives/FF_AI_24V_cam.ft -d .
+```
 
-### Phase 4: TXT-Controller verbinden
+### Phase 5: TXT-Controller verbinden
 
 1. **ROBO Pro Coding:**
    - `Controller → Verbinden` oder entsprechendes Menü
@@ -128,7 +125,7 @@ integrations/TXT-{MODULE}/
    - Controller aus Liste auswählen
    - Verbindung wird hergestellt
 
-### Phase 5: Deployment
+### Phase 6: Deployment (Zurück auf Controller)
 
 1. **Projekt deployen:**
    - `Controller → Download` oder entsprechendes Menü
@@ -148,23 +145,14 @@ integrations/TXT-{MODULE}/
 
 ---
 
-## 📦 Original entpacken (einmalig)
-
-Falls Original aus `vendor/` für Analyse entpackt werden soll:
+## 📦 Entpacken für Analyse
 
 ```bash
-# Original aus vendor/ entpacken
 cd integrations/TXT-AIQS/workspaces/
-unzip ../../../vendor/fischertechnik/FF_AI_24V.ft -d .
+unzip ../archives/FF_AI_24V_cam.ft -d .
 ```
 
-**Ergebnis:**
-```
-integrations/TXT-AIQS/workspaces/FF_AI_24V/
-├── FF_AI_24V.py
-├── lib/
-└── data/
-```
+**Original** aus [Fischertechnik-Repo](https://github.com/fischertechnik/Agile-Production-Simulation-24V) herunterladen und bei Bedarf entpacken.
 
 ---
 
@@ -240,10 +228,10 @@ integrations/TXT-AIQS/workspaces/FF_AI_24V/
 
 **Ziel:** Kamera-Bilder von AIQS über MQTT publizieren.
 
-### Schritt 1: Original öffnen
+### Schritt 1: Projekt öffnen
 
 1. ROBO Pro Coding öffnen
-2. `vendor/fischertechnik/FF_AI_24V.ft` öffnen
+2. `integrations/TXT-AIQS/archives/FF_AI_24V_wav.ft` öffnen (oder vom Controller)
 3. Professional Modus aktivieren: `Ansicht → Art der Programmierung → Python-Programmierung`
 
 ### Schritt 2: Neue Datei erstellen
@@ -271,5 +259,5 @@ integrations/TXT-AIQS/workspaces/FF_AI_24V/
 
 ---
 
-*Letzte Aktualisierung: 06.01.2026*
+*Letzte Aktualisierung: 18.02.2026 – Workflow ohne vendor, alle OSF-Versionen in integrations*
 

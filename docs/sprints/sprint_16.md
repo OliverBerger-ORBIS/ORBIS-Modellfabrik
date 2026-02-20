@@ -22,7 +22,8 @@
 
 ### Dokumentation
 - [x] Fischertechnik: Lokale Kopie der MQTT-Doku ([fischertechnik-official/](../06-integrations/fischertechnik-official/)) + Verweis auf Upstream ([FISCHERTECHNIK-OFFICIAL](../06-integrations/FISCHERTECHNIK-OFFICIAL.md))
-- [ ] As-Is Doku: großes Aufräumen nach Doku-Check
+- [x] Restrukturierung der docs und säubern des Repos
+- [ ] As-Is Doku: Aufräumen nach Vergleich mit aktueller Fischertechnik-Doku
 - [x] dsp-architecture-inventory Dokumentation der SVGs
 
 **Doku-Audit-Pfad:** Unsere Interpretationen und Prämissen gegen die Fischertechnik-Doku prüfen. Beispiel: [aps-data-flow.md](../02-architecture/aps-data-flow.md) – stimmen Datenfluss, Topics, Komponenten? Autoritative Quelle: [fischertechnik-official/](../06-integrations/fischertechnik-official/) (lokale Kopie). Quellen-Zuordnung: [README – Fischertechnik-Quellen](../../README.md#-fischertechnik-quellen--wo-liegt-was).

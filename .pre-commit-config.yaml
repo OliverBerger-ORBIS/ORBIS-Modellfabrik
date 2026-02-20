@@ -1,27 +1,27 @@
 # .pre-commit-config.yaml
-# Pre-commit hooks for OMF3 (Angular) and Session Manager (Python)
+# Pre-commit hooks for OSF (Angular) and Session Manager (Python)
 
 repos:
   # Angular/TypeScript Validation
   - repo: local
     hooks:
-      # OMF3 Tests (CRITICAL - produktiver Code)
-      - id: nx-test-omf3
-        name: OMF3 Tests
+      # OSF Tests (CRITICAL - produktiver Code)
+      - id: nx-test-osf
+        name: OSF Tests
         entry: bash -c 'npx nx test osf-ui && npx nx test mqtt-client'
         language: system
         pass_filenames: false
-        stages: [commit]
-        description: Run OMF3 tests (osf-ui, mqtt-client)
+        stages: [pre-commit]
+        description: Run OSF tests (osf-ui, mqtt-client)
 
       # TypeScript/ESLint Linting
-      - id: nx-lint-omf3
-        name: OMF3 Lint
+      - id: nx-lint-osf
+        name: OSF Lint
         entry: npx nx lint osf-ui
         language: system
         pass_filenames: false
-        stages: [commit]
-        description: Run ESLint on OMF3 Angular code
+        stages: [pre-commit]
+        description: Run ESLint on OSF Angular code
 
       # TypeScript Type Check (via tsc - non-blocking)
       - id: nx-type-check
@@ -29,7 +29,7 @@ repos:
         entry: bash -c 'cd osf/apps/osf-ui && npx tsc --noEmit' || true
         language: system
         pass_filenames: false
-        stages: [commit]
+        stages: [pre-commit]
         description: TypeScript type checking (non-blocking, ESLint catches most issues)
 
   # Python Validation (Session Manager only)
@@ -63,5 +63,5 @@ repos:
         language: system
         files: \.md$
         pass_filenames: false
-        stages: [commit]
+        stages: [pre-commit]
         description: Validate Mermaid diagrams in documentation

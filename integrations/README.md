@@ -1,43 +1,30 @@
 # TXT Controller Modules
 
-This directory contains the essential TXT controller programs extracted from the Fischertechnik APS Modellfabrik for our OSF (ORBIS SmartFactory) project.
+This directory contains TXT controller programs for the OSF (ORBIS SmartFactory) project. Structure follows [DR-17](../docs/03-decision-records/17-txt-controller-deployment.md) and [How-To: TXT-Controller Deployment](../docs/04-howto/txt-controller-deployment.md).
 
 ## Structure
 
-Each TXT module is extracted from ZIP/ZAP18 archives in `vendor/fischertechnik/` or loaded directly from TXT Controller and contains:
-- **Python source code** (`.py` files)
-- **Blockly visual programming** (`.blockly` files) 
-- **Configuration files** (`.json` files)
-- **Library modules** (`lib/` directory)
+| Ort | Zweck | Inhalt |
+|-----|-------|--------|
+| `integrations/TXT-{MODULE}/archives/` | **Alle OSF-Versionen** – für ROBO Pro und Deployment | `.ft` Archive (öffnen, ändern, speichern, deployen) |
+| `integrations/TXT-{MODULE}/workspaces/` | Code-Analyse | Entpackte Versionen (`unzip …/archives/Variante.ft -d .`) |
 
-### Standard Directory Structure
+**Workflow:** Projekt öffnen (aus `archives/` oder vom Controller) → umbenennen → speichern → ändern → speichern → mit Controller verbinden → zurück auf Controller downloaden. Originale/ältere Versionen bei Bedarf aus [Fischertechnik-Repo](https://github.com/fischertechnik/Agile-Production-Simulation-24V) holen.
 
-**Aktuelle Struktur (23.12.2025):**
+### TXT-{MODULE} Verzeichnisstruktur
+
 ```
 integrations/TXT-{MODULE}/
-└── workspaces/              # Spiegelt Controller-Struktur (/opt/ft/workspaces/)
-    └── {PROJEKT_NAME}/      # Z.B. FF_AI_24V/, FF_DPS_24V/, fts_main/, FF_CGW/
-        ├── {PROJEKT_NAME}.py    # Haupt-Datei
-        ├── lib/             # Alle lib/*.py Dateien
-        │   ├── camera.py
-        │   ├── mqtt_utils.py
-        │   └── ... (weitere lib-Dateien)
-        └── data/            # Konfigurationen
-            ├── config.json
-            └── factsheet.json
+├── archives/                # Varianten (nur wo modifiziert, z.B. TXT-AIQS)
+│   └── FF_AI_24V_cam.ft
+└── workspaces/              # Entpackt für Analyse
+    └── {PROJEKT_NAME}/      # FF_AI_24V/, FF_DPS_24V/, fts_main/, FF_CGW/
+        ├── {PROJEKT_NAME}.py
+        ├── lib/
+        └── data/
 ```
 
-**Prinzip:**
-- `workspaces/` spiegelt die Struktur auf dem TXT-Controller (`/opt/ft/workspaces/`)
-- Original-Sourcen werden **nicht** modifiziert
-- Alle Dateien stammen direkt vom Controller (via SSH/tar kopiert)
-
-**Source Access Methods:**
-1. **SSH/SCP** (Port 22, aktiv verwendet): `ssh ft@<TXT-IP>` → tar-Archiv erstellen → `scp` kopieren
-2. **Web Interface** (Port 80, alternativ): `http://<TXT-IP>` → Login `ft`/`fischertechnik` → Download files
-3. **ROBO Pro Coding** (Ziel-Methode, noch zu erarbeiten): Direkter Export/Deploy-Workflow
-
-**Detaillierte Anleitung:** Siehe [TXT-SOURCE-ACCESS.md](../docs/06-integrations/TXT-SOURCE-ACCESS.md)
+**Detaillierte Anleitung:** [How-To: TXT-Controller Deployment](../docs/04-howto/txt-controller-deployment.md) | [DR-17](../docs/03-decision-records/17-txt-controller-deployment.md)
 
 ## TXT Modules
 
@@ -79,14 +66,14 @@ integrations/TXT-{MODULE}/
 - **Features:** Image recognition, quality control, sorting line
 - **Status:** ✅ **Relevant für Fabrik-Prozesse**
 
-## Extraction Process
+## Extraction (Optional)
 
-All TXT modules are extracted from the `vendor/fischertechnik/` submodule using a unified process:
+Workspaces bei Bedarf aus `.ft` Archiven erzeugen:
 
-1. **Source Identification:** Identify relevant `.ft` (ZIP) or `.zap18` archives
-2. **Extraction:** Extract to temporary directory
-3. **Restructuring:** Move content to `TXT-{MODULE}/` directory
-4. **Cleanup:** Remove temporary files and directories
+```bash
+cd integrations/TXT-AIQS/workspaces/
+unzip ../archives/FF_AI_24V_cam.ft -d .
+```
 
 ## Analysis Status
 

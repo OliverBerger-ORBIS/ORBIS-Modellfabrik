@@ -10,10 +10,10 @@
 
 **ROBO Pro Coding** wird als primäre Methode für Deployment von Code auf TXT-Controller verwendet.
 
-**Verzeichnis-Struktur:**
-- `vendor/fischertechnik/` = Git-Submodul, Original `.ft` Archive, Workspace für ROBO Pro
-- `integrations/TXT-{MODULE}/archives/` = Varianten als `.ft` Archive (für Deployment)
-- `integrations/TXT-{MODULE}/workspaces/` = Entpackte Versionen (für Code-Analyse)
+**Verzeichnis-Struktur (Stand 18.02.2026 – ohne vendor):**
+- `integrations/TXT-{MODULE}/archives/` = Alle OSF-Versionen (`.ft` Archive für ROBO Pro, Deployment)
+- `integrations/TXT-{MODULE}/workspaces/` = Entpackte Versionen (für Code-Analyse, grep, diff)
+- Originale/ältere Versionen bei Bedarf aus [Fischertechnik-Repo](https://github.com/fischertechnik/Agile-Production-Simulation-24V) besorgen
 
 **Modus:** Grafischer Modus (Blockly) für visuelle Programmierung, Professional Modus (Python) für Code-Änderungen.
 
@@ -72,39 +72,33 @@
 
 ## Verzeichnis-Struktur
 
-### Prinzip
+### Prinzip (ohne vendor – alle OSF-Versionen in integrations)
 
-**1. `vendor/fischertechnik/`** (Git-Submodul)
-- **Zweck:** Original `.ft` Archive aus offiziellem Fischertechnik Repository
-- **Inhalt:** Nur Original-Archive (z.B. `FF_AI_24V.ft`, `FF_DPS_24V.ft`)
-- **Verwendung:** Workspace für ROBO Pro (Projekte öffnen)
-- **Status:** Git-Submodul, keine Varianten
+**1. `integrations/TXT-{MODULE}/archives/`**
+- **Zweck:** Alle OSF-Versionen als `.ft` Archive (öffnen, ändern, speichern, deployen)
+- **Inhalt:** z.B. `FF_AI_24V.ft`, `FF_AI_24V_wav.ft`, `FF_AI_24V_cam.ft`
+- **Verwendung:** ROBO Pro öffnet von hier ODER vom Controller; „Speichern unter“ nach hier
+- **Status:** Quelle of Truth für OSF
 
-**2. `integrations/TXT-{MODULE}/archives/`** (Varianten als `.ft` Archive)
-- **Zweck:** Varianten für Deployment auf TXT-Controller
-- **Inhalt:** Modifizierte `.ft` Archive (z.B. `FF_AI_24V_mod.ft`)
-- **Verwendung:** Wird von ROBO Pro erstellt (über "Speichern unter...")
-- **Status:** Wird auf TXT Controller deployed
+**2. `integrations/TXT-{MODULE}/workspaces/`**
+- **Zweck:** Code-Analyse (grep, diff, IDE)
+- **Inhalt:** Entpackte Projekte (`unzip …/archives/Variante.ft -d .`)
+- **Verwendung:** Bei Bedarf aus archives/ extrahieren
 
-**3. `integrations/TXT-{MODULE}/workspaces/`** (Entpackte Versionen)
-- **Zweck:** Code-Analyse außerhalb von ROBO Pro
-- **Inhalt:** Entpackte Projekte (z.B. `FF_AI_24V/`, `FF_AI_24V_mod/`)
-- **Verwendung:** Für Code-Analyse, Git-Diff, externe Tools
-- **Status:** Wird aus `.ft` Archiven extrahiert
+**3. Fischertechnik-Repo (bei Bedarf)**
+- **URL:** [Agile-Production-Simulation-24V](https://github.com/fischertechnik/Agile-Production-Simulation-24V)
+- **Zweck:** Originale oder ältere Versionen besorgen
 
 ### Beispiel-Struktur
 
 ```
-vendor/fischertechnik/
-├── FF_AI_24V.ft              # Original (Git-Submodul)
-└── FF_DPS_24V.ft             # Original (Git-Submodul)
-
 integrations/TXT-AIQS/
 ├── archives/
-│   └── FF_AI_24V_mod.ft      # Variante (für Deployment)
+│   ├── FF_AI_24V.ft          # Original
+│   ├── FF_AI_24V_wav.ft
+│   └── FF_AI_24V_cam.ft     # … weitere Varianten
 └── workspaces/
-    ├── FF_AI_24V/             # Original (entpackt)
-    └── FF_AI_24V_mod/         # Variante (entpackt für Analyse)
+    └── FF_AI_24V_cam/        # entpackt für Analyse
 ```
 
 ---
@@ -133,27 +127,27 @@ integrations/TXT-AIQS/
 
 ### Workflow
 
-1. **Original öffnen:**
+1. **Projekt öffnen:**
    - ROBO Pro Coding öffnen
-   - `vendor/fischertechnik/FF_AI_24V.ft` öffnen
+   - Öffnen aus `integrations/TXT-*/archives/` ODER vom Controller
    - Für Python-Änderungen: Professional Modus aktivieren
 
-2. **Änderungen durchführen:**
+2. **Umbenennen & speichern** (bei neuer Variante)
+
+3. **Änderungen durchführen:**
    - Code direkt in ROBO Pro bearbeiten
    - ROBO Pro speichert automatisch
 
-3. **Variante speichern:**
-   - "Speichern unter..." → `integrations/TXT-AIQS/archives/FF_AI_24V_mod.ft`
-   - ROBO Pro erstellt `.ft` Archiv automatisch
+4. **Speichern** (Cmd+S)
 
-4. **Deployment:**
+5. **Deployment:**
    - TXT-Controller verbinden (DHCP-Scan, API-Key)
    - Projekt deployen
    - Testen
 
-5. **Optional: Entpacken für Analyse:**
+6. **Optional: Entpacken für Analyse:**
    ```bash
-   unzip integrations/TXT-AIQS/archives/FF_AI_24V_mod.ft -d integrations/TXT-AIQS/workspaces/
+   cd integrations/TXT-AIQS/workspaces/ && unzip ../archives/FF_AI_24V_cam.ft -d .
    ```
 
 ### Voraussetzungen

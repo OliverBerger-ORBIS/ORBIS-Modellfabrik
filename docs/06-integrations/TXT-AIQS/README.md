@@ -19,31 +19,34 @@ TXT-AIQS is the AI Quality System TXT controller responsible for quality control
 - **Main Program:** `/integrations/TXT-AIQS/FF_AI_24V.py` (minimal, extracted)
 - **Source Archive:** `FF_AI_24V.ft` (ZIP archive with complete source)
 
-## Project Structure
+## Projekt-Struktur und FF_AI_24V-Varianten
 
-**Aktuelle Struktur (06.01.2026):**
+**Quelle of Truth:** TXT-Controller. Workflow: ROBO Pro → Controller verbinden → Projekt vom Controller öffnen → umbenennen → speichern nach `archives/` → Download auf Controller.
+
+### Erwartete Varianten (archives/)
+
+| Suffix | Beschreibung |
+|--------|--------------|
+| *(keins)* | Original (Basis) |
+| `_wav` | Ton in sorting_line bei result passed/failed (unterschiedliche Töne) |
+| `_cam` | Ton + MQTT-Nachricht Topic `quality_check` |
+| `_cam_clfn` | Wie _cam, Topic um `classification` erweitert |
+
+**Aktuell in archives/:** `FF_AI_24V_cam.ft`, `FF_AI_24V_cam_clfn.ft`, `FF_AI_24V_wav.ft`
+
+### Verzeichnisstruktur
+
 ```
 integrations/TXT-AIQS/
-├── archives/                # Varianten als .ft Archive (für Deployment)
-│   └── FF_AI_24V_mod.ft    # Beispiel: Modifizierte Variante
-└── workspaces/              # Entpackte Versionen (für Analyse)
-    ├── FF_AI_24V/           # Original (entpackt aus vendor/)
-    │   ├── FF_AI_24V.py     # Haupt-Datei
-    │   ├── lib/             # Alle lib/*.py Dateien
-    │   │   ├── camera.py
-    │   │   ├── machine_learning.py
-    │   │   ├── mqtt_utils.py
-    │   │   └── ...
-    │   └── data/            # Konfigurationen
-    └── FF_AI_24V_mod/       # Variante (entpackt für Analyse)
+├── archives/                # .ft Archive (Quelle of Truth für Deployment)
+│   ├── FF_AI_24V.ft        # Original (ggf. vom Controller sichern)
+│   ├── FF_AI_24V_wav.ft
+│   ├── FF_AI_24V_cam.ft
+│   └── FF_AI_24V_cam_clfn.ft
+└── workspaces/              # Entpackt für Code-Analyse (unzip bei Bedarf)
 ```
 
-**Prinzip:**
-- `vendor/fischertechnik/` = Original `.ft` Archive (Git-Submodul, Workspace für ROBO Pro)
-- `archives/` = Varianten als `.ft` Archive (für Deployment)
-- `workspaces/` = Entpackte Versionen (für Code-Analyse)
-
-**Siehe:** [Decision Record](../../03-decision-records/17-txt-controller-deployment.md) für Details zur Verzeichnis-Struktur
+**Siehe:** [How-To TXT-Controller](../../04-howto/txt-controller-deployment.md) | [Integrations/Vendor-Analyse](../../07-analysis/INTEGRATIONS-VENDOR-ANALYSIS.md)
 
 **Status (22.12.2025):**
 - ✅ Vollständige Source-Dateien vom Controller kopiert

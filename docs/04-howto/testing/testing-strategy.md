@@ -72,13 +72,14 @@ addopts = --cov=omf --cov-report=html --cov-report=term
 
 ### **Test-Directory Structure**
 ```
-tests_orbis/
-├── test_osf/                    # OSF-spezifische Tests
-│   ├── test_dashboard/          # Dashboard-Tests
-│   ├── test_tools/              # Tools-Tests
-│   └── test_aps_integration/    # APS-Integration-Tests
-├── test_helper_apps/            # Helper-App-Tests
-└── conftest.py                  # Pytest-Fixtures
+session_manager/
+└── tests/                       # Session Manager Python-Tests
+    ├── test_session_manager_logging.py
+    ├── test_session_logger.py
+    └── test_logging_cleanup.py
+
+osf/                             # OSF Angular/Jest-Tests
+└── apps/osf-ui/.../__tests__/   # Component/Service-Tests
 ```
 
 ### **Mock-Objekte**

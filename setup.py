@@ -1,12 +1,22 @@
 #!/usr/bin/env python3
 """
 ORBIS Modellfabrik - Setup Configuration
-Echtes Python Packaging für OMF2
+Python Packaging für Session Manager und Projekt-Tools
+
+Version wird aus package.json gelesen (Single Source of Truth für OSF + Session Manager).
 """
 
+import json
 from pathlib import Path
 
 from setuptools import find_packages, setup
+
+# Version aus package.json (Single Source of Truth)
+package_json_path = Path(__file__).parent / "package.json"
+version = "0.0.0"
+if package_json_path.exists():
+    with open(package_json_path, encoding="utf-8") as f:
+        version = json.load(f).get("version", version)
 
 # Read README for long description
 readme_path = Path(__file__).parent / "README.md"
@@ -20,13 +30,13 @@ if requirements_path.exists():
     requirements = [req.strip() for req in requirements if req.strip() and not req.startswith("#")]
 
 setup(
-    name="orbis-modellfabrik",
-    version="3.2.0",
+    name="orbis-smartfactory",
+    version=version,
     author="ORBIS Team",
-    description="ORBIS Modellfabrik Dashboard und Tools",
+    description="ORBIS SmartFactory – Session Manager für Replay-Environment",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    packages=find_packages(include=["omf2*", "session_manager*"]),
+    packages=find_packages(include=["session_manager*"]),
     python_requires=">=3.8",
     install_requires=requirements,
     extras_require={
@@ -36,11 +46,6 @@ setup(
             "ruff>=0.1.0",
             "pre-commit>=3.2.0",
         ]
-    },
-    entry_points={
-        "console_scripts": [
-            "omf2=omf2.omf:main",
-        ],
     },
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -55,14 +60,4 @@ setup(
         "Programming Language :: Python :: 3.13",
     ],
     include_package_data=True,
-    package_data={
-        "omf2": [
-            "config/*.yml",
-            "config/*.json",
-            "registry/**/*.yml",
-            "registry/**/*.json",
-            "assets/**/*.svg",
-            "assets/**/*.html",
-        ],
-    },
 )

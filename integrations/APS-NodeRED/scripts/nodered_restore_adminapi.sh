@@ -50,8 +50,8 @@ fi
 # Erstelle Backup der aktuellen Flows
 echo "💾 Erstelle Backup der aktuellen Flows..."
 CURRENT_BACKUP="$(date -u +%Y%m%dT%H%M%SZ)_current"
-mkdir -p "integrations/node_red/backups/$CURRENT_BACKUP"
-curl -sf "${authHeader[@]}" "$BASE/flows" -o "integrations/node_red/backups/$CURRENT_BACKUP/flows.json" || {
+mkdir -p "integrations/APS-NodeRED/backups/$CURRENT_BACKUP"
+curl -sf "${authHeader[@]}" "$BASE/flows" -o "integrations/APS-NodeRED/backups/$CURRENT_BACKUP/flows.json" || {
     echo "⚠️  Fehler beim Backup der aktuellen Flows - fahre trotzdem fort"
 }
 
@@ -74,11 +74,11 @@ else
 fi
 
 # Backup-Info erstellen
-cat > "integrations/node_red/backups/$CURRENT_BACKUP/backup_info.txt" << EOF
+cat > "integrations/APS-NodeRED/backups/$CURRENT_BACKUP/backup_info.txt" << EOF
 Node-RED Restore Backup erstellt: $(date)
 Node-RED URL: $BASE
 Restore-Datei: $FILE
-Backup-Verzeichnis: integrations/node_red/backups/$CURRENT_BACKUP
+Backup-Verzeichnis: integrations/APS-NodeRED/backups/$CURRENT_BACKUP
 
 WICHTIG: 
 - Nur flows.json wurde über Admin API wiederhergestellt
@@ -86,11 +86,11 @@ WICHTIG:
 - Für vollständige Wiederherstellung SSH-Restore verwenden
 
 Wiederherstellung:
-BASE=$BASE FILE=integrations/node_red/backups/$CURRENT_BACKUP/flows.json TOKEN=$TOKEN ./nodered_restore_adminapi.sh
+BASE=$BASE FILE=integrations/APS-NodeRED/backups/$CURRENT_BACKUP/flows.json TOKEN=$TOKEN ./nodered_restore_adminapi.sh
 EOF
 
 echo ""
 echo "✅ Restore abgeschlossen!"
-echo "💾 Aktuelle Flows gesichert in: integrations/node_red/backups/$CURRENT_BACKUP/"
+echo "💾 Aktuelle Flows gesichert in: integrations/APS-NodeRED/backups/$CURRENT_BACKUP/"
 echo "⚠️  HINWEIS: flows_cred.json (Credentials) wurde NICHT übertragen!"
 echo "🌐 Node-RED UI: $BASE"

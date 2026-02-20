@@ -35,6 +35,12 @@ try {
 
     fs.writeFileSync(versionFilePath, fileContent, 'utf8');
     console.log(`Successfully updated ${versionFilePath}`);
+
+    // 4. Write VERSION file for Python (setup.py/pyproject.toml)
+    const versionFilePathPy = path.join(rootDir, 'VERSION');
+    fs.writeFileSync(versionFilePathPy, version + '\n', 'utf8');
+    console.log(`Successfully updated ${versionFilePathPy}`);
+
     console.log(`- Version: ${version}`);
     console.log(`- Date: ${buildDate}`);
 

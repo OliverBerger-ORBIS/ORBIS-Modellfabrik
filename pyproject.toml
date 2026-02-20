@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "orbis-modellfabrik"
-version = "3.2.0"
-description = "ORBIS Modellfabrik Dashboard und Tools"
+name = "orbis-smartfactory"
+dynamic = ["version"]
+description = "ORBIS SmartFactory – Session Manager für Replay-Environment (MQTT-Aufnahme, Wiedergabe, Analyse)"
 authors = [{name = "ORBIS Team"}]
 readme = "README.md"
 requires-python = ">=3.8"
@@ -24,21 +24,11 @@ dev = [
     "pre-commit>=3.2.0",
 ]
 
-[project.scripts]
-omf2 = "omf2.omf:main"
-
 [tool.setuptools.packages.find]
-include = ["omf2*", "session_manager*"]
+include = ["session_manager*"]
 
-[tool.setuptools.package-data]
-omf2 = [
-    "config/*.yml",
-    "config/*.json",
-    "registry/**/*.yml",
-    "registry/**/*.json",
-    "assets/**/*.svg",
-    "assets/**/*.html",
-]
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
 
 [tool.black]
 line-length = 120
@@ -75,13 +65,13 @@ select = [
 ignore = [
     "E501",  # line too long (HTML/CSS in f-strings)
 ]
-per-file-ignores = { "**/logger.py" = ["E402"], "**/omf.py" = ["E402"], "integrations/**" = ["F405", "E402"], "session_manager/**" = ["E402"], "tests/**" = ["E402", "F841"] }
+per-file-ignores = { "**/logger.py" = ["E402"], "integrations/**" = ["F405", "E402"], "session_manager/**" = ["E402"] }
 
 [tool.ruff.lint.isort]
-known-first-party = ["omf2", "session_manager"]
+known-first-party = ["session_manager"]
 
 [tool.pytest.ini_options]
-testpaths = ["omf2/tests", "tests"]
+testpaths = ["session_manager/tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]

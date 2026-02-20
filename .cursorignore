@@ -6,7 +6,6 @@ git-hooks/pre-commit
 
 # Wichtige Konfigurationsdateien
 .gitignore
-pyproject.toml
 requirements.txt
 pytest.ini
 
@@ -14,9 +13,6 @@ pytest.ini
 logs/
 *.log
 *.jsonl
-
-# Vendor-Verzeichnisse (Submodule)
-vendor/
 
 # Temporäre Dateien
 *.tmp

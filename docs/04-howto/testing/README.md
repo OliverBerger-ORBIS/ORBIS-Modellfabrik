@@ -32,13 +32,14 @@
 ### Tests ausführen
 
 ```bash
-# Alle Tests
+# OSF Angular/Jest Tests
 npm test
-
-# Nur OSF-UI Tests
 nx test osf-ui
 
-# Mit Coverage Report
+# Session Manager Python-Tests (von Projekt-Root)
+python -m pytest session_manager/tests/ -v
+
+# Mit Coverage Report (OSF)
 npm run test:coverage
 
 # Coverage Check (mit Thresholds)

@@ -60,8 +60,9 @@ git clone -b release https://github.com/fischertechnik/Agile-Production-Simulati
 
 ### 24V (ohne Dev): TXT-Programme, PLC-Programme
 
-**URL:** [Agile-Production-Simulation-24V](https://github.com/fischertechnik/Agile-Production-Simulation-24V)  
-**Lokaler Zugriff:** Submodul `vendor/fischertechnik`
+**URL:** [Agile-Production-Simulation-24V](https://github.com/fischertechnik/Agile-Production-Simulation-24V)
+
+**Originale oder ältere Versionen** der `.ft` Archive (FF_AI_24V.ft, FF_DPS_24V.ft, …) bei Bedarf dort besorgen. OSF-Versionen liegen in `integrations/TXT-*/archives/`.
 
 **Inhalt u.a.:**
 - **TXT4.0-programs/** – `*.ft` (RoBO Pro Coding: FF_AI_24V.ft, FF_CGW.ft, FF_DPS_24V.ft, fts_main.ft, …)
@@ -73,11 +74,11 @@ git clone -b release https://github.com/fischertechnik/Agile-Production-Simulati
 
 ## 🗂️ Matrix: Beide Fischertechnik-Repos
 
-| Inhalt | 24V-Dev | 24V (ohne Dev, Submodul) |
+| Inhalt | 24V-Dev | 24V (ohne Dev – bei Bedarf vom Repo) |
 |--------|---------|---------------------------|
 | **MQTT-Dokumentation** | ✓ docs/ (lokale Kopie in fischertechnik-official/) | – |
 | **CCU, Node-RED, mosquitto** | ✓ central-control, nodeRed, mosquitto | flows.json |
-| **TXT-Programme (\*.ft)** | – | ✓ TXT4.0-programs/ (RoBO Pro Coding) |
+| **TXT-Programme (\*.ft)** | – | ✓ TXT4.0-programs/ (RoBO Pro Coding) – bei Bedarf vom Repo; OSF-Versionen in integrations |
 | **PLC-Programme (\*.zap18)** | – | ✓ PLC-programs/S7_1200_TIAv18/ (TIA Portal) |
 | **Deployment-Anleitung** | ✓ DEPLOYMENT.md | RPI_Image.md |
 

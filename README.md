@@ -73,7 +73,7 @@
 | Änderung / Erweiterung | Repo | Quellen | Tool |
 |------------------------|------|---------|------|
 | **MQTT, CCU, Node-RED** | [24V-**Dev**](https://github.com/fischertechnik/Agile-Production-Simulation-24V-Dev) | central-control, nodeRed, docs, mosquitto, DEPLOYMENT.md | Docker, npm, Node-RED |
-| **TXT-Programme (\*.ft)** | [24V](https://github.com/fischertechnik/Agile-Production-Simulation-24V) (`vendor/fischertechnik`) | TXT4.0-programs/ | RoBO Pro Coding |
+| **TXT-Programme (\*.ft)** | [24V](https://github.com/fischertechnik/Agile-Production-Simulation-24V) – Originale dort; OSF-Versionen in `integrations/TXT-*/archives/` | TXT4.0-programs/ | RoBO Pro Coding |
 | **PLC-Programme (\*.zap18)** | [24V](https://github.com/fischertechnik/Agile-Production-Simulation-24V) | PLC-programs/S7_1200_TIAv18/ | TIA Portal, UA-Expert |
 
 → Details: [FISCHERTECHNIK-OFFICIAL](docs/06-integrations/FISCHERTECHNIK-OFFICIAL.md) | [fischertechnik-official/](docs/06-integrations/fischertechnik-official/) (lokale Kopie)
@@ -117,8 +117,7 @@ streamlit run session_manager/app.py
 |-------------|--------|
 | `osf/` | Angular Dashboard, mqtt-client, gateway, business, entities |
 | `session_manager/` | Session-Replay Helper-App |
-| `integrations/` | APS-CCU, APS-NodeRED, TXT-Controller (ORBIS-spezifisch) |
-| `vendor/fischertechnik/` | Submodul: TXT4.0-programs, PLC-programs, Node-RED flows |
+| `integrations/` | APS-CCU, APS-NodeRED, TXT-Controller (archives/ + workspaces/) – alle OSF-Versionen |
 
 ### OSF-Regeln
 - **TypeScript:** Strikte Typisierung

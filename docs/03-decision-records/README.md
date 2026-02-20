@@ -56,7 +56,7 @@ Routen außerhalb der Tab-Navigation (z.B. Presentation, DSP-Animation); Dokumen
 
 ### 17. [TXT-Controller Deployment mit ROBO Pro Coding](17-txt-controller-deployment.md)
 **Status:** Accepted | **Datum:** 2026-01-06  
-ROBO Pro Coding als Deployment-Methode; Verzeichnis-Struktur vendor/ vs. integrations/TXT-*.
+ROBO Pro Coding als Deployment-Methode; alle OSF-Versionen in integrations/TXT-*/archives/ (ohne vendor).
 
 ---
 

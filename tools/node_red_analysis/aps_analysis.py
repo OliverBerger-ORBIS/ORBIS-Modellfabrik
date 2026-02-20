@@ -657,7 +657,7 @@ def generate_aps_readme_md(analysis_results):
     content.append("## 🔗 Integration Management")
     content.append("")
     content.append(
-        "- **[Node-RED Integration](../../integrations/node_red/README.md)** - Backup, Restore und Management"
+        "- **[Node-RED Integration](../../integrations/APS-NodeRED/README.md)** - Backup, Restore und Management"
     )
     content.append("- **[Integration Guide](./integration-guide.md)** - Detaillierte Setup-Anleitung")
     content.append("")
@@ -735,7 +735,7 @@ def generate_aps_readme_md(analysis_results):
     content.append("")
     content.append("### Integration Structure")
     content.append("```")
-    content.append("integrations/node_red/          # Backup/Restore Management")
+    content.append("integrations/APS-NodeRED/      # Backup/Restore Management")
     content.append("docs/06-integrations/     # Dokumentation")
     content.append("├── node-red/                   # Node-RED spezifische Docs")
     content.append("│   ├── README.md              # Diese Datei")
@@ -754,7 +754,7 @@ def generate_aps_readme_md(analysis_results):
 
 
 def main():
-    flows_file = Path("integrations/node_red/backups/20250915T102133Z/flows.json")
+    flows_file = Path("integrations/APS-NodeRED/backups/20250915T102133Z/flows.json")
 
     if not flows_file.exists():
         print(f"Error: {flows_file} not found")

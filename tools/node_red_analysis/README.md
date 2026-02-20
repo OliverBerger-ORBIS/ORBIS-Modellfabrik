@@ -7,7 +7,7 @@ Diese Tools analysieren die Node-RED Flows der Fischertechnik APS (Agile Product
 
 ### `aps_analysis.py`
 **Hauptanalyse-Script** - Generiert die komplette APS-Dokumentation
-- Analysiert `flows.json` aus `integrations/node_red/backups/`
+- Analysiert `flows.json` aus `integrations/APS-NodeRED/backups/`
 - Fokussiert auf Module: MILL, DRILL, AIQS, DPS, HBW
 - Erstellt Markdown-Dokumentation in `docs/07-analysis/node-red/aps_docs/`
 - Generiert Mermaid-Diagramme für System-Architektur, State Machines, OPC-UA, MQTT
@@ -53,7 +53,7 @@ python generate_diagrams.py
 ## 📋 Voraussetzungen
 
 - Python 3.x
-- `flows.json` in `integrations/node_red/backups/`
+- `flows.json` in `integrations/APS-NodeRED/backups/`
 - Mermaid-Unterstützung für Diagramm-Rendering
 
 ## 🎯 Ausgabe
