@@ -49,7 +49,7 @@ export class Uc04I18nService {
 
   private getEnglishTranslations(): Record<string, string> {
     return {
-      'uc04.title': 'UC-04 — Closed Loop Quality',
+      'uc04.title': 'Closed Loop Quality',
       'uc04.subtitle': 'Quality Inspection Event → Decide → Act → Feedback to MES/ERP/Analytics',
 
       'uc04.lane.process': 'Process Data & Quality Flow',

@@ -1,4 +1,4 @@
-# UC-06 — Interoperability: Event-to-Process Map (Anchor for A1)
+# UC-00 — Interoperability: Event-to-Process Map (Anchor for A1)
 
 ## Status
 - Owner: @<Oliver Berger>
@@ -96,14 +96,14 @@ Diagram showing shopfloor events mapped to process steps and an end-to-end flow.
 
 ---
 
-## Screen Spec / Implementation Notes (UC-06) — DE
+## Screen Spec / Implementation Notes (UC-00) — DE
 
 ### Ziel
-UC-06 visualisiert das Prinzip „Event-to-Process“: technische Shopfloor-Events werden normalisiert, mit Business-Kontext angereichert und als prozessfähige Sicht bereitgestellt. **Umsetzung:** dynamische SVG-Generierung mit Step-Animation (analog zu UC-01 bis UC-07); siehe [use-case-library](../../../02-architecture/use-case-library.md).
+UC-00 visualisiert das Prinzip „Event-to-Process“: technische Shopfloor-Events werden normalisiert, mit Business-Kontext angereichert und als prozessfähige Sicht bereitgestellt. **Umsetzung:** dynamische SVG-Generierung mit Step-Animation (analog zu UC-01 bis UC-06); siehe [use-case-library](../../../02-architecture/use-case-library.md).
 
 ### Platzierung & Verlinkung
 - **Primär:** DSP-Tab → Abschnitt „DSP Anwendungsfälle“ als zusätzlicher Use Case „Interoperabilität (Event-to-Process)“.
-- **Sekundär (optional):** Wiki-Use-Case-Seite (UC-06) enthält das Diagramm + Kurzbeschreibung.
+- **Sekundär (optional):** Wiki-Use-Case-Seite (UC-00) enthält das Diagramm + Kurzbeschreibung.
 - **Verlinkung (optional, später):**
   - Klick auf die UC-Card im DSP-Tab → Scroll/Jump auf Detailbereich oder Öffnen einer Detail-Ansicht.
   - Wiki verlinkt zurück auf DSP-Tab (und umgekehrt), ohne OSF als „produktive Use-Case-App“ darzustellen.
@@ -129,7 +129,7 @@ UC-06 visualisiert das Prinzip „Event-to-Process“: technische Shopfloor-Even
 - Standardbegriffe (DE): **Event**, **Kontext**, **Order**, **Werkstück**, **Station**, **Zeit**, **Status**, **Prozessschritt**
 - Ziel: Begriffe identisch in
   - Blog A1 (Abschnitt Interoperabilität)
-  - UC-06 Seite
+  - UC-00 Seite
   - DSP-Tab Use Case Texten
 
 ### Icon/Assets
@@ -143,25 +143,25 @@ UC-06 visualisiert das Prinzip „Event-to-Process“: technische Shopfloor-Even
 - DE/EN über i18n; Bilder getrennt je Sprache, falls Labels im Bild.
 
 ### Step-Animation (umgesetzt)
-- UC-06 nutzt wie alle Use-Cases die gemeinsame Step-Logik (Step-Controls, Highlighting, Auto-Dim).
-- SVG wird dynamisch aus `uc-06-structure.config.ts` generiert; Steps steuern Sichtbarkeit/Highlight über `uc-06-event-to-process-map.steps.json`.
+- UC-00 nutzt wie alle Use-Cases die gemeinsame Step-Logik (Step-Controls, Highlighting, Auto-Dim).
+- SVG wird dynamisch aus `uc-00-structure.config.ts` generiert; Steps steuern Sichtbarkeit/Highlight über `uc-00-event-to-process-map.steps.json`.
 
 ### Acceptance Criteria (MVP)
-- UC-06 erscheint als zusätzliche Card im DSP Use-Case-Grid (DE/EN).
+- UC-00 erscheint als zusätzliche Card im DSP Use-Case-Grid (DE/EN).
 - Detailbereich zeigt Titel, One-liner, zwei Bullet-Listen, Disclaimer (DE/EN).
 - Interoperabilität-Icon konsistent, keine neuen Stile.
 - Optionales Diagramm (PNG/SVG) kann eingebunden werden, ohne UI-Refactoring.
 
 ---
 
-## Screen Spec / Implementation Notes (UC-06) — EN
+## Screen Spec / Implementation Notes (UC-00) — EN
 
 ### Goal
-UC-06 visualizes the “event-to-process” principle: raw shopfloor events are normalized, enriched with business context, and turned into a process-ready view. **Implementation:** dynamic SVG generation with step animation (aligned with UC-01–UC-07); see [use-case-library](../../../02-architecture/use-case-library.md).
+UC-00 visualizes the “event-to-process” principle: raw shopfloor events are normalized, enriched with business context, and turned into a process-ready view. **Implementation:** dynamic SVG generation with step animation (aligned with UC-01–UC-06); see [use-case-library](../../../02-architecture/use-case-library.md).
 
 ### Placement & Linking
 - **Primary:** DSP tab → “DSP Use Cases” section as an additional use case: “Interoperability (Event-to-Process)”.
-- **Secondary (optional):** UC-06 wiki page hosts the diagram and a concise description.
+- **Secondary (optional):** UC-00 wiki page hosts the diagram and a concise description.
 - **Linking (optional, later):**
   - Click on the UC card → scroll/jump to the detail panel or open a detail view.
   - Cross-link wiki ↔ DSP tab, without positioning OSF as the productive use-case application.
@@ -187,7 +187,7 @@ UC-06 visualizes the “event-to-process” principle: raw shopfloor events are 
 - Standard terms (EN): **event**, **context**, **order**, **workpiece**, **station**, **time**, **status**, **process step**
 - Keep terminology consistent across:
   - Blog A1 (interoperability section)
-  - UC-06 page
+  - UC-00 page
   - DSP tab use-case texts
 
 ### Icon/Assets
@@ -201,11 +201,11 @@ UC-06 visualizes the “event-to-process” principle: raw shopfloor events are 
 - DE/EN via i18n; separate images per language if labels are embedded in the image.
 
 ### Step Animation (implemented)
-- UC-06 uses the shared step logic (step controls, highlighting, auto-dim) like all use cases.
-- SVG is generated dynamically from `uc-06-structure.config.ts`; steps control visibility/highlighting via `uc-06-event-to-process-map.steps.json`.
+- UC-00 uses the shared step logic (step controls, highlighting, auto-dim) like all use cases.
+- SVG is generated dynamically from `uc-00-structure.config.ts`; steps control visibility/highlighting via `uc-00-event-to-process-map.steps.json`.
 
 ### Acceptance Criteria (MVP)
-- UC-06 appears as an additional card in the DSP use-case grid (DE/EN).
+- UC-00 appears as an additional card in the DSP use-case grid (DE/EN).
 - Detail panel shows title, one-liner, two bullet lists, and the disclaimer (DE/EN).
 - Interoperability icon is consistent; no new styles are introduced.
 - Optional diagram (PNG/SVG) can be embedded without UI refactoring.
@@ -214,17 +214,17 @@ UC-06 visualizes the “event-to-process” principle: raw shopfloor events are 
 ---
 
 ## Assets (placeholders)
-- Version 1 Shopfloor-first: ![UC-06-Interoperability-Shopfloor-first.png](/.attachments/UC-06-Interoperability-Shopfloor-first-84b2f388-914e-4b74-b677-0eaf6b0ba0c6.png) 
-- Version 2 Business-first: ![UC-06-Interoperability-Business-first.png](/.attachments/UC-06-Interoperability-Business-first-d6dffb56-c520-4385-a8f5-6b1fc029b0c1.png)
+- Version 1 Shopfloor-first: ![UC-00-Interoperability-Shopfloor-first.png](/.attachments/UC-00-Interoperability-Shopfloor-first-84b2f388-914e-4b74-b677-0eaf6b0ba0c6.png) 
+- Version 2 Business-first: ![UC-00-Interoperability-Business-first.png](/.attachments/UC-00-Interoperability-Business-first-d6dffb56-c520-4385-a8f5-6b1fc029b0c1.png)
 - SVG DE
-![UC-06-SVG-Template-DE.png](/.attachments/UC-06-SVG-Template-DE-54365d72-52c0-48c2-9bf9-b9dfc9f34f7b.png)
+![UC-00-SVG-Template-DE.png](/.attachments/UC-00-SVG-Template-DE-54365d72-52c0-48c2-9bf9-b9dfc9f34f7b.png)
 
 - SVG EN
-![UC-06-SVG-Template-EN.png](/.attachments/UC-06-SVG-Template-EN-d20ed899-dd3b-4faa-a1f3-4fe56671809d.png)
+![UC-00-SVG-Template-EN.png](/.attachments/UC-00-SVG-Template-EN-d20ed899-dd3b-4faa-a1f3-4fe56671809d.png)
 
 ---
 
 ## Open points / review notes
 - [ ] Final CTA wording confirmation
-- [ ] Decide whether UC-06 is shown only in blog/wiki, or also in OSF UI (Use-Case card)
+- [ ] Decide whether UC-00 is shown only in blog/wiki, or also in OSF UI (Use-Case card)
 - [ ] Final labels for DE/EN (glossary alignment)

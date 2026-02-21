@@ -37,10 +37,11 @@
 - [ ] Konsistenz-Check: Marketing-Inhalte vs. Use-Cases der OSF-UI
 
 ### Blog-Serie
-- [ ] UC-06: UC-00 aufführen, da kein USE-Case an sich sondern Grundlage für a1. Outcomes Neu 6 Use-Cases, Prüfen ob man im DSP-Layer Vorgehensmodell anzeigen soll?
-- [ ] a1-DE: TODO Review-Kommentare einarbeiten, 
+- [x] UC-07 → UC-06 umbenennen (Process Optimization)
+- [ ] UC-00 als Grundlage aufführen (kein Use-Case an sich); Outcomes: 6 Use-Cases (UC-01 bis UC-06). Prüfen ob DSP-Layer Vorgehensmodell angezeigt werden soll.
+- [ ] a1-DE: TODO Review-Kommentare einarbeiten
 - [ ] UC-02: Layout-Entscheidung (Vertical Concept vs. Horizontal Lanes)
-- [ ] A2/A3: Review-Prozess starten, A3 mit UC-07 überarbeiten
+- [ ] A2/A3: Review-Prozess starten, A3 mit UC-06 überarbeiten
 - [ ] A4 Closed Loops – Draft erstellen
 
 ### Sprint-Abschluss (Pflicht vor Neuanlage Sprint 17)

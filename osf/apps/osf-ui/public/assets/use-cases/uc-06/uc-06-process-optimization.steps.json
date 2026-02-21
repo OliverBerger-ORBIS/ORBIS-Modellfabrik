@@ -1,51 +1,51 @@
 [
   {
-    "id": "uc07-00-overview",
+    "id": "uc06-00-overview",
     "title": {"de": "Übersicht", "en": "Overview"},
     "description": {"de": "Optimization Loop – Gesamtübersicht aller Komponenten.", "en": "Optimization Loop – Overview of all components."},
-    "highlightIds": ["uc07_col_process", "uc07_container_mixed", "uc07_col_shopfloor"],
+    "highlightIds": ["uc06_col_process", "uc06_container_mixed", "uc06_col_shopfloor"],
     "hideIds": []
   },
   {
-    "id": "uc07-01-observe",
+    "id": "uc06-01-observe",
     "title": {"de": "Observe", "en": "Observe"},
     "description": {"de": "KPIs, Zykluszeiten und Maschinennutzung aus den 3 Datentöpfen bilden die Beobachtungsbasis.", "en": "KPIs, cycle times and machine utilization from the 3 data pools meet the observation baseline."},
-    "highlightIds": ["uc07_proc_observe", "uc07_sf_sources", "uc07_conn_sources_dsp"],
+    "highlightIds": ["uc06_proc_observe", "uc06_sf_sources", "uc06_conn_sources_dsp"],
     "hideIds": []
   },
   {
-    "id": "uc07-02-analyze",
+    "id": "uc06-02-analyze",
     "title": {"de": "Analyze", "en": "Analyze"},
     "description": {"de": "Bottleneck-Analyse und Engpassindikatoren identifizieren Optimierungspotenziale.", "en": "Bottleneck analysis and constraint indicators identify optimization potential."},
-    "highlightIds": ["uc07_proc_analyze", "uc07_mixed_dsp"],
+    "highlightIds": ["uc06_proc_analyze", "uc06_mixed_dsp"],
     "hideIds": []
   },
   {
-    "id": "uc07-03-recommend",
+    "id": "uc06-03-recommend",
     "title": {"de": "Recommend", "en": "Recommend"},
     "description": {"de": "AI-Empfehlungen für Parameter, Reihenfolge und Takt basierend auf Kontext und historischen Daten.", "en": "AI recommendations for parameters, sequence and takt based on context and historical data."},
-    "highlightIds": ["uc07_proc_recommend", "uc07_mixed_recommend", "uc07_conn_dsp_recommend"],
+    "highlightIds": ["uc06_proc_recommend", "uc06_mixed_recommend", "uc06_conn_dsp_recommend"],
     "hideIds": []
   },
   {
-    "id": "uc07-04-simulate",
+    "id": "uc06-04-simulate",
     "title": {"de": "Simulate", "en": "Simulate"},
     "description": {"de": "What-if-Szenarien prüfen vor physischen Änderungen an der Linie.", "en": "What-if scenarios verify before applying physical changes to the line."},
-    "highlightIds": ["uc07_proc_simulate", "uc07_mixed_recommend"],
+    "highlightIds": ["uc06_proc_simulate", "uc06_mixed_recommend"],
     "hideIds": []
   },
   {
-    "id": "uc07-05-execute",
+    "id": "uc06-05-execute",
     "title": {"de": "Execute", "en": "Execute"},
     "description": {"de": "DSP Executors und MES-Workflows setzen Änderungen um – Parameter, Plan, Reihenfolge.", "en": "DSP executors and MES workflows apply changes – parameters, plan, sequence."},
-    "highlightIds": ["uc07_proc_execute", "uc07_mixed_target", "uc07_sf_targets", "uc07_conn_recommend_execute", "uc07_conn_target_targets"],
+    "highlightIds": ["uc06_proc_execute", "uc06_mixed_target", "uc06_sf_targets", "uc06_conn_recommend_execute", "uc06_conn_target_targets"],
     "hideIds": []
   },
   {
-    "id": "uc07-06-feedback",
+    "id": "uc06-06-feedback",
     "title": {"de": "Feedback", "en": "Feedback"},
     "description": {"de": "Verbesserte KPIs fließen zurück in Observe – geschlossener Optimierungsregelkreis.", "en": "Improved KPIs feed back into Observe – closed optimization loop."},
-    "highlightIds": ["uc07_proc_feedback", "uc07_feedback", "uc07_proc_observe"],
+    "highlightIds": ["uc06_proc_feedback", "uc06_feedback", "uc06_proc_observe"],
     "hideIds": []
   }
 ]

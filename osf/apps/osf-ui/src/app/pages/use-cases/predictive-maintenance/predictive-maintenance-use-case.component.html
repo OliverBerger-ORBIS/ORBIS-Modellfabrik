@@ -1,6 +1,8 @@
 <section class="predictive-maintenance-use-case">
   <header class="predictive-maintenance-use-case__header">
     <app-use-case-controls
+      useCaseCode="UC-05"
+      [useCaseTitle]="useCaseTitle"
       [steps]="steps"
       [currentStepIndex]="currentStepIndex"
       [zoom]="zoom"
@@ -19,9 +21,7 @@
       (zoomIn)="zoomIn()"
       (zoomOut)="zoomOut()"
       (resetZoom)="resetZoom()"
-    >
-      <h2 use-case-title i18n="@@predictiveMaintenanceUseCaseHeadline">Predictive Maintenance</h2>
-    </app-use-case-controls>
+    />
   </header>
 
   <div class="predictive-maintenance-use-case__content">

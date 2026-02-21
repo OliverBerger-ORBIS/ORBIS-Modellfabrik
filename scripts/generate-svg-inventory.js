@@ -86,8 +86,8 @@ const DOCUMENTED_SVGS = new Set([
   'assets/svg/dsp/use-cases/use-case-predictive-maintenance.svg',
   'assets/svg/dsp/use-cases/use-case-process-optimization.svg',
   'assets/svg/dsp/use-cases/use-case-track-trace.svg',
-  'assets/svg/use-cases/uc-06-event-to-process-map-DE.svg',
-  'assets/svg/use-cases/uc-06-event-to-process-map-EN.svg',
+  'assets/svg/use-cases/uc-00-event-to-process-map-DE.svg',
+  'assets/svg/use-cases/uc-00-event-to-process-map-EN.svg',
 ]);
 
 function readDirSafe(dir) {

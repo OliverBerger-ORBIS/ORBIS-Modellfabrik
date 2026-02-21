@@ -23,6 +23,8 @@ import { LanguageService } from '../../../services/language.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PredictiveMaintenanceUseCaseComponent extends BaseUseCaseComponent {
+  readonly useCaseTitle = $localize`:@@predictiveMaintenanceUseCaseHeadline:Predictive Maintenance`;
+
   constructor(
     sanitizer: DomSanitizer,
     cdr: ChangeDetectorRef,

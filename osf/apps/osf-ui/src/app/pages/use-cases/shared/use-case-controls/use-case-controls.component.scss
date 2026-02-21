@@ -12,6 +12,23 @@
 
   &__title {
     min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0.35em;
+
+    .use-case-controls__code {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--orbis-nightblue);
+      flex-shrink: 0;
+    }
+
+    .use-case-controls__title-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--orbis-blue-strong);
+      letter-spacing: -0.02em;
+    }
 
     :host-context([use-case-title]) h2,
     h2 {

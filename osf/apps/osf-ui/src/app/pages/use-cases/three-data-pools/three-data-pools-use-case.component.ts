@@ -25,6 +25,8 @@ export type Uc02ViewMode = 'concept' | 'lanes';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ThreeDataPoolsUseCaseComponent extends BaseUseCaseComponent {
+  readonly useCaseTitle = $localize`:@@threeDataPoolsUseCaseHeadline:Data Aggregation: Three Data Pools for Reliable KPIs`;
+
   protected readonly viewModeConceptLabel = $localize`:@@uc02ViewConcept:Concept (Sources → DSP → Targets)`;
   protected readonly viewModeLanesLabel = $localize`:@@uc02ViewLanes:Architecture Lanes (Analytics | DSP | Data)`;
 

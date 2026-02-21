@@ -23,6 +23,8 @@ import { LanguageService } from '../../../services/language.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AiLifecycleUseCaseComponent extends BaseUseCaseComponent {
+  readonly useCaseTitle = $localize`:@@aiLifecycleUseCaseHeadline:AI Lifecycle: Train centrally → Deploy to multiple stations`;
+
   constructor(
     sanitizer: DomSanitizer,
     cdr: ChangeDetectorRef,

@@ -49,7 +49,7 @@ export class Uc03I18nService {
 
   private getEnglishTranslations(): Record<string, string> {
     return {
-      'uc03.title': 'UC-03 — AI Lifecycle',
+      'uc03.title': 'AI Lifecycle',
       'uc03.subtitle': 'Train centrally, deploy to multiple stations via DSP Edge + Management Cockpit',
       'uc03.lane.process': 'Process Data & Model Lifecycle',
       'uc03.lane.dsp': 'DSP Context Model & Mediation',

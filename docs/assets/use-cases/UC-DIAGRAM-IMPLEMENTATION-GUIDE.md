@@ -1,13 +1,13 @@
 # UC-Diagramm Implementierungs-Guide
 
 **Erstellt:** 21.01.2026  
-**Basiert auf:** UC-06 Interoperability Implementierung
+**Basiert auf:** UC-00 Interoperability Implementierung
 
 ---
 
 ## 🎯 Übersicht
 
-Dieses Dokument beschreibt das **prinzipielle Vorgehen** für die Implementierung von Use-Case-Diagrammen im OSF-UI. Die Methode wurde bei UC-06 entwickelt und sollte für alle weiteren UC-Diagramme verwendet werden.
+Dieses Dokument beschreibt das **prinzipielle Vorgehen** für die Implementierung von Use-Case-Diagrammen im OSF-UI. Die Methode wurde bei UC-00 entwickelt und sollte für alle weiteren UC-Diagramme verwendet werden.
 
 ---
 
@@ -23,7 +23,7 @@ Columns (Spalten)
       └── Chips (Einzelelemente innerhalb einer Lane)
 ```
 
-**Beispiel UC-06:**
+**Beispiel UC-00:**
 - **Column "Sources"** → enthält mehrere **Lanes** (Business Context, Machine/Station, AGV, Quality, Environment)
 - **Lane "Business Context"** → enthält mehrere **Chips** (Production Order, Storage Order, Material, Customer, etc.)
 - **Chip "Production Order"** → einzelnes Element mit Text, Icon, Position
@@ -56,11 +56,11 @@ osf/apps/osf-ui/src/app/pages/use-cases/
     └── [uc-name]-i18n.service.ts                # I18n-Loader Service
 ```
 
-**Beispiel UC-06:**
+**Beispiel UC-00:**
 - `interoperability-use-case.component.ts`
-- `uc-06-structure.config.ts`
-- `uc-06-svg-generator.service.ts`
-- `uc-06-i18n.service.ts`
+- `uc-00-structure.config.ts`
+- `uc-00-svg-generator.service.ts`
+- `uc-00-i18n.service.ts`
 
 ---
 
@@ -133,11 +133,11 @@ export interface Uc06Column {
 #### 1.2 Struktur erstellen
 
 ```typescript
-export function createUc06Structure(): Uc06Structure {
-  const structure: Uc06Structure = {
+export function createUc00Structure(): Uc00Structure {
+  const structure: Uc00Structure = {
     viewBox: { width: 1920, height: 1300 },
-    title: { x: 960, y: 80, key: 'uc06.title' },
-    subtitle: { x: 960, y: 140, key: 'uc06.subtitle' },
+    title: { x: 960, y: 80, key: 'uc00.title' },
+    subtitle: { x: 960, y: 140, key: 'uc00.subtitle' },
     columns: {
       sources: {
         id: 'sources',
@@ -147,11 +147,11 @@ export function createUc06Structure(): Uc06Structure {
         height: 950,
         headerX: 120,
         headerY: 270,
-        headerKey: 'uc06.sources.header',
+        headerKey: 'uc00.sources.header',
         lanes: [
           {
             id: 'business_context',
-            titleKey: 'uc06.lane.business_context.title',
+            titleKey: 'uc00.lane.business_context.title',
             iconPath: '/assets/svg/business/erp-application.svg',
             iconX: 520,
             iconY: 318,
@@ -181,7 +181,7 @@ export function createUc06Structure(): Uc06Structure {
 **Wichtig:** Lanes müssen dynamisch positioniert werden mit gleichmäßigem Spacing.
 
 ```typescript
-function calculateLaneLayout(column: Uc06Column): void {
+function calculateLaneLayout(column: Uc00Column): void {
   if (!column.lanes || column.lanes.length === 0) return;
   
   const headerHeight = 50;           // Platz für Header
@@ -292,17 +292,17 @@ export class Uc06SvgGeneratorService {
 
 ```typescript
 @Injectable({ providedIn: 'root' })
-export class Uc06I18nService {
+export class Uc00I18nService {
   async loadTexts(): Promise<Record<string, string>> {
     const locale = this.languageService.current;
     
     // Lade messages.{locale}.json
     const messages = await this.http.get<Record<string, string>>(...);
     
-    // Filtere UC-spezifische Keys (z.B. @@uc06.*)
+    // Filtere UC-spezifische Keys (z.B. @@uc00.*)
     const ucTexts: Record<string, string> = {};
     Object.keys(messages).forEach((key) => {
-      if (key.startsWith('@@uc06')) {
+      if (key.startsWith('@@uc00')) {
         ucTexts[key.replace(/^@@/, '')] = messages[key];
       }
     });
@@ -313,15 +313,15 @@ export class Uc06I18nService {
 ```
 
 **I18n-Keys Struktur:**
-- Präfix: `@@uc06.` (für UC-06)
-- Struktur: `uc06.[section].[element].[property]`
+- Präfix: `@@uc00.` (für UC-00)
+- Struktur: `uc00.[section].[element].[property]`
 - Beispiele:
-  - `uc06.title`
-  - `uc06.sources.header`
-  - `uc06.lane.business_context.title`
-  - `uc06.chip.production_order`
-  - `uc06.chip.start`
-  - `uc06.chip.running`
+  - `uc00.title`
+  - `uc00.sources.header`
+  - `uc00.lane.business_context.title`
+  - `uc00.chip.production_order`
+  - `uc00.chip.start`
+  - `uc00.chip.running`
 
 ---
 
@@ -343,8 +343,8 @@ export class InteroperabilityUseCaseComponent implements OnInit {
   isLoading = true;
 
   constructor(
-    private readonly svgGenerator: Uc06SvgGeneratorService,
-    private readonly i18nService: Uc06I18nService,
+    private readonly svgGenerator: Uc00SvgGeneratorService,
+    private readonly i18nService: Uc00I18nService,
     private readonly sanitizer: DomSanitizer,
     private readonly cdr: ChangeDetectorRef
   ) {}
@@ -505,7 +505,7 @@ background: rgba(var(--orbis-blue-strong-rgb), 0.1);
 {
   id: 'operation_chip',
   multiline: true,
-  textLines: ['uc06.chip.operation_label', 'uc06.chip.start', 'uc06.chip.stop'],
+  textLines: ['uc00.chip.operation_label', 'uc00.chip.start', 'uc00.chip.stop'],
   operationIcons: [
     { 
       lineIndex: 1,  // Für "Start"
@@ -531,13 +531,13 @@ background: rgba(var(--orbis-blue-strong-rgb), 0.1);
 ```typescript
 {
   id: 'state_chip',
-  textKey: 'uc06.chip.state_label',
+  textKey: 'uc00.chip.state_label',
   statusDots: [
     { cx: 370, cy: 600, color: 'running' },
     { cx: 370, cy: 625, color: 'idle' },
     { cx: 370, cy: 650, color: 'fail' },
   ],
-  statusLabels: ['uc06.chip.running', 'uc06.chip.idle', 'uc06.chip.fail']
+  statusLabels: ['uc00.chip.running', 'uc00.chip.idle', 'uc00.chip.fail']
 }
 ```
 
@@ -554,7 +554,7 @@ background: rgba(var(--orbis-blue-strong-rgb), 0.1);
   id: 'pass_badge',
   fill: '#e8f5e9',      // Light Green
   stroke: '#4caf50',   // Green
-  textKey: 'uc06.chip.pass'
+  textKey: 'uc00.chip.pass'
 }
 ```
 
@@ -564,7 +564,7 @@ background: rgba(var(--orbis-blue-strong-rgb), 0.1);
 
 ---
 
-## 📊 Unterschiede zur ursprünglichen Planung (UC-06)
+## 📊 Unterschiede zur ursprünglichen Planung (UC-00)
 
 ### Was sich geändert hat:
 
@@ -580,11 +580,11 @@ background: rgba(var(--orbis-blue-strong-rgb), 0.1);
 
 3. **I18n-Service statt Environment-Service**
    - **Geplant:** `EnvironmentService` für Locale
-   - **Umsetzung:** Eigener `Uc06I18nService` für UC-spezifische Texte
+   - **Umsetzung:** Eigener `Uc00I18nService` für UC-spezifische Texte
    - **Grund:** Bessere Trennung, Filterung nach UC-Keys
 
 4. **Enhanced-Version für EN**
-   - **Neu:** Separate `Uc06SvgGeneratorEnhancedService` für optische Verbesserungen
+   - **Neu:** Separate `Uc00SvgGeneratorEnhancedService` für optische Verbesserungen
    - **Grund:** Visuelle Verbesserungen ohne DE-Version zu beeinflussen
 
 5. **Icon-Registry Integration**
@@ -649,7 +649,7 @@ background: rgba(var(--orbis-blue-strong-rgb), 0.1);
 ### Phase 2: Animation vorbereiten
 
 1. **Steps-Definition verwenden**
-   - Datei: `uc-06-event-to-process-map.steps.json`
+   - Datei: `uc-00-event-to-process-map.steps.json`
    - Ähnlich wie `DspAnimationComponent`
 
 2. **Komponente erweitern**
@@ -660,14 +660,14 @@ background: rgba(var(--orbis-blue-strong-rgb), 0.1);
 
 3. **SVG-IDs für Animation**
    - Alle Elemente müssen eindeutige IDs haben
-   - Format: `uc06_[type]_[id]` (z.B. `uc06_chip_production_order`)
+   - Format: `uc00_[type]_[id]` (z.B. `uc00_chip_production_order`)
    - IDs werden in `generateSvg()` gesetzt
 
 ---
 
 ## 📚 Referenzen
 
-- **UC-06 Implementierung:** `osf/apps/osf-ui/src/app/pages/use-cases/interoperability/`
+- **UC-00 Implementierung:** `osf/apps/osf-ui/src/app/pages/use-cases/interoperability/`
 - **DSP Architecture:** `osf/apps/osf-ui/src/app/components/dsp-architecture/` (für Animation-Referenz)
 - **Track-Trace:** `osf/apps/osf-ui/src/app/tabs/track-trace-tab.component.ts` (für Routing-Referenz)
 - **Icon Registry:** `osf/apps/osf-ui/src/app/assets/icon-registry.ts`
@@ -676,4 +676,4 @@ background: rgba(var(--orbis-blue-strong-rgb), 0.1);
 ---
 
 *Erstellt: 21.01.2026*  
-*Basierend auf UC-06 Interoperability Implementierung*
+*Basierend auf UC-00 Interoperability Implementierung*

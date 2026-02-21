@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import {
-  createUc07Structure,
-  type Uc07Structure,
-  type Uc07ProcessStep,
-  type Uc07MixedBox,
-  type Uc07ShopfloorBox,
-  type Uc07ShopfloorTargetsBox,
-} from './uc-07-structure.config';
+  createUc06Structure,
+  type Uc06Structure,
+  type Uc06ProcessStep,
+  type Uc06MixedBox,
+  type Uc06ShopfloorBox,
+  type Uc06ShopfloorTargetsBox,
+} from './uc-06-structure.config';
 import { ICONS } from '../../../shared/icons/icon.registry';
 import { ORBIS_COLORS } from '../../../assets/color-palette';
 
-const UC07_SHOPFLOOR_ICONS = {
+const UC06_SHOPFLOOR_ICONS = {
   systems: ['agv', 'scada'] as const,
   devices: ['mill', 'drill', 'aiqs', 'hbw'] as const,
 } as const;
@@ -22,9 +22,9 @@ const UC07_SHOPFLOOR_ICONS = {
  * Connection Mixed Target → Shopfloor Target endet am oberen Rand der zweiten Box.
  */
 @Injectable({ providedIn: 'root' })
-export class Uc07SvgGeneratorService {
+export class Uc06SvgGeneratorService {
   generateSvg(i18nTexts: Record<string, string>): string {
-    const s = createUc07Structure();
+    const s = createUc06Structure();
     const t = (key: string): string => i18nTexts[key] || key;
     const D = ORBIS_COLORS.diagram;
     const recFill = D.laneTraceFill;
@@ -33,30 +33,30 @@ export class Uc07SvgGeneratorService {
     let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${s.viewBox.width}" height="${s.viewBox.height}" viewBox="0 0 ${s.viewBox.width} ${s.viewBox.height}">`;
 
     svg += this.defs(recStroke);
-    svg += '<g id="uc07_root">';
+    svg += '<g id="uc06_root">';
 
-    svg += `<rect x="0" y="0" width="${s.viewBox.width}" height="${s.viewBox.height}" fill="url(#uc07_bgGrad)"/>`;
+    svg += `<rect x="0" y="0" width="${s.viewBox.width}" height="${s.viewBox.height}" fill="url(#uc06_bgGrad)"/>`;
 
-    svg += `<g id="uc07_title"><text x="${s.title.x}" y="${s.title.y}" text-anchor="middle" class="uc07-title">${this.esc(t(s.title.key))}</text></g>`;
-    svg += `<g id="uc07_subtitle"><text x="${s.subtitle.x}" y="${s.subtitle.y}" text-anchor="middle" class="uc07-subtitle">${this.esc(t(s.subtitle.key))}</text></g>`;
+    svg += `<g id="uc06_title"><text x="${s.title.x}" y="${s.title.y}" text-anchor="middle" class="uc06-title">${this.esc(t(s.title.key))}</text></g>`;
+    svg += `<g id="uc06_subtitle"><text x="${s.subtitle.x}" y="${s.subtitle.y}" text-anchor="middle" class="uc06-subtitle">${this.esc(t(s.subtitle.key))}</text></g>`;
 
-    svg += `<g id="uc07_col_process">`;
-    svg += `<rect id="uc07_lane_process" x="${s.laneProcess.x}" y="${s.laneProcess.y}" width="${s.laneProcess.width}" height="${s.laneProcess.height}" rx="10" fill="url(#uc07_processGrad)" stroke="${D.laneBusinessStroke}" stroke-width="2"/>`;
-    svg += `<text x="${s.laneProcess.x + 16}" y="${s.laneProcess.y + 32}" text-anchor="start" class="uc07-lane-label">${this.esc(t('uc07.lane.process'))}</text>`;
+    svg += `<g id="uc06_col_process">`;
+    svg += `<rect id="uc06_lane_process" x="${s.laneProcess.x}" y="${s.laneProcess.y}" width="${s.laneProcess.width}" height="${s.laneProcess.height}" rx="10" fill="url(#uc06_processGrad)" stroke="${D.laneBusinessStroke}" stroke-width="2"/>`;
+    svg += `<text x="${s.laneProcess.x + 16}" y="${s.laneProcess.y + 32}" text-anchor="start" class="uc06-lane-label">${this.esc(t('uc06.lane.process'))}</text>`;
     for (const step of s.processSteps) {
       svg += this.processStepBox(step, t, D);
     }
     svg += '</g>';
 
-    svg += `<g id="uc07_container_mixed">`;
+    svg += `<g id="uc06_container_mixed">`;
     for (const box of s.mixedBoxes) {
       svg += this.mixedBox(box, t, D, recFill, recStroke);
     }
     svg += '</g>';
 
-    svg += `<g id="uc07_col_shopfloor">`;
-    svg += `<rect id="uc07_lane_shopfloor" x="${s.laneShopfloor.x}" y="${s.laneShopfloor.y}" width="${s.laneShopfloor.width}" height="${s.laneShopfloor.height}" rx="10" fill="url(#uc07_shopfloorGrad)" stroke="${D.laneShopfloorStroke}" stroke-width="2"/>`;
-    svg += `<text x="${s.laneShopfloor.x + s.laneShopfloor.width / 2}" y="${s.laneShopfloor.y + 32}" text-anchor="middle" class="uc07-lane-label">${this.esc(t('uc07.lane.shopfloor'))}</text>`;
+    svg += `<g id="uc06_col_shopfloor">`;
+    svg += `<rect id="uc06_lane_shopfloor" x="${s.laneShopfloor.x}" y="${s.laneShopfloor.y}" width="${s.laneShopfloor.width}" height="${s.laneShopfloor.height}" rx="10" fill="url(#uc06_shopfloorGrad)" stroke="${D.laneShopfloorStroke}" stroke-width="2"/>`;
+    svg += `<text x="${s.laneShopfloor.x + s.laneShopfloor.width / 2}" y="${s.laneShopfloor.y + 32}" text-anchor="middle" class="uc06-lane-label">${this.esc(t('uc06.lane.shopfloor'))}</text>`;
     svg += this.shopfloorSourcesBox(s.shopfloorSourcesBox, t, D);
     svg += this.shopfloorTargetsBox(s.shopfloorTargetsBox, t, D);
     svg += '</g>';
@@ -66,10 +66,10 @@ export class Uc07SvgGeneratorService {
 
     const sd = s.stepDescription;
     const hlGreen = ORBIS_COLORS.highlightGreen.strong;
-    svg += `<g id="uc07_step_description" style="display: none;">`;
+    svg += `<g id="uc06_step_description" style="display: none;">`;
     svg += `<rect x="${sd.x - sd.width / 2}" y="${sd.y}" width="${sd.width}" height="${sd.height}" rx="8" ry="8" fill="${hlGreen}" opacity="0.95"/>`;
-    svg += `<text id="uc07_step_description_title" x="${sd.x}" y="${sd.y + 28}" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff"></text>`;
-    svg += `<text id="uc07_step_description_text" x="${sd.x}" y="${sd.y + 58}" text-anchor="middle" font-size="16" font-weight="400" fill="#ffffff"></text>`;
+    svg += `<text id="uc06_step_description_title" x="${sd.x}" y="${sd.y + 28}" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff"></text>`;
+    svg += `<text id="uc06_step_description_text" x="${sd.x}" y="${sd.y + 58}" text-anchor="middle" font-size="16" font-weight="400" fill="#ffffff"></text>`;
     svg += '</g>';
 
     svg += '</g></svg>';
@@ -81,33 +81,33 @@ export class Uc07SvgGeneratorService {
     const nightBlue = ORBIS_COLORS.orbisNightBlue;
 
     return `<defs>
-      <marker id="uc07_arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <marker id="uc06_arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
         <polygon points="0,0 10,5 0,10" fill="${D.connectionStroke}"/>
       </marker>
-      <marker id="uc07_arrow_feedback" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <marker id="uc06_arrow_feedback" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
         <polygon points="0,0 10,5 0,10" fill="${D.laneTraceStroke}"/>
       </marker>
-      <linearGradient id="uc07_bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <linearGradient id="uc06_bgGrad" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="${D.bgGradientStart}"/>
         <stop offset="100%" stop-color="${D.bgGradientEnd}"/>
       </linearGradient>
-      <linearGradient id="uc07_processGrad" x1="0" y1="0" x2="0" y2="1">
+      <linearGradient id="uc06_processGrad" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="#ffffff"/>
         <stop offset="100%" stop-color="${D.laneBusinessFill}"/>
       </linearGradient>
-      <linearGradient id="uc07_shopfloorGrad" x1="0" y1="0" x2="0" y2="1">
+      <linearGradient id="uc06_shopfloorGrad" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="#ffffff"/>
         <stop offset="100%" stop-color="${D.laneShopfloorFill}"/>
       </linearGradient>
       <style>
-        .uc07-title { font: 700 40px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
-        .uc07-subtitle { font: 400 22px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
-        .uc07-lane-label { font: 700 18px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
-        .uc07-step-title { font: 700 22px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
-        .uc07-step-bullet { font: 400 13px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
-        .uc07-mixed-title { font: 700 16px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
-        .uc07-rec-title { font: 700 18px "Segoe UI",Arial,sans-serif; fill: ${recStroke}; }
-        .uc07-sf-title { font: 700 16px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
+        .uc06-title { font: 700 40px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
+        .uc06-subtitle { font: 400 22px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
+        .uc06-lane-label { font: 700 18px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
+        .uc06-step-title { font: 700 22px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
+        .uc06-step-bullet { font: 400 13px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
+        .uc06-mixed-title { font: 700 16px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
+        .uc06-rec-title { font: 700 18px "Segoe UI",Arial,sans-serif; fill: ${recStroke}; }
+        .uc06-sf-title { font: 700 16px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
       </style>
     </defs>`;
   }
@@ -118,7 +118,7 @@ export class Uc07SvgGeneratorService {
     return `M ${x + tipSize} ${y} L ${x + w - tipSize} ${y} L ${x + w} ${y + h / 2} L ${x + w - tipSize} ${y + h} L ${x + tipSize} ${y + h} L ${leftTipX} ${y + h / 2} Z`;
   }
 
-  private processStepBox(step: Uc07ProcessStep, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
+  private processStepBox(step: Uc06ProcessStep, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
     const bullets = (t(step.bulletsKey) || '').split(/\n/).filter(Boolean);
     const tipSize = Math.min(step.height * 0.35, step.width * 0.18);
     // Innenliegendes Rechteck: links = mittlere Spitze (leftTipX), rechts = oberer/unterer rechter Punkt
@@ -129,31 +129,31 @@ export class Uc07SvgGeneratorService {
     const titleY = step.y + 42;
     const lineH = 16;
     const bulletStartY = titleY + 24;
-    let out = `<g id="uc07_${step.id}">`;
+    let out = `<g id="uc06_${step.id}">`;
     out += `<path d="${this.arrowStepPathHex(step.x, step.y, step.width, step.height)}" fill="${D.laneBusinessFill}" stroke="${D.laneBusinessStroke}" stroke-width="1.5"/>`;
-    out += `<text x="${innerCenterX}" y="${titleY}" text-anchor="middle" class="uc07-step-title">${this.esc(t(step.titleKey))}</text>`;
+    out += `<text x="${innerCenterX}" y="${titleY}" text-anchor="middle" class="uc06-step-title">${this.esc(t(step.titleKey))}</text>`;
     bullets.slice(0, 3).forEach((b, i) => {
-      out += `<text x="${innerLeft + bulletPad}" y="${bulletStartY + i * lineH}" text-anchor="start" class="uc07-step-bullet">${this.esc(b.replace(/^[•\-\*]\s*/, ''))}</text>`;
+      out += `<text x="${innerLeft + bulletPad}" y="${bulletStartY + i * lineH}" text-anchor="start" class="uc06-step-bullet">${this.esc(b.replace(/^[•\-\*]\s*/, ''))}</text>`;
     });
     out += '</g>';
     return out;
   }
 
-  private mixedBox(box: Uc07MixedBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram, recFill: string, recStroke: string): string {
+  private mixedBox(box: Uc06MixedBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram, recFill: string, recStroke: string): string {
     const cx = box.x + box.width / 2;
     const toAbs = (p: string) => p;
 
     if (box.type === 'recommendation') {
       const iconSize = Math.min(56, box.width / 3, box.height / 2);
       const iconY = box.y + (box.height - iconSize) / 2;
-      let out = `<g id="uc07_${box.id}">`;
+      let out = `<g id="uc06_${box.id}">`;
       out += `<rect x="${box.x}" y="${box.y}" width="${box.width}" height="${box.height}" rx="10" fill="${recFill}" stroke="${recStroke}" stroke-width="2"/>`;
       const iconPath = toAbs(ICONS.dsp.functions.analytics);
       if (iconPath) {
         out += `<image href="${iconPath}" x="${cx - iconSize / 2}" y="${iconY}" width="${iconSize}" height="${iconSize}" preserveAspectRatio="xMidYMid meet" opacity="0.9"/>`;
       }
-      out += `<text x="${cx}" y="${box.y + 18}" text-anchor="middle" class="uc07-rec-title">${this.esc(t(box.titleKey))}</text>`;
-      out += `<text x="${cx}" y="${box.y + box.height - 10}" text-anchor="middle" font-size="11" fill="${recStroke}">${this.esc(t('uc07.mixed.recommend.sub'))}</text>`;
+      out += `<text x="${cx}" y="${box.y + 18}" text-anchor="middle" class="uc06-rec-title">${this.esc(t(box.titleKey))}</text>`;
+      out += `<text x="${cx}" y="${box.y + box.height - 10}" text-anchor="middle" font-size="11" fill="${recStroke}">${this.esc(t('uc06.mixed.recommend.sub'))}</text>`;
       out += '</g>';
       return out;
     }
@@ -168,9 +168,9 @@ export class Uc07SvgGeneratorService {
     const titleY = box.y + 28;
     const lineH = 14;
 
-    let out = `<g id="uc07_${box.id}">`;
+    let out = `<g id="uc06_${box.id}">`;
     out += `<rect x="${box.x}" y="${box.y}" width="${box.width}" height="${box.height}" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
-    out += `<text x="${cx}" y="${titleY}" text-anchor="middle" class="uc07-mixed-title">${this.esc(t(box.titleKey))}</text>`;
+    out += `<text x="${cx}" y="${titleY}" text-anchor="middle" class="uc06-mixed-title">${this.esc(t(box.titleKey))}</text>`;
     bullets.slice(0, 4).forEach((b, i) => {
       out += `<text x="${cx}" y="${titleY + 22 + i * lineH}" text-anchor="middle" font-size="12" fill="${ORBIS_COLORS.neutralDarkGrey}">${this.esc(b.replace(/^[•\-\*]\s*/, ''))}</text>`;
     });
@@ -184,7 +184,7 @@ export class Uc07SvgGeneratorService {
     return out;
   }
 
-  private targetBoxWithSubBoxes(box: Uc07MixedBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram, toAbs: (p: string) => string): string {
+  private targetBoxWithSubBoxes(box: Uc06MixedBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram, toAbs: (p: string) => string): string {
     const subGap = 12;
     const pad = 14;
     const titleH = 26;
@@ -195,14 +195,14 @@ export class Uc07SvgGeneratorService {
     const iconSize = Math.min(64, subW - 16, subH - 40);
 
     const subs = [
-      { key: 'uc07.mixed.target.mes', icon: ICONS.business.mes },
-      { key: 'uc07.mixed.target.erp', icon: ICONS.business.erp },
-      { key: 'uc07.mixed.target.planning', icon: ICONS.ui.processFlow },
+      { key: 'uc06.mixed.target.mes', icon: ICONS.business.mes },
+      { key: 'uc06.mixed.target.erp', icon: ICONS.business.erp },
+      { key: 'uc06.mixed.target.planning', icon: ICONS.ui.processFlow },
     ];
 
-    let out = `<g id="uc07_${box.id}">`;
+    let out = `<g id="uc06_${box.id}">`;
     out += `<rect x="${box.x}" y="${box.y}" width="${box.width}" height="${box.height}" rx="10" fill="${D.targetAnalyticsFill}" stroke="${D.targetAnalyticsStroke}" stroke-width="1.5"/>`;
-    out += `<text x="${box.x + box.width / 2}" y="${box.y + titleH - 4}" text-anchor="middle" class="uc07-mixed-title">${this.esc(t(box.titleKey))}</text>`;
+    out += `<text x="${box.x + box.width / 2}" y="${box.y + titleH - 4}" text-anchor="middle" class="uc06-mixed-title">${this.esc(t(box.titleKey))}</text>`;
 
     subs.forEach((sub, i) => {
       const sx = subStartX + i * (subW + subGap);
@@ -218,7 +218,7 @@ export class Uc07SvgGeneratorService {
   }
 
   /** Shopfloor Sources (links): wiederverwendbares Systems & Devices Element wie UC-04 */
-  private shopfloorSourcesBox(box: Uc07ShopfloorBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
+  private shopfloorSourcesBox(box: Uc06ShopfloorBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
     const toAbs = (p: string) => p;
     const titlePad = 14;
     const stripPad = 14;
@@ -231,10 +231,10 @@ export class Uc07SvgGeneratorService {
     const sysBoxX = box.x + stripPad;
     const devBoxX = box.x + stripPad + sysBoxW + groupGap;
 
-    const sysPaths = UC07_SHOPFLOOR_ICONS.systems.map(
+    const sysPaths = UC06_SHOPFLOOR_ICONS.systems.map(
       (k) => toAbs((ICONS.shopfloor.systems as Record<string, string>)[k] ?? '')
     );
-    const devPaths = UC07_SHOPFLOOR_ICONS.devices.map(
+    const devPaths = UC06_SHOPFLOOR_ICONS.devices.map(
       (k) => toAbs((ICONS.shopfloor.stations as Record<string, string>)[k] ?? '')
     );
     const sysLabels = ['AGV', 'SCADA'];
@@ -244,9 +244,9 @@ export class Uc07SvgGeneratorService {
     const figFill = 'rgba(255,255,255,0.6)';
     const captionPad = 6;
 
-    let out = `<g id="uc07_${box.id}">`;
+    let out = `<g id="uc06_${box.id}">`;
     out += `<rect x="${box.x}" y="${box.y}" width="${box.width}" height="${box.height}" rx="10" fill="${D.laneShopfloorFill}" stroke="${D.laneShopfloorStroke}" stroke-width="1.5"/>`;
-    out += `<text x="${box.x + titlePad}" y="${box.y + 26}" text-anchor="start" class="uc07-sf-title">${this.esc(t(box.titleKey))}</text>`;
+    out += `<text x="${box.x + titlePad}" y="${box.y + 26}" text-anchor="start" class="uc06-sf-title">${this.esc(t(box.titleKey))}</text>`;
 
     const sysCount = sysPaths.filter(Boolean).length;
     const devCount = devPaths.filter(Boolean).length;
@@ -269,7 +269,7 @@ export class Uc07SvgGeneratorService {
         out += `<text x="${fx + sysFigW / 2}" y="${fy + sysFigH - captionPad}" text-anchor="middle" font-size="10" font-weight="600" fill="#1e2d3d">${this.esc(sysLabels[i] ?? '')}</text>`;
       }
     });
-    out += `<text x="${sysBoxX + sysBoxW / 2}" y="${stripY + stripH - 6}" text-anchor="middle" font-size="11" font-weight="600" fill="${ORBIS_COLORS.orbisNightBlue}">${this.esc(t('uc07.sf.systemsLabel'))}</text>`;
+    out += `<text x="${sysBoxX + sysBoxW / 2}" y="${stripY + stripH - 6}" text-anchor="middle" font-size="11" font-weight="600" fill="${ORBIS_COLORS.orbisNightBlue}">${this.esc(t('uc06.sf.systemsLabel'))}</text>`;
 
     out += `<rect x="${devBoxX}" y="${stripY}" width="${devBoxW}" height="${stripH}" rx="8" fill="rgba(255,255,255,0.5)" stroke="${figStroke}" stroke-width="1"/>`;
     devPaths.forEach((path, i) => {
@@ -281,14 +281,14 @@ export class Uc07SvgGeneratorService {
         out += `<text x="${fx + devFigW / 2}" y="${fy + devFigH - captionPad}" text-anchor="middle" font-size="10" font-weight="600" fill="#1e2d3d">${this.esc(devLabels[i] ?? '')}</text>`;
       }
     });
-    out += `<text x="${devBoxX + devBoxW / 2}" y="${stripY + stripH - 6}" text-anchor="middle" font-size="11" font-weight="600" fill="${ORBIS_COLORS.orbisNightBlue}">${this.esc(t('uc07.sf.devicesLabel'))}</text>`;
+    out += `<text x="${devBoxX + devBoxW / 2}" y="${stripY + stripH - 6}" text-anchor="middle" font-size="11" font-weight="600" fill="${ORBIS_COLORS.orbisNightBlue}">${this.esc(t('uc06.sf.devicesLabel'))}</text>`;
 
     out += '</g>';
     return out;
   }
 
   /** Shopfloor Targets (rechts): Systems & Devices als Optimierungsziel – dieselben Icons wie Sources, gleiche Farbe */
-  private shopfloorTargetsBox(box: Uc07ShopfloorTargetsBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
+  private shopfloorTargetsBox(box: Uc06ShopfloorTargetsBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
     const toAbs = (p: string) => p;
     const titlePad = 14;
     const stripPad = 14;
@@ -301,10 +301,10 @@ export class Uc07SvgGeneratorService {
     const sysBoxX = box.x + stripPad;
     const devBoxX = box.x + stripPad + sysBoxW + groupGap;
 
-    const sysPaths = UC07_SHOPFLOOR_ICONS.systems.map(
+    const sysPaths = UC06_SHOPFLOOR_ICONS.systems.map(
       (k) => toAbs((ICONS.shopfloor.systems as Record<string, string>)[k] ?? '')
     );
-    const devPaths = UC07_SHOPFLOOR_ICONS.devices.map(
+    const devPaths = UC06_SHOPFLOOR_ICONS.devices.map(
       (k) => toAbs((ICONS.shopfloor.stations as Record<string, string>)[k] ?? '')
     );
     const sysLabels = ['AGV', 'SCADA'];
@@ -314,9 +314,9 @@ export class Uc07SvgGeneratorService {
     const figFill = 'rgba(255,255,255,0.6)';
     const captionPad = 6;
 
-    let out = `<g id="uc07_${box.id}">`;
+    let out = `<g id="uc06_${box.id}">`;
     out += `<rect x="${box.x}" y="${box.y}" width="${box.width}" height="${box.height}" rx="10" fill="${D.laneShopfloorFill}" stroke="${D.laneShopfloorStroke}" stroke-width="1.5"/>`;
-    out += `<text x="${box.x + box.width / 2}" y="${box.y + 26}" text-anchor="middle" class="uc07-sf-title">${this.esc(t(box.titleKey))}</text>`;
+    out += `<text x="${box.x + box.width / 2}" y="${box.y + 26}" text-anchor="middle" class="uc06-sf-title">${this.esc(t(box.titleKey))}</text>`;
 
     const sysCount = sysPaths.filter(Boolean).length;
     const devCount = devPaths.filter(Boolean).length;
@@ -339,7 +339,7 @@ export class Uc07SvgGeneratorService {
         out += `<text x="${fx + sysFigW / 2}" y="${fy + sysFigH - captionPad}" text-anchor="middle" font-size="10" font-weight="600" fill="#1e2d3d">${this.esc(sysLabels[i] ?? '')}</text>`;
       }
     });
-    out += `<text x="${sysBoxX + sysBoxW / 2}" y="${stripY + stripH - 6}" text-anchor="middle" font-size="11" font-weight="600" fill="${ORBIS_COLORS.orbisNightBlue}">${this.esc(t('uc07.sf.systemsLabel'))}</text>`;
+    out += `<text x="${sysBoxX + sysBoxW / 2}" y="${stripY + stripH - 6}" text-anchor="middle" font-size="11" font-weight="600" fill="${ORBIS_COLORS.orbisNightBlue}">${this.esc(t('uc06.sf.systemsLabel'))}</text>`;
 
     out += `<rect x="${devBoxX}" y="${stripY}" width="${devBoxW}" height="${stripH}" rx="8" fill="rgba(255,255,255,0.5)" stroke="${figStroke}" stroke-width="1"/>`;
     devPaths.forEach((path, i) => {
@@ -351,7 +351,7 @@ export class Uc07SvgGeneratorService {
         out += `<text x="${fx + devFigW / 2}" y="${fy + devFigH - captionPad}" text-anchor="middle" font-size="10" font-weight="600" fill="#1e2d3d">${this.esc(devLabels[i] ?? '')}</text>`;
       }
     });
-    out += `<text x="${devBoxX + devBoxW / 2}" y="${stripY + stripH - 6}" text-anchor="middle" font-size="11" font-weight="600" fill="${ORBIS_COLORS.orbisNightBlue}">${this.esc(t('uc07.sf.devicesLabel'))}</text>`;
+    out += `<text x="${devBoxX + devBoxW / 2}" y="${stripY + stripH - 6}" text-anchor="middle" font-size="11" font-weight="600" fill="${ORBIS_COLORS.orbisNightBlue}">${this.esc(t('uc06.sf.devicesLabel'))}</text>`;
 
     out += '</g>';
     return out;
@@ -361,9 +361,9 @@ export class Uc07SvgGeneratorService {
    * Connections an Kanten der Boxen – keine Durchkreuzung.
    * Jeder Pfad startet/endet an der Kante, zu der die Verbindung zeigt.
    */
-  private connections(s: Uc07Structure, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
+  private connections(s: Uc06Structure, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
     const stroke = D.connectionStroke;
-    let out = '<g id="uc07_connections">';
+    let out = '<g id="uc06_connections">';
 
     const steps = s.processSteps;
     const mixed = s.mixedBoxes;
@@ -381,20 +381,20 @@ export class Uc07SvgGeneratorService {
     const dspBottom = dsp.y + dsp.height;
     const dspCx = cx(dsp.x, dsp.width);
     const wayY1 = (sourcesTop + dspBottom) / 2;
-    out += `<path id="uc07_conn_sources_dsp" d="M ${sourcesTopCx} ${sourcesTop} L ${sourcesTopCx} ${wayY1} L ${dspCx} ${wayY1} L ${dspCx} ${dspBottom}" stroke="${stroke}" stroke-width="2" fill="none" marker-end="url(#uc07_arrow)"/>`;
-    out += `<text x="${(sourcesTopCx + dspCx) / 2}" y="${wayY1 + 14}" text-anchor="middle" font-size="11" fill="${ORBIS_COLORS.neutralDarkGrey}">${this.esc(t('uc07.conn.kpis'))}</text>`;
+    out += `<path id="uc06_conn_sources_dsp" d="M ${sourcesTopCx} ${sourcesTop} L ${sourcesTopCx} ${wayY1} L ${dspCx} ${wayY1} L ${dspCx} ${dspBottom}" stroke="${stroke}" stroke-width="2" fill="none" marker-end="url(#uc06_arrow)"/>`;
+    out += `<text x="${(sourcesTopCx + dspCx) / 2}" y="${wayY1 + 14}" text-anchor="middle" font-size="11" fill="${ORBIS_COLORS.neutralDarkGrey}">${this.esc(t('uc06.conn.kpis'))}</text>`;
 
     // DSP Right → Recommend Left: Kante rechts (DSP) zu Kante links (Recommend)
     const dspRight = dsp.x + dsp.width;
     const recLeft = recommend.x;
     const recCy = cy(recommend.y, recommend.height);
-    out += `<path id="uc07_conn_dsp_recommend" d="M ${dspRight} ${cy(dsp.y, dsp.height)} L ${recLeft} ${recCy}" stroke="${stroke}" stroke-width="2" fill="none" marker-end="url(#uc07_arrow)"/>`;
+    out += `<path id="uc06_conn_dsp_recommend" d="M ${dspRight} ${cy(dsp.y, dsp.height)} L ${recLeft} ${recCy}" stroke="${stroke}" stroke-width="2" fill="none" marker-end="url(#uc06_arrow)"/>`;
 
     // Recommend Right → Target Left: Kante rechts (Recommend) zu Kante links (Target)
     const recRight = recommend.x + recommend.width;
     const targetLeft = target.x;
-    out += `<path id="uc07_conn_recommend_target" d="M ${recRight} ${recCy} L ${targetLeft} ${cy(target.y, target.height)}" stroke="${stroke}" stroke-width="2" fill="none" marker-end="url(#uc07_arrow)"/>`;
-    out += `<text x="${(recRight + targetLeft) / 2}" y="${recCy - 8}" text-anchor="middle" font-size="11" fill="${ORBIS_COLORS.neutralDarkGrey}">${this.esc(t('uc07.conn.recommendation'))}</text>`;
+    out += `<path id="uc06_conn_recommend_target" d="M ${recRight} ${recCy} L ${targetLeft} ${cy(target.y, target.height)}" stroke="${stroke}" stroke-width="2" fill="none" marker-end="url(#uc06_arrow)"/>`;
+    out += `<text x="${(recRight + targetLeft) / 2}" y="${recCy - 8}" text-anchor="middle" font-size="11" fill="${ORBIS_COLORS.neutralDarkGrey}">${this.esc(t('uc06.conn.recommendation'))}</text>`;
 
     // Recommend Top → Execute Bottom: Kante oben (Recommend) zu Kante unten (Execute)
     const recTop = recommend.y;
@@ -403,7 +403,7 @@ export class Uc07SvgGeneratorService {
     const executeBottom = executeStep.y + executeStep.height;
     const executeCx = cx(executeStep.x, executeStep.width);
     const middleY = (recTop + executeBottom) / 2;
-    out += `<path id="uc07_conn_recommend_execute" d="M ${recCx} ${recTop} L ${recCx} ${middleY} L ${executeCx} ${middleY} L ${executeCx} ${executeBottom}" stroke="${stroke}" stroke-width="2" stroke-dasharray="8 4" fill="none" marker-end="url(#uc07_arrow)"/>`;
+    out += `<path id="uc06_conn_recommend_execute" d="M ${recCx} ${recTop} L ${recCx} ${middleY} L ${executeCx} ${middleY} L ${executeCx} ${executeBottom}" stroke="${stroke}" stroke-width="2" stroke-dasharray="8 4" fill="none" marker-end="url(#uc06_arrow)"/>`;
 
     // Target Bottom → Targets Top: Kante unten (Mixed Target) bis Oberkante der zweiten Shopfloor-Box
     const targetBottom = target.y + target.height;
@@ -411,14 +411,14 @@ export class Uc07SvgGeneratorService {
     const targetsTopCx = targetsBox.x + targetsBox.width / 2;
     const targetsTopY = targetsBox.y;
     const wayY = (targetBottom + targetsTopY) / 2;
-    out += `<path id="uc07_conn_target_targets" d="M ${targetCx} ${targetBottom} L ${targetCx} ${wayY} L ${targetsTopCx} ${wayY} L ${targetsTopCx} ${targetsTopY}" stroke="${stroke}" stroke-width="2" fill="none" marker-end="url(#uc07_arrow)"/>`;
-    out += `<text x="${(targetCx + targetsTopCx) / 2}" y="${wayY - 10}" text-anchor="middle" font-size="11" fill="${ORBIS_COLORS.neutralDarkGrey}">${this.esc(t('uc07.conn.action'))}</text>`;
+    out += `<path id="uc06_conn_target_targets" d="M ${targetCx} ${targetBottom} L ${targetCx} ${wayY} L ${targetsTopCx} ${wayY} L ${targetsTopCx} ${targetsTopY}" stroke="${stroke}" stroke-width="2" fill="none" marker-end="url(#uc06_arrow)"/>`;
+    out += `<text x="${(targetCx + targetsTopCx) / 2}" y="${wayY - 10}" text-anchor="middle" font-size="11" fill="${ORBIS_COLORS.neutralDarkGrey}">${this.esc(t('uc06.conn.action'))}</text>`;
 
     out += '</g>';
     return out;
   }
 
-  private feedbackConnection(s: Uc07Structure, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
+  private feedbackConnection(s: Uc06Structure, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
     const steps = s.processSteps;
     const mixed = s.mixedBoxes;
     const target = mixed[2];
@@ -431,9 +431,9 @@ export class Uc07SvgGeneratorService {
     const path = `M ${targetCx} ${targetTop} L ${targetCx} ${wayY} L ${feedbackCx} ${wayY} L ${feedbackCx} ${feedbackBottom}`;
     const lblX = (targetCx + feedbackCx) / 2;
     const lblY = wayY + 16;
-    return `<g id="uc07_feedback">
-      <path d="${path}" stroke="${D.laneTraceStroke}" stroke-width="2" stroke-dasharray="8 4" fill="none" marker-end="url(#uc07_arrow_feedback)"/>
-      <text x="${lblX}" y="${lblY}" text-anchor="middle" font-size="11" fill="${ORBIS_COLORS.neutralDarkGrey}">${this.esc(t('uc07.feedback'))}</text>
+    return `<g id="uc06_feedback">
+      <path d="${path}" stroke="${D.laneTraceStroke}" stroke-width="2" stroke-dasharray="8 4" fill="none" marker-end="url(#uc06_arrow_feedback)"/>
+      <text x="${lblX}" y="${lblY}" text-anchor="middle" font-size="11" fill="${ORBIS_COLORS.neutralDarkGrey}">${this.esc(t('uc06.feedback'))}</text>
     </g>`;
   }
 

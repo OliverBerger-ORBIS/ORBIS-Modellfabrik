@@ -214,7 +214,15 @@
     padding-top: 1rem;
     border-top: 1px solid rgba(var(--orbis-blue-light-rgb), 0.3);
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__actions-ref {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orbis-blue-strong);
   }
 
   &__view-details-btn {

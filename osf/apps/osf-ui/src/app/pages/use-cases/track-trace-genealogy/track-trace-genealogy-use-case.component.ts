@@ -23,6 +23,8 @@ import { LanguageService } from '../../../services/language.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TrackTraceGenealogyUseCaseComponent extends BaseUseCaseComponent {
+  readonly useCaseTitle = $localize`:@@trackTraceGenealogyUseCaseHeadline:Track & Trace Genealogy`;
+
   constructor(
     sanitizer: DomSanitizer,
     cdr: ChangeDetectorRef,

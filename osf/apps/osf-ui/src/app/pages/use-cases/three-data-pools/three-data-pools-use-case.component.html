@@ -23,6 +23,8 @@
   </ng-template>
   <header class="three-data-pools-use-case__header">
     <app-use-case-controls
+      useCaseCode="UC-02"
+      [useCaseTitle]="useCaseTitle"
       [steps]="steps"
       [currentStepIndex]="currentStepIndex"
       [zoom]="zoom"
@@ -42,9 +44,7 @@
       (zoomIn)="zoomIn()"
       (zoomOut)="zoomOut()"
       (resetZoom)="resetZoom()"
-    >
-      <h2 use-case-title i18n="@@threeDataPoolsUseCaseHeadline">Data Aggregation: Three Data Pools for Reliable KPIs</h2>
-    </app-use-case-controls>
+    />
   </header>
 
   <div class="three-data-pools-use-case__content">

@@ -25,17 +25,24 @@ Die **Use-Case Bibliothek** im OSF Dashboard präsentiert die DSP (Digital Shopf
 |------------|------------|--------|
 | `dsp/use-case` | UseCaseSelectorPageComponent | – |
 | `dsp/use-case/track-trace` | **TrackTraceTabComponent** (Live Demo) | – |
+| `dsp/use-case/interoperability` | InteroperabilityUseCaseComponent | UC-00 |
 | `dsp/use-case/track-trace-genealogy` | TrackTraceGenealogyUseCaseComponent | UC-01 |
 | `dsp/use-case/three-data-pools` | ThreeDataPoolsUseCaseComponent | UC-02 |
 | `dsp/use-case/ai-lifecycle` | AiLifecycleUseCaseComponent | UC-03 |
 | `dsp/use-case/closed-loop-quality` | ClosedLoopQualityUseCaseComponent | UC-04 |
 | `dsp/use-case/predictive-maintenance` | PredictiveMaintenanceUseCaseComponent | UC-05 |
-| `dsp/use-case/process-optimization` | ProcessOptimizationUseCaseComponent | UC-07 |
-| `dsp/use-case/interoperability` | InteroperabilityUseCaseComponent | UC-06 |
+| `dsp/use-case/process-optimization` | ProcessOptimizationUseCaseComponent | UC-06 |
 
 ---
 
 ## 2. Bestehende Use-Cases (Detailseiten)
+
+### UC-00: Interoperabilität (Event-to-Process)
+
+- **Ordner:** `interoperability/`
+- **Dateien:** Component, `uc-00-structure.config.ts`, `uc-00-svg-generator.service.ts`, `uc-00-i18n.service.ts`
+- **Steps:** `assets/use-cases/uc-00/uc-00-event-to-process-map.steps.json`
+- **Besonderheit:** Keine Connection-IDs (leeres Array)
 
 ### UC-01: Track & Trace Genealogie
 
@@ -72,19 +79,12 @@ Die **Use-Case Bibliothek** im OSF Dashboard präsentiert die DSP (Digital Shopf
 - **Steps:** `assets/use-cases/uc-05/uc-05-predictive-maintenance.steps.json`
 - **Besonderheit:** `UC05_CONNECTION_IDS` in `uc-05-structure.config.ts` für `dim-conn`
 
-### UC-06: Interoperabilität (Event-to-Process)
-
-- **Ordner:** `interoperability/`
-- **Dateien:** Component, `uc-06-structure.config.ts`, `uc-06-svg-generator.service.ts`, `uc-06-i18n.service.ts`
-- **Steps:** `assets/use-cases/uc-06/uc-06-event-to-process-map.steps.json`
-- **Besonderheit:** Keine Connection-IDs (leeres Array)
-
-### UC-07: Process Optimization (KPI-to-Action)
+### UC-06: Process Optimization (KPI-to-Action)
 
 - **Ordner:** `process-optimization/`
-- **Dateien:** Component, `uc-07-structure.config.ts`, `uc-07-svg-generator.service.ts`, `uc-07-i18n.service.ts`
-- **Steps:** `assets/use-cases/uc-07/uc-07-process-optimization.steps.json`
-- **Besonderheit:** `UC07_CONNECTION_IDS` in `uc-07-structure.config.ts` für `dim-conn`; Prozess-Loop (Observe→Analyze→Recommend→Simulate→Execute→Feedback)
+- **Dateien:** Component, `uc-06-structure.config.ts`, `uc-06-svg-generator.service.ts`, `uc-06-i18n.service.ts`
+- **Steps:** `assets/use-cases/uc-06/uc-06-process-optimization.steps.json`
+- **Besonderheit:** `UC06_CONNECTION_IDS` in `uc-06-structure.config.ts` für `dim-conn`; Prozess-Loop (Observe→Analyze→Recommend→Simulate→Execute→Feedback)
 
 ---
 
@@ -176,8 +176,8 @@ Reihenfolge: Title → [View-Toggle] → Nav → Step-Info → Zoom
 
 | Use-Case | highlightIds | hideIds | connectionIds | Quelle |
 |----------|--------------|---------|---------------|--------|
-| UC-01, 02, 06 | explizit | explizit | `[]` | `getConnectionIds()` in Component |
-| UC-03, 04, 05, 07 | explizit | explizit | aus `uc-0n-structure.config.ts` | `UC0n_CONNECTION_IDS` exportiert, Component importiert |
+| UC-00, 01, 02 | explizit | explizit | `[]` | `getConnectionIds()` in Component |
+| UC-03, 04, 05, 06 | explizit | explizit | aus `uc-0n-structure.config.ts` | `UC0n_CONNECTION_IDS` exportiert, Component importiert |
 
 Shared: `applyStepToSvg()` in `shared/use-case-step-apply.ts`.
 
@@ -209,13 +209,13 @@ DspUseCasesComponent (Übersicht)
         │
         └── Navigate → Use-Case-Detailseiten
                 │
+                ├── UC-00 InteroperabilityUseCaseComponent
                 ├── UC-01 TrackTraceGenealogyUseCaseComponent
                 ├── UC-02 ThreeDataPoolsUseCaseComponent
                 ├── UC-03 AiLifecycleUseCaseComponent
                 ├── UC-04 ClosedLoopQualityUseCaseComponent
                 ├── UC-05 PredictiveMaintenanceUseCaseComponent
-                ├── UC-07 ProcessOptimizationUseCaseComponent
-                └── UC-06 InteroperabilityUseCaseComponent
+                └── UC-06 ProcessOptimizationUseCaseComponent
                         │
                         ├── [uc]-structure.config.ts
                         ├── [uc]-svg-generator.service.ts

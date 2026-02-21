@@ -27,7 +27,7 @@
 
 ## Use-Case Strukturprinzip: Columns (vertikal)
 
-### 3-Column-Struktur für UC-06 (Interoperability)
+### 3-Column-Struktur für UC-00 (Interoperability)
 1. **Column Sources** (`col-sources`) - Links
    - Events & Signale aus verschiedenen Quellen
    - Farbe: Weiß oder neutral (analog zu Business Process Layer)
@@ -112,7 +112,7 @@
 
 ## Dimensionen & Größe
 
-### Aktuelle Dimensionen (UC-06)
+### Aktuelle Dimensionen (UC-00)
 - Width: 1920px
 - Height: 1080px
 - Column Height: ~760px
@@ -135,7 +135,7 @@
    - UC-03: AI Lifecycle
    - UC-04: Closed-Loop Quality
    - UC-05: Predictive Maintenance
-   - UC-06: Interoperability ✅ (bereits vorhanden)
+   - UC-00: Interoperability ✅ (bereits vorhanden)
 
 2. **Gemeinsame Struktur erstellen**
    - Column-Struktur definieren (welche Use-Cases haben Columns?)
@@ -166,7 +166,7 @@
 
 ## Nächste Schritte
 
-### Sofort (UC-06)
+### Sofort (UC-00)
 1. ✅ SVG-Icons-Problem beheben (Inline SVG)
 2. ✅ Farben über CSS-Variablen definieren
 3. ✅ Column-IDs konsistent benennen

@@ -15,44 +15,44 @@ Die Use-Case-Diagramme werden zur Laufzeit generiert. Export per `node scripts/e
 <table>
 <tr>
 <td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 50%;">
+<strong>UC-00: Interoperability (Event-to-Process)</strong><br/>
+<img src="../assets/use-cases/uc-00/uc-00-event-to-process-map-EN.svg" alt="UC-00 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
+<small>Overview (Step 0), EN</small>
+</td>
+<td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 50%;">
 <strong>UC-01: Track & Trace Genealogie</strong><br/>
 <img src="../assets/use-cases/uc-01/uc-01-track-trace-genealogy-EN.svg" alt="UC-01 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
 <small>Overview (Step 0), EN</small>
 </td>
-<td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 50%;">
+</tr>
+<tr>
+<td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
 <strong>UC-02: Three Data Pools</strong><br/>
 <img src="../assets/use-cases/uc-02/uc-02-three-data-pools-EN.svg" alt="UC-02 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
 <small>Overview (Step 0), EN</small>
 </td>
-</tr>
-<tr>
 <td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
 <strong>UC-03: AI Lifecycle</strong><br/>
 <img src="../assets/use-cases/uc-03/uc-03-ai-lifecycle-EN.svg" alt="UC-03 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
 <small>Overview (Step 0), EN</small>
 </td>
+</tr>
+<tr>
 <td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
 <strong>UC-04: Closed Loop Quality</strong><br/>
 <img src="../assets/use-cases/uc-04/uc-04-closed-loop-quality-EN.svg" alt="UC-04 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
 <small>Overview (Step 0), EN</small>
 </td>
-</tr>
-<tr>
 <td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
 <strong>UC-05: Predictive Maintenance</strong><br/>
 <img src="../assets/use-cases/uc-05/uc-05-predictive-maintenance-EN.svg" alt="UC-05 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
 <small>Overview (Step 0), EN</small>
 </td>
-<td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
-<strong>UC-06: Interoperability (Event-to-Process)</strong><br/>
-<img src="../assets/use-cases/uc-06/uc-06-event-to-process-map-EN.svg" alt="UC-06 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
-<small>Overview (Step 0), EN</small>
-</td>
 </tr>
 <tr>
 <td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
-<strong>UC-07: Process Optimization</strong><br/>
-<img src="../assets/use-cases/uc-07/uc-07-process-optimization-EN.svg" alt="UC-07 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
+<strong>UC-06: Process Optimization</strong><br/>
+<img src="../assets/use-cases/uc-06/uc-06-process-optimization-EN.svg" alt="UC-06 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
 <small>Overview (Step 0), EN</small>
 </td>
 <td></td>
@@ -61,6 +61,8 @@ Die Use-Case-Diagramme werden zur Laufzeit generiert. Export per `node scripts/e
 
 **Export:** `node scripts/export-use-case-svgs.js` – baut bei Bedarf, startet Server, exportiert mit Puppeteer.
 Schreibt nach `osf/.../assets/svg/use-cases/` und kopiert nach `docs/assets/use-cases/uc-XX/` (Referenz für diese Übersicht).
+
+**Hinweis:** UC-00 und UC-06 erscheinen erst nach einem Export. Falls die Bilder nicht angezeigt werden: `node scripts/export-use-case-svgs.js` ausführen.
 
 **Voraussetzung:** Puppeteer benötigt Chrome. Falls Fehler „Could not find Chrome“:
 ```bash
@@ -73,13 +75,34 @@ npx puppeteer browsers install chrome
 
 | UC | Name | Route | Steps | Step 1 (erster Detail-Step) | Connection-IDs |
 |----|------|-------|-------|-----------------------------|---------------|
+| 00 | Interoperability | `interoperability` | 9 | Shopfloor events | – |
 | 01 | Track & Trace Genealogie | `track-trace-genealogy` | 9 | Business Context | – |
 | 02 | Three Data Pools | `three-data-pools` | 7 | Business data | – |
 | 03 | AI Lifecycle | `ai-lifecycle` | 6 | Data Capture | uc-03-structure.config |
 | 04 | Closed Loop Quality | `closed-loop-quality` | 7 | Source: Order & AIQS | uc-04-structure.config |
 | 05 | Predictive Maintenance | `predictive-maintenance` | 7 | Trigger & Sensor | uc-05-structure.config |
-| 06 | Interoperability | `interoperability` | 9 | Shopfloor events | – |
-| 07 | Process Optimization | `process-optimization` | 7 | Observe | uc-07-structure.config |
+| 06 | Process Optimization | `process-optimization` | 7 | Observe | uc-06-structure.config |
+
+---
+
+## UC-00: Interoperability (Event-to-Process)
+
+- **Route:** `dsp/use-case/interoperability`
+- **Ordner:** `interoperability/`
+- **Steps:** 9
+
+### Step 1: Shopfloor events
+
+| Feld | Wert |
+|------|------|
+| **ID** | `uc00-01-sources-shopfloor` |
+| **Titel (EN)** | Shopfloor events |
+| **Beschreibung (EN)** | Events from machines, AGVs, quality checks, and sensors form the foundation for the process view. |
+| **highlightIds** | `uc00_lane_machine_station`, `uc00_lane_agv_system`, `uc00_lane_quality_aiqs`, `uc00_lane_environment_sensors` |
+
+### Besonderheiten
+
+- Keine Connection-IDs
 
 ---
 
@@ -184,28 +207,7 @@ npx puppeteer browsers install chrome
 
 ---
 
-## UC-06: Interoperability (Event-to-Process)
-
-- **Route:** `dsp/use-case/interoperability`
-- **Ordner:** `interoperability/`
-- **Steps:** 9
-
-### Step 1: Shopfloor events
-
-| Feld | Wert |
-|------|------|
-| **ID** | `uc06-01-sources-shopfloor` |
-| **Titel (EN)** | Shopfloor events |
-| **Beschreibung (EN)** | Events from machines, AGVs, quality checks, and sensors form the foundation for the process view. |
-| **highlightIds** | `uc06_lane_machine_station`, `uc06_lane_agv_amr`, `uc06_lane_quality_aiqs`, `uc06_lane_env_sensors` |
-
-### Besonderheiten
-
-- Keine Connection-IDs
-
----
-
-## UC-07: Process Optimization
+## UC-06: Process Optimization
 
 - **Route:** `dsp/use-case/process-optimization`
 - **Ordner:** `process-optimization/`
@@ -215,10 +217,10 @@ npx puppeteer browsers install chrome
 
 | Feld | Wert |
 |------|------|
-| **ID** | `uc07-01-observe` |
+| **ID** | `uc06-01-observe` |
 | **Titel (EN)** | Observe |
 | **Beschreibung (EN)** | KPIs, cycle times and machine utilization from the 3 data pools meet the observation baseline. |
-| **Connection-IDs** | `UC07_CONNECTION_IDS` in structure.config |
+| **Connection-IDs** | `UC06_CONNECTION_IDS` in structure.config |
 
 ### Besonderheiten
 
@@ -230,13 +232,13 @@ npx puppeteer browsers install chrome
 ## Anleitung: Neuen Use-Case hinzufügen (z.B. Process Optimization)
 
 1. **Ordner anlegen:** `process-optimization/`
-2. **Dateien:** Component, `uc-07-structure.config.ts`, `uc-07-svg-generator.service.ts`, `uc-07-i18n.service.ts`
-3. **Steps:** `assets/use-cases/uc-07/uc-07-process-optimization.steps.json`
+2. **Dateien:** Component, `uc-06-structure.config.ts`, `uc-06-svg-generator.service.ts`, `uc-06-i18n.service.ts`
+3. **Steps:** `assets/use-cases/uc-06/uc-06-process-optimization.steps.json`
 4. **Routing:** Route `process-optimization` in `use-case.routes.ts` und App-Routing
 5. **Component:** `ProcessOptimizationUseCaseComponent` extends `BaseUseCaseComponent`
 6. **DspUseCasesComponent:** `detailRoute: '/dsp/use-case/process-optimization'` für process-optimization-Karte
 7. **UseCaseSelectorPageComponent:** Karte hinzufügen
-8. **Inventory:** Zeile in Übersichtstabelle + Abschnitt „UC-07: Process Optimization“
+8. **Inventory:** Zeile in Übersichtstabelle + Abschnitt „UC-06: Process Optimization“
 
 Referenz: [Use-Case Bibliothek](use-case-library.md) § 3.1 Datei-Organisation, [UC-DIAGRAM-IMPLEMENTATION-GUIDE](../assets/use-cases/UC-DIAGRAM-IMPLEMENTATION-GUIDE.md)
 

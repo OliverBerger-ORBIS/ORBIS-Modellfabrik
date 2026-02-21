@@ -35,8 +35,8 @@ const USE_CASE_DOCS_FOLDERS = {
   'uc-03-ai-lifecycle': 'uc-03',
   'uc-04-closed-loop-quality': 'uc-04',
   'uc-05-predictive-maintenance': 'uc-05',
-  'uc-06-event-to-process-map': 'uc-06',
-  'uc-07-process-optimization': 'uc-07',
+  'uc-00-event-to-process-map': 'uc-00',
+  'uc-06-process-optimization': 'uc-06',
 };
 
 /** Normalize image hrefs to ../path form (relative to use-cases/) */
@@ -106,8 +106,8 @@ const USE_CASES = [
   { id: 'uc-03', route: 'ai-lifecycle', name: 'uc-03-ai-lifecycle' },
   { id: 'uc-04', route: 'closed-loop-quality', name: 'uc-04-closed-loop-quality' },
   { id: 'uc-05', route: 'predictive-maintenance', name: 'uc-05-predictive-maintenance' },
-  { id: 'uc-06', route: 'interoperability', name: 'uc-06-event-to-process-map' },
-  { id: 'uc-07', route: 'process-optimization', name: 'uc-07-process-optimization' },
+  { id: 'uc-00', route: 'interoperability', name: 'uc-00-event-to-process-map' },
+  { id: 'uc-06', route: 'process-optimization', name: 'uc-06-process-optimization' },
 ];
 
 function run(cmd, args, opts = {}) {

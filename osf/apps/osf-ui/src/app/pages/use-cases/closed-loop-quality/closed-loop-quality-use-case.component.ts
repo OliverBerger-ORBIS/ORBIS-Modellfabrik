@@ -23,6 +23,8 @@ import { LanguageService } from '../../../services/language.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClosedLoopQualityUseCaseComponent extends BaseUseCaseComponent {
+  readonly useCaseTitle = $localize`:@@closedLoopQualityUseCaseHeadline:Closed Loop Quality`;
+
   constructor(
     sanitizer: DomSanitizer,
     cdr: ChangeDetectorRef,

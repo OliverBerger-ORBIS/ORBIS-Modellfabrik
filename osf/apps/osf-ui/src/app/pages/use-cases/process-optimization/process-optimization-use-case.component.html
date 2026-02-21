@@ -1,6 +1,8 @@
 <section class="process-optimization-use-case">
   <header class="process-optimization-use-case__header">
     <app-use-case-controls
+      useCaseCode="UC-06"
+      [useCaseTitle]="useCaseTitle"
       [steps]="steps"
       [currentStepIndex]="currentStepIndex"
       [zoom]="zoom"
@@ -19,9 +21,7 @@
       (zoomIn)="zoomIn()"
       (zoomOut)="zoomOut()"
       (resetZoom)="resetZoom()"
-    >
-      <h2 use-case-title i18n="@@processOptimizationUseCaseHeadline">Process Optimization</h2>
-    </app-use-case-controls>
+    />
   </header>
 
   <div class="process-optimization-use-case__content">

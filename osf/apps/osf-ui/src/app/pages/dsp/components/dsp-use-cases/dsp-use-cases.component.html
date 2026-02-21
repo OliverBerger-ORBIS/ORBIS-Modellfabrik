@@ -14,9 +14,9 @@
       (dblclick)="onUseCaseDoubleClick(useCase)"
     >
       <div class="use-case-card__icon">
-        <img [src]="useCase.icon" [alt]="useCase.title" />
+        <img [src]="useCase.icon" [alt]="useCase.useCaseTitle" />
       </div>
-      <div class="use-case-card__title">{{ useCase.title }}</div>
+      <div class="use-case-card__title">{{ useCase.useCaseTitle }}</div>
       <div class="use-case-card__subtitle">{{ useCase.description }}</div>
     </button>
   </div>
@@ -25,11 +25,11 @@
     <article class="dsp-use-case-detail">
       <header class="dsp-use-case-detail__header">
         <div class="dsp-use-case-detail__icon">
-          <img [src]="useCase.icon" [alt]="useCase.title" />
+          <img [src]="useCase.icon" [alt]="useCase.useCaseTitle" />
         </div>
         <div>
-          <div class="dsp-use-case-detail__label">Use Case</div>
-          <h3 class="dsp-use-case-detail__title">{{ useCase.title }}</h3>
+          <div class="dsp-use-case-detail__label">{{ getDetailLabel(useCase) }}</div>
+          <h3 class="dsp-use-case-detail__title">{{ useCase.useCaseTitle }}</h3>
           <p class="dsp-use-case-detail__subtitle">{{ useCase.description }}</p>
         </div>
       </header>
@@ -59,6 +59,7 @@
       </p>
 
       <div *ngIf="enableNavigation && hasDetailPage(useCase)" class="dsp-use-case-detail__actions">
+        <span *ngIf="useCase.reference" class="dsp-use-case-detail__actions-ref">{{ useCase.reference }}</span>
         <button
           type="button"
           class="dsp-use-case-detail__view-details-btn"

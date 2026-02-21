@@ -1,6 +1,11 @@
 <div class="use-case-controls" [class.use-case-controls--with-view-toggle]="viewToggleTemplate">
   <div class="use-case-controls__title">
-    <ng-content select="[use-case-title]"></ng-content>
+    @if (useCaseCode && useCaseTitle) {
+      <span class="use-case-controls__code">{{ useCaseCode }}:</span>
+      <span class="use-case-controls__title-text">{{ useCaseTitle }}</span>
+    } @else {
+      <ng-content select="[use-case-title]"></ng-content>
+    }
   </div>
   <div class="use-case-controls__view-toggle" *ngIf="viewToggleTemplate">
     <ng-container *ngTemplateOutlet="viewToggleTemplate"></ng-container>

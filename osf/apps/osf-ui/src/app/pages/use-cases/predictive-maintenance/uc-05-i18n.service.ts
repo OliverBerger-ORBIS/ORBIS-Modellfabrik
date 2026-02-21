@@ -49,7 +49,7 @@ export class Uc05I18nService {
 
   private getEnglishTranslations(): Record<string, string> {
     return {
-      'uc05.title': 'UC-05 — Predictive Maintenance',
+      'uc05.title': 'Predictive Maintenance',
       'uc05.subtitle': 'Condition monitoring: Detect vibrations → Evaluate → Alarm → Act → Feedback',
 
       'uc05.lane.process': 'Process Data & Alarm Flow',

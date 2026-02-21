@@ -1,6 +1,8 @@
 <section class="track-trace-genealogy-use-case">
   <header class="track-trace-genealogy-use-case__header">
     <app-use-case-controls
+      useCaseCode="UC-01"
+      [useCaseTitle]="useCaseTitle"
       [steps]="steps"
       [currentStepIndex]="currentStepIndex"
       [zoom]="zoom"
@@ -19,9 +21,7 @@
       (zoomIn)="zoomIn()"
       (zoomOut)="zoomOut()"
       (resetZoom)="resetZoom()"
-    >
-      <h2 use-case-title i18n="@@trackTraceGenealogyUseCaseHeadline">Track & Trace Genealogy</h2>
-    </app-use-case-controls>
+    />
   </header>
 
   <div class="track-trace-genealogy-use-case__content">

@@ -25,6 +25,11 @@ export class UseCaseControlsComponent {
   @Input() isAutoPlaying = false;
   @Input() viewToggleTemplate: TemplateRef<unknown> | null = null;
 
+  /** Use-Case code (e.g. UC-00) – displayed separately from title when both are set */
+  @Input() useCaseCode: string | null = null;
+  /** Use-Case title (e.g. Interoperability) – displayed without code prefix when useCaseCode is set */
+  @Input() useCaseTitle: string | null = null;
+
   @Input() btnPrev = $localize`:@@dspArchPrev:Previous`;
   @Input() btnNext = $localize`:@@dspArchNext:Next`;
   @Input() btnAutoPlay = $localize`:@@dspArchAutoPlay:Auto Play`;

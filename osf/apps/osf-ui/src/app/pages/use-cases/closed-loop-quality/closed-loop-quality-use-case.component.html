@@ -1,6 +1,8 @@
 <section class="closed-loop-quality-use-case">
   <header class="closed-loop-quality-use-case__header">
     <app-use-case-controls
+      useCaseCode="UC-04"
+      [useCaseTitle]="useCaseTitle"
       [steps]="steps"
       [currentStepIndex]="currentStepIndex"
       [zoom]="zoom"
@@ -19,9 +21,7 @@
       (zoomIn)="zoomIn()"
       (zoomOut)="zoomOut()"
       (resetZoom)="resetZoom()"
-    >
-      <h2 use-case-title i18n="@@closedLoopQualityUseCaseHeadline">Closed Loop Quality</h2>
-    </app-use-case-controls>
+    />
   </header>
 
   <div class="closed-loop-quality-use-case__content">

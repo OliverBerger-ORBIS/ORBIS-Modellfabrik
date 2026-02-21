@@ -2,7 +2,7 @@
 
 ## Status
 - Version: v2
-- v2: UC-06 Visual-Verweis aktualisiert (Step-Animation umgesetzt, SVG-Export nutzbar)
+- v2: UC-00 Visual-Verweis aktualisiert (Step-Animation umgesetzt, SVG-Export nutzbar)
 - Owner: @<Oliver Berger>
 - Review: <Tech Reviewer> / <MES-ERP Reviewer> / <Redaktion>
 - Zieltermin: <Datum>
@@ -100,13 +100,13 @@ Call to Action: Sprechen Sie uns an für einen Reifegrad-Check oder einen Smart-
 In einer interoperablen Fertigungsarchitektur werden technische Events (z. B. Station „Start/End“, Transfer, Qualitätsresultat) normalisiert und mit Kontext (Order, Werkstück, Station, Zeit) verknüpft. Dadurch entsteht ein prozessfähiges Modell, das KPI-Berechnung, Ursachenanalyse und Orchestrierung ermöglicht. Edge-Komponenten unterstützen Realtime-Verarbeitung und lokale Reaktionen; Cloud-Komponenten unterstützen Training, Benchmarking und skalierbare Auswertung. Best-of-Breed bedeutet, dass ERP/MES/Analytics austauschbar bleiben; SAP kann ein Zielsystem sein, ist aber nicht Voraussetzung.
 
 ## Visuals (Einbindung)
-### Visual 1: UC-06 (Konzept-Screen)
-- Link: [UC-06 — Interoperability Event-to-Process Map (Klammer für A1)]([UC-06 — Interoperability Event-to-Process Map (Klammer für A1) - Overview](https://dev.azure.com/ORBIS-AG-SAP/Modellfabrik/_wiki/wikis/Modellfabrik.wiki/8405/UC-06-%E2%80%94-Interoperability-Event-to-Process-Map-(Klammer-f%C3%BCr-A1))))
+### Visual 1: UC-00 (Konzept-Screen)
+- Link: [UC-00 — Interoperability Event-to-Process Map (Klammer für A1)](https://dev.azure.com/ORBIS-AG-SAP/Modellfabrik/_wiki/wikis/Modellfabrik.wiki/8405/UC-00-%E2%80%94-Interoperability-Event-to-Process-Map-(Klammer-f%C3%BCr-A1))
 - Caption DE: Interoperabilität macht aus technischen Events ein verständliches Prozessbild – als gemeinsame Sprache zwischen Shopfloor und IT.
 - Alt-Text DE: Diagramm zeigt, wie Shopfloor-Events mit Prozesskontext zu einem End-to-End Prozessbild zusammengeführt werden.
 
-UC-06 ist in OSF mit Step-Animation verfügbar; SVG-Export via `node scripts/export-use-case-svgs.js` (siehe use-case-library).
-![UC-06-SVG-Template-DE.png](/.attachments/UC-06-SVG-Template-DE-73d2c2d8-2542-4d0a-a337-94b0e304aec1.png)
+UC-00 ist in OSF mit Step-Animation verfügbar; SVG-Export via `node scripts/export-use-case-svgs.js` (siehe use-case-library).
+![UC-00-SVG-Template-DE.png](/.attachments/UC-00-SVG-Template-DE-73d2c2d8-2542-4d0a-a337-94b0e304aec1.png)
 
 ### Visual 2: OSF Proof „Digital Twin Pair“ (50/50)
 Hinweis: Für DE/EN wird jeweils die sprachspezifische Layout-Grafik verwendet (Labels im Bild).

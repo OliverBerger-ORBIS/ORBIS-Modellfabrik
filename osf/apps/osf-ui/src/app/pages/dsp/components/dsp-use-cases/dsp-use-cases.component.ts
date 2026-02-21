@@ -4,27 +4,31 @@ import { Router } from '@angular/router';
 import { LanguageService } from '../../../../services/language.service';
 
 interface UseCase {
-  id: string;
-  title: string;
+  id: string; // Route id (e.g. 'interoperability')
+  useCaseTitle: string; // Display title on tiles and detail header (e.g. "Interoperability (Event-to-Process)")
+  useCaseCode?: string; // Optional UC code for label (e.g. "UC-00" → "Use Case UC-00")
+  reference?: string; // Optional full reference for View Details row (e.g. "UC-00: Interoperability")
   description: string;
   actions: string[];
   smartFactory: string[];
   icon: string;
   footer?: string;
-  detailRoute?: string; // Route to detail page if implemented
+  detailRoute?: string;
 }
+
+const USE_CASE_LABEL = $localize`:@@dspUseCaseLabel:Use Case`;
 
 /**
  * DSP Use Cases Component
  * 
  * Displays the main DSP use cases (Reihenfolge wie im Blog-Artikel):
- * 1. UC-06 Interoperability (Event-to-Process)
+ * 1. UC-00 Interoperability (Event-to-Process, Grundlage)
  * 2. UC-01 Track & Trace (Genealogy, Live)
  * 3. UC-02 Data Aggregation
  * 4. UC-03 AI Lifecycle
  * 5. UC-04 Closed Loop Quality
  * 6. UC-05 Predictive Maintenance
- * 7. UC-07 Process Optimization
+ * 7. UC-06 Process Optimization
  * 
  * Supports:
  * - Single click: Highlight and show details
@@ -62,7 +66,9 @@ export class DspUseCasesComponent {
   useCases: UseCase[] = [
     {
       id: 'interoperability',
-      title: $localize`:@@dspUseCaseInteroperabilityTitle:Interoperability (Event-to-Process)`,
+      useCaseTitle: $localize`:@@dspUseCaseInteroperabilityTileTitle:Interoperability (Event-to-Process)`,
+      useCaseCode: 'UC-00',
+      reference: $localize`:@@dspUseCaseInteroperabilityRef:UC-00: Interoperability`,
       description: $localize`:@@dspUseCaseInteroperabilityDesc:Normalize shopfloor events and enrich them with context to create a shared process view for OT and IT.`,
       actions: [
         $localize`:@@dspUseCaseInteroperabilityH1:Normalize and harmonize events across machines, stations, AGVs, and quality systems`,
@@ -82,7 +88,7 @@ export class DspUseCasesComponent {
     },
     {
       id: 'track-trace-genealogy',
-      title: $localize`:@@dspUseCaseTrackTraceGenealogyTitle:Track & Trace (Schema)`,
+      useCaseTitle: $localize`:@@dspUseCaseTrackTraceGenealogyTitle:Track & Trace (Schema)`,
       description: $localize`:@@dspUseCaseTrackTraceGenealogyDesc:Conceptual diagram showing how events are correlated along a unique workpiece ID to create a complete genealogy.`,
       actions: [
         $localize`:@@dspUseCaseTrackTraceGenealogyH1:Business events (Supplier Order, Customer Order) with material/batch information`,
@@ -101,7 +107,7 @@ export class DspUseCasesComponent {
     },
     {
       id: 'track-trace-live',
-      title: $localize`:@@dspUseCaseTrackTraceLiveTitle:Track & Trace (Live Demo)`,
+      useCaseTitle: $localize`:@@dspUseCaseTrackTraceLiveTitle:Track & Trace (Live Demo)`,
       description: $localize`:@@dspUseCaseTrackTraceDesc:Workpiece tracking via Digital Twin including AGV positions, stations, and events for complete traceability.`,
       actions: [
         $localize`:@@dspUseCaseTrackTraceH1:Real-time workpiece location tracking`,
@@ -120,7 +126,7 @@ export class DspUseCasesComponent {
     },
     {
       id: 'data-aggregation',
-      title: $localize`:@@dspUseCaseAggregationTitle:Data Aggregation`,
+      useCaseTitle: $localize`:@@dspUseCaseAggregationTitle:Data Aggregation`,
       description: $localize`:@@dspUseCaseAggregationDesc:Collection and harmonization of setup times, operational states, downtime, and energy consumption as the foundation for OEE and process optimization.`,
       actions: [
         $localize`:@@dspUseCaseAggregationH1:Setup times and operational states`,
@@ -140,7 +146,7 @@ export class DspUseCasesComponent {
     },
     {
       id: 'ai-lifecycle',
-      title: $localize`:@@dspUseCaseAiLifecycleTitle:AI Lifecycle`,
+      useCaseTitle: $localize`:@@dspUseCaseAiLifecycleTitle:AI Lifecycle`,
       description: $localize`:@@dspUseCaseAiLifecycleDesc:Industrial AI as a lifecycle: data capture, cloud training, governed rollout to multiple stations, and continuous improvement through monitoring and feedback.`,
       actions: [
         $localize`:@@dspUseCaseAiLifecycleH1:Real-time inference at the edge where decisions are needed`,
@@ -160,7 +166,7 @@ export class DspUseCasesComponent {
     },
     {
       id: 'closed-loop-quality',
-      title: $localize`:@@dspUseCaseClosedLoopQualityTitle:Closed Loop Quality`,
+      useCaseTitle: $localize`:@@dspUseCaseClosedLoopQualityTitle:Closed Loop Quality`,
       description: $localize`:@@dspUseCaseClosedLoopQualityDesc:Quality inspection events leading to decisions and actions – block, rework, rebuild, conditional release – with feedback to MES/ERP/Analytics.`,
       actions: [
         $localize`:@@dspUseCaseClosedLoopQualityH1:Inspection result as quality event`,
@@ -180,7 +186,7 @@ export class DspUseCasesComponent {
     },
     {
       id: 'predictive-maintenance',
-      title: $localize`:@@dspUseCasePredictiveTitle:Predictive Maintenance`,
+      useCaseTitle: $localize`:@@dspUseCasePredictiveTitle:Predictive Maintenance`,
       description: $localize`:@@dspUseCasePredictiveDesc:Condition monitoring, early warning systems for machine parameters, and AI/ML models for predictive maintenance.`,
       actions: [
         $localize`:@@dspUseCasePredictiveH1:Real-time condition monitoring`,
@@ -199,7 +205,9 @@ export class DspUseCasesComponent {
     },
     {
       id: 'process-optimization',
-      title: $localize`:@@dspUseCaseOptimizationTitle:Process Optimization`,
+      useCaseTitle: $localize`:@@dspUseCaseOptimizationTitle:Process Optimization`,
+      useCaseCode: 'UC-06',
+      reference: $localize`:@@dspUseCaseOptimizationRef:UC-06: Process Optimization`,
       description: $localize`:@@dspUseCaseOptimizationDesc:Event-based process control, dynamic planning, and autonomously responding systems for continuous optimization.`,
       actions: [
         $localize`:@@dspUseCaseOptimizationH1:Event-driven process control`,
@@ -258,6 +266,10 @@ export class DspUseCasesComponent {
 
   trackById(_index: number, useCase: UseCase): string {
     return useCase.id;
+  }
+
+  getDetailLabel(useCase: UseCase): string {
+    return useCase.useCaseCode ? `${USE_CASE_LABEL} ${useCase.useCaseCode}` : USE_CASE_LABEL;
   }
 
   get activeUseCase(): UseCase | undefined {

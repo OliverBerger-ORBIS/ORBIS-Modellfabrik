@@ -1,8 +1,8 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UseCaseControlsComponent } from '../shared/use-case-controls/use-case-controls.component';
-import { Uc06SvgGeneratorService } from './uc-06-svg-generator.service';
-import { Uc06I18nService } from './uc-06-i18n.service';
+import { Uc00SvgGeneratorService } from './uc-00-svg-generator.service';
+import { Uc00I18nService } from './uc-00-i18n.service';
 import { BaseUseCaseComponent } from '../shared/base-use-case.component';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ChangeDetectorRef } from '@angular/core';
@@ -23,23 +23,25 @@ import { LanguageService } from '../../../services/language.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InteroperabilityUseCaseComponent extends BaseUseCaseComponent {
+  readonly useCaseTitle = $localize`:@@interoperabilityUseCaseHeadline:Interoperability (Event-to-Process Map)`;
+
   constructor(
     sanitizer: DomSanitizer,
     cdr: ChangeDetectorRef,
     http: HttpClient,
     languageService: LanguageService,
-    private readonly svgGenerator: Uc06SvgGeneratorService,
-    private readonly i18nService: Uc06I18nService
+    private readonly svgGenerator: Uc00SvgGeneratorService,
+    private readonly i18nService: Uc00I18nService
   ) {
     super(sanitizer, cdr, http, languageService);
   }
 
   override getStepsUrl(): string {
-    return 'assets/use-cases/uc-06/uc-06-event-to-process-map.steps.json';
+    return 'assets/use-cases/uc-00/uc-00-event-to-process-map.steps.json';
   }
 
   override getStepPrefix(): string {
-    return 'uc06';
+    return 'uc00';
   }
 
   override getConnectionIds(): readonly string[] {

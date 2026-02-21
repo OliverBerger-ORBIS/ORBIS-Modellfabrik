@@ -21,6 +21,7 @@ Die Dokumente beschreiben den Systemkontext, Message Flows und Namenskonventione
 - [Shopfloor Mapping Service](shopfloor-mapping-service.md) – Serial↔Modul↔Cell-Mapping
 - [DSP Architecture Component Spec](dsp-architecture-component-spec.md) – DSP Architecture Component Specification
 - [DSP SVG Inventory](dsp-svg-inventory.md) – Übersicht aller verfügbaren SVG-Assets für die DSP-Architektur
+- [Use-Case Bibliothek](use-case-library.md) – Technische Doku (Routing, Dateien, Steps, Konsistenz)
 - [Use-Case Inventory](use-case-inventory.md) – Übersicht der animierten Use-Case-Diagramme (Step 1, Anleitung für Anpassungen)
 
 ### APS Physical Architecture
