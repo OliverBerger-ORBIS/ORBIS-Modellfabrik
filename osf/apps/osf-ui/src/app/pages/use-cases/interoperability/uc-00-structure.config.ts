@@ -115,6 +115,20 @@ export interface Uc00Target {
   labelY: number;
 }
 
+export interface Uc00OutcomeBox {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  iconPath: string;
+  iconSize: number;
+  titleKey: string;
+  /** Optional second line for long titles (e.g. "Predictive" / "Maintenance") */
+  titleLine2Key?: string;
+}
+
+/** @deprecated Replaced by Uc00OutcomeBox */
 export interface Uc00Outcome {
   id: string;
   x: number;
@@ -145,6 +159,7 @@ export interface Uc00Structure {
     };
     targets: {
       column: Omit<Uc00Column, 'lanes'>;
+      sectionHeaders: Array<{ key: string; x: number; y: number }>;
       processViewBox: {
         x: number;
         y: number;
@@ -162,7 +177,7 @@ export interface Uc00Structure {
       noteKey: string;
       noteX: number;
       noteY: number;
-      outcomes: Uc00Outcome[];
+      outcomeBoxes: Uc00OutcomeBox[];
     };
   };
   
@@ -321,36 +336,71 @@ export function createUc00Structure(): Uc00Structure {
           { id: 'foundation', x: UC00_DSP_X + 80, y: colY + 790, width: 440, height: 70, textKey: 'uc00.bar.foundation', multiline: true, textLines: ['uc00.bar.foundation.line1', 'uc00.bar.foundation.line2'] },
         ],
       },
-      targets: {
-        column: { id: 'targets', x: UC00_TARGETS_X, y: colY, width: UC00_COLUMN_WIDTH, height: colH, headerX: UC00_TARGETS_X + 40, headerY: colY + 50, headerKey: 'uc00.targets.header' },
-        processViewBox: {
-          x: UC00_TARGETS_X + 40, y: colY + 90, width: 520, height: 200, titleKey: 'uc00.process_view.title',
+      targets: (() => {
+        const headerH = 28;
+        const leftX = UC00_TARGETS_X + 40;
+        const shiftProcess = 25;
+        const shiftTarget = 49;
+        const shiftUseCases = 50;
+        const sh1Y = colY + 8 + shiftProcess;
+        const pvY = sh1Y + headerH;
+        const sh2Y = pvY + 200 + 6 + shiftTarget;
+        const targetsY = sh2Y + headerH;
+        const noteY = targetsY + 180 + 10;
+        const sh3Y = noteY + 20 + shiftUseCases;
+        const outcomesBottom = UC00_VIEWBOX.height - 40;
+        const gap = 12;
+        const boxW = Math.floor((520 - 2 * gap) / 3);
+        const boxHSquare = boxW;
+        const oy = sh3Y + headerH + 6;
+        const availableForBoxes = outcomesBottom - oy;
+        const boxHToFill = Math.floor((availableForBoxes - gap) / 2);
+        const boxH = Math.min(boxHSquare, Math.max(boxHToFill, 80));
+        return {
+        column: { id: 'targets', x: UC00_TARGETS_X, y: colY, width: UC00_COLUMN_WIDTH, height: colH, headerKey: '', headerX: 0, headerY: 0 },
+        sectionHeaders: [
+          { key: 'uc00.section.process_view', x: leftX, y: sh1Y },
+          { key: 'uc00.section.target_systems', x: leftX, y: sh2Y },
+          { key: 'uc00.section.use_cases', x: leftX, y: sh3Y },
+        ],
+        processViewBox: (() => {
+          const pvLeft = UC00_TARGETS_X + 40;
+          const spacing = 78;
+          const firstRel = 65;
+          const iconOffset = 17.5;
+          return {
+          x: pvLeft, y: pvY, width: 520, height: 200, titleKey: 'uc00.process_view.title',
           timeline: {
-            lineX1: UC00_TARGETS_X + 70, lineY: colY + 200, lineX2: UC00_TARGETS_X + UC00_COLUMN_WIDTH - 50,
+            lineX1: UC00_TARGETS_X + 70, lineY: pvY + 110, lineX2: UC00_TARGETS_X + UC00_COLUMN_WIDTH - 50,
             points: [
-              { x: UC00_TARGETS_X + 85, y: colY + 200, iconPath: '/assets/svg/shopfloor/stations/hbw-station.svg', iconX: UC00_TARGETS_X + 67.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc00.timeline.warehouse', labelY: colY + 240 },
-              { x: UC00_TARGETS_X + 163, y: colY + 200, iconPath: '/assets/svg/shopfloor/shared/agv-vehicle.svg', iconX: UC00_TARGETS_X + 145.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc00.timeline.agv', labelY: colY + 240 },
-              { x: UC00_TARGETS_X + 241, y: colY + 200, iconPath: '/assets/svg/shopfloor/stations/drill-station.svg', iconX: UC00_TARGETS_X + 223.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc00.timeline.station', labelY: colY + 240 },
-              { x: UC00_TARGETS_X + 319, y: colY + 200, iconPath: '/assets/svg/shopfloor/shared/pass-event.svg', iconX: UC00_TARGETS_X + 301.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc00.timeline.transfer', labelY: colY + 240 },
-              { x: UC00_TARGETS_X + 397, y: colY + 200, iconPath: '/assets/svg/shopfloor/stations/aiqs-station.svg', iconX: UC00_TARGETS_X + 379.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc00.timeline.quality', labelY: colY + 240 },
-              { x: UC00_TARGETS_X + 475, y: colY + 200, iconPath: '/assets/svg/shopfloor/shared/order-tracking.svg', iconX: UC00_TARGETS_X + 457.5, iconY: colY + 145, iconWidth: 35, iconHeight: 35, labelKey: 'uc00.timeline.complete', labelY: colY + 240 },
+              { x: pvLeft + firstRel + spacing * 0, y: pvY + 110, iconPath: '/assets/svg/shopfloor/stations/hbw-station.svg', iconX: pvLeft + firstRel + spacing * 0 - iconOffset, iconY: pvY + 55, iconWidth: 35, iconHeight: 35, labelKey: 'uc00.timeline.warehouse', labelY: pvY + 150 },
+              { x: pvLeft + firstRel + spacing * 1, y: pvY + 110, iconPath: '/assets/svg/shopfloor/shared/agv-vehicle.svg', iconX: pvLeft + firstRel + spacing * 1 - iconOffset, iconY: pvY + 55, iconWidth: 35, iconHeight: 35, labelKey: 'uc00.timeline.agv', labelY: pvY + 150 },
+              { x: pvLeft + firstRel + spacing * 2, y: pvY + 110, iconPath: '/assets/svg/shopfloor/stations/drill-station.svg', iconX: pvLeft + firstRel + spacing * 2 - iconOffset, iconY: pvY + 55, iconWidth: 35, iconHeight: 35, labelKey: 'uc00.timeline.station', labelY: pvY + 150 },
+              { x: pvLeft + firstRel + spacing * 3, y: pvY + 110, iconPath: '/assets/svg/shopfloor/shared/pass-event.svg', iconX: pvLeft + firstRel + spacing * 3 - iconOffset, iconY: pvY + 55, iconWidth: 35, iconHeight: 35, labelKey: 'uc00.timeline.transfer', labelY: pvY + 150 },
+              { x: pvLeft + firstRel + spacing * 4, y: pvY + 110, iconPath: '/assets/svg/shopfloor/stations/aiqs-station.svg', iconX: pvLeft + firstRel + spacing * 4 - iconOffset, iconY: pvY + 55, iconWidth: 35, iconHeight: 35, labelKey: 'uc00.timeline.quality', labelY: pvY + 150 },
+              { x: pvLeft + firstRel + spacing * 5, y: pvY + 110, iconPath: '/assets/svg/shopfloor/shared/order-tracking.svg', iconX: pvLeft + firstRel + spacing * 5 - iconOffset, iconY: pvY + 55, iconWidth: 35, iconHeight: 35, labelKey: 'uc00.timeline.complete', labelY: pvY + 150 },
             ],
           },
-        },
+        };
+        })(),
         targets: [
-          { id: 'erp', x: UC00_TARGETS_X + 50, y: colY + 330, width: 160, height: 180, iconPath: '/assets/svg/business/erp-application.svg', iconX: UC00_TARGETS_X + 50 + 48, iconY: colY + 388, iconWidth: 64, iconHeight: 64, labelKey: 'uc00.target.erp', labelY: colY + 502 },
-          { id: 'mes', x: UC00_TARGETS_X + 220, y: colY + 330, width: 160, height: 180, iconPath: '/assets/svg/business/mes-application.svg', iconX: UC00_TARGETS_X + 220 + 48, iconY: colY + 388, iconWidth: 64, iconHeight: 64, labelKey: 'uc00.target.mes', labelY: colY + 502 },
-          { id: 'analytics_ai', x: UC00_TARGETS_X + 390, y: colY + 330, width: 160, height: 180, iconPath: '/assets/svg/business/analytics-application.svg', iconX: UC00_TARGETS_X + 390 + 48, iconY: colY + 388, iconWidth: 64, iconHeight: 64, labelKey: 'uc00.target.analytics_ai', labelY: colY + 502 },
+          { id: 'erp', x: UC00_TARGETS_X + 50, y: targetsY, width: 160, height: 180, iconPath: '/assets/svg/business/erp-application.svg', iconX: UC00_TARGETS_X + 50 + 48, iconY: targetsY + 58, iconWidth: 64, iconHeight: 64, labelKey: 'uc00.target.erp', labelY: targetsY + 172 },
+          { id: 'mes', x: UC00_TARGETS_X + 220, y: targetsY, width: 160, height: 180, iconPath: '/assets/svg/business/mes-application.svg', iconX: UC00_TARGETS_X + 220 + 48, iconY: targetsY + 58, iconWidth: 64, iconHeight: 64, labelKey: 'uc00.target.mes', labelY: targetsY + 172 },
+          { id: 'analytics_ai', x: UC00_TARGETS_X + 390, y: targetsY, width: 160, height: 180, iconPath: '/assets/svg/business/analytics-application.svg', iconX: UC00_TARGETS_X + 390 + 48, iconY: targetsY + 58, iconWidth: 64, iconHeight: 64, labelKey: 'uc00.target.analytics_ai', labelY: targetsY + 172 },
         ],
         noteKey: 'uc00.targets.note',
         noteX: UC00_TARGETS_X + 40,
-        noteY: colY + 525,
-        outcomes: [
-          { id: 'traceability', x: UC00_TARGETS_X + 40, y: colY + 590, width: 520, height: 70, textKey: 'uc00.outcome.traceability' },
-          { id: 'kpi', x: UC00_TARGETS_X + 40, y: colY + 680, width: 520, height: 80, textKey: 'uc00.outcome.kpi', multiline: true, textLines: ['uc00.outcome.kpi.line1', 'uc00.outcome.kpi.line2'] },
-          { id: 'closed_loop', x: UC00_TARGETS_X + 40, y: colY + 780, width: 520, height: 70, textKey: 'uc00.outcome.closed_loop' },
+        noteY,
+        outcomeBoxes: [
+          { id: 'uc01', x: UC00_TARGETS_X + 40, y: oy, width: boxW, height: boxH, iconPath: '/assets/svg/dsp/use-cases/use-case-track-trace.svg', iconSize: 48, titleKey: 'uc00.outcome.uc01' },
+          { id: 'uc02', x: UC00_TARGETS_X + 40 + boxW + gap, y: oy, width: boxW, height: boxH, iconPath: '/assets/svg/dsp/use-cases/use-case-data-aggregation.svg', iconSize: 48, titleKey: 'uc00.outcome.uc02' },
+          { id: 'uc03', x: UC00_TARGETS_X + 40 + 2 * (boxW + gap), y: oy, width: boxW, height: boxH, iconPath: '/assets/svg/dsp/methodology/phase4-automation-orchestration.svg', iconSize: 48, titleKey: 'uc00.outcome.uc03' },
+          { id: 'uc04', x: UC00_TARGETS_X + 40, y: oy + boxH + gap, width: boxW, height: boxH, iconPath: '/assets/svg/dsp/functions/edge-analytics.svg', iconSize: 48, titleKey: 'uc00.outcome.uc04.line1', titleLine2Key: 'uc00.outcome.uc04.line2' },
+          { id: 'uc05', x: UC00_TARGETS_X + 40 + boxW + gap, y: oy + boxH + gap, width: boxW, height: boxH, iconPath: '/assets/svg/dsp/use-cases/use-case-predictive-maintenance.svg', iconSize: 48, titleKey: 'uc00.outcome.uc05.line1', titleLine2Key: 'uc00.outcome.uc05.line2' },
+          { id: 'uc06', x: UC00_TARGETS_X + 40 + 2 * (boxW + gap), y: oy + boxH + gap, width: boxW, height: boxH, iconPath: '/assets/svg/dsp/use-cases/use-case-process-optimization.svg', iconSize: 48, titleKey: 'uc00.outcome.uc06.line1', titleLine2Key: 'uc00.outcome.uc06.line2' },
         ],
-      },
+      };
+      })(),
     },
     footer: { x: 960, y: UC00_VIEWBOX.height - 30, key: 'uc00.footer' },
   };

@@ -2,7 +2,23 @@
 
 All notable changes to OSF Dashboard will be documented here.
 
+**Hinweis zur Use-Case-Nummerierung (ab v0.7.11):** Ältere Changelog-Einträge, die „UC-06 Interoperability“ oder „UC-06 (Edge Interoperability)“ erwähnen, beziehen sich auf den Use-Case, der seit v0.7.11 als **UC-00 Interoperability** bezeichnet wird. UC-07 Process Optimization wurde zu UC-06.
+
 ## [Unreleased]
+
+## [0.7.11] - 2026-02-21
+
+### Changed
+- **Use-Case-Nummerierung:** UC-06 → UC-00 (Interoperability), UC-07 → UC-06 (Process Optimization); alle Referenzen in Code, Doku, Locales und Routing angepasst
+- **UC-00 Interoperability (Event-to-Process Map):** Strukturelle Überarbeitung der rechten Spalte
+  - Drei Abschnitte mit linksbündigen Überschriften: Process View, Target systems, Use-Cases
+  - Outcome-Bereich: 6 Use-Case-Boxen (UC-01 bis UC-06) mit Icon und Titel statt textueller Beschreibung
+  - Box-Layout: Titel oben, Icon zentriert darunter; zweizeilige Titel für lange Namen
+  - Target-Systeme (ERP, MES, Analytics) in Originalhöhe; Use-Case-Boxen quadratisch/unten positioniert
+  - Event-to-Process Timeline: Kreise, Icons und Labels symmetrisch zur Box (gleiche Ränder links/rechts)
+- **Dokumentation:** use-case-inventory.md und use-case-library.md nach UC-00, 01 … 06 sortiert
+- **UseCaseControlsComponent:** Anzeige von `useCaseCode` und `useCaseTitle` getrennt
+- **SVG-Titel:** UC-Code aus SVG-Titeln bei UC-03, UC-04, UC-05, UC-06 entfernt
 
 ## [0.7.9] - 2026-02-18
 

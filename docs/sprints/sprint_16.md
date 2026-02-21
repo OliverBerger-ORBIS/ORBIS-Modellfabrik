@@ -37,9 +37,11 @@
 - [ ] Konsistenz-Check: Marketing-Inhalte vs. Use-Cases der OSF-UI
 
 ### Blog-Serie
+- [x] UC-06 -> UC-00 umbenennen 
 - [x] UC-07 → UC-06 umbenennen (Process Optimization)
-- [ ] UC-00 als Grundlage aufführen (kein Use-Case an sich); Outcomes: 6 Use-Cases (UC-01 bis UC-06). Prüfen ob DSP-Layer Vorgehensmodell angezeigt werden soll.
+- [x] UC-00  Outcomes: 6 Use-Cases (UC-01 bis UC-06) als Outcomes in Process view & target systems darstellen als 6 Boxen mit Titel uns SVG-ICON.
 - [ ] a1-DE: TODO Review-Kommentare einarbeiten
+- [ ] UC-00: Prüfung ob DASP-Spalte angepasst werden soll: Erweiterung von Normalize -> Enrich -> Correlate , ggf Darstellung des Vorgehensmodells
 - [ ] UC-02: Layout-Entscheidung (Vertical Concept vs. Horizontal Lanes)
 - [ ] A2/A3: Review-Prozess starten, A3 mit UC-06 überarbeiten
 - [ ] A4 Closed Loops – Draft erstellen

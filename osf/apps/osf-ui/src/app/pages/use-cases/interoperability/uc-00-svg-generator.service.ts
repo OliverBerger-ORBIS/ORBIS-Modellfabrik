@@ -226,7 +226,10 @@ export class Uc00SvgGeneratorService {
     const targetsStroke = ORBIS_COLORS.diagram.targetAnalyticsStroke;
     let svg = `<g id="uc00_col_targets">`;
     svg += `<rect x="${targets.column.x}" y="${targets.column.y}" width="${targets.column.width}" height="${targets.column.height}" rx="20" ry="20" fill="${targetsFill}" stroke="${targetsStroke}" stroke-width="1.5"/>`;
-    svg += `<text x="${targets.column.headerX}" y="${targets.column.headerY}" class="h2">${this.escapeXml(getText(targets.column.headerKey))}</text>`;
+    (targets.sectionHeaders || []).forEach((h: { key: string; x: number; y: number }, i: number) => {
+      const ids = ['uc00_section_process_view', 'uc00_section_target_systems', 'uc00_section_use_cases'];
+      svg += `<g id="${ids[i] || `uc00_section_${i}`}"><text x="${h.x}" y="${h.y}" text-anchor="start" class="p" font-weight="600">${this.escapeXml(getText(h.key))}</text></g>`;
+    });
     const pv = targets.processViewBox;
     svg += `<g id="uc00_process_view_box">`;
     svg += `<rect class="stepBox" x="${pv.x}" y="${pv.y}" width="${pv.width}" height="${pv.height}" rx="14" ry="14" fill="#ffffff"/>`;
@@ -255,21 +258,24 @@ export class Uc00SvgGeneratorService {
     const outcomeFill = ORBIS_COLORS.highlightGreen.light;
     const outcomeStroke = ORBIS_COLORS.highlightGreen.medium;
     svg += `<g id="uc00_outcomes">`;
-    targets.outcomes.forEach((outcome: any) => {
-      svg += `<g id="uc00_outcome_${outcome.id}">`;
-      svg += `<rect x="${outcome.x}" y="${outcome.y}" width="${outcome.width}" height="${outcome.height}" rx="12" ry="12" fill="${outcomeFill}" stroke="${outcomeStroke}" stroke-width="1.5"/>`;
-      svg += `<path d="M ${outcome.x + 15} ${outcome.y + outcome.height / 2 - 3} L ${outcome.x + 18} ${outcome.y + outcome.height / 2} L ${outcome.x + 23} ${outcome.y + outcome.height / 2 - 6}" stroke="${ORBIS_COLORS.statusSuccess.strong}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
-      const textStartX = outcome.x + 60;
-      const textWidth = outcome.width - 80;
-      const maxCharsPerLine = Math.floor(textWidth / 8);
-      if (outcome.multiline && outcome.textLines) {
-        outcome.textLines.forEach((lineKey: string, index: number) => {
-          const lineY = outcome.y + 35 + (index * 30);
-          svg += `<text x="${textStartX}" y="${lineY}" class="p">${this.escapeXml(getText(lineKey))}</text>`;
-        });
-      } else {
-        svg += `<text x="${textStartX}" y="${outcome.y + 45}" class="p">${this.escapeXml(getText(outcome.textKey))}</text>`;
+    (targets.outcomeBoxes || []).forEach((box: { id: string; x: number; y: number; width: number; height: number; iconPath: string; iconSize: number; titleKey: string; titleLine2Key?: string }) => {
+      const ip = getAssetPath(box.iconPath.replace(/^\//, ''));
+      const topPadding = 10;
+      const titleLineHeight = 18;
+      const titleLines = box.titleLine2Key ? 2 : 1;
+      const titleHeight = topPadding + titleLines * titleLineHeight + 8;
+      const iconX = box.x + (box.width - box.iconSize) / 2;
+      const iconAreaHeight = box.height - titleHeight;
+      const iconY = box.y + titleHeight + (iconAreaHeight - box.iconSize) / 2;
+      svg += `<g id="uc00_outcome_${box.id}">`;
+      svg += `<rect x="${box.x}" y="${box.y}" width="${box.width}" height="${box.height}" rx="12" ry="12" fill="${outcomeFill}" stroke="${outcomeStroke}" stroke-width="1.5"/>`;
+      svg += `<text x="${box.x + box.width / 2}" y="${box.y + topPadding + 14}" text-anchor="middle" class="small" font-weight="600">`;
+      svg += `<tspan x="${box.x + box.width / 2}" dy="0">${this.escapeXml(getText(box.titleKey))}</tspan>`;
+      if (box.titleLine2Key) {
+        svg += `<tspan x="${box.x + box.width / 2}" dy="${titleLineHeight}">${this.escapeXml(getText(box.titleLine2Key))}</tspan>`;
       }
+      svg += '</text>';
+      svg += `<image href="${ip}" x="${iconX}" y="${iconY}" width="${box.iconSize}" height="${box.iconSize}" preserveAspectRatio="xMidYMid meet" opacity="0.9"/>`;
       svg += '</g>';
     });
     svg += '</g></g>';
