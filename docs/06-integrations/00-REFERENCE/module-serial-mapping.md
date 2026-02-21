@@ -1,6 +1,6 @@
 # 📋 Module Serial Mapping - Single Source of Truth
 
-**Verifiziert durch:** Session Factsheets (auftrag-*.db) + Mosquitto Logs  
+**Quellen:** Empirische Analyse (Session Factsheets auftrag-*.db, Mosquitto Logs). Mit Fischertechnik-Doku abgeglichen (Will Message Topics, Connection-Format).  
 **Datum:** 2025-10-08
 
 ---
@@ -70,13 +70,15 @@ graph LR
 | Controller | Serial/Typ | Will Message Topic | Payload Size | QoS | Retain |
 |------------|-----------|-------------------|--------------|-----|--------|
 | **TXT-FTS** | 5iO4 (FTS) | `fts/v1/ff/5iO4/connection` | 212 bytes | 1 | Yes |
-| **TXT-DPS** | SVR4H73275 (DPS) | `module/v1/ff/NodeRed/SVR4H73275/connection` | 184 bytes | 1 | Yes |
-| **TXT-AIQS** | SVR4H76530 (AIQS) | `module/v1/ff/NodeRed/SVR4H76530/connection` | 208 bytes | 1 | Yes |
+| **TXT-DPS** | SVR4H73275 (DPS) | `module/v1/ff/SVR4H73275/connection` | 184 bytes | 1 | Yes |
+| **TXT-AIQS** | SVR4H76530 (AIQS) | `module/v1/ff/SVR4H76530/connection` | 208 bytes | 1 | Yes |
 
 **Pattern:**
 ```
 Connect → Will Message registriert → Normal Operation → Disconnect → Will Message published
 ```
+
+**Hinweis:** TXT-Controller (Fischertechnik-Komponenten) publizieren Connection/Will wie in der Fischertechnik-Referenz spezifiziert – kein Unterschied zwischen APS und FMF. OSF-UI nutzt die Standard-Topics (`module/v1/ff/<serial>/connection`).
 
 ---
 
@@ -159,7 +161,7 @@ FTS TXT (MQTT) ↔ MQTT Broker ↔ CCU-Backend
 → **NEIN**, nur TXT-Controller mit MQTT
 
 ### **Frage: Welche Will Message hat TXT-DPS?**
-→ `module/v1/ff/NodeRed/SVR4H73275/connection`
+→ `module/v1/ff/SVR4H73275/connection`
 
 ### **Frage: Warum gibt es zwei Topics für DPS/AIQS?**
 → TXT sendet RAW (`module/v1/ff/<serial>/*`), NodeRed sendet ENRICHED (`module/v1/ff/NodeRed/<serial>/*`)

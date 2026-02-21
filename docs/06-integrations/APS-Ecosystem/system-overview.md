@@ -1,5 +1,7 @@
 # APS-System Overview - Phase 0 "as IS"
 
+**Quellen:** Empirische Analyse (Mosquitto Logs, Session-Auswertung). Will Message Topics mit Fischertechnik-Doku abgeglichen.
+
 ## 🏗️ **System-Architektur**
 
 Das Fischertechnik APS-System besteht aus mehreren autonomen Komponenten, die über MQTT kommunizieren:
@@ -103,8 +105,8 @@ sequenceDiagram
     
     %% Will Messages (Connection Status)
     TXT_FTS->>MQTT_BROKER: Will: fts/v1/ff/5iO4/connection
-    TXT_AIQS->>MQTT_BROKER: Will: module/v1/ff/NodeRed/SVR4H76530/connection
-    TXT_DPS->>MQTT_BROKER: Will: module/v1/ff/NodeRed/SVR4H73275/connection
+    TXT_AIQS->>MQTT_BROKER: Will: module/v1/ff/SVR4H76530/connection
+    TXT_DPS->>MQTT_BROKER: Will: module/v1/ff/SVR4H73275/connection
     
     %% UI-Interaktionen (16:25:37)
     Note over DASHBOARD: User klickt "Factory Reset" Button
@@ -201,7 +203,7 @@ fts/v1/ff/5iO4/connection   # FTS Connection Status
 ## 🚨 **Will Messages**
 
 **Was passiert bei Disconnect:**
-- **Topic:** `fts/v1/ff/5iO4/connection` (FTS) oder `module/v1/ff/NodeRed/SVR4H73275/connection` (Module)
+- **Topic:** `fts/v1/ff/5iO4/connection` (FTS) oder `module/v1/ff/<serial>/connection` (Module)
 - **Payload:** Wahrscheinlich `{"status": "disconnected"}` oder `{"connected": false}`
 - **QoS:** 1 (at least once)
 - **Retain:** 1 (letzte Nachricht wird gespeichert)

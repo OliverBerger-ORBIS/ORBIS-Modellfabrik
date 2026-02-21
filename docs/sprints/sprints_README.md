@@ -15,7 +15,7 @@ Jeder Sprint dokumentiert Ziele, Fortschritt (Checkliste) und offene Punkte.
 ## 🔄 Dokumenten-Workflow (Aktualität sicherstellen)
 
 ### Sprint-Dokument (sprint_XX.md)
-- **Wird erfasst:** Ziele, Tasks (Checkliste), Detail-Doku nur wo nötig
+- **Wird erfasst:** Ziele, Tasks (Checkliste), Backlog (optional) für „Später“-Items
 - **Aktualisierung:** Quasi täglich – Checkboxen abhaken, Status anpassen
 - **Bei Anlage eines neuen Sprints:** Siehe „Sprint-Abschluss“ unten
 
@@ -42,7 +42,7 @@ Jeder Sprint dokumentiert Ziele, Fortschritt (Checkliste) und offene Punkte.
 | Element | Inhalt | Vermeiden |
 |---------|--------|-----------|
 | **Ziele** | Flache Checkliste `[x]` / `[ ]`, eine Zeile pro Task | Keine nested Sub-Checkboxen, kein "✅ Implementiert" zusätzlich zu `[x]` |
-| **Detail-Doku** | Nur wo technische Details nötig (How-To-Links, Optionen) | Keine Wiederholung der Checklisten-Inhalte |
+| **Backlog (optional)** | Tasks bei Gelegenheit (z.B. Session-Log-Analyse, Doku-Lücken) | Kein separates Backlog-System |
 | **Übernommen** | Offene Tasks explizit in nächsten Sprint übernehmen | Kein separater "Fortschritt"-Block (redundant zur Checkliste) |
 | **Abgeschlossen** | Status auf "Abgeschlossen", Abschlussdatum, Verweis auf Nachfolge-Sprint | Kein eigener "Abgeschlossene Aufgaben"-Block (Checkboxen zeigen Status) |
 

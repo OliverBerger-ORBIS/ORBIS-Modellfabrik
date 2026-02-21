@@ -23,10 +23,10 @@
 ### Dokumentation
 - [x] Fischertechnik: Lokale Kopie der MQTT-Doku ([fischertechnik-official/](../06-integrations/fischertechnik-official/)) + Verweis auf Upstream ([FISCHERTECHNIK-OFFICIAL](../06-integrations/FISCHERTECHNIK-OFFICIAL.md))
 - [x] Restrukturierung der docs und säubern des Repos
-- [ ] As-Is Doku: Aufräumen nach Vergleich mit aktueller Fischertechnik-Doku
+- [x] As-Is Doku: Aufräumen nach Vergleich mit aktueller Fischertechnik-Doku
 - [x] dsp-architecture-inventory Dokumentation der SVGs
 
-**Doku-Audit-Pfad:** Unsere Interpretationen und Prämissen gegen die Fischertechnik-Doku prüfen. Beispiel: [aps-data-flow.md](../02-architecture/aps-data-flow.md) – stimmen Datenfluss, Topics, Komponenten? Autoritative Quelle: [fischertechnik-official/](../06-integrations/fischertechnik-official/) (lokale Kopie). Quellen-Zuordnung: [README – Fischertechnik-Quellen](../../README.md#-fischertechnik-quellen--wo-liegt-was).
+**Doku-Audit-Pfad:** ✅ [AS-IS vs. Fischertechnik Vergleich](../07-analysis/AS-IS-FISCHERTECHNIK-COMPARISON.md) – Abweichungen und Lücken dokumentiert. Autoritative Quelle: [fischertechnik-official/](../06-integrations/fischertechnik-official/).
   
 ### ERP/MES Integration
 - [ ] Erweiterung der APS/FMF/CCU-Komponente: Order/request-Topic von (DSP_Edge) sendet zusätzlich eine request-ID, CCU sendet eine Order/request-ack mit Request-ID und order-id
@@ -51,9 +51,11 @@
 
 ---
 
-## 📋 Detail-Doku (nur wo nötig)
+## 📋 Backlog (optional)
 
-*Wird bei Bedarf ergänzt.*
+*Tasks bei Gelegenheit angehen – kein separates Backlog-System.*
+
+- [ ] **Session-Log-Analyse:** QoS/Retained für State-Topics empirisch verifizieren → [Anleitung](../04-howto/session-log-analyse.md), Kontext: [AS-IS vs. Fischertechnik](../07-analysis/AS-IS-FISCHERTECHNIK-COMPARISON.md)
 
 ---
 

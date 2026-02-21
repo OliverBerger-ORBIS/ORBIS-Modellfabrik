@@ -25,9 +25,11 @@
 
 ---
 
-## 📋 Detail-Doku (nur wo nötig)
+## 📋 Backlog (optional)
 
-[Nur bei Tasks mit technischer Erklärung oder How-To-Links]
+*Tasks bei Gelegenheit angehen – kein separates Backlog-System. Offene `[ ]` aus vorherigen Sprints übernehmen.*
+
+- [ ] *(Beispiel: Session-Log-Analyse, Dokumentations-Lücken, …)*
 
 ---
 

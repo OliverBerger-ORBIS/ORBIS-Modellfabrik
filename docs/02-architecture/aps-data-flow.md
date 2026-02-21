@@ -1,35 +1,11 @@
 # APS Data Flow Architecture
 
-> **Autoritative Quelle für MQTT/APS:** [fischertechnik-official/](../06-integrations/fischertechnik-official/) – Abgleich empfohlen.
+> **Quellen:** Inhalt aus empirischer Analyse (Session-Logs, Mosquitto, APS-Ecosystem) und mit [fischertechnik-official/](../06-integrations/fischertechnik-official/) abgeglichen (QoS, Retained, CGW).  
+> **Entwicklungsphasen:** Siehe [roadmap.md](../01-strategy/roadmap.md) – keine eigenständigen Architektur-Phasen.
 
 ---
 
-## 📋 Architektur-Phasen
-
-### **Phase 0: APS "as IS" - Fischertechnik-System verstehen**
-- **Status:** ✅ Abgeschlossen
-- **Ziel:** Das bestehende Fischertechnik APS-System (FMF + APS) verstehen
-- **Erreicht:** APS-Ecosystem dokumentiert, Mosquitto-Analyse, APS-NodeRED Flows analysiert
-
-### **Phase 1: OSF-UI mit APS-CCU Frontend-Funktionalität**
-- **Status:** 🔄 In Bearbeitung
-- **Ziel:** APS-Dashboard Funktionalität in der OSF-UI nachbauen
-- **Erreicht:** APS Overview Tab, APS Control Tab, APS Steering Tab, APS Orders Tab
-- **Aktuell:** Sensor-Daten Integration testen, APS Configuration Tab implementieren
-
-### **Phase 2: OSF-UI mit APS-NodeRED Funktionalität**
-- **Status:** ⏳ Geplant
-- **Ziel:** APS-NodeRED Gateway-Funktionalität in der OSF-UI integrieren
-- **Geplant:** MQTT ↔ OPC-UA Gateway, VDA 5050 FTS-Standard
-
-### **Phase 3: Erweiterungen**
-- **Status:** ⏳ Geplant
-- **Ziel:** OSF-System um erweiterte Funktionalitäten ausbauen
-- **Geplant:** DSP-Anbindung, ORBIS Cloud, SAP/ERP, KI-Use-cases
-
----
-
-## 📊 Datenfluss-Diagramm (Phase 1)
+## 📊 Datenfluss-Diagramm
 
 ```mermaid
 %%{init: {'theme':'neutral'}}%%
@@ -46,7 +22,7 @@ classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
     end
     
     subgraph "Data Processing"
-        CG[Cloud Gateway<br/>~192.168.0.101<br/>Data Aggregation]:::ftsoftware
+        CG[Cloud Gateway<br/>~192.168.0.101<br/>MQTT-Bridge lokal↔Cloud]:::ftsoftware
         NR[APS-NodeRED<br/>192.168.0.100<br/>Flow Processing]:::ftsoftware
         MQTT[mosquitto<br/>192.168.0.100<br/>Message Routing]:::external
     end
@@ -98,15 +74,15 @@ sequenceDiagram
     Note over FTC,FTS: VDA 5050 Standard Communication
     
     FTC->>CG: HTTPS/REST API<br/>Camera Images (Base64)
-    CG->>MQTT: Publish Commands<br/>QoS=1, Retain=False
+    CG->>MQTT: Publish Commands<br/>QoS=2, Retain=False
     
-    MQTT->>DPS: module/v1/ff/DPS/state
-    MQTT->>AIQS: module/v1/ff/AIQS/state
-    MQTT->>FTS: fts/v1/ff/FTS/state
+    MQTT->>DPS: module/v1/ff/<serial>/state
+    MQTT->>AIQS: module/v1/ff/<serial>/state
+    MQTT->>FTS: fts/v1/ff/<serial>/state
     
-    DPS->>MQTT: State Updates<br/>QoS=0, Retain=False
-    AIQS->>MQTT: Quality Check Results<br/>QoS=0, Retain=False
-    FTS->>MQTT: Transport Status<br/>QoS=0, Retain=False
+    DPS->>MQTT: State Updates<br/>QoS=1, Retained
+    AIQS->>MQTT: Quality Check Results<br/>QoS=1, Retained
+    FTS->>MQTT: Transport Status<br/>QoS=1, Retained
     
     MQTT->>CG: Telemetry Data
     CG->>FTC: Forward to Cloud
@@ -115,7 +91,7 @@ sequenceDiagram
     AIQS->>AIQS: Internal OPC-UA<br/>Quality Processing
 ```
 
-## 🏗️ System-Komponenten-Diagramm (Phase 1)
+## 🏗️ System-Komponenten-Diagramm
 
 ```mermaid
 %%{init: {'theme':'neutral'}}%%
@@ -225,8 +201,8 @@ classDef risk fill:#ffebee,stroke:#ef5350,stroke-dasharray: 5 3,color:#7a1a14;
 - **Module States**: Verbindungsstatus, Fehlerzustände
 
 ### 2. **Datenverarbeitung**
-- **Cloud Gateway**: Aggregation und Routing
-- **APS-NodeRED**: Flow-basierte Verarbeitung
+- **Cloud Gateway**: MQTT-Bridge (lokal ↔ Fischertechnik Cloud)
+- **APS-NodeRED**: OPC-UA ↔ MQTT Bridge, Flow-basierte Verarbeitung
 - **mosquitto**: Message Queuing und Distribution
 
 ### 3. **Datenspeicherung**

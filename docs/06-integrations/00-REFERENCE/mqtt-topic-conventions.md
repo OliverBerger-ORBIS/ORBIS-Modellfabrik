@@ -1,6 +1,6 @@
 # 🏷️ Topic-Naming-Convention - Analyse der Future Factory
 
-**Quelle:** Session-Analyse auftrag-*.db + NodeRed Flows  
+**Quellen:** Empirische Analyse (Session auftrag-*.db, NodeRed Flows). QoS- und Retained-Strategie mit Fischertechnik-Doku abgeglichen.  
 **Datum:** 2025-10-08
 
 ## 🎯 Module-Kategorien
@@ -209,6 +209,37 @@ CCU-Backend publishes: fts/v1/ff/5iO4/order
 - ✅ Order funktioniert **nur** mit `ccu/order/request`
 - ❓ `/j1/txt/1/f/o/order` ist optional (UI-Anzeige?)
 - ✅ `ccu/order/request` ist der **eigentliche Trigger**
+
+---
+
+---
+
+## 📌 QoS- und Retained-Strategie
+
+**Quelle:** Fischertechnik-Referenz (02-architecture, 05-message-structure)  
+**Zweck:** UI-Persistenz, reduzierte Last, konsistente Nutzung
+
+### QoS-Werte
+
+| Nachrichtentyp | QoS | Begründung |
+|----------------|-----|------------|
+| Commands (Order, Instant Actions) | 2 | Zuverlässige Übermittlung, mindestens einmal |
+| State, Connection, Factsheet | 1 | Bestätigung, Retained unterstützt |
+| Events (optional) | 0 | Fire-and-forget bei hoher Frequenz |
+
+### Retained Messages
+
+| Topic-Typ | Retain | Begründung |
+|-----------|--------|------------|
+| `*/connection` | Yes | Letzter Status bei Broker-Reconnect sofort verfügbar |
+| `*/state` | Yes | UI-Persistenz, „Reduces MQTT traffic by ~95%“ (nur bei Änderung) |
+| `*/factsheet` | Yes | Modul-Metadaten beim Start laden |
+| Commands | No | Keine Persistenz nötig |
+
+### State-Message-Verhalten
+
+- State **nur bei Änderung** (event-driven), kein periodischer 30s-Refresh
+- Retained für UI-Persistenz nach Reconnect
 
 ---
 

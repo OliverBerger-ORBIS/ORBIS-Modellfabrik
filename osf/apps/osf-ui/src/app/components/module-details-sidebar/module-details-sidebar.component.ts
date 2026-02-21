@@ -81,22 +81,23 @@ export class ModuleDetailsSidebarComponent implements OnInit, OnChanges, AfterVi
     const allTopics = this.messageMonitor.getTopics();
     const moduleTopics: string[] = [];
     
-    // Patterns to match:
-    // - module/v1/ff/<serialId>/connection
-    // - module/v1/ff/<serialId>/state
-    // - module/v1/ff/<serialId>/factsheet
-    // - module/v1/ff/NodeRed/<serialId>/...
-    // - module/<serialId>/connection, state, factsheet
+    // Patterns to match (Standard-Modul-Topics bevorzugt):
+    // - module/v1/ff/<serialId>/connection, state, factsheet
     // - fts/v1/ff/<serialId>/... (for FTS)
+    // NodeRed-Topics (module/v1/ff/NodeRed/<serialId>/...) werden für connection NICHT verwendet,
+    // um mit Fischertechnik-Standard konform zu sein.
     
     allTopics.forEach((topic) => {
-      // Try to resolve serial from topic by mapping known serials
       const knownSerials = this.mappingService.getAllModules().map((m) => m.serialId);
       const matchingSerial = knownSerials.find((s) => topic.includes(s));
 
       if (this.serialId && matchingSerial === this.serialId) {
         if (topic.startsWith('module/') || topic.startsWith('fts/')) {
           if (topic.includes('/connection') || topic.includes('/state') || topic.includes('/factsheet')) {
+            // Connection-Info: nur Standard-Topics, keine NodeRed-Topics
+            if (topic.includes('/connection') && topic.includes('NodeRed')) {
+              return;
+            }
             moduleTopics.push(topic);
           }
         }
