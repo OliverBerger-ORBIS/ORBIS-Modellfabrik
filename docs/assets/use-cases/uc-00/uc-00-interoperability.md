@@ -1,10 +1,10 @@
-# UC-00 — Interoperability: Event-to-Process Map (Anchor for A1)
+# UC-00 — Interoperability: Event-to-Process Map (Foundation / Anchor for A1)
 
 ## Status
 - Owner: @<Oliver Berger>
-- Scope: OSF-BLOG-2026
+- Scope-Tag: OSF-BLOG-2026
 - Messe-Tag: LOGIMAT
-- Referenziert in: A1 (DE/EN Draft)
+- Referenziert in: A1 (DE Draft)
 - Feature: #69066
 - User Stories: #69087
 
@@ -13,7 +13,7 @@
 ## DE
 
 ### Titel
-**Interoperabilität: Event-to-Process Map**
+**Interoperabilität: Event-to-Process Map (Foundation)**
 
 ### One-liner
 Shopfloor-Events werden zu einem verständlichen Prozessbild – als gemeinsame Sprache zwischen OT und IT.
@@ -37,26 +37,31 @@ Shopfloor-Events werden zu einem verständlichen Prozessbild – als gemeinsame 
 Kürzere Störungsbehebungszeiten (MTTR), höhere Datenqualität, schnelleres Onboarding neuer Module/Systeme.
 
 ### Orchestrierung / Systeminteraktion
-Events werden normalisiert und kontextualisiert (Order / Werkstück / Station / Zeit) und zu interpretierbaren Prozessschritten korreliert. Ergebnis ist eine Event-to-Process Map als wiederverwendbare Basis für weitere Use Cases (z. B. Track & Trace, Closed Loops, KPI-Analytik).
+Interoperabilität bedeutet, dass unterschiedliche Systeme, Maschinen, Softwarelösungen und Datenquellen reibungslos miteinander kommunizieren und Informationen nahtlos austauschen können – ohne Sonderprogrammierung, Medienbrüche oder proprietäre Abhängigkeiten. Kurz gesagt: **Alles versteht sich gegenseitig – automatisch, standardisiert und in Echtzeit.**
+
+Dazu werden Events **normalisiert**, mit Kontext **angereichert** (Order / Werkstück / Station / Zeit) und zu interpretierbaren Prozessschritten **korreliert**. Ergebnis ist eine **Event-to-Process Map** als wiederverwendbare Foundation für weitere Use Cases (z. B. Track & Trace, KPI-Analytik, AI, Closed Loops).
+
+Merksatz: **„Interoperabilität wird nicht programmiert – sie wird aktiviert.“**
 
 ### Demonstrator vs. produktive Lösung (Pflicht)
 Die ORBIS SmartFactory (OSF) dient als Demonstrator, um Datenflüsse, Zustände und Integrationsprinzipien anschaulich zu machen. Die dargestellten Use Cases sind konzeptionell und werden je nach Zielumgebung (ERP/MES/Analytics) kundenspezifisch umgesetzt.
 
 ### CTA
-**Interoperability & Integration Assessment (Workshop)**
+**Reifegrad-Check (kompakt)**  
+_Vertiefung (optional): Für komplexe Zielarchitekturen kann daraus ein Interoperability & Integration Assessment abgeleitet werden._
 
 ### Caption
-Interoperabilität macht aus technischen Events ein Prozessbild, das IT und OT gleichermaßen verstehen.
+UC-00 (Foundation): Interoperabilität macht aus technischen Shopfloor-Events ein prozessfähiges Prozessbild – durch Normalisieren, Kontextanreicherung und Korrelation zu Prozessschritten.
 
 ### Alt-Text
-Diagramm, das Shopfloor-Events in Prozessschritte und einen End-to-End Ablauf überführt.
+Diagramm zeigt Datenquellen aus Business und Shopfloor, die über DSP normalisiert und mit Kontext (Order/Werkstück/Station/Zeit) angereichert werden und als Prozessschritte in Zielsysteme (z. B. Analytics/MES/ERP) fließen.
 
 ---
 
 ## EN
 
 ### Title
-**Interoperability: Event-to-Process Map**
+**Interoperability: Event-to-Process Map (Foundation)**
 
 ### One-liner
 Turn shopfloor events into a shared process view—one language for OT and IT.
@@ -80,33 +85,38 @@ Turn shopfloor events into a shared process view—one language for OT and IT.
 Reduced MTTR, higher data quality, faster onboarding of new modules/systems.
 
 ### Orchestration / interaction
-Events are normalized and contextualized (order / workpiece / station / time) and correlated into interpretable process steps. The result is an event-to-process map that can be reused as a foundation for further use cases (e.g., track & trace, closed loops, KPI analytics).
+Interoperability means that different systems, machines, software solutions, and data sources can communicate smoothly and exchange information seamlessly—without custom coding, media breaks, or proprietary dependencies. In short: **everything “understands” each other—automatically, standardized, and in real time.**
+
+To achieve this, events are **normalized**, **enriched** with context (order / workpiece / station / time), and **correlated** into interpretable process steps. The result is an **event-to-process map** that serves as a reusable foundation for further use cases (e.g., track & trace, KPI analytics, AI, closed loops).
+
+Key message: **“Interoperability isn’t programmed—it’s activated.”**
 
 ### Disclaimer (mandatory)
 The ORBIS SmartFactory (OSF) is a demonstrator used to showcase data flows, states, and integration principles. The depicted use cases are conceptual and are implemented customer-specifically depending on the target landscape (ERP/MES/analytics).
 
 ### CTA
-**Interoperability & Integration Assessment workshop**
+**Maturity check (compact)**  
+_Optional deep dive: for complex target landscapes, this can be extended into an interoperability & integration assessment._
 
 ### Caption
-Interoperability converts technical events into a process view understood by both OT and IT.
+UC-00 (foundation): Interoperability turns raw shopfloor events into a process-ready view—by normalizing, enriching with context, and correlating into process steps.
 
 ### Alt text
-Diagram showing shopfloor events mapped to process steps and an end-to-end flow.
+Diagram showing business and shopfloor data sources being normalized and enriched with context (order/workpiece/station/time) via DSP and delivered as process steps to target systems (e.g., analytics/MES/ERP).
 
 ---
 
 ## Screen Spec / Implementation Notes (UC-00) — DE
 
 ### Ziel
-UC-00 visualisiert das Prinzip „Event-to-Process“: technische Shopfloor-Events werden normalisiert, mit Business-Kontext angereichert und als prozessfähige Sicht bereitgestellt. **Umsetzung:** dynamische SVG-Generierung mit Step-Animation (analog zu UC-01 bis UC-06); siehe [use-case-library](../../../02-architecture/use-case-library.md).
+UC-00 visualisiert das Prinzip „Event-to-Process“: technische Shopfloor-Events werden normalisiert, mit Business-Kontext angereichert und als prozessfähige Sicht bereitgestellt. **Umsetzung:** dynamische SVG-Generierung mit Step-Animation (konsistent zu den bestehenden Use-Case Cards/Step-Animationen im DSP/OSF); siehe [use-case-library](../../../02-architecture/use-case-library.md).
 
 ### Platzierung & Verlinkung
-- **Primär:** DSP-Tab → Abschnitt „DSP Anwendungsfälle“ als zusätzlicher Use Case „Interoperabilität (Event-to-Process)“.
-- **Sekundär (optional):** Wiki-Use-Case-Seite (UC-00) enthält das Diagramm + Kurzbeschreibung.
+- **Primär:** OSF UI → DSP-Tab → Abschnitt „DSP Anwendungsfälle“ als zusätzliche Card „Interoperabilität (Event-to-Process)“.
+- **Sekundär (optional):** Wiki-Use-Case-Seite (UC-00) enthält Diagramm + Kurzbeschreibung.
 - **Verlinkung (optional, später):**
-  - Klick auf die UC-Card im DSP-Tab → Scroll/Jump auf Detailbereich oder Öffnen einer Detail-Ansicht.
-  - Wiki verlinkt zurück auf DSP-Tab (und umgekehrt), ohne OSF als „produktive Use-Case-App“ darzustellen.
+  - Klick auf die UC-Card → Scroll/Jump auf Detailbereich oder Öffnen einer Detail-Ansicht.
+  - Wiki ↔ UI können wechselseitig verlinken, ohne OSF als „produktive Use-Case-App“ darzustellen.
 
 ### Visual Pattern (OSF/DSP konsistent)
 - **Pattern wie bestehende DSP Use Cases (mit Step-Animation):**
@@ -119,11 +129,10 @@ UC-00 visualisiert das Prinzip „Event-to-Process“: technische Shopfloor-Even
   - Titel: *Interoperabilität (Event-to-Process)*
   - One-liner: *Shopfloor-Events normalisieren und mit Kontext anreichern – als gemeinsames Prozessbild für OT und IT.*
 - **Detailbereich**
-  - *Aktionen* (Bullets): Normalisieren, Kontext anreichern, Event-Ketten korrelieren, Wiederverwendbarkeit statt P2P.
-  - *Smart Factory* (Bullets): Gemeinsames Prozessbild, Basis für Traceability/KPIs/Closed Loops, Best-of-Breed Zielsysteme.
+  - *Aktionen* (Bullets): Normalisieren, Kontext anreichern, Event-Ketten korrelieren, Wiederverwendbarkeit statt Punkt-zu-Punkt.
+  - *Smart Factory* (Bullets): Gemeinsames Prozessbild, Basis für Track & Trace/KPIs/AI/Closed Loops, Best-of-Breed Zielsysteme.
 - **Konzept-Diagramm (optional im Detailbereich oder als eigenes Asset im Wiki)**
-  - Variante A: „3 Säulen“ (Quellen → DSP Verarbeitung → Prozesssicht/Targets)
-  - Variante B: „Business-first“ (oben Business-Kontext, unten Shopfloor)
+  - Sources → DSP Mediation (Normalize / Enrich / Correlate) → Process View / Targets
 
 ### Daten-/Begriffsmodell (für Konsistenz)
 - Standardbegriffe (DE): **Event**, **Kontext**, **Order**, **Werkstück**, **Station**, **Zeit**, **Status**, **Prozessschritt**
@@ -133,7 +142,7 @@ UC-00 visualisiert das Prinzip „Event-to-Process“: technische Shopfloor-Even
   - DSP-Tab Use Case Texten
 
 ### Icon/Assets
-- Icon: vorhandenes **Interoperabilität-SVG** (CI-konform).
+- Icon: vorhandenes **Interoperabilität-SVG** (CI-konform; Steuerrad mit 5 Speichen).
 - Keine neuen Icon-Stile einführen.
 - Diagramm-Farben/Typografie orientieren sich an bestehenden DSP-Visuals (OSF/DSP CI).
 
@@ -142,7 +151,7 @@ UC-00 visualisiert das Prinzip „Event-to-Process“: technische Shopfloor-Even
 - Inhalte werden als **statische Konfiguration** modelliert (z. B. JSON / i18n keys).
 - DE/EN über i18n; Bilder getrennt je Sprache, falls Labels im Bild.
 
-### Step-Animation (umgesetzt)
+### Step-Animation (Umsetzung / Konzept)
 - UC-00 nutzt wie alle Use-Cases die gemeinsame Step-Logik (Step-Controls, Highlighting, Auto-Dim).
 - SVG wird dynamisch aus `uc-00-structure.config.ts` generiert; Steps steuern Sichtbarkeit/Highlight über `uc-00-event-to-process-map.steps.json`.
 
@@ -157,18 +166,18 @@ UC-00 visualisiert das Prinzip „Event-to-Process“: technische Shopfloor-Even
 ## Screen Spec / Implementation Notes (UC-00) — EN
 
 ### Goal
-UC-00 visualizes the “event-to-process” principle: raw shopfloor events are normalized, enriched with business context, and turned into a process-ready view. **Implementation:** dynamic SVG generation with step animation (aligned with UC-01–UC-06); see [use-case-library](../../../02-architecture/use-case-library.md).
+UC-00 visualizes the “event-to-process” principle: raw shopfloor events are normalized, enriched with business context, and turned into a process-ready view. **Implementation:** dynamic SVG generation with step animation (aligned with existing DSP/OSF use-case cards and step animations); see [use-case-library](../../../02-architecture/use-case-library.md).
 
 ### Placement & Linking
-- **Primary:** DSP tab → “DSP Use Cases” section as an additional use case: “Interoperability (Event-to-Process)”.
+- **Primary:** OSF UI → DSP tab → “DSP Use Cases” section as an additional card: “Interoperability (Event-to-Process)”.
 - **Secondary (optional):** UC-00 wiki page hosts the diagram and a concise description.
 - **Linking (optional, later):**
   - Click on the UC card → scroll/jump to the detail panel or open a detail view.
-  - Cross-link wiki ↔ DSP tab, without positioning OSF as the productive use-case application.
+  - Cross-link wiki ↔ UI without positioning OSF as the productive use-case application.
 
 ### Visual Pattern (consistent with OSF/DSP)
 - **Pattern aligned with existing DSP use cases (including step animation):**
-  - **Top:** Use-case cards (grid) with icon, title, one-liner.
+  - **Top:** use-case cards (grid) with icon, title, one-liner.
   - **Detail panel:** “Actions” (left) + “Smart Factory” (right) as bullet lists.
   - **Footer disclaimer:** OSF is a demonstrator (conceptual; customer-specific implementation).
 
@@ -178,10 +187,9 @@ UC-00 visualizes the “event-to-process” principle: raw shopfloor events are 
   - One-liner: *Normalize shopfloor events and enrich them with context—creating a shared process view for OT and IT.*
 - **Detail panel**
   - *Actions* (bullets): normalize, enrich context, correlate event chains, reuse instead of point-to-point.
-  - *Smart Factory* (bullets): shared process view, basis for traceability/KPIs/closed loops, best-of-breed target systems.
+  - *Smart Factory* (bullets): shared process view, basis for track & trace/KPIs/AI/closed loops, best-of-breed target systems.
 - **Concept diagram (optional in the detail panel or as a separate wiki asset)**
-  - Option A: “3 pillars” (sources → DSP processing → process view/targets)
-  - Option B: “business-first” (business context on top, shopfloor at the bottom)
+  - Sources → DSP mediation (Normalize / Enrich / Correlate) → Process view / targets
 
 ### Data/Terminology Model (for consistency)
 - Standard terms (EN): **event**, **context**, **order**, **workpiece**, **station**, **time**, **status**, **process step**
@@ -191,7 +199,7 @@ UC-00 visualizes the “event-to-process” principle: raw shopfloor events are 
   - DSP tab use-case texts
 
 ### Icon/Assets
-- Icon: existing **Interoperability SVG** (CI-compliant).
+- Icon: existing **Interoperability SVG** (CI-compliant; 5-spoke wheel).
 - Do not introduce new icon styles.
 - Diagram colors/typography follow existing DSP visuals (OSF/DSP CI).
 
@@ -200,7 +208,7 @@ UC-00 visualizes the “event-to-process” principle: raw shopfloor events are 
 - Content is modeled as **static configuration** (e.g., JSON / i18n keys).
 - DE/EN via i18n; separate images per language if labels are embedded in the image.
 
-### Step Animation (implemented)
+### Step Animation (implementation / concept)
 - UC-00 uses the shared step logic (step controls, highlighting, auto-dim) like all use cases.
 - SVG is generated dynamically from `uc-00-structure.config.ts`; steps control visibility/highlighting via `uc-00-event-to-process-map.steps.json`.
 
@@ -210,21 +218,19 @@ UC-00 visualizes the “event-to-process” principle: raw shopfloor events are 
 - Interoperability icon is consistent; no new styles are introduced.
 - Optional diagram (PNG/SVG) can be embedded without UI refactoring.
 
-
 ---
 
-## Assets (placeholders)
-- Version 1 Shopfloor-first: ![UC-00-Interoperability-Shopfloor-first.png](/.attachments/UC-00-Interoperability-Shopfloor-first-84b2f388-914e-4b74-b677-0eaf6b0ba0c6.png) 
-- Version 2 Business-first: ![UC-00-Interoperability-Business-first.png](/.attachments/UC-00-Interoperability-Business-first-d6dffb56-c520-4385-a8f5-6b1fc029b0c1.png)
-- SVG DE
-![UC-00-SVG-Template-DE.png](/.attachments/UC-00-SVG-Template-DE-54365d72-52c0-48c2-9bf9-b9dfc9f34f7b.png)
+## Assets
+- Diagram DE:
 
-- SVG EN
-![UC-00-SVG-Template-EN.png](/.attachments/UC-00-SVG-Template-EN-d20ed899-dd3b-4faa-a1f3-4fe56671809d.png)
+![uc-00-event-to-process-map-DE.svg](/.attachments/uc-00-event-to-process-map-DE-faa6ddc3-3b4a-4216-ac32-2717c8dd8ce3.svg)
+- Diagram EN: 
+
+![uc-00-event-to-process-map-EN.svg](/.attachments/uc-00-event-to-process-map-EN-3e8ad471-08cd-4359-b8a8-7ba9146ab332.svg)
 
 ---
 
 ## Open points / review notes
-- [ ] Final CTA wording confirmation
-- [ ] Decide whether UC-00 is shown only in blog/wiki, or also in OSF UI (Use-Case card)
 - [ ] Final labels for DE/EN (glossary alignment)
+- [ ] Verify CTA wording (default: maturity check / Reifegrad-Check)
+- [ ] Confirm whether the optional diagram is embedded in the OSF UI detail panel or only linked via wiki

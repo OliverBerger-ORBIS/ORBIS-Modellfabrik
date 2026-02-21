@@ -1,0 +1,45 @@
+Konsistenz-Check: Marketing-Inhalte vs. Use-Cases der OSF-UI (Analyse)
+1) Was ist bereits konsistent (grün)
+
+Foundation/Interoperabilität: Marketing-Definition + Claim decken sich sauber mit UC-00 (Normalize/Enrich/Correlate → process view).
+
+Best-of-breed / Offenheit: Marketing spricht plattformunabhängige Integration; OSF-Use-Cases sind als konzeptionelle Visualisierung (nicht „die produktive App“) angelegt – passt zu eurer Abgrenzung in den Artikeln.
+
+DSP als Orchestrator: Die UI-Struktur (DSP-Tab, Use-Case-Cards, Step-Animation) unterstützt die Botschaft „wiederverwendbare Integrationslogik statt P2P“.
+
+2) Potenzielle Inkonsistenzen / Risiken (gelb/rot) + Handlungsempfehlung
+
+A) „Plug-and-Play / Low-Code“ vs. UI-Realität
+Marketing behauptet sinngemäß „Plug-and-Play für neue Maschinen“ und Low-Code. Wenn die OSF-UI dazu keinen sichtbaren Hook hat (z. B. „Connector Registry“, „Templates“, „Flow/Mapping“), wirkt das schnell wie ein Versprechen ohne Proof.
+➡️ Empfehlung: Nicht zwingend ein neues UI-Feature bauen. Im Blog/UC-00/UC-02 reicht ein Satz wie:
+„Neue Quellen werden über wiederverwendbare Templates/Connectoren angebunden (konzeptionell).“
+
+B) Begriffskonsistenz: FTS vs. AGV, „Workpiece“ vs. „SinglePart“
+Marketing ist meist englisch geprägt; OSF-UI ist i18n, aber Screens/Labels müssen konsistent zu den Use-Case-Texten sein (A2: Workpiece-ID/NFC; UC-00: workpiece).
+➡️ Empfehlung: Ein kleines Glossar (ihr habt das OSF Glossar Feature ohnehin geplant) mit 5–8 Kernbegriffen: Event, Context, Order, Workpiece/SinglePart, Station, Transfer (FTS/AGV).
+
+C) „Adaptive end-to-end processes“ vs. derzeitiger OSF-Umfang
+Marketing-Positioning zielt auf „adaptive E2E Prozesse“. OSF zeigt aktuell vor allem Transparenz + Foundations; echte Adaptivität (automatische Prozessänderungen, dynamische Routen) ist eher A4 (Closed Loops).
+➡️ Empfehlung: In OSF-UI und Blog sauber formulieren:
+„OSF zeigt die Voraussetzungen und Prinzipien; Adaptivität entsteht in der kundenspezifischen Umsetzung (Closed Loops).“
+Das ist bereits eure Linie – nur konsequent überall durchziehen.
+
+D) Use-Case Coverage vs. Marketing Story
+Marketing verspricht Effizienz/Stillstandszeit reduzieren. Das muss in der Use-Case-Library sichtbar an Outcomes hängen:
+
+UC-04/05 decken Stillstandszeit/Qualität ab (gut)
+
+UC-02 deckt KPI/Erklärbarkeit ab (gut)
+
+UC-01 deckt Traceability ab (gut)
+➡️ Empfehlung: In der OSF-UI Use-Case-Detailansicht jeweils 1 Zeile „Outcome/KPI“ (z. B. MTTR, FPY, OEE) – auch wenn es statisch ist.
+
+3) Konkreter „Do-this-now“ Check (minimaler Aufwand)
+
+Wording-Alignment: In jeder UC-Seite die 3 DSP-Verben konsequent: Normalize / Enrich / Correlate (DE-Übersetzungen okay, aber Keywords gleich lassen).
+
+Outcome-Zeile je Use Case: MTTR (UC-00/05), FPY (UC-04), OEE/Energy per unit (UC-02), Traceability coverage (UC-01).
+
+Disclaimer überall identisch: OSF = Demonstrator, produktiv kundenspezifisch.
+
+Wenn du mir 2–3 Screenshots der aktuellen Use-Case-Cards/Detailbereiche im DSP-Tab (DE) gibst (oder den i18n Keys aus messages.de.json für die Use-Case-Texte), kann ich dir daraus eine präzise Abweichungsliste machen: „Marketing Claim X ↔ UI Text Y ↔ Änderungsvorschlag (1 Satz)“.

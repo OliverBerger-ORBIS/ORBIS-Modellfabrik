@@ -33,17 +33,17 @@
 - [ ] OSF-UI sendet ein Topic ERP-Order-request-Meta, DSP sendet response mit ERP-Info zur Order (-> Track & Trace) mit SAP/EREP-Daten
 
 ### Marketing & Konsistenz
-- [ ] Marketing-Präsentation zu DSP und Cross-Selling – Analyse
-- [ ] Konsistenz-Check: Marketing-Inhalte vs. Use-Cases der OSF-UI
+- [x] Marketing-Präsentation zu DSP und Cross-Selling – Analyse: Die Präsentation ist inhaltlich konsistent zu eurer Blog-Storyline: Interoperabilität als Fundament, DSP als Schlüsseltechnologie (Edge+Cloud, plattformunabhängig), und der zentrale Claim „Interoperabilität wird nicht programmiert – sie wird aktiviert.“ lässt sich direkt und glaubwürdig in A1/UC-00 verwenden.
+- [ ] Konsistenz-Check: Marketing-Inhalte vs. Use-Cases der OSF-UI analysis with TODOS:        \docs\07-analysis\Marketing-DSP-Präsentation-Use-Case-Konsistency
 
 ### Blog-Serie
 - [x] UC-06 -> UC-00 umbenennen 
 - [x] UC-07 → UC-06 umbenennen (Process Optimization)
 - [x] UC-00  Outcomes: 6 Use-Cases (UC-01 bis UC-06) als Outcomes in Process view & target systems darstellen als 6 Boxen mit Titel uns SVG-ICON.
-- [ ] a1-DE: TODO Review-Kommentare einarbeiten
-- [ ] UC-00: Prüfung ob DASP-Spalte angepasst werden soll: Erweiterung von Normalize -> Enrich -> Correlate , ggf Darstellung des Vorgehensmodells
-- [ ] UC-02: Layout-Entscheidung (Vertical Concept vs. Horizontal Lanes)
-- [ ] A2/A3: Review-Prozess starten, A3 mit UC-06 überarbeiten
+- [x] a1-DE: TODO Review-Kommentare einarbeiten
+- [x] UC-00: Prüfung ob DSP-Spalte angepasst werden soll: Erweiterung von Normalize -> Enrich -> Correlate , ggf Darstellung des Vorgehensmodells. Wir halten die DSP-Spalte im UC-00 bewusst schlank, weil UC-00 das Architektur-Prinzip „Event-to-Process“ (Normalize/Enrich/Correlate) visualisiert, während das Vorgehensmodell/Reifegradmodell eine Delivery-/Transformationssicht ist
+- [ ] A2: Review-Prozess, 
+- [ ] A3 Review mit UC-06 überarbeiten
 - [ ] A4 Closed Loops – Draft erstellen
 
 ### Sprint-Abschluss (Pflicht vor Neuanlage Sprint 17)
