@@ -26,3 +26,6 @@ backend/metrics-service/node_modules/
 backend/metrics-service/dist/
 backend/metrics-service/.env
 backend/metrics-service/*.log
+
+# Arduino - Libraries per Library Manager installieren
+integrations/Arduino/libraries/
