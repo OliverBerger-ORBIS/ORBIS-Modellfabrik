@@ -18,7 +18,7 @@ Dieses How-To beschreibt den vollständigen Workflow für Deployment von Code au
 | Punkt | Hinweis |
 |------|---------|
 | **Keine Änderungen im Repo** | Änderungen am TXT-Projekt erfolgen **ausschließlich in RoboPro Coding**. Die Quellen in `workspaces/` werden nicht direkt bearbeitet – sie dienen der Analyse (z.B. nach Entpacken des `.ft`-Archivs). |
-| **RoboPro erforderlich** | RoboPro Coding muss installiert sein. *Aktuell:* nur auf **Mac** verfügbar. |
+| **RoboPro erforderlich** | RoboPro Coding muss installiert sein. Siehe [ROBO Pro Coding Setup](setup/robo-pro-setup.md). |
 | **Blockly-Modus für Code** | Code-Anpassungen erfolgen im **Blockly-Editor** (grafischer Modus). Das Ergebnis wird über den generierten Python-Code verifiziert. |
 | **Vorsicht bei Python-Edit** | Direktes Bearbeiten des Python-Codes im Professional-Modus kann **problematisch** sein: Der TXT reagiert extrem empfindlich auf Leerzeichen und Einrückungen. |
 
@@ -27,7 +27,7 @@ Dieses How-To beschreibt den vollständigen Workflow für Deployment von Code au
 ## 📋 Voraussetzungen
 
 ### Software
-- ✅ **ROBO Pro Coding** installiert (*aktuell nur Mac*)
+- ✅ **ROBO Pro Coding** installiert – siehe [ROBO Pro Coding Setup](setup/robo-pro-setup.md)
 - ✅ **TXT-Controller** im WLAN (DHCP-Bereich `192.168.0.101-199`)
 - ✅ **SSH optional:** Nur für direkten Controller-Zugriff (muss am Controller aktiviert werden)
 

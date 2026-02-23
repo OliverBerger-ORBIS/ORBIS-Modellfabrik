@@ -1,0 +1,111 @@
+%% Arduino Vibrationssensor APS-Modellfabrik – Verdrahtungsdiagramm
+%% Siehe: arduino-vibrationssensor.md
+%% Stand: 2026-02
+%% L-förmige Kanten (stepBefore), Kabel-Farben, Komponenten-Darstellung
+%% Breadboard: 6×2 Raster. Signalampel: 1 Spalte, 4 Reihen (Sirene oben, Common unten).
+
+%%{init: {'flowchart': {'curve': 'stepBefore'}}}%%
+flowchart TB
+    subgraph ARDUINO["Arduino Uno + Ethernet Shield 2"]
+        direction TB
+        A_5V["5V"]
+        A_GND["GND"]
+        A_P2["Pin 2"]
+        A_P5["Pin 5"]
+        A_P6["Pin 6"]
+    end
+
+    subgraph BREADBOARD["Breadboard – 6×2 Raster: links 6 (+), rechts 6 (−)"]
+        direction LR
+        subgraph BB_PLUS["(+) Bus"]
+            direction TB
+            BB_P1["(+)"]; BB_P2["(+)"]; BB_P3["(+)"]; BB_P4["(+)"]; BB_P5["(+)"]; BB_P6["(+)"]
+        end
+        subgraph BB_MINUS["(−) Bus"]
+            direction TB
+            BB_M1["(−)"]; BB_M2["(−)"]; BB_M3["(−)"]; BB_M4["(−)"]; BB_M5["(−)"]; BB_M6["(−)"]
+        end
+    end
+
+    subgraph SW420["SW-420 – 3 Pins an einer Seite"]
+        direction LR
+        S_VCC["VCC"]
+        S_GND["GND"]
+        S_DO["DO"]
+    end
+
+    subgraph RELAIS_IN["4-Kanal Relais – Steckerleiste 5V"]
+        direction TB
+        R_VCC["VCC"]
+        R_GND["GND"]
+        R_IN1["IN1"]
+        R_IN2["IN2"]
+    end
+
+    subgraph RELAIS_OUT["Relais – Schraubklemmen 12V"]
+        direction LR
+        R_COM1["COM1"]
+        R_COM2["COM2"]
+        R_NO1["NO1"]
+        R_NO2["NO2"]
+    end
+
+    subgraph DC["12V DC-Netzteil + Adapter"]
+        direction TB
+        DC_PLUS["(+)"]
+        DC_MINUS["(−)"]
+    end
+
+    subgraph AMPEL["12V Signalampel – 1 Spalte, 4 Reihen"]
+        direction TB
+        AMP_SIRENE["Sirene"]
+        AMP_ROT["Rot"]
+        AMP_GRUEN["Grün"]
+        AMP_COMMON["Common"]
+    end
+
+    %% 5V-Stromverteilung (je Breadboard-Anschluss max. 1 Verbindung)
+    A_5V -->|"M/M"| BB_P1
+    A_GND -->|"M/M"| BB_M1
+
+    %% Sensor
+    BB_P2 -->|"M/W"| S_VCC
+    BB_M2 -->|"M/W"| S_GND
+    S_DO -->|"M/W"| A_P2
+
+    %% Relais-Eingang
+    BB_P3 -->|"M/W"| R_VCC
+    BB_M3 -->|"M/W"| R_GND
+    A_P5 -->|"M/W"| R_IN1
+    A_P6 -->|"M/W"| R_IN2
+
+    %% 12V-Versorgung Relais
+    DC_PLUS -->|"Litze"| R_COM1
+    R_COM1 <-->|"Brücke"| R_COM2
+
+    %% Ampel
+    DC_MINUS --> AMP_COMMON
+    R_NO1 --> AMP_GRUEN
+    R_NO2 --> AMP_ROT
+    R_NO2 --> AMP_SIRENE
+
+    %% Common Ground
+    BB_M4 <-->|"M/M"| DC_MINUS
+
+    %% Kabel-Farben: Rot #dc2626, Schwarz #1f2937, Grün #16a34a, Lila #9333ea, Grau #6b7280
+    linkStyle 0 stroke:#dc2626,stroke-width:3px
+    linkStyle 1 stroke:#1f2937,stroke-width:3px
+    linkStyle 2 stroke:#dc2626,stroke-width:3px
+    linkStyle 3 stroke:#1f2937,stroke-width:3px
+    linkStyle 4 stroke:#4b5563,stroke-width:2px
+    linkStyle 5 stroke:#dc2626,stroke-width:3px
+    linkStyle 6 stroke:#1f2937,stroke-width:3px
+    linkStyle 7 stroke:#4b5563,stroke-width:2px
+    linkStyle 8 stroke:#4b5563,stroke-width:2px
+    linkStyle 9 stroke:#dc2626,stroke-width:3px
+    linkStyle 10 stroke:#dc2626,stroke-width:3px
+    linkStyle 11 stroke:#1f2937,stroke-width:3px
+    linkStyle 12 stroke:#16a34a,stroke-width:3px
+    linkStyle 13 stroke:#dc2626,stroke-width:3px
+    linkStyle 14 stroke:#9333ea,stroke-width:3px
+    linkStyle 15 stroke:#1f2937,stroke-width:3px

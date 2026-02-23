@@ -6,6 +6,21 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-02-23
+
+**Versionskreis 0.8.x:** Arduino-Erweiterung, ggf. ERP/MES-Integration
+
+### Added
+- **Arduino Integration:** Struktur `integrations/Arduino/` für Arduino-Sketches (analog zu TXT-Controller/ROBO Pro)
+- **Sketch Vibrationssensor_SW420:** Basis-Programm für SW-420, Relais, 12V-Signalampel
+- **Arduino IDE Setup How-To:** [arduino-ide-setup.md](docs/04-howto/setup/arduino-ide-setup.md) – Installation, Sketchbook-Speicherort, Systemtest (Blink)
+- **ROBO Pro Setup How-To:** [robo-pro-setup.md](docs/04-howto/setup/robo-pro-setup.md) – Installation für TXT-Controller
+- **Hardware-Doku:** [arduino-vibrationssensor.md](docs/05-hardware/arduino-vibrationssensor.md) – Verdrahtung, Aufbau, MPU-6050-Ausblick
+
+### Changed
+- **integrations/README.md:** Arduino-Abschnitt ergänzt
+- **Vibrationssensor-Projekt:** Vollständiger Sketch in Repo, Verknüpfung Hardware-Doku ↔ integrations/Arduino
+
 ## [0.7.11] - 2026-02-21
 
 ### Changed

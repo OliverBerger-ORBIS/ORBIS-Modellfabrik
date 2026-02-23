@@ -15,8 +15,8 @@
 - [ ] Projektantrag ORBIS-Smartfactory Q1/Q2 2026
 
 ### Vibration-Sensor
-- [ ] Implementieren (Arduino, Signalampel)
-- [ ] Testen
+- [x] Vorbereitung der IDE (Arduino-IDE) mit einfachem Test
+- [ ] Wiring der Arduino-Komponenten und Test von sketch Vibrationsensor_SW420
 - [ ] Integrieren in OSF-UI
 - Projektplan: [arduino-vibrationssensor.md](../05-hardware/arduino-vibrationssensor.md)
 
@@ -48,7 +48,7 @@
 
 ### Sprint-Abschluss (Pflicht vor Neuanlage Sprint 17)
 - [ ] Sprint-Dokument: Status → "Abgeschlossen", Abschlussdatum setzen
-- [ ] Neuer Sprint: Aus Template anlegen (`sprint_17.md`), offene `[ ]` übernehmen
+- [ ] Neuer Sprint: Aus Template anlegen (`sprint_17.md`), offene `[ ]` übernehmen (inklusive Backlog)
 - [ ] PROJECT_STATUS: Neue Tabellenzeile (Sprint 17, Zeitraum, ORBIS-Projekt, OSF-Phase, Externe Events)
 - [ ] Roadmap prüfen: Phasen/Daten noch stimmig? (bei Bedarf anpassen)
 

@@ -1,8 +1,26 @@
-# TXT Controller Modules
+# Integrations – TXT Controller, Arduino, NodeRED
 
-This directory contains TXT controller programs for the OSF (ORBIS SmartFactory) project. Structure follows [DR-17](../docs/03-decision-records/17-txt-controller-deployment.md) and [How-To: TXT-Controller Deployment](../docs/04-howto/txt-controller-deployment.md).
+Dieses Verzeichnis enthält Hardware-Integrationen für das OSF (ORBIS SmartFactory) Projekt.
 
-## Structure
+---
+
+## Arduino
+
+| Ort | Zweck | Inhalt |
+|-----|-------|--------|
+| `integrations/Arduino/` | **Sketchbook** – Arduino IDE öffnet diesen Ordner | Sketches (z. B. `Vibrationssensor_SW420/`) |
+
+**Setup:** Arduino IDE → Einstellungen → Sketchbook-Speicherort = `integrations/Arduino` (absoluter Pfad).
+
+**Doku:** [Arduino Vibrationssensor](../docs/05-hardware/arduino-vibrationssensor.md) | [Arduino IDE Setup](../docs/04-howto/setup/arduino-ide-setup.md)
+
+---
+
+## TXT Controller Modules
+
+Structure follows [DR-17](../docs/03-decision-records/17-txt-controller-deployment.md) and [How-To: TXT-Controller Deployment](../docs/04-howto/txt-controller-deployment.md).
+
+### Structure
 
 | Ort | Zweck | Inhalt |
 |-----|-------|--------|

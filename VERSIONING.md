@@ -33,6 +33,12 @@ Session Manager teilt dieselbe Version mit OSF (u.a. für Docker-Deployment und 
 3. `pip install -e ".[dev]"` verwendet die Version aus `package.json` automatisch
 4. Keine weiteren manuellen Schritte nötig
 
+## Versionskreise (0.8.x)
+
+| Bereich | Thematik |
+|---------|----------|
+| **0.8.x** | Arduino-Erweiterung, ggf. ERP/MES-Integration |
+
 ## Für KI-Assistenten
 
 - **Suchbegriff:** `"version"` in `package.json` (root)

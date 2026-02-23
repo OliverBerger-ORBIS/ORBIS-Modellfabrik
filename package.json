@@ -1,6 +1,6 @@
 {
   "name": "osf-workspace",
-  "version": "0.7.11",
+  "version": "0.8.0",
   "private": true,
   "license": "MIT",
   "scripts": {
