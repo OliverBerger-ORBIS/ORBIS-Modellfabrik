@@ -239,7 +239,8 @@ Switch: 192.168.0.1
 ├── DRILL (S7-1200): 192.168.0.50:4840 (statisch)
 ├── AIQS (S7-1200): 192.168.0.70:4840 (statisch)
 ├── HBW (S7-1200): 192.168.0.80:4840 (statisch)
-└── DPS (S7-1200): 192.168.0.90:4840 (statisch)
+├── DPS (S7-1200): 192.168.0.90:4840 (statisch)
+└── Arduino (Vibrationssensor sw420-1): 192.168.0.95 (statisch, MQTT)
 ```
 
 ### Docker-Netzwerk (172.18.0.x)

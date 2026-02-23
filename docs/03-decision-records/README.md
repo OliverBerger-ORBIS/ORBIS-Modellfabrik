@@ -21,7 +21,7 @@ Architektur-Entscheidungen (ADRs) für die OSF-Entwicklung.
 
 ### Wie
 1. [Template](decision_template.md) als Vorlage nutzen
-2. Neue Datei: `NN-kurzer-titel.md` (NN = nächste freie Nummer: **18**, siehe Liste unten)
+2. Neue Datei: `NN-kurzer-titel.md` (NN = nächste freie Nummer: **19**, siehe Liste unten)
 3. Ausfüllen: Kontext, Entscheidung, Alternativen, Konsequenzen
 4. In diese README unter "Entscheidungen" eintragen
 5. Bei Bedarf: Verweise in Architektur-Doku oder How-Tos ergänzen
@@ -57,6 +57,10 @@ Routen außerhalb der Tab-Navigation (z.B. Presentation, DSP-Animation); Dokumen
 ### 17. [TXT-Controller Deployment mit ROBO Pro Coding](17-txt-controller-deployment.md)
 **Status:** Accepted | **Datum:** 2026-01-06  
 ROBO Pro Coding als Deployment-Methode; alle OSF-Versionen in integrations/TXT-*/archives/ (ohne vendor).
+
+### 18. [OSF-Erweiterungen – IP-Adressen und MQTT-Topics](18-osf-extensions-ip-and-mqtt-topics.md)
+**Status:** Accepted | **Datum:** 2026-02-18  
+IP-Range 192.168.0.91–99 für ORBIS Extensions; Topic-Schema `osf/arduino/<sensorTyp>/<deviceId>/*`.
 
 ---
 

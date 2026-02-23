@@ -317,9 +317,10 @@ void loop() {
 
 ## 4. Nächste Schritte nach dem Hardware-Test
 
-1. **Kalibrierung:** Drehe am blauen Potentiometer des SW-420, bis die Status-LED gerade so erlischt. Teste die Empfindlichkeit mit der Stimmgabel.
-2. **Netzwerk-Einbindung:** Sobald die lokale Logik läuft, ergänzen wir den Code um die `Ethernet.h` Library, um die Alarme per LAN zu senden.
-3. **Integration:** Mechanische Befestigung des Sensors an den fischertechnik-U-Profilen der Modellfabrik.
+1. **Serial Monitor:** Arduino IDE → Lupen-Symbol (Serial Monitor) → 9600 Baud. Bei Vibration erscheint `!!! VIBRATION ERKANNT !!!` – ideal zur Kontrolle vor der MQTT-Integration.
+2. **Kalibrierung:** Drehe am blauen Potentiometer des SW-420, bis die Status-LED gerade so erlischt. Teste die Empfindlichkeit mit der Stimmgabel.
+3. **Netzwerk-Einbindung:** Sobald die lokale Logik läuft, ergänzen wir den Code um Ethernet und MQTT ([arduino-mqtt-ethernet-setup.md](arduino-mqtt-ethernet-setup.md)), um die Alarme per LAN zu senden.
+4. **Integration:** Mechanische Befestigung des Sensors an den fischertechnik-U-Profilen der Modellfabrik.
 
 ---
 

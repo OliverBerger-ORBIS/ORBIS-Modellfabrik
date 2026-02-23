@@ -103,6 +103,7 @@ This document contains default login credentials and access information for the 
   - **AIQS**: `192.168.0.70-75`
   - **HBW**: `192.168.0.80-83`
   - **DPS**: `192.168.0.90`
+  - **ORBIS Extensions** (Arduino, Sensoren): `192.168.0.91-99` (Arduino sw420-1: `.95`)
 - **Port**: `4840`
 - **Authentication**: Keine (OPC-UA Standard)
 - **Status**: ⚠️ **Not Tested**

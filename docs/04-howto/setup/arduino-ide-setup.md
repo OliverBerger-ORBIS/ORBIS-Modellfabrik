@@ -86,10 +86,11 @@ Für das Projekt **Vibrationsüberwachung** (SW-420, Relais) reichen die Standar
 
 ### Typische Libraries (bei Bedarf)
 
-| Library    | Verwendung                    |
-|-----------|--------------------------------|
-| Ethernet2 | Arduino Ethernet Shield 2     |
-| Wire      | I2C (z. B. MPU-6050) – meist schon enthalten |
+| Library      | Verwendung                         |
+|--------------|------------------------------------|
+| Ethernet2    | Arduino Ethernet Shield 2 (W5500)  |
+| PubSubClient | MQTT für LAN-Anbindung             |
+| Wire         | I2C (z. B. MPU-6050) – meist schon enthalten |
 
 ---
 

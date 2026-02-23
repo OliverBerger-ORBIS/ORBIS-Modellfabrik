@@ -3,6 +3,19 @@
 **Quellen:** Empirische Analyse (Session auftrag-*.db, NodeRed Flows). QoS- und Retained-Strategie mit Fischertechnik-Doku abgeglichen.  
 **Datum:** 2025-10-08
 
+## 🔑 Trennung: Fischertechnik (v1/ff) vs. ORBIS-Erweiterungen
+
+| Segment | Bedeutung |
+|---------|-----------|
+| **v1** | Version der Fischertechnik-Topic-Struktur |
+| **ff** | **Future Factory** – Fischertechnik APS |
+
+**Fischertechnik-Bereich** (`module/v1/ff/...`, `fts/v1/ff/...`, `/j1/txt/...`): Sensoren wie BME680 (`/j1/txt/1/i/bme680`), Cam (`/j1/txt/1/i/cam`) sind Teil des APS.
+
+**ORBIS-Erweiterungen** (ohne v1/ff): z.B. `dsp/drill/action`, `osf/arduino/vibration/...` – Erweiterungen außerhalb der Fischertechnik-Standard-Topics. **Regel:** Erweiterungen an bestehenden Modulen (z.B. quality_check) nutzen Fischertechnik-Topics; neue ORBIS-Objekte (Sensoren, Arduino) nutzen `osf/`-Namensraum. Siehe [DR-18 OSF-Erweiterungen](../../03-decision-records/18-osf-extensions-ip-and-mqtt-topics.md).
+
+---
+
 ## 🎯 Module-Kategorien
 
 ### Module OHNE TXT-Controller (kein MQTT)
@@ -87,7 +100,21 @@ ccu/<category>/<action>
 
 **Publisher:** CCU-Backend (externe Software)
 
-### Pattern 5: TXT Topics
+### Pattern 5: OSF Arduino Topics
+```
+osf/arduino/<sensorTyp>/<deviceId>/<action>
+  ↑     ↑         ↑            ↑         ↑
+ NS  Plattform  Sensor-Typ  Device-ID   Action
+```
+
+**Beispiele:**
+- `osf/arduino/vibration/sw420-1/state` – SW-420 Vibrationssensor Status
+- `osf/arduino/vibration/sw420-1/connection` – LWT, Online-Status
+- `osf/arduino/vibration/mpu6050-1/state` – MPU-6050 (geplant)
+
+**Regel:** Neue ORBIS-Sensoren/Arduinos → `osf/arduino/...`. Details: [DR-18 OSF-Erweiterungen](../../03-decision-records/18-osf-extensions-ip-and-mqtt-topics.md).
+
+### Pattern 6: TXT Topics (Fischertechnik)
 ```
 /j1/txt/1/f/i/<category>  - Input (vom TXT)
 /j1/txt/1/f/o/<category>  - Output (zum TXT)

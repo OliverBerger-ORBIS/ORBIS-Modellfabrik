@@ -61,6 +61,12 @@ graph LR
 - **IP (TXT):** WLAN, DHCP-vergeben (variabel)
 - **IP (OPC-UA):** LAN, statisch
 
+### ORBIS Extensions (kein Fischertechnik)
+
+| Device-ID | Typ | IP | Topics | Quelle |
+|-----------|-----|-----|--------|--------|
+| sw420-1 | Arduino Vibrationssensor | 192.168.0.95 | `osf/arduino/vibration/sw420-1/*` | [DR-18](../../03-decision-records/18-osf-extensions-ip-and-mqtt-topics.md) |
+
 ---
 
 ## 📡 MQTT Will Message Topics
