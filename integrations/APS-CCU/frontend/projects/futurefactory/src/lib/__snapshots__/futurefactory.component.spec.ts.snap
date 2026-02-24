@@ -1,0 +1,231 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FutureFactoryComponent should render the component 1`] = `
+<ff-futurefactory
+  FutureFactoryRoutes={[Function Object]}
+  collisionWarningDetectorService={[Function CollisionWarningDetectorService]}
+  destroy$={[Function ReplaySubject]}
+  mqttService={[Function TypedMqttService]}
+  notification={[Function MatSnackBar]}
+  translate={[Function TranslateService]}
+>
+  <nav
+    backgroundcolor="accent"
+    class="mat-tab-nav-bar mat-tab-header mat-background-accent mat-primary"
+    mat-tab-nav-bar=""
+    role="tablist"
+  >
+    <button
+      aria-hidden="true"
+      class="mat-ripple mat-tab-header-pagination mat-tab-header-pagination-before mat-elevation-z4 mat-tab-header-pagination-disabled"
+      disabled=""
+      mat-ripple=""
+      tabindex="-1"
+      type="button"
+    >
+      <div
+        class="mat-tab-header-pagination-chevron"
+      />
+    </button>
+    <div
+      class="mat-tab-link-container"
+    >
+      <div
+        class="mat-tab-list _mat-animation-noopable"
+        style="transform: translateX(0px);"
+      >
+        <div
+          class="mat-tab-links"
+        >
+          <a
+            aria-disabled="false"
+            aria-selected="false"
+            class="mat-tab-link mat-focus-indicator button"
+            href="/dashboard"
+            mat-tab-link=""
+            role="tab"
+            routerlinkactive="active"
+            tabindex="-1"
+          >
+            Übersicht
+          </a>
+          <a
+            aria-disabled="false"
+            aria-selected="false"
+            class="mat-tab-link mat-focus-indicator button"
+            href="/orders"
+            mat-tab-link=""
+            role="tab"
+            routerlinkactive="active"
+            tabindex="-1"
+          >
+            Aufträge
+          </a>
+          <a
+            aria-disabled="false"
+            aria-selected="false"
+            class="mat-tab-link mat-focus-indicator button"
+            href="/flows"
+            mat-tab-link=""
+            role="tab"
+            routerlinkactive="active"
+            tabindex="-1"
+          >
+            Abläufe
+          </a>
+          <a
+            aria-disabled="false"
+            aria-selected="false"
+            class="mat-tab-link mat-focus-indicator button"
+            href="/layout"
+            mat-tab-link=""
+            role="tab"
+            routerlinkactive="active"
+            tabindex="-1"
+          >
+            Konfiguration
+          </a>
+          <a
+            aria-disabled="false"
+            aria-selected="false"
+            class="mat-tab-link mat-focus-indicator button"
+            href="/module"
+            mat-tab-link=""
+            role="tab"
+            routerlinkactive="active"
+            tabindex="-1"
+          >
+            Module
+          </a>
+          <a
+            aria-disabled="false"
+            aria-selected="false"
+            class="mat-tab-link mat-focus-indicator button"
+            href="/simulation"
+            mat-tab-link=""
+            role="tab"
+            routerlinkactive="active"
+            tabindex="-1"
+          >
+            Planspiel
+          </a>
+          <a
+            aria-disabled="false"
+            aria-selected="false"
+            class="mat-tab-link mat-focus-indicator button"
+            href="/logs"
+            mat-tab-link=""
+            role="tab"
+            routerlinkactive="active"
+            tabindex="-1"
+          >
+            Meldungen
+          </a>
+          <ff-language-selector>
+            <button
+              aria-haspopup="true"
+              class="mat-focus-indicator mat-menu-trigger lang-button mat-button mat-button-base _mat-animation-noopable"
+              mat-button=""
+            >
+              <span
+                class="mat-button-wrapper"
+              >
+                <span>
+                  EN-US
+                </span>
+                <mat-icon
+                  aria-hidden="true"
+                  class="mat-icon notranslate material-icons mat-icon-no-color"
+                  data-mat-icon-type="font"
+                  role="img"
+                >
+                  arrow_drop_down
+                </mat-icon>
+              </span>
+              <span
+                class="mat-ripple mat-button-ripple"
+                matripple=""
+              />
+              <span
+                class="mat-button-focus-overlay"
+              />
+            </button>
+            <mat-menu>
+            </mat-menu>
+          </ff-language-selector>
+          <ff-version-info>
+            <a
+              alt="version information"
+              href="./assets/version.json?v=1699604177818"
+              target="_blank"
+            >
+              <mat-icon
+                aria-hidden="true"
+                class="mat-icon notranslate mat-primary material-icons"
+                color="primary"
+                data-mat-icon-type="font"
+                role="img"
+              >
+                info
+              </mat-icon>
+            </a>
+          </ff-version-info>
+        </div>
+        <mat-ink-bar
+          class="mat-ink-bar _mat-animation-noopable"
+          style="visibility: hidden;"
+        />
+      </div>
+    </div>
+    <button
+      aria-hidden="true"
+      class="mat-ripple mat-tab-header-pagination mat-tab-header-pagination-after mat-elevation-z4 mat-tab-header-pagination-disabled"
+      disabled=""
+      mat-ripple=""
+      tabindex="-1"
+      type="button"
+    >
+      <div
+        class="mat-tab-header-pagination-chevron"
+      />
+    </button>
+  </nav><mat-tab-nav-panel
+    class="mat-tab-nav-panel"
+    role="tabpanel"
+  /><mat-tab-nav-panel
+    class="mat-tab-nav-panel page-content mat-typography"
+    role="tabpanel"
+  >
+    <ff-factory-reset>
+      <button
+        aria-label="Fabrik zurücksetzen"
+        class="mat-focus-indicator action-btn mat-mini-fab mat-button-base mat-primary _mat-animation-noopable"
+        color="primary"
+        mat-mini-fab=""
+        title="Fabrik zurücksetzen"
+      >
+        <span
+          class="mat-button-wrapper"
+        >
+          <mat-icon
+            aria-hidden="true"
+            class="mat-icon notranslate material-icons mat-icon-no-color"
+            data-mat-icon-type="font"
+            role="img"
+          >
+            sync_problem
+          </mat-icon>
+        </span>
+        <span
+          class="mat-ripple mat-button-ripple mat-button-ripple-round"
+          matripple=""
+        />
+        <span
+          class="mat-button-focus-overlay"
+        />
+      </button>
+    </ff-factory-reset>
+    <router-outlet />
+  </mat-tab-nav-panel>
+</ff-futurefactory>
+`;

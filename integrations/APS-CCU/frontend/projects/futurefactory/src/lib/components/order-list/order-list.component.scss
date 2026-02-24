@@ -1,0 +1,28 @@
+:host {
+  height: 100%;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.production-orders {
+  &__list {
+    margin-bottom: 10px;
+    &__item {
+      &__content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        span {
+          flex: 1;
+          margin-right: 10px;
+          &.icon_column {
+            flex: 0;
+          }
+        }
+      }
+    }
+  }
+}

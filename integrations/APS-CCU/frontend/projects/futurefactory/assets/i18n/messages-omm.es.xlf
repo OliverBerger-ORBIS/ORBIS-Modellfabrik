@@ -1,0 +1,1365 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="de" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="Übersicht" datatype="html">
+        <source>Übersicht</source>
+        <target>Visión general</target>
+      </trans-unit>
+      <trans-unit id="Aufträge" datatype="html">
+        <source>Aufträge</source>
+        <target>Pedidos</target>
+      </trans-unit>
+      <trans-unit id="Abläufe" datatype="html">
+        <source>Abläufe</source>
+        <target>Procesos</target>
+      </trans-unit>
+      <trans-unit id="Konfiguration" datatype="html">
+        <source>Konfiguration</source>
+        <target>Configuración</target>
+      </trans-unit>
+      <trans-unit id="Module" datatype="html">
+        <source>Module</source>
+        <target>Módulos</target>
+      </trans-unit>
+      <trans-unit id="Planspiel" datatype="html">
+        <source>Planspiel</source>
+        <target>Juego de simulación</target>
+      </trans-unit>
+      <trans-unit id="Meldungen" datatype="html">
+        <source>Meldungen</source>
+        <target>Mensajes</target>
+      </trans-unit>
+      <trans-unit id="Statusmeldungen" datatype="html">
+        <source>Statusmeldungen</source>
+        <target>Mensajes de estado</target>
+      </trans-unit>
+      <trans-unit id="state.received" datatype="html">
+        <source>Status empfangen</source>
+        <target>Recibir estado</target>
+      </trans-unit>
+      <trans-unit id="state.type" datatype="html">
+        <source>Statustyp</source>
+        <target>Tipo de estado</target>
+      </trans-unit>
+      <trans-unit id="Nachrichtenherkunft" datatype="html">
+        <source>Nachrichtenherkunft</source>
+        <target>Origen de las noticias</target>
+      </trans-unit>
+      <trans-unit id="Keine Daten verfügbar" datatype="html">
+        <source>Keine Daten verfügbar</source>
+        <target>No hay datos disponibles</target>
+      </trans-unit>
+      <trans-unit id="Planspiel wird gestartet" datatype="html">
+        <source>Planspiel wird gestartet</source>
+        <target>Se lanza el juego de simulación</target>
+      </trans-unit>
+      <trans-unit id="Planspiel starten" datatype="html">
+        <source>Planspiel starten</source>
+        <target>Iniciar juego de simulación</target>
+      </trans-unit>
+      <trans-unit id="Name des Planspiels" datatype="html">
+        <source>Name des Planspiels</source>
+        <target>Nombre del juego de simulación</target>
+      </trans-unit>
+      <trans-unit id="Bitte geben Sie einen Namen ein." datatype="html">
+        <source>Bitte geben Sie einen Namen ein.</source>
+        <target>Introduzca un nombre.</target>
+      </trans-unit>
+      <trans-unit id="Ein Planspiel mit diesem Namen existiert bereits." datatype="html">
+        <source>Ein Planspiel mit diesem Namen existiert bereits.</source>
+        <target>Ya existe un juego de simulación con este nombre.</target>
+      </trans-unit>
+      <trans-unit id="Produktionsplanung" datatype="html">
+        <source>Produktionsplanung</source>
+        <target>Planificación de la producción</target>
+      </trans-unit>
+      <trans-unit id="Werkstücktyp" datatype="html">
+        <source>Werkstücktyp</source>
+        <target>Tipo de pieza</target>
+      </trans-unit>
+      <trans-unit id="Dieses Werkstück ist nicht auf Lager." datatype="html">
+        <source>Dieses Werkstück ist nicht auf Lager.</source>
+        <target>Esta pieza no está en stock.</target>
+      </trans-unit>
+      <trans-unit id="Werkstück hinzufügen" datatype="html">
+        <source>Werkstück hinzufügen</source>
+        <target>Añadir pieza</target>
+      </trans-unit>
+      <trans-unit id="Planspiel läuft" datatype="html">
+        <source>Planspiel läuft</source>
+        <target>El juego de simulación funciona</target>
+      </trans-unit>
+      <trans-unit id="Aufträge ohne Planspiel" datatype="html">
+        <source>Aufträge ohne Planspiel</source>
+        <target>Pedidos sin juego de simulación</target>
+      </trans-unit>
+      <trans-unit id="CSV herunterladen" datatype="html">
+        <source>CSV herunterladen</source>
+        <target>Descargar CSV</target>
+      </trans-unit>
+      <trans-unit id="Ergebnisse von '{{simulationId}}'" datatype="html">
+        <source>Ergebnisse von '{{simulationId}}'</source>
+        <target>Resultados de '{{simulationId}}'</target>
+      </trans-unit>
+      <trans-unit id="Ergebnisse von Aufträgen ohne Planspiel" datatype="html">
+        <source>Ergebnisse von Aufträgen ohne Planspiel</source>
+        <target>Resultados de las asignaciones sin juego de simulación</target>
+      </trans-unit>
+      <trans-unit id="Bitte beachten Sie, dass die OEE-Berechnung erst nach Abschluss der Produktion einen sinnvollen Wert liefert." datatype="html">
+        <source>Bitte beachten Sie, dass die OEE-Berechnung erst nach Abschluss der Produktion einen sinnvollen Wert liefert.</source>
+        <target>Tenga en cuenta que el cálculo de la OEE solo proporciona un valor significativo una vez finalizada la producción.</target>
+      </trans-unit>
+      <trans-unit id="OEE" datatype="html">
+        <source>OEE</source>
+        <target>OEE</target>
+      </trans-unit>
+      <trans-unit id="Qualität" datatype="html">
+        <source>Qualität</source>
+        <target>Calidad</target>
+      </trans-unit>
+      <trans-unit id="Leistung" datatype="html">
+        <source>Leistung</source>
+        <target>Rendimiento</target>
+      </trans-unit>
+      <trans-unit id="Verfügbarkeit" datatype="html">
+        <source>Verfügbarkeit</source>
+        <target>Disponibilidad</target>
+      </trans-unit>
+      <trans-unit id="Gewählter Produktionsauftrag" datatype="html">
+        <source>Gewählter Produktionsauftrag</source>
+        <target>Orden de fabricación seleccionada</target>
+      </trans-unit>
+      <trans-unit id="Produktions- und Navigationsschritte" datatype="html">
+        <source>Produktions- und Navigationsschritte</source>
+        <target>Pasos de producción y navegación</target>
+      </trans-unit>
+      <trans-unit id="Kein Produktionsauftrag ausgewählt" datatype="html">
+        <source>Kein Produktionsauftrag ausgewählt</source>
+        <target>No se ha seleccionado ninguna orden de fabricación</target>
+      </trans-unit>
+      <trans-unit id="Fertigungsschritte" datatype="html">
+        <source>Fertigungsschritte</source>
+        <target>Etapas de la producción</target>
+      </trans-unit>
+      <trans-unit id="Aktueller Fertigungsschritt" datatype="html">
+        <source>Aktueller Fertigungsschritt</source>
+        <target>Fase de producción actual</target>
+      </trans-unit>
+      <trans-unit id="Auftragsinformationen" datatype="html">
+        <source>Auftragsinformationen</source>
+        <target>Información para pedidos</target>
+      </trans-unit>
+      <trans-unit id="Auftragsnummer" datatype="html">
+        <source>Auftragsnummer</source>
+        <target>Número de pedido</target>
+      </trans-unit>
+      <trans-unit id="Auftragsstatus" datatype="html">
+        <source>Auftragsstatus</source>
+        <target>Estado del pedido</target>
+      </trans-unit>
+      <trans-unit id="Bestelldatum" datatype="html">
+        <source>Bestelldatum</source>
+        <target>Fecha del pedido</target>
+      </trans-unit>
+      <trans-unit id="Auftragseingang" datatype="html">
+        <source>Auftragseingang</source>
+        <target>Entrada de pedidos</target>
+      </trans-unit>
+      <trans-unit id="Start der Bearbeitung" datatype="html">
+        <source>Start der Bearbeitung</source>
+        <target>Iniciar el tratamiento</target>
+      </trans-unit>
+      <trans-unit id="Ende der Bearbeitung" datatype="html">
+        <source>Ende der Bearbeitung</source>
+        <target>Fin del tratamiento</target>
+      </trans-unit>
+      <trans-unit id="Modulübersicht" datatype="html">
+        <source>Moduleübersicht</source>
+        <target>Resumen del módulo</target>
+      </trans-unit>
+      <trans-unit id="ID" datatype="html">
+        <source>ID</source>
+        <target>ID</target>
+      </trans-unit>
+      <trans-unit id="Name" datatype="html">
+        <source>Name</source>
+        <target>Nombre</target>
+      </trans-unit>
+      <trans-unit id="Verbunden" datatype="html">
+        <source>Verbunden</source>
+        <target>Conectado</target>
+      </trans-unit>
+      <trans-unit id="Nicht verbunden" datatype="html">
+        <source>Nicht verbunden</source>
+        <target>No conectado</target>
+      </trans-unit>
+      <trans-unit id="Verfügbarkeitsstatus" datatype="html">
+        <source>Verfügbarkeitsstatus</source>
+        <target>Estado de disponibilidad</target>
+      </trans-unit>
+      <trans-unit id="Konfiguriert" datatype="html">
+        <source>Konfiguriert</source>
+        <target>Configurado</target>
+      </trans-unit>
+      <trans-unit id="Docke an DPS" datatype="html">
+        <source>Docke an DPS</source>
+        <target>Conexión a DPS</target>
+      </trans-unit>
+      <trans-unit id="Laden" datatype="html">
+        <source>Laden</source>
+        <target>Carga</target>
+      </trans-unit>
+      <trans-unit id="Laden beenden" datatype="html">
+        <source>Laden beenden</source>
+        <target>Fin de la carga</target>
+      </trans-unit>
+      <trans-unit id="Kalibrieren" datatype="html">
+        <source>Kalibrieren</source>
+        <target>Calibrar</target>
+      </trans-unit>
+      <trans-unit id="Löschen" datatype="html">
+        <source>Löschen</source>
+        <target>Borrar</target>
+      </trans-unit>
+      <trans-unit id="Endgültig löschen" datatype="html">
+        <source>Endgültig löschen</source>
+        <target>Borrar definitivamente</target>
+      </trans-unit>
+      <trans-unit id="Moduleinstellungen" datatype="html">
+        <source>Moduleinstellungen</source>
+        <target>Configuración del módulo</target>
+      </trans-unit>
+      <trans-unit id="Modulwerte" datatype="html">
+        <source>Modulwerte</source>
+        <target>Valores del módulo</target>
+      </trans-unit>
+      <trans-unit id="Fertigungsdauer" datatype="html">
+        <source>Fertigungsdauer</source>
+        <target>Tiempo de producción</target>
+      </trans-unit>
+      <trans-unit id="Sekunden" datatype="html">
+        <source>Sekunden</source>
+        <target>Segundos</target>
+      </trans-unit>
+      <trans-unit id="Blockiert durch Fehler" datatype="html">
+        <source>Blockiert durch Fehler</source>
+        <target>Bloqueado por error</target>
+      </trans-unit>
+      <trans-unit id="Kalibrierung" datatype="html">
+        <source>Kalibrierung</source>
+        <target>Calibración</target>
+      </trans-unit>
+      <trans-unit id="Aktueller Auftrag" datatype="html">
+        <source>Aktueller Auftrag</source>
+        <target>Pedido actual</target>
+      </trans-unit>
+      <trans-unit id="Bestellung" datatype="html">
+        <source>Bestellung</source>
+        <target>Pedido</target>
+      </trans-unit>
+      <trans-unit id="Unbekannt" datatype="html">
+        <source>Unbekannt</source>
+        <target>Desconocido</target>
+      </trans-unit>
+      <trans-unit id="Kalibrierung beenden" datatype="html">
+        <source>Kalibrierung beenden</source>
+        <target>Terminar calibración</target>
+      </trans-unit>
+      <trans-unit id="Nicht gespeicherte Änderungen gehen verloren." datatype="html">
+        <source>Nicht gespeicherte Änderungen gehen verloren.</source>
+        <target>Los cambios no guardados se pierden.</target>
+      </trans-unit>
+      <trans-unit id="Abbrechen" datatype="html">
+        <source>Abbrechen</source>
+        <target>Cancelar</target>
+      </trans-unit>
+      <trans-unit id="Modulkalibrierung" datatype="html">
+        <source>Modulkalibrierung</source>
+        <target>Calibración del módulo</target>
+      </trans-unit>
+      <trans-unit id="Kalibrierung starten" datatype="html">
+        <source>Kalibrierung starten</source>
+        <target>Iniciar calibración</target>
+      </trans-unit>
+      <trans-unit id="Auf Werkseinstellungen zurücksetzen" datatype="html">
+        <source>Auf Werkseinstellungen zurücksetzen</source>
+        <target>Restablecer valores de fábrica</target>
+      </trans-unit>
+      <trans-unit id="Kalibrierungswerte" datatype="html">
+        <source>Kalibrierungswerte</source>
+        <target>Valores de calibración</target>
+      </trans-unit>
+      <trans-unit id="Werte laden" datatype="html">
+        <source>Werte laden</source>
+        <target>Valores de carga</target>
+      </trans-unit>
+      <trans-unit id="Position zum Kalibrieren" datatype="html">
+        <source>Position zum Kalibrieren</source>
+        <target>Posición de calibración</target>
+      </trans-unit>
+      <trans-unit id="FACTORY_BASE_SETTINGS" datatype="html">
+        <source>APS Basiseinstellungen</source>
+        <target>Ajustes básicos APS</target>
+      </trans-unit>
+      <trans-unit id="Position wählen" datatype="html">
+        <source>Position wählen</source>
+        <target>Seleccionar posición</target>
+      </trans-unit>
+      <trans-unit id="Position testen" datatype="html">
+        <source>Position testen</source>
+        <target>Posición de prueba</target>
+      </trans-unit>
+      <trans-unit id="Anwenden" datatype="html">
+        <source>Anwenden</source>
+        <target>Solicitar</target>
+      </trans-unit>
+      <trans-unit id="Zurücksetzen" datatype="html">
+        <source>Zurücksetzen</source>
+        <target>Restablecer</target>
+      </trans-unit>
+      <trans-unit id="Speichern" datatype="html">
+        <source>Speichern</source>
+        <target>Guardar</target>
+      </trans-unit>
+      <trans-unit id="Fabrikkonfiguration" datatype="html">
+        <source>Fabrikkonfiguration</source>
+        <target>Configuración de fábrica</target>
+      </trans-unit>
+      <trans-unit id="Bearbeitungsschritte" datatype="html">
+        <source>Bearbeitungsschritte</source>
+        <target>Pasos del proceso</target>
+      </trans-unit>
+      <trans-unit id="Bearbeitungsschritt hinzufügen" datatype="html">
+        <source>Bearbeitungsschritt hinzufügen</source>
+        <target>Añadir paso de mecanizado</target>
+      </trans-unit>
+      <trans-unit id="Vorhandene Produktionsmodule" datatype="html">
+        <source>Vorhandene Produktionsmodule</source>
+        <target>Módulos de producción existentes</target>
+      </trans-unit>
+      <trans-unit id="Auslagern aus Hochregallager" datatype="html">
+        <source>Auslagern über Hochregallager</source>
+        <target>Recuperación mediante almacén de estanterías elevadas</target>
+      </trans-unit>
+      <trans-unit id="Werkstück.Blau" datatype="html">
+        <source>Blau</source>
+        <target>Azul</target>
+      </trans-unit>
+      <trans-unit id="Fertiges Werkstück" datatype="html">
+        <source>Fertiges Werkstück</source>
+        <target>Pieza acabada</target>
+      </trans-unit>
+      <trans-unit id="Werkstück.Rot" datatype="html">
+        <source>Rot</source>
+        <target>Rojo</target>
+      </trans-unit>
+      <trans-unit id="Werkstück.Weiß" datatype="html">
+        <source>Weiß</source>
+        <target>Blanco</target>
+      </trans-unit>
+      <trans-unit id="Auslieferung über Warenausgang" datatype="html">
+        <source>Auslieferung über Warenausgang</source>
+        <target>Entrega mediante salida de mercancías</target>
+      </trans-unit>
+      <trans-unit id="Fehlerzeitpunkt" datatype="html">
+        <source>Fehlerzeitpunkt</source>
+        <target>Tiempo de error</target>
+      </trans-unit>
+      <trans-unit id="errorReferences" datatype="html">
+        <source>Fehlerreferenzen</source>
+        <target>Referencias de error</target>
+      </trans-unit>
+      <trans-unit id="IP: {{ip}} - Version: {{version}}" datatype="html">
+        <source>IP: {{ip}} - Version: {{version}}</source>
+        <target>IP: {{ip}} - Versión: {{version}}</target>
+      </trans-unit>
+      <trans-unit id="Verbindungsstatus vom {{timestamp}}" datatype="html">
+        <source>Verbindungsstatus vom {{timestamp}}</source>
+        <target>Estado de la conexión desde {{timestamp}}</target>
+      </trans-unit>
+      <trans-unit id="Status für FTS [{{serialNumber}}] vom {{timestamp}}" datatype="html">
+        <source>Status für FTS [{{serialNumber}}] vom {{timestamp}}</source>
+        <target>Estado para FTS [{{serialNumber}}] de {{timestamp}}</target>
+      </trans-unit>
+      <trans-unit id="Letzter Knoten / letztes Module {{lastNodeId}}" datatype="html">
+        <source>Letzter Knoten / letztes Module {{lastNodeId}}</source>
+        <target>Último nodo / último módulo {{lastNodeId}}</target>
+      </trans-unit>
+      <trans-unit id="Batteriestand {{percentage}}%" datatype="html">
+        <source>Batteriestand {{percentage}}%</source>
+        <target>Nivel de batería {{percentage}}%</target>
+      </trans-unit>
+      <trans-unit id="Status für Module [{{serialNumber}}] vom {{timestamp}}" datatype="html">
+        <source>Status für Module [{{serialNumber}}] vom {{timestamp}}</source>
+        <target>Estado de los módulos [{{serialNumber}}] de {{timestamp}}</target>
+      </trans-unit>
+      <trans-unit id="Start" datatype="html">
+        <source>Start</source>
+        <target>Inicio</target>
+      </trans-unit>
+      <trans-unit id="Ende" datatype="html">
+        <source>Ende</source>
+        <target>Fin</target>
+      </trans-unit>
+      <trans-unit id="Gesamtdauer" datatype="html">
+        <source>Gesamtdauer</source>
+        <target>Duración total</target>
+      </trans-unit>
+      <trans-unit id="Produktionsdauer" datatype="html">
+        <source>Produktionsdauer</source>
+        <target>Tiempo de producción</target>
+      </trans-unit>
+      <trans-unit id="Transportdauer" datatype="html">
+        <source>Transportdauer</source>
+        <target>Duración del transporte</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.FTS" datatype="html">
+        <source>Fahrerloses Transportsystem</source>
+        <target>Sistema de transporte sin conductor</target>
+      </trans-unit>
+      <trans-unit id="Auftrag" datatype="html">
+        <source>Auftrag</source>
+        <target>Pedido</target>
+      </trans-unit>
+      <trans-unit id="Laufende Aufträge" datatype="html">
+        <source>Laufende Aufträge</source>
+        <target>Pedidos en curso</target>
+      </trans-unit>
+      <trans-unit id="Keine laufenden Aufträge verfügbar" datatype="html">
+        <source>Keine laufenden Aufträge verfügbar</source>
+        <target>No hay pedidos disponibles</target>
+      </trans-unit>
+      <trans-unit id="Abgeschlossene Aufträge" datatype="html">
+        <source>Abgeschlossene Aufträge</source>
+        <target>Pedidos completados</target>
+      </trans-unit>
+      <trans-unit id="Keine abgeschlossenen Aufträge verfügbar" datatype="html">
+        <source>Keine abgeschlossenen Aufträge verfügbar</source>
+        <target>No hay pedidos completados disponibles</target>
+      </trans-unit>
+      <trans-unit id="Keine Modulinformationen verfügbar" datatype="html">
+        <source>Keine Modulinformationen verfügbar</source>
+        <target>No hay información disponible sobre el módulo</target>
+      </trans-unit>
+      <trans-unit id="Controller for the Future-Factory not connected" datatype="html">
+        <source>Controller for the Future-Factory not connected</source>
+        <target>Controlador de la Fábrica del Futuro no conectado</target>
+      </trans-unit>
+      <trans-unit id="Fabrik zurücksetzen" datatype="html">
+        <source>Fabrik zurücksetzen</source>
+        <target>Restablecimiento de fábrica</target>
+      </trans-unit>
+      <trans-unit id="Soll die Fabrik wirklich zurückgesetzt werden?" datatype="html">
+        <source>Soll die Fabrik wirklich zurückgesetzt werden?</source>
+        <target>¿Realmente se debe restablecer la fábrica?</target>
+      </trans-unit>
+      <trans-unit id="Ja" datatype="html">
+        <source>Ja</source>
+        <target>Sí</target>
+      </trans-unit>
+      <trans-unit id="Nein" datatype="html">
+        <source>Nein</source>
+        <target>No</target>
+      </trans-unit>
+      <trans-unit id="Hinzufügen" datatype="html">
+        <source>Hinzufügen</source>
+        <target>Añadir</target>
+      </trans-unit>
+      <trans-unit id="Vergrößern" datatype="html">
+        <source>Vergrößern</source>
+        <target>Ampliar</target>
+      </trans-unit>
+      <trans-unit id="Verkleinern" datatype="html">
+        <source>Verkleinern</source>
+        <target>Reducir</target>
+      </trans-unit>
+      <trans-unit id="Kreuzung" datatype="html">
+        <source>Kreuzung</source>
+        <target>Cruce</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.CHRG" datatype="html">
+        <source>Ladestation</source>
+        <target>Estación de carga</target>
+      </trans-unit>
+      <trans-unit id="ID:" datatype="html">
+        <source>ID:</source>
+        <target>ID:</target>
+      </trans-unit>
+      <trans-unit id="Drehen" datatype="html">
+        <source>Drehen</source>
+        <target>Girar</target>
+      </trans-unit>
+      <trans-unit id="Mehr" datatype="html">
+        <source>Mehr</source>
+        <target>Más</target>
+      </trans-unit>
+      <trans-unit id="Kalibrierungsinformationen" datatype="html">
+        <source>Kalibrierungsinformationen</source>
+        <target>Información de calibración</target>
+      </trans-unit>
+      <trans-unit id="Beim Starten des Planspiels ist ein Fehler aufgetreten." datatype="html">
+        <source>Beim Starten des Planspiels ist ein Fehler aufgetreten.</source>
+        <target>Se ha producido un error al iniciar el juego de simulación.</target>
+      </trans-unit>
+      <trans-unit id="OK" datatype="html">
+        <source>OK</source>
+        <target>OK</target>
+      </trans-unit>
+      <trans-unit id="Das Planspiel wurde erfolgreich gestartet." datatype="html">
+        <source>Das Planspiel wurde erfolgreich gestartet.</source>
+        <target>El juego de simulación se lanzó con éxito.</target>
+      </trans-unit>
+      <trans-unit id="Die zentrale Steuerung hat die Verbindung zur APS verloren. Bitte starten Sie die zentrale Steuerung neu." datatype="html">
+        <source>Die zentrale Steuerung hat die Verbindung zur APS verloren. Bitte starten Sie die zentrale Steuerung neu.</source>
+        <target>La unidad de control central ha perdido la conexión con el APS. Por favor, reinicie la unidad de control central.</target>
+      </trans-unit>
+      <trans-unit id="Keine Metadaten verfügbar" datatype="html">
+        <source>Keine Metadaten verfügbar</source>
+        <target>No hay metadatos disponibles</target>
+      </trans-unit>
+      <trans-unit id="nicht in Fabrik eingebunden" datatype="html">
+        <source>nicht in Fabrik eingebunden</source>
+        <target>no implicad en la fábrica</target>
+      </trans-unit>
+      <trans-unit id="In Fabrik eingebunden seit {{since}}" datatype="html">
+        <source>In Fabrik eingebunden seit {{since}}</source>
+        <target>Implicado en la fábrica desde {{since}}</target>
+      </trans-unit>
+      <trans-unit id="nicht im Layout" datatype="html">
+        <source>nicht im Layout</source>
+        <target>no en maquetación</target>
+      </trans-unit>
+      <trans-unit id="im Layout seit {{since}}" datatype="html">
+        <source>im Layout seit {{since}}</source>
+        <target>en maquetación desde {{since}}</target>
+      </trans-unit>
+      <trans-unit id="AIQS muss immer am Ende der Kette stehen" datatype="html">
+        <source>AIQS muss immer am Ende der Kette stehen</source>
+        <target>AIQS debe estar siempre al final de la cadena</target>
+      </trans-unit>
+      <trans-unit id="OK" datatype="html">
+        <source>OK</source>
+        <target>OK</target>
+      </trans-unit>
+      <trans-unit id="Verfügbar" datatype="html">
+        <source>Verfügbar</source>
+        <target>Disponible</target>
+      </trans-unit>
+      <trans-unit id="Ergebnisse von {{simulationId}}" datatype="html">
+        <source>Ergebnisse von {{simulationId}}</source>
+        <target>Resultados de {{simulationId}}</target>
+      </trans-unit>
+      <trans-unit id="OEE" datatype="html">
+        <source>OEE</source>
+        <target>OEE</target>
+      </trans-unit>
+      <trans-unit id="Gesamt" datatype="html">
+        <source>Gesamt</source>
+        <target>Total</target>
+      </trans-unit>
+      <trans-unit id="Wartungsmodus" datatype="html">
+        <source>Wartungsmodus</source>
+        <target>Modo de mantenimiento</target>
+      </trans-unit>
+      <trans-unit id="Rot bestellen" datatype="html">
+        <source>Rot bestellen</source>
+        <target>Pedir rojo</target>
+      </trans-unit>
+      <trans-unit id="Weiß bestellen" datatype="html">
+        <source>Weiß bestellen</source>
+        <target>Pedir blanco</target>
+      </trans-unit>
+      <trans-unit id="Blau bestellen" datatype="html">
+        <source>Blau bestellen</source>
+        <target>Pedir azul</target>
+      </trans-unit>
+      <trans-unit id="errorType" datatype="html">
+        <source>Fehlerart</source>
+        <target>Tipo de error</target>
+      </trans-unit>
+      <trans-unit id="errorLevel" datatype="html">
+        <source>Schweregrad</source>
+        <target>Gravedad</target>
+      </trans-unit>
+      <trans-unit id="Fahrzeuge" datatype="html">
+        <source>Fahrzeuge</source>
+        <target>Vehículos</target>
+      </trans-unit>
+      <trans-unit id="FTS" datatype="html">
+        <source>FTS</source>
+        <target>FTS</target>
+      </trans-unit>
+      <trans-unit id="Status.ENQUEUED" datatype="html">
+        <source>Wartet</source>
+        <target>Espere</target>
+      </trans-unit>
+      <trans-unit id="Status.IN_PROGRESS" datatype="html">
+        <source>In Bearbeitung</source>
+        <target>En curso</target>
+      </trans-unit>
+      <trans-unit id="Status.FINISHED" datatype="html">
+        <source>Fertig</source>
+        <target>Listo</target>
+      </trans-unit>
+      <trans-unit id="Status.ERROR" datatype="html">
+        <source>Fehler</source>
+        <target>Error</target>
+      </trans-unit>
+      <trans-unit id="Status.CANCELLED" datatype="html">
+        <source>Abgebrochen</source>
+        <target>Abortado</target>
+      </trans-unit>
+      <trans-unit id="Befehl.CHECK_QUALITY" datatype="html">
+        <source>Qualitätsprüfung</source>
+        <target>Control de calidad</target>
+      </trans-unit>
+      <trans-unit id="Befehl.PICK" datatype="html">
+        <source>FTS entladen</source>
+        <target>Descargar FTS</target>
+      </trans-unit>
+      <trans-unit id="Befehl.DROP" datatype="html">
+        <source>FTS beladen</source>
+        <target>Cargar FTS</target>
+      </trans-unit>
+      <trans-unit id="Befehl.MILL" datatype="html">
+        <source>Fräsen</source>
+        <target>Fresado</target>
+      </trans-unit>
+      <trans-unit id="Befehl.DRILL" datatype="html">
+        <source>Bohren</source>
+        <target>Perforación</target>
+      </trans-unit>
+      <trans-unit id="Befehl.FIRE" datatype="html">
+        <source>Erhitzen</source>
+        <target>Calentamiento</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.UNBEKANNT" datatype="html">
+        <source>Unbekanntes Modul</source>
+        <target>Módulo desconocido</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.MODULE" datatype="html">
+        <source>Unbekanntes Modul</source>
+        <target>Módulo desconocido</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.DPS" datatype="html">
+        <source>Warenein- und -ausgang</source>
+        <target>Entrada y salida de mercancías</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.HBW" datatype="html">
+        <source>Hochregallager</source>
+        <target>Almacén de gran altura</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.AIQS" datatype="html">
+        <source>KI-Qualitätssicherung</source>
+        <target>Garantía de calidad de la IA</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.MILL" datatype="html">
+        <source>Fräse</source>
+        <target>Fresador</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.DRILL" datatype="html">
+        <source>Bohrer</source>
+        <target>Perforador</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.OVEN" datatype="html">
+        <source>Brennofen</source>
+        <target>Horno</target>
+      </trans-unit>
+      <trans-unit id="AvailableState.BLOCKED" datatype="html">
+        <source>Blockiert</source>
+        <target>Bloqueado</target>
+      </trans-unit>
+      <trans-unit id="AvailableState.READY" datatype="html">
+        <source>Verfügbar</source>
+        <target>Disponible</target>
+      </trans-unit>
+      <trans-unit id="AvailableState.BUSY" datatype="html">
+        <source>Beschäftigt</source>
+        <target>Ocupado</target>
+      </trans-unit>
+      <trans-unit id="StateLog.MODULE" datatype="html">
+        <source>Modulstatus</source>
+        <target>Estado del módulo</target>
+      </trans-unit>
+      <trans-unit id="StateLog.FTS" datatype="html">
+        <source>FTS-Status</source>
+        <target>Estado FTS</target>
+      </trans-unit>
+      <trans-unit id="StateLog.CONNECTION" datatype="html">
+        <source>Verbindungsstatus</source>
+        <target>Estado de la conexión</target>
+      </trans-unit>
+      <trans-unit id="REF" datatype="html">
+        <source>Referenzpunkt</source>
+        <target>Punto de referencia</target>
+      </trans-unit>
+      <trans-unit id="RACK_REIHE_1_SPALTE_A" datatype="html">
+        <source>Regalplatz A1</source>
+        <target>Espacio A1</target>
+      </trans-unit>
+      <trans-unit id="RACK_REIHE_2_SPALTE_B" datatype="html">
+        <source>Regalplatz B2</source>
+        <target>Espacio B2</target>
+      </trans-unit>
+      <trans-unit id="RACK_REIHE_3_SPALTE_C" datatype="html">
+        <source>Regalplatz C3</source>
+        <target>Espacio C3</target>
+      </trans-unit>
+      <trans-unit id="RAMPE" datatype="html">
+        <source>Rampe</source>
+        <target>Rampa</target>
+      </trans-unit>
+      <trans-unit id="PICK" datatype="html">
+        <source>Ladeposition</source>
+        <target>Posición de carga</target>
+      </trans-unit>
+      <trans-unit id="DROP" datatype="html">
+        <source>Entladeposition</source>
+        <target>Posición de descarga</target>
+      </trans-unit>
+      <trans-unit id="cal__row1" datatype="html">
+        <source>Position Reihe 1</source>
+        <target>Posición Fila 1</target>
+      </trans-unit>
+      <trans-unit id="cal__row2" datatype="html">
+        <source>Position Reihe 2</source>
+        <target>Posición Fila 2</target>
+      </trans-unit>
+      <trans-unit id="cal__row3" datatype="html">
+        <source>Position Reihe 3</source>
+        <target>Posición Fila 3</target>
+      </trans-unit>
+      <trans-unit id="cal__colA" datatype="html">
+        <source>Position Spalte A</source>
+        <target>Posición Columna A</target>
+      </trans-unit>
+      <trans-unit id="cal__colB" datatype="html">
+        <source>Position Spalte B</source>
+        <target>Posición Columna B</target>
+      </trans-unit>
+      <trans-unit id="cal__colC" datatype="html">
+        <source>Position Spalte C</source>
+        <target>Posición Columna C</target>
+      </trans-unit>
+      <trans-unit id="cal__rackOffset" datatype="html">
+        <source>Lagerposition Hebedifferenz</source>
+        <target>Posición de apoyo Diferencia de elevación</target>
+      </trans-unit>
+      <trans-unit id="cal__rampPositionX" datatype="html">
+        <source>Rampe - X-Koordinate der Shuttleposition</source>
+        <target>Rampa - Coordenada X de la posición de la lanzadera</target>
+      </trans-unit>
+      <trans-unit id="cal__rampPositionY" datatype="html">
+        <source>Rampe - Y-Koordinate der Shuttleposition</source>
+        <target>Rampa - Coordenada Y de la posición de la lanzadera</target>
+      </trans-unit>
+      <trans-unit id="cal__rampPositionRot" datatype="html">
+        <source>Rampe - Drehwinkel für Aufnahme</source>
+        <target>Rampa - Ángulo de rotación para la grabación</target>
+      </trans-unit>
+      <trans-unit id="cal__rampPositionRotCheck" datatype="html">
+        <source>Rampe - Drehwinkel für Warteposition</source>
+        <target>Rampa - Ángulo de rotación para posición de espera</target>
+      </trans-unit>
+      <trans-unit id="cal__rampOffset" datatype="html">
+        <source>Rampe - Hebedifferenz</source>
+        <target>Rampa - Diferencia de elevación</target>
+      </trans-unit>
+      <trans-unit id="cal__AGVPositionRot" datatype="html">
+        <source>FTS - Drehwinkel für Be- und Entladung</source>
+        <target>FTS - Ángulo de rotación para carga y descarga</target>
+      </trans-unit>
+      <trans-unit id="cal__timeProcessEnd" datatype="html">
+        <source>Wartezeit für Prozessverarbeitung</source>
+        <target>Tiempo de espera para la tramitación del proceso</target>
+      </trans-unit>
+      <trans-unit id="cal__timeGripperValveClose" datatype="html">
+        <source>Wartezeit für Ventilschließung des Sauggreifers</source>
+        <target>Tiempo de espera para el cierre de la válvula de la ventosa</target>
+      </trans-unit>
+      <trans-unit id="cal__timeGripperValveOpen" datatype="html">
+        <source>Wartezeit für Ventilöffnung des Sauggreifers</source>
+        <target>Tiempo de espera para la apertura de la válvula de la ventosa</target>
+      </trans-unit>
+      <trans-unit id="cal__timeCompressor" datatype="html">
+        <source>Wartezeit für Kompressorabschaltung</source>
+        <target>Tiempo de espera para la desconexión del compresor</target>
+      </trans-unit>
+      <trans-unit id="HOME_BASE" datatype="html">
+        <source>Ruheposition</source>
+        <target>Posición de descanso</target>
+      </trans-unit>
+      <trans-unit id="HOME_INPUT" datatype="html">
+        <source>Wegpunkt Wareneingang</source>
+        <target>Punto de ruta entrada de mercancías</target>
+      </trans-unit>
+      <trans-unit id="HOME_OUTPUT" datatype="html">
+        <source>Wegpunkt Warenausgang</source>
+        <target>Punto de ruta salida de mercancías</target>
+      </trans-unit>
+      <trans-unit id="NIO_APPROACH" datatype="html">
+        <source>Wegpunkt NIO-Behälter</source>
+        <target>Punto de ruta contenedor NIO</target>
+      </trans-unit>
+      <trans-unit id="NIO_TARGET" datatype="html">
+        <source>Zielpunkt NIO-Behälter</source>
+        <target>Punto de destino Contenedor NIO</target>
+      </trans-unit>
+      <trans-unit id="CS_APPROACH" datatype="html">
+        <source>Wegpunkt Farbsensor</source>
+        <target>Punto de ruta sensor cromático</target>
+      </trans-unit>
+      <trans-unit id="CS_TARGET" datatype="html">
+        <source>Zielpunkt Farbsensor</source>
+        <target>Punto de destino sensor cromático</target>
+      </trans-unit>
+      <trans-unit id="NFC_APPROACH" datatype="html">
+        <source>Wegpunkt NFC-Leser</source>
+        <target>Punto de ruta lector NFC</target>
+      </trans-unit>
+      <trans-unit id="NFC_TARGET" datatype="html">
+        <source>Zielpunkt NFC-Leser</source>
+        <target>Punto de destino lector NFC</target>
+      </trans-unit>
+      <trans-unit id="INPUT_PICK_APPROACH_A" datatype="html">
+        <source>Wegpunkt A - Wareneingang</source>
+        <target>Punto de ruta A - Entrada de mercancías</target>
+      </trans-unit>
+      <trans-unit id="INPUT_PICK_APPROACH_B" datatype="html">
+        <source>Wegpunkt B - Wareneingang</source>
+        <target>Punto de ruta B - Entrada de mercancías</target>
+      </trans-unit>
+      <trans-unit id="INPUT_PICK_TARGET" datatype="html">
+        <source>Zielpunkt - Wareneingang</source>
+        <target>Punto de destino - Entrada de mercancías</target>
+      </trans-unit>
+      <trans-unit id="OUTPUT_DROP_APPROACH_A" datatype="html">
+        <source>Wegpunkt A - Warenausgang</source>
+        <target>Punto de ruta A - Salida de mercancías</target>
+      </trans-unit>
+      <trans-unit id="OUTPUT_DROP_APPROACH_B" datatype="html">
+        <source>Wegpunkt B - Warenausgang</source>
+        <target>Punto de ruta B - Salida de mercancías</target>
+      </trans-unit>
+      <trans-unit id="OUTPUT_DROP_TARGET" datatype="html">
+        <source>Zielpunkt - Warenausgang</source>
+        <target>Punto de destino - Salida de mercancías</target>
+      </trans-unit>
+      <trans-unit id="FTS_PICK_APPROACH_A" datatype="html">
+        <source>Wegpunkt A - FTS Entladung</source>
+        <target>Punto de ruta A - Descarga FTS</target>
+      </trans-unit>
+      <trans-unit id="FTS_PICK_APPROACH_B" datatype="html">
+        <source>Wegpunkt B - FTS Entladung</source>
+        <target>Punto de ruta B - Descarga FTS</target>
+      </trans-unit>
+      <trans-unit id="FTS_PICK_TARGET" datatype="html">
+        <source>Zielpunkt - FTS Entladung</source>
+        <target>Punto de destino - Descarga FTS</target>
+      </trans-unit>
+      <trans-unit id="FTS_DROP_APPROACH_A" datatype="html">
+        <source>Wegpunkt A - FTS Beladung</source>
+        <target>Punto de ruta A - Carga FTS</target>
+      </trans-unit>
+      <trans-unit id="FTS_DROP_APPROACH_B" datatype="html">
+        <source>Wegpunkt B - FTS Beladung</source>
+        <target>Punto de ruta B - Carga FTS</target>
+      </trans-unit>
+      <trans-unit id="FTS_DROP_TARGET" datatype="html">
+        <source>Zielpunkt - FTS Beladung</source>
+        <target>Punto de destino - Carga FTS</target>
+      </trans-unit>
+      <trans-unit id="GRIP_ON" datatype="html">
+        <source>Sauggreifer einschalten</source>
+        <target>Encender la ventosa</target>
+      </trans-unit>
+      <trans-unit id="GRIP_OFF" datatype="html">
+        <source>Sauggreifer ausschalten</source>
+        <target>Desconectar la ventosa</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.APPROACH.X" datatype="html">
+        <source>Wegpunkt Farbsensor - X-Koordinate</source>
+        <target>Punto de ruta sensor cromático - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.APPROACH.Y" datatype="html">
+        <source>Wegpunkt Farbsensor - Y-Koordinate</source>
+        <target>Punto de ruta sensor cromático - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.APPROACH.Z" datatype="html">
+        <source>Wegpunkt Farbsensor - Z-Koordinate</source>
+        <target>Punto de ruta sensor cromático - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.TARGET.X" datatype="html">
+        <source>Zielpunkt Farbsensor - X-Koordinate</source>
+        <target>Punto de destino sensor cromático - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.TARGET.Y" datatype="html">
+        <source>Zielpunkt Farbsensor - Y-Koordinate</source>
+        <target>Punto de destino sensor cromático - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.TARGET.Z" datatype="html">
+        <source>Zielpunkt Farbsensor - Z-Koordinate</source>
+        <target>Punto de destino sensor cromático - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_A.X" datatype="html">
+        <source>Wegpunkt A - FTS-Beladung - X-Koordinate</source>
+        <target>Punto de ruta A - Carga FTS - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_A.Y" datatype="html">
+        <source>Wegpunkt A - FTS-Beladung - Y-Koordinate</source>
+        <target>Punto de ruta A - Carga FTS - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_A.Z" datatype="html">
+        <source>Wegpunkt A - FTS Beladung - Z-Koordinate</source>
+        <target>Punto de ruta A - Carga FTS - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_B.X" datatype="html">
+        <source>Wegpunkt B - FTS-Beladung - X-Koordinate</source>
+        <target>Punto de ruta B - Carga FTS -Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_B.Y" datatype="html">
+        <source>Wegpunkt B - FTS-Beladung - Y-Koordinate</source>
+        <target>Punto de ruta B - Carga FTS - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_B.Z" datatype="html">
+        <source>Wegpunkt B - FTS-Beladung - Z-Koordinate</source>
+        <target>Punto de ruta B - Carga FTS - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.TARGET.X" datatype="html">
+        <source>Zielpunkt - FTS-Beladung - X-Koordinate</source>
+        <target>Punto de destino - Carga FTS - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.TARGET.Y" datatype="html">
+        <source>Zielpunkt - FTS-Beladung - Y-Koordinate</source>
+        <target>Punto de destino - Carga FTS - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.TARGET.Z" datatype="html">
+        <source>Zielpunkt - FTS-Beladung - Z-Koordinate</source>
+        <target>Punto de destino - Carga FTS - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_A.X" datatype="html">
+        <source>Wegpunkt A - FTS-Entladung - X-Koordinate</source>
+        <target>Punto de ruta A - Descarga FTS - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_A.Y" datatype="html">
+        <source>Wegpunkt A - FTS-Entladung - Y-Koordinate</source>
+        <target>Punto de ruta A - Descarga FTS - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_A.Z" datatype="html">
+        <source>Wegpunkt A - FTS-Entladung - Z-Koordinate</source>
+        <target>Punto de ruta A - Descarga FTS - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_B.X" datatype="html">
+        <source>Wegpunkt B - FTS-Entladung - X-Koordinate</source>
+        <target>Punto de ruta B - Descarga FTS - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_B.Y" datatype="html">
+        <source>Wegpunkt B - FTS-Entladung - Y-Koordinate</source>
+        <target>Punto de ruta B - Descarga FTS - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_B.Z" datatype="html">
+        <source>Wegpunkt B - FTS-Entladung - Z-Koordinate</source>
+        <target>Punto de ruta B - Descarga FTS - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.TARGET.X" datatype="html">
+        <source>Zielpunkt - FTS-Entladung - X-Koordinate</source>
+        <target>Punto de destino - Descarga FTS - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.TARGET.Y" datatype="html">
+        <source>Zielpunkt - FTS-Entladung - Y-Koordinate</source>
+        <target>Punto de destino - Descarga FTS - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.TARGET.Z" datatype="html">
+        <source>Zielpunkt - FTS-Entladung - Z-Koordinate</source>
+        <target>Punto de destino - Descarga FTS - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.BASE.X" datatype="html">
+        <source>Ruheposition - X-Koordinate</source>
+        <target>Posición de reposo - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.BASE.Y" datatype="html">
+        <source>Ruheposition - Y-Koordinate</source>
+        <target>Posición de reposo - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.BASE.Z" datatype="html">
+        <source>Ruheposition - Z-Koordinate</source>
+        <target>Posición de reposo - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.INPUT.X" datatype="html">
+        <source>Wegpunkt - Wareneingang - X-Koordinate</source>
+        <target>Punto de ruta - entrada de mercancías - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.INPUT.Y" datatype="html">
+        <source>Wegpunkt - Wareneingang - Y-Koordinate</source>
+        <target>Punto de ruta - entrada de mercancías - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.INPUT.Z" datatype="html">
+        <source>Wegpunkt - Wareneingang - Z-Koordinate</source>
+        <target>Punto de ruta - entrada de mercancías - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.OUTPUT.X" datatype="html">
+        <source>Wegpunkt - Warenausgang - X-Koordinate</source>
+        <target>Punto de ruta - salida de mercancías - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.OUTPUT.Y" datatype="html">
+        <source>Wegpunkt - Warenausgang - Y-Koordinate</source>
+        <target>Punto de ruta - salida de mercancías - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.OUTPUT.Z" datatype="html">
+        <source>Wegpunkt - Warenausgang - Z-Koordinate</source>
+        <target>Punto de ruta - salida de mercancías - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_A.X" datatype="html">
+        <source>Wegpunkt A - Wareneingang - X-Koordinate</source>
+        <target>Punto de ruta A - entrada de mercancías - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_A.Y" datatype="html">
+        <source>Wegpunkt A - Wareneingang - Y-Koordinate</source>
+        <target>Punto de ruta A - entrada de mercancías - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_A.Z" datatype="html">
+        <source>Wegpunkt A - Wareneingang - Z-Koordinate</source>
+        <target>Punto de ruta A - entrada de mercancías - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_B.X" datatype="html">
+        <source>Wegpunkt B - Wareneingang - X-Koordinate</source>
+        <target>Punto de ruta B - entrada de mercancías - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_B.Y" datatype="html">
+        <source>Wegpunkt B - Wareneingang - Y-Koordinate</source>
+        <target>Punto de ruta B - entrada de mercancías - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_B.Z" datatype="html">
+        <source>Wegpunkt B - Wareneingang - Z-Koordinate</source>
+        <target>Punto de ruta B - entrada de mercancías - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.TARGET.X" datatype="html">
+        <source>Zielpunkt - Wareneingang - X-Koordinate</source>
+        <target>Punto de destino - entrada de mercancías - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.TARGET.Y" datatype="html">
+        <source>Zielpunkt - Wareneingang - Y-Koordinate</source>
+        <target>Punto de destino - entrada de mercancías - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.TARGET.Z" datatype="html">
+        <source>Zielpunkt - Wareneingang - Z-Koordinate</source>
+        <target>Punto de destino - entrada de mercancías - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.APPROACH.X" datatype="html">
+        <source>Wegpunkt - NFC-Leser - X-Koordinate</source>
+        <target>Punto de ruta - Lector NFC - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.APPROACH.Y" datatype="html">
+        <source>Wegpunkt - NFC-Leser - Y-Koordinate</source>
+        <target>Punto de ruta - Lector NFC - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.APPROACH.Z" datatype="html">
+        <source>Wegpunkt - NFC-Leser - Z-Koordinate</source>
+        <target>Punto de ruta - Lector NFC - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.TARGET.X" datatype="html">
+        <source>Zielpunkt - NFC-Leser - X-Koordinate</source>
+        <target>Punto de destino - Lector NFC - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.TARGET.Y" datatype="html">
+        <source>Zielpunkt - NFC-Leser - Y-Koordinate</source>
+        <target>Punto de destino - Lector NFC - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.TARGET.Z" datatype="html">
+        <source>Zielpunkt - NFC-Leser - Z-Koordinate</source>
+        <target>Punto de destino - Lector NFC - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.APPROACH.X" datatype="html">
+        <source>Wegpunkt - NIO-Behälter - X-Koordinate</source>
+        <target>Punto de ruta - Contenedor NIO - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.APPROACH.Y" datatype="html">
+        <source>Wegpunkt - NIO-Behälter - Y-Koordinate</source>
+        <target>Punto de ruta - Contenedor NIO - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.APPROACH.Z" datatype="html">
+        <source>Wegpunkt - NIO-Behälter - Z-Koordinate</source>
+        <target>Punto de ruta - Contenedor NIO - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.TARGET.X" datatype="html">
+        <source>Zielpunkt - NIO-Behälter - X-Koordinate</source>
+        <target>Punto de destino - Contenedor NIO - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.TARGET.Y" datatype="html">
+        <source>Zielpunkt - NIO-Behälter - Y-Koordinate</source>
+        <target>Punto de destino - Contenedor NIO - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.TARGET.Z" datatype="html">
+        <source>Zielpunkt - NIO-Behälter - Z-Koordinate</source>
+        <target>Punto de destino - Contenedor NIO - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_A.X" datatype="html">
+        <source>Wegpunkt A - Warenausgang - X-Koordinate</source>
+        <target>Punto de ruta A - salida de mercancías - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_A.Y" datatype="html">
+        <source>Wegpunkt A - Warenausgang - Y-Koordinate</source>
+        <target>Punto de ruta A - salida de mercancías - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_A.Z" datatype="html">
+        <source>Wegpunkt A - Warenausgang - Z-Koordinate</source>
+        <target>Punto de ruta A - salida de mercancías - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_B.X" datatype="html">
+        <source>Wegpunkt B - Warenausgang - X-Koordinate</source>
+        <target>Punto de ruta B - salida de mercancías - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_B.Y" datatype="html">
+        <source>Wegpunkt B - Warenausgang - Y-Koordinate</source>
+        <target>Punto de ruta B - salida de mercancías - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_B.Z" datatype="html">
+        <source>Wegpunkt B - Warenausgang - Z-Koordinate</source>
+        <target>Punto de ruta B - salida de mercancías - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.TARGET.X" datatype="html">
+        <source>Zielpunkt - Warenausgang - X-Koordinate</source>
+        <target>Punto de destino - salida de mercancías - Coordenada X</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.TARGET.Y" datatype="html">
+        <source>Zielpunkt - Warenausgang - Y-Koordinate</source>
+        <target>Punto de destino - salida de mercancías - Coordenada Y</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.TARGET.Z" datatype="html">
+        <source>Zielpunkt - Warenausgang - Z-Koordinate</source>
+        <target>Punto de destino - salida de mercancías - Coordenada Z</target>
+      </trans-unit>
+      <trans-unit id="CHECK" datatype="html">
+        <source>Prüfposition</source>
+        <target>Posición de prueba</target>
+      </trans-unit>
+      <trans-unit id="STEPS_BELT_CAMERA" datatype="html">
+        <source>Fließbandschritte Positionierung - Kamera</source>
+        <target>Posicionamiento Pasos de la cadena de montaje - Cámara</target>
+      </trans-unit>
+      <trans-unit id="STEPS_BELT_BIN" datatype="html">
+        <source>Fließbandschritte Positionierung - NIO-Behälter</source>
+        <target>Posicionamiento Pasos de la cadena de montaje - Contenedor NIO</target>
+      </trans-unit>
+      <trans-unit id="STEPS_BELT_GRIPPER" datatype="html">
+        <source>Fließbandschritte Positionierung - Sauggreifer</source>
+        <target>Posicionamiento Pasos de la cadena de montaje - Ventosa</target>
+      </trans-unit>
+      <!-- Until this comment, the translations were provided by the translation agency -->
+      <!-- After this comment, the translations were provided by DeepL                  -->
+      <trans-unit id="Controller for the Agile Production Simulation is not connected" datatype="html">
+        <source>Controller für die Agile Production Simulation ist nicht verbunden</source>
+        <target>El controlador para la simulación de producción Agile no está conectado</target>
+      </trans-unit>
+      <trans-unit id="Produktionseinstellungen" datatype="html">
+        <source>Produktionseinstellungen</source>
+        <target>Ajustes de producción</target>
+      </trans-unit>
+      <trans-unit id="Anzahl parallel produzierbarer Werkstücke" datatype="html">
+        <source>Anzahl parallel produzierbarer Werkstücke</source>
+        <target>Número de piezas que pueden producirse en paralelo</target>
+      </trans-unit>
+      <trans-unit id="TO_NIO_BIN" datatype="html">
+        <source>Vorwärts in den NIO-Container</source>
+        <target>Adelante en el contenedor NIO</target>
+      </trans-unit>
+      <trans-unit id="TO_CAMERA" datatype="html">
+        <source>Zur Kamera bewegen</source>
+        <target>Mover a cámara</target>
+      </trans-unit>
+      <trans-unit id="TO_PICKUP" datatype="html">
+        <source>Zum Ablagepunkt bewegen</source>
+        <target>Desplazarse al punto de almacenamiento</target>
+      </trans-unit>
+      <trans-unit id="CALIBRATION_TESTIMAGE" datatype="html">
+        <source>Testbild fotografieren</source>
+        <target>Fotografía imagen de prueba</target>
+      </trans-unit>
+      <trans-unit id="cal__badTime" datatype="html">
+        <source>Laufzeit des Förderbandes bis zum NIO-Behälter</source>
+        <target>Tiempo de recorrido de la cinta transportadora hasta el contenedor NIO</target>
+      </trans-unit>
+      <trans-unit id="cal__cameraTime" datatype="html">
+        <source>Laufzeit des Förderbandes bis zur Kamera</source>
+        <target>Tiempo de recorrido de la cinta transportadora hasta la cámara</target>
+      </trans-unit>
+      <trans-unit id="cal__prePhotoTime" datatype="html">
+        <source>Wartezeit bis fotografiert wird</source>
+        <target>Tiempo de espera hasta que se toman las fotos</target>
+      </trans-unit>
+      <trans-unit id="cal__processEndTime" datatype="html">
+        <source>Wartezeit bis zur Abschlussmeldung für die zentrale Steuerung</source>
+        <target>Tiempo de espera hasta el mensaje de finalización para el sistema de control centralizado</target>
+      </trans-unit>
+      <trans-unit id="cal__midLightGateTime" datatype="html">
+        <source>Laufzeit des Förderbandes bis zur Mitte der Lichtschranke</source>
+        <target>Tiempo de recorrido de la cinta transportadora hasta el centro de la barrera de luz</target>
+      </trans-unit>
+      <trans-unit id="cal__gripperDownTime" datatype="html">
+        <source>Laufzeit und Wartezeit für die Bewegung des Sauggreifers</source>
+        <target>Tiempo de recorrido y de espera del movimiento de la ventosa</target>
+      </trans-unit>
+      <trans-unit id="cal__vacuumReleaseTime" datatype="html">
+        <source>Wartezeit des Sauggreifers zur Freigabe des Werkstücks</source>
+        <target>Tiempo de espera de la ventosa para liberar la pieza</target>
+      </trans-unit>
+      <trans-unit id="cal__colorRedSetpoint" datatype="html">
+        <source>Richtwert des Farbsensors für rote Werkstücke</source>
+        <target>Valor de referencia del sensor de color para piezas rojas</target>
+      </trans-unit>
+      <trans-unit id="cal__colorBlueSetpoint" datatype="html">
+        <source>Richtwert des Farbsensors für blaue Werkstücke</source>
+        <target>Valor de referencia del sensor de color para piezas azules</target>
+      </trans-unit>
+      <trans-unit id="cal__colorWhiteSetpoint" datatype="html">
+        <source>Richtwert des Farbsensors für weiße Werkstücke</source>
+        <target>Valor de referencia del sensor de color para piezas blancas</target>
+      </trans-unit>
+      <trans-unit id="cal__homePosX" datatype="html">
+        <source>X-Koordinate für Kameraausgangsposition</source>
+        <target>Coordenada X para la posición de salida de la cámara</target>
+      </trans-unit>
+      <trans-unit id="cal__homePosY" datatype="html">
+        <source>Y-Koordinate für Kameraausgangsposition</source>
+        <target>Coordenada Y para la posición de salida de la cámara</target>
+      </trans-unit>
+      <trans-unit id="cal__customPosX" datatype="html">
+        <source>X-Koordinate für Kameraposition mit Blick Richtung Hochregallager</source>
+        <target>Coordenada X para la posición de la cámara con vista hacia el almacén de estanterías altas</target>
+      </trans-unit>
+      <trans-unit id="cal__customPosY" datatype="html">
+        <source>Y-Koordinate für Kameraposition mit Blick Richtung Hochregallager</source>
+        <target>Coordenada Y para la posición de la cámara con vista hacia el almacén de estanterías altas</target>
+      </trans-unit>
+      <trans-unit id="cal__shortProcessWaitTime" datatype="html">
+        <source>Wartezeit bis zur Abschlussmeldung für die zentrale Steuerung</source>
+        <target>Tiempo de espera hasta el mensaje de finalización para el sistema de control centralizado</target>
+      </trans-unit>
+      <trans-unit id="cal__colorRange" datatype="html">
+        <source>Wertebereich des Farbsensors für die Farberkennung</source>
+        <target>Rango de valores del sensor de color para la detección del color</target>
+      </trans-unit>
+      <trans-unit id="CAMERA_HOME" datatype="html">
+        <source>Kameraausgangsposition</source>
+        <target>Posición de salida de la cámara</target>
+      </trans-unit>
+      <trans-unit id="CAMERA_HBW" datatype="html">
+        <source>Kameraposition mit Blick Richtung Hochregallager</source>
+        <target>Posición de la cámara con vista hacia el almacén de gran altura</target>
+      </trans-unit>
+      <trans-unit id="Zurücksetzen auf Standardlayout" datatype="html">
+        <source>Zurücksetzen auf Standardlayout</source>
+        <target>Restablecer el diseño estándar</target>
+      </trans-unit>
+      <trans-unit id="Soll die Fabrik wirklich auf das Standardlayout zurückgesetzt werden?" datatype="html">
+        <source>Soll die Fabrik wirklich auf das Standardlayout zurückgesetzt werden?</source>
+        <target>¿Debería restablecerse realmente la disposición estándar de fábrica?</target>
+      </trans-unit>
+      <trans-unit id="Auch den Lagerbestand leeren?" datatype="html">
+        <source>Auch den Lagerbestand leeren?</source>
+        <target>¿Vaciar también las existencias?</target>
+      </trans-unit>
+      <trans-unit id="cal__colorValue" datatype="html">
+        <source>Aktueller Wert des Farbsensors</source>
+        <target>Valor actual del sensor de color</target>
+      </trans-unit>
+      <trans-unit id="Erweiterte Bearbeitungsschritte aktivieren" datatype="html">
+        <source>Erweiterte Bearbeitungsschritte aktivieren</source>
+        <target>Activar pasos de procesamiento avanzados</target>
+      </trans-unit>
+      <trans-unit id="Fabrik parken" datatype="html">
+        <source>Fabrik parken</source>
+        <target>Aparcar la fábrica...</target>
+      </trans-unit>
+      <trans-unit id="Sollen die Fabrikmodule geparkt werden?" datatype="html">
+        <source>Sollen die Fabrikmodule geparkt werden?</source>
+        <target>¿Debe aparcarse el módulo de fabricación?</target>
+      </trans-unit>
+      <trans-unit id="PARK" datatype="html">
+        <source>Modul parken</source>
+        <target>Aparcar el módulo</target>
+      </trans-unit>
+      <trans-unit id="Filter" datatype="html">
+        <source>Filter</source>
+        <target>Filtros</target>
+      </trans-unit>
+      <trans-unit id="Transporteinstellungen" datatype="html">
+        <source>Transporteinstellungen</source>
+        <target>Configuración de transporte</target>
+      </trans-unit>
+      <trans-unit id="Ladeschwelle für FTS" datatype="html">
+        <source>Ladeschwelle für FTS</source>
+        <target>Umbral de carga para AGV</target>
+      </trans-unit>
+      <trans-unit id="Alle Nachrichten" datatype="html">
+        <source>Alle Nachrichten</source>
+        <target>Todos los mensajes</target>
+      </trans-unit>
+      <trans-unit id="Alle Module" datatype="html">
+        <source>Alle Module</source>
+        <target>Todos los módulos</target>
+      </trans-unit>
+      <trans-unit id="Versions-Konflikt" datatype="html">
+        <source>Versions-Konflikt</source>
+        <target>Conflicto de versiones</target>
+      </trans-unit>
+      <trans-unit id="Modulversionen stimmen nicht mit der Version der zentralen Steuerung überein!" datatype="html">
+        <source>Modulversionen stimmen nicht mit der Version der zentralen Steuerung überein!</source>
+        <target>Las versiones de los módulos no coinciden con la versión de la unidad de control central.</target>
+      </trans-unit>
+      <trans-unit id="Für eine einwandfreie Funktion installieren Sie bitte einen einheitlichen Softwarestand. Die aktuellen Versionen finden Sie unter" datatype="html">
+        <source>Für eine einwandfreie Funktion installieren Sie bitte einen einheitlichen Softwarestand. Die aktuellen Versionen finden Sie unter</source>
+        <target>Para garantizar un funcionamiento correcto, instale una versión de software normalizada. Encontrará las versiones actuales en</target>
+      </trans-unit>
+      <trans-unit id="Version der zentralen Steuerung:" datatype="html">
+        <source>Version der zentralen Steuerung:</source>
+        <target>Versión de la unidad de control central:</target>
+      </trans-unit>
+      <trans-unit id="Modul" datatype="html">
+        <source>Modul</source>
+        <target>Módulo</target>
+      </trans-unit>
+      <trans-unit id="Seriennummer" datatype="html">
+        <source>Seriennummer</source>
+        <target>Número de serie</target>
+      </trans-unit>
+      <trans-unit id="Controller" datatype="html">
+        <source>Controller</source>
+        <target>Controlador</target>
+      </trans-unit>
+      <trans-unit id="Installiert" datatype="html">
+        <source>Installiert</source>
+        <target>Instalado</target>
+      </trans-unit>
+      <trans-unit id="Erwartete Version" datatype="html">
+        <source>Erwartete Version</source>
+        <target>Versión prevista</target>
+      </trans-unit>
+      <trans-unit id="SPS" datatype="html">
+        <source>SPS</source>
+        <target>PLC (SPS)</target>
+      </trans-unit>
+      <trans-unit id="Kollisionswarnung" datatype="html">
+        <source>Kollisionswarnung</source>
+        <target>Aviso de colisión</target>
+      </trans-unit>
+      <trans-unit id="Ein oder mehrere Fahrerlose Transportsysteme (FTS) sind durch Gegenstände auf der Fahrbahn am Weiterfahren blockiert." datatype="html">
+        <source>Ein oder mehrere Fahrerlose Transportsysteme (FTS) sind durch Gegenstände auf der Fahrbahn am Weiterfahren blockiert.</source>
+        <target>Uno o varios vehículos de guiado automático (AGV) están bloqueados para continuar su marcha por objetos en la calzada.</target>
+      </trans-unit>
+      <trans-unit id="Bitte entfernen Sie die Hindernisse um den Betrieb fortzusetzen." datatype="html">
+        <source>Bitte entfernen Sie die Hindernisse um den Betrieb fortzusetzen.</source>
+        <target>Por favor, retire los obstáculos para continuar la marcha.</target>
+      </trans-unit>
+      <trans-unit id="FTS mit gemeldeten Hindernissen:" datatype="html">
+        <source>FTS mit gemeldeten Hindernissen:</source>
+        <target>AGV con obstáculos señalados:</target>
+      </trans-unit>
+      <trans-unit id="Letzte Position:" datatype="html">
+        <source>Letzte Position:</source>
+        <target>Última posición:</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

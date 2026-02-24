@@ -1,0 +1,1365 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="de" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="Übersicht" datatype="html">
+        <source>Übersicht</source>
+        <target>Обзор</target>
+      </trans-unit>
+      <trans-unit id="Aufträge" datatype="html">
+        <source>Aufträge</source>
+        <target>Заказы</target>
+      </trans-unit>
+      <trans-unit id="Abläufe" datatype="html">
+        <source>Abläufe</source>
+        <target>Процессы</target>
+      </trans-unit>
+      <trans-unit id="Konfiguration" datatype="html">
+        <source>Konfiguration</source>
+        <target>Конфигурация</target>
+      </trans-unit>
+      <trans-unit id="Module" datatype="html">
+        <source>Module</source>
+        <target>Модуль</target>
+      </trans-unit>
+      <trans-unit id="Planspiel" datatype="html">
+        <source>Planspiel</source>
+        <target>Моделирование</target>
+      </trans-unit>
+      <trans-unit id="Meldungen" datatype="html">
+        <source>Meldungen</source>
+        <target>Уведомления</target>
+      </trans-unit>
+      <trans-unit id="Statusmeldungen" datatype="html">
+        <source>Statusmeldungen</source>
+        <target>Уведомления о статусе</target>
+      </trans-unit>
+      <trans-unit id="state.received" datatype="html">
+        <source>Status empfangen</source>
+        <target>Получить статус</target>
+      </trans-unit>
+      <trans-unit id="state.type" datatype="html">
+        <source>Statustyp</source>
+        <target>Тип статуса</target>
+      </trans-unit>
+      <trans-unit id="Nachrichtenherkunft" datatype="html">
+        <source>Nachrichtenherkunft</source>
+        <target>Формирование данных</target>
+      </trans-unit>
+      <trans-unit id="Keine Daten verfügbar" datatype="html">
+        <source>Keine Daten verfügbar</source>
+        <target>Данные недоступны</target>
+      </trans-unit>
+      <trans-unit id="Planspiel wird gestartet" datatype="html">
+        <source>Planspiel wird gestartet</source>
+        <target>Моделирование запущено</target>
+      </trans-unit>
+      <trans-unit id="Planspiel starten" datatype="html">
+        <source>Planspiel starten</source>
+        <target>Начать моделирование</target>
+      </trans-unit>
+      <trans-unit id="Name des Planspiels" datatype="html">
+        <source>Name des Planspiels</source>
+        <target>Наименование моделирования</target>
+      </trans-unit>
+      <trans-unit id="Bitte geben Sie einen Namen ein." datatype="html">
+        <source>Bitte geben Sie einen Namen ein.</source>
+        <target>Укажите наименование, пожалуйста.</target>
+      </trans-unit>
+      <trans-unit id="Ein Planspiel mit diesem Namen existiert bereits." datatype="html">
+        <source>Ein Planspiel mit diesem Namen existiert bereits.</source>
+        <target>Моделирование с таким именем уже существует.</target>
+      </trans-unit>
+      <trans-unit id="Produktionsplanung" datatype="html">
+        <source>Produktionsplanung</source>
+        <target>Планирование производства</target>
+      </trans-unit>
+      <trans-unit id="Werkstücktyp" datatype="html">
+        <source>Werkstücktyp</source>
+        <target>Тип обрабатываемой детали</target>
+      </trans-unit>
+      <trans-unit id="Dieses Werkstück ist nicht auf Lager." datatype="html">
+        <source>Dieses Werkstück ist nicht auf Lager.</source>
+        <target>Данной детали нет в наличии.</target>
+      </trans-unit>
+      <trans-unit id="Werkstück hinzufügen" datatype="html">
+        <source>Werkstück hinzufügen</source>
+        <target>Добавить деталь</target>
+      </trans-unit>
+      <trans-unit id="Planspiel läuft" datatype="html">
+        <source>Planspiel läuft</source>
+        <target>Деловая игра в процессе</target>
+      </trans-unit>
+      <trans-unit id="Aufträge ohne Planspiel" datatype="html">
+        <source>Aufträge ohne Planspiel</source>
+        <target>Задания без моделирования</target>
+      </trans-unit>
+      <trans-unit id="CSV herunterladen" datatype="html">
+        <source>CSV herunterladen</source>
+        <target>Загрузить файл CSV</target>
+      </trans-unit>
+      <trans-unit id="Ergebnisse von '{{simulationId}}'" datatype="html">
+        <source>Ergebnisse von '{{simulationId}}'</source>
+        <target>Результаты '{{simulationId}}'</target>
+      </trans-unit>
+      <trans-unit id="Ergebnisse von Aufträgen ohne Planspiel" datatype="html">
+        <source>Ergebnisse von Aufträgen ohne Planspiel</source>
+        <target>Результаты заданий без моделирования</target>
+      </trans-unit>
+      <trans-unit id="Bitte beachten Sie, dass die OEE-Berechnung erst nach Abschluss der Produktion einen sinnvollen Wert liefert." datatype="html">
+        <source>Bitte beachten Sie, dass die OEE-Berechnung erst nach Abschluss der Produktion einen sinnvollen Wert liefert.</source>
+        <target>Обратите внимание, что расчет OEE дает приемлемые значения только после завершения производства.</target>
+      </trans-unit>
+      <trans-unit id="OEE" datatype="html">
+        <source>OEE</source>
+        <target>OEE (общая эффективность оборудования)</target>
+      </trans-unit>
+      <trans-unit id="Qualität" datatype="html">
+        <source>Qualität</source>
+        <target>Качество</target>
+      </trans-unit>
+      <trans-unit id="Leistung" datatype="html">
+        <source>Leistung</source>
+        <target>Выработка</target>
+      </trans-unit>
+      <trans-unit id="Verfügbarkeit" datatype="html">
+        <source>Verfügbarkeit</source>
+        <target>Доступность</target>
+      </trans-unit>
+      <trans-unit id="Gewählter Produktionsauftrag" datatype="html">
+        <source>Gewählter Produktionsauftrag</source>
+        <target>Выбранный производственный заказ</target>
+      </trans-unit>
+      <trans-unit id="Produktions- und Navigationsschritte" datatype="html">
+        <source>Produktions- und Navigationsschritte</source>
+        <target>Этапы производства и навигации</target>
+      </trans-unit>
+      <trans-unit id="Kein Produktionsauftrag ausgewählt" datatype="html">
+        <source>Kein Produktionsauftrag ausgewählt</source>
+        <target>Производственный заказ не выбран</target>
+      </trans-unit>
+      <trans-unit id="Fertigungsschritte" datatype="html">
+        <source>Fertigungsschritte</source>
+        <target>Этапы изготовления</target>
+      </trans-unit>
+      <trans-unit id="Aktueller Fertigungsschritt" datatype="html">
+        <source>Aktueller Fertigungsschritt</source>
+        <target>Текущий этап изготовления</target>
+      </trans-unit>
+      <trans-unit id="Auftragsinformationen" datatype="html">
+        <source>Auftragsinformationen</source>
+        <target>Информация по заказу</target>
+      </trans-unit>
+      <trans-unit id="Auftragsnummer" datatype="html">
+        <source>Auftragsnummer</source>
+        <target>Номер заказа</target>
+      </trans-unit>
+      <trans-unit id="Auftragsstatus" datatype="html">
+        <source>Auftragsstatus</source>
+        <target>Статус заказа</target>
+      </trans-unit>
+      <trans-unit id="Bestelldatum" datatype="html">
+        <source>Bestelldatum</source>
+        <target>Дата размещения заказа</target>
+      </trans-unit>
+      <trans-unit id="Auftragseingang" datatype="html">
+        <source>Auftragseingang</source>
+        <target>Получение заказа</target>
+      </trans-unit>
+      <trans-unit id="Start der Bearbeitung" datatype="html">
+        <source>Start der Bearbeitung</source>
+        <target>Начало обработки</target>
+      </trans-unit>
+      <trans-unit id="Ende der Bearbeitung" datatype="html">
+        <source>Ende der Bearbeitung</source>
+        <target>Окончание обработки</target>
+      </trans-unit>
+      <trans-unit id="Modulübersicht" datatype="html">
+        <source>Moduleübersicht</source>
+        <target>Обзор модуля</target>
+      </trans-unit>
+      <trans-unit id="ID" datatype="html">
+        <source>ID</source>
+        <target>ID</target>
+      </trans-unit>
+      <trans-unit id="Name" datatype="html">
+        <source>Name</source>
+        <target>Наименование</target>
+      </trans-unit>
+      <trans-unit id="Verbunden" datatype="html">
+        <source>Verbunden</source>
+        <target>Подключенный</target>
+      </trans-unit>
+      <trans-unit id="Nicht verbunden" datatype="html">
+        <source>Nicht verbunden</source>
+        <target>Не подключенный</target>
+      </trans-unit>
+      <trans-unit id="Verfügbarkeitsstatus" datatype="html">
+        <source>Verfügbarkeitsstatus</source>
+        <target>Статус готовности</target>
+      </trans-unit>
+      <trans-unit id="Konfiguriert" datatype="html">
+        <source>Konfiguriert</source>
+        <target>С заданной конфигурацией</target>
+      </trans-unit>
+      <trans-unit id="Docke an DPS" datatype="html">
+        <source>Docke an DPS</source>
+        <target>Док на DPS</target>
+      </trans-unit>
+      <trans-unit id="Laden" datatype="html">
+        <source>Laden</source>
+        <target>Зарядка</target>
+      </trans-unit>
+      <trans-unit id="Laden beenden" datatype="html">
+        <source>Laden beenden</source>
+        <target>Завершить зарядку</target>
+      </trans-unit>
+      <trans-unit id="Kalibrieren" datatype="html">
+        <source>Kalibrieren</source>
+        <target>Калибрировать</target>
+      </trans-unit>
+      <trans-unit id="Löschen" datatype="html">
+        <source>Löschen</source>
+        <target>Удалить</target>
+      </trans-unit>
+      <trans-unit id="Endgültig löschen" datatype="html">
+        <source>Endgültig löschen</source>
+        <target>Окончательно удалить</target>
+      </trans-unit>
+      <trans-unit id="Moduleinstellungen" datatype="html">
+        <source>Moduleinstellungen</source>
+        <target>Настройки модуля</target>
+      </trans-unit>
+      <trans-unit id="Modulwerte" datatype="html">
+        <source>Modulwerte</source>
+        <target>Значение модуля</target>
+      </trans-unit>
+      <trans-unit id="Fertigungsdauer" datatype="html">
+        <source>Fertigungsdauer</source>
+        <target>Сроки изготовления</target>
+      </trans-unit>
+      <trans-unit id="Sekunden" datatype="html">
+        <source>Sekunden</source>
+        <target>Секунды</target>
+      </trans-unit>
+      <trans-unit id="Blockiert durch Fehler" datatype="html">
+        <source>Blockiert durch Fehler</source>
+        <target>Заблокировано по ошибке</target>
+      </trans-unit>
+      <trans-unit id="Kalibrierung" datatype="html">
+        <source>Kalibrierung</source>
+        <target>Калибровка</target>
+      </trans-unit>
+      <trans-unit id="Aktueller Auftrag" datatype="html">
+        <source>Aktueller Auftrag</source>
+        <target>Текущее задание</target>
+      </trans-unit>
+      <trans-unit id="Bestellung" datatype="html">
+        <source>Bestellung</source>
+        <target>Заказ</target>
+      </trans-unit>
+      <trans-unit id="Unbekannt" datatype="html">
+        <source>Unbekannt</source>
+        <target>Неизвестен</target>
+      </trans-unit>
+      <trans-unit id="Kalibrierung beenden" datatype="html">
+        <source>Kalibrierung beenden</source>
+        <target>Завершить калибровку</target>
+      </trans-unit>
+      <trans-unit id="Nicht gespeicherte Änderungen gehen verloren." datatype="html">
+        <source>Nicht gespeicherte Änderungen gehen verloren.</source>
+        <target>Несохраненные изменения будут потеряны.</target>
+      </trans-unit>
+      <trans-unit id="Abbrechen" datatype="html">
+        <source>Abbrechen</source>
+        <target>Прерываться</target>
+      </trans-unit>
+      <trans-unit id="Modulkalibrierung" datatype="html">
+        <source>Modulkalibrierung</source>
+        <target>Калибровка модуля</target>
+      </trans-unit>
+      <trans-unit id="Kalibrierung starten" datatype="html">
+        <source>Kalibrierung starten</source>
+        <target>Начать калибровку</target>
+      </trans-unit>
+      <trans-unit id="Auf Werkseinstellungen zurücksetzen" datatype="html">
+        <source>Auf Werkseinstellungen zurücksetzen</source>
+        <target>Вернуться к заводским настройкам</target>
+      </trans-unit>
+      <trans-unit id="Kalibrierungswerte" datatype="html">
+        <source>Kalibrierungswerte</source>
+        <target>Калибровочные параметры</target>
+      </trans-unit>
+      <trans-unit id="Werte laden" datatype="html">
+        <source>Werte laden</source>
+        <target>Загрузить параметры</target>
+      </trans-unit>
+      <trans-unit id="Position zum Kalibrieren" datatype="html">
+        <source>Position zum Kalibrieren</source>
+        <target>Положение для калибровки</target>
+      </trans-unit>
+      <trans-unit id="FACTORY_BASE_SETTINGS" datatype="html">
+        <source>APS Basiseinstellungen</source>
+        <target>Основные настройки APS</target>
+      </trans-unit>
+      <trans-unit id="Position wählen" datatype="html">
+        <source>Position wählen</source>
+        <target>Выбрать позицию</target>
+      </trans-unit>
+      <trans-unit id="Position testen" datatype="html">
+        <source>Position testen</source>
+        <target>Протестировать позицию</target>
+      </trans-unit>
+      <trans-unit id="Anwenden" datatype="html">
+        <source>Anwenden</source>
+        <target>Применить</target>
+      </trans-unit>
+      <trans-unit id="Zurücksetzen" datatype="html">
+        <source>Zurücksetzen</source>
+        <target>Сбросить</target>
+      </trans-unit>
+      <trans-unit id="Speichern" datatype="html">
+        <source>Speichern</source>
+        <target>Сохранить</target>
+      </trans-unit>
+      <trans-unit id="Fabrikkonfiguration" datatype="html">
+        <source>Fabrikkonfiguration</source>
+        <target>Заводская конфигурация</target>
+      </trans-unit>
+      <trans-unit id="Bearbeitungsschritte" datatype="html">
+        <source>Bearbeitungsschritte</source>
+        <target>Этапы обработки</target>
+      </trans-unit>
+      <trans-unit id="Bearbeitungsschritt hinzufügen" datatype="html">
+        <source>Bearbeitungsschritt hinzufügen</source>
+        <target>Добавить этап обработки</target>
+      </trans-unit>
+      <trans-unit id="Vorhandene Produktionsmodule" datatype="html">
+        <source>Vorhandene Produktionsmodule</source>
+        <target>Существующие производственные модули</target>
+      </trans-unit>
+      <trans-unit id="Auslagern aus Hochregallager" datatype="html">
+        <source>Auslagern über Hochregallager</source>
+        <target>Выдача на многоярусном складе</target>
+      </trans-unit>
+      <trans-unit id="Werkstück.Blau" datatype="html">
+        <source>Blau</source>
+        <target>Синий</target>
+      </trans-unit>
+      <trans-unit id="Fertiges Werkstück" datatype="html">
+        <source>Fertiges Werkstück</source>
+        <target>Готовая деталь</target>
+      </trans-unit>
+      <trans-unit id="Werkstück.Rot" datatype="html">
+        <source>Rot</source>
+        <target>Красный</target>
+      </trans-unit>
+      <trans-unit id="Werkstück.Weiß" datatype="html">
+        <source>Weiß</source>
+        <target>Белый</target>
+      </trans-unit>
+      <trans-unit id="Auslieferung über Warenausgang" datatype="html">
+        <source>Auslieferung über Warenausgang</source>
+        <target>Поставка путем выхода продукции</target>
+      </trans-unit>
+      <trans-unit id="Fehlerzeitpunkt" datatype="html">
+        <source>Fehlerzeitpunkt</source>
+        <target>Время возникновения ошибки</target>
+      </trans-unit>
+      <trans-unit id="errorReferences" datatype="html">
+        <source>Fehlerreferenzen</source>
+        <target>Ссылки на ошибки</target>
+      </trans-unit>
+      <trans-unit id="IP: {{ip}} - Version: {{version}}" datatype="html">
+        <source>IP: {{ip}} - Version: {{version}}</source>
+        <target>IP: {{ip}} - версия: {{version}}</target>
+      </trans-unit>
+      <trans-unit id="Verbindungsstatus vom {{timestamp}}" datatype="html">
+        <source>Verbindungsstatus vom {{timestamp}}</source>
+        <target>Состояние соединения с {{timestamp}}</target>
+      </trans-unit>
+      <trans-unit id="Status für FTS [{{serialNumber}}] vom {{timestamp}}" datatype="html">
+        <source>Status für FTS [{{serialNumber}}] vom {{timestamp}}</source>
+        <target>Статус для AGV [{{serialNumber}}] с {{timestamp}}</target>
+      </trans-unit>
+      <trans-unit id="Letzter Knoten / letztes Module {{lastNodeId}}" datatype="html">
+        <source>Letzter Knoten / letztes Module {{lastNodeId}}</source>
+        <target>Последний узел / последний модуль {{lastNodeId}}</target>
+      </trans-unit>
+      <trans-unit id="Batteriestand {{percentage}}%" datatype="html">
+        <source>Batteriestand {{percentage}}%</source>
+        <target>Состояние аккумулятора {{percentage}}%</target>
+      </trans-unit>
+      <trans-unit id="Status für Module [{{serialNumber}}] vom {{timestamp}}" datatype="html">
+        <source>Status für Module [{{serialNumber}}] vom {{timestamp}}</source>
+        <target>Статус модуля [{{serialNumber}}] с {{timestamp}}</target>
+      </trans-unit>
+      <trans-unit id="Start" datatype="html">
+        <source>Start</source>
+        <target>Начало</target>
+      </trans-unit>
+      <trans-unit id="Ende" datatype="html">
+        <source>Ende</source>
+        <target>Конец</target>
+      </trans-unit>
+      <trans-unit id="Gesamtdauer" datatype="html">
+        <source>Gesamtdauer</source>
+        <target>Общая продолжительность</target>
+      </trans-unit>
+      <trans-unit id="Produktionsdauer" datatype="html">
+        <source>Produktionsdauer</source>
+        <target>Продолжительность изготовления</target>
+      </trans-unit>
+      <trans-unit id="Transportdauer" datatype="html">
+        <source>Transportdauer</source>
+        <target>Продолжительность транспортировки</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.FTS" datatype="html">
+        <source>Fahrerloses Transportsystem</source>
+        <target>Автоматическая транспортная система</target>
+      </trans-unit>
+      <trans-unit id="Auftrag" datatype="html">
+        <source>Auftrag</source>
+        <target>Заказ</target>
+      </trans-unit>
+      <trans-unit id="Laufende Aufträge" datatype="html">
+        <source>Laufende Aufträge</source>
+        <target>Текущие заказы</target>
+      </trans-unit>
+      <trans-unit id="Keine laufenden Aufträge verfügbar" datatype="html">
+        <source>Keine laufenden Aufträge verfügbar</source>
+        <target>Текущие заказы недоступны</target>
+      </trans-unit>
+      <trans-unit id="Abgeschlossene Aufträge" datatype="html">
+        <source>Abgeschlossene Aufträge</source>
+        <target>Завершенные заказы</target>
+      </trans-unit>
+      <trans-unit id="Keine abgeschlossenen Aufträge verfügbar" datatype="html">
+        <source>Keine abgeschlossenen Aufträge verfügbar</source>
+        <target>Завершенные заказы недоступны</target>
+      </trans-unit>
+      <trans-unit id="Keine Modulinformationen verfügbar" datatype="html">
+        <source>Keine Modulinformationen verfügbar</source>
+        <target>Информация о модуле отсутствует</target>
+      </trans-unit>
+      <trans-unit id="Controller for the Future-Factory not connected" datatype="html">
+        <source>Controller for the Future-Factory not connected</source>
+        <target>Контроллер для Future-Factory не подключен</target>
+      </trans-unit>
+      <trans-unit id="Fabrik zurücksetzen" datatype="html">
+        <source>Fabrik zurücksetzen</source>
+        <target>Сброс к заводским настройкам</target>
+      </trans-unit>
+      <trans-unit id="Soll die Fabrik wirklich zurückgesetzt werden?" datatype="html">
+        <source>Soll die Fabrik wirklich zurückgesetzt werden?</source>
+        <target>Действительно сбросить к заводским настройкам?</target>
+      </trans-unit>
+      <trans-unit id="Ja" datatype="html">
+        <source>Ja</source>
+        <target>Да</target>
+      </trans-unit>
+      <trans-unit id="Nein" datatype="html">
+        <source>Nein</source>
+        <target>Нет</target>
+      </trans-unit>
+      <trans-unit id="Hinzufügen" datatype="html">
+        <source>Hinzufügen</source>
+        <target>Добавить</target>
+      </trans-unit>
+      <trans-unit id="Vergrößern" datatype="html">
+        <source>Vergrößern</source>
+        <target>Увеличить</target>
+      </trans-unit>
+      <trans-unit id="Verkleinern" datatype="html">
+        <source>Verkleinern</source>
+        <target>Уменьшить</target>
+      </trans-unit>
+      <trans-unit id="Kreuzung" datatype="html">
+        <source>Kreuzung</source>
+        <target>Пересечение</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.CHRG" datatype="html">
+        <source>Ladestation</source>
+        <target>Зарядная станция</target>
+      </trans-unit>
+      <trans-unit id="ID:" datatype="html">
+        <source>ID:</source>
+        <target>ID:</target>
+      </trans-unit>
+      <trans-unit id="Drehen" datatype="html">
+        <source>Drehen</source>
+        <target>Обтачивать</target>
+      </trans-unit>
+      <trans-unit id="Mehr" datatype="html">
+        <source>Mehr</source>
+        <target>Далее</target>
+      </trans-unit>
+      <trans-unit id="Kalibrierungsinformationen" datatype="html">
+        <source>Kalibrierungsinformationen</source>
+        <target>Данные калибровки</target>
+      </trans-unit>
+      <trans-unit id="Beim Starten des Planspiels ist ein Fehler aufgetreten." datatype="html">
+        <source>Beim Starten des Planspiels ist ein Fehler aufgetreten.</source>
+        <target>При запуске моделирования произошла ошибка.</target>
+      </trans-unit>
+      <trans-unit id="OK" datatype="html">
+        <source>OK</source>
+        <target>ОК</target>
+      </trans-unit>
+      <trans-unit id="Das Planspiel wurde erfolgreich gestartet." datatype="html">
+        <source>Das Planspiel wurde erfolgreich gestartet.</source>
+        <target>Моделирование было успешно запущено.</target>
+      </trans-unit>
+      <trans-unit id="Die zentrale Steuerung hat die Verbindung zur APS verloren. Bitte starten Sie die zentrale Steuerung neu." datatype="html">
+        <source>Die zentrale Steuerung hat die Verbindung zur APS verloren. Bitte starten Sie die zentrale Steuerung neu.</source>
+        <target>Центральный пульт управления потерял связь с APS. Запустите центральный пульт управления снова.</target>
+      </trans-unit>
+      <trans-unit id="Keine Metadaten verfügbar" datatype="html">
+        <source>Keine Metadaten verfügbar</source>
+        <target>Метаданные недоступны</target>
+      </trans-unit>
+      <trans-unit id="nicht in Fabrik eingebunden" datatype="html">
+        <source>nicht in Fabrik eingebunden</source>
+        <target>не задействован в производстве</target>
+      </trans-unit>
+      <trans-unit id="In Fabrik eingebunden seit {{since}}" datatype="html">
+        <source>In Fabrik eingebunden seit {{since}}</source>
+        <target>Задействован в производстве с {{since}}</target>
+      </trans-unit>
+      <trans-unit id="nicht im Layout" datatype="html">
+        <source>nicht im Layout</source>
+        <target>отсутствует на чертеже</target>
+      </trans-unit>
+      <trans-unit id="im Layout seit {{since}}" datatype="html">
+        <source>im Layout seit {{since}}</source>
+        <target>на чертеже с {{since}}</target>
+      </trans-unit>
+      <trans-unit id="AIQS muss immer am Ende der Kette stehen" datatype="html">
+        <source>AIQS muss immer am Ende der Kette stehen</source>
+        <target>AIQS должен быть всегда в конце цепочки</target>
+      </trans-unit>
+      <trans-unit id="OK" datatype="html">
+        <source>OK</source>
+        <target>ОК</target>
+      </trans-unit>
+      <trans-unit id="Verfügbar" datatype="html">
+        <source>Verfügbar</source>
+        <target>Доступный</target>
+      </trans-unit>
+      <trans-unit id="Ergebnisse von {{simulationId}}" datatype="html">
+        <source>Ergebnisse von {{simulationId}}</source>
+        <target>Результаты {{simulationId}}</target>
+      </trans-unit>
+      <trans-unit id="OEE" datatype="html">
+        <source>OEE</source>
+        <target>OEE (общая эффективность оборудования)</target>
+      </trans-unit>
+      <trans-unit id="Gesamt" datatype="html">
+        <source>Gesamt</source>
+        <target>Итого</target>
+      </trans-unit>
+      <trans-unit id="Wartungsmodus" datatype="html">
+        <source>Wartungsmodus</source>
+        <target>Режим обслуживания</target>
+      </trans-unit>
+      <trans-unit id="Rot bestellen" datatype="html">
+        <source>Rot bestellen</source>
+        <target>Заказать красный</target>
+      </trans-unit>
+      <trans-unit id="Weiß bestellen" datatype="html">
+        <source>Weiß bestellen</source>
+        <target>Заказать белый</target>
+      </trans-unit>
+      <trans-unit id="Blau bestellen" datatype="html">
+        <source>Blau bestellen</source>
+        <target>Заказать синий</target>
+      </trans-unit>
+      <trans-unit id="errorType" datatype="html">
+        <source>Fehlerart</source>
+        <target>Тип ошибки</target>
+      </trans-unit>
+      <trans-unit id="errorLevel" datatype="html">
+        <source>Schweregrad</source>
+        <target>Категория сложности</target>
+      </trans-unit>
+      <trans-unit id="Fahrzeuge" datatype="html">
+        <source>Fahrzeuge</source>
+        <target>Транспортные средства</target>
+      </trans-unit>
+      <trans-unit id="FTS" datatype="html">
+        <source>FTS</source>
+        <target>AGV</target>
+      </trans-unit>
+      <trans-unit id="Status.ENQUEUED" datatype="html">
+        <source>Wartet</source>
+        <target>Ожидает</target>
+      </trans-unit>
+      <trans-unit id="Status.IN_PROGRESS" datatype="html">
+        <source>In Bearbeitung</source>
+        <target>Выполняется</target>
+      </trans-unit>
+      <trans-unit id="Status.FINISHED" datatype="html">
+        <source>Fertig</source>
+        <target>Готово</target>
+      </trans-unit>
+      <trans-unit id="Status.ERROR" datatype="html">
+        <source>Fehler</source>
+        <target>Ошибка</target>
+      </trans-unit>
+      <trans-unit id="Status.CANCELLED" datatype="html">
+        <source>Abgebrochen</source>
+        <target>Прерван</target>
+      </trans-unit>
+      <trans-unit id="Befehl.CHECK_QUALITY" datatype="html">
+        <source>Qualitätsprüfung</source>
+        <target>Контроль качества</target>
+      </trans-unit>
+      <trans-unit id="Befehl.PICK" datatype="html">
+        <source>FTS entladen</source>
+        <target>Разгрузить AGV</target>
+      </trans-unit>
+      <trans-unit id="Befehl.DROP" datatype="html">
+        <source>FTS beladen</source>
+        <target>Загрузить AGV</target>
+      </trans-unit>
+      <trans-unit id="Befehl.MILL" datatype="html">
+        <source>Fräsen</source>
+        <target>Фрезеровать</target>
+      </trans-unit>
+      <trans-unit id="Befehl.DRILL" datatype="html">
+        <source>Bohren</source>
+        <target>Сверлить</target>
+      </trans-unit>
+      <trans-unit id="Befehl.FIRE" datatype="html">
+        <source>Erhitzen</source>
+        <target>Нагревать</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.UNBEKANNT" datatype="html">
+        <source>Unbekanntes Modul</source>
+        <target>Неизвестный модуль</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.MODULE" datatype="html">
+        <source>Unbekanntes Modul</source>
+        <target>Неизвестный модуль</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.DPS" datatype="html">
+        <source>Warenein- und -ausgang</source>
+        <target>Прием и отпуск товара</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.HBW" datatype="html">
+        <source>Hochregallager</source>
+        <target>Многоярусный склад</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.AIQS" datatype="html">
+        <source>KI-Qualitätssicherung</source>
+        <target>Обеспечение качества ИИ</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.MILL" datatype="html">
+        <source>Fräse</source>
+        <target>Фреза</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.DRILL" datatype="html">
+        <source>Bohrer</source>
+        <target>Сверло</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.OVEN" datatype="html">
+        <source>Brennofen</source>
+        <target>Печь для обжига</target>
+      </trans-unit>
+      <trans-unit id="AvailableState.BLOCKED" datatype="html">
+        <source>Blockiert</source>
+        <target>Заблокированный</target>
+      </trans-unit>
+      <trans-unit id="AvailableState.READY" datatype="html">
+        <source>Verfügbar</source>
+        <target>Доступный</target>
+      </trans-unit>
+      <trans-unit id="AvailableState.BUSY" datatype="html">
+        <source>Beschäftigt</source>
+        <target>Занятый</target>
+      </trans-unit>
+      <trans-unit id="StateLog.MODULE" datatype="html">
+        <source>Modulstatus</source>
+        <target>Состояние модуля</target>
+      </trans-unit>
+      <trans-unit id="StateLog.FTS" datatype="html">
+        <source>FTS-Status</source>
+        <target>Статус AGV</target>
+      </trans-unit>
+      <trans-unit id="StateLog.CONNECTION" datatype="html">
+        <source>Verbindungsstatus</source>
+        <target>Состояние соединения</target>
+      </trans-unit>
+      <trans-unit id="REF" datatype="html">
+        <source>Referenzpunkt</source>
+        <target>Контрольная точка</target>
+      </trans-unit>
+      <trans-unit id="RACK_REIHE_1_SPALTE_A" datatype="html">
+        <source>Regalplatz A1</source>
+        <target>Место на полке А1</target>
+      </trans-unit>
+      <trans-unit id="RACK_REIHE_2_SPALTE_B" datatype="html">
+        <source>Regalplatz B2</source>
+        <target>Место на полке В2</target>
+      </trans-unit>
+      <trans-unit id="RACK_REIHE_3_SPALTE_C" datatype="html">
+        <source>Regalplatz C3</source>
+        <target>Место на полке С3</target>
+      </trans-unit>
+      <trans-unit id="RAMPE" datatype="html">
+        <source>Rampe</source>
+        <target>Платформа</target>
+      </trans-unit>
+      <trans-unit id="PICK" datatype="html">
+        <source>Ladeposition</source>
+        <target>Место загрузки</target>
+      </trans-unit>
+      <trans-unit id="DROP" datatype="html">
+        <source>Entladeposition</source>
+        <target>Место разгрузки</target>
+      </trans-unit>
+      <trans-unit id="cal__row1" datatype="html">
+        <source>Position Reihe 1</source>
+        <target>Позиция в ряду 1</target>
+      </trans-unit>
+      <trans-unit id="cal__row2" datatype="html">
+        <source>Position Reihe 2</source>
+        <target>Позиция в ряду 2</target>
+      </trans-unit>
+      <trans-unit id="cal__row3" datatype="html">
+        <source>Position Reihe 3</source>
+        <target>Позиция в ряду 3</target>
+      </trans-unit>
+      <trans-unit id="cal__colA" datatype="html">
+        <source>Position Spalte A</source>
+        <target>Промежуток между местами A</target>
+      </trans-unit>
+      <trans-unit id="cal__colB" datatype="html">
+        <source>Position Spalte B</source>
+        <target>Промежуток между местами B</target>
+      </trans-unit>
+      <trans-unit id="cal__colC" datatype="html">
+        <source>Position Spalte C</source>
+        <target>Промежуток между местами C</target>
+      </trans-unit>
+      <trans-unit id="cal__rackOffset" datatype="html">
+        <source>Lagerposition Hebedifferenz</source>
+        <target>Разница в уровне подъема складской позиции</target>
+      </trans-unit>
+      <trans-unit id="cal__rampPositionX" datatype="html">
+        <source>Rampe - X-Koordinate der Shuttleposition</source>
+        <target>Платформа - координата Х положения транспортера</target>
+      </trans-unit>
+      <trans-unit id="cal__rampPositionY" datatype="html">
+        <source>Rampe - Y-Koordinate der Shuttleposition</source>
+        <target>Платформа - координата Y положения транспортера</target>
+      </trans-unit>
+      <trans-unit id="cal__rampPositionRot" datatype="html">
+        <source>Rampe - Drehwinkel für Aufnahme</source>
+        <target>Платформа - угол поворота для приема</target>
+      </trans-unit>
+      <trans-unit id="cal__rampPositionRotCheck" datatype="html">
+        <source>Rampe - Drehwinkel für Warteposition</source>
+        <target>Платформа - угол поворота для позиции ожидания</target>
+      </trans-unit>
+      <trans-unit id="cal__rampOffset" datatype="html">
+        <source>Rampe - Hebedifferenz</source>
+        <target>Платформа - разница в уровне подъема</target>
+      </trans-unit>
+      <trans-unit id="cal__AGVPositionRot" datatype="html">
+        <source>FTS - Drehwinkel für Be- und Entladung</source>
+        <target>AGV - угол поворота для загрузки и разгрузки</target>
+      </trans-unit>
+      <trans-unit id="cal__timeProcessEnd" datatype="html">
+        <source>Wartezeit für Prozessverarbeitung</source>
+        <target>Время ожидания для технологического процесса</target>
+      </trans-unit>
+      <trans-unit id="cal__timeGripperValveClose" datatype="html">
+        <source>Wartezeit für Ventilschließung des Sauggreifers</source>
+        <target>Время ожидания для закрытия клапана загрузочной присоски</target>
+      </trans-unit>
+      <trans-unit id="cal__timeGripperValveOpen" datatype="html">
+        <source>Wartezeit für Ventilöffnung des Sauggreifers</source>
+        <target>Время ожидания для открытия клапана загрузочной присоски</target>
+      </trans-unit>
+      <trans-unit id="cal__timeCompressor" datatype="html">
+        <source>Wartezeit für Kompressorabschaltung</source>
+        <target>Время ожидания для отключения компрессора</target>
+      </trans-unit>
+      <trans-unit id="HOME_BASE" datatype="html">
+        <source>Ruheposition</source>
+        <target>Положение покоя</target>
+      </trans-unit>
+      <trans-unit id="HOME_INPUT" datatype="html">
+        <source>Wegpunkt Wareneingang</source>
+        <target>Поступление продукции в путевую точку</target>
+      </trans-unit>
+      <trans-unit id="HOME_OUTPUT" datatype="html">
+        <source>Wegpunkt Warenausgang</source>
+        <target>Выход продукции из путевой точки</target>
+      </trans-unit>
+      <trans-unit id="NIO_APPROACH" datatype="html">
+        <source>Wegpunkt NIO-Behälter</source>
+        <target>Путевая точка NIO-контейнер</target>
+      </trans-unit>
+      <trans-unit id="NIO_TARGET" datatype="html">
+        <source>Zielpunkt NIO-Behälter</source>
+        <target>Пункт назначения NIO-контейнер</target>
+      </trans-unit>
+      <trans-unit id="CS_APPROACH" datatype="html">
+        <source>Wegpunkt Farbsensor</source>
+        <target>Путевая точка сенсор цвета</target>
+      </trans-unit>
+      <trans-unit id="CS_TARGET" datatype="html">
+        <source>Zielpunkt Farbsensor</source>
+        <target>Пункт назначения сенсор цвета</target>
+      </trans-unit>
+      <trans-unit id="NFC_APPROACH" datatype="html">
+        <source>Wegpunkt NFC-Leser</source>
+        <target>Путевая точка NFC-считыватель</target>
+      </trans-unit>
+      <trans-unit id="NFC_TARGET" datatype="html">
+        <source>Zielpunkt NFC-Leser</source>
+        <target>Пункт назначения NFC-считыватель</target>
+      </trans-unit>
+      <trans-unit id="INPUT_PICK_APPROACH_A" datatype="html">
+        <source>Wegpunkt A - Wareneingang</source>
+        <target>Путевая точка А - поступление продукции</target>
+      </trans-unit>
+      <trans-unit id="INPUT_PICK_APPROACH_B" datatype="html">
+        <source>Wegpunkt B - Wareneingang</source>
+        <target>Путевая точка В - поступление продукции</target>
+      </trans-unit>
+      <trans-unit id="INPUT_PICK_TARGET" datatype="html">
+        <source>Zielpunkt - Wareneingang</source>
+        <target>Пункт назначения - поступление продукции</target>
+      </trans-unit>
+      <trans-unit id="OUTPUT_DROP_APPROACH_A" datatype="html">
+        <source>Wegpunkt A - Warenausgang</source>
+        <target>Путевая точка А - выход продукции</target>
+      </trans-unit>
+      <trans-unit id="OUTPUT_DROP_APPROACH_B" datatype="html">
+        <source>Wegpunkt B - Warenausgang</source>
+        <target>Путевая точка В - выход продукции</target>
+      </trans-unit>
+      <trans-unit id="OUTPUT_DROP_TARGET" datatype="html">
+        <source>Zielpunkt - Warenausgang</source>
+        <target>Пункт назначения - выход продукции</target>
+      </trans-unit>
+      <trans-unit id="FTS_PICK_APPROACH_A" datatype="html">
+        <source>Wegpunkt A - FTS Entladung</source>
+        <target>Путевая точка А - разгрузка AGV</target>
+      </trans-unit>
+      <trans-unit id="FTS_PICK_APPROACH_B" datatype="html">
+        <source>Wegpunkt B - FTS Entladung</source>
+        <target>Путевая точка B - разгрузка AGV</target>
+      </trans-unit>
+      <trans-unit id="FTS_PICK_TARGET" datatype="html">
+        <source>Zielpunkt - FTS Entladung</source>
+        <target>Пункт назначения - разгрузка AGV</target>
+      </trans-unit>
+      <trans-unit id="FTS_DROP_APPROACH_A" datatype="html">
+        <source>Wegpunkt A - FTS Beladung</source>
+        <target>Путевая точка А - загрузка AGV</target>
+      </trans-unit>
+      <trans-unit id="FTS_DROP_APPROACH_B" datatype="html">
+        <source>Wegpunkt B - FTS Beladung</source>
+        <target>Путевая точка B - загрузка AGV</target>
+      </trans-unit>
+      <trans-unit id="FTS_DROP_TARGET" datatype="html">
+        <source>Zielpunkt - FTS Beladung</source>
+        <target>Пункт назначения - загрузка AGV</target>
+      </trans-unit>
+      <trans-unit id="GRIP_ON" datatype="html">
+        <source>Sauggreifer einschalten</source>
+        <target>Включить загрузочную присоску</target>
+      </trans-unit>
+      <trans-unit id="GRIP_OFF" datatype="html">
+        <source>Sauggreifer ausschalten</source>
+        <target>Выключить загрузочную присоску</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.APPROACH.X" datatype="html">
+        <source>Wegpunkt Farbsensor - X-Koordinate</source>
+        <target>Путевая точка сенсор цвета - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.APPROACH.Y" datatype="html">
+        <source>Wegpunkt Farbsensor - Y-Koordinate</source>
+        <target>Путевая точка сенсор цвета - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.APPROACH.Z" datatype="html">
+        <source>Wegpunkt Farbsensor - Z-Koordinate</source>
+        <target>Путевая точка сенсор цвета - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.TARGET.X" datatype="html">
+        <source>Zielpunkt Farbsensor - X-Koordinate</source>
+        <target>Пункт назначения сенсор цвета - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.TARGET.Y" datatype="html">
+        <source>Zielpunkt Farbsensor - Y-Koordinate</source>
+        <target>Пункт назначения сенсор цвета - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.TARGET.Z" datatype="html">
+        <source>Zielpunkt Farbsensor - Z-Koordinate</source>
+        <target>Пункт назначения сенсор цвета - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_A.X" datatype="html">
+        <source>Wegpunkt A - FTS-Beladung - X-Koordinate</source>
+        <target>Путевая точка А - загрузка AGV - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_A.Y" datatype="html">
+        <source>Wegpunkt A - FTS-Beladung - Y-Koordinate</source>
+        <target>Путевая точка А - загрузка AGV - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_A.Z" datatype="html">
+        <source>Wegpunkt A - FTS Beladung - Z-Koordinate</source>
+        <target>Путевая точка А - загрузка AGV - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_B.X" datatype="html">
+        <source>Wegpunkt B - FTS-Beladung - X-Koordinate</source>
+        <target>Путевая точка B - загрузка AGV - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_B.Y" datatype="html">
+        <source>Wegpunkt B - FTS-Beladung - Y-Koordinate</source>
+        <target>Путевая точка B - загрузка AGV - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_B.Z" datatype="html">
+        <source>Wegpunkt B - FTS-Beladung - Z-Koordinate</source>
+        <target>Путевая точка B - загрузка AGV - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.TARGET.X" datatype="html">
+        <source>Zielpunkt - FTS-Beladung - X-Koordinate</source>
+        <target>Пункт назначения - загрузка AGV - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.TARGET.Y" datatype="html">
+        <source>Zielpunkt - FTS-Beladung - Y-Koordinate</source>
+        <target>Пункт назначения - загрузка AGV - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.TARGET.Z" datatype="html">
+        <source>Zielpunkt - FTS-Beladung - Z-Koordinate</source>
+        <target>Пункт назначения - загрузка AGV - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_A.X" datatype="html">
+        <source>Wegpunkt A - FTS-Entladung - X-Koordinate</source>
+        <target>Путевая точка А - разгрузка AGV - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_A.Y" datatype="html">
+        <source>Wegpunkt A - FTS-Entladung - Y-Koordinate</source>
+        <target>Путевая точка А - разгрузка AGV - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_A.Z" datatype="html">
+        <source>Wegpunkt A - FTS-Entladung - Z-Koordinate</source>
+        <target>Путевая точка А - разгрузка AGV - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_B.X" datatype="html">
+        <source>Wegpunkt B - FTS-Entladung - X-Koordinate</source>
+        <target>Путевая точка B - разгрузка AGV - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_B.Y" datatype="html">
+        <source>Wegpunkt B - FTS-Entladung - Y-Koordinate</source>
+        <target>Путевая точка В - разгрузка AGV - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_B.Z" datatype="html">
+        <source>Wegpunkt B - FTS-Entladung - Z-Koordinate</source>
+        <target>Путевая точка В - разгрузка AGV - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.TARGET.X" datatype="html">
+        <source>Zielpunkt - FTS-Entladung - X-Koordinate</source>
+        <target>Пункт назначения - разгрузка AGV - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.TARGET.Y" datatype="html">
+        <source>Zielpunkt - FTS-Entladung - Y-Koordinate</source>
+        <target>Пункт назначения - разгрузка AGV - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.TARGET.Z" datatype="html">
+        <source>Zielpunkt - FTS-Entladung - Z-Koordinate</source>
+        <target>Пункт назначения - разгрузка AGV - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.BASE.X" datatype="html">
+        <source>Ruheposition - X-Koordinate</source>
+        <target>Положение покоя - координата Х</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.BASE.Y" datatype="html">
+        <source>Ruheposition - Y-Koordinate</source>
+        <target>Положение покоя - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.BASE.Z" datatype="html">
+        <source>Ruheposition - Z-Koordinate</source>
+        <target>Положение покоя - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.INPUT.X" datatype="html">
+        <source>Wegpunkt - Wareneingang - X-Koordinate</source>
+        <target>Путевая точка - поступление продукции - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.INPUT.Y" datatype="html">
+        <source>Wegpunkt - Wareneingang - Y-Koordinate</source>
+        <target>Путевая точка - поступление продукции - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.INPUT.Z" datatype="html">
+        <source>Wegpunkt - Wareneingang - Z-Koordinate</source>
+        <target>Путевая точка - поступление продукции - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.OUTPUT.X" datatype="html">
+        <source>Wegpunkt - Warenausgang - X-Koordinate</source>
+        <target>Путевая точка - выход продукции - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.OUTPUT.Y" datatype="html">
+        <source>Wegpunkt - Warenausgang - Y-Koordinate</source>
+        <target>Путевая точка - выход продукции - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.OUTPUT.Z" datatype="html">
+        <source>Wegpunkt - Warenausgang - Z-Koordinate</source>
+        <target>Путевая точка - выход продукции - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_A.X" datatype="html">
+        <source>Wegpunkt A - Wareneingang - X-Koordinate</source>
+        <target>Путевая точка А - поступление продукции - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_A.Y" datatype="html">
+        <source>Wegpunkt A - Wareneingang - Y-Koordinate</source>
+        <target>Путевая точка А - поступление продукции - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_A.Z" datatype="html">
+        <source>Wegpunkt A - Wareneingang - Z-Koordinate</source>
+        <target>Путевая точка А - поступление продукции - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_B.X" datatype="html">
+        <source>Wegpunkt B - Wareneingang - X-Koordinate</source>
+        <target>Путевая точка В - поступление продукции - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_B.Y" datatype="html">
+        <source>Wegpunkt B - Wareneingang - Y-Koordinate</source>
+        <target>Путевая точка В - поступление продукции - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_B.Z" datatype="html">
+        <source>Wegpunkt B - Wareneingang - Z-Koordinate</source>
+        <target>Путевая точка В - поступление продукции - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.TARGET.X" datatype="html">
+        <source>Zielpunkt - Wareneingang - X-Koordinate</source>
+        <target>Пункт назначения - поступление продукции - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.TARGET.Y" datatype="html">
+        <source>Zielpunkt - Wareneingang - Y-Koordinate</source>
+        <target>Пункт назначения - поступление продукции - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.TARGET.Z" datatype="html">
+        <source>Zielpunkt - Wareneingang - Z-Koordinate</source>
+        <target>Пункт назначения - поступление продукции - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.APPROACH.X" datatype="html">
+        <source>Wegpunkt - NFC-Leser - X-Koordinate</source>
+        <target>Путевая точка - NFC-считыватель - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.APPROACH.Y" datatype="html">
+        <source>Wegpunkt - NFC-Leser - Y-Koordinate</source>
+        <target>Путевая точка - NFC-считыватель - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.APPROACH.Z" datatype="html">
+        <source>Wegpunkt - NFC-Leser - Z-Koordinate</source>
+        <target>Путевая точка - NFC-считыватель - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.TARGET.X" datatype="html">
+        <source>Zielpunkt - NFC-Leser - X-Koordinate</source>
+        <target>Пункт назначения - NFC-считыватель - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.TARGET.Y" datatype="html">
+        <source>Zielpunkt - NFC-Leser - Y-Koordinate</source>
+        <target>Пункт назначения - NFC-считыватель - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.TARGET.Z" datatype="html">
+        <source>Zielpunkt - NFC-Leser - Z-Koordinate</source>
+        <target>Пункт назначения - NFC-считыватель - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.APPROACH.X" datatype="html">
+        <source>Wegpunkt - NIO-Behälter - X-Koordinate</source>
+        <target>Путевая точка - NIO-контейнер- координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.APPROACH.Y" datatype="html">
+        <source>Wegpunkt - NIO-Behälter - Y-Koordinate</source>
+        <target>Путевая точка - NIO-контейнер - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.APPROACH.Z" datatype="html">
+        <source>Wegpunkt - NIO-Behälter - Z-Koordinate</source>
+        <target>Путевая точка - NIO-контейнер - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.TARGET.X" datatype="html">
+        <source>Zielpunkt - NIO-Behälter - X-Koordinate</source>
+        <target>Пункт назначения - NIO-контейнер - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.TARGET.Y" datatype="html">
+        <source>Zielpunkt - NIO-Behälter - Y-Koordinate</source>
+        <target>Пункт назначения - NIO-контейнер - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.TARGET.Z" datatype="html">
+        <source>Zielpunkt - NIO-Behälter - Z-Koordinate</source>
+        <target>Пункт назначения - NIO-контейнер - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_A.X" datatype="html">
+        <source>Wegpunkt A - Warenausgang - X-Koordinate</source>
+        <target>Путевая точка А - выход продукции - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_A.Y" datatype="html">
+        <source>Wegpunkt A - Warenausgang - Y-Koordinate</source>
+        <target>Путевая точка А - выход продукции - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_A.Z" datatype="html">
+        <source>Wegpunkt A - Warenausgang - Z-Koordinate</source>
+        <target>Путевая точка А - выход продукции - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_B.X" datatype="html">
+        <source>Wegpunkt B - Warenausgang - X-Koordinate</source>
+        <target>Путевая точка В - выход продукции - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_B.Y" datatype="html">
+        <source>Wegpunkt B - Warenausgang - Y-Koordinate</source>
+        <target>Путевая точка В - выход продукции - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_B.Z" datatype="html">
+        <source>Wegpunkt B - Warenausgang - Z-Koordinate</source>
+        <target>Путевая точка В - выход продукции - координата Z</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.TARGET.X" datatype="html">
+        <source>Zielpunkt - Warenausgang - X-Koordinate</source>
+        <target>Пункт назначения - выход продукции - координата X</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.TARGET.Y" datatype="html">
+        <source>Zielpunkt - Warenausgang - Y-Koordinate</source>
+        <target>Пункт назначения - выход продукции - координата Y</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.TARGET.Z" datatype="html">
+        <source>Zielpunkt - Warenausgang - Z-Koordinate</source>
+        <target>Пункт назначения - выход продукции - координата Z</target>
+      </trans-unit>
+      <trans-unit id="CHECK" datatype="html">
+        <source>Prüfposition</source>
+        <target>Тестовая позиция</target>
+      </trans-unit>
+      <trans-unit id="STEPS_BELT_CAMERA" datatype="html">
+        <source>Fließbandschritte Positionierung - Kamera</source>
+        <target>Расположение этапов конвейерной ленты - камера</target>
+      </trans-unit>
+      <trans-unit id="STEPS_BELT_BIN" datatype="html">
+        <source>Fließbandschritte Positionierung - NIO-Behälter</source>
+        <target>Расположение этапов конвейерной ленты - NIO-контейнер</target>
+      </trans-unit>
+      <trans-unit id="STEPS_BELT_GRIPPER" datatype="html">
+        <source>Fließbandschritte Positionierung - Sauggreifer</source>
+        <target>Расположение этапов конвейерной ленты - загрузочная присоска</target>
+      </trans-unit>
+      <!-- Until this comment, the translations were provided by the translation agency -->
+      <!-- After this comment, the translations were provided by DeepL                  -->
+      <trans-unit id="Controller for the Agile Production Simulation is not connected" datatype="html">
+        <source>Controller für die Agile Production Simulation ist nicht verbunden</source>
+        <target>Контроллер для симулятора переналаживаемого производства не подключен</target>
+      </trans-unit>
+      <trans-unit id="Produktionseinstellungen" datatype="html">
+        <source>Produktionseinstellungen</source>
+        <target>Производственные параметры</target>
+      </trans-unit>
+      <trans-unit id="Anzahl parallel produzierbarer Werkstücke" datatype="html">
+        <source>Anzahl parallel produzierbarer Werkstücke</source>
+        <target>Количество одновременно производимых деталей</target>
+      </trans-unit>
+      <trans-unit id="TO_NIO_BIN" datatype="html">
+        <source>Vorwärts in den NIO-Container</source>
+        <target>Перемещение в NIO-контейнер</target>
+      </trans-unit>
+      <trans-unit id="TO_CAMERA" datatype="html">
+        <source>Zur Kamera bewegen</source>
+        <target>Переместить в камеру</target>
+      </trans-unit>
+      <trans-unit id="TO_PICKUP" datatype="html">
+        <source>Zum Ablagepunkt bewegen</source>
+        <target>Переместить к месту хранения</target>
+      </trans-unit>
+      <trans-unit id="CALIBRATION_TESTIMAGE" datatype="html">
+        <source>Testbild fotografieren</source>
+        <target>Фотографировать тестовое изображение</target>
+      </trans-unit>
+      <trans-unit id="cal__badTime" datatype="html">
+        <source>Laufzeit des Förderbandes bis zum NIO-Behälter</source>
+        <target>Время прохождения конвейера до NIO-контейнера</target>
+      </trans-unit>
+      <trans-unit id="cal__cameraTime" datatype="html">
+        <source>Laufzeit des Förderbandes bis zur Kamera</source>
+        <target>Время прохождения конвейера до камеры</target>
+      </trans-unit>
+      <trans-unit id="cal__prePhotoTime" datatype="html">
+        <source>Wartezeit bis fotografiert wird</source>
+        <target>Время ожидания фотографирования</target>
+      </trans-unit>
+      <trans-unit id="cal__processEndTime" datatype="html">
+        <source>Wartezeit bis zur Abschlussmeldung für die zentrale Steuerung</source>
+        <target>Время ожидания сообщения о завершении работы центрального пульта управления</target>
+      </trans-unit>
+      <trans-unit id="cal__midLightGateTime" datatype="html">
+        <source>Laufzeit des Förderbandes bis zur Mitte der Lichtschranke</source>
+        <target>Время прохождения конвейера до середины фотоэлектрического устройства</target>
+      </trans-unit>
+      <trans-unit id="cal__gripperDownTime" datatype="html">
+        <source>Laufzeit und Wartezeit für die Bewegung des Sauggreifers</source>
+        <target>Время работы и время ожидания для перемещения присоски</target>
+      </trans-unit>
+      <trans-unit id="cal__vacuumReleaseTime" datatype="html">
+        <source>Wartezeit des Sauggreifers zur Freigabe des Werkstücks</source>
+        <target>Время ожидания присоски для освобождения детали</target>
+      </trans-unit>
+      <trans-unit id="cal__colorRedSetpoint" datatype="html">
+        <source>Richtwert des Farbsensors für rote Werkstücke</source>
+        <target>Контрольное значение датчика цвета для красных деталей</target>
+      </trans-unit>
+      <trans-unit id="cal__colorBlueSetpoint" datatype="html">
+        <source>Richtwert des Farbsensors für blaue Werkstücke</source>
+        <target>Контрольное значение датчика цвета для синих деталей</target>
+      </trans-unit>
+      <trans-unit id="cal__colorWhiteSetpoint" datatype="html">
+        <source>Richtwert des Farbsensors für weiße Werkstücke</source>
+        <target>Контрольное значение датчика цвета для белых деталей</target>
+      </trans-unit>
+      <trans-unit id="cal__homePosX" datatype="html">
+        <source>X-Koordinate für Kameraausgangsposition</source>
+        <target>X-координата исходного положения камеры</target>
+      </trans-unit>
+      <trans-unit id="cal__homePosY" datatype="html">
+        <source>Y-Koordinate für Kameraausgangsposition</source>
+        <target>Y-координата исходного положения камеры</target>
+      </trans-unit>
+      <trans-unit id="cal__customPosX" datatype="html">
+        <source>X-Koordinate für Kameraposition mit Blick Richtung Hochregallager</source>
+        <target>X-координата положения камеры с направлением обзора на многоярусный склад</target>
+      </trans-unit>
+      <trans-unit id="cal__customPosY" datatype="html">
+        <source>Y-Koordinate für Kameraposition mit Blick Richtung Hochregallager</source>
+        <target>Y-координата положения камеры с направлением обзора на многоярусный склад</target>
+      </trans-unit>
+      <trans-unit id="cal__shortProcessWaitTime" datatype="html">
+        <source>Wartezeit bis zur Abschlussmeldung für die zentrale Steuerung</source>
+        <target>Время ожидания сообщения о завершении работы центрального пульта управления</target>
+      </trans-unit>
+      <trans-unit id="cal__colorRange" datatype="html">
+        <source>Wertebereich des Farbsensors für die Farberkennung</source>
+        <target>Диапазон значений датчика цвета для определения цвета</target>
+      </trans-unit>
+      <trans-unit id="CAMERA_HOME" datatype="html">
+        <source>Kameraausgangsposition</source>
+        <target>Исходное положение камеры</target>
+      </trans-unit>
+      <trans-unit id="CAMERA_HBW" datatype="html">
+        <source>Kameraposition mit Blick Richtung Hochregallager</source>
+        <target>Положение камеры с направлением обзора на многоярусный склад</target>
+      </trans-unit>
+      <trans-unit id="Zurücksetzen auf Standardlayout" datatype="html">
+        <source>Zurücksetzen auf Standardlayout</source>
+        <target>Возврат к стандартной схеме расположения</target>
+      </trans-unit>
+      <trans-unit id="Soll die Fabrik wirklich auf das Standardlayout zurückgesetzt werden?" datatype="html">
+        <source>Soll die Fabrik wirklich auf das Standardlayout zurückgesetzt werden?</source>
+        <target>Действительно сбросить заводские настройки на стандартную схему расположения?</target>
+      </trans-unit>
+      <trans-unit id="Auch den Lagerbestand leeren?" datatype="html">
+        <source>Auch den Lagerbestand leeren?</source>
+        <target>Опустошить также запас?</target>
+      </trans-unit>
+      <trans-unit id="cal__colorValue" datatype="html">
+        <source>Aktueller Wert des Farbsensors</source>
+        <target>Текущее значение датчика цвета</target>
+      </trans-unit>
+      <trans-unit id="Erweiterte Bearbeitungsschritte aktivieren" datatype="html">
+        <source>Erweiterte Bearbeitungsschritte aktivieren</source>
+        <target>Активируйте расширенные этапы обработки</target>
+      </trans-unit>
+      <trans-unit id="Fabrik parken" datatype="html">
+        <source>Fabrik parken</source>
+        <target>Припаркуйте завод</target>
+      </trans-unit>
+      <trans-unit id="Sollen die Fabrikmodule geparkt werden?" datatype="html">
+        <source>Sollen die Fabrikmodule geparkt werden?</source>
+        <target>Нужно ли парковать заводские модули?</target>
+      </trans-unit>
+      <trans-unit id="PARK" datatype="html">
+        <source>Modul parken</source>
+        <target>Припаркуйте модуль</target>
+      </trans-unit>
+      <trans-unit id="Filter" datatype="html">
+        <source>Filter</source>
+        <target>Фильтры</target>
+      </trans-unit>
+      <trans-unit id="Transporteinstellungen" datatype="html">
+        <source>Transporteinstellungen</source>
+        <target>Настройки транспорта</target>
+      </trans-unit>
+      <trans-unit id="Ladeschwelle für FTS" datatype="html">
+        <source>Ladeschwelle für FTS</source>
+        <target>Порог зарядки для AGV</target>
+      </trans-unit>
+      <trans-unit id="Alle Nachrichten" datatype="html">
+        <source>Alle Nachrichten</source>
+        <target>Все сообщения</target>
+      </trans-unit>
+      <trans-unit id="Alle Module" datatype="html">
+        <source>Alle Module</source>
+        <target>Все модули</target>
+      </trans-unit>
+      <trans-unit id="Versions-Konflikt" datatype="html">
+        <source>Versions-Konflikt</source>
+        <target>Конфликт версий</target>
+      </trans-unit>
+      <trans-unit id="Modulversionen stimmen nicht mit der Version der zentralen Steuerung überein!" datatype="html">
+        <source>Modulversionen stimmen nicht mit der Version der zentralen Steuerung überein!</source>
+        <target>Версии модулей не совпадают с версией центрального блока управления!</target>
+      </trans-unit>
+      <trans-unit id="Für eine einwandfreie Funktion installieren Sie bitte einen einheitlichen Softwarestand. Die aktuellen Versionen finden Sie unter" datatype="html">
+        <source>Für eine einwandfreie Funktion installieren Sie bitte einen einheitlichen Softwarestand. Die aktuellen Versionen finden Sie unter</source>
+        <target>Для обеспечения правильного функционирования, пожалуйста, установите стандартную версию программного обеспечения. Актуальные версии можно найти по адресу</target>
+      </trans-unit>
+      <trans-unit id="Version der zentralen Steuerung:" datatype="html">
+        <source>Version der zentralen Steuerung:</source>
+        <target>Версия центрального блока управления:</target>
+      </trans-unit>
+      <trans-unit id="Modul" datatype="html">
+        <source>Modul</source>
+        <target>Модуль</target>
+      </trans-unit>
+      <trans-unit id="Seriennummer" datatype="html">
+        <source>Seriennummer</source>
+        <target>Серийный номер</target>
+      </trans-unit>
+      <trans-unit id="Controller" datatype="html">
+        <source>Controller</source>
+        <target>Контроллер</target>
+      </trans-unit>
+      <trans-unit id="Installiert" datatype="html">
+        <source>Installiert</source>
+        <target>Установленный</target>
+      </trans-unit>
+      <trans-unit id="Erwartete Version" datatype="html">
+        <source>Erwartete Version</source>
+        <target>Ожидаемая версия</target>
+      </trans-unit>
+      <trans-unit id="SPS" datatype="html">
+        <source>SPS</source>
+        <target>PLC (SPS)</target>
+      </trans-unit>
+      <trans-unit id="Kollisionswarnung" datatype="html">
+        <source>Kollisionswarnung</source>
+        <target>Предупреждение о столкновении</target>
+      </trans-unit>
+      <trans-unit id="Ein oder mehrere Fahrerlose Transportsysteme (FTS) sind durch Gegenstände auf der Fahrbahn am Weiterfahren blockiert." datatype="html">
+        <source>Ein oder mehrere Fahrerlose Transportsysteme (FTS) sind durch Gegenstände auf der Fahrbahn am Weiterfahren blockiert.</source>
+        <target>Одному или нескольким автоматизированным управляемым транспортным средствам (AGV) мешают объекты на проезжей части.</target>
+      </trans-unit>
+      <trans-unit id="Bitte entfernen Sie die Hindernisse um den Betrieb fortzusetzen." datatype="html">
+        <source>Bitte entfernen Sie die Hindernisse um den Betrieb fortzusetzen.</source>
+        <target>Пожалуйста, устраните препятствия, чтобы продолжить движение.</target>
+      </trans-unit>
+      <trans-unit id="FTS mit gemeldeten Hindernissen:" datatype="html">
+        <source>FTS mit gemeldeten Hindernissen:</source>
+        <target>AGV с указанными препятствиями:</target>
+      </trans-unit>
+      <trans-unit id="Letzte Position:" datatype="html">
+        <source>Letzte Position:</source>
+        <target>Последнее положение:</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

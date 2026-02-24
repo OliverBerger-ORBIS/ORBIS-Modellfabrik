@@ -1,0 +1,11 @@
+{
+  "MOD-FF22+AIQS+24V+TXT": "1.3.*",
+  "MOD-FF22+AIQS+24V": "1.3.*",
+  "MOD-FF22+DPS+24V+TXT": "1.6.*",
+  "MOD-FF22+DPS+24V": "1.6.*",
+  "FTS-FF22+": "1.1.*",
+  "MOD-FF22+DRILL+24V": "1.3.*",
+  "MOD-FF22+MILL+24V": "1.3.*",
+  "MOD-FF22+HBW+24V": "1.3.*",
+  "MOD-FF22+OVEN+24V": "1.3.*"
+}

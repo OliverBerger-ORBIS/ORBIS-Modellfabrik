@@ -9,6 +9,8 @@
 
 **APS-CCU** ist das Herz der APS Modellfabrik - die zentrale Steuerungseinheit.
 
+**Quellcode (Ein-Repo-Ansatz):** Die vollständige 24V-Dev-Quelle liegt in `integrations/APS-CCU/` – central-control, common, nodeRed, mosquitto, frontend, scripts. Build/Deploy: `cd integrations/APS-CCU && npm run docker:build` bzw. `npm run docker:deploy`. Details: [ccu-modification-and-deployment-analysis](../../07-analysis/ccu-modification-and-deployment-analysis.md).
+
 ## 🔍 Komponenten-Details
 
 ### **Hardware**

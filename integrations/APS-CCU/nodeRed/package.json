@@ -1,0 +1,21 @@
+{
+    "name": "node-red-docker",
+    "version": "3.0.2",
+    "description": "Low-code programming for event-driven applications",
+    "license": "Apache-2.0",
+    "private": true,
+    "scripts": {
+        "start": "node $NODE_OPTIONS node_modules/node-red/red.js $FLOWS"
+    },
+    "dependencies": {
+        "node-red": "~3.0.2",
+        "node-red-contrib-iiot-opcua": "~4.1.2",
+        "node-red-contrib-msg-resend": "~1.0.0",
+        "node-red-contrib-opcua": "~0.2.313",
+        "node-red-dashboard": "~3.5.0",
+        "node-red-node-data-generator": "~1.0.1"
+    },
+    "engines": {
+        "node": ">=12"
+    }
+}

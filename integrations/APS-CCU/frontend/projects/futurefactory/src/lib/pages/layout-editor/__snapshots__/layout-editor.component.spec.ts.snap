@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FutureFactoryLayoutEditorComponent should render the component 1`] = `
+<ff-layout-editor
+  htmlStrings={[Function Object]}
+>
+  <ff-missing-controller-banner
+    style="flex-direction: column;"
+  >
+    <div
+      class="missing-controller-banner"
+    >
+      <h1>
+        Controller for the Agile Production Simulation is not connected
+      </h1>
+    </div>
+  </ff-missing-controller-banner>
+</ff-layout-editor>
+`;

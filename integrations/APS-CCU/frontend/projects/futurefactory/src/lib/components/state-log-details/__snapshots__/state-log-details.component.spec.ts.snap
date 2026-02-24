@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StateLogDetailsComponent should render the component 1`] = `
+<ff-state-log-details
+  StateLogType={[Function Object]}
+  displayColumns={[Function Array]}
+  errorColumns={[Function Array]}
+  ftsInfo$={[Function Observable]}
+  moduleInfo$={[Function Observable]}
+  pairingState$={[Function Observable]}
+  stateLog="null"
+  stateService={[Function StatesService]}
+>
+</ff-state-log-details>
+`;

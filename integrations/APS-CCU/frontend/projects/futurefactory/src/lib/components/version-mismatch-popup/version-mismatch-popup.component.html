@@ -1,0 +1,63 @@
+<h2 mat-dialog-title>
+  <mat-icon style="vertical-align: baseline">report_problem</mat-icon>
+  {{ 'Versions-Konflikt' | translate }}
+</h2>
+<div mat-dialog-content *ngIf="data.message">
+  <p>{{ 'Modulversionen stimmen nicht mit der Version der zentralen Steuerung überein!' | translate }}</p>
+  <p>
+    {{ 'Für eine einwandfreie Funktion installieren Sie bitte einen einheitlichen Softwarestand. Die aktuellen Versionen finden Sie unter' | translate }}
+    <br>
+    <a href="https://www.fischertechnik.de/agile-production-simulation/update-blog">https://www.fischertechnik.de/agile-production-simulation/update-blog</a>
+  </p>
+  <p><strong>{{ 'Version der zentralen Steuerung:' | translate }} {{ data.message.ccuVersion }}</strong></p>
+  <table mat-table [dataSource]="data.message.mismatchedModules">
+
+    <!-- Module Type Column -->
+    <ng-container matColumnDef="moduleType">
+      <th mat-header-cell *matHeaderCellDef>{{ 'Modul' | translate }}</th>
+      <td mat-cell *matCellDef="let module">
+        {{ 'Produktionsschritt.' + (module.moduleType ?? module.deviceType) | translate }}
+      </td>
+    </ng-container>
+
+    <!-- Serial Number Column -->
+    <ng-container matColumnDef="serialNumber">
+      <th mat-header-cell *matHeaderCellDef>{{ 'Seriennummer' | translate }}</th>
+      <td mat-cell *matCellDef="let module">
+        <strong>{{ module.serialNumber }}</strong>
+      </td>
+    </ng-container>
+
+    <!-- Description Column -->
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef>{{ 'Controller' | translate }}</th>
+      <td mat-cell *matCellDef="let module">
+        <span *ngIf="module.is24V">24V</span> <!-- 24V Module -->
+        <span *ngIf="module.isTXT">TXT</span> <!-- TXT Controller -->
+        <span *ngIf="!module.isTXT">{{ 'SPS' | translate }}</span> <!-- SPS if not TXT Controller -->
+      </td>
+    </ng-container>
+
+    <!-- Installed Version Column -->
+    <ng-container matColumnDef="version">
+      <th mat-header-cell *matHeaderCellDef>{{ 'Installiert' | translate }}</th>
+      <td mat-cell *matCellDef="let module">
+        {{ module.version }}
+      </td>
+    </ng-container>
+
+    <!-- Required Version Column -->
+    <ng-container matColumnDef="requiredVersion">
+      <th mat-header-cell *matHeaderCellDef>{{ 'Erwartete Version' | translate }}</th>
+      <td mat-cell *matCellDef="let module">
+        {{ module.requiredVersion }}
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
+<div mat-dialog-actions>
+  <button mat-flat-button mat-dialog-close cdkFocusInitial color="warn">{{ 'OK' | translate }}</button>
+</div>

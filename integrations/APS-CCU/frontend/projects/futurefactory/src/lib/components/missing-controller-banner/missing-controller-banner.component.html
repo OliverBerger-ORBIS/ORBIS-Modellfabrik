@@ -1,0 +1,6 @@
+<ng-container [ngSwitch]="state.hasController$ | async">
+  <ng-content *ngSwitchCase="true"></ng-content>
+  <div *ngSwitchDefault class="missing-controller-banner">
+    <h1>{{ "Controller for the Agile Production Simulation is not connected" | translate }}</h1>
+  </div>
+</ng-container>

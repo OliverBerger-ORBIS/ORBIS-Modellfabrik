@@ -1,6 +1,18 @@
-# Integrations – TXT Controller, Arduino, NodeRED
+# Integrations – APS-CCU, TXT Controller, Arduino, NodeRED
 
-Dieses Verzeichnis enthält Hardware-Integrationen für das OSF (ORBIS SmartFactory) Projekt.
+Dieses Verzeichnis enthält Hardware- und Software-Integrationen für das OSF (ORBIS SmartFactory) Projekt.
+
+---
+
+## APS-CCU (Central Control Unit)
+
+| Ort | Zweck | Inhalt |
+|-----|-------|--------|
+| `integrations/APS-CCU/` | **Vollständige 24V-Dev-Quelle** – CCU-Backend, Node-RED, Mosquitto, Frontend | central-control/, common/, nodeRed/, mosquitto/, frontend/, scripts/, DEPLOYMENT.md |
+
+**Workflow:** Änderungen direkt im Repo. Build: `cd integrations/APS-CCU && npm run docker:build`. Deploy: `npm run docker:deploy -- ff22@192.168.0.100`. Hybrid-Development: `cd central-control && npm start` (CCU lokal, MQTT auf Pi).
+
+**Doku:** [APS-CCU Integration](../docs/06-integrations/APS-CCU/README.md) | [CCU-Analyse & Deployment](../docs/07-analysis/ccu-modification-and-deployment-analysis.md)
 
 ---
 

@@ -1,0 +1,86 @@
+<ng-template #listoption let-order="order">
+  <div
+    class="production-orders__list__item__content"
+    [title]="'ID: ' + order.orderId">
+    <span>{{ 'Auftrag' | translate }}</span>
+    <span>{{ order.timestamp | date : "hh:mm" }}</span>
+    <span>{{ order.type }}</span>
+    <span class="icon_column">
+      <mat-icon
+        class="step-state"
+        [attr.aria-label]="'Status.' + order.state | translate"
+        [title]="'Status.' + order.state | translate">
+        {{ order.state | toIcon:stateIcons }}
+      </mat-icon>
+    </span>
+    <span>
+      {{ order.startedAt | date : "short" }}
+      <button
+        *ngIf="order.state === 'ENQUEUED' && canRemove"
+        mat-icon-button
+        (click)="state.deleteOrder($event, order.orderId)">
+        <mat-icon
+          [attr.aria-label]="'Abbrechen' | translate"
+          [title]="'Abbrechen' | translate">
+          delete
+        </mat-icon>
+      </button>
+    </span>
+  </div>
+</ng-template>
+
+<mat-card>
+  <mat-card-title class="mb-0">
+    <h2 class="mb-0" *ngIf="(activeOrders$ | async)!.length > 0">
+      {{ 'Laufende Aufträge' | translate }}
+    </h2>
+    <h2 class="mb-0" *ngIf="(activeOrders$ | async)?.length === 0">
+      {{ "Keine laufenden Aufträge verfügbar" | translate }}
+    </h2>
+  </mat-card-title>
+  <mat-card-content>
+    <div class="production-orders__list"
+      *ngIf="(activeOrders$ | async)!.length > 0">
+      <mat-selection-list
+        [multiple]="false"
+        (selectionChange)="selectOrder($event)">
+        <mat-list-option
+          *ngFor="let order of activeOrders$ | async; let first = first"
+          color="accent"
+          class="production-orders__list__item"
+          [selected]="state.isOrderSelected(order)"
+          [value]="order">
+          <ng-container *ngTemplateOutlet="listoption; context: { order: order }"></ng-container>
+        </mat-list-option>
+      </mat-selection-list>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card *ngIf="withCompleted">
+  <mat-card-title class="mb-0">
+    <h2 class="mb-0" *ngIf="(completedOrders$ | async)!.length > 0">
+      {{ 'Abgeschlossene Aufträge' | translate }}
+    </h2>
+    <h2 class="mb-0" *ngIf="(completedOrders$ | async)!.length === 0">
+      {{ "Keine abgeschlossenen Aufträge verfügbar" | translate }}
+    </h2>
+  </mat-card-title>
+  <mat-card-content>
+    <div class="production-orders__list"
+      *ngIf="(completedOrders$ | async)!.length > 0">
+      <mat-selection-list
+        [multiple]="false"
+        (selectionChange)="selectOrder($event)">
+        <mat-list-option
+          *ngFor="let order of completedOrders$ | async; let first = first"
+          color="accent"
+          class="production-orders__list__item"
+          [selected]="state.isOrderSelected(order)"
+          [value]="order">
+          <ng-container *ngTemplateOutlet="listoption; context: { order: order }"></ng-container>
+        </mat-list-option>
+      </mat-selection-list>
+    </div>
+  </mat-card-content>
+</mat-card>

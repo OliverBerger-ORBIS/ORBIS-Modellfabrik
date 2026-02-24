@@ -1,0 +1,66 @@
+:host {
+  display: block;
+  padding: 10px;
+}
+
+h3 {
+  margin: 16px 0 0;
+}
+
+.mat-cell, .mat-header-cell {
+  padding: 10px;
+}
+
+.mat-icon {
+  vertical-align: middle;
+  line-height: 24px;
+}
+.calibration-button,
+.delete-module-button {
+  margin-left: 10px;
+  display: inline-block;
+}
+
+.mat-column-icon {
+  width: 4rem;
+
+  img {
+    height: 3rem;
+  }
+}
+
+.mat-row {
+  &.has-details .mat-cell {
+    cursor: pointer;
+  }
+
+  &.has-details .mat-cell.no-pointer {
+    cursor: default;
+  }
+
+  &:hover {
+    .mat-cell {
+      background: var(--primary-lighter-color);
+    }
+  }
+}
+
+@media only screen and (max-width:640px) {
+  .mat-header-row {
+    display: none;
+  }
+  .mat-row {
+    .mat-cell {
+      &.mat-column-name {
+        max-width: calc(100vw - 4rem);
+      }
+      &.mat-column-serialnumber {
+        order: 3;
+      }
+    }
+  }
+}
+
+.mat-column-paired {
+  min-width: 250px;
+}

@@ -1,0 +1,16 @@
+:host {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.production-order-steps {
+  &__item .mat-list-item-content {
+    display: flex;
+    justify-content: space-between;
+
+    > span {
+      flex: 1;
+    }
+  }
+}

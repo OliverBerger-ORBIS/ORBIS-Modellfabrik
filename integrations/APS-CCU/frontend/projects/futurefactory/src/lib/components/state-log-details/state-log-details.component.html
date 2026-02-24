@@ -1,0 +1,89 @@
+<ng-template #errorTable let-errors="errors">
+  <table mat-table [dataSource]="filterEmptyErrors(errors)" *ngIf="hasErrors(errors)">
+    <ng-container matColumnDef="timestamp">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'Fehlerzeitpunkt' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.timestamp | date: "medium" }}
+      </td>
+    </ng-container>
+    <ng-container *ngFor="let column of displayColumns" [matColumnDef]="column">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ column | translate }}
+      </th>
+      <td mat-cell *matCellDef="let row">
+        {{ row[column] | translate }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="errorReferences">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'errorReferences' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <ng-container *ngIf="!row.errorReferences">
+          <p class="ref-output">N/A</p>
+        </ng-container>
+        <ng-container *ngFor="let ref of row.errorReferences">
+          <ng-container *ngIf="ref.referenceKey && ref.referenceValue">
+            <p class="ref-output">{{ ref.referenceKey | translate }} - {{ ref.referenceValue | translate }}</p>
+          </ng-container>
+          <ng-container *ngIf="!ref.referenceKey || !ref.referenceValue">
+            <p class="ref-output" *ngFor="let kv of ref | keyvalue">{{ kv.key }} - {{ kv.value }}</p>
+          </ng-container>
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="errorColumns"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" [attr.colspan]="errorColumns.length">
+        {{ 'Keine Daten verfügbar' | translate }}
+      </td>
+    </tr>
+    <tr mat-row *matRowDef="let row; columns: errorColumns"></tr>
+  </table>
+</ng-template>
+
+<ng-template #connectionStrings let-moduleInfo="moduleInfo">
+  <p>{{ (moduleInfo.connected ? 'Verbunden' : 'Nicht verbunden') | translate }} - {{ 'AvailableState.' + moduleInfo.available | translate }}</p>
+  <p>{{ 'IP: {{ip}} - Version: {{version}}' | translate: {ip: moduleInfo.ip ?? 'N/A', version: moduleInfo.version ?? 'N/A'} }}</p>
+</ng-template>
+
+<ng-template #connectionState let-state="state">
+  <section *ngIf="moduleInfo$ | async as moduleInfo">
+    <h3>{{ 'Verbindungsstatus vom {{timestamp}}' | translate: {timestamp: state?.timestamp | date: 'medium' } }}</h3>
+    <p>{{ 'Produktionsschritt.' + (moduleInfo.subType ?? moduleInfo.type) | translate }} - {{ moduleInfo.serialNumber }}</p>
+    <ng-container *ngTemplateOutlet="connectionStrings; context: { moduleInfo: moduleInfo }"></ng-container>
+  </section>
+</ng-template>
+
+<ng-template #ftsState let-state="state">
+  <section *ngIf="ftsInfo$ | async as moduleInfo">
+    <h3>{{ 'Status für FTS [{{serialNumber}}] vom {{timestamp}}' | translate: {serialNumber: moduleInfo.serialNumber, timestamp: state?.timestamp | date: 'medium' } }}</h3>
+    <ng-container *ngTemplateOutlet="connectionStrings; context: { moduleInfo: moduleInfo }"></ng-container>
+    <p>{{ 'Letzter Knoten / letztes Module {{lastNodeId}}' | translate: {lastNodeId: moduleInfo.lastNodeId} }}</p>
+    <p>{{ 'Batteriestand {{percentage}}%' | translate: {percentage: state?.batteryState?.percentage} }}</p>
+  </section>
+  <ng-container *ngTemplateOutlet="errorTable; context: { errors: state.errors }"></ng-container>
+</ng-template>
+
+<ng-template #moduleState let-state="state">
+  <section *ngIf="moduleInfo$ | async as moduleInfo">
+    <h3>{{ 'Status für Module [{{serialNumber}}] vom {{timestamp}}' | translate: {serialNumber: moduleInfo.serialNumber, timestamp: state?.timestamp | date: 'medium' } }}</h3>
+    <ng-container *ngTemplateOutlet="connectionStrings; context: { moduleInfo: moduleInfo }"></ng-container>
+  </section>
+  <ng-container *ngTemplateOutlet="errorTable; context: { errors: state.errors }"></ng-container>
+</ng-template>
+
+<ng-container [ngSwitch]="stateLog?.type">
+  <ng-container *ngSwitchCase="StateLogType.CONNECTION">
+    <ng-container *ngTemplateOutlet="connectionState; context: { state: stateLog?.state }"></ng-container>
+  </ng-container>
+  <ng-container *ngSwitchCase="StateLogType.FTS">
+    <ng-container *ngTemplateOutlet="ftsState; context: { state: stateLog?.state }"></ng-container>
+  </ng-container>
+  <ng-container *ngSwitchCase="StateLogType.MODULE">
+    <ng-container *ngTemplateOutlet="moduleState; context: { state: stateLog?.state }"></ng-container>
+  </ng-container>
+</ng-container>

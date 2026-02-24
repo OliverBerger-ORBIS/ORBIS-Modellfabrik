@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FutureFactoryFlowEditorComponent should render the component 1`] = `
+<ff-flow-editor
+  Workpiece={[Function Object]}
+  availableModulesId={[Function String]}
+  availableTypes$={[Function Observable]}
+  blueSteps={[Function Array]}
+  destroyed$={[Function ReplaySubject]}
+  enterPredicate__bound={[Function Function]}
+  extendedFlows="false"
+  hasRunningOrders$={[Function Observable]}
+  layout={[Function FactoryLayoutService]}
+  modified="false"
+  mqtt={[Function TypedMqttService]}
+  notification={[Function MatSnackBar]}
+  orderStates={[Function OrderStatesService]}
+  productionFlows={[Function Object]}
+  productionFlowsService={[Function ProductionFlowsService]}
+  redSteps={[Function Array]}
+  selectableTypes$={[Function Observable]}
+  translate={[Function TranslateService]}
+  whiteSteps={[Function Array]}
+>
+  <ff-missing-controller-banner>
+    <div
+      class="missing-controller-banner"
+    >
+      <h1>
+        Controller for the Agile Production Simulation is not connected
+      </h1>
+    </div>
+  </ff-missing-controller-banner>
+</ff-flow-editor>
+`;

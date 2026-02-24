@@ -1,0 +1,195 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FutureFactoryOrderListComponent should render the component 1`] = `
+<ng-component
+  activatedRoute={[Function ActivatedRoute]}
+  activeOrders$={[Function Observable]}
+  activeStepId$={[Function Observable]}
+  destroyed$={[Function Subject]}
+  mqttService={[Function TypedMqttService]}
+  orderStatesService={[Function OrderStatesService]}
+  paramOrderId$={[Function AnonymousSubject]}
+  router={[Function Router]}
+  selectedOrder$={[Function Observable]}
+  selectionList="undefined"
+>
+  <div
+    class="production-orders"
+    id="production-orders"
+  >
+    <div
+      class="wideflex"
+    >
+      <div
+        class="col"
+      >
+        <ff-order-list>
+          <mat-card
+            class="mat-card mat-focus-indicator _mat-animation-noopable"
+          >
+            <mat-card-title
+              class="mat-card-title mb-0"
+            >
+              <h2
+                class="mb-0"
+              >
+                 Keine laufenden Aufträge verfügbar 
+              </h2>
+            </mat-card-title>
+            <mat-card-content
+              class="mat-card-content"
+            >
+            </mat-card-content>
+          </mat-card>
+        </ff-order-list>
+      </div>
+      <div
+        class="col"
+      >
+        <mat-card
+          class="mat-card mat-focus-indicator _mat-animation-noopable"
+        >
+          <mat-card-title
+            class="mat-card-title"
+          >
+            <h2
+              class="header"
+            >
+               Aktueller Fertigungsschritt 
+            </h2>
+          </mat-card-title>
+          <mat-card-content
+            class="mat-card-content"
+          >
+            <ff-factory-layout>
+              <div
+                id="layout-configuration"
+              >
+                <button
+                  aria-label="Vergrößern"
+                  class="mat-focus-indicator mat-tooltip-trigger mat-raised-button mat-button-base _mat-animation-noopable"
+                  mat-raised-button=""
+                >
+                  <span
+                    class="mat-button-wrapper"
+                  >
+                    <mat-icon
+                      aria-hidden="true"
+                      class="mat-icon notranslate material-icons mat-icon-no-color"
+                      data-mat-icon-type="font"
+                      role="img"
+                    >
+                      zoom_in
+                    </mat-icon>
+                  </span>
+                  <span
+                    class="mat-ripple mat-button-ripple"
+                    matripple=""
+                  />
+                  <span
+                    class="mat-button-focus-overlay"
+                  />
+                </button>
+                <button
+                  aria-label="Verkleinern"
+                  class="mat-focus-indicator mat-tooltip-trigger mat-raised-button mat-button-base _mat-animation-noopable"
+                  mat-raised-button=""
+                >
+                  <span
+                    class="mat-button-wrapper"
+                  >
+                    <mat-icon
+                      aria-hidden="true"
+                      class="mat-icon notranslate material-icons mat-icon-no-color"
+                      data-mat-icon-type="font"
+                      role="img"
+                    >
+                      zoom_out
+                    </mat-icon>
+                  </span>
+                  <span
+                    class="mat-ripple mat-button-ripple"
+                    matripple=""
+                  />
+                  <span
+                    class="mat-button-focus-overlay"
+                  />
+                </button>
+                <mat-drawer-container
+                  class="mat-drawer-container example-container mat-drawer-container-explicit-backdrop"
+                  hasbackdrop="true"
+                >
+                  <div
+                    class="mat-drawer-backdrop"
+                  />
+                  <div
+                    aria-hidden="true"
+                    class="cdk-visually-hidden cdk-focus-trap-anchor"
+                  />
+                  <mat-drawer
+                    class="mat-drawer ng-trigger ng-trigger-transform mat-drawer-over"
+                    mode="over"
+                    style="box-shadow:none;visibility:hidden;0:box-shadow;1:visibility;"
+                    tabindex="-1"
+                  >
+                    <div
+                      cdkscrollable=""
+                      class="mat-drawer-inner-container"
+                    >
+                    </div>
+                  </mat-drawer>
+                  <div
+                    aria-hidden="true"
+                    class="cdk-visually-hidden cdk-focus-trap-anchor"
+                  />
+                  <mat-drawer-content
+                    class="mat-drawer-content"
+                  >
+                    <div
+                      id="grid-zoom"
+                      style="transform: scale(0);"
+                    >
+                      <gridster
+                        class="readonly gridSize"
+                        style="padding: 10px 10px 10px 10px; width: 640px; height: 640px;"
+                      >
+                        <div
+                          class="gridster-column"
+                          style="transform: translateX(0px); width: 200px; height: 620px;"
+                        />
+                        <div
+                          class="gridster-column"
+                          style="transform: translateX(210px); width: 200px; height: 620px;"
+                        />
+                        <div
+                          class="gridster-column"
+                          style="transform: translateX(420px); width: 200px; height: 620px;"
+                        />
+                        <div
+                          class="gridster-row"
+                          style="transform: translateY(0px); width: 620px; height: 200px;"
+                        />
+                        <div
+                          class="gridster-row"
+                          style="transform: translateY(210px); width: 620px; height: 200px;"
+                        />
+                        <div
+                          class="gridster-row"
+                          style="transform: translateY(420px); width: 620px; height: 200px;"
+                        />
+                        <gridster-preview
+                          class="gridster-preview"
+                        />
+                      </gridster>
+                    </div>
+                  </mat-drawer-content>
+                </mat-drawer-container>
+              </div>
+            </ff-factory-layout>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</ng-component>
+`;

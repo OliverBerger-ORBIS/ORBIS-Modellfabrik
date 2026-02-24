@@ -1,0 +1,2 @@
+# Exclude integrations from NX project graph (eigenes Build-Setup)
+/integrations/

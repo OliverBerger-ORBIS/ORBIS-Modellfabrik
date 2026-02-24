@@ -1,0 +1,73 @@
+<ff-missing-controller-banner>
+  <section id="module-details" *ngIf="moduleData$ | async as moduleData">
+  <h1>{{ 'Moduleinstellungen' | translate }} - {{'Produktionsschritt.' + moduleData.subType | translate}} (ID: {{moduleData.serialNumber}})</h1>
+  <div class="wideflex">
+    <section class="left">
+    <section class="image">
+      <img [src]="'assets/images/ic_ft_' + moduleData.subType?.toLowerCase() + '.svg'"
+           [attr.alt]="'Produktionsschritt.' + moduleData.subType | translate">
+    </section>
+    <section class="module_settings">
+      <h3>{{ 'Modulwerte' | translate }}</h3>
+      <dl *ngIf="moduleData.productionDuration !== undefined">
+        <dt>{{ 'Fertigungsdauer' | translate }}</dt>
+        <dd>
+          <input type="number"
+                 [value]="moduleData.productionDuration"
+                 [disabled]="!durationEditEnabled.checked"
+                 #durationInput>
+          &nbsp;{{ 'Sekunden' | translate }}&nbsp;
+          <mat-button-toggle #durationEditEnabled
+                             (click)="clickEditDuration()">
+            <mat-icon>edit</mat-icon>
+          </mat-button-toggle>
+        </dd>
+      </dl>
+      <dl>
+        <dt>{{ 'Verbunden' | translate }}</dt>
+        <dd>{{moduleData.connected}}</dd>
+      </dl>
+      <dl>
+        <dt>{{ 'Blockiert durch Fehler' | translate }}</dt>
+        <dd>
+          {{moduleData.connected && moduleData.available === BLOCKED_STATE}}
+          <button mat-icon-button>
+            <mat-icon>more</mat-icon>
+          </button>
+        </dd>
+      </dl>
+      <dl>
+        <dt>{{ 'Kalibrierung' | translate }}</dt>
+        <dd>
+          {{moduleData.calibrating ?? false}}
+          <a class="calibration-button" mat-stroked-button *ngIf="moduleData.hasCalibration" [routerLink]="[CALIBRATION_ROUTE]">
+            <mat-icon [title]="'Kalibrieren' | translate">
+              tune
+            </mat-icon>
+            {{'Kalibrieren' | translate}}
+          </a>
+        </dd>
+      </dl>
+    </section>
+    </section>
+    <section class="location">
+      <ff-factory-layout [startZoom]="0.6" [editable]="false" [highlightedId]="moduleId"></ff-factory-layout>
+    </section>
+  </div>
+    <section class="order_info">
+      <h3>{{ 'Aktueller Auftrag' | translate }}</h3>
+      <dl *ngIf="orderInfo$ | async as orderInfo">
+        <dt>{{ 'Bestellung' | translate }}</dt>
+        <dd>
+          <a *ngIf="orderInfo.orderId"
+            [routerLink]="[routeToRoot$ | async, ORDERS_ROUTE, orderInfo.orderId]">
+            <span class="workpiece">{{orderInfo.workpiece}}</span>&nbsp;
+            <span class="orderId">{{orderInfo.orderId}}</span>
+          </a>
+        </dd>
+        <dt>{{ 'Start der Bearbeitung' | translate }}</dt>
+        <dd>{{orderInfo.startedAt ?? ('Unbekannt' | translate)}}</dd>
+      </dl>
+    </section>
+  </section>
+</ff-missing-controller-banner>

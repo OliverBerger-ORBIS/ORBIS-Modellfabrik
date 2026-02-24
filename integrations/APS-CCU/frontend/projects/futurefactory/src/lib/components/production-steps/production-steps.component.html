@@ -1,0 +1,28 @@
+<mat-list>
+  <mat-list-item class="production-order-steps__item" *ngFor="let step of order?.productionSteps"
+                 [class.mat-list-single-selected-option]="step.state === 'IN_PROGRESS'">
+    <span>
+      <img *ngIf="step.type === 'MANUFACTURE'" [src]="step.moduleType | toIcon:MODULE_ICON_PATHS"
+           [attr.alt]="'Produktionsschritt.' + step.moduleType | translate" style="vertical-align: middle; height: 24px">
+      <img *ngIf="step.type === 'NAVIGATION'" [src]="'FTS' | toIcon:MODULE_ICON_PATHS"
+           [attr.alt]="'Produktionsschritt.FTS' | translate" style="vertical-align: middle; height: 24px">
+    </span>
+    <span>
+      <mat-icon
+        class="step-state"
+        [attr.aria-label]="'Status.' + step.state | translate"
+        [title]="'Status.' + step.state | translate">
+        {{ step.state | toIcon:stateIcons }}
+      </mat-icon>
+    </span>
+    <span *ngIf="step.type === 'MANUFACTURE'">{{'Produktionsschritt.' + step.moduleType | translate}}
+      : {{ 'Befehl.' + step.command | translate }}</span>
+    <span *ngIf="step.type === 'NAVIGATION'">{{'Produktionsschritt.FTS' | translate}}
+      <mat-icon style="vertical-align: middle">chevron_right</mat-icon>
+      <img style="vertical-align: middle; height: 24px"
+           [src]="step.target | toIcon:MODULE_ICON_PATHS"
+           [attr.alt]="'Produktionsschritt.' + step.target | translate">
+      {{'Produktionsschritt.' + step.target | translate}}
+    </span>
+  </mat-list-item>
+</mat-list>

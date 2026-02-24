@@ -1,0 +1,29 @@
+# Build files
+*/dist/
+
+*.md
+
+# Dockerfiles
+Dockerfile
+Dockerfile.dev
+
+# Dependencies
+node_modules/
+*/node_modules
+*/common-tests
+*/coverage
+*/test-results
+
+# VS Code
+.vscode/
+
+# IDEA
+.idea/
+*/.idea
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# logs
+logs

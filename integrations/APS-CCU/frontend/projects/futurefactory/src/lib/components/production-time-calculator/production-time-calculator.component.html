@@ -1,0 +1,20 @@
+<h2>
+  {{ "Start" | translate }}:&nbsp;
+  {{ state.startTime$ | async | date : "medium" | fallback : "Unbekannt" | translate }}
+</h2>
+<h2>
+  {{ "Ende" | translate }}:&nbsp;
+  {{ state.endTime$ | async | date : "medium" | fallback : "Unbekannt" | translate }}
+</h2>
+<h2>
+  {{ "Gesamtdauer" | translate }}:&nbsp;
+  {{ state.duration$ | async | toSeconds | fallback : "Unbekannt" | translate }}
+</h2>
+<h2>
+  {{ "Produktionsdauer" | translate }}:&nbsp;
+  {{ state.calculatedProductionTime$ | async | toSeconds | fallback : "Unbekannt" | translate }}
+</h2>
+<h2>
+  {{ "Transportdauer" | translate }}:&nbsp;
+  {{ state.calculatedTransportTime$ | async | toSeconds | fallback : "Unbekannt" | translate }}
+</h2>

@@ -1,0 +1,10 @@
+:host {
+  position: fixed;
+  background: var(--text-primary-color);
+  z-index: 1000;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 25dvw;
+  overflow-y: auto;
+}

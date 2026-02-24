@@ -1,0 +1,72 @@
+<div id="production-orders" class="production-orders">
+  <div class="wideflex">
+    <div class="col">
+      <ff-order-list
+        [selectedOrder]="selectedOrder$ | async"
+        (orderSelect)="selectOrder($event)">
+      </ff-order-list>
+      <mat-card id="production-order-steps"
+        class="production-order-steps"
+        *ngIf="selectedOrder$ | async as selectedOrder">
+        <mat-card-title>
+          <h2 class="header">{{ 'Fertigungsschritte' | translate }}</h2>
+        </mat-card-title>
+        <mat-card-content>
+          <ff-production-steps [order]="selectedOrder"></ff-production-steps>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col">
+      <mat-card>
+        <mat-card-title>
+          <h2 class="header">
+            {{ 'Aktueller Fertigungsschritt' | translate }}
+          </h2>
+        </mat-card-title>
+        <mat-card-content>
+          <ff-factory-layout
+            [startZoom]="0.6"
+            [editable]="false"
+            [highlightedId]="activeStepId$ | async">
+          </ff-factory-layout>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="production-order-details"
+        *ngIf="selectedOrder$ | async as selectedOrder">
+        <mat-card-title>
+          <h2 class="header">{{ 'Auftragsinformationen' | translate }}</h2>
+        </mat-card-title>
+        <mat-card-content>
+          <dl>
+            <dt>{{ 'Auftragsnummer' | translate }}</dt>
+            <dd>{{selectedOrder.orderId}}</dd>
+          </dl>
+          <dl>
+            <dt>{{ 'Auftragsstatus' | translate }}</dt>
+            <dd>{{ 'Status.' + selectedOrder.state | translate }}</dd>
+          </dl>
+          <dl *ngIf="selectedOrder.timestamp">
+            <dt>{{ 'Bestelldatum' | translate }}</dt>
+            <dd>{{selectedOrder.timestamp | date:'short'}}</dd>
+          </dl>
+          <dl *ngIf="selectedOrder.receivedAt">
+            <dt>{{ 'Auftragseingang' | translate }}</dt>
+            <dd>{{selectedOrder.receivedAt | date:'short'}}</dd>
+          </dl>
+          <dl *ngIf="selectedOrder.startedAt">
+            <dt>{{ 'Start der Bearbeitung' | translate }}</dt>
+            <dd>{{selectedOrder.startedAt | date:'short'}}</dd>
+          </dl>
+          <dl *ngIf="selectedOrder.stoppedAt">
+            <dt>{{ 'Ende der Bearbeitung' | translate }}</dt>
+            <dd>{{selectedOrder.stoppedAt | date:'short'}}</dd>
+          </dl>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+
+

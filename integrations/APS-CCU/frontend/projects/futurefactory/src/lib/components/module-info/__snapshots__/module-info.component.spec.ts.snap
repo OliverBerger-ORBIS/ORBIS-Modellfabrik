@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ModuleInfoComponent should render the component 1`] = `
+<ff-module-info
+  moduleInfo$={[Function Observable]}
+  pairedFts$={[Function Observable]}
+  pairedModule$={[Function Observable]}
+  pairingState$={[Function Observable]}
+  stateLog="null"
+  stateService={[Function StatesService]}
+>
+</ff-module-info>
+`;

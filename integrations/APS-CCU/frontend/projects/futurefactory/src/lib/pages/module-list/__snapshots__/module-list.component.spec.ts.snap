@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FutureFactoryModuleListComponent should render the component 1`] = `
+<ff-module-list
+  CALIBRATION_ROUTE={[Function String]}
+  DeviceType={[Function Object]}
+  MODULE_ICON_PATHS={[Function Object]}
+  activatedRoute={[Function ActivatedRoute]}
+  dataSource={[Function ModuleListDataSource]}
+  deletionMap={[Function Map]}
+  displayedColumns={[Function Array]}
+  factoryLayoutService={[Function FactoryLayoutService]}
+  mqttService={[Function TypedMqttService]}
+  router={[Function Router]}
+  sort={[Function MatSort]}
+  translate={[Function TranslateService]}
+>
+  <ff-missing-controller-banner>
+    <div
+      class="missing-controller-banner"
+    >
+      <h1>
+        Controller for the Agile Production Simulation is not connected
+      </h1>
+    </div>
+  </ff-missing-controller-banner>
+</ff-module-list>
+`;

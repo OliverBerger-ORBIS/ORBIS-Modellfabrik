@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LanguageSelectorComponent should render the language selector 1`] = `
+<ff-language-selector
+  i18n={[Function I18nService]}
+  locale={[Function String]}
+  locales={[Function Array]}
+  router={[Function Router]}
+  selectedLocale={[Function String]}
+  showLanguageSelector={[Function Boolean]}
+>
+  <button
+    aria-haspopup="true"
+    class="mat-focus-indicator mat-menu-trigger lang-button mat-button mat-button-base _mat-animation-noopable"
+    mat-button=""
+  >
+    <span
+      class="mat-button-wrapper"
+    >
+      <span>
+        EN-US
+      </span>
+      <mat-icon
+        aria-hidden="true"
+        class="mat-icon notranslate material-icons mat-icon-no-color"
+        data-mat-icon-type="font"
+        role="img"
+      >
+        arrow_drop_down
+      </mat-icon>
+    </span>
+    <span
+      class="mat-ripple mat-button-ripple"
+      matripple=""
+    />
+    <span
+      class="mat-button-focus-overlay"
+    />
+  </button><mat-menu>
+  </mat-menu>
+</ff-language-selector>
+`;

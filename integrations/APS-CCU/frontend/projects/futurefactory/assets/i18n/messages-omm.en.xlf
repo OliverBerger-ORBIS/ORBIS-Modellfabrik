@@ -1,0 +1,1365 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="de" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="Übersicht" datatype="html">
+        <source>Übersicht</source>
+        <target>Overview</target>
+      </trans-unit>
+      <trans-unit id="Aufträge" datatype="html">
+        <source>Aufträge</source>
+        <target>Orders</target>
+      </trans-unit>
+      <trans-unit id="Abläufe" datatype="html">
+        <source>Abläufe</source>
+        <target>Processes</target>
+      </trans-unit>
+      <trans-unit id="Konfiguration" datatype="html">
+        <source>Konfiguration</source>
+        <target>Configuration</target>
+      </trans-unit>
+      <trans-unit id="Module" datatype="html">
+        <source>Module</source>
+        <target>Modules</target>
+      </trans-unit>
+      <trans-unit id="Planspiel" datatype="html">
+        <source>Planspiel</source>
+        <target>Simulation game</target>
+      </trans-unit>
+      <trans-unit id="Meldungen" datatype="html">
+        <source>Meldungen</source>
+        <target>Messages</target>
+      </trans-unit>
+      <trans-unit id="Statusmeldungen" datatype="html">
+        <source>Statusmeldungen</source>
+        <target>Status messages</target>
+      </trans-unit>
+      <trans-unit id="state.received" datatype="html">
+        <source>Status empfangen</source>
+        <target>Status received</target>
+      </trans-unit>
+      <trans-unit id="state.type" datatype="html">
+        <source>Statustyp</source>
+        <target>Status type</target>
+      </trans-unit>
+      <trans-unit id="Nachrichtenherkunft" datatype="html">
+        <source>Nachrichtenherkunft</source>
+        <target>News origin</target>
+      </trans-unit>
+      <trans-unit id="Keine Daten verfügbar" datatype="html">
+        <source>Keine Daten verfügbar</source>
+        <target>No data available</target>
+      </trans-unit>
+      <trans-unit id="Planspiel wird gestartet" datatype="html">
+        <source>Planspiel wird gestartet</source>
+        <target>Simulation game is starting</target>
+      </trans-unit>
+      <trans-unit id="Planspiel starten" datatype="html">
+        <source>Planspiel starten</source>
+        <target>Start simulation game</target>
+      </trans-unit>
+      <trans-unit id="Name des Planspiels" datatype="html">
+        <source>Name des Planspiels</source>
+        <target>Name of the simulation game</target>
+      </trans-unit>
+      <trans-unit id="Bitte geben Sie einen Namen ein." datatype="html">
+        <source>Bitte geben Sie einen Namen ein.</source>
+        <target>Please enter a name.</target>
+      </trans-unit>
+      <trans-unit id="Ein Planspiel mit diesem Namen existiert bereits." datatype="html">
+        <source>Ein Planspiel mit diesem Namen existiert bereits.</source>
+        <target>A simulation game with this name already exists.</target>
+      </trans-unit>
+      <trans-unit id="Produktionsplanung" datatype="html">
+        <source>Produktionsplanung</source>
+        <target>Production planning</target>
+      </trans-unit>
+      <trans-unit id="Werkstücktyp" datatype="html">
+        <source>Werkstücktyp</source>
+        <target>Workpiece type</target>
+      </trans-unit>
+      <trans-unit id="Dieses Werkstück ist nicht auf Lager." datatype="html">
+        <source>Dieses Werkstück ist nicht auf Lager.</source>
+        <target>This workpiece is not in stock.</target>
+      </trans-unit>
+      <trans-unit id="Werkstück hinzufügen" datatype="html">
+        <source>Werkstück hinzufügen</source>
+        <target>Add workpiece</target>
+      </trans-unit>
+      <trans-unit id="Planspiel läuft" datatype="html">
+        <source>Planspiel läuft</source>
+        <target>Simulation game is running</target>
+      </trans-unit>
+      <trans-unit id="Aufträge ohne Planspiel" datatype="html">
+        <source>Aufträge ohne Planspiel</source>
+        <target>Orders without a simulation game</target>
+      </trans-unit>
+      <trans-unit id="CSV herunterladen" datatype="html">
+        <source>CSV herunterladen</source>
+        <target>Download CSV</target>
+      </trans-unit>
+      <trans-unit id="Ergebnisse von '{{simulationId}}'" datatype="html">
+        <source>Ergebnisse von '{{simulationId}}'</source>
+        <target>Results of '{{simulationId}}'</target>
+      </trans-unit>
+      <trans-unit id="Ergebnisse von Aufträgen ohne Planspiel" datatype="html">
+        <source>Ergebnisse von Aufträgen ohne Planspiel</source>
+        <target>Results of assignments without a simulation game</target>
+      </trans-unit>
+      <trans-unit id="Bitte beachten Sie, dass die OEE-Berechnung erst nach Abschluss der Produktion einen sinnvollen Wert liefert." datatype="html">
+        <source>Bitte beachten Sie, dass die OEE-Berechnung erst nach Abschluss der Produktion einen sinnvollen Wert liefert.</source>
+        <target>Please note that the OEE calculation only provides a useful value once production has been completed.</target>
+      </trans-unit>
+      <trans-unit id="OEE" datatype="html">
+        <source>OEE</source>
+        <target>OEE</target>
+      </trans-unit>
+      <trans-unit id="Qualität" datatype="html">
+        <source>Qualität</source>
+        <target>Quality</target>
+      </trans-unit>
+      <trans-unit id="Leistung" datatype="html">
+        <source>Leistung</source>
+        <target>Performance</target>
+      </trans-unit>
+      <trans-unit id="Verfügbarkeit" datatype="html">
+        <source>Verfügbarkeit</source>
+        <target>Availability</target>
+      </trans-unit>
+      <trans-unit id="Gewählter Produktionsauftrag" datatype="html">
+        <source>Gewählter Produktionsauftrag</source>
+        <target>Selected production order</target>
+      </trans-unit>
+      <trans-unit id="Produktions- und Navigationsschritte" datatype="html">
+        <source>Produktions- und Navigationsschritte</source>
+        <target>Production and navigation steps</target>
+      </trans-unit>
+      <trans-unit id="Kein Produktionsauftrag ausgewählt" datatype="html">
+        <source>Kein Produktionsauftrag ausgewählt</source>
+        <target>No production order selected</target>
+      </trans-unit>
+      <trans-unit id="Fertigungsschritte" datatype="html">
+        <source>Fertigungsschritte</source>
+        <target>Production steps</target>
+      </trans-unit>
+      <trans-unit id="Aktueller Fertigungsschritt" datatype="html">
+        <source>Aktueller Fertigungsschritt</source>
+        <target>Current production step</target>
+      </trans-unit>
+      <trans-unit id="Auftragsinformationen" datatype="html">
+        <source>Auftragsinformationen</source>
+        <target>Order information</target>
+      </trans-unit>
+      <trans-unit id="Auftragsnummer" datatype="html">
+        <source>Auftragsnummer</source>
+        <target>Order number</target>
+      </trans-unit>
+      <trans-unit id="Auftragsstatus" datatype="html">
+        <source>Auftragsstatus</source>
+        <target>Order status</target>
+      </trans-unit>
+      <trans-unit id="Bestelldatum" datatype="html">
+        <source>Bestelldatum</source>
+        <target>Order date</target>
+      </trans-unit>
+      <trans-unit id="Auftragseingang" datatype="html">
+        <source>Auftragseingang</source>
+        <target>Order receipt</target>
+      </trans-unit>
+      <trans-unit id="Start der Bearbeitung" datatype="html">
+        <source>Start der Bearbeitung</source>
+        <target>Start of processing</target>
+      </trans-unit>
+      <trans-unit id="Ende der Bearbeitung" datatype="html">
+        <source>Ende der Bearbeitung</source>
+        <target>End of processing</target>
+      </trans-unit>
+      <trans-unit id="Modulübersicht" datatype="html">
+        <source>Moduleübersicht</source>
+        <target>Module overview</target>
+      </trans-unit>
+      <trans-unit id="ID" datatype="html">
+        <source>ID</source>
+        <target>ID</target>
+      </trans-unit>
+      <trans-unit id="Name" datatype="html">
+        <source>Name</source>
+        <target>Name</target>
+      </trans-unit>
+      <trans-unit id="Verbunden" datatype="html">
+        <source>Verbunden</source>
+        <target>Connected</target>
+      </trans-unit>
+      <trans-unit id="Nicht verbunden" datatype="html">
+        <source>Nicht verbunden</source>
+        <target>Not connected</target>
+      </trans-unit>
+      <trans-unit id="Verfügbarkeitsstatus" datatype="html">
+        <source>Verfügbarkeitsstatus</source>
+        <target>Availability status</target>
+      </trans-unit>
+      <trans-unit id="Konfiguriert" datatype="html">
+        <source>Konfiguriert</source>
+        <target>Configured</target>
+      </trans-unit>
+      <trans-unit id="Docke an DPS" datatype="html">
+        <source>Docke an DPS</source>
+        <target>Dock to DPS</target>
+      </trans-unit>
+      <trans-unit id="Laden" datatype="html">
+        <source>Laden</source>
+        <target>Charge</target>
+      </trans-unit>
+      <trans-unit id="Laden beenden" datatype="html">
+        <source>Laden beenden</source>
+        <target>Finish charging</target>
+      </trans-unit>
+      <trans-unit id="Kalibrieren" datatype="html">
+        <source>Kalibrieren</source>
+        <target>Calibrate</target>
+      </trans-unit>
+      <trans-unit id="Löschen" datatype="html">
+        <source>Löschen</source>
+        <target>Delete</target>
+      </trans-unit>
+      <trans-unit id="Endgültig löschen" datatype="html">
+        <source>Endgültig löschen</source>
+        <target>Final delete</target>
+      </trans-unit>
+      <trans-unit id="Moduleinstellungen" datatype="html">
+        <source>Moduleinstellungen</source>
+        <target>Module settings</target>
+      </trans-unit>
+      <trans-unit id="Modulwerte" datatype="html">
+        <source>Modulwerte</source>
+        <target>Module values</target>
+      </trans-unit>
+      <trans-unit id="Fertigungsdauer" datatype="html">
+        <source>Fertigungsdauer</source>
+        <target>Manufacturing time</target>
+      </trans-unit>
+      <trans-unit id="Sekunden" datatype="html">
+        <source>Sekunden</source>
+        <target>Seconds</target>
+      </trans-unit>
+      <trans-unit id="Blockiert durch Fehler" datatype="html">
+        <source>Blockiert durch Fehler</source>
+        <target>Blocked due to error</target>
+      </trans-unit>
+      <trans-unit id="Kalibrierung" datatype="html">
+        <source>Kalibrierung</source>
+        <target>Calibration</target>
+      </trans-unit>
+      <trans-unit id="Aktueller Auftrag" datatype="html">
+        <source>Aktueller Auftrag</source>
+        <target>Current assignment</target>
+      </trans-unit>
+      <trans-unit id="Bestellung" datatype="html">
+        <source>Bestellung</source>
+        <target>Order</target>
+      </trans-unit>
+      <trans-unit id="Unbekannt" datatype="html">
+        <source>Unbekannt</source>
+        <target>Unknown</target>
+      </trans-unit>
+      <trans-unit id="Kalibrierung beenden" datatype="html">
+        <source>Kalibrierung beenden</source>
+        <target>End calibration</target>
+      </trans-unit>
+      <trans-unit id="Nicht gespeicherte Änderungen gehen verloren." datatype="html">
+        <source>Nicht gespeicherte Änderungen gehen verloren.</source>
+        <target>Any changes that are not saved will be lost.</target>
+      </trans-unit>
+      <trans-unit id="Abbrechen" datatype="html">
+        <source>Abbrechen</source>
+        <target>Cancel</target>
+      </trans-unit>
+      <trans-unit id="Modulkalibrierung" datatype="html">
+        <source>Modulkalibrierung</source>
+        <target>Module calibration</target>
+      </trans-unit>
+      <trans-unit id="Kalibrierung starten" datatype="html">
+        <source>Kalibrierung starten</source>
+        <target>Start calibration</target>
+      </trans-unit>
+      <trans-unit id="Auf Werkseinstellungen zurücksetzen" datatype="html">
+        <source>Auf Werkseinstellungen zurücksetzen</source>
+        <target>Reset to factory settings</target>
+      </trans-unit>
+      <trans-unit id="Kalibrierungswerte" datatype="html">
+        <source>Kalibrierungswerte</source>
+        <target>Calibration values</target>
+      </trans-unit>
+      <trans-unit id="Werte laden" datatype="html">
+        <source>Werte laden</source>
+        <target>Load values</target>
+      </trans-unit>
+      <trans-unit id="Position zum Kalibrieren" datatype="html">
+        <source>Position zum Kalibrieren</source>
+        <target>Position for calibration</target>
+      </trans-unit>
+      <trans-unit id="FACTORY_BASE_SETTINGS" datatype="html">
+        <source>APS Basiseinstellungen</source>
+        <target>APS basic settings</target>
+      </trans-unit>
+      <trans-unit id="Position wählen" datatype="html">
+        <source>Position wählen</source>
+        <target>Select position</target>
+      </trans-unit>
+      <trans-unit id="Position testen" datatype="html">
+        <source>Position testen</source>
+        <target>Test position</target>
+      </trans-unit>
+      <trans-unit id="Anwenden" datatype="html">
+        <source>Anwenden</source>
+        <target>Apply</target>
+      </trans-unit>
+      <trans-unit id="Zurücksetzen" datatype="html">
+        <source>Zurücksetzen</source>
+        <target>Reset to default</target>
+      </trans-unit>
+      <trans-unit id="Speichern" datatype="html">
+        <source>Speichern</source>
+        <target>Save</target>
+      </trans-unit>
+      <trans-unit id="Fabrikkonfiguration" datatype="html">
+        <source>Fabrikkonfiguration</source>
+        <target>Factory configuration</target>
+      </trans-unit>
+      <trans-unit id="Bearbeitungsschritte" datatype="html">
+        <source>Bearbeitungsschritte</source>
+        <target>Processing steps</target>
+      </trans-unit>
+      <trans-unit id="Bearbeitungsschritt hinzufügen" datatype="html">
+        <source>Bearbeitungsschritt hinzufügen</source>
+        <target>Add processing step</target>
+      </trans-unit>
+      <trans-unit id="Vorhandene Produktionsmodule" datatype="html">
+        <source>Vorhandene Produktionsmodule</source>
+        <target>Existing production modules</target>
+      </trans-unit>
+      <trans-unit id="Auslagern aus Hochregallager" datatype="html">
+        <source>Auslagern über Hochregallager</source>
+        <target>Retrieve via high-bay warehouse</target>
+      </trans-unit>
+      <trans-unit id="Werkstück.Blau" datatype="html">
+        <source>Blau</source>
+        <target>Blue</target>
+      </trans-unit>
+      <trans-unit id="Fertiges Werkstück" datatype="html">
+        <source>Fertiges Werkstück</source>
+        <target>Finished workpiece</target>
+      </trans-unit>
+      <trans-unit id="Werkstück.Rot" datatype="html">
+        <source>Rot</source>
+        <target>Red</target>
+      </trans-unit>
+      <trans-unit id="Werkstück.Weiß" datatype="html">
+        <source>Weiß</source>
+        <target>White</target>
+      </trans-unit>
+      <trans-unit id="Auslieferung über Warenausgang" datatype="html">
+        <source>Auslieferung über Warenausgang</source>
+        <target>Delivery via Goods Outgoing</target>
+      </trans-unit>
+      <trans-unit id="Fehlerzeitpunkt" datatype="html">
+        <source>Fehlerzeitpunkt</source>
+        <target>Time of fault</target>
+      </trans-unit>
+      <trans-unit id="errorReferences" datatype="html">
+        <source>Fehlerreferenzen</source>
+        <target>Fault references</target>
+      </trans-unit>
+      <trans-unit id="IP: {{ip}} - Version: {{version}}" datatype="html">
+        <source>IP: {{ip}} - Version: {{version}}</source>
+        <target>IP: {{ip}} - Version: {{version}}</target>
+      </trans-unit>
+      <trans-unit id="Verbindungsstatus vom {{timestamp}}" datatype="html">
+        <source>Verbindungsstatus vom {{timestamp}}</source>
+        <target>Connection status from {{timestamp}}</target>
+      </trans-unit>
+      <trans-unit id="Status für FTS [{{serialNumber}}] vom {{timestamp}}" datatype="html">
+        <source>Status für FTS [{{serialNumber}}] vom {{timestamp}}</source>
+        <target>Status for AGV [{{serialNumber}}] from {{timestamp}}</target>
+      </trans-unit>
+      <trans-unit id="Letzter Knoten / letztes Module {{lastNodeId}}" datatype="html">
+        <source>Letzter Knoten / letztes Module {{lastNodeId}}</source>
+        <target>Last node / last module {{lastNodeId}}</target>
+      </trans-unit>
+      <trans-unit id="Batteriestand {{percentage}}%" datatype="html">
+        <source>Batteriestand {{percentage}}%</source>
+        <target>Battery level {{percentage}}%</target>
+      </trans-unit>
+      <trans-unit id="Status für Module [{{serialNumber}}] vom {{timestamp}}" datatype="html">
+        <source>Status für Module [{{serialNumber}}] vom {{timestamp}}</source>
+        <target>Status for modules [{{serialNumber}}] from {{timestamp}}</target>
+      </trans-unit>
+      <trans-unit id="Start" datatype="html">
+        <source>Start</source>
+        <target>Start</target>
+      </trans-unit>
+      <trans-unit id="Ende" datatype="html">
+        <source>Ende</source>
+        <target>End</target>
+      </trans-unit>
+      <trans-unit id="Gesamtdauer" datatype="html">
+        <source>Gesamtdauer</source>
+        <target>Total duration</target>
+      </trans-unit>
+      <trans-unit id="Produktionsdauer" datatype="html">
+        <source>Produktionsdauer</source>
+        <target>Production time</target>
+      </trans-unit>
+      <trans-unit id="Transportdauer" datatype="html">
+        <source>Transportdauer</source>
+        <target>Transport duration</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.FTS" datatype="html">
+        <source>Fahrerloses Transportsystem</source>
+        <target>Automated Guided Vehicle (AGV)</target>
+      </trans-unit>
+      <trans-unit id="Auftrag" datatype="html">
+        <source>Auftrag</source>
+        <target>Order</target>
+      </trans-unit>
+      <trans-unit id="Laufende Aufträge" datatype="html">
+        <source>Laufende Aufträge</source>
+        <target>Ongoing orders</target>
+      </trans-unit>
+      <trans-unit id="Keine laufenden Aufträge verfügbar" datatype="html">
+        <source>Keine laufenden Aufträge verfügbar</source>
+        <target>No ongoing orders available</target>
+      </trans-unit>
+      <trans-unit id="Abgeschlossene Aufträge" datatype="html">
+        <source>Abgeschlossene Aufträge</source>
+        <target>Completed orders</target>
+      </trans-unit>
+      <trans-unit id="Keine abgeschlossenen Aufträge verfügbar" datatype="html">
+        <source>Keine abgeschlossenen Aufträge verfügbar</source>
+        <target>No completed orders available</target>
+      </trans-unit>
+      <trans-unit id="Keine Modulinformationen verfügbar" datatype="html">
+        <source>Keine Modulinformationen verfügbar</source>
+        <target>No module information available</target>
+      </trans-unit>
+      <trans-unit id="Controller for the Future-Factory not connected" datatype="html">
+        <source>Controller for the Future-Factory not connected</source>
+        <target>Controller for the Future-Factory not connected</target>
+      </trans-unit>
+      <trans-unit id="Fabrik zurücksetzen" datatype="html">
+        <source>Fabrik zurücksetzen</source>
+        <target>Reset factory</target>
+      </trans-unit>
+      <trans-unit id="Soll die Fabrik wirklich zurückgesetzt werden?" datatype="html">
+        <source>Soll die Fabrik wirklich zurückgesetzt werden?</source>
+        <target>Do you really want to reset the factory?</target>
+      </trans-unit>
+      <trans-unit id="Ja" datatype="html">
+        <source>Ja</source>
+        <target>Yes</target>
+      </trans-unit>
+      <trans-unit id="Nein" datatype="html">
+        <source>Nein</source>
+        <target>No</target>
+      </trans-unit>
+      <trans-unit id="Hinzufügen" datatype="html">
+        <source>Hinzufügen</source>
+        <target>Add</target>
+      </trans-unit>
+      <trans-unit id="Vergrößern" datatype="html">
+        <source>Vergrößern</source>
+        <target>Enlarge</target>
+      </trans-unit>
+      <trans-unit id="Verkleinern" datatype="html">
+        <source>Verkleinern</source>
+        <target>Reduce</target>
+      </trans-unit>
+      <trans-unit id="Kreuzung" datatype="html">
+        <source>Kreuzung</source>
+        <target>Crossing</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.CHRG" datatype="html">
+        <source>Ladestation</source>
+        <target>Charging Station</target>
+      </trans-unit>
+      <trans-unit id="ID:" datatype="html">
+        <source>ID:</source>
+        <target>ID:</target>
+      </trans-unit>
+      <trans-unit id="Drehen" datatype="html">
+        <source>Drehen</source>
+        <target>Turn</target>
+      </trans-unit>
+      <trans-unit id="Mehr" datatype="html">
+        <source>Mehr</source>
+        <target>More</target>
+      </trans-unit>
+      <trans-unit id="Kalibrierungsinformationen" datatype="html">
+        <source>Kalibrierungsinformationen</source>
+        <target>Calibration information</target>
+      </trans-unit>
+      <trans-unit id="Beim Starten des Planspiels ist ein Fehler aufgetreten." datatype="html">
+        <source>Beim Starten des Planspiels ist ein Fehler aufgetreten.</source>
+        <target>An error occurred while starting the simulation game.</target>
+      </trans-unit>
+      <trans-unit id="OK" datatype="html">
+        <source>OK</source>
+        <target>OK</target>
+      </trans-unit>
+      <trans-unit id="Das Planspiel wurde erfolgreich gestartet." datatype="html">
+        <source>Das Planspiel wurde erfolgreich gestartet.</source>
+        <target>The simulation game was started successfully.</target>
+      </trans-unit>
+      <trans-unit id="Die zentrale Steuerung hat die Verbindung zur APS verloren. Bitte starten Sie die zentrale Steuerung neu." datatype="html">
+        <source>Die zentrale Steuerung hat die Verbindung zur APS verloren. Bitte starten Sie die zentrale Steuerung neu.</source>
+        <target>The central control system has lost the connection to the APS. Please restart the central control system.</target>
+      </trans-unit>
+      <trans-unit id="Keine Metadaten verfügbar" datatype="html">
+        <source>Keine Metadaten verfügbar</source>
+        <target>No metadata available</target>
+      </trans-unit>
+      <trans-unit id="nicht in Fabrik eingebunden" datatype="html">
+        <source>nicht in Fabrik eingebunden</source>
+        <target>not integrated into factory</target>
+      </trans-unit>
+      <trans-unit id="In Fabrik eingebunden seit {{since}}" datatype="html">
+        <source>In Fabrik eingebunden seit {{since}}</source>
+        <target>Integrated into factory since {{since}}</target>
+      </trans-unit>
+      <trans-unit id="nicht im Layout" datatype="html">
+        <source>nicht im Layout</source>
+        <target>not in layout</target>
+      </trans-unit>
+      <trans-unit id="im Layout seit {{since}}" datatype="html">
+        <source>im Layout seit {{since}}</source>
+        <target>in layout since {{since}}</target>
+      </trans-unit>
+      <trans-unit id="AIQS muss immer am Ende der Kette stehen" datatype="html">
+        <source>AIQS muss immer am Ende der Kette stehen</source>
+        <target>AIQS must always be at the end of the chain</target>
+      </trans-unit>
+      <trans-unit id="OK" datatype="html">
+        <source>OK</source>
+        <target>OK</target>
+      </trans-unit>
+      <trans-unit id="Verfügbar" datatype="html">
+        <source>Verfügbar</source>
+        <target>Available</target>
+      </trans-unit>
+      <trans-unit id="Ergebnisse von {{simulationId}}" datatype="html">
+        <source>Ergebnisse von {{simulationId}}</source>
+        <target>Results of {{simulationId}}</target>
+      </trans-unit>
+      <trans-unit id="OEE" datatype="html">
+        <source>OEE</source>
+        <target>OEE</target>
+      </trans-unit>
+      <trans-unit id="Gesamt" datatype="html">
+        <source>Gesamt</source>
+        <target>Total</target>
+      </trans-unit>
+      <trans-unit id="Wartungsmodus" datatype="html">
+        <source>Wartungsmodus</source>
+        <target>Maintenance mode</target>
+      </trans-unit>
+      <trans-unit id="Rot bestellen" datatype="html">
+        <source>Rot bestellen</source>
+        <target>Order red</target>
+      </trans-unit>
+      <trans-unit id="Weiß bestellen" datatype="html">
+        <source>Weiß bestellen</source>
+        <target>Order white</target>
+      </trans-unit>
+      <trans-unit id="Blau bestellen" datatype="html">
+        <source>Blau bestellen</source>
+        <target>Order blue</target>
+      </trans-unit>
+      <trans-unit id="errorType" datatype="html">
+        <source>Fehlerart</source>
+        <target>Error type</target>
+      </trans-unit>
+      <trans-unit id="errorLevel" datatype="html">
+        <source>Schweregrad</source>
+        <target>Severity</target>
+      </trans-unit>
+      <trans-unit id="Fahrzeuge" datatype="html">
+        <source>Fahrzeuge</source>
+        <target>Vehicles</target>
+      </trans-unit>
+      <trans-unit id="FTS" datatype="html">
+        <source>FTS</source>
+        <target>AGV</target>
+      </trans-unit>
+      <trans-unit id="Status.ENQUEUED" datatype="html">
+        <source>Wartet</source>
+        <target>Waiting</target>
+      </trans-unit>
+      <trans-unit id="Status.IN_PROGRESS" datatype="html">
+        <source>In Bearbeitung</source>
+        <target>Processing</target>
+      </trans-unit>
+      <trans-unit id="Status.FINISHED" datatype="html">
+        <source>Fertig</source>
+        <target>Finished</target>
+      </trans-unit>
+      <trans-unit id="Status.ERROR" datatype="html">
+        <source>Fehler</source>
+        <target>Error</target>
+      </trans-unit>
+      <trans-unit id="Status.CANCELLED" datatype="html">
+        <source>Abgebrochen</source>
+        <target>Cancelled</target>
+      </trans-unit>
+      <trans-unit id="Befehl.CHECK_QUALITY" datatype="html">
+        <source>Qualitätsprüfung</source>
+        <target>Quality check</target>
+      </trans-unit>
+      <trans-unit id="Befehl.PICK" datatype="html">
+        <source>FTS entladen</source>
+        <target>Unload AGV</target>
+      </trans-unit>
+      <trans-unit id="Befehl.DROP" datatype="html">
+        <source>FTS beladen</source>
+        <target>Load AGV</target>
+      </trans-unit>
+      <trans-unit id="Befehl.MILL" datatype="html">
+        <source>Fräsen</source>
+        <target>Milling</target>
+      </trans-unit>
+      <trans-unit id="Befehl.DRILL" datatype="html">
+        <source>Bohren</source>
+        <target>Drilling</target>
+      </trans-unit>
+      <trans-unit id="Befehl.FIRE" datatype="html">
+        <source>Erhitzen</source>
+        <target>Heating</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.UNBEKANNT" datatype="html">
+        <source>Unbekanntes Modul</source>
+        <target>Unknown module</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.MODULE" datatype="html">
+        <source>Unbekanntes Modul</source>
+        <target>Unknown module</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.DPS" datatype="html">
+        <source>Warenein- und -ausgang</source>
+        <target>Delivery and Pickup Station</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.HBW" datatype="html">
+        <source>Hochregallager</source>
+        <target>High-Bay Warehouse</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.AIQS" datatype="html">
+        <source>KI-Qualitätssicherung</source>
+        <target>Quality Control with AI</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.MILL" datatype="html">
+        <source>Fräse</source>
+        <target>Milling Station</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.DRILL" datatype="html">
+        <source>Bohrer</source>
+        <target>Drilling Station</target>
+      </trans-unit>
+      <trans-unit id="Produktionsschritt.OVEN" datatype="html">
+        <source>Brennofen</source>
+        <target>Hardening Furnace</target>
+      </trans-unit>
+      <trans-unit id="AvailableState.BLOCKED" datatype="html">
+        <source>Blockiert</source>
+        <target>Blocked</target>
+      </trans-unit>
+      <trans-unit id="AvailableState.READY" datatype="html">
+        <source>Verfügbar</source>
+        <target>Available</target>
+      </trans-unit>
+      <trans-unit id="AvailableState.BUSY" datatype="html">
+        <source>Beschäftigt</source>
+        <target>Busy</target>
+      </trans-unit>
+      <trans-unit id="StateLog.MODULE" datatype="html">
+        <source>Modulstatus</source>
+        <target>Module status</target>
+      </trans-unit>
+      <trans-unit id="StateLog.FTS" datatype="html">
+        <source>FTS-Status</source>
+        <target>AGV status</target>
+      </trans-unit>
+      <trans-unit id="StateLog.CONNECTION" datatype="html">
+        <source>Verbindungsstatus</source>
+        <target>Connection status</target>
+      </trans-unit>
+      <trans-unit id="REF" datatype="html">
+        <source>Referenzpunkt</source>
+        <target>Reference point</target>
+      </trans-unit>
+      <trans-unit id="RACK_REIHE_1_SPALTE_A" datatype="html">
+        <source>Regalplatz A1</source>
+        <target>Shelf Space A1</target>
+      </trans-unit>
+      <trans-unit id="RACK_REIHE_2_SPALTE_B" datatype="html">
+        <source>Regalplatz B2</source>
+        <target>Shelf Space B2</target>
+      </trans-unit>
+      <trans-unit id="RACK_REIHE_3_SPALTE_C" datatype="html">
+        <source>Regalplatz C3</source>
+        <target>Shelf Space C3</target>
+      </trans-unit>
+      <trans-unit id="RAMPE" datatype="html">
+        <source>Rampe</source>
+        <target>Ramp</target>
+      </trans-unit>
+      <trans-unit id="PICK" datatype="html">
+        <source>Ladeposition</source>
+        <target>AGV - Loading</target>
+      </trans-unit>
+      <trans-unit id="DROP" datatype="html">
+        <source>Entladeposition</source>
+        <target>AGV - Unloading</target>
+      </trans-unit>
+      <trans-unit id="cal__row1" datatype="html">
+        <source>Position Reihe 1</source>
+        <target>Position row 1</target>
+      </trans-unit>
+      <trans-unit id="cal__row2" datatype="html">
+        <source>Position Reihe 2</source>
+        <target>Position row 2</target>
+      </trans-unit>
+      <trans-unit id="cal__row3" datatype="html">
+        <source>Position Reihe 3</source>
+        <target>Position row 3</target>
+      </trans-unit>
+      <trans-unit id="cal__colA" datatype="html">
+        <source>Position Spalte A</source>
+        <target>Position column A</target>
+      </trans-unit>
+      <trans-unit id="cal__colB" datatype="html">
+        <source>Position Spalte B</source>
+        <target>Position column B</target>
+      </trans-unit>
+      <trans-unit id="cal__colC" datatype="html">
+        <source>Position Spalte C</source>
+        <target>Position column C</target>
+      </trans-unit>
+      <trans-unit id="cal__rackOffset" datatype="html">
+        <source>Lagerposition Hebedifferenz</source>
+        <target>Storage position lifting difference</target>
+      </trans-unit>
+      <trans-unit id="cal__rampPositionX" datatype="html">
+        <source>Rampe - X-Koordinate der Shuttleposition</source>
+        <target>Ramp - X coordinate of the shuttle position</target>
+      </trans-unit>
+      <trans-unit id="cal__rampPositionY" datatype="html">
+        <source>Rampe - Y-Koordinate der Shuttleposition</source>
+        <target>Ramp - Y coordinate of the shuttle position</target>
+      </trans-unit>
+      <trans-unit id="cal__rampPositionRot" datatype="html">
+        <source>Rampe - Drehwinkel für Aufnahme</source>
+        <target>Ramp - rotation angle for pickup</target>
+      </trans-unit>
+      <trans-unit id="cal__rampPositionRotCheck" datatype="html">
+        <source>Rampe - Drehwinkel für Warteposition</source>
+        <target>Ramp - rotation angle for waiting position</target>
+      </trans-unit>
+      <trans-unit id="cal__rampOffset" datatype="html">
+        <source>Rampe - Hebedifferenz</source>
+        <target>Ramp - lifting difference</target>
+      </trans-unit>
+      <trans-unit id="cal__AGVPositionRot" datatype="html">
+        <source>FTS - Drehwinkel für Be- und Entladung</source>
+        <target>AGV - rotation angle for loading and unloading</target>
+      </trans-unit>
+      <trans-unit id="cal__timeProcessEnd" datatype="html">
+        <source>Wartezeit für Prozessverarbeitung</source>
+        <target>Waiting time for process handling</target>
+      </trans-unit>
+      <trans-unit id="cal__timeGripperValveClose" datatype="html">
+        <source>Wartezeit für Ventilschließung des Sauggreifers</source>
+        <target>Waiting time for the suction cup valve closing</target>
+      </trans-unit>
+      <trans-unit id="cal__timeGripperValveOpen" datatype="html">
+        <source>Wartezeit für Ventilöffnung des Sauggreifers</source>
+        <target>Waiting time for the suction cup valve opening</target>
+      </trans-unit>
+      <trans-unit id="cal__timeCompressor" datatype="html">
+        <source>Wartezeit für Kompressorabschaltung</source>
+        <target>Waiting time for compressor shutdown</target>
+      </trans-unit>
+      <trans-unit id="HOME_BASE" datatype="html">
+        <source>Ruheposition</source>
+        <target>Rest position</target>
+      </trans-unit>
+      <trans-unit id="HOME_INPUT" datatype="html">
+        <source>Wegpunkt Wareneingang</source>
+        <target>Waypoint - Raw Goods Incoming</target>
+      </trans-unit>
+      <trans-unit id="HOME_OUTPUT" datatype="html">
+        <source>Wegpunkt Warenausgang</source>
+        <target>Waypoint - Goods Outgoing</target>
+      </trans-unit>
+      <trans-unit id="NIO_APPROACH" datatype="html">
+        <source>Wegpunkt NIO-Behälter</source>
+        <target>Waypoint - NIO-Container</target>
+      </trans-unit>
+      <trans-unit id="NIO_TARGET" datatype="html">
+        <source>Zielpunkt NIO-Behälter</source>
+        <target>Destination point - NIO-Container</target>
+      </trans-unit>
+      <trans-unit id="CS_APPROACH" datatype="html">
+        <source>Wegpunkt Farbsensor</source>
+        <target>Waypoint - Colour Sensor</target>
+      </trans-unit>
+      <trans-unit id="CS_TARGET" datatype="html">
+        <source>Zielpunkt Farbsensor</source>
+        <target>Destination point - Colour Sensor</target>
+      </trans-unit>
+      <trans-unit id="NFC_APPROACH" datatype="html">
+        <source>Wegpunkt NFC-Leser</source>
+        <target>Waypoint - NFC-Reader</target>
+      </trans-unit>
+      <trans-unit id="NFC_TARGET" datatype="html">
+        <source>Zielpunkt NFC-Leser</source>
+        <target>Destination point - NFC-Reader</target>
+      </trans-unit>
+      <trans-unit id="INPUT_PICK_APPROACH_A" datatype="html">
+        <source>Wegpunkt A - Wareneingang</source>
+        <target>Waypoint A - Raw Goods Incoming</target>
+      </trans-unit>
+      <trans-unit id="INPUT_PICK_APPROACH_B" datatype="html">
+        <source>Wegpunkt B - Wareneingang</source>
+        <target>Waypoint B - Raw Goods Incoming</target>
+      </trans-unit>
+      <trans-unit id="INPUT_PICK_TARGET" datatype="html">
+        <source>Zielpunkt - Wareneingang</source>
+        <target>Destination point - Raw Goods Incoming</target>
+      </trans-unit>
+      <trans-unit id="OUTPUT_DROP_APPROACH_A" datatype="html">
+        <source>Wegpunkt A - Warenausgang</source>
+        <target>Waypoint A - Goods Outgoing</target>
+      </trans-unit>
+      <trans-unit id="OUTPUT_DROP_APPROACH_B" datatype="html">
+        <source>Wegpunkt B - Warenausgang</source>
+        <target>Waypoint B - Goods Outgoing</target>
+      </trans-unit>
+      <trans-unit id="OUTPUT_DROP_TARGET" datatype="html">
+        <source>Zielpunkt - Warenausgang</source>
+        <target>Destination point - Goods Outgoing</target>
+      </trans-unit>
+      <trans-unit id="FTS_PICK_APPROACH_A" datatype="html">
+        <source>Wegpunkt A - FTS Entladung</source>
+        <target>Waypoint A - AGV Unloading</target>
+      </trans-unit>
+      <trans-unit id="FTS_PICK_APPROACH_B" datatype="html">
+        <source>Wegpunkt B - FTS Entladung</source>
+        <target>Waypoint B - AGV Unloading</target>
+      </trans-unit>
+      <trans-unit id="FTS_PICK_TARGET" datatype="html">
+        <source>Zielpunkt - FTS Entladung</source>
+        <target>Destination point - AGV Unloading</target>
+      </trans-unit>
+      <trans-unit id="FTS_DROP_APPROACH_A" datatype="html">
+        <source>Wegpunkt A - FTS Beladung</source>
+        <target>Waypoint A - AGV Loading</target>
+      </trans-unit>
+      <trans-unit id="FTS_DROP_APPROACH_B" datatype="html">
+        <source>Wegpunkt B - FTS Beladung</source>
+        <target>Waypoint B - AGV Loading</target>
+      </trans-unit>
+      <trans-unit id="FTS_DROP_TARGET" datatype="html">
+        <source>Zielpunkt - FTS Beladung</source>
+        <target>Destination point - AGV Loading</target>
+      </trans-unit>
+      <trans-unit id="GRIP_ON" datatype="html">
+        <source>Sauggreifer einschalten</source>
+        <target>Switch on the suction cup</target>
+      </trans-unit>
+      <trans-unit id="GRIP_OFF" datatype="html">
+        <source>Sauggreifer ausschalten</source>
+        <target>Switch off the suction cup</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.APPROACH.X" datatype="html">
+        <source>Wegpunkt Farbsensor - X-Koordinate</source>
+        <target>Waypoint - Colour Sensor - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.APPROACH.Y" datatype="html">
+        <source>Wegpunkt Farbsensor - Y-Koordinate</source>
+        <target>Waypoint - Colour Sensor - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.APPROACH.Z" datatype="html">
+        <source>Wegpunkt Farbsensor - Z-Koordinate</source>
+        <target>Waypoint - Colour Sensor - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.TARGET.X" datatype="html">
+        <source>Zielpunkt Farbsensor - X-Koordinate</source>
+        <target>Destination point - Colour Sensor - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.TARGET.Y" datatype="html">
+        <source>Zielpunkt Farbsensor - Y-Koordinate</source>
+        <target>Destination point - Colour Sensor - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.CS.TARGET.Z" datatype="html">
+        <source>Zielpunkt Farbsensor - Z-Koordinate</source>
+        <target>Destination point - Colour Sensor - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_A.X" datatype="html">
+        <source>Wegpunkt A - FTS-Beladung - X-Koordinate</source>
+        <target>Waypoint A - AGV Loading - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_A.Y" datatype="html">
+        <source>Wegpunkt A - FTS-Beladung - Y-Koordinate</source>
+        <target>Waypoint A - AGV Loading - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_A.Z" datatype="html">
+        <source>Wegpunkt A - FTS Beladung - Z-Koordinate</source>
+        <target>Waypoint A - AGV Loading - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_B.X" datatype="html">
+        <source>Wegpunkt B - FTS-Beladung - X-Koordinate</source>
+        <target>Waypoint B - AGV Loading - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_B.Y" datatype="html">
+        <source>Wegpunkt B - FTS-Beladung - Y-Koordinate</source>
+        <target>Waypoint B - AGV Loading - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.APPROACH_B.Z" datatype="html">
+        <source>Wegpunkt B - FTS-Beladung - Z-Koordinate</source>
+        <target>Waypoint B - AGV Loading - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.TARGET.X" datatype="html">
+        <source>Zielpunkt - FTS-Beladung - X-Koordinate</source>
+        <target>Destination point - AGV Loading - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.TARGET.Y" datatype="html">
+        <source>Zielpunkt - FTS-Beladung - Y-Koordinate</source>
+        <target>Destination point - AGV Loading - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.DROP.TARGET.Z" datatype="html">
+        <source>Zielpunkt - FTS-Beladung - Z-Koordinate</source>
+        <target>Destination point - AGV Loading - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_A.X" datatype="html">
+        <source>Wegpunkt A - FTS-Entladung - X-Koordinate</source>
+        <target>Waypoint A - AGV Unloading - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_A.Y" datatype="html">
+        <source>Wegpunkt A - FTS-Entladung - Y-Koordinate</source>
+        <target>Waypoint A - AGV Unloading - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_A.Z" datatype="html">
+        <source>Wegpunkt A - FTS-Entladung - Z-Koordinate</source>
+        <target>Waypoint A - AGV Unloading - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_B.X" datatype="html">
+        <source>Wegpunkt B - FTS-Entladung - X-Koordinate</source>
+        <target>Waypoint B - AGV Unloading - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_B.Y" datatype="html">
+        <source>Wegpunkt B - FTS-Entladung - Y-Koordinate</source>
+        <target>Waypoint B - AGV Unloading - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.APPROACH_B.Z" datatype="html">
+        <source>Wegpunkt B - FTS-Entladung - Z-Koordinate</source>
+        <target>Waypoint B - AGV Unloading - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.TARGET.X" datatype="html">
+        <source>Zielpunkt - FTS-Entladung - X-Koordinate</source>
+        <target>Destination point - AGV Unloading - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.TARGET.Y" datatype="html">
+        <source>Zielpunkt - FTS-Entladung - Y-Koordinate</source>
+        <target>Destination point - AGV Unloading - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.FTS.PICK.TARGET.Z" datatype="html">
+        <source>Zielpunkt - FTS-Entladung - Z-Koordinate</source>
+        <target>Destination point - AGV Unloading - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.BASE.X" datatype="html">
+        <source>Ruheposition - X-Koordinate</source>
+        <target>Rest position - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.BASE.Y" datatype="html">
+        <source>Ruheposition - Y-Koordinate</source>
+        <target>Rest position - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.BASE.Z" datatype="html">
+        <source>Ruheposition - Z-Koordinate</source>
+        <target>Rest position - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.INPUT.X" datatype="html">
+        <source>Wegpunkt - Wareneingang - X-Koordinate</source>
+        <target>Waypoint - Raw Goods Incoming - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.INPUT.Y" datatype="html">
+        <source>Wegpunkt - Wareneingang - Y-Koordinate</source>
+        <target>Waypoint - Raw Goods Incoming - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.INPUT.Z" datatype="html">
+        <source>Wegpunkt - Wareneingang - Z-Koordinate</source>
+        <target>Waypoint - Raw Goods Incoming - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.OUTPUT.X" datatype="html">
+        <source>Wegpunkt - Warenausgang - X-Koordinate</source>
+        <target>Waypoint - Goods shipping - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.OUTPUT.Y" datatype="html">
+        <source>Wegpunkt - Warenausgang - Y-Koordinate</source>
+        <target>Waypoint - Goods shipping - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.HOME.OUTPUT.Z" datatype="html">
+        <source>Wegpunkt - Warenausgang - Z-Koordinate</source>
+        <target>Waypoint - Goods shipping - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_A.X" datatype="html">
+        <source>Wegpunkt A - Wareneingang - X-Koordinate</source>
+        <target>Waypoint A - Raw Goods Incoming - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_A.Y" datatype="html">
+        <source>Wegpunkt A - Wareneingang - Y-Koordinate</source>
+        <target>Waypoint A - Raw Goods Incoming - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_A.Z" datatype="html">
+        <source>Wegpunkt A - Wareneingang - Z-Koordinate</source>
+        <target>Waypoint A - Raw Goods Incoming - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_B.X" datatype="html">
+        <source>Wegpunkt B - Wareneingang - X-Koordinate</source>
+        <target>Waypoint B - Raw Goods Incoming - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_B.Y" datatype="html">
+        <source>Wegpunkt B - Wareneingang - Y-Koordinate</source>
+        <target>Waypoint B - Raw Goods Incoming - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.APPROACH_B.Z" datatype="html">
+        <source>Wegpunkt B - Wareneingang - Z-Koordinate</source>
+        <target>Waypoint B - Raw Goods Incoming - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.TARGET.X" datatype="html">
+        <source>Zielpunkt - Wareneingang - X-Koordinate</source>
+        <target>Destination point - Raw Goods Incoming - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.TARGET.Y" datatype="html">
+        <source>Zielpunkt - Wareneingang - Y-Koordinate</source>
+        <target>Destination point - Raw Goods Incoming - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.INPUT.PICK.TARGET.Z" datatype="html">
+        <source>Zielpunkt - Wareneingang - Z-Koordinate</source>
+        <target>Destination point - Raw Goods Incoming - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.APPROACH.X" datatype="html">
+        <source>Wegpunkt - NFC-Leser - X-Koordinate</source>
+        <target>Waypoint - NFC-Reader - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.APPROACH.Y" datatype="html">
+        <source>Wegpunkt - NFC-Leser - Y-Koordinate</source>
+        <target>Waypoint - NFC-Reader - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.APPROACH.Z" datatype="html">
+        <source>Wegpunkt - NFC-Leser - Z-Koordinate</source>
+        <target>Waypoint - NFC-Reader - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.TARGET.X" datatype="html">
+        <source>Zielpunkt - NFC-Leser - X-Koordinate</source>
+        <target>Destination point - NFC-Reader - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.TARGET.Y" datatype="html">
+        <source>Zielpunkt - NFC-Leser - Y-Koordinate</source>
+        <target>Destination point - NFC-Reader - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.NFC.TARGET.Z" datatype="html">
+        <source>Zielpunkt - NFC-Leser - Z-Koordinate</source>
+        <target>Destination point - NFC-Reader - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.APPROACH.X" datatype="html">
+        <source>Wegpunkt - NIO-Behälter - X-Koordinate</source>
+        <target>Waypoint - NIO-Container - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.APPROACH.Y" datatype="html">
+        <source>Wegpunkt - NIO-Behälter - Y-Koordinate</source>
+        <target>Waypoint - NIO-Container - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.APPROACH.Z" datatype="html">
+        <source>Wegpunkt - NIO-Behälter - Z-Koordinate</source>
+        <target>Waypoint - NIO-Container - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.TARGET.X" datatype="html">
+        <source>Zielpunkt - NIO-Behälter - X-Koordinate</source>
+        <target>Destination point - NIO-Container - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.TARGET.Y" datatype="html">
+        <source>Zielpunkt - NIO-Behälter - Y-Koordinate</source>
+        <target>Destination point - NIO-Container - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.NIO.TARGET.Z" datatype="html">
+        <source>Zielpunkt - NIO-Behälter - Z-Koordinate</source>
+        <target>Destination point - NIO-Container - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_A.X" datatype="html">
+        <source>Wegpunkt A - Warenausgang - X-Koordinate</source>
+        <target>Waypoint A - Goods shipping - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_A.Y" datatype="html">
+        <source>Wegpunkt A - Warenausgang - Y-Koordinate</source>
+        <target>Waypoint A - Goods shipping - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_A.Z" datatype="html">
+        <source>Wegpunkt A - Warenausgang - Z-Koordinate</source>
+        <target>Waypoint A - Goods shipping - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_B.X" datatype="html">
+        <source>Wegpunkt B - Warenausgang - X-Koordinate</source>
+        <target>Waypoint B - Goods shipping - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_B.Y" datatype="html">
+        <source>Wegpunkt B - Warenausgang - Y-Koordinate</source>
+        <target>Waypoint B - Goods shipping - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.APPROACH_B.Z" datatype="html">
+        <source>Wegpunkt B - Warenausgang - Z-Koordinate</source>
+        <target>Waypoint B - Goods shipping - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.TARGET.X" datatype="html">
+        <source>Zielpunkt - Warenausgang - X-Koordinate</source>
+        <target>Destination point - Goods shipping - X coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.TARGET.Y" datatype="html">
+        <source>Zielpunkt - Warenausgang - Y-Koordinate</source>
+        <target>Destination point - Goods shipping - Y coordinate</target>
+      </trans-unit>
+      <trans-unit id="RA.OUTPUT.DROP.TARGET.Z" datatype="html">
+        <source>Zielpunkt - Warenausgang - Z-Koordinate</source>
+        <target>Destination point - Goods shipping - Z coordinate</target>
+      </trans-unit>
+      <trans-unit id="CHECK" datatype="html">
+        <source>Prüfposition</source>
+        <target>Checking position</target>
+      </trans-unit>
+      <trans-unit id="STEPS_BELT_CAMERA" datatype="html">
+        <source>Fließbandschritte Positionierung - Kamera</source>
+        <target>Conveyor belt steps for positioning - camera</target>
+      </trans-unit>
+      <trans-unit id="STEPS_BELT_BIN" datatype="html">
+        <source>Fließbandschritte Positionierung - NIO-Behälter</source>
+        <target>Conveyor belt steps for positioning - NIO-Container</target>
+      </trans-unit>
+      <trans-unit id="STEPS_BELT_GRIPPER" datatype="html">
+        <source>Fließbandschritte Positionierung - Sauggreifer</source>
+        <target>Conveyor belt steps for positioning - suction cups</target>
+      </trans-unit>
+      <!-- Until this comment, the translations were provided by the translation agency -->
+      <!-- After this comment, the translations were provided by DeepL                  -->
+      <trans-unit id="Controller for the Agile Production Simulation is not connected" datatype="html">
+        <source>Controller für die Agile Production Simulation ist nicht verbunden</source>
+        <target>The controller for Agile Production Simulation is not connected</target>
+      </trans-unit>
+      <trans-unit id="Produktionseinstellungen" datatype="html">
+        <source>Produktionseinstellungen</source>
+        <target>Production settings</target>
+      </trans-unit>
+      <trans-unit id="Anzahl parallel produzierbarer Werkstücke" datatype="html">
+        <source>Anzahl parallel produzierbarer Werkstücke</source>
+        <target>Number of simultaneously producible workpieces</target>
+      </trans-unit>
+      <trans-unit id="TO_NIO_BIN" datatype="html">
+        <source>Vorwärts in den NIO-Container</source>
+        <target>Move forwards into the NIO-Container</target>
+      </trans-unit>
+      <trans-unit id="TO_CAMERA" datatype="html">
+        <source>Zur Kamera bewegen</source>
+        <target>Move to the camera</target>
+      </trans-unit>
+      <trans-unit id="TO_PICKUP" datatype="html">
+        <source>Zum Ablagepunkt bewegen</source>
+        <target>Move to the drop-off point</target>
+      </trans-unit>
+      <trans-unit id="CALIBRATION_TESTIMAGE" datatype="html">
+        <source>Testbild fotografieren</source>
+        <target>Take a test photo</target>
+      </trans-unit>
+      <trans-unit id="cal__badTime" datatype="html">
+        <source>Laufzeit des Förderbandes bis zum NIO-Behälter</source>
+        <target>Running time of the conveyor belt to the NIO-Container</target>
+      </trans-unit>
+      <trans-unit id="cal__cameraTime" datatype="html">
+        <source>Laufzeit des Förderbandes bis zur Kamera</source>
+        <target>Running time of the conveyor belt to the camera</target>
+      </trans-unit>
+      <trans-unit id="cal__prePhotoTime" datatype="html">
+        <source>Wartezeit bis fotografiert wird</source>
+        <target>Waiting period until the picture is taken</target>
+      </trans-unit>
+      <trans-unit id="cal__processEndTime" datatype="html">
+        <source>Wartezeit bis zur Abschlussmeldung für die zentrale Steuerung</source>
+        <target>Waiting period until the completion message is sent to the central control system</target>
+      </trans-unit>
+      <trans-unit id="cal__midLightGateTime" datatype="html">
+        <source>Laufzeit des Förderbandes bis zur Mitte der Lichtschranke</source>
+        <target>Running time of the conveyor belt to the centre of the light barrier</target>
+      </trans-unit>
+      <trans-unit id="cal__gripperDownTime" datatype="html">
+        <source>Laufzeit und Wartezeit für die Bewegung des Sauggreifers</source>
+        <target>Running time and waiting period for the suction pad to move</target>
+      </trans-unit>
+      <trans-unit id="cal__vacuumReleaseTime" datatype="html">
+        <source>Wartezeit des Sauggreifers zur Freigabe des Werkstücks</source>
+        <target>Waiting time for the suction pad to release the workpiece</target>
+      </trans-unit>
+      <trans-unit id="cal__colorRedSetpoint" datatype="html">
+        <source>Richtwert des Farbsensors für rote Werkstücke</source>
+        <target>Colour sensor reference value for red workpieces</target>
+      </trans-unit>
+      <trans-unit id="cal__colorBlueSetpoint" datatype="html">
+        <source>Richtwert des Farbsensors für blaue Werkstücke</source>
+        <target>Colour sensor reference value for blue workpieces</target>
+      </trans-unit>
+      <trans-unit id="cal__colorWhiteSetpoint" datatype="html">
+        <source>Richtwert des Farbsensors für weiße Werkstücke</source>
+        <target>Colour sensor reference value for white workpieces</target>
+      </trans-unit>
+      <trans-unit id="cal__homePosX" datatype="html">
+        <source>X-Koordinate für Kameraausgangsposition</source>
+        <target>X-coordinate for camera starting position</target>
+      </trans-unit>
+      <trans-unit id="cal__homePosY" datatype="html">
+        <source>Y-Koordinate für Kameraausgangsposition</source>
+        <target>Y coordinate for camera starting position</target>
+      </trans-unit>
+      <trans-unit id="cal__customPosX" datatype="html">
+        <source>X-Koordinate für Kameraposition mit Blick Richtung Hochregallager</source>
+        <target>X coordinate for camera position looking towards the high-bay warehouse</target>
+      </trans-unit>
+      <trans-unit id="cal__customPosY" datatype="html">
+        <source>Y-Koordinate für Kameraposition mit Blick Richtung Hochregallager</source>
+        <target>Y coordinate for camera position looking towards high-bay warehouse</target>
+      </trans-unit>
+      <trans-unit id="cal__shortProcessWaitTime" datatype="html">
+        <source>Wartezeit bis zur Abschlussmeldung für die zentrale Steuerung</source>
+        <target>Waiting period until the completion message is sent to the central control system</target>
+      </trans-unit>
+      <trans-unit id="cal__colorRange" datatype="html">
+        <source>Wertebereich des Farbsensors für die Farberkennung</source>
+        <target>Colour sensor value range for colour detection</target>
+      </trans-unit>
+      <trans-unit id="CAMERA_HOME" datatype="html">
+        <source>Kameraausgangsposition</source>
+        <target>Camera - Home</target>
+      </trans-unit>
+      <trans-unit id="CAMERA_HBW" datatype="html">
+        <source>Kameraposition mit Blick Richtung Hochregallager</source>
+        <target>Camera - HBW</target>
+      </trans-unit>
+      <trans-unit id="Zurücksetzen auf Standardlayout" datatype="html">
+        <source>Zurücksetzen auf Standardlayout</source>
+        <target>Reset to the standard layout</target>
+      </trans-unit>
+      <trans-unit id="Soll die Fabrik wirklich auf das Standardlayout zurückgesetzt werden?" datatype="html">
+        <source>Soll die Fabrik wirklich auf das Standardlayout zurückgesetzt werden?</source>
+        <target>Do you really want to reset the factory to the standard layout?</target>
+      </trans-unit>
+      <trans-unit id="Auch den Lagerbestand leeren?" datatype="html">
+        <source>Auch den Lagerbestand leeren?</source>
+        <target>Also empty the stock?</target>
+      </trans-unit>
+      <trans-unit id="cal__colorValue" datatype="html">
+        <source>Aktueller Wert des Farbsensors</source>
+        <target>Current value of the colour sensor</target>
+      </trans-unit>
+      <trans-unit id="Erweiterte Bearbeitungsschritte aktivieren" datatype="html">
+        <source>Erweiterte Bearbeitungsschritte aktivieren</source>
+        <target>Activate advanced processing steps</target>
+      </trans-unit>
+      <trans-unit id="Fabrik parken" datatype="html">
+        <source>Fabrik parken</source>
+        <target>Park factory</target>
+      </trans-unit>
+      <trans-unit id="Sollen die Fabrikmodule geparkt werden?" datatype="html">
+        <source>Sollen die Fabrikmodule geparkt werden?</source>
+        <target>Should the factory modules be parked?</target>
+      </trans-unit>
+      <trans-unit id="PARK" datatype="html">
+        <source>Modul parken</source>
+        <target>Park module</target>
+      </trans-unit>
+      <trans-unit id="Filter" datatype="html">
+        <source>Filter</source>
+        <target>Filters</target>
+      </trans-unit>
+      <trans-unit id="Transporteinstellungen" datatype="html">
+        <source>Transporteinstellungen</source>
+        <target>Transport settings</target>
+      </trans-unit>
+      <trans-unit id="Ladeschwelle für FTS" datatype="html">
+        <source>Ladeschwelle für FTS</source>
+        <target>Charging threshold for AGV</target>
+      </trans-unit>
+      <trans-unit id="Alle Nachrichten" datatype="html">
+        <source>Alle Nachrichten</source>
+        <target>All messages</target>
+      </trans-unit>
+      <trans-unit id="Alle Module" datatype="html">
+        <source>Alle Module</source>
+        <target>All modules</target>
+      </trans-unit>
+      <trans-unit id="Versions-Konflikt" datatype="html">
+        <source>Versions-Konflikt</source>
+        <target>Version conflict</target>
+      </trans-unit>
+      <trans-unit id="Modulversionen stimmen nicht mit der Version der zentralen Steuerung überein!" datatype="html">
+        <source>Modulversionen stimmen nicht mit der Version der zentralen Steuerung überein!</source>
+        <target>Module versions do not match the version of the central control unit!</target>
+      </trans-unit>
+      <trans-unit id="Für eine einwandfreie Funktion installieren Sie bitte einen einheitlichen Softwarestand. Die aktuellen Versionen finden Sie unter" datatype="html">
+        <source>Für eine einwandfreie Funktion installieren Sie bitte einen einheitlichen Softwarestand. Die aktuellen Versionen finden Sie unter</source>
+        <target>To ensure proper functioning, please install a uniform software version. You can find the current versions at</target>
+      </trans-unit>
+      <trans-unit id="Version der zentralen Steuerung:" datatype="html">
+        <source>Version der zentralen Steuerung:</source>
+        <target>Version of the central control unit:</target>
+      </trans-unit>
+      <trans-unit id="Modul" datatype="html">
+        <source>Modul</source>
+        <target>Module</target>
+      </trans-unit>
+      <trans-unit id="Seriennummer" datatype="html">
+        <source>Seriennummer</source>
+        <target>Serial number</target>
+      </trans-unit>
+      <trans-unit id="Controller" datatype="html">
+        <source>Controller</source>
+        <target>Controller</target>
+      </trans-unit>
+      <trans-unit id="Installiert" datatype="html">
+        <source>Installiert</source>
+        <target>Installed</target>
+      </trans-unit>
+      <trans-unit id="Erwartete Version" datatype="html">
+        <source>Erwartete Version</source>
+        <target>Expected version</target>
+      </trans-unit>
+      <trans-unit id="SPS" datatype="html">
+        <source>SPS</source>
+        <target>PLC (SPS)</target>
+      </trans-unit>
+      <trans-unit id="Kollisionswarnung" datatype="html">
+        <source>Kollisionswarnung</source>
+        <target>Collision warning</target>
+      </trans-unit>
+      <trans-unit id="Ein oder mehrere Fahrerlose Transportsysteme (FTS) sind durch Gegenstände auf der Fahrbahn am Weiterfahren blockiert." datatype="html">
+        <source>Ein oder mehrere Fahrerlose Transportsysteme (FTS) sind durch Gegenstände auf der Fahrbahn am Weiterfahren blockiert.</source>
+        <target>One or more automated guided vehicles (AGVs) are blocked from continuing their journey by objects on the road.</target>
+      </trans-unit>
+      <trans-unit id="Bitte entfernen Sie die Hindernisse um den Betrieb fortzusetzen." datatype="html">
+        <source>Bitte entfernen Sie die Hindernisse um den Betrieb fortzusetzen.</source>
+        <target>Please remove the obstacles to continue operation.</target>
+      </trans-unit>
+      <trans-unit id="FTS mit gemeldeten Hindernissen:" datatype="html">
+        <source>FTS mit gemeldeten Hindernissen:</source>
+        <target>AGV with reported obstacles:</target>
+      </trans-unit>
+      <trans-unit id="Letzte Position:" datatype="html">
+        <source>Letzte Position:</source>
+        <target>Last position:</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

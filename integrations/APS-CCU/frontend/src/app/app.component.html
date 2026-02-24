@@ -1,0 +1,5 @@
+<mat-toolbar><h1 class="mat-title">{{ APP_TITLE }}</h1></mat-toolbar>
+
+<div class="page-content mat-typography" *ngIf="i18nIsFullyLoaded$ | async">
+  <router-outlet></router-outlet>
+</div>

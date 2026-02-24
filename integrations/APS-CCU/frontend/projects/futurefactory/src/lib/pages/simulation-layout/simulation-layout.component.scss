@@ -1,0 +1,112 @@
+:host {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  padding: 1rem;
+  font-size: 1.2rem;
+}
+
+mat-hint.error {
+  color: var(--warn-color);
+}
+
+section {
+  padding: 1rem;
+}
+
+.vertical-divider {
+  border-left: 1px solid #ccc;
+  margin: 0 1rem;
+}
+
+.planning {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: auto;
+  position: relative;
+  min-width: 30rem;
+
+  .order-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    &.not-in-stock {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .simulation-is-starting {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255,255,255,0.8);
+    z-index: 1000;
+  }
+}
+
+.order-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+  overflow-y: auto;
+
+  .simulation-entry {
+    .header {
+      cursor: pointer;
+
+      &.active {
+        background-color: #ccc;
+      }
+    }
+  }
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 3rem;
+    border-bottom: 1px solid #ccc;
+    padding: 0 1rem;
+}
+
+.results {
+  flex: 1;
+
+  .header {
+    background-color: #ccc;
+  }
+
+  .oee-card-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    > mat-card {
+      flex: 1;
+      margin: 0 0.5rem;
+
+      &:first-child {
+        margin-left: 0;
+      }
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+.steps {
+  margin: 1rem 2rem 0 2rem;
+}

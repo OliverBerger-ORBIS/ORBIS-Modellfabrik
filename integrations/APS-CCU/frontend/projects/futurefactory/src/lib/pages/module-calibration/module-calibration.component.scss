@@ -1,0 +1,35 @@
+:host {
+  display: block;
+  overflow: auto;
+  max-width: 100dvw;
+}
+
+.mat-icon {
+  line-height: 24px;
+}
+
+.value-list {
+  max-width: 40rem;
+}
+.full-width {
+  display: block;
+}
+
+.calibration-data {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  grid-gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media screen and (min-width: 1200px) {
+  :host {
+    padding: 10px;
+    max-width: 60dvw;
+  }
+
+  .calibration-data {
+    grid-template-columns: 1fr 1fr;
+  }
+}

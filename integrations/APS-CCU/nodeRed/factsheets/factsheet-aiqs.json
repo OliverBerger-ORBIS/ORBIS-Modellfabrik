@@ -1,0 +1,145 @@
+{
+  "headerId": 1,
+  "timestamp": "<replace_in_vda5050>",
+  "version": "0.1.1+git9005fdf",
+  "manufacturer": "Fischertechnik",
+  "serialNumber": "<replace_in_vda5050>",
+  "typeSpecification": {
+    "seriesName": "MOD-FF22+AIQS+24V",
+    "moduleClass": "AIQS"
+  },
+  "physicalParameters": {},
+  "protocolLimits": {},
+  "protocolFeatures": {
+    "moduleActions": [
+      {
+        "actionType": "PICK",
+        "actionParameters": [
+          {
+            "parameterName": "type",
+            "parameterType": "string",
+            "parameterDescription": "Type of workpiece to pick up and process"
+          }
+        ]
+      },
+      {
+        "actionType": "DROP",
+        "actionParameters": [
+          {
+            "parameterName": "type",
+            "parameterType": "string",
+            "parameterDescription": "Type of workpiece that should be put on the FTS",
+            "isOptional": true
+          }
+        ]
+      },
+      {
+        "actionType": "CHECK_QUALITY",
+        "actionParameters": [
+          {
+            "parameterName": "type",
+            "parameterType": "string",
+            "parameterDescription": "Type of workpiece that should checked",
+            "isOptional": true
+          }
+        ]
+      },
+      {
+        "actionType": "startCalibration",
+        "actionScopes": [
+          "INSTANT"
+        ]
+      },
+      {
+        "actionType": "stopCalibration",
+        "actionScopes": [
+          "INSTANT"
+        ]
+      },
+      {
+        "actionType": "setCalibrationValues",
+        "actionScopes": [
+          "INSTANT"
+        ],
+        "actionParameters": [
+          {
+            "parameterName": "references",
+            "parameterType": "array",
+            "parameterDescription": "Array of ReferenceValues objects with referenceKey and referenceValue"
+          }
+        ]
+      },
+      {
+        "actionType": "storeCalibrationValues",
+        "actionScopes": [
+          "INSTANT"
+        ],
+        "actionParameters": [
+          {
+            "parameterName": "references",
+            "parameterType": "array",
+            "parameterDescription": "Array of ReferenceValues objects with referenceKey and referenceValue",
+            "isOptional": true
+          }
+        ]
+      },
+      {
+        "actionType": "selectCalibrationPosition",
+        "actionScopes": [
+          "INSTANT"
+        ],
+        "actionParameters": [
+          {
+            "parameterName": "position",
+            "parameterType": "string",
+            "parameterDescription": "Position to select"
+          }
+        ]
+      },
+      {
+        "actionType": "testCalibrationPosition",
+        "actionScopes": [
+          "INSTANT"
+        ],
+        "actionParameters": [
+          {
+            "parameterName": "position",
+            "parameterType": "string",
+            "parameterDescription": "Position to test"
+          }
+        ]
+      },
+      {
+        "actionType": "resetCalibration",
+        "actionScopes": [
+          "INSTANT"
+        ],
+        "actionParameters": [
+          {
+            "parameterName": "factory",
+            "parameterType": "boolean",
+            "parameterDescription": "Reset to factory defaults",
+            "isOptional": true
+          }
+        ]
+      }
+    ]
+  },
+  "localizationParameters": {},
+  "loadSpecification": {
+    "loadSets": [
+      {
+        "setName": "WHITES",
+        "loadType": "WHITE"
+      },
+      {
+        "setName": "REDS",
+        "loadType": "RED"
+      },
+      {
+        "setName": "BLUES",
+        "loadType": "BLUE"
+      }
+    ]
+  }
+}

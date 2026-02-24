@@ -1,0 +1,133 @@
+<ng-template #defaultLayoutDialogContent>
+  <h2 mat-dialog-title><mat-icon>healing</mat-icon> {{ 'Zurücksetzen auf Standardlayout' | translate }}</h2>
+  <div mat-dialog-content>
+    {{'Soll die Fabrik wirklich auf das Standardlayout zurückgesetzt werden?' | translate}}
+  </div>
+  <div mat-dialog-actions>
+    <button mat-flat-button mat-dialog-close color="warn" (click)="sendDefaultLayoutReset()">{{ 'Ja' | translate }}</button>
+    <button mat-flat-button mat-dialog-close cdkFocusInitial>{{ 'Nein' | translate }}</button>
+  </div>
+</ng-template>
+<ng-template #layoutActions>
+  <button *ngIf="editable" mat-raised-button
+    (click)="drawer.toggle()"
+    [disabled]="hasRunningOrders$ | async"
+    aria-label="'Hinzufügen' | translate"
+    [matTooltip]="'Hinzufügen' | translate">
+    <mat-icon>add_circle</mat-icon>
+  </button>
+  <button *ngIf="editable" mat-raised-button
+    (click)="saveLayout()"
+    [attr.aria-label]="'Speichern' | translate"
+    [matTooltip]="'Speichern' | translate"
+    [disabled]="(hasRunningOrders$ | async) || !layoutEditor.modified || (isValidLayout$ | async) === false">
+    <mat-icon>save</mat-icon>
+  </button>
+  <button *ngIf="editable" mat-raised-button
+    (click)="resetLayout()"
+    [attr.aria-label]="'Zurücksetzen' | translate"
+    [matTooltip]="'Zurücksetzen' | translate"
+    [disabled]="!layoutEditor.modified">
+    <mat-icon>refresh</mat-icon>
+  </button>
+  <button *ngIf="editable" mat-raised-button
+    (click)="resetDefaultLayout()"
+    [attr.aria-label]="'Zurücksetzen auf Standardlayout' | translate"
+    [matTooltip]="'Zurücksetzen auf Standardlayout' | translate">
+    <mat-icon>healing</mat-icon>
+  </button>
+  <button mat-raised-button
+    (click)="zoomIn()"
+    [attr.aria-label]="'Vergrößern' | translate"
+    [matTooltip]="'Vergrößern' | translate">
+    <mat-icon>zoom_in</mat-icon>
+  </button>
+  <button mat-raised-button
+    (click)="zoomOut()"
+    [attr.aria-label]="'Verkleinern' | translate"
+    [matTooltip]="'Verkleinern' | translate">
+    <mat-icon>zoom_out</mat-icon>
+  </button>
+</ng-template>
+
+<div id="layout-configuration">
+  <ng-container *ngTemplateOutlet="layoutActions"></ng-container>
+  <mat-drawer-container class="example-container" hasBackdrop=true>
+    <mat-drawer #drawer mode="over">
+      <mat-action-list *ngIf="editable">
+        <button mat-list-item (click)="add_intersection()">
+          <mat-icon color="accent">flare</mat-icon>
+          <span>{{'Kreuzung' | translate}}</span>
+        </button>
+        <button mat-list-item (click)="add_charger()">
+          <mat-icon color="accent">power</mat-icon>
+          <span>{{'Produktionsschritt.CHRG' | translate}}</span>
+        </button>
+        <button mat-list-item *ngFor="let mod of (layoutEditor.availableModules$ | async)"
+                (click)="add_production(mod)">
+          <img [src]="'assets/images/ic_ft_' + mod.subType?.toLowerCase() + '.svg'" class="module-icon" [alt]="'Produktionsschritt.' + mod.subType | translate">
+          <span><span>{{'Produktionsschritt.' + mod.subType | translate}} </span> <span>{{mod.serialNumber}}</span></span>
+        </button>
+      </mat-action-list>
+    </mat-drawer>
+    <mat-drawer-content>
+      <div #gridZoomContainer id="grid-zoom" [ngStyle]="widthScaleStyle$ | async">
+        <gridster [options]="options" #gridster [class.readonly]="!editable">
+          <gridster-item [item]="item" class="ff-tile"
+            *ngFor="let item of gridContents$ | async"
+            [class.is-road]="item.tile.type === 'ROAD'"
+            [class.highlight]="item.tile.id === highlightedId">
+            <button class="gridster-item-content"
+              mat-icon-button mat-raised-button
+              *ngIf="editable" (click)="delete_item(item)"
+              [disabled]="hasRunningOrders$ | async"
+              [attr.aria-label]="'Löschen' | translate"
+              [matTooltip]="'Löschen' | translate"
+              style="float: right; z-index: 1; position: relative">
+              <mat-icon>delete</mat-icon>
+            </button>
+            <div class="roads" *ngIf="item.tile.type === 'ROAD'">
+              <div class="road road-south"></div>
+              <div class="road road-east"></div>
+              <div class="road road-north"></div>
+              <div class="road road-west"></div>
+              <div class="content intersection">{{item.tile.id}}</div>
+            </div>
+            <div class="module" *ngIf="item.tile.type === 'MODULE'"
+              (click)="item_clicked(item)"
+              [class.is-offline]="isOffline(item.tile.id)"
+              [class.is-placeholder]="item.tile.placeholder"
+              [class.is-large-module]="layoutEditor.isLargeModule(item.tile.moduleType)"
+              [class.not-connected]="!item.tile.intersection">
+              <div class="content" [ngClass]="[item.tile.moduleType]">
+                <div class="module-type">{{'Produktionsschritt.' + item.tile.moduleType | translate}}</div>
+                <div class="module-id">{{'ID:' | translate}} {{item.tile.id}}</div>
+              </div>
+              <div class="direction" [ngClass]="[item.tile.direction, item.tile.moduleType]" [title]="item.tile.direction"></div>
+              <div class="actions">
+                <button *ngIf="editable"
+                  mat-icon-button
+                  mat-raised-button
+                  (click)="rotate_module(item)"
+                  [disabled]="hasRunningOrders$ | async"
+                  class="gridster-item-content"
+                  [attr.aria-label]="'Drehen' | translate" [matTooltip]="'Drehen' | translate">
+                  <mat-icon>rotate_right</mat-icon>
+                </button>
+                <button mat-icon-button
+                  *ngIf="item.tile.moduleType !== ModuleType.CHRG"
+                  routerLinkActive="active"
+                  [routerLink]="[routeToRoot$ | async, FutureFactoryRoutes.MODULE, item.tile.id]"
+                  [attr.aria-label]="'Mehr' | translate"
+                  [matTooltip]="'Mehr' | translate">
+                  <mat-icon>more</mat-icon>
+                </button>
+              </div>
+            </div>
+            <div class="ff-tile-overlay" ></div>
+          </gridster-item>
+        </gridster>
+      </div>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</div>

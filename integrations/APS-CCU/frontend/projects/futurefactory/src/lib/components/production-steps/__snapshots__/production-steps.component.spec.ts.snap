@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProductionStepsComponent should render the component 1`] = `
+<ff-production-steps
+  MODULE_ICON_PATHS={[Function Object]}
+  actionHtmlStrings={[Function Object]}
+  order="undefined"
+  stateIcons={[Function Object]}
+>
+  <mat-list
+    class="mat-list mat-list-base"
+  >
+  </mat-list>
+</ff-production-steps>
+`;

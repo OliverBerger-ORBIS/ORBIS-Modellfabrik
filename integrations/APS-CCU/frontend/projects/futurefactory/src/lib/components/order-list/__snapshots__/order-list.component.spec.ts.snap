@@ -1,0 +1,586 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`OrderListComponent should render the component 1`] = `
+<ff-order-list
+  activeOrders$={[Function AnonymousSubject]}
+  canRemove={[Function Boolean]}
+  completedOrders$={[Function AnonymousSubject]}
+  multiple="false"
+  orderSelect={[Function EventEmitter_]}
+  state={[Function OrderListState]}
+  stateIcons={[Function Object]}
+  stepTypeIcon={[Function Object]}
+  withCompleted="false"
+>
+  <mat-card
+    class="mat-card mat-focus-indicator _mat-animation-noopable"
+  >
+    <mat-card-title
+      class="mat-card-title mb-0"
+    >
+      <h2
+        class="mb-0"
+      >
+         Keine laufenden Aufträge verfügbar 
+      </h2>
+    </mat-card-title>
+    <mat-card-content
+      class="mat-card-content"
+    >
+    </mat-card-content>
+  </mat-card>
+</ff-order-list>
+`;
+
+exports[`OrderListComponent should show active orders and hide completed orders if withCompleted equals false 1`] = `
+<ff-order-list
+  activeOrders$={[Function AnonymousSubject]}
+  canRemove={[Function Boolean]}
+  completedOrders$={[Function AnonymousSubject]}
+  multiple="false"
+  orderSelect={[Function EventEmitter_]}
+  state={[Function OrderListState]}
+  stateIcons={[Function Object]}
+  stepTypeIcon={[Function Object]}
+  withCompleted="false"
+>
+  <mat-card
+    class="mat-card mat-focus-indicator _mat-animation-noopable"
+  >
+    <mat-card-title
+      class="mat-card-title mb-0"
+    >
+      <h2
+        class="mb-0"
+      >
+         Laufende Aufträge 
+      </h2>
+    </mat-card-title>
+    <mat-card-content
+      class="mat-card-content"
+    >
+      <div
+        class="production-orders__list"
+      >
+        <mat-selection-list
+          aria-disabled="false"
+          aria-multiselectable="false"
+          class="mat-selection-list mat-list-base"
+          role="listbox"
+          tabindex="0"
+        >
+          <mat-list-option
+            aria-disabled="false"
+            aria-selected="false"
+            class="mat-list-item mat-list-option mat-focus-indicator production-orders__list__item mat-accent"
+            color="accent"
+            role="option"
+            tabindex="-1"
+          >
+            <div
+              class="mat-list-item-content mat-list-item-content-reverse"
+            >
+              <div
+                class="mat-ripple mat-list-item-ripple"
+                mat-ripple=""
+              />
+              <div
+                class="mat-list-text"
+              >
+                <div
+                  class="production-orders__list__item__content"
+                  title="ID: 471243d7-5ac2-4fe5-959a-04708e783629"
+                >
+                  <span>
+                    Auftrag
+                  </span>
+                  <span>
+                    10:00
+                  </span>
+                  <span>
+                    BLUE
+                  </span>
+                  <span
+                    class="icon_column"
+                  >
+                    <mat-icon
+                      aria-hidden="true"
+                      aria-label="Status.ENQUEUED"
+                      class="mat-icon notranslate step-state material-icons mat-icon-no-color"
+                      data-mat-icon-type="font"
+                      role="img"
+                      title="Status.ENQUEUED"
+                    >
+                       hourglass_empty 
+                    </mat-icon>
+                  </span>
+                  <span>
+                    <button
+                      class="mat-focus-indicator mat-icon-button mat-button-base _mat-animation-noopable"
+                      mat-icon-button=""
+                    >
+                      <span
+                        class="mat-button-wrapper"
+                      >
+                        <mat-icon
+                          aria-hidden="true"
+                          aria-label="Abbrechen"
+                          class="mat-icon notranslate material-icons mat-icon-no-color"
+                          data-mat-icon-type="font"
+                          role="img"
+                          title="Abbrechen"
+                        >
+                           delete 
+                        </mat-icon>
+                      </span>
+                      <span
+                        class="mat-ripple mat-button-ripple mat-button-ripple-round"
+                        matripple=""
+                      />
+                      <span
+                        class="mat-button-focus-overlay"
+                      />
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </mat-list-option>
+        </mat-selection-list>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</ff-order-list>
+`;
+
+exports[`OrderListComponent should show active orders without completed 1`] = `
+<ff-order-list
+  activeOrders$={[Function AnonymousSubject]}
+  canRemove={[Function Boolean]}
+  completedOrders$={[Function AnonymousSubject]}
+  multiple="false"
+  orderSelect={[Function EventEmitter_]}
+  state={[Function OrderListState]}
+  stateIcons={[Function Object]}
+  stepTypeIcon={[Function Object]}
+  withCompleted="false"
+>
+  <mat-card
+    class="mat-card mat-focus-indicator _mat-animation-noopable"
+  >
+    <mat-card-title
+      class="mat-card-title mb-0"
+    >
+      <h2
+        class="mb-0"
+      >
+         Laufende Aufträge 
+      </h2>
+    </mat-card-title>
+    <mat-card-content
+      class="mat-card-content"
+    >
+      <div
+        class="production-orders__list"
+      >
+        <mat-selection-list
+          aria-disabled="false"
+          aria-multiselectable="false"
+          class="mat-selection-list mat-list-base"
+          role="listbox"
+          tabindex="0"
+        >
+          <mat-list-option
+            aria-disabled="false"
+            aria-selected="false"
+            class="mat-list-item mat-list-option mat-focus-indicator production-orders__list__item mat-accent"
+            color="accent"
+            role="option"
+            tabindex="-1"
+          >
+            <div
+              class="mat-list-item-content mat-list-item-content-reverse"
+            >
+              <div
+                class="mat-ripple mat-list-item-ripple"
+                mat-ripple=""
+              />
+              <div
+                class="mat-list-text"
+              >
+                <div
+                  class="production-orders__list__item__content"
+                  title="ID: 471243d7-5ac2-4fe5-959a-04708e783629"
+                >
+                  <span>
+                    Auftrag
+                  </span>
+                  <span>
+                    10:00
+                  </span>
+                  <span>
+                    BLUE
+                  </span>
+                  <span
+                    class="icon_column"
+                  >
+                    <mat-icon
+                      aria-hidden="true"
+                      aria-label="Status.ENQUEUED"
+                      class="mat-icon notranslate step-state material-icons mat-icon-no-color"
+                      data-mat-icon-type="font"
+                      role="img"
+                      title="Status.ENQUEUED"
+                    >
+                       hourglass_empty 
+                    </mat-icon>
+                  </span>
+                  <span>
+                    <button
+                      class="mat-focus-indicator mat-icon-button mat-button-base _mat-animation-noopable"
+                      mat-icon-button=""
+                    >
+                      <span
+                        class="mat-button-wrapper"
+                      >
+                        <mat-icon
+                          aria-hidden="true"
+                          aria-label="Abbrechen"
+                          class="mat-icon notranslate material-icons mat-icon-no-color"
+                          data-mat-icon-type="font"
+                          role="img"
+                          title="Abbrechen"
+                        >
+                           delete 
+                        </mat-icon>
+                      </span>
+                      <span
+                        class="mat-ripple mat-button-ripple mat-button-ripple-round"
+                        matripple=""
+                      />
+                      <span
+                        class="mat-button-focus-overlay"
+                      />
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </mat-list-option>
+        </mat-selection-list>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</ff-order-list>
+`;
+
+exports[`OrderListComponent should show both active and completed orders if withCompleted equals true 1`] = `
+<ff-order-list
+  activeOrders$={[Function AnonymousSubject]}
+  canRemove={[Function Boolean]}
+  completedOrders$={[Function AnonymousSubject]}
+  multiple="false"
+  orderSelect={[Function EventEmitter_]}
+  state={[Function OrderListState]}
+  stateIcons={[Function Object]}
+  stepTypeIcon={[Function Object]}
+  withCompleted={[Function Boolean]}
+>
+  <mat-card
+    class="mat-card mat-focus-indicator _mat-animation-noopable"
+  >
+    <mat-card-title
+      class="mat-card-title mb-0"
+    >
+      <h2
+        class="mb-0"
+      >
+         Laufende Aufträge 
+      </h2>
+    </mat-card-title>
+    <mat-card-content
+      class="mat-card-content"
+    >
+      <div
+        class="production-orders__list"
+      >
+        <mat-selection-list
+          aria-disabled="false"
+          aria-multiselectable="false"
+          class="mat-selection-list mat-list-base"
+          role="listbox"
+          tabindex="0"
+        >
+          <mat-list-option
+            aria-disabled="false"
+            aria-selected="false"
+            class="mat-list-item mat-list-option mat-focus-indicator production-orders__list__item mat-accent"
+            color="accent"
+            role="option"
+            tabindex="-1"
+          >
+            <div
+              class="mat-list-item-content mat-list-item-content-reverse"
+            >
+              <div
+                class="mat-ripple mat-list-item-ripple"
+                mat-ripple=""
+              />
+              <div
+                class="mat-list-text"
+              >
+                <div
+                  class="production-orders__list__item__content"
+                  title="ID: 471243d7-5ac2-4fe5-959a-04708e783629"
+                >
+                  <span>
+                    Auftrag
+                  </span>
+                  <span>
+                    10:00
+                  </span>
+                  <span>
+                    BLUE
+                  </span>
+                  <span
+                    class="icon_column"
+                  >
+                    <mat-icon
+                      aria-hidden="true"
+                      aria-label="Status.ENQUEUED"
+                      class="mat-icon notranslate step-state material-icons mat-icon-no-color"
+                      data-mat-icon-type="font"
+                      role="img"
+                      title="Status.ENQUEUED"
+                    >
+                       hourglass_empty 
+                    </mat-icon>
+                  </span>
+                  <span>
+                    <button
+                      class="mat-focus-indicator mat-icon-button mat-button-base _mat-animation-noopable"
+                      mat-icon-button=""
+                    >
+                      <span
+                        class="mat-button-wrapper"
+                      >
+                        <mat-icon
+                          aria-hidden="true"
+                          aria-label="Abbrechen"
+                          class="mat-icon notranslate material-icons mat-icon-no-color"
+                          data-mat-icon-type="font"
+                          role="img"
+                          title="Abbrechen"
+                        >
+                           delete 
+                        </mat-icon>
+                      </span>
+                      <span
+                        class="mat-ripple mat-button-ripple mat-button-ripple-round"
+                        matripple=""
+                      />
+                      <span
+                        class="mat-button-focus-overlay"
+                      />
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </mat-list-option>
+        </mat-selection-list>
+      </div>
+    </mat-card-content>
+  </mat-card><mat-card
+    class="mat-card mat-focus-indicator _mat-animation-noopable"
+  >
+    <mat-card-title
+      class="mat-card-title mb-0"
+    >
+      <h2
+        class="mb-0"
+      >
+         Abgeschlossene Aufträge 
+      </h2>
+    </mat-card-title>
+    <mat-card-content
+      class="mat-card-content"
+    >
+      <div
+        class="production-orders__list"
+      >
+        <mat-selection-list
+          aria-disabled="false"
+          aria-multiselectable="false"
+          class="mat-selection-list mat-list-base"
+          role="listbox"
+          tabindex="0"
+        >
+          <mat-list-option
+            aria-disabled="false"
+            aria-selected="false"
+            class="mat-list-item mat-list-option mat-focus-indicator production-orders__list__item mat-accent"
+            color="accent"
+            role="option"
+            tabindex="-1"
+          >
+            <div
+              class="mat-list-item-content mat-list-item-content-reverse"
+            >
+              <div
+                class="mat-ripple mat-list-item-ripple"
+                mat-ripple=""
+              />
+              <div
+                class="mat-list-text"
+              >
+                <div
+                  class="production-orders__list__item__content"
+                  title="ID: 471243d7-5ac2-4fe5-959a-04708e369124"
+                >
+                  <span>
+                    Auftrag
+                  </span>
+                  <span>
+                    10:00
+                  </span>
+                  <span>
+                    BLUE
+                  </span>
+                  <span
+                    class="icon_column"
+                  >
+                    <mat-icon
+                      aria-hidden="true"
+                      aria-label="Status.FINISHED"
+                      class="mat-icon notranslate step-state material-icons mat-icon-no-color"
+                      data-mat-icon-type="font"
+                      role="img"
+                      title="Status.FINISHED"
+                    >
+                       check_circle 
+                    </mat-icon>
+                  </span>
+                  <span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </mat-list-option>
+        </mat-selection-list>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</ff-order-list>
+`;
+
+exports[`OrderListComponent should show completed orders if withCompleted equals true 1`] = `
+<ff-order-list
+  activeOrders$={[Function AnonymousSubject]}
+  canRemove={[Function Boolean]}
+  completedOrders$={[Function AnonymousSubject]}
+  multiple="false"
+  orderSelect={[Function EventEmitter_]}
+  state={[Function OrderListState]}
+  stateIcons={[Function Object]}
+  stepTypeIcon={[Function Object]}
+  withCompleted={[Function Boolean]}
+>
+  <mat-card
+    class="mat-card mat-focus-indicator _mat-animation-noopable"
+  >
+    <mat-card-title
+      class="mat-card-title mb-0"
+    >
+      <h2
+        class="mb-0"
+      >
+         Keine laufenden Aufträge verfügbar 
+      </h2>
+    </mat-card-title>
+    <mat-card-content
+      class="mat-card-content"
+    >
+    </mat-card-content>
+  </mat-card><mat-card
+    class="mat-card mat-focus-indicator _mat-animation-noopable"
+  >
+    <mat-card-title
+      class="mat-card-title mb-0"
+    >
+      <h2
+        class="mb-0"
+      >
+         Abgeschlossene Aufträge 
+      </h2>
+    </mat-card-title>
+    <mat-card-content
+      class="mat-card-content"
+    >
+      <div
+        class="production-orders__list"
+      >
+        <mat-selection-list
+          aria-disabled="false"
+          aria-multiselectable="false"
+          class="mat-selection-list mat-list-base"
+          role="listbox"
+          tabindex="0"
+        >
+          <mat-list-option
+            aria-disabled="false"
+            aria-selected="false"
+            class="mat-list-item mat-list-option mat-focus-indicator production-orders__list__item mat-accent"
+            color="accent"
+            role="option"
+            tabindex="-1"
+          >
+            <div
+              class="mat-list-item-content mat-list-item-content-reverse"
+            >
+              <div
+                class="mat-ripple mat-list-item-ripple"
+                mat-ripple=""
+              />
+              <div
+                class="mat-list-text"
+              >
+                <div
+                  class="production-orders__list__item__content"
+                  title="ID: 471243d7-5ac2-4fe5-959a-04708e369124"
+                >
+                  <span>
+                    Auftrag
+                  </span>
+                  <span>
+                    10:00
+                  </span>
+                  <span>
+                    BLUE
+                  </span>
+                  <span
+                    class="icon_column"
+                  >
+                    <mat-icon
+                      aria-hidden="true"
+                      aria-label="Status.FINISHED"
+                      class="mat-icon notranslate step-state material-icons mat-icon-no-color"
+                      data-mat-icon-type="font"
+                      role="img"
+                      title="Status.FINISHED"
+                    >
+                       check_circle 
+                    </mat-icon>
+                  </span>
+                  <span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </mat-list-option>
+        </mat-selection-list>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</ff-order-list>
+`;

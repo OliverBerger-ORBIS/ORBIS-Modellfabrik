@@ -1,0 +1,1331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en-US" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="globalAttention" datatype="html">
+        <source>Attention</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/outer-frame/outer-frame.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      <target>Attentie</target></trans-unit>
+      <trans-unit id="globalConfirm" datatype="html">
+        <source>Confirm</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+      <target>Bevestigen</target></trans-unit>
+      <trans-unit id="globalContinue" datatype="html">
+        <source>Continue</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      <target>Voortzetten</target></trans-unit>
+      <trans-unit id="globalAbort" datatype="html">
+        <source>Abort</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard-dialog/dashboard-dialog.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      <target>Afbreken</target></trans-unit>
+      <trans-unit id="globalApply" datatype="html">
+        <source>Apply</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard-dialog/dashboard-dialog.component.html</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+      <target>Toepassen</target></trans-unit>
+      <trans-unit id="globalNo" datatype="html">
+        <source>No</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+      <target>Nee</target></trans-unit>
+      <trans-unit id="globalYes" datatype="html">
+        <source>Yes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      <target>Ja</target></trans-unit>
+      <trans-unit id="globalError" datatype="html">
+        <source>Error</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      <target>Fout</target></trans-unit>
+      <trans-unit id="globalServerError" datatype="html">
+        <source>The server is currently unavailable. Please try again later.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+      <target>De server is momenteel niet beschikbaar. Probeer het later nog eens.</target></trans-unit>
+      <trans-unit id="dialogLoadData" datatype="html">
+        <source>Data is loading.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      <target>Gegevens worden geladen.</target></trans-unit>
+      <trans-unit id="dialogExportData" datatype="html">
+        <source>Data downloading.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      <target>Gegevens downloaden.</target></trans-unit>
+      <trans-unit id="dialogSaveDataQuestion" datatype="html">
+        <source>Do you want to save all data, before you continues?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      <target>Wil je alle gegevens opslaan voordat je doorgaat?</target></trans-unit>
+      <trans-unit id="dialogSavePicture" datatype="html">
+        <source>The picture will be saved.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+      <target>De foto wordt opgeslagen.</target></trans-unit>
+      <trans-unit id="dialogSavePictureError" datatype="html">
+        <source>The picture could not be saved.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      <target>De foto kon niet worden opgeslagen.</target></trans-unit>
+      <trans-unit id="dialogDeletePicture" datatype="html">
+        <source>The picture will be deleted.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      <target>De foto wordt verwijderd.</target></trans-unit>
+      <trans-unit id="dialogDeletePictureError" datatype="html">
+        <source>The picture could not be deleted.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      <target>De foto kon niet worden verwijderd.</target></trans-unit>
+      <trans-unit id="dialogDeleteController" datatype="html">
+        <source>The controller will be deleted.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      <target>De controller wordt verwijderd.</target></trans-unit>
+      <trans-unit id="dialogDeleteControllerError" datatype="html">
+        <source>The controller could not be deleted.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      <target>De controller moet niet worden verwijderd.</target></trans-unit>
+      <trans-unit id="dialogSaveController" datatype="html">
+        <source>The controller will be saved.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      <target>De controller wordt opgeslagen.</target></trans-unit>
+      <trans-unit id="dialogSaveControllerError" datatype="html">
+        <source>The controller could not be saved.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      <target>De controller kon niet worden opgeslagen.</target></trans-unit>
+      <trans-unit id="dialogLinkController" datatype="html">
+        <source>The controller will be linked.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      <target>De controller wordt gekoppeld.</target></trans-unit>
+      <trans-unit id="dialogLinkControllerError" datatype="html">
+        <source>The pairing code has expired or could not be found. The controller could not be linked.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      <target>De pairing-code is ongeldig geworden of werd niet gevonden. De controller kon niet gekoppeld worden.</target></trans-unit>
+      <trans-unit id="dialogDeleteMember" datatype="html">
+        <source>The member will be deleted.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      <target>Het lid wordt verwijderd.</target></trans-unit>
+      <trans-unit id="dialogDeleteMemberError" datatype="html">
+        <source>The member could not be deleted.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      <target>Het lid kon niet worden verwijderd.</target></trans-unit>
+      <trans-unit id="dialogUpdateMember" datatype="html">
+        <source>The member will be saved.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      <target>Het lid wordt opgeslagen.</target></trans-unit>
+      <trans-unit id="dialogUpdateMemberError" datatype="html">
+        <source>The member could not be saved.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+      <target>Het lid kon niet worden opgeslagen.</target></trans-unit>
+      <trans-unit id="dialogCreateMember" datatype="html">
+        <source>The member will be created.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      <target>Het lid wordt aangemaakt.</target></trans-unit>
+      <trans-unit id="dialogCreateMemberError" datatype="html">
+        <source>The member could not be created.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+      <target>Het lid kon niet worden aangemaakt.</target></trans-unit>
+      <trans-unit id="dialogActivateLicence" datatype="html">
+        <source>The licence will be activated.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      <target>De licentie wordt geactiveerd.</target></trans-unit>
+      <trans-unit id="dialogActivateLicenceInvalidError" datatype="html">
+        <source>The licence you entered is invalid.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      <target>De ingevoerde licentie is ongeldig.</target></trans-unit>
+      <trans-unit id="dialogActivateLicenceUsedError" datatype="html">
+        <source>The licence you entered is already in use.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      <target>De ingevoerde licentie wordt reeds gebruikt.</target></trans-unit>
+      <trans-unit id="dialogActivateLicenceTimeError" datatype="html">
+        <source>You have entered too many licences. Please try again later.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      <target>Je hebt te veel licenties ingevoerd. Probeer het later nog eens.</target></trans-unit>
+      <trans-unit id="dialogCleanStorage" datatype="html">
+        <source>The storage will be freed.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+      <target>De opslag wordt opgeschoond.</target></trans-unit>
+      <trans-unit id="dialogCleanStorageQuestion" datatype="html">
+        <source>Do you really want to clean your storage space?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+      <target>Wil je echt je opslagruimte opschonen?</target></trans-unit>
+      <trans-unit id="dialogUpdateUser" datatype="html">
+        <source>The profile will be saved.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      <target>Het profiel wordt opgeslagen.</target></trans-unit>
+      <trans-unit id="dialogUpdateUserError" datatype="html">
+        <source>The profile could not be saved.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+      <target>Het profiel kon niet worden opgeslagen.</target></trans-unit>
+      <trans-unit id="dialogDeleteUser" datatype="html">
+        <source>The profile will be deleted.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+      <target>Het profiel wordt gewist.</target></trans-unit>
+      <trans-unit id="dialogDeleteUserQuestion" datatype="html">
+        <source>Do you really want to delete your profile?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      <target>Wil je je profiel echt wissen?</target></trans-unit>
+      <trans-unit id="dialogDeleteUserError" datatype="html">
+        <source>The profile could not be deleted.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      <target>Het profiel kan niet worden gewist.</target></trans-unit>
+      <trans-unit id="dialogDeletePictureQuestion" datatype="html">
+        <source>Should the picture be deleted?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/smarthome/gallery-window/gallery-window.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      <target>Moet de foto verwijderd worden?</target></trans-unit>
+      <trans-unit id="dialogDeleteAllPicturesQuestion" datatype="html">
+        <source>Should all pictures be deleted?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/smarthome/gallery-window/gallery-window.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      <target>Moeten alle foto’s verwijderd worden?</target></trans-unit>
+      <trans-unit id="alarmCode100" datatype="html">
+        <source>Alarm: Movement noticed!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      <target>Alarm: Beweging waargenomen!</target></trans-unit>
+      <trans-unit id="alarmCode200" datatype="html">
+        <source>Alarm: Danger of frost! (%1$s°C)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">44</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+      <target>Alarm: Vorstgevaar! (%1$s°C)</target></trans-unit>
+      <trans-unit id="alarmCode300" datatype="html">
+        <source>Alarm: High Humidity! (%1$s%)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      <target>Alarm: Hoog vochtigheidsgehalte! (%1$s%)</target></trans-unit>
+      <trans-unit id="dashboardCamera" datatype="html">
+        <source>Camera</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      <target>Camera</target></trans-unit>
+      <trans-unit id="dashboardCameraControl" datatype="html">
+        <source>Camera control</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+      <target>Camerabediening</target></trans-unit>
+      <trans-unit id="dashboardGallery" datatype="html">
+        <source>Gallery</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+      <target>Galerij</target></trans-unit>
+      <trans-unit id="dashboardChartSingleValue" datatype="html">
+        <source>Single value</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      <target>Enkele waarde</target></trans-unit>
+      <trans-unit id="dashboardChartCurve" datatype="html">
+        <source>Curve</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+      <target>Verloop</target></trans-unit>
+      <trans-unit id="dashboardChartCurrentBrightness" datatype="html">
+        <source>Current brightness</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">51</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      <target>Huidige helderheid</target></trans-unit>
+      <trans-unit id="dashboardChartCurrentAirHumidity" datatype="html">
+        <source>Current air humidity</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      <target>Huidige luchtvochtigheid</target></trans-unit>
+      <trans-unit id="dashboardChartCurrentAirQuality" datatype="html">
+        <source>Current air quality</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">53</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      <target>Huidige luchtkwaliteit</target></trans-unit>
+      <trans-unit id="dashboardChartCurrentAirPressure" datatype="html">
+        <source>Current air pressure</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      <target>Huidige luchtdruk</target></trans-unit>
+      <trans-unit id="dashboardChartCurrentTemperature" datatype="html">
+        <source>Current temperature</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      <target>Huidige temperatuur</target></trans-unit>
+      <trans-unit id="dashboardChartBrightnessCurve" datatype="html">
+        <source>Brightness curve</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      <target>Helderheidsverloop</target></trans-unit>
+      <trans-unit id="dashboardChartAirHumidityCurve" datatype="html">
+        <source>Humidity curve</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">57</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      <target>Vochtigheidsverloop</target></trans-unit>
+      <trans-unit id="dashboardChartAirQualityCurve" datatype="html">
+        <source>Air quality curve</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      <target>Luchtkwaliteitsverloop</target></trans-unit>
+      <trans-unit id="dashboardChartAirPressureCurve" datatype="html">
+        <source>Air pressure curve</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      <target>Luchtdrukverloop</target></trans-unit>
+      <trans-unit id="dashboardChartTemperatureCurve" datatype="html">
+        <source>Temperature curve</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      <target>Temperatuurverloop</target></trans-unit>
+      <trans-unit id="dashboardChartXAxisLabel" datatype="html">
+        <source>Time</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">61</context>
+        </context-group>
+      <target>Tijd</target></trans-unit>
+      <trans-unit id="dashboardChartYAxisLabelTemperature" datatype="html">
+        <source>Temperature in °C</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      <target>Temperatuur in °C</target></trans-unit>
+      <trans-unit id="dashboardChartYAxisLabelAirHumidity" datatype="html">
+        <source>Air humidity in %</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+      <target>Luchtvochtigheid in %</target></trans-unit>
+      <trans-unit id="dashboardChartYAxisLabelAirPressure" datatype="html">
+        <source>Air pressure in hPa</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">64</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      <target>Luchtdruk in hPa</target></trans-unit>
+      <trans-unit id="dashboardChartYAxisLabelAirQuality" datatype="html">
+        <source>Air quality [0-500]</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+      <target>Luchtkwaliteit [0 - 500]</target></trans-unit>
+      <trans-unit id="dashboardChartYAxisLabelBrightness" datatype="html">
+        <source>Brightness [0-100]</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">66</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      <target>Helderheid [0 - 100]</target></trans-unit>
+      <trans-unit id="dashboardChartTemperature" datatype="html">
+        <source>Temperature</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+      <target>Temperatuur</target></trans-unit>
+      <trans-unit id="dashboardChartAirHumidity" datatype="html">
+        <source>Air Humidity</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">69</context>
+        </context-group>
+      <target>Luchtvochtigheid</target></trans-unit>
+      <trans-unit id="dashboardChartAirPressure" datatype="html">
+        <source>Air Pressure</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+      <target>Luchtdruk</target></trans-unit>
+      <trans-unit id="dashboardChartAirQuality" datatype="html">
+        <source>Air Quality</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">71</context>
+        </context-group>
+      <target>Luchtkwaliteit</target></trans-unit>
+      <trans-unit id="dashboardChartBrightness" datatype="html">
+        <source>Brightness</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/i18n/i18n.component.html</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+      <target>Helderheid</target></trans-unit>
+      <trans-unit id="navbarSmartHome" datatype="html">
+        <source>Sensor Station IoT</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/navbar/navbar.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      <target>Sensor Station IoT</target></trans-unit>
+      <trans-unit id="navbarFactorySimulation" datatype="html">
+        <source>Training Factory Industry 4.0</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/navbar/navbar.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      <target>Training Factory Industry 4.0</target></trans-unit>
+      <trans-unit id="navbarRoboticStudio" datatype="html">
+        <source>ROBO Pro Coding</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/navbar/navbar.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      <target>ROBO Pro Coding</target></trans-unit>
+      <trans-unit id="navbarFutureFactory" datatype="html">
+        <source>Agile Production Simulation</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/navbar/navbar.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="navbarSettings" datatype="html">
+        <source>Settings</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/navbar/navbar.component.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      <target>Instellingen</target></trans-unit>
+      <trans-unit id="upgradeTxtControllerHint" datatype="html">
+        <source> For communication with the fischertechnik Cloud, the TXT controller requires firmware version 4.7.0. For older versions, an update must be performed, see <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://www.fischertechnik.de/txt-update470&quot; target=&quot;_blank&quot;&gt;"/>www.fischertechnik.de/txt-update470<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/outer-frame/outer-frame.component.html</context>
+          <context context-type="linenumber">12,14</context>
+        </context-group>
+      <target>Voor communicatie met de fischertechnik Cloud heeft deze controller firmware versie 4.7.0 nodig. Voor oudere versies moet een update worden uitgevoerd, zie www.fischertechnik.de/txt-update470.</target></trans-unit>
+      <trans-unit id="upgradeTxt4ControllerHint" datatype="html">
+        <source> This controller does not require an update for communication with the fischertechnik Cloud. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/outer-frame/outer-frame.component.html</context>
+          <context context-type="linenumber">19,21</context>
+        </context-group>
+      <target>Deze controller heeft geen update nodig voor de communicatie met de fischertechnik Cloud.</target></trans-unit>
+      <trans-unit id="userMenuSalutation" datatype="html">
+        <source>Hello</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/outer-frame/outer-frame.component.html</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+      <target>Hallo</target></trans-unit>
+      <trans-unit id="userMenuProfile" datatype="html">
+        <source>Profile</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/outer-frame/outer-frame.component.html</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+      <target>Profiel</target></trans-unit>
+      <trans-unit id="userMenuLogout" datatype="html">
+        <source>Logout</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/outer-frame/outer-frame.component.html</context>
+          <context context-type="linenumber">51</context>
+        </context-group>
+      <target>Uitloggen</target></trans-unit>
+      <trans-unit id="profileName" datatype="html">
+        <source>Name</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      <target>Naam</target></trans-unit>
+      <trans-unit id="profileBirthday" datatype="html">
+        <source>Birthday</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      <target>Verjaardag</target></trans-unit>
+      <trans-unit id="profileEmail" datatype="html">
+        <source>Email</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+      <target>E-mail</target></trans-unit>
+      <trans-unit id="profileEmailIsBlocked" datatype="html">
+        <source> This e-mail has been blocked. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">22,24</context>
+        </context-group>
+      <target>Deze e-mail is geblokkeerd.</target></trans-unit>
+      <trans-unit id="profileEmailIsAlreadyRegistered" datatype="html">
+        <source> This e-mail is already registered. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">25,27</context>
+        </context-group>
+      <target>Deze e-mail is reeds geregistreerd.</target></trans-unit>
+      <trans-unit id="profileEmailIsRequired" datatype="html">
+        <source> Email is required </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">29,31</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">45,47</context>
+        </context-group>
+      <target>E-mail is vereist</target></trans-unit>
+      <trans-unit id="profileEmailIsInvalid" datatype="html">
+        <source> The e-mail is invalid. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">32,34</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">42,44</context>
+        </context-group>
+      <target>E-mail is ongeldig.</target></trans-unit>
+      <trans-unit id="profilePassword" datatype="html">
+        <source>Password</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+      <target>Wachtwoord</target></trans-unit>
+      <trans-unit id="profileChangePassword" datatype="html">
+        <source>change</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      <target>wijzig</target></trans-unit>
+      <trans-unit id="profileParentEmail" datatype="html">
+        <source>Parent Email</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      <target>Bovenliggende e-mail</target></trans-unit>
+      <trans-unit id="profilePrivacyPolicy" datatype="html">
+        <source>By signing up, you agree to the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a [target]=&quot;'_blank'&quot; [queryParams]=&quot;{ url: 'https://www.fischertechnik.de/{language}/rechtliches/datenschutz'}&quot; [class.disabled] = &quot;null&quot; [routerLink]=&quot;['/backlink']&quot; routerLinkActive=&quot;active&quot; #rla=&quot;routerLinkActive&quot;&gt;"/>Privacy Policy<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+      <target>Door je aan te melden ga je akkoord met het privacybeleid.</target></trans-unit>
+      <trans-unit id="globalEdit" datatype="html">
+        <source>Edit</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
+      <target>Bewerken</target></trans-unit>
+      <trans-unit id="globalStore" datatype="html">
+        <source>Store</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">53</context>
+        </context-group>
+      <target>Bewaar</target></trans-unit>
+      <trans-unit id="globalDelete" datatype="html">
+        <source>Delete</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+      <target>Wissen</target></trans-unit>
+      <trans-unit id="profileStorage" datatype="html">
+        <source>Storage</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+      <target>Opslag</target></trans-unit>
+      <trans-unit id="profileStorageConsumed" datatype="html">
+        <source>consumed</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+      <target>verbruikt</target></trans-unit>
+      <trans-unit id="profileStorageFree" datatype="html">
+        <source>free</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+      <target>vrij</target></trans-unit>
+      <trans-unit id="globalClean" datatype="html">
+        <source>Clean</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">77</context>
+        </context-group>
+      <target>Vernieuwen</target></trans-unit>
+      <trans-unit id="globalDownload" datatype="html">
+        <source>Download</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-basic-ui/src/lib/components/user-profile/user-profile.component.html</context>
+          <context context-type="linenumber">78</context>
+        </context-group>
+      <target>Download</target></trans-unit>
+      <trans-unit id="dialogNoControllerRegistered" datatype="html">
+        <source>No controller has been registered yet.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard-dialog/dashboard-dialog.component.html</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+      <target>Nog geen controller geregistreerd.</target></trans-unit>
+      <trans-unit id="dialogRegistereController" datatype="html">
+        <source>Register controller now ...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard-dialog/dashboard-dialog.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      <target>Registreer controller nu ...</target></trans-unit>
+      <trans-unit id="dashboardAddWindow" datatype="html">
+        <source>Add window</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+      <target>Venster toevoegen</target></trans-unit>
+      <trans-unit id="dashboardSupplierView" datatype="html">
+        <source>Supplier view</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      <target>Weergave leverancier</target></trans-unit>
+      <trans-unit id="dashboardCustomerView" datatype="html">
+        <source>Customer view</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      <target>Weergave klant</target></trans-unit>
+      <trans-unit id="dashboardProductionvView" datatype="html">
+        <source>Production view</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+      <target>Weergave productie</target></trans-unit>
+      <trans-unit id="dashboardMonitoring" datatype="html">
+        <source>Monitoring</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+      <target>Monitoring</target></trans-unit>
+      <trans-unit id="dashboardOrder" datatype="html">
+        <source>Order</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      <target>Bestelling</target></trans-unit>
+      <trans-unit id="dashboardOrderRawMaterial" datatype="html">
+        <source>Order raw material</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+      <target>Bestel ruw materiaal</target></trans-unit>
+      <trans-unit id="dashboardFactoryStatus" datatype="html">
+        <source>Factory status</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+      <target>Fabrieksstatus</target></trans-unit>
+      <trans-unit id="dashboardProductionProcess" datatype="html">
+        <source>Production process</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      <target>Productieproces</target></trans-unit>
+      <trans-unit id="dashboardStock" datatype="html">
+        <source>Stock</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      <target>Voorraad</target></trans-unit>
+      <trans-unit id="dashboardNfcReader" datatype="html">
+        <source>NFC reader</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+      <target>NFC reader</target></trans-unit>
+      <trans-unit id="globalMore" datatype="html">
+        <source>More</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/title-bar/title-bar.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      <target>Meer</target></trans-unit>
+      <trans-unit id="dashboardWindowFullscreen" datatype="html">
+        <source>Fullscreen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/title-bar/title-bar.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      <target>Volledig scherm</target></trans-unit>
+      <trans-unit id="dashboardWindowFullscreenExit" datatype="html">
+        <source>Exit fullscreen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/title-bar/title-bar.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      <target>Volledig scherm verlaten</target></trans-unit>
+      <trans-unit id="dashboardWindowClose" datatype="html">
+        <source>Close window</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/title-bar/title-bar.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      <target>Venster sluiten</target></trans-unit>
+      <trans-unit id="redWorkpiece" datatype="html">
+        <source>Red workpiece</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/customer-window/order-state/order-state.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/customer-window/workpiece-advertisement/workpiece-advertisement.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/supplier-window/order-raw-material-window/order-raw-material-window.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      <target>Rood werkstuk</target></trans-unit>
+      <trans-unit id="blueWorkpiece" datatype="html">
+        <source>Blue workpiece</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/customer-window/order-state/order-state.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/customer-window/workpiece-advertisement/workpiece-advertisement.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/supplier-window/order-raw-material-window/order-raw-material-window.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      <target>Blauw werkstuk</target></trans-unit>
+      <trans-unit id="whiteWorkpiece" datatype="html">
+        <source>White workpiece</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/customer-window/order-state/order-state.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/customer-window/workpiece-advertisement/workpiece-advertisement.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/supplier-window/order-raw-material-window/order-raw-material-window.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+      <target>Wit werkstuk</target></trans-unit>
+      <trans-unit id="ordered" datatype="html">
+        <source>Ordered</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/customer-window/order-state/order-state.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+      <target>Besteld</target></trans-unit>
+      <trans-unit id="inProcess" datatype="html">
+        <source>In process</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/customer-window/order-state/order-state.component.html</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+      <target>Wordt verwerkt</target></trans-unit>
+      <trans-unit id="shipped" datatype="html">
+        <source>Shipped</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/customer-window/order-state/order-state.component.html</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+      <target>Verzonden</target></trans-unit>
+      <trans-unit id="availability" datatype="html">
+        <source>Availability:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/customer-window/workpiece-advertisement/workpiece-advertisement.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      <target>Beschikbaarheid:</target></trans-unit>
+      <trans-unit id="stock" datatype="html">
+        <source>Stock:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/customer-window/workpiece-advertisement/workpiece-advertisement.component.html</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+      <target>Voorraad: </target></trans-unit>
+      <trans-unit id="order" datatype="html">
+        <source>order</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/customer-window/workpiece-advertisement/workpiece-advertisement.component.html</context>
+          <context context-type="linenumber">44</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/customer-window/workpiece-advertisement/workpiece-advertisement.component.html</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+      <target>bestel</target></trans-unit>
+      <trans-unit id="inStock" datatype="html">
+        <source>in stock</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/customer-window/workpiece-advertisement/workpiece-advertisement.component.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+      <target>Op voorraad</target></trans-unit>
+      <trans-unit id="notInStock" datatype="html">
+        <source>not in stock</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/customer-window/workpiece-advertisement/workpiece-advertisement.component.html</context>
+          <context context-type="linenumber">61</context>
+        </context-group>
+      <target>Niet op voorraad</target></trans-unit>
+      <trans-unit id="stationDsi" datatype="html">
+        <source>Delivery</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/factory-state-window/factory-state-window.component.html</context>
+          <context context-type="linenumber">161</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/process-window/process-window.component.html</context>
+          <context context-type="linenumber">98</context>
+        </context-group>
+      <target>Levering</target></trans-unit>
+      <trans-unit id="stationDso" datatype="html">
+        <source>Shipping</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/factory-state-window/factory-state-window.component.html</context>
+          <context context-type="linenumber">163</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/process-window/process-window.component.html</context>
+          <context context-type="linenumber">97</context>
+        </context-group>
+      <target>Verzenden</target></trans-unit>
+      <trans-unit id="stationSld" datatype="html">
+        <source>Sorting Line</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/factory-state-window/factory-state-window.component.html</context>
+          <context context-type="linenumber">165</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/process-window/process-window.component.html</context>
+          <context context-type="linenumber">99</context>
+        </context-group>
+      <target>Sorteerlijn</target></trans-unit>
+      <trans-unit id="stationVgr" datatype="html">
+        <source>Vacuum Gripper Robot</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/factory-state-window/factory-state-window.component.html</context>
+          <context context-type="linenumber">167</context>
+        </context-group>
+      <target>Vacuümgrijprobot</target></trans-unit>
+      <trans-unit id="stationHbw" datatype="html">
+        <source>High-Bay Warehouse</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/factory-state-window/factory-state-window.component.html</context>
+          <context context-type="linenumber">169</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/process-window/process-window.component.html</context>
+          <context context-type="linenumber">100</context>
+        </context-group>
+      <target>Hoge magazijnstellingen</target></trans-unit>
+      <trans-unit id="stationMpo" datatype="html">
+        <source>Processing Station</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/factory-state-window/factory-state-window.component.html</context>
+          <context context-type="linenumber">170,171</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/process-window/process-window.component.html</context>
+          <context context-type="linenumber">101</context>
+        </context-group>
+      <target>Verwerkingsstation</target></trans-unit>
+      <trans-unit id="acknowledgeError" datatype="html">
+        <source>Acknowledge error </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/factory-state-window/factory-state-window.component.html</context>
+          <context context-type="linenumber">174,175</context>
+        </context-group>
+      <target>Toestaan</target></trans-unit>
+      <trans-unit id="workpieceStatus" datatype="html">
+        <source>State</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+      <target>Status</target></trans-unit>
+      <trans-unit id="workpieceStateRaw" datatype="html">
+        <source>raw</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      <target>ruw</target></trans-unit>
+      <trans-unit id="workpieceStateProcessed" datatype="html">
+        <source>processed</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      <target>verwerkt</target></trans-unit>
+      <trans-unit id="workpieceStateRejected" datatype="html">
+        <source>rejected</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+      <target>afgewezen</target></trans-unit>
+      <trans-unit id="workpiecedHistory" datatype="html">
+        <source>History</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+      <target>Geschiedenis</target></trans-unit>
+      <trans-unit id="codeInDelivery" datatype="html">
+        <source>In Delivery</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+      <target>Wordt geleverd</target></trans-unit>
+      <trans-unit id="codeQualityAssuranceDelivery" datatype="html">
+        <source>Quality Assurance Delivery</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="codeStockpiling" datatype="html">
+        <source>Stockpiling</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+      <target>Aanleg voorraad</target></trans-unit>
+      <trans-unit id="codeStockRemoval" datatype="html">
+        <source>Stock removal</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">61</context>
+        </context-group>
+      <target>Verwijdering voorraad</target></trans-unit>
+      <trans-unit id="codeProcessingFurnace" datatype="html">
+        <source>Processing Furnace</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
+      <target>Verwerking oven</target></trans-unit>
+      <trans-unit id="codeProcessingMill" datatype="html">
+        <source>Processing Mill</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+      <target>Verwerking fabriek</target></trans-unit>
+      <trans-unit id="codeProcessingDrill" datatype="html">
+        <source>Processing Drill</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">64</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="codeQualityAssurance" datatype="html">
+        <source>Quality Assurance</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+      <target>Kwaliteitsgarantie</target></trans-unit>
+      <trans-unit id="codeShipping" datatype="html">
+        <source>Shipping</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">66</context>
+        </context-group>
+      <target>Verzenden</target></trans-unit>
+      <trans-unit id="dashboardNfcReaderBtnRead" datatype="html">
+        <source>NFC read</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+      <target>NFC lezen</target></trans-unit>
+      <trans-unit id="dashboardNfcReaderBtnDelete" datatype="html">
+        <source>NFC delete</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/factorysimulation/production-window/nfc-reader-window/nfc-reader-window.component.html</context>
+          <context context-type="linenumber">76</context>
+        </context-group>
+      <target>NFC wissen</target></trans-unit>
+      <trans-unit id="dashboardCameraSnapshot" datatype="html">
+        <source>Take a snapshot of current picture</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/smarthome/camera-window/camera-window.component.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      <target>Maak een snapshot van een actuele foto</target></trans-unit>
+      <trans-unit id="dashboardWindowDeleteAllPictures" datatype="html">
+        <source>Delete all pictures</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/smarthome/gallery-window/gallery-window.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dashboardWindowDownloadAllPictures" datatype="html">
+        <source>Download all pictures</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/smarthome/gallery-window/gallery-window.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dashboardCameraPtuStepSize" datatype="html">
+        <source>Step size</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/smarthome/ptu-window/ptu-window.component.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      <target>Stappenformaat</target></trans-unit>
+      <trans-unit id="dashboardCameraPtuMoveUpwards" datatype="html">
+        <source>Move upwards</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/smarthome/ptu-window/ptu-window.component.html</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+      <target>Omhoog</target></trans-unit>
+      <trans-unit id="dashboardCameraPtuMoveDown" datatype="html">
+        <source>Move down</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/smarthome/ptu-window/ptu-window.component.html</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+      <target>Omlaag</target></trans-unit>
+      <trans-unit id="dashboardCameraPtuMoveLeft" datatype="html">
+        <source>Move left</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/smarthome/ptu-window/ptu-window.component.html</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+      <target>Naar links</target></trans-unit>
+      <trans-unit id="dashboardCameraPtuMoveRight" datatype="html">
+        <source>Move right</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/smarthome/ptu-window/ptu-window.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+      <target>Naar rechts</target></trans-unit>
+      <trans-unit id="dashboardCameraPtuCenter" datatype="html">
+        <source>Center the camera</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/smarthome/ptu-window/ptu-window.component.html</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+      <target>Midden van de camera</target></trans-unit>
+      <trans-unit id="dashboardCameraPtuStop" datatype="html">
+        <source>Stop camera</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/smarthome/ptu-window/ptu-window.component.html</context>
+          <context context-type="linenumber">67</context>
+        </context-group>
+      <target>Camera stoppen</target></trans-unit>
+      <trans-unit id="accuracy" datatype="html">
+        <source>Accuracy</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/smarthome/sensor-window/sensor-value-window/traffic-light-window/traffic-light-window.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+      <target>Nauwkeurigheid</target></trans-unit>
+      <trans-unit id="calibrationRequired" datatype="html">
+        <source>Calibration required</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/smarthome/sensor-window/sensor-value-window/traffic-light-window/traffic-light-window.component.html</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      <target>Kalibratie vereist</target></trans-unit>
+      <trans-unit id="calibrationOnGoing" datatype="html">
+        <source>Calibration on-going</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/smarthome/sensor-window/sensor-value-window/traffic-light-window/traffic-light-window.component.html</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+      <target>Kalibratie actief</target></trans-unit>
+      <trans-unit id="invalidValue" datatype="html">
+        <source>Invalid value</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/ft-window/src/lib/components/window/smarthome/sensor-window/sensor-value-window/traffic-light-window/traffic-light-window.component.html</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+      <target>Ongeldige waarde</target></trans-unit>
+    </body>
+  </file>
+</xliff>

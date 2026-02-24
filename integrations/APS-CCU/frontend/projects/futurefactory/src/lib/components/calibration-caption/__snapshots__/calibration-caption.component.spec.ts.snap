@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CalibrationCaptionComponent should render no images 1`] = `
+<ff-calibration-caption
+  ModuleType={[Function Object]}
+  moduleType="null"
+>
+</ff-calibration-caption>
+`;
+
+exports[`CalibrationCaptionComponent should render the images for the DPS 1`] = `
+<ff-calibration-caption
+  ModuleType={[Function Object]}
+  moduleType={[Function String]}
+>
+</ff-calibration-caption>
+`;
+
+exports[`CalibrationCaptionComponent should render the images for the HBW 1`] = `
+<ff-calibration-caption
+  ModuleType={[Function Object]}
+  moduleType={[Function String]}
+>
+</ff-calibration-caption>
+`;

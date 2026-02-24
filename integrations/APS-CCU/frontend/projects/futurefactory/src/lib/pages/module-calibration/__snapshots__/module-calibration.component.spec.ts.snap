@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FutureFactoryModuleCalibrationComponent should render the component 1`] = `
+<ff-module-details
+  ModuleCalibrationCommand={[Function Object]}
+  available_positions={[Function Array]}
+  calibration_data={[Function Array]}
+  current_position=""
+  destroyed$={[Function Subject]}
+  dialog={[Function MatDialog]}
+  factoryLayoutService={[Function FactoryLayoutService]}
+  image_data={[Function Array]}
+  moduleCalibration$={[Function Observable]}
+  moduleData$={[Function Observable]}
+  moduleId$={[Function BehaviorSubject]}
+  mqttClient={[Function TypedMqttService]}
+  route={[Function Object]}
+  routeToRoot$={[Function Observable]}
+  statesService={[Function StatesService]}
+  status_values={[Function Array]}
+>
+  <ff-missing-controller-banner>
+    <div
+      class="missing-controller-banner"
+    >
+      <h1>
+        Controller for the Agile Production Simulation is not connected
+      </h1>
+    </div>
+  </ff-missing-controller-banner>
+</ff-module-details>
+`;

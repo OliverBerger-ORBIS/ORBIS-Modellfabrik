@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FactoryResetComponent should render the component 1`] = `
+<ff-factory-reset
+  dialog={[Function MatDialog]}
+  mqtt={[Function TypedMqttService]}
+  resetDialogContent={[Function TemplateRef2]}
+  withStorage="false"
+>
+  <button
+    aria-label="Fabrik zurücksetzen"
+    class="mat-focus-indicator action-btn mat-mini-fab mat-button-base mat-primary _mat-animation-noopable"
+    color="primary"
+    mat-mini-fab=""
+    title="Fabrik zurücksetzen"
+  >
+    <span
+      class="mat-button-wrapper"
+    >
+      <mat-icon
+        aria-hidden="true"
+        class="mat-icon notranslate material-icons mat-icon-no-color"
+        data-mat-icon-type="font"
+        role="img"
+      >
+        sync_problem
+      </mat-icon>
+    </span>
+    <span
+      class="mat-ripple mat-button-ripple mat-button-ripple-round"
+      matripple=""
+    />
+    <span
+      class="mat-button-focus-overlay"
+    />
+  </button>
+</ff-factory-reset>
+`;
