@@ -1,0 +1,9 @@
+<ng-container *ngIf="showLanguageSelector">
+  <button class="lang-button" mat-button [matMenuTriggerFor]="localMenu">
+    <span>{{ selectedLocale | uppercase }}</span>
+    <mat-icon>arrow_drop_down</mat-icon>
+  </button>
+  <mat-menu class="nav__language-menu" #localMenu="matMenu" [overlapTrigger]="false">
+    <button *ngFor="let locale of locales" mat-menu-item (click)="setLanguage(locale)">{{locale | uppercase}}</button>
+  </mat-menu>
+</ng-container>

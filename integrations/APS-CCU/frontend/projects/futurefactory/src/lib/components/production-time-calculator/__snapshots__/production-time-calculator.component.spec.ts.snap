@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProductionTimeCalculatorComponent should render the component 1`] = `
+<ff-production-time-calculator
+  state={[Function ProductionTimeCalculatorState]}
+>
+  <h2>
+     Start:  Unbekannt
+  </h2><h2>
+     Ende:  Unbekannt
+  </h2><h2>
+     Gesamtdauer:  Unbekannt
+  </h2><h2>
+     Produktionsdauer:  Unbekannt
+  </h2><h2>
+     Transportdauer:  Unbekannt
+  </h2>
+</ff-production-time-calculator>
+`;

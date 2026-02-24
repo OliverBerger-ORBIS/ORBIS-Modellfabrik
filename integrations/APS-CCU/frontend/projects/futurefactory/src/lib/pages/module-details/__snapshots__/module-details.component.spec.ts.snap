@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FutureFactoryModuleDetailsComponent should render the component 1`] = `
+<ff-module-details
+  BLOCKED_STATE={[Function String]}
+  CALIBRATION_ROUTE={[Function String]}
+  ORDERS_ROUTE={[Function String]}
+  destroyed$={[Function Subject]}
+  durationEditToggle="undefined"
+  durationInput="undefined"
+  factoryLayoutService={[Function FactoryLayoutService]}
+  moduleData$={[Function Observable]}
+  moduleId$={[Function BehaviorSubject]}
+  mqttClient={[Function TypedMqttService]}
+  orderInfo$={[Function Observable]}
+  orderStatesService={[Function OrderStatesService]}
+  route={[Function Object]}
+  routeToRoot$={[Function Observable]}
+  statesService={[Function StatesService]}
+>
+  <ff-missing-controller-banner>
+    <div
+      class="missing-controller-banner"
+    >
+      <h1>
+        Controller for the Agile Production Simulation is not connected
+      </h1>
+    </div>
+  </ff-missing-controller-banner>
+</ff-module-details>
+`;

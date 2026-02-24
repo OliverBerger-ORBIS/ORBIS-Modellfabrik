@@ -1,0 +1,13 @@
+{
+  "productionDurations": {
+    "WHITE": 440,
+    "BLUE": 460,
+    "RED": 500
+  },
+  "productionSettings": {
+    "maxParallelOrders": 2
+  },
+  "ftsSettings": {
+    "chargeThresholdPercent": 10
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "ff-central-control-unit",
+  "version": "1.3.0",
+  "private": true,
+  "scripts": {
+    "setup": "node scripts/setup.js",
+    "start": "node scripts/start.js",
+    "start:build": "docker compose up --build",
+    "stop": "docker compose down",
+    "build:central": "cd central-control && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build:frontend:futurefactory": "cd frontend && npm run build:futurefactory",
+    "docker:build": "node scripts/build-images.js",
+    "docker:save": "node scripts/save-images.js",
+    "docker:deploy": "node scripts/deploy-to-rpi.js",
+    "docker:reset": "node scripts/reset-rpi.js",
+    "release": "standard-version",
+    "release:dry-run": "standard-version --dry-run",
+    "install:all": "cd central-control && npm install && cd ../frontend && npm install"
+  },
+  "devDependencies": {
+    "@digitalroute/cz-conventional-changelog-for-jira": "^8.0.1",
+    "commitizen": "^4.3.0"
+  },
+  "dependencies": {
+    "standard-version": "^9.5.0"
+  }
+}

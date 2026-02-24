@@ -1,0 +1,21 @@
+{
+  "BLUE": {
+    "steps": [
+      "MILL",
+      "DRILL",
+      "AIQS"
+    ]
+  },
+  "RED": {
+    "steps": [
+      "MILL",
+      "AIQS"
+    ]
+  },
+  "WHITE": {
+    "steps": [
+      "DRILL",
+      "AIQS"
+    ]
+  }
+}

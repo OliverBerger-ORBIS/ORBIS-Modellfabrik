@@ -1,0 +1,28 @@
+include:
+  - project: 'omm-internal/gitlab-ci-templates'
+    ref: v0.13.4
+    file: 'base-template.yml'
+
+variables:
+  DISABLE_HELM_LINT: "true"
+  DISABLE_HELM_PUBLISH: "true"
+  # Required helm variables, mocked values for now
+  HARBOR_REPO: "https://harbor.dev.omm.cloud/chartrepo/fischertechnik"
+  HARBOR_USER: "harry.potter@omm-solutions.de"
+  HARBOR_PASSWORD: "m4lf0ysucks"
+
+default:
+  image: docker:19.03.12
+  services:
+    - docker:19.03.12-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+frontend:
+  stage: modules
+  variables:
+    DIRECTORY: .
+    DOCKER_CONTEXT: ./
+    DOCKER_IMAGE: node:18.14.0-alpine3.17
+    MODULE_NAME: frontend
+  trigger: !reference [ .base, js-module ]

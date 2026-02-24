@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CalibrationInfoComponent should render the language selector 1`] = `
+<ff-calibration-info
+  imageData={[Function Array]}
+  statusValues={[Function Array]}
+>
+</ff-calibration-info>
+`;

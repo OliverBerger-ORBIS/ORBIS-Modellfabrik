@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FutureFactorySimulationLayoutComponent should render the component 1`] = `
+<ng-component
+  allOrders={[Function Array]}
+  allSimulationIds={[Function Array]}
+  mqttService={[Function TypedMqttService]}
+  notification={[Function MatSnackBar]}
+  onDestroy$={[Function ReplaySubject]}
+  orderStatesService={[Function OrderStatesService]}
+  runningSimulationId$={[Function Observable]}
+  simulation={[Function Object]}
+  simulationIsRunning$={[Function Observable]}
+  simulationNameAlreadyExists="false"
+  startingSimulation="false"
+  state={[Function FutureFactorySimulationLayoutState]}
+  stateIcons={[Function Object]}
+  stockStatesService={[Function StockStatesService]}
+  translate={[Function TranslateService]}
+  wsTypes={[Function Array]}
+>
+  <div>
+    <section
+      class="planning"
+    >
+    </section>
+    <section
+      class="order-list"
+    >
+      <div
+        class="simulation-entry"
+      >
+        <div
+          class="header"
+        >
+          <span>
+            Aufträge ohne Planspiel (OEE: 0%)
+          </span>
+          <mat-icon
+            aria-hidden="true"
+            class="mat-icon notranslate material-icons mat-icon-no-color"
+            data-mat-icon-type="font"
+            role="img"
+          >
+             keyboard_arrow_down 
+          </mat-icon>
+        </div>
+      </div>
+      <hr />
+      <button
+        class="mat-focus-indicator mat-raised-button mat-button-base mat-primary _mat-animation-noopable"
+        color="primary"
+        mat-raised-button=""
+      >
+        <span
+          class="mat-button-wrapper"
+        >
+           CSV herunterladen 
+        </span>
+        <span
+          class="mat-ripple mat-button-ripple"
+          matripple=""
+        />
+        <span
+          class="mat-button-focus-overlay"
+        />
+      </button>
+    </section>
+  </div><div
+    class="vertical-divider"
+  /><section
+    class="results"
+  >
+  </section>
+</ng-component>
+`;

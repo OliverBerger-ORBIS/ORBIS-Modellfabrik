@@ -1,0 +1,19 @@
+:host {
+  display: block;
+  align-self: center;
+  height: 24px;
+  width: 24px;
+  line-height: 36px;
+  color: var(--text-accent-color);
+  background-color: var(--text-accent-color);
+  border-radius: 50%;
+
+  position: absolute;
+  right: 1rem;
+}
+
+a {
+  display: inline-block;
+  height: 24px;
+  line-height: 24px;
+}

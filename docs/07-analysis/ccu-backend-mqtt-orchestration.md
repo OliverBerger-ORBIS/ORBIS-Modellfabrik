@@ -1,7 +1,7 @@
 # 🎯 CCU-Backend MQTT-Orchestration - Complete Analysis
 
 **Source:** Fischertechnik CCU-Backend (compiled JavaScript)  
-**Location:** `integrations/APS-CCU/ff-central-control-unit/central-control/src/`  
+**Location:** `integrations/APS-CCU/central-control/src/`  
 **Date:** 2025-10-08
 
 ## 📡 CCU-Backend Published Topics

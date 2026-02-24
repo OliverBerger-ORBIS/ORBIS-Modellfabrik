@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>
+  <mat-icon style="vertical-align: baseline">report_problem</mat-icon>
+  {{ 'Kollisionswarnung' | translate }}
+</h2>
+<div mat-dialog-content *ngIf="data.collisions">
+  <p>{{ 'Ein oder mehrere Fahrerlose Transportsysteme (FTS) sind durch Gegenstände auf der Fahrbahn am Weiterfahren blockiert.' | translate }}</p>
+  <p>{{ 'Bitte entfernen Sie die Hindernisse um den Betrieb fortzusetzen.' | translate }}</p>
+  <h3>{{ 'FTS mit gemeldeten Hindernissen:' | translate }}</h3>
+  <ul>
+    <li *ngFor="let collision of data.collisions">
+      <strong>{{ collision.serialNumber }} ({{"Letzte Position:" | translate}} {{collision.lastNodeId}})</strong>
+    </li>
+  </ul>
+</div>
+<div mat-dialog-actions>
+  <button mat-flat-button mat-dialog-close cdkFocusInitial color="warn">{{ 'OK' | translate }}</button>
+</div>

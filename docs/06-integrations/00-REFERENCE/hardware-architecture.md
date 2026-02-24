@@ -81,7 +81,7 @@ Raspberry Pi: 192.168.0.100
 ├── Node-RED
 │   └── Port: 1880 (Admin API)
 ├── CCU-Backend (ff-central-control)
-│   └── Source: integrations/APS-CCU/ff-central-control-unit/central-control/
+│   └── Source: integrations/APS-CCU/central-control/
 └── APS Dashboard Frontend (Angular PWA)
     └── Port: 80
 ```
@@ -279,7 +279,7 @@ Docker Bridge: 172.18.0.x
 
 ### CCU-Backend (ff-central-control)
 - **Location:** Raspberry Pi Docker
-- **Source:** `integrations/APS-CCU/ff-central-control-unit/central-control/`
+- **Source:** `integrations/APS-CCU/central-control/`
 - **Sprache:** JavaScript (kompiliert von TypeScript)
 - **Rolle:** Order-Management, UUID-Generation, FTS-Orchestration
 

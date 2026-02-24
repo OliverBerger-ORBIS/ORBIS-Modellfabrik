@@ -1,0 +1,3 @@
+# NX/OSF workspace only - integrations have own ESLint config
+integrations/
+backend/

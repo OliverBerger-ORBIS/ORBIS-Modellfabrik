@@ -1,0 +1,15 @@
+[Unit]
+Description=Fischertechnik APS (Agile Production Simulation) Service
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/home/ff22/fischertechnik/ff-central-control-unit
+ExecStart=/home/ff22/.docker/cli-plugins/docker-compose -f docker-compose-prod.yml up -d --force-recreate
+ExecStop=/home/ff22/.docker/cli-plugins/docker-compose -f docker-compose-prod.yml down
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

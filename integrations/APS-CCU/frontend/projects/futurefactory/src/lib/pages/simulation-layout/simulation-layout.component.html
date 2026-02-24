@@ -1,0 +1,155 @@
+<div>
+  <section class="planning">
+    <div class="simulation-is-starting" *ngIf="startingSimulation">
+      <mat-spinner></mat-spinner>
+      <h1>{{ "Planspiel wird gestartet" | translate }}</h1>
+    </div>
+    <ng-container *ngIf="(simulationIsRunning$ | async) === false">
+      <button mat-raised-button color="primary" (click)="startSimulation()" [disabled]="!canStartSimulation">
+        {{ "Planspiel starten" | translate }}
+      </button>
+      <br>
+      <!-- name edit box -->
+      <mat-form-field>
+        <mat-label>{{ "Name des Planspiels" | translate }}</mat-label>
+        <input matInput [(ngModel)]="simulation.name" (ngModelChange)="checkSimulationName()" />
+        <mat-hint *ngIf="!simulation.name" class="error">
+          {{ "Bitte geben Sie einen Namen ein." | translate }}
+        </mat-hint>
+        <mat-hint *ngIf="simulationNameAlreadyExists" class="error">
+          {{ "Ein Planspiel mit diesem Namen existiert bereits." | translate }}
+        </mat-hint>
+      </mat-form-field>
+
+      <h2>{{ "Produktionsplanung" | translate }}</h2>
+
+      <div *ngFor="let workpiece of simulation.workpieces" class="order-item"
+        [ngClass]="{'not-in-stock': !workpiece.inStock}">
+        <mat-form-field style="flex: 1;">
+          <mat-label>{{ "Werkstücktyp" | translate }}</mat-label>
+          <mat-select [(ngModel)]="workpiece.type" (ngModelChange)="updateProducability()">
+            <mat-option *ngFor="let type of wsTypes" [value]="type.type">
+              {{ type.name | translate }}
+            </mat-option>
+          </mat-select>
+          <mat-hint *ngIf="!workpiece.inStock" class="error">
+            {{ "Dieses Werkstück ist nicht auf Lager." | translate }}
+          </mat-hint>
+        </mat-form-field>
+        <button mat-icon-button (click)="removeWorkpiece(workpiece)">
+          <mat-icon>do_not_disturb_on</mat-icon>
+        </button>
+      </div>
+
+      <button mat-raised-button color="primary" (click)="addWorkpiece()">
+        {{ "Werkstück hinzufügen" | translate }}
+      </button>
+    </ng-container>
+    <ff-banner *ngIf="simulationIsRunning$ | async">
+      <h1 style="margin: 0">{{ "Planspiel läuft" | translate }}</h1>
+    </ff-banner>
+
+  </section>
+  <section class="order-list">
+    <div *ngFor="let simulationId of allSimulationIds" class="simulation-entry">
+      <div class="header" [ngClass]="{'active': selectedSimulationId===simulationId}"
+        (click)="toggleSelectSimulation(simulationId)">
+        <span>{{ simulationId }} (OEE: {{oee(simulationId) | percent}})</span>
+        <mat-icon>
+          {{ selectedSimulationId===simulationId ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+        </mat-icon> 
+      </div>
+      <ng-container *ngIf="selectedSimulationId===simulationId">
+        <ff-order-list [multiple]="true" [withCompleted]="true" [canRemove]="false" [simulationId]="simulationId"
+          [selectedOrder]="state.selectedOrder.value" (orderSelect)="state.setSelectedOrder($event)">
+        </ff-order-list>
+      </ng-container>
+    </div>
+    <div class="simulation-entry">
+      <div class="header" [ngClass]="{'active': selectedSimulationId===null}"
+        (click)="toggleSelectSimulation(null)">
+        <span>{{ "Aufträge ohne Planspiel" | translate }} (OEE: {{oee(null) | percent}})</span>
+        <mat-icon>
+          {{ selectedSimulationId===null ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+        </mat-icon>
+      </div>
+      <ng-container *ngIf="selectedSimulationId===null">
+        <ff-order-list [multiple]="true" [withCompleted]="true" [canRemove]="false" [simulationId]="null"
+          [selectedOrder]="state.selectedOrder.value" (orderSelect)="state.setSelectedOrder($event)">
+        </ff-order-list>
+      </ng-container>
+    </div>
+    <hr>
+    <button mat-raised-button color="primary" (click)="downloadCsv()">
+      {{ "CSV herunterladen" | translate }}
+    </button>
+  </section>
+</div>
+
+<div class="vertical-divider"></div>
+
+<!-- right side of the screen -->
+<section class="results">
+  <div class="mat-elevation-z4" *ngIf="selectedSimulationId !== undefined">
+    <div class="header" *ngIf="selectedSimulationId">{{ "Ergebnisse von '{{simulationId}}'" | translate: {simulationId: selectedSimulationId} }}</div>
+    <div class="header" *ngIf="selectedSimulationId===null">{{ "Ergebnisse von Aufträgen ohne Planspiel" | translate }}</div>
+    <div style="padding: 1rem;">
+      <div *ngIf="(runningSimulationId$ | async) === selectedSimulationId">
+        {{ 'Bitte beachten Sie, dass die OEE-Berechnung erst nach Abschluss der Produktion einen sinnvollen Wert liefert.' | translate }}
+      </div>
+      <div class="oee-card-container">
+        <mat-card>
+          <mat-card-title>{{ 'OEE' | translate }}</mat-card-title>
+          <mat-card-content>
+            <h1>{{ oee(selectedSimulationId) | percent }}</h1>
+          </mat-card-content>
+        </mat-card>
+        <mat-card>
+          <mat-card-title>{{ 'Qualität' | translate }}</mat-card-title>
+          <mat-card-content>
+            <h1>{{ quality(selectedSimulationId) | percent }}</h1>
+          </mat-card-content>
+        </mat-card>
+        <mat-card>
+          <mat-card-title>{{ 'Leistung' | translate }}</mat-card-title>
+          <mat-card-content>
+            <h1>{{ performance(selectedSimulationId) | percent }}</h1>
+          </mat-card-content>
+        </mat-card>
+        <mat-card>
+          <mat-card-title>{{ 'Verfügbarkeit' | translate }}</mat-card-title>
+          <mat-card-content>
+            <h1>{{ availability(selectedSimulationId) | percent }}</h1>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <hr>
+      <div *ngIf="state.selectedOrder.value as selectedOrder">
+        <span style="display: inline-flex;">
+          <h1>
+            {{ "Gewählter Produktionsauftrag" | translate }}:&nbsp;
+            {{ selectedOrder.orderId }} ({{ selectedOrder.type }}; {{ selectedOrder.receivedAt | date : "medium" }})
+          </h1>
+          <mat-icon style="height: 36px; width: 36px; margin-top: -2px; font-size: 36px;"
+            [attr.aria-label]="'Status.' + selectedOrder.state | translate"
+            [title]="'Status.' + selectedOrder.state | translate">
+            {{ selectedOrder.state | toIcon:stateIcons }}
+          </mat-icon>
+        </span>
+        <ff-production-time-calculator [order]="selectedOrder">
+        </ff-production-time-calculator>
+      </div>
+      <mat-expansion-panel *ngIf="state.selectedOrder.value as selectedOrder" class="simulation__steps">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{ "Produktions- und Navigationsschritte" | translate }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ff-production-steps [order]="selectedOrder"></ff-production-steps>
+      </mat-expansion-panel>
+      <ff-banner *ngIf="!state.selectedOrder.value">
+        <h1 style="margin: 0">{{ "Kein Produktionsauftrag ausgewählt" | translate }}</h1>
+      </ff-banner>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,71 @@
+{
+    "headerId": 1,
+    "loadSpecification": {
+        "loadPositions": [
+            "A1",
+            "B1",
+            "C1",
+            "A2",
+            "B2",
+            "C2",
+            "A3",
+            "B3",
+            "C3"
+        ],
+        "loadSets": [
+            {
+                "loadType": "WHITE",
+                "maxAmount": 3,
+                "setName": "WHITES"
+            },
+            {
+                "loadType": "RED",
+                "maxAmount": 3,
+                "setName": "REDS"
+            },
+            {
+                "loadType": "BLUE",
+                "maxAmount": 3,
+                "setName": "BLUES"
+            }
+        ]
+    },
+    "localizationParameters": {},
+    "manufacturer": "Fischertechnik",
+    "physicalParameters": {},
+    "protocolFeatures": {
+        "moduleActions": [
+            {
+                "actionParameters": [
+                    {
+                        "parameterDescription": "The load type to unload",
+                        "parameterName": "type",
+                        "parameterType": "string"
+                    }
+                ],
+                "actionType": "DROP"
+            },
+            {
+                "actionParameters": [
+                    {
+                        "parameterDescription": "The load type to store",
+                        "parameterName": "type",
+                        "parameterType": "string"
+                    }
+                ],
+                "actionType": "PICK"
+            }
+        ],
+        "moduleParameters": {
+            "clearModuleOnPick": true
+        }
+    },
+    "protocolLimits": {},
+    "serialNumber": "yBix",
+    "timestamp": "2023-04-26T07:39:48.599317Z",
+    "typeSpecification": {
+        "moduleClass": "HBW",
+        "seriesName": "MOD-FF22+HBW"
+    },
+    "version": "1.0.0"
+}

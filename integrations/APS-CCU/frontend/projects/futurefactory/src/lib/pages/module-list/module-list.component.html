@@ -1,0 +1,102 @@
+<ff-missing-controller-banner>
+  <h2 class="header">{{ 'Modulübersicht' | translate }}</h2>
+  <ff-factory-park></ff-factory-park>
+
+  <table mat-table matSort [dataSource]="dataSource">
+    <ng-container matColumnDef="icon">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let mod" (click)="moduleSelected(mod)">
+        <img [src]="(mod.subType ?? mod.type) | toIcon:MODULE_ICON_PATHS">
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="serialNumber">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>{{ 'ID' | translate }}</th>
+      <td mat-cell *matCellDef="let mod" (click)="moduleSelected(mod)">
+        <span [title]="getMetadata(mod)">
+          {{mod.serialNumber}}
+        </span>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="name">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>{{ 'Name' | translate }}</th>
+      <td mat-cell *matCellDef="let mod" (click)="moduleSelected(mod)">
+        <span>
+          {{ 'Produktionsschritt.' + (mod.subType ?? mod.type) | translate }}
+        </span>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="connected">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>{{ 'Verbunden' | translate }}</th>
+      <td mat-cell *matCellDef="let mod" (click)="moduleSelected(mod)">
+        <mat-icon [title]="mod.connected ? 'Verbunden' : 'Nicht verbunden' | translate">
+          {{mod.connected ? 'wifi' : 'wifi_off'}}
+        </mat-icon>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="available">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>{{ 'Verfügbarkeitsstatus' | translate }}</th>
+      <td mat-cell *matCellDef="let mod" (click)="moduleSelected(mod)">
+        {{ ('AvailableState.' + mod.available) | translate }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="paired">
+      <th mat-header-cell *matHeaderCellDef>{{ 'Konfiguriert' | translate }}</th>
+      <td mat-cell *matCellDef="let mod" class="no-pointer">
+        <ng-container *ngIf="mod.type === DeviceType.FTS">
+          <span *ngIf="mod.connected">
+            <button mat-stroked-button *ngIf="!mod.pairedSince" (click)="connectFts(mod)">
+              <mat-icon [title]="'Docke an DPS' | translate">
+                pin_drop
+              </mat-icon>
+              {{'Docke an DPS' | translate}}
+            </button>
+            <mat-icon *ngIf="mod.pairedSince" [title]="getInFactorySince(mod)">
+              place
+            </mat-icon>
+             <a class="charge-button" mat-stroked-button *ngIf="!mod.charging && mod.pairedSince" (click)="setFtsCharge(mod, true)">
+            <mat-icon [title]="'Laden' | translate">
+              power
+            </mat-icon>
+               {{'Laden' | translate}}
+          </a>
+          <a class="charge-button" mat-stroked-button *ngIf="mod.charging && mod.pairedSince" (click)="setFtsCharge(mod, false)">
+            <mat-icon [title]="'Laden' | translate">
+              battery_charging_full
+            </mat-icon>
+            {{'Laden beenden' | translate}}
+          </a>
+          </span>
+        </ng-container>
+        <ng-container *ngIf="mod.type === DeviceType.MODULE">
+          <mat-icon [title]="getPairedSince(mod)">
+            {{mod.pairedSince ? 'grid_on' : 'grid_off'}}
+          </mat-icon>
+        </ng-container>
+        <a class="calibration-button" mat-stroked-button *ngIf="mod.hasCalibration"
+           [routerLink]="[mod.serialNumber, CALIBRATION_ROUTE]">
+          <mat-icon [title]="'Kalibrieren' | translate">
+            tune
+          </mat-icon>
+          {{'Kalibrieren' | translate}}
+        </a>
+        <ng-container *ngIf="mod.type === DeviceType.MODULE">
+          <button mat-stroked-button color="warn" class="delete-module-button"
+            *ngIf="!mod.pairedSince && !hasConfirmedDelete(mod)" (click)="confirmDelete(mod)">
+            <mat-icon [title]="'Löschen' | translate">delete</mat-icon>
+            {{'Löschen' | translate}}
+          </button>
+          <button mat-flat-button color="warn" class="delete-module-button"
+            *ngIf="!mod.pairedSince && hasConfirmedDelete(mod)" (click)="deleteModule(mod)">
+            <mat-icon [title]="'Löschen' | translate">delete_forever</mat-icon>
+            {{'Endgültig löschen' | translate}}
+          </button>
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+      [class.has-details]="row.type === 'MODULE'"></tr>
+  </table>
+
+</ff-missing-controller-banner>

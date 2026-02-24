@@ -1,0 +1,25 @@
+# ATTENTION: This file is used to be run only in combination with docker-compose.yml
+FROM node:18.17.1-alpine3.18
+
+RUN apk --no-cache --update add git make clang build-base python3
+
+USER node
+ENV NODE_ENV=development
+ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
+
+WORKDIR /app
+RUN git config --global --add safe.directory /app
+
+COPY ./angular.json /app
+COPY ./copy-common.js /app
+COPY ./package-lock.json /app
+COPY ./package.json /app
+COPY ./tsconfig*.json /app
+COPY ./packages /app/packages
+
+# npm install as user node
+RUN npm ci --include=dev
+
+EXPOSE 4200
+
+CMD ["npm", "start"]

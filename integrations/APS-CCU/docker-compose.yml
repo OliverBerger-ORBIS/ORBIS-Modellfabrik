@@ -1,0 +1,65 @@
+version: '3.8'
+services:
+  central-control:
+    links:
+      - mqtt-broker
+    build:
+      context: ./central-control
+      dockerfile: Dockerfile.dev
+    environment:
+      MQTT_USER: default
+      MQTT_PASS: default
+      MQTT_URL: ${MQTT_URL:-mqtt://mqtt-broker}
+      MQTT_INIT_RETRIES: 20
+      MQTT_INIT_RETRY_DELAY: 1000
+      FTS_CHARGE_DISABLED: 'true'
+      FTS_CHARGE_BELOW_PERCENTAGE: 10
+      ROUTING_NODE_BLOCKING_DISABLED: 'true'
+      MQTT_DEBUG: 'true'
+    volumes:
+      - ./central-control:/app
+      - ./common:/common
+      - /app/node_modules
+      - ./central-control/data/:/app/data
+  frontend:
+    user: node:node
+    environment:
+      NODE_ENV: development
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - 4200:4200
+    volumes:
+      - .git:/app/.git
+      - ./frontend:/app
+      - ./common:/common
+      - /app/node_modules
+  mqtt-broker:
+    image: eclipse-mosquitto:2
+    volumes:
+      - ./mosquitto/config/:/mosquitto/config/:ro
+      - ./logs/mosquitto:/mosquitto/log/
+      - ./mosquittodata:/mosquitto/data
+    ports:
+      - 1883:1883
+      - 9001:9001
+  nodered:
+    build:
+      context: ./nodeRed
+      dockerfile: Dockerfile.dev
+    environment:
+      - TZ=Europe/Amsterdam
+      - MILL_OPCUA_ADDRESS=opc.tcp://192.168.0.135:4840
+      - DRILL_OPCUA_ADDRESS=opc.tcp://192.168.0.130:4840
+      - OVEN_OPCUA_ADDRESS=opc.tcp://192.168.0.125:4840
+      - AIQS_OPCUA_ADDRESS=opc.tcp://192.168.0.120:4840
+      - DPS_OPCUA_ADDRESS=opc.tcp://192.168.0.150:4840
+      - HBW_OPCUA_ADDRESS=opc.tcp://192.168.0.140:4840
+    ports:
+      - 1880:1880
+    volumes:
+      - ./nodeRed:/data
+
+volumes:
+  mosquittodata: ~

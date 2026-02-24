@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FactoryParkComponent should render the component 1`] = `
+<ff-factory-park
+  dialog={[Function MatDialog]}
+  mqtt={[Function TypedMqttService]}
+  parkDialogContent={[Function TemplateRef2]}
+>
+  <button
+    aria-label="Fabrik parken"
+    class="mat-focus-indicator action-btn mat-mini-fab mat-button-base mat-primary _mat-animation-noopable"
+    color="primary"
+    mat-mini-fab=""
+    title="Fabrik parken"
+  >
+    <span
+      class="mat-button-wrapper"
+    >
+      <mat-icon
+        aria-hidden="true"
+        class="mat-icon notranslate material-icons mat-icon-no-color"
+        data-mat-icon-type="font"
+        role="img"
+      >
+        local_parking
+      </mat-icon>
+    </span>
+    <span
+      class="mat-ripple mat-button-ripple mat-button-ripple-round"
+      matripple=""
+    />
+    <span
+      class="mat-button-focus-overlay"
+    />
+  </button>
+</ff-factory-park>
+`;

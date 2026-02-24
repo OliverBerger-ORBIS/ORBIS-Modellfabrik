@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AppComponent should render the app 1`] = `
+<app-root
+  APP_TITLE={[Function String]}
+  RoutePaths={[Function Object]}
+  i18nIsFullyLoaded$={[Function Observable]}
+  translate={[Function Object]}
+>
+  <mat-toolbar
+    class="mat-toolbar mat-toolbar-single-row"
+  >
+    <h1
+      class="mat-title"
+    >
+      Agile Production Simulation (APS)
+    </h1>
+  </mat-toolbar><div
+    class="page-content mat-typography"
+  >
+    <router-outlet />
+  </div>
+</app-root>
+`;

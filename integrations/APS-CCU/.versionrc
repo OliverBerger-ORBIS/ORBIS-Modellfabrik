@@ -1,0 +1,36 @@
+{
+  "bumpFiles": [
+    {
+      "filename": "package.json",
+      "type": "json"
+    },
+    {
+      "filename": "package-lock.json",
+      "type": "json"
+    },
+    {
+      "filename": "frontend/package.json",
+      "type": "json"
+    },
+    {
+      "filename": "frontend/package-lock.json",
+      "type": "json"
+    },
+    {
+      "filename": "central-control/package.json",
+      "type": "json"
+    },
+    {
+      "filename": "central-control/package-lock.json",
+      "type": "json"
+    },
+    {
+      "filename": "frontend/projects/futurefactory/package.json",
+      "type": "json"
+    },
+    {
+      "filename": "frontend/projects/futurefactory/package-lock.json",
+      "type": "json"
+    }
+  ]
+}

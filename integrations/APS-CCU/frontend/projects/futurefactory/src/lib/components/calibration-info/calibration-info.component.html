@@ -1,0 +1,16 @@
+<mat-card *ngIf="statusValues?.length || imageData?.length">
+  <mat-card-title>{{ "Kalibrierungsinformationen" | translate }}</mat-card-title>
+  <mat-card-content>
+    <div *ngIf="statusValues" class="value-list">
+      <mat-form-field class="full-width" *ngFor="let ref of statusValues">
+        <mat-label>{{ ref.referenceKey | translate }}</mat-label>
+        <input matNativeControl readonly="readonly" type="text" [(ngModel)]="ref.referenceValue">
+      </mat-form-field>
+    </div>
+
+    <figure *ngFor="let image of imageData">
+      <img [src]="image.referenceValue">
+      <figcaption>{{ image.referenceKey | translate}}</figcaption>
+    </figure>
+  </mat-card-content>
+</mat-card>

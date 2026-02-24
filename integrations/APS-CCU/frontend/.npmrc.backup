@@ -1,0 +1,5 @@
+@beemo:registry=https://update.fischertechnik-cloud.com/repository/ft-npm
+@fischertechnik:registry=https://update.fischertechnik-cloud.com/repository/ft-npm
+@ft:registry=https://update.fischertechnik-cloud.com/repository/ft-npm-omm
+always-auth=true
+//update.fischertechnik-cloud.com/repository/:_auth="${NPM_AUTH}"

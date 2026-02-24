@@ -1,0 +1,6 @@
+.mat-header-cell, .mat-cell {
+  padding: .5rem;
+}
+.mat-cell span:not(:last-child) {
+  margin-right: 1ch;
+}

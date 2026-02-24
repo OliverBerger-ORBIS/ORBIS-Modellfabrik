@@ -1,0 +1,41 @@
+<!-- config section to configure the planned duration times -->
+<section *ngIf="config?.productionDurations && config?.ftsSettings">
+  <h2>{{ 'Gesamtdauer' | translate }}</h2>
+  <div class="config">
+    <div class="config__item" *ngFor="let type of wsTypes">
+      <img class="config__item__icon" [src]="type.icon" [attr.alt]="type.name | translate" />
+      <div class="config__item__label">{{ type.name | translate }}</div>
+      <div class="config__item__value">
+        <mat-form-field>
+          <input matInput type="number" [(ngModel)]="config!.productionDurations![type.type]" />
+          <span matSuffix>{{ 'Sekunden' | translate }}</span>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <h2>{{ 'Produktionseinstellungen' | translate }}</h2>
+  <div class="config__item">
+    <div class="config__item__label">{{ 'Anzahl parallel produzierbarer Werkstücke' | translate }}</div>
+    <div class="config__item__value">
+      <mat-form-field>
+        <input matInput type="number" [(ngModel)]="config!.productionSettings.maxParallelOrders" />
+      </mat-form-field>
+    </div>
+  </div>
+  <hr>
+  <h2>{{ 'Transporteinstellungen' | translate }}</h2>
+  <div class="config__item">
+    <div class="config__item__label">{{ 'Ladeschwelle für FTS' | translate }}</div>
+    <div class="config__item__value">
+      <mat-form-field>
+        <input matInput min="0" max="100" type="number" [(ngModel)]="config!.ftsSettings.chargeThresholdPercent" />
+        <span matSuffix>&#xFF05;</span>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <button mat-raised-button color="primary"
+    [disabled]="!configChanged"
+    (click)="saveConfig()">{{ 'Speichern' | translate }}</button>
+</section>

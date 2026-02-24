@@ -1,0 +1,19 @@
+<ng-template #parkDialogContent>
+  <h2 mat-dialog-title><mat-icon>sync_problem</mat-icon> {{ 'Fabrik parken' | translate }}</h2>
+  <div mat-dialog-content>
+    <p>{{'Sollen die Fabrikmodule geparkt werden?' | translate}}</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-flat-button mat-dialog-close color="warn" (click)="sendFactoryPark()">{{ 'Ja' | translate }}</button>
+    <button mat-flat-button mat-dialog-close cdkFocusInitial>{{ 'Nein' | translate }}</button>
+  </div>
+</ng-template>
+
+<button mat-mini-fab
+        [title]="'Fabrik parken' | translate"
+        [attr.aria-label]="'Fabrik parken' | translate"
+        color="primary"
+        class="action-btn"
+        (click)="confirmFactoryPark()">
+  <mat-icon>local_parking</mat-icon>
+</button>

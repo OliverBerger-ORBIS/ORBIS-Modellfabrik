@@ -1,0 +1,26 @@
+# This file contains the sha256 checksums for the downloaded fonts from google.
+# These were generated after the download to ensure the integrity of the files
+# To test the checksums, run "sha256sum -c fonts.sha256sum"
+# It will print out any discrepancies for the files
+8265f64786397d6b832d1ca0aafdf149ad84e72759fffa9f7272e91a0fb015d1  material-icons.woff2
+435e4b7f9f250d9d9243d4754799fc96ff3e648eb113fad1d15fbcf7eaae70c0  roboto-normal-300-cyrillic-ext.woff2
+47aa3bfad6cb9e2d63abdd58f4e6ce4f7b9fd2704b2b15193c71874035fe025d  roboto-normal-300-cyrillic.woff2
+20dc200cc43ab904876fb0c1697ebe398da40f6769c3dfa35ed51c7e2a0656d5  roboto-normal-300-greek-ext.woff2
+455c2c1af0a2bf20047a1864d7d7c174983407b58465cdb000b9c47565f9ee3b  roboto-normal-300-greek.woff2
+b076e86301cbee8c5c9aef51863a9c0a88e6f6d2aabdffca93e031113c6caa74  roboto-normal-300-latin-ext.woff2
+f75911313e1c7802c23345ab57e754d87801581706780c993fb23ff4e0fe62ef  roboto-normal-300-latin.woff2
+51f3f41805329fb8341beb56ded833eae6c7a8a1a0a1d7e78960e1390fe928b6  roboto-normal-300-vietnamese.woff2
+b7ef2cd1159a8cbfd271ff2abe07f237a46f6fa056eefd2e9018661f93eea137  roboto-normal-400-cyrillic-ext.woff2
+495d38d4b9741e8aa4204002414069e2d8db9f3c60b60e195e4d74381462dee9  roboto-normal-400-cyrillic.woff2
+d368cf5bed7856dbafa2af36b51acb9c3e028689eca4495fed5f28388cec60ba  roboto-normal-400-greek-ext.woff2
+daf51ab540602b2d0b87646621637bac38889bb34effb8a432ae739aca78b5c0  roboto-normal-400-greek.woff2
+3c23eb02de6b34e30f18cfb7167abd81a2cedfd1da60dfcb71989517ab3fb431  roboto-normal-400-latin-ext.woff2
+f6734f8177112c0839b961f96d813fcb189d81b60e96c33278c1983b6f419615  roboto-normal-400-latin.woff2
+77b24796a3d4ab521f66765651875338ed50cb9306cfe4603a3e79618e429cec  roboto-normal-400-vietnamese.woff2
+aeed0e51b0bac7c89e5c7e6cf086d7e03bae03df2390528a6f8a66a93e130d80  roboto-normal-500-cyrillic-ext.woff2
+3728fbdd191d75bad5b83a838dfe2fc15f84c2aaa36ffa573321275847db31a9  roboto-normal-500-cyrillic.woff2
+ef8f0236a7e8b46bc9d642ecf4ab0cb7bad7c4182108612ce8f4fb1e2d570b40  roboto-normal-500-greek-ext.woff2
+713780d8b30bda5583052ea847cdcb4f2956c2ac5ff38a7e538ba8f14ad1043e  roboto-normal-500-greek.woff2
+7f1c829b0c90fd664a03bb714a74f7d35d9e38ee1687104abc8ad5bd9c8ccb6c  roboto-normal-500-latin-ext.woff2
+b019538234514166ec7665359d097403358f8a4c991901983922fb4d56989f1e  roboto-normal-500-latin.woff2
+0948409a22b5979aa7e1ec20da9e61f12e7d403800b541ece053881bd2542b70  roboto-normal-500-vietnamese.woff2

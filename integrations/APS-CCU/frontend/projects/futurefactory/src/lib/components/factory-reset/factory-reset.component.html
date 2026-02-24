@@ -1,0 +1,24 @@
+<ng-template #resetDialogContent>
+  <h2 mat-dialog-title><mat-icon>sync_problem</mat-icon> {{ 'Fabrik zurücksetzen' | translate }}</h2>
+  <div mat-dialog-content>
+    <p>{{'Soll die Fabrik wirklich zurückgesetzt werden?' | translate}}</p>
+    <p>
+      <mat-checkbox [(ngModel)]="withStorage">
+        {{ 'Auch den Lagerbestand leeren?' | translate }}
+      </mat-checkbox>
+    </p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-flat-button mat-dialog-close color="warn" (click)="sendFactoryReset()">{{ 'Ja' | translate }}</button>
+    <button mat-flat-button mat-dialog-close cdkFocusInitial>{{ 'Nein' | translate }}</button>
+  </div>
+</ng-template>
+
+<button mat-mini-fab
+        [title]="'Fabrik zurücksetzen' | translate"
+        [attr.aria-label]="'Fabrik zurücksetzen' | translate"
+        color="primary"
+        class="action-btn"
+        (click)="confirmFactoryReset()">
+  <mat-icon>sync_problem</mat-icon>
+</button>

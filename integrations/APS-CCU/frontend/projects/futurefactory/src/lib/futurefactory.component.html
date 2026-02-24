@@ -1,0 +1,18 @@
+<nav mat-tab-nav-bar [tabPanel]="tabPanel" backgroundColor="accent">
+  <a mat-tab-link class="button" #rlaA="routerLinkActive" [active]="rlaA.isActive" routerLinkActive="active" [routerLink]="FutureFactoryRoutes.DASHBOARD">{{ 'Übersicht' | translate }}</a>
+  <a mat-tab-link class="button" #rlaB="routerLinkActive" [active]="rlaB.isActive" routerLinkActive="active" [routerLink]="FutureFactoryRoutes.ORDERS">{{ 'Aufträge' | translate }}</a>
+  <a mat-tab-link class="button" #rlaC="routerLinkActive" [active]="rlaC.isActive" routerLinkActive="active" [routerLink]="FutureFactoryRoutes.PRODUCTION_FLOWS">{{ 'Abläufe' | translate }}</a>
+  <a mat-tab-link class="button" #rlaD="routerLinkActive" [active]="rlaD.isActive" routerLinkActive="active" [routerLink]="FutureFactoryRoutes.LAYOUT">{{ 'Konfiguration' | translate }}</a>
+  <a mat-tab-link class="button" #rlaE="routerLinkActive" [active]="rlaE.isActive" routerLinkActive="active" [routerLink]="FutureFactoryRoutes.MODULE">{{ 'Module' | translate }}</a>
+  <a mat-tab-link class="button" #rlaF="routerLinkActive" [active]="rlaF.isActive" routerLinkActive="active" [routerLink]="FutureFactoryRoutes.SIMULATION">{{ 'Planspiel' | translate }}</a>
+  <a mat-tab-link class="button" #rlaG="routerLinkActive" [active]="rlaG.isActive" routerLinkActive="active" [routerLink]="FutureFactoryRoutes.LOGS">{{ 'Meldungen' | translate }}</a>
+
+  <ff-language-selector></ff-language-selector>
+  <ff-version-info></ff-version-info>
+</nav>
+<mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+
+<mat-tab-nav-panel class="page-content mat-typography">
+  <ff-factory-reset></ff-factory-reset>
+  <router-outlet></router-outlet>
+</mat-tab-nav-panel>

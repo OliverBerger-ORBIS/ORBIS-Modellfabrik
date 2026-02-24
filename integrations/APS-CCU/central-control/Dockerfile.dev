@@ -1,0 +1,9 @@
+FROM node:18.17.1-alpine3.18
+
+COPY . /app
+
+WORKDIR /app
+
+RUN npm ci --include=dev
+
+CMD ["npm", "start"]

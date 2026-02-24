@@ -7,7 +7,7 @@ module.exports = [
     rules: {},
   },
   {
-    ignores: ['**/dist/**', '**/tmp/**', '**/.nx/**'],
+    ignores: ['**/dist/**', '**/tmp/**', '**/.nx/**', 'integrations/**', 'backend/**'],
   },
 ];
 

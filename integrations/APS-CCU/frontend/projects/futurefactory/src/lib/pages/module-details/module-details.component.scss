@@ -1,0 +1,54 @@
+:host {
+  display: block;
+  overflow: auto;
+}
+@media screen and (min-width: 1200px) {
+  :host {
+    padding: 10px;
+  }
+}
+
+.image img {
+  display: block;
+  width: 100%;
+  max-width: 20rem;
+  height: auto;
+}
+
+.wideflex {
+  width: 100%;
+  flex-flow: row wrap;
+  > * {
+    min-height: 300px;
+    flex: 1;
+  }
+  .location {
+    overflow: auto;
+  }
+}
+@media screen and (min-width: 800px) {
+  .wideflex {
+    display: flex;
+    flex-direction: row;
+    flex: 1 1;
+    dl {
+      display: flex;
+      flex-flow: row wrap;
+      align-items: center;
+      dt {
+        flex-basis: 30%;
+      }
+      dd {
+        flex-basis: 60%;
+      }
+    }
+  }
+}
+
+.module_settings {
+  font-size: 1.2rem;
+
+  h3 {
+    font-size: 1.3rem;
+  }
+}

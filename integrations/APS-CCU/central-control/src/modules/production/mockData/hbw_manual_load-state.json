@@ -1,0 +1,23 @@
+{
+  "batteryState": {},
+  "serialNumber": "yBix",
+  "headerId": 2,
+  "orderId": "",
+  "loads": [
+    {
+      "loadPosition": "A1",
+      "loadType": "RED",
+      "loadId": ""
+    },
+    {
+      "loadPosition": "B1",
+      "loadType": "RED",
+      "loadId": ""
+    }
+  ],
+  "orderUpdateId": 0,
+  "errors": [],
+  "paused": false,
+  "timestamp": "2023-04-26T08:04:52.296841Z",
+  "actionState": null
+}

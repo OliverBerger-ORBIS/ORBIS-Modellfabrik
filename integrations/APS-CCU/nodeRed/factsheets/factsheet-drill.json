@@ -1,0 +1,71 @@
+{
+  "headerId": 1,
+  "timestamp": "<replace_in_vda5050>",
+  "version": "0.1.1+git4f766a7",
+  "manufacturer": "Fischertechnik",
+  "serialNumber": "<replace_in_vda5050>",
+  "typeSpecification": {
+    "seriesName": "MOD-FF22+DRILL+24V",
+    "moduleClass": "DRILL"
+  },
+  "physicalParameters": {},
+  "protocolLimits": {},
+  "protocolFeatures": {
+    "moduleActions": [
+      {
+        "actionType": "DROP",
+        "actionParameters": [
+          {
+            "parameterName": "type",
+            "parameterType": "string",
+            "parameterDescription": "Type of workpiece that should be put on the FTS",
+            "isOptional": true
+          }
+        ]
+      },
+      {
+        "actionType": "PICK",
+        "actionParameters": [
+          {
+            "parameterName": "type",
+            "parameterType": "string",
+            "parameterDescription": "Type of workpiece to pick up and process"
+          }
+        ]
+      },
+      {
+        "actionType": "DRILL",
+        "actionParameters": [
+          {
+            "parameterName": "duration",
+            "parameterType": "number",
+            "parameterDescription": "Set the duration of the drilling operation"
+          },
+          {
+            "parameterName": "type",
+            "parameterType": "string",
+            "parameterDescription": "Type of workpiece to process",
+            "isOptional": true
+          }
+        ]
+      }
+    ]
+  },
+  "localizationParameters": {},
+  "loadSpecification": {
+    "loadSets": [
+      {
+        "setName": "WHITES",
+        "loadType": "WHITE"
+      },
+      {
+        "setName": "REDS",
+        "loadType": "RED"
+      },
+      {
+        "setName": "BLUES",
+        "loadType": "BLUE"
+      }
+    ]
+  }
+}

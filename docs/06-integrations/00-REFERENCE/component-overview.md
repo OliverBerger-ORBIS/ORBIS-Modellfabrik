@@ -66,7 +66,7 @@ graph TB
 | **Location** | Raspberry Pi Docker |
 | **IP** | 172.18.0.4 (Docker) |
 | **Sprache** | JavaScript (TypeScript kompiliert) |
-| **Source** | `integrations/APS-CCU/ff-central-control-unit/` |
+| **Source** | `integrations/APS-CCU/` |
 | **Hauptfunktion** | Order-Management, UUID-Generation, FTS-Orchestration |
 
 **Subscribes:**
@@ -137,7 +137,7 @@ graph TB
 | **External** | 192.168.0.100:80 |
 | **Framework** | Angular PWA |
 | **Client-ID** | `mqttjs_bba12050` |
-| **Source** | `integrations/APS-CCU/ff-central-control-unit/aps-dashboard-source/` |
+| **Source** | `integrations/APS-CCU/frontend/` |
 
 ---
 

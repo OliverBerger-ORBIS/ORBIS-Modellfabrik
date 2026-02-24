@@ -1,0 +1,8 @@
+<ng-container *ngIf="moduleInfo$ | async as moduleInfo">
+  <p *ngIf="!moduleInfo">
+    {{ 'Keine Modulinformationen verfügbar' | translate }}
+  </p>
+  <p *ngIf="moduleInfo">
+    {{ 'Produktionsschritt.' + (moduleInfo.subType ?? moduleInfo.type) | translate }} ({{ moduleInfo.serialNumber }})
+  </p>
+</ng-container>

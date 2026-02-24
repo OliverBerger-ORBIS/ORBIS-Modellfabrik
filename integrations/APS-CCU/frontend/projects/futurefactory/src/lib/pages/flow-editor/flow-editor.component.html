@@ -1,0 +1,204 @@
+<ng-template #flowsConnector>
+  <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
+    <path fill="var(--accent-color)" stroke="var(--accent-color)" d="M0,0 L100,0 L50,19 L0,0"/>
+  </svg>
+</ng-template>
+
+<ff-missing-controller-banner>
+  <div id="flows-configuration">
+    <h2 class="heading">
+      {{ 'Bearbeitungsschritte' | translate }}
+    </h2>
+    <section class="flows-actions">
+      <mat-button-toggle
+        [attr.aria-label]="'Bearbeitungsschritt hinzufügen' | translate"
+        [disabled]="hasRunningOrders$ | async"
+        #add_toggle>
+        <mat-icon>add_circle</mat-icon>
+      </mat-button-toggle>
+      <button mat-raised-button
+              (click)="saveFlows()"
+              [disabled]="(hasRunningOrders$ | async) || !modified"
+              [attr.aria-label]="'Speichern' | translate"
+              [matTooltip]="'Speichern' | translate">
+        <mat-icon>save</mat-icon>
+      </button>
+      <button mat-raised-button
+              (click)="resetFlows()"
+              [attr.aria-label]="'Zurücksetzen' | translate"
+              [matTooltip]="'Zurücksetzen' | translate"
+              [disabled]="!modified">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <mat-slide-toggle
+        [attr.aria-label]="'Erweiterte Bearbeitungsschritte aktivieren' | translate"
+        [disabled]="hasRunningOrders$ | async"
+        [(ngModel)]="extendedFlows"
+        [style.margin-left.px]="16">
+        {{ 'Erweiterte Bearbeitungsschritte aktivieren' | translate }}
+      </mat-slide-toggle>
+    </section>
+    <section class="workpiece__steps" [style.display]="add_toggle.checked ? 'block' : 'none'">
+      <mat-card>
+        <mat-card-title>
+          {{ 'Vorhandene Produktionsmodule' | translate }}
+        </mat-card-title>
+        <mat-card-content>
+          <div cdkDropList
+               class="modules-list"
+               [id]="availableModulesId"
+               [cdkDropListDisabled]="hasRunningOrders$ | async"
+               [cdkDropListConnectedTo]="[Workpiece.BLUE, Workpiece.RED, Workpiece.WHITE]"
+               cdkDropListSortingDisabled>
+            <section class="module-item"
+                     [class.blocked]="hasRunningOrders$ | async"
+                     *ngFor="let module of (selectableTypes$ | async)"
+                     cdkDrag [cdkDragData]="module">
+              <h3>{{ 'Produktionsschritt.' + module | translate }}</h3>
+            </section>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
+    <section class="workpiece__flows">
+      <section class="flows-start">
+        <h2>{{ 'Auslagern aus Hochregallager' | translate }}</h2>
+      </section>
+      <ng-container *ngTemplateOutlet="flowsConnector"></ng-container>
+      <ng-container *ngTemplateOutlet="flowsConnector"></ng-container>
+      <ng-container *ngTemplateOutlet="flowsConnector"></ng-container>
+      <mat-card class="workpiece__flows__steps">
+        <mat-card-header>
+          <img mat-card-avatar class="workpiece--icon"
+               src="assets/images/ic_ft_workpiece_blue.svg"
+               [attr.alt]="'Werkstück.Blau' | translate"/>
+          <mat-card-title class="workpiece--name">
+            {{ 'Werkstück.Blau' | translate }}
+          </mat-card-title>
+          <img class="workpiece__finished"
+               src="assets/images/drilled+milled.svg"
+               [attr.alt]="'Fertiges Werkstück' | translate"/>
+        </mat-card-header>
+        <mat-card-content>
+          <div cdkDropList
+               [id]="Workpiece.BLUE"
+               [cdkDropListData]="blueSteps"
+               class="step-list"
+               [cdkDropListDisabled]="hasRunningOrders$ | async"
+               [cdkDropListConnectedTo]="[availableModulesId, Workpiece.RED, Workpiece.WHITE]"
+               [cdkDropListEnterPredicate]="enterPredicate__bound"
+               [cdkDropListSortPredicate]="sortPredicate"
+               (cdkDropListDropped)="drop($event)">
+            <section class="step-item"
+                     [class.blocked]="hasRunningOrders$ | async"
+                     *ngFor="let step of blueSteps; let index=index"
+                     cdkDrag [cdkDragData]="step">
+              <img class="step-item__icon"
+                   [src]="'assets/images/ic_ft_' + step.toLowerCase() + '.svg'"
+                   [attr.alt]="'Produktionsschritt.' + step | translate"/>
+              <h3>{{ 'Produktionsschritt.' + step | translate }}</h3>
+              <span class="buttons push">
+                <button mat-icon-button
+                        [attr.aria-label]="'Löschen' | translate"
+                        [disabled]="hasRunningOrders$ | async"
+                        (click)="deleteStepAtIndex(index, blueSteps)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </span>
+            </section>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="workpiece__flows__steps">
+        <mat-card-header>
+          <img mat-card-avatar class="workpiece--icon"
+               src="assets/images/ic_ft_workpiece_red.svg"
+               [attr.alt]="'Werkstück.Rot' | translate"/>
+          <mat-card-title class="workpiece--name">
+            {{ 'Werkstück.Rot' | translate }}
+          </mat-card-title>
+          <img class="workpiece__finished"
+               src="assets/images/milled.svg"
+               [attr.alt]="'Fertiges Werkstück' | translate"/>
+        </mat-card-header>
+        <mat-card-content>
+          <div cdkDropList
+               [id]="Workpiece.RED"
+               [cdkDropListData]="redSteps"
+               class="step-list"
+               [cdkDropListDisabled]="hasRunningOrders$ | async"
+               [cdkDropListConnectedTo]="[availableModulesId, Workpiece.BLUE, Workpiece.WHITE]"
+               [cdkDropListEnterPredicate]="enterPredicate__bound"
+               [cdkDropListSortPredicate]="sortPredicate"
+               (cdkDropListDropped)="drop($event)">
+            <section class="step-item"
+                     [class.blocked]="hasRunningOrders$ | async"
+                     *ngFor="let step of redSteps; let index=index"
+                     cdkDrag [cdkDragData]="step">
+              <img class="step-item__icon"
+                   [src]="'assets/images/ic_ft_' + step.toLowerCase() + '.svg'"
+                   [attr.alt]="'Produktionsschritt.' + step | translate"/>
+              <h3>{{ 'Produktionsschritt.' + step | translate }}</h3>
+              <span class="buttons push">
+                <button mat-icon-button
+                        [attr.aria-label]="'Löschen' | translate"
+                        [disabled]="hasRunningOrders$ | async"
+                        (click)="deleteStepAtIndex(index, redSteps)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </span>
+            </section>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="workpiece__flows__steps">
+        <mat-card-header>
+          <img mat-card-avatar class="workpiece--icon"
+               src="assets/images/ic_ft_workpiece_white.svg"
+               [attr.alt]="'Werkstück.Weiß' | translate"/>
+          <mat-card-title class="workpiece--name">
+            {{ 'Werkstück.Weiß' | translate }}
+          </mat-card-title>
+          <img class="workpiece__finished"
+               src="assets/images/drilled.svg"
+               [attr.alt]="'Fertiges Werkstück' | translate"/>
+        </mat-card-header>
+        <mat-card-content>
+          <div cdkDropList
+               [id]="Workpiece.WHITE"
+               [cdkDropListData]="whiteSteps"
+               class="step-list"
+               [cdkDropListDisabled]="hasRunningOrders$ | async"
+               [cdkDropListConnectedTo]="[availableModulesId, Workpiece.BLUE, Workpiece.RED]"
+               [cdkDropListEnterPredicate]="enterPredicate__bound"
+               [cdkDropListSortPredicate]="sortPredicate"
+               (cdkDropListDropped)="drop($event)">
+            <section class="step-item"
+                     [class.blocked]="hasRunningOrders$ | async"
+                     *ngFor="let step of whiteSteps; let index=index"
+                     cdkDrag [cdkDragData]="step">
+              <img class="step-item__icon"
+                   [src]="'assets/images/ic_ft_' + step.toLowerCase() + '.svg'"
+                   [attr.alt]="'Produktionsschritt.' + step | translate"/>
+              <h3>{{ 'Produktionsschritt.' + step | translate }}</h3>
+              <span class="buttons push">
+                <button mat-icon-button
+                        [attr.aria-label]="'Löschen' | translate"
+                        [disabled]="hasRunningOrders$ | async"
+                        (click)="deleteStepAtIndex(index, whiteSteps)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </span>
+            </section>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <ng-container *ngTemplateOutlet="flowsConnector"></ng-container>
+      <ng-container *ngTemplateOutlet="flowsConnector"></ng-container>
+      <ng-container *ngTemplateOutlet="flowsConnector"></ng-container>
+      <section class="flows-end">
+        <h2>{{ 'Auslieferung über Warenausgang' | translate }}</h2>
+      </section>
+    </section>
+  </div>
+</ff-missing-controller-banner>

@@ -1,0 +1,23 @@
+section {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background-color: #eaeaea;
+    font-size: 1.3rem;
+}
+
+.config__item {
+    display: flex;
+    flex-direction: row;
+    /* gap items with 0.5rem and center them vertically */
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.config__item input {
+    text-align: right;
+}
+
+.config__item__icon {
+    width: 3em;
+}

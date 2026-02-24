@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`VersionInfoComponent should render the language selector 1`] = `
+<ff-version-info
+  mismatchPopup={[Function VersionMismatchPopupService]}
+  now={[Function Number]}
+>
+  <a
+    alt="version information"
+    href="./assets/version.json?v=1699604177818"
+    target="_blank"
+  >
+    <mat-icon
+      aria-hidden="true"
+      class="mat-icon notranslate mat-primary material-icons"
+      color="primary"
+      data-mat-icon-type="font"
+      role="img"
+    >
+      info
+    </mat-icon>
+  </a>
+</ff-version-info>
+`;

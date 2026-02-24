@@ -1,0 +1,68 @@
+<ng-template #stopDialogContent>
+  <h2 mat-dialog-title><mat-icon>tune</mat-icon>{{ 'Kalibrierung beenden' | translate }}</h2>
+  <section mat-dialog-content>
+    {{'Nicht gespeicherte Änderungen gehen verloren.' | translate}}
+  </section>
+  <section mat-dialog-actions>
+    <button mat-flat-button mat-dialog-close color="warn" (click)="sendCalibrationCommand(ModuleCalibrationCommand.STOP)">{{ 'Kalibrierung beenden' | translate }}</button>
+    <button mat-flat-button mat-dialog-close cdkFocusInitial>{{ 'Abbrechen' | translate }}</button>
+  </section>
+</ng-template>
+
+<ff-missing-controller-banner>
+  <section id="module-calibration" *ngIf="moduleData$ | async as moduleData">
+    <h1>{{ 'Modulkalibrierung' | translate }} - {{moduleData.subType}} (ID: {{moduleData.serialNumber}})</h1>
+    <div *ngIf="!moduleData.calibrating && moduleData.connected">
+      <button mat-raised-button *ngIf="!moduleData.calibrating"
+              (click)="sendCalibrationCommand(ModuleCalibrationCommand.START)"><mat-icon>tune</mat-icon>{{ "Kalibrierung starten" | translate }}</button>
+    </div>
+    <section *ngIf="moduleData.calibrating && moduleData.connected">
+      <button mat-raised-button
+              (click)="this.dialog.open(stopDialogContent);"><mat-icon>tune</mat-icon>{{ "Kalibrierung beenden" | translate }}</button>
+      <button mat-raised-button [disabled]="true"
+              (click)="sendCalibrationCommand(ModuleCalibrationCommand.RESET, undefined, true)"><mat-icon>clear</mat-icon>{{ "Auf Werkseinstellungen zurücksetzen" | translate }}</button>
+      <mat-card>
+        <mat-card-title>{{ "Kalibrierungswerte" | translate }}</mat-card-title>
+        <mat-card-content>
+          <button mat-raised-button
+                  *ngIf="!calibration_data?.length"
+                  (click)="sendCalibrationCommand(ModuleCalibrationCommand.START)"><mat-icon>refresh</mat-icon>{{ "Werte laden" | translate }}</button>
+          <section class="calibration-data" *ngIf="calibration_data?.length">
+            <section class="value-list">
+              <section style="margin-bottom: 1rem">
+                <mat-form-field class="full-width">
+                  <mat-label>{{ "Position zum Kalibrieren" | translate}}</mat-label>
+                  <mat-select [(value)]="current_position">
+                    <mat-option *ngFor="let pos of available_positions" [value]="pos">{{ pos | translate }}</mat-option>
+                    <mat-option [value]="'FACTORY_BASE_SETTINGS'">{{ "FACTORY_BASE_SETTINGS" | translate }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <button mat-raised-button
+                        *ngIf="current_position !== 'FACTORY_BASE_SETTINGS'"
+                        (click)="sendCalibrationCommand(ModuleCalibrationCommand.SELECT, current_position?.trim()?.toUpperCase())"><mat-icon>flag</mat-icon>{{ "Position wählen" | translate }}</button>
+                <button mat-raised-button
+                        *ngIf="current_position !== 'FACTORY_BASE_SETTINGS'"
+                        (click)="sendCalibrationCommand(ModuleCalibrationCommand.TEST, current_position?.trim()?.toUpperCase())"><mat-icon>play_arrow</mat-icon>{{ "Position testen" | translate }}</button>
+              </section>
+              <mat-form-field class="full-width" *ngFor="let ref of calibration_data | filterRef:current_position:moduleData.subType!">
+                <mat-label>{{ ref.referenceKey | translate }}</mat-label>
+                <input matNativeControl #refInput type="number" [ngModel]="ref.referenceValue" (ngModelChange)="updateRef(refInput, ref, $event)">
+              </mat-form-field>
+            </section>
+          </section>
+        </mat-card-content>
+        <mat-card-actions *ngIf="calibration_data?.length">
+          <button mat-raised-button
+                  (click)="calibrationCommandWithValues(ModuleCalibrationCommand.SET_VALUES)"><mat-icon>access_time</mat-icon>{{ "Anwenden" | translate }}</button>
+          <button mat-raised-button
+                  (click)="sendCalibrationCommand(ModuleCalibrationCommand.RESET)"><mat-icon>undo</mat-icon>{{ "Zurücksetzen" | translate }}</button>
+          <button mat-raised-button
+                  (click)="calibrationCommandWithValues(ModuleCalibrationCommand.STORE)"><mat-icon>save</mat-icon>{{ "Speichern" | translate }}</button>
+        </mat-card-actions>
+      </mat-card>
+
+      <ff-calibration-info [imageData]="image_data" [statusValues]="status_values"></ff-calibration-info>
+      <ff-calibration-caption [moduleType]="moduleData.subType!"></ff-calibration-caption>
+    </section>
+  </section>
+</ff-missing-controller-banner>
