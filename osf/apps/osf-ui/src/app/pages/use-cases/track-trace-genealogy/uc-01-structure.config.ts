@@ -108,6 +108,7 @@ export interface Uc01Structure {
   viewBox: { width: number; height: number };
   title: { x: number; y: number; key: string };
   subtitle: { x: number; y: number; key: string };
+  outcome: { x: number; y: number; key: string };
   stepDescription: { x: number; y: number; width: number; height: number };
 
   lanes: Uc01Lane[];
@@ -124,6 +125,7 @@ export interface Uc01Structure {
   phases: Uc01Phase[];
   legend: { x: number; y: number; width: number; height: number; textKey: string };
   abbreviations: { x: number; y: number; width: number; height: number; textKey: string };
+  footer: { x: number; y: number; key: string };
 }
 
 // ===== Structure Factory =====
@@ -140,6 +142,8 @@ export function createUc01Structure(): Uc01Structure {
 
     title: { x: 960, y: 52, key: 'uc01.title' },
     subtitle: { x: 960, y: 78, key: 'uc01.subtitle' },
+    outcome: { x: 960, y: 110, key: 'uc01.outcome' },
+    footer: { x: 960, y: 1080 - 24, key: 'uc01.footer' },
     stepDescription: { x: 960, y: 20, width: 1400, height: 100 },
 
     // ───── 3 Horizontal Lanes ─────

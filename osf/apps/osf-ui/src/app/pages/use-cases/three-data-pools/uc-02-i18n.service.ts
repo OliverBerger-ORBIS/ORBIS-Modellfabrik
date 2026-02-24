@@ -55,6 +55,7 @@ export class Uc02I18nService {
     return {
       'uc02.title': 'Data Aggregation: Three Data Pools for Reliable KPIs',
       'uc02.subtitle': 'Business + Shopfloor + Environment: only the combination makes KPIs explainable and actionable.',
+      'uc02.outcome': 'Outcome: OEE / Energy per Unit',
       'uc02.dsp.header': 'DSP Context Model & Mediation',
       'uc02.src.business': 'Business Data',
       'uc02.src.business.sub': 'ERP, Order, Material',

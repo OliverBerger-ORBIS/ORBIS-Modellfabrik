@@ -73,6 +73,7 @@ export class Uc01I18nService {
       // Title & Subtitle
       'uc01.title': 'Track & Trace — SinglePart (NFC)',
       'uc01.subtitle': 'Business Context + Trace + Enrichment',
+      'uc01.outcome': 'Outcome: Traceability Coverage (100%)',
       // Lanes
       'uc01.lane.business': 'Business Context',
       'uc01.lane.trace': 'Trace & Genealogy',
@@ -113,6 +114,8 @@ export class Uc01I18nService {
       'uc01.legend.parallel': 'Parallel job FTS',
       // Abbreviations
       'uc01.abbreviations': 'HBW=High Bay Warehouse | DPS=Delivery & Pickup | DRILL=Drilling | MILL=Milling | AIQS=AI Quality',
+      // Footer
+      'uc01.footer': 'OSF is a demonstrator showcasing integration principles; productive implementations depend on the customer\'s target landscape.',
     };
   }
 }

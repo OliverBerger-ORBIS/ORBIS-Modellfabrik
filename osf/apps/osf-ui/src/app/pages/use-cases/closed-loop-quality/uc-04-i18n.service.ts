@@ -51,7 +51,7 @@ export class Uc04I18nService {
     return {
       'uc04.title': 'Closed Loop Quality',
       'uc04.subtitle': 'Quality Inspection Event → Decide → Act → Feedback to MES/ERP/Analytics',
-
+      'uc04.outcome': 'Outcome: Closed Loop Quality (FPY)',
       'uc04.lane.process': 'Process Data & Quality Flow',
       'uc04.lane.mixed': 'DSP Edge | Quality Event | Target',
       'uc04.lane.shopfloor': 'Shopfloor Sources & Devices',
@@ -90,6 +90,7 @@ export class Uc04I18nService {
       'uc04.conn.qualityEvent': 'Quality event',
       'uc04.conn.action': 'Action',
       'uc04.feedback': 'Feedback',
+      'uc04.footer': 'OSF is a demonstrator showcasing integration principles; productive implementations depend on the customer\'s target landscape.',
     };
   }
 }

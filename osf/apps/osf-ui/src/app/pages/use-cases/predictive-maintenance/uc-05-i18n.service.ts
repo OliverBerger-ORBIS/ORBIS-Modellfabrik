@@ -51,7 +51,7 @@ export class Uc05I18nService {
     return {
       'uc05.title': 'Predictive Maintenance',
       'uc05.subtitle': 'Condition monitoring: Detect vibrations → Evaluate → Alarm → Act → Feedback',
-
+      'uc05.outcome': 'Outcome: Predictive Maintenance (MTTR)',
       'uc05.lane.process': 'Process Data & Alarm Flow',
       'uc05.lane.mixed': 'DSP Edge | Alarm | Target',
       'uc05.lane.shopfloor': 'Shopfloor Trigger & Sensors',
@@ -96,6 +96,7 @@ export class Uc05I18nService {
       'uc05.conn.alarmEvent': 'Alarm Event',
       'uc05.conn.productionPause': 'Production pause',
       'uc05.feedback': 'Feedback',
+      'uc05.footer': 'OSF is a demonstrator showcasing integration principles; productive implementations depend on the customer\'s target landscape.',
     };
   }
 }

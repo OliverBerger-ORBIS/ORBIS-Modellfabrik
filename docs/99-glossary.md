@@ -4,6 +4,34 @@
 
 ---
 
+## Kernbegriffe & Terminologie (Core Concepts)
+
+### Event (Ereignis)
+Ein diskretes Vorkommnis auf dem Shopfloor, z.B. eine Statusänderung eines Sensors oder der Start/Stopp einer Maschine. Im OSF/DSP-Kontext werden Events **normalisiert** (standardisiert), um sie systemunabhängig verarbeitbar zu machen.
+
+### Context (Kontext)
+Informationen, die einem Event Bedeutung geben. Ein rohes Sensor-Signal wird erst durch Kontext wertvoll: Welcher **Auftrag** (Order)? Welches **Werkstück** (Workpiece)? Welche **Station**? Welche **Zeit**? Der Prozess des Hinzufügens dieser Information heißt **Enrichment** (Anreichern).
+
+### Order (Auftrag)
+Eine Anforderung zur Herstellung eines Produkts oder Erbringung einer Dienstleistung.
+- **Customer Order:** Vertriebsauftrag (ERP).
+- **Production Order:** Fertigungsauftrag (MES).
+- **Transport Order:** Fahrauftrag an das FTS.
+
+### Workpiece / SinglePart (Werkstück)
+Das physische Produkt, das gefertigt wird. In der Modellfabrik identifiziert durch einen **NFC-Code** (SinglePart-Tracking). Im DSP-Kontext oft als "SinglePart" bezeichnet, um die Granularität (Losgröße 1) zu betonen.
+
+### Station
+Ein physischer Ort oder eine Maschine, an dem ein Wertschöpfungsschritt stattfindet (z.B. Bohren an der DRILL-Station, Fräsen an der MILL-Station).
+
+### Transfer (FTS / AGV)
+Die Bewegung von Material zwischen Stationen.
+- **FTS:** Fahrerloses Transportsystem (deutscher Begriff).
+- **AGV:** Automated Guided Vehicle (internationaler Begriff).
+In der UI wird meist "FTS (AGV)" verwendet, um beide Begriffe abzudecken.
+
+---
+
 ## Konzept & Systeme
 
 ### OSF (ORBIS-SmartFactory)

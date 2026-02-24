@@ -25,8 +25,9 @@ export class Uc00SvgGeneratorService {
     svg += `<rect class="frame" x="0" y="0" width="${structure.viewBox.width}" height="${structure.viewBox.height}" fill="url(#frameGradient)"/>`;
     svg += `<g id="uc00_title"><text x="${structure.title.x}" y="${structure.title.y}" text-anchor="middle" class="title">${this.escapeXml(getText(structure.title.key))}</text></g>`;
     svg += `<g id="uc00_subtitle"><text x="${structure.subtitle.x}" y="${structure.subtitle.y}" text-anchor="middle" class="subtitle">${this.escapeXml(getText(structure.subtitle.key))}</text></g>`;
-    const sd = structure.stepDescription;
     const highlightGreenStrong = ORBIS_COLORS.highlightGreen.strong;
+    svg += `<g id="uc00_outcome"><text x="${structure.outcome.x}" y="${structure.outcome.y}" text-anchor="middle" font-family="Segoe UI" font-weight="600" font-size="16" fill="${highlightGreenStrong}">${this.escapeXml(getText(structure.outcome.key))}</text></g>`;
+    const sd = structure.stepDescription;
     svg += `<g id="uc00_step_description" class="step-description-overlay" style="display: none;">`;
     svg += `<rect x="${sd.x - sd.width / 2}" y="${sd.y}" width="${sd.width}" height="${sd.height}" rx="8" ry="8" fill="${highlightGreenStrong}" opacity="0.95" class="step-description__bg"/>`;
     svg += `<text id="uc00_step_description_title" x="${sd.x}" y="${sd.y + 28}" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff" class="step-description__title"></text>`;
@@ -42,12 +43,49 @@ export class Uc00SvgGeneratorService {
     svg += '</g>';
     svg += this.generateDspColumn(structure.columns.dsp, getText);
     svg += this.generateTargetsColumn(structure.columns.targets, getText);
+    svg += this.generateConnectorNote(structure.connectorNote, getText);
+    svg += `
+    <g id="uc00_footer"><text x="${structure.footer.x}" y="${structure.footer.y}" text-anchor="middle" font-family="Segoe UI" font-size="14" fill="${ORBIS_COLORS.neutralDarkGrey}">${this.escapeXml(getText(structure.footer.key))}</text></g>
+    `;
     svg += '</g>';
     svg += '</g>';
     svg += '</svg>';
     return svg;
   }
   
+  private generateConnectorNote(note: { x: number; y: number; width: number; height: number; key: string }, getText: (key: string) => string): string {
+    const text = getText(note.key);
+    const words = text.split(/\s+/);
+    const lines: string[] = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+      if ((currentLine + ' ' + words[i]).length < 45) {
+        currentLine += ' ' + words[i];
+      } else {
+        lines.push(currentLine);
+        currentLine = words[i];
+      }
+    }
+    lines.push(currentLine);
+
+    const lh = 18;
+    const contentH = lines.length * lh;
+    const startY = note.y + (note.height - contentH) / 2 + 14; 
+    const cx = note.x + note.width / 2;
+    const laneTraceStroke = ORBIS_COLORS.diagram.laneTraceStroke;
+
+    let out = `<g id="uc00_note_connector">`;
+    out += `<rect x="${note.x}" y="${note.y}" width="${note.width}" height="${note.height}" rx="4" ry="4" fill="#FEF9E7" stroke="${laneTraceStroke}" stroke-width="1" stroke-dasharray="4 2"/>`;
+    
+    lines.forEach((l, i) => {
+      out += `<text x="${cx}" y="${startY + i * lh}" text-anchor="middle" font-size="14" fill="${ORBIS_COLORS.neutralDarkGrey}" font-family="Segoe UI">${this.escapeXml(l)}</text>`;
+    });
+    
+    out += '</g>';
+    return out;
+  }
+
   private generateDefs(): string {
     const orbisBlueStrong = ORBIS_COLORS.orbisBlue.strong;
     return `

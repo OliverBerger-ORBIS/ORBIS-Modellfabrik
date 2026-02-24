@@ -50,6 +50,8 @@ export interface Uc06Structure {
   viewBox: { width: number; height: number };
   title: { x: number; y: number; key: string };
   subtitle: { x: number; y: number; key: string };
+  outcome: { x: number; y: number; key: string };
+  footer: { x: number; y: number; key: string };
   stepDescription: { x: number; y: number; width: number; height: number };
   laneProcess: { x: number; y: number; width: number; height: number };
   processSteps: Uc06ProcessStep[];
@@ -156,6 +158,8 @@ export function createUc06Structure(): Uc06Structure {
     viewBox: { width: vbW, height: vbH },
     title: { x: vbW / 2, y: 42, key: 'uc06.title' },
     subtitle: { x: vbW / 2, y: 74, key: 'uc06.subtitle' },
+    outcome: { x: vbW / 2, y: 110, key: 'uc06.outcome' },
+    footer: { x: vbW / 2, y: vbH - 20, key: 'uc06.footer' },
     stepDescription: { x: vbW / 2, y: 20, width: 1400, height: 100 },
 
     laneProcess: { x: laneX, y: laneProcessY, width: laneW, height: laneProcessH },

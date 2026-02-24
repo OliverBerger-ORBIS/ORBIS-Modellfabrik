@@ -40,6 +40,14 @@ export class Uc06SvgGeneratorService {
     svg += `<g id="uc06_title"><text x="${s.title.x}" y="${s.title.y}" text-anchor="middle" class="uc06-title">${this.esc(t(s.title.key))}</text></g>`;
     svg += `<g id="uc06_subtitle"><text x="${s.subtitle.x}" y="${s.subtitle.y}" text-anchor="middle" class="uc06-subtitle">${this.esc(t(s.subtitle.key))}</text></g>`;
 
+    // Outcome (shown constantly)
+    const highlightGreenStrong = ORBIS_COLORS.highlightGreen.strong;
+    svg += `<g id="uc06_outcome"><text x="${s.outcome.x}" y="${s.outcome.y}" text-anchor="middle" font-family="Segoe UI" font-weight="600" font-size="16" fill="${highlightGreenStrong}">${this.esc(t(s.outcome.key))}</text></g>`;
+
+    // Footer (Disclaimer)
+    svg += `<g id="uc06_footer"><text x="${s.footer.x}" y="${s.footer.y}" text-anchor="middle" class="uc06-footer">${this.esc(t(s.footer.key))}</text></g>`;
+
+
     svg += `<g id="uc06_col_process">`;
     svg += `<rect id="uc06_lane_process" x="${s.laneProcess.x}" y="${s.laneProcess.y}" width="${s.laneProcess.width}" height="${s.laneProcess.height}" rx="10" fill="url(#uc06_processGrad)" stroke="${D.laneBusinessStroke}" stroke-width="2"/>`;
     svg += `<text x="${s.laneProcess.x + 16}" y="${s.laneProcess.y + 32}" text-anchor="start" class="uc06-lane-label">${this.esc(t('uc06.lane.process'))}</text>`;
@@ -102,6 +110,7 @@ export class Uc06SvgGeneratorService {
       <style>
         .uc06-title { font: 700 40px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
         .uc06-subtitle { font: 400 22px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
+        .uc06-footer { font: 400 14px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
         .uc06-lane-label { font: 700 18px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
         .uc06-step-title { font: 700 22px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
         .uc06-step-bullet { font: 400 13px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }

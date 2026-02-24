@@ -51,6 +51,8 @@ export interface Uc04Structure {
   viewBox: { width: number; height: number };
   title: { x: number; y: number; key: string };
   subtitle: { x: number; y: number; key: string };
+  outcome: { x: number; y: number; key: string };
+  footer: { x: number; y: number; key: string };
   stepDescription: { x: number; y: number; width: number; height: number };
   laneProcess: { x: number; y: number; width: number; height: number };
   processSteps: Uc04ProcessStep[];
@@ -167,6 +169,8 @@ export function createUc04Structure(): Uc04Structure {
     viewBox: { width: vbW, height: vbH },
     title: { x: vbW / 2, y: 42, key: 'uc04.title' },
     subtitle: { x: vbW / 2, y: 74, key: 'uc04.subtitle' },
+    outcome: { x: vbW / 2, y: 110, key: 'uc04.outcome' },
+    footer: { x: vbW / 2, y: vbH - 24, key: 'uc04.footer' },
     stepDescription: { x: vbW / 2, y: 20, width: 1400, height: 100 },
 
     laneProcess: { x: laneX, y: laneProcessY, width: laneW, height: laneProcessH },

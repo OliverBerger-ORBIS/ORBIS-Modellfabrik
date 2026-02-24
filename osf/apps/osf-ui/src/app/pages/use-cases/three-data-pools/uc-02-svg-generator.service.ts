@@ -33,6 +33,16 @@ export class Uc02SvgGeneratorService {
     // Subtitle (step 0 only)
     svg += `<g id="uc02_subtitle"><text x="${s.subtitle.x}" y="${s.subtitle.y}" text-anchor="middle" class="uc02-subtitle">${this.esc(t(s.subtitle.key))}</text></g>`;
 
+    // Outcome (shown constantly)
+    const highlightGreenStrong = ORBIS_COLORS.highlightGreen.strong;
+    svg += `<g id="uc02_outcome"><text x="${s.outcome.x}" y="${s.outcome.y}" text-anchor="middle" font-family="Segoe UI" font-weight="600" font-size="16" fill="${highlightGreenStrong}">${this.esc(t(s.outcome.key))}</text></g>`;
+
+    // Footer (Disclaimer)
+    svg += `<g id="uc02_footer"><text x="${s.footer.x}" y="${s.footer.y}" text-anchor="middle" class="uc02-footer">${this.esc(t(s.footer.key))}</text></g>`;
+
+
+    // Step description overlay (placeholder for consistency, not rendered here yet or handled by overlay component)
+    
     // Sources column
     svg += '<g id="uc02_col_sources">';
     for (const src of s.sources) {
@@ -51,6 +61,9 @@ export class Uc02SvgGeneratorService {
 
     // Note (context model) - rectangle with folded upper-right corner, 3 lines
     svg += this.noteBox(s.note, t, D);
+
+    // Connector Note (Low Code)
+    svg += this.connectorNoteBox(s.connectorNote, t, D);
 
     // Targets column
     svg += '<g id="uc02_col_targets">';
@@ -210,6 +223,42 @@ export class Uc02SvgGeneratorService {
       <text x="${cx}" y="${note.y + 28 + lh}" text-anchor="middle" class="uc02-note">${this.esc(line2)}</text>
       <text x="${cx}" y="${note.y + 28 + lh * 2}" text-anchor="middle" class="uc02-note">${this.esc(line3)}</text>
     </g>`;
+  }
+
+  private connectorNoteBox(note: { x: number; y: number; width: number; height: number; textKey: string }, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
+    const text = t(note.textKey);
+    const words = text.split(/\s+/);
+    const lines: string[] = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+      if ((currentLine + ' ' + words[i]).length < 28) {
+        currentLine += ' ' + words[i];
+      } else {
+        lines.push(currentLine);
+        currentLine = words[i];
+      }
+    }
+    lines.push(currentLine);
+
+    // Auto-height adjustment if needed, but fixed box is safer for layout
+    const lh = 18;
+    // Center vertically based on number of lines
+    const contentH = lines.length * lh;
+    const startY = note.y + (note.height - contentH) / 2 + 14; 
+    const cx = note.x + note.width / 2;
+
+    let out = `<g id="uc02_note_connector">`;
+    // Dashed border, light yellow background for "note" look
+    // #FEF9E7 is a light paper yellow
+    out += `<rect x="${note.x}" y="${note.y}" width="${note.width}" height="${note.height}" rx="4" ry="4" fill="#FEF9E7" stroke="${D.laneTraceStroke}" stroke-width="1" stroke-dasharray="4 2"/>`;
+    
+    lines.forEach((l, i) => {
+      out += `<text x="${cx}" y="${startY + i * lh}" text-anchor="middle" font-size="14" fill="${ORBIS_COLORS.neutralDarkGrey}" font-family="Segoe UI">${this.esc(l)}</text>`;
+    });
+    
+    out += '</g>';
+    return out;
   }
 
   /** Target boxes incl. BI/Data Lake: rounded rect (no cloud). */

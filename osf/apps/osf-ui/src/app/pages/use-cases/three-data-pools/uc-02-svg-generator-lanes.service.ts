@@ -29,6 +29,10 @@ export class Uc02SvgGeneratorLanesService {
     svg += `<g id="uc02_title"><text x="${s.title.x}" y="${s.title.y}" text-anchor="middle" class="uc02-title">${this.esc(t(s.title.key))}</text></g>`;
     svg += `<g id="uc02_subtitle"><text x="${s.subtitle.x}" y="${s.subtitle.y}" text-anchor="middle" class="uc02-subtitle">${this.esc(t(s.subtitle.key))}</text></g>`;
 
+    // Outcome (shown constantly)
+    const highlightGreenStrong = ORBIS_COLORS.highlightGreen.strong;
+    svg += `<g id="uc02_outcome"><text x="${s.outcome.x}" y="${s.outcome.y}" text-anchor="middle" font-family="Segoe UI" font-weight="600" font-size="16" fill="${highlightGreenStrong}">${this.esc(t(s.outcome.key))}</text></g>`;
+
     // Lane 1: Analytics & Value (top) - uc02_col_targets
     svg += `<g id="uc02_col_targets">`;
     svg += `<rect id="uc02_lanes_layer_analytics" x="${s.laneAnalytics.x}" y="${s.laneAnalytics.y}" width="${s.laneAnalytics.width}" height="${s.laneAnalytics.height}" rx="10" fill="url(#uc02_analyticsGrad)" stroke="${D.targetAnalyticsStroke}" stroke-width="2"/>`;

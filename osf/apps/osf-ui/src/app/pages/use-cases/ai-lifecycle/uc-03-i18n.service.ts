@@ -51,6 +51,7 @@ export class Uc03I18nService {
     return {
       'uc03.title': 'AI Lifecycle',
       'uc03.subtitle': 'Train centrally, deploy to multiple stations via DSP Edge + Management Cockpit',
+      'uc03.outcome': 'Outcome: AI Lifecycle',
       'uc03.lane.process': 'Process Data & Model Lifecycle',
       'uc03.lane.dsp': 'DSP Context Model & Mediation',
       'uc03.lane.shopfloor': 'Shopfloor Systems & Devices',
@@ -84,6 +85,7 @@ export class Uc03I18nService {
 
       'uc03.feedback': 'Feedback',
       'uc03.conn.dspProcess': 'DSP ↔ Process',
+      'uc03.footer': 'OSF is a demonstrator showcasing integration principles; productive implementations depend on the customer\'s target landscape.',
     };
   }
 }

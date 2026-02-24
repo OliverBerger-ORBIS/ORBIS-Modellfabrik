@@ -101,7 +101,7 @@ export class AppComponent implements OnDestroy {
       'module': $localize`:@@navModule:Modules`,
       'configuration': $localize`:@@navConfiguration:Configuration`,
       'message-monitor': $localize`:@@navMessageMonitor:Message Monitor`,
-      'fts': $localize`:@@navFts:AGV`,
+      'agv': $localize`:@@navFts:AGV`,
       'track-trace': $localize`:@@navTrackTrace:Track & Trace`,
       'settings': $localize`:@@navSettings:Settings`,
     };

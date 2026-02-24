@@ -106,6 +106,7 @@ export class Uc00I18nService {
       'uc00.target.mes': 'MES',
       'uc00.target.analytics_ai': 'Analytics / AI',
       'uc00.targets.note': 'Best-of-breed: SAP may be an example, but it is not a prerequisite.',
+      'uc00.outcome': 'Outcome: Process Efficiency & Latency Reduction',
       'uc00.outcome.uc01': 'Track & Trace',
       'uc00.outcome.uc02': 'Data Aggregation',
       'uc00.outcome.uc03': 'AI Lifecycle',

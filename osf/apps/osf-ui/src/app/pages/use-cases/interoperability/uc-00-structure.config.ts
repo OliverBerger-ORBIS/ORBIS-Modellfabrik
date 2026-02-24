@@ -147,6 +147,7 @@ export interface Uc00Structure {
   // Title and subtitle
   title: { x: number; y: number; key: string };
   subtitle: { x: number; y: number; key: string };
+  outcome: { x: number; y: number; key: string };
   
   // Columns (hierarchical structure)
   columns: {
@@ -188,6 +189,14 @@ export interface Uc00Structure {
     height: number;
   };
   
+  connectorNote: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    key: string;
+  };
+
   footer: {
     x: number;
     y: number;
@@ -269,6 +278,7 @@ export function createUc00Structure(): Uc00Structure {
     viewBox: UC00_VIEWBOX,
     title: { x: 960, y: 42, key: 'uc00.title' },
     subtitle: { x: 960, y: 74, key: 'uc00.subtitle' },
+    outcome: { x: 960, y: 110, key: 'uc00.outcome' },
     stepDescription: { x: 960, y: 20, width: 1400, height: 100 },
     columns: {
       sources: {
@@ -402,6 +412,7 @@ export function createUc00Structure(): Uc00Structure {
       };
       })(),
     },
+    connectorNote: { x: 40, y: UC00_VIEWBOX.height - 110, width: 360, height: 80, key: 'uc00.note.connector' },
     footer: { x: 960, y: UC00_VIEWBOX.height - 30, key: 'uc00.footer' },
   };
   

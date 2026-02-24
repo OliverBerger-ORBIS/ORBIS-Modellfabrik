@@ -38,6 +38,14 @@ export class Uc04SvgGeneratorService {
     svg += `<g id="uc04_title"><text x="${s.title.x}" y="${s.title.y}" text-anchor="middle" class="uc04-title">${this.esc(t(s.title.key))}</text></g>`;
     svg += `<g id="uc04_subtitle"><text x="${s.subtitle.x}" y="${s.subtitle.y}" text-anchor="middle" class="uc04-subtitle">${this.esc(t(s.subtitle.key))}</text></g>`;
 
+    // Outcome (shown constantly)
+    const highlightGreenStrong = ORBIS_COLORS.highlightGreen.strong;
+    svg += `<g id="uc04_outcome"><text x="${s.outcome.x}" y="${s.outcome.y}" text-anchor="middle" font-family="Segoe UI" font-weight="600" font-size="16" fill="${highlightGreenStrong}">${this.esc(t(s.outcome.key))}</text></g>`;
+
+    // Footer (Disclaimer)
+    svg += `<g id="uc04_footer"><text x="${s.footer.x}" y="${s.footer.y}" text-anchor="middle" class="uc04-footer">${this.esc(t(s.footer.key))}</text></g>`;
+
+
     svg += `<g id="uc04_col_process">`;
     svg += `<rect id="uc04_lanes_layer_process" x="${s.laneProcess.x}" y="${s.laneProcess.y}" width="${s.laneProcess.width}" height="${s.laneProcess.height}" rx="10" fill="url(#uc04_processGrad)" stroke="${D.laneBusinessStroke}" stroke-width="2"/>`;
     svg += `<text x="${s.laneProcess.x + 16}" y="${s.laneProcess.y + 32}" text-anchor="start" class="uc04-lane-label">${this.esc(t('uc04.lane.process'))}</text>`;
@@ -107,6 +115,7 @@ export class Uc04SvgGeneratorService {
         .uc04-mixed-title { font: 700 16px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
         .uc04-quality-title { font: 700 18px "Segoe UI",Arial,sans-serif; fill: ${qualityStroke}; }
         .uc04-sf-title { font: 700 16px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
+        .uc04-footer { font: 400 16px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
       </style>
     </defs>`;
   }

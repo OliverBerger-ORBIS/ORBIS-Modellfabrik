@@ -51,7 +51,7 @@ export class Uc06I18nService {
     return {
       'uc06.title': 'Process Optimization',
       'uc06.subtitle': 'Observe → Analyze → Recommend → Simulate → Execute → Feedback (KPI-to-Action Loop)',
-
+      'uc06.outcome': 'Outcome: Process Optimization',
       'uc06.lane.process': 'Optimization Loop',
       'uc06.lane.shopfloor': 'Shopfloor Sources & Targets',
 
@@ -94,6 +94,7 @@ export class Uc06I18nService {
       'uc06.conn.recommendation': 'Recommendation',
       'uc06.conn.action': 'Execute',
       'uc06.feedback': 'Feedback',
+      'uc06.footer': 'OSF is a demonstrator and not a productive system.',
     };
   }
 }

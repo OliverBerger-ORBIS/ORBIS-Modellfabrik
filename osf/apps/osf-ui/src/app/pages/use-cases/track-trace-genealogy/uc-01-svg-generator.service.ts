@@ -43,6 +43,14 @@ export class Uc01SvgGeneratorService {
     // Subtitle (shown in step 0, replaced by step description later)
     svg += `<g id="uc01_subtitle"><text x="${s.subtitle.x}" y="${s.subtitle.y}" text-anchor="middle" class="uc01-subtitle">${this.esc(t(s.subtitle.key))}</text></g>`;
 
+    // Outcome (shown constantly)
+    const highlightGreenStrong = ORBIS_COLORS.highlightGreen.strong;
+    svg += `<g id="uc01_outcome"><text x="${s.outcome.x}" y="${s.outcome.y}" text-anchor="middle" font-family="Segoe UI" font-weight="600" font-size="16" fill="${highlightGreenStrong}">${this.esc(t(s.outcome.key))}</text></g>`;
+
+    // Footer (Disclaimer)
+    svg += `<g id="uc01_footer"><text x="${s.footer.x}" y="${s.footer.y}" text-anchor="middle" class="uc01-footer">${this.esc(t(s.footer.key))}</text></g>`;
+
+
     // Step description overlay
     svg += this.stepDescriptionOverlay(s);
 

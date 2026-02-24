@@ -33,6 +33,14 @@ export class Uc03SvgGeneratorService {
     svg += `<g id="uc03_title"><text x="${s.title.x}" y="${s.title.y}" text-anchor="middle" class="uc03-title">${this.esc(t(s.title.key))}</text></g>`;
     svg += `<g id="uc03_subtitle"><text x="${s.subtitle.x}" y="${s.subtitle.y}" text-anchor="middle" class="uc03-subtitle">${this.esc(t(s.subtitle.key))}</text></g>`;
 
+    // Outcome (shown constantly)
+    const highlightGreenStrong = ORBIS_COLORS.highlightGreen.strong;
+    svg += `<g id="uc03_outcome"><text x="${s.outcome.x}" y="${s.outcome.y}" text-anchor="middle" font-family="Segoe UI" font-weight="600" font-size="16" fill="${highlightGreenStrong}">${this.esc(t(s.outcome.key))}</text></g>`;
+
+    // Footer (Disclaimer)
+    svg += `<g id="uc03_footer"><text x="${s.footer.x}" y="${s.footer.y}" text-anchor="middle" class="uc03-footer">${this.esc(t(s.footer.key))}</text></g>`;
+
+
     // Lane 1: Process (top) – label left-top, animation-compatible ID
     svg += `<g id="uc03_col_process">`;
     svg += `<rect id="uc03_lanes_layer_process" x="${s.laneProcess.x}" y="${s.laneProcess.y}" width="${s.laneProcess.width}" height="${s.laneProcess.height}" rx="10" fill="url(#uc03_processGrad)" stroke="${D.laneBusinessStroke}" stroke-width="2"/>`;
@@ -113,6 +121,7 @@ export class Uc03SvgGeneratorService {
         .uc03-dsp-bullet { font: 400 12px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
         .uc03-sf-title { font: 700 16px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
         .uc03-sf-bullet { font: 400 12px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
+        .uc03-footer { font: 400 16px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
       </style>
     </defs>`;
   }

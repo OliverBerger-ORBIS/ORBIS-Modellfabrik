@@ -39,6 +39,7 @@ export interface Uc02LanesStructure {
   viewBox: { width: number; height: number };
   title: { x: number; y: number; key: string };
   subtitle: { x: number; y: number; key: string };
+  outcome: { x: number; y: number; key: string };
   stepDescription: { x: number; y: number; width: number; height: number };
   laneAnalytics: { x: number; y: number; width: number; height: number };
   targets: Uc02LanesTarget[];
@@ -77,8 +78,7 @@ export function createUc02LanesStructure(): Uc02LanesStructure {
   return {
     viewBox: { width: vbW, height: vbH },
     title: { x: vbW / 2, y: 42, key: 'uc02.title' },
-    subtitle: { x: vbW / 2, y: 74, key: 'uc02.subtitle' },
-    stepDescription: { x: vbW / 2, y: 20, width: 1400, height: 100 },
+    subtitle: { x: vbW / 2, y: 74, key: 'uc02.subtitle' },    outcome: { x: vbW / 2, y: 104, key: 'uc02.outcome' },    stepDescription: { x: vbW / 2, y: 20, width: 1400, height: 100 },
 
     laneAnalytics: { x: laneX, y: laneAnalyticsY, width: laneW, height: laneAnalyticsH },
     targets: [
