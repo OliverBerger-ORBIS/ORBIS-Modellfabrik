@@ -2,6 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { OrderCardComponent } from '../order-card.component';
 import { ModuleNameService } from '../../../services/module-name.service';
+import { CorrelationInfoService } from '../../../services/correlation-info.service';
+import { MessageMonitorService } from '../../../services/message-monitor.service';
+import { MessageValidationService } from '../../../services/message-validation.service';
+import { MessagePersistenceService } from '../../../services/message-persistence.service';
 import type { OrderActive, ProductionStep } from '@osf/entities';
 import { SimpleChange } from '@angular/core';
 
@@ -48,9 +52,16 @@ describe('OrderCardComponent', () => {
   } as OrderActive;
 
   beforeEach(async () => {
+    localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [OrderCardComponent, HttpClientTestingModule],
-      providers: [ModuleNameService],
+      providers: [
+        ModuleNameService,
+        CorrelationInfoService,
+        MessageMonitorService,
+        MessageValidationService,
+        MessagePersistenceService,
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(OrderCardComponent);

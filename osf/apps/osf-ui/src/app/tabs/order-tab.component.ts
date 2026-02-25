@@ -126,6 +126,14 @@ export class OrderTabComponent implements OnInit, OnDestroy {
       : $localize`:@@orderTabCollapseCompleted:Collapse completed orders`;
   }
 
+  requestCorrelation = async (ccuOrderId: string): Promise<void> => {
+    try {
+      await this.dashboard.commands.requestCorrelationInfo({ ccuOrderId });
+    } catch (error) {
+      console.error('[order-tab] requestCorrelationInfo failed:', error);
+    }
+  };
+
   private bindOrderStreams(): void {
     // Pattern: Merge MessageMonitor last messages with dashboard streams
     // This ensures we get the latest orders even when connecting while factory is already running
@@ -148,50 +156,45 @@ export class OrderTabComponent implements OnInit, OnDestroy {
       startWith([] as OrderActive[])
     );
     
-    // Combine last messages from both topics and merge with dashboard streams
-    // MessageMonitor streams come first to ensure they take priority
+    // Combine last messages from both topics (CCU full-snapshot semantics)
+    // CCU publishes ccu/order/active and ccu/order/completed as complete arrays each time (like CCU Frontend).
+    // MessageMonitor delivers the exact payload. Do NOT merge with dashboard.streams.orders$ in replay/live:
+    // the gateway uses additive scan() and never clears – it does not match CCU snapshot semantics.
     const lastOrders = combineLatest([lastActive, lastCompleted]).pipe(
       map(([active, completed]) => {
-        // Build orders state from last messages (similar to business layer logic)
         const activeMap: Record<string, OrderActive> = {};
         const completedMap: Record<string, OrderActive> = {};
-        
         active.forEach((order) => {
           if (order && order.orderId) {
             activeMap[order.orderId] = order;
           }
         });
-        
         completed.forEach((order) => {
           if (order && order.orderId) {
             completedMap[order.orderId] = order;
-            // Remove from active if it's completed
             delete activeMap[order.orderId];
           }
         });
-        
         return { active: activeMap, completed: completedMap };
       })
     );
-    
-    // Merge with dashboard streams - MessageMonitor first to ensure latest data
-    // Dashboard streams are Record<string, OrderActive>, so we convert MessageMonitor data to match
+
     const lastActiveOrders$ = lastOrders.pipe(map((state) => state.active));
     const lastCompletedOrders$ = lastOrders.pipe(map((state) => state.completed));
-    
-    const ordersState$ = merge(
-      lastActiveOrders$,
-      this.dashboard.streams.orders$
-    ).pipe(
-      shareReplay({ bufferSize: 1, refCount: false })
-    );
-    
-    const completedState$ = merge(
-      lastCompletedOrders$,
-      this.dashboard.streams.completedOrders$
-    ).pipe(
-      shareReplay({ bufferSize: 1, refCount: false })
-    );
+
+    // Replay/Live: use MessageMonitor only (CCU snapshot semantics).
+    // Mock: use dashboard streams (fixtures).
+    const ordersState$ = this.isMockMode
+      ? merge(lastActiveOrders$, this.dashboard.streams.orders$).pipe(
+          shareReplay({ bufferSize: 1, refCount: false })
+        )
+      : lastActiveOrders$.pipe(shareReplay({ bufferSize: 1, refCount: false }));
+
+    const completedState$ = this.isMockMode
+      ? merge(lastCompletedOrders$, this.dashboard.streams.completedOrders$).pipe(
+          shareReplay({ bufferSize: 1, refCount: false })
+        )
+      : lastCompletedOrders$.pipe(shareReplay({ bufferSize: 1, refCount: false }));
 
     // Convert Record<string, OrderActive> to OrderActive[]
     const orderList$ = ordersState$.pipe(

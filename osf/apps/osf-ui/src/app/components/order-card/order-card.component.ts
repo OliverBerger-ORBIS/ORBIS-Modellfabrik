@@ -1,9 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import type { OrderActive, ProductionStep } from '@osf/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@osf/testing-fixtures';
 import { ShopfloorPreviewComponent } from '../shopfloor-preview/shopfloor-preview.component';
 import { ModuleNameService } from '../../services/module-name.service';
+import { CorrelationInfoService, type CorrelationInfo } from '../../services/correlation-info.service';
 import { resolveLegacyShopfloorPath } from '../../shared/icons/legacy-shopfloor-map';
 import { ICONS } from '../../shared/icons/icon.registry';
 
@@ -35,6 +39,9 @@ const THREE_D_ICON_MAP: Record<'BLUE' | 'WHITE' | 'RED', string> = {
 
 const DEFAULT_SHOPFLOOR_ICON = resolveLegacyShopfloorPath('assets/svg/shopfloor/shared/question.svg');
 
+/** Callback to request ERP correlation info for an order (ccuOrderId). */
+export type RequestCorrelationFn = (ccuOrderId: string) => Promise<void>;
+
 @Component({
   standalone: true,
   selector: 'app-order-card',
@@ -47,21 +54,41 @@ export class OrderCardComponent implements OnInit, OnChanges {
   @Input({ required: true }) order: OrderActive | null | undefined;
   @Input({ transform: (v: unknown) => Boolean(v) }) isCompleted = false;
   @Input({ transform: (v: unknown) => Boolean(v) }) expanded = false;
+  @Input() onRequestCorrelation: RequestCorrelationFn | null = null;
 
   steps: ProductionStep[] = [];
   collapsed = false;
 
-  constructor(private readonly moduleNameService: ModuleNameService) {}
+  private readonly orderIdSubject = new BehaviorSubject<string>('');
+  correlationInfo$: Observable<CorrelationInfo | null> = this.orderIdSubject.pipe(
+    switchMap((id) => (id ? this.correlationInfoService.getCorrelationInfo$(id) : of(null)))
+  );
+
+  constructor(
+    private readonly moduleNameService: ModuleNameService,
+    private readonly correlationInfoService: CorrelationInfoService
+  ) {}
 
   ngOnInit(): void {
-    // Initialize collapsed state based on expanded and isCompleted
-    // This runs after all inputs are set, ensuring we have the correct initial state
+    this.orderIdSubject.next(this.order?.orderId ?? '');
     this.updateCollapsedState();
+  }
+
+  async requestCorrelation(): Promise<void> {
+    const id = this.order?.orderId;
+    if (id && this.onRequestCorrelation) {
+      await this.onRequestCorrelation(id);
+    }
+  }
+
+  get requestCorrelationButtonLabel(): string {
+    return $localize`:@@orderCardRequestCorrelation:Request ERP info`;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['order']) {
       this.steps = (this.order?.productionSteps ?? []) as ProductionStep[];
+      this.orderIdSubject.next(this.order?.orderId ?? '');
     }
     
     // Always update collapsed state when any relevant input changes

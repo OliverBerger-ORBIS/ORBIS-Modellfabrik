@@ -84,6 +84,28 @@
         <span class="detail-label" i18n="@@orderCardOrderId">Order ID</span>
         <span class="detail-value">{{ orderId }}</span>
       </div>
+      <ng-container *ngIf="correlationInfo$ | async as info">
+        <div class="detail-group order-card__erp" *ngIf="info.orderType === 'CUSTOMER' && info.customerOrderId">
+          <span class="detail-label" i18n="@@orderCardErpCustomerOrder">ERP Customer Order</span>
+          <span class="detail-value">{{ info.customerOrderId }}{{ info.customerId ? ' · ' + info.customerId : '' }}</span>
+        </div>
+        <div class="detail-group order-card__erp" *ngIf="info.orderType === 'PURCHASE' && info.purchaseOrderId">
+          <span class="detail-label" i18n="@@orderCardErpPurchaseOrder">ERP Purchase Order</span>
+          <span class="detail-value">{{ info.purchaseOrderId }}{{ info.supplierId ? ' · ' + info.supplierId : '' }}</span>
+        </div>
+      </ng-container>
+      <div class="detail-group order-card__correlate" *ngIf="onRequestCorrelation && currentOrder.orderId">
+        <button
+          type="button"
+          class="order-card__correlate-btn"
+          (click)="requestCorrelation()"
+          [attr.aria-label]="requestCorrelationButtonLabel"
+          [title]="requestCorrelationButtonLabel"
+        >
+          <span aria-hidden="true">📋</span>
+          {{ requestCorrelationButtonLabel }}
+        </button>
+      </div>
       <div class="detail-group" *ngIf="orderDuration as duration">
         <span class="detail-label" i18n="@@orderCardDuration">Duration</span>
         <span class="detail-value">{{ duration }}</span>

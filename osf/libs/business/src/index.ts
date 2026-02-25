@@ -63,6 +63,7 @@ export interface BusinessCommands {
   dockFts: (serialNumber: string, nodeId?: string) => Promise<void>;
   sendCustomerOrder: (workpieceType: WorkpieceType) => Promise<void>;
   requestRawMaterial: (workpieceType: WorkpieceType) => Promise<void>;
+  requestCorrelationInfo: (params: { ccuOrderId?: string; requestId?: string }) => Promise<void>;
   moveCamera: (command: 'relmove_up' | 'relmove_down' | 'relmove_left' | 'relmove_right' | 'home' | 'stop', degree: number) => Promise<void>;
   resetFactory: (withStorage?: boolean) => Promise<void>;
 }
@@ -537,6 +538,23 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     await publish('ccu/order/request', payload, { qos: 1, retain: false });
   };
 
+  const requestCorrelationInfo: BusinessCommands['requestCorrelationInfo'] = async (params) => {
+    const { ccuOrderId, requestId } = params ?? {};
+    if (!ccuOrderId && !requestId) {
+      return;
+    }
+    const payload: Record<string, string> = {
+      timestamp: new Date().toISOString(),
+    };
+    if (ccuOrderId) {
+      payload['ccuOrderId'] = ccuOrderId;
+    }
+    if (requestId) {
+      payload['requestId'] = requestId;
+    }
+    await publish('dsp/correlation/request', payload, { qos: 1, retain: false });
+  };
+
   const requestRawMaterial: BusinessCommands['requestRawMaterial'] = async (workpieceType) => {
     if (!workpieceType) {
       return;
@@ -601,6 +619,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     setFtsCharge,
     dockFts,
     sendCustomerOrder,
+    requestCorrelationInfo,
     requestRawMaterial,
     moveCamera,
     resetFactory,

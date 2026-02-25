@@ -244,6 +244,57 @@ test('sendCustomerOrder does not publish if workpieceType is empty', async () =>
   assert.equal(publishLog.length, 0);
 });
 
+test('requestCorrelationInfo publishes dsp/correlation/request with ccuOrderId', async () => {
+  const { streams, publishLog } = createGateway();
+  const business = createBusiness(streams);
+
+  await business.requestCorrelationInfo({ ccuOrderId: 'ORD-001' });
+
+  assert.equal(publishLog.length, 1);
+  assert.equal(publishLog[0]?.topic, 'dsp/correlation/request');
+  const payload = publishLog[0]?.payload as Record<string, unknown>;
+  assert.equal(payload.ccuOrderId, 'ORD-001');
+  assert.equal(typeof payload.timestamp, 'string');
+  assert.ok((payload.timestamp as string).match(/^\d{4}-\d{2}-\d{2}T/), 'timestamp should be ISO format');
+  const options = publishLog[0]?.options;
+  assert.equal(options?.qos, 1);
+  assert.equal(options?.retain, false);
+});
+
+test('requestCorrelationInfo publishes with requestId when provided', async () => {
+  const { streams, publishLog } = createGateway();
+  const business = createBusiness(streams);
+
+  await business.requestCorrelationInfo({ requestId: 'REQ-123' });
+
+  assert.equal(publishLog.length, 1);
+  const payload = publishLog[0]?.payload as Record<string, unknown>;
+  assert.equal(payload.requestId, 'REQ-123');
+  assert.equal(typeof payload.timestamp, 'string');
+});
+
+test('requestCorrelationInfo publishes with both ccuOrderId and requestId', async () => {
+  const { streams, publishLog } = createGateway();
+  const business = createBusiness(streams);
+
+  await business.requestCorrelationInfo({ ccuOrderId: 'ORD-002', requestId: 'REQ-456' });
+
+  assert.equal(publishLog.length, 1);
+  const payload = publishLog[0]?.payload as Record<string, unknown>;
+  assert.equal(payload.ccuOrderId, 'ORD-002');
+  assert.equal(payload.requestId, 'REQ-456');
+});
+
+test('requestCorrelationInfo does not publish if neither ccuOrderId nor requestId provided', async () => {
+  const { streams, publishLog } = createGateway();
+  const business = createBusiness(streams);
+
+  await business.requestCorrelationInfo({});
+  await business.requestCorrelationInfo({ ccuOrderId: '', requestId: '' } as any);
+
+  assert.equal(publishLog.length, 0);
+});
+
 test('requestRawMaterial publishes omf/order/raw_material with correct payload', async () => {
   const { streams, publishLog } = createGateway();
   const business = createBusiness(streams);
