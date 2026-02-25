@@ -515,6 +515,13 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     await publish(`fts/v1/ff/${serialNumber}/instantAction`, payload, { qos: 1, retain: false });
   };
 
+  const generateRequestId = (): string =>
+    `OSF-UI_${'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    })}`;
+
   const sendCustomerOrder: BusinessCommands['sendCustomerOrder'] = async (workpieceType) => {
     if (!workpieceType) {
       return;
@@ -524,6 +531,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
       type: workpieceType,
       timestamp: new Date().toISOString(),
       orderType: 'PRODUCTION',
+      requestId: generateRequestId(),
     };
 
     await publish('ccu/order/request', payload, { qos: 1, retain: false });

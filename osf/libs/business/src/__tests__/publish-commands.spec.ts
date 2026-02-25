@@ -192,16 +192,35 @@ test('sendCustomerOrder publishes ccu/order/request with correct payload', async
 
   assert.equal(publishLog.length, 1);
   assert.equal(publishLog[0]?.topic, 'ccu/order/request');
-  
+
   const payload = publishLog[0]?.payload as any;
   assert.equal(payload.type, 'BLUE');
   assert.equal(payload.orderType, 'PRODUCTION');
   assert.equal(typeof payload.timestamp, 'string');
   assert.ok(payload.timestamp.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/), 'timestamp should be ISO format');
-  
+  assert.ok(
+    payload.requestId?.match(/^OSF-UI_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i),
+    `requestId should match OSF-UI_<UUID>, got: ${payload.requestId}`
+  );
+
   const options = publishLog[0]?.options;
   assert.equal(options?.qos, 1);
   assert.equal(options?.retain, false);
+});
+
+test('sendCustomerOrder generates unique requestId per call', async () => {
+  const { streams, publishLog } = createGateway();
+  const business = createBusiness(streams);
+
+  await business.sendCustomerOrder('BLUE');
+  await business.sendCustomerOrder('RED');
+
+  assert.equal(publishLog.length, 2);
+  const id1 = (publishLog[0]?.payload as any).requestId;
+  const id2 = (publishLog[1]?.payload as any).requestId;
+  assert.notEqual(id1, id2, 'each order should have unique requestId');
+  assert.ok(id1?.startsWith('OSF-UI_'), 'requestId should have OSF-UI_ prefix');
+  assert.ok(id2?.startsWith('OSF-UI_'), 'requestId should have OSF-UI_ prefix');
 });
 
 test('sendCustomerOrder supports all workpiece types', async () => {

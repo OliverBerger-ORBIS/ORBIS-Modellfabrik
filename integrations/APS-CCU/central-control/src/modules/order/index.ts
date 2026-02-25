@@ -82,6 +82,7 @@ export const sendResponse = async (
     state: OrderState.ENQUEUED,
     workpieceId: orderRequest.workpieceId ? orderRequest.workpieceId : undefined,
     simulationId: orderRequest.simulationId,
+    requestId: orderRequest.requestId,
   };
 
   await OrderManagement.getInstance().cacheOrder(response);
@@ -157,7 +158,11 @@ export const handleMessage = async (message: string): Promise<void> => {
       console.error('Production order has no navigation steps configured, aborting ...');
       return;
     } else if (!StockManagementService.reserveWorkpiece(orderId, orderRequest.type)) {
-      console.error('No workpiece available to create order for ' + orderRequest.type);
+      const warehouses = StockManagementService.getWarehouses();
+      const stockItems = StockManagementService.getStock();
+      console.error(
+        `No workpiece available for ${orderRequest.type} - warehouses: [${warehouses.join(', ')}] stockItems: ${stockItems.length}`,
+      );
       return;
     }
   } else {

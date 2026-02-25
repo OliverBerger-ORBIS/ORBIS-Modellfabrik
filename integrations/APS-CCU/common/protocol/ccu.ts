@@ -115,6 +115,8 @@ export type OrderRequest = {
   workpieceId?: string;
   /** Optional: The id of the simulation/planspiel, that this order is a part of. */
   simulationId?: string;
+  /** Optional: Correlation ID from ERP/MES/DSP_Edge for request-response matching */
+  requestId?: string;
 };
 
 export type OrderResponse = {
@@ -126,6 +128,8 @@ export type OrderResponse = {
   timestamp: Date;
   /** The generated unique order id */
   orderId: string;
+  /** Optional: Echo of requestId from OrderRequest for correlation (ERP/MES) */
+  requestId?: string;
   /** The steps an order has to succeed until the order if fulfilled */
   productionSteps: Array<OrderNavigationStep | OrderManufactureStep>;
   state: OrderState;

@@ -1,0 +1,23 @@
+{
+  "topic": "module/v1/ff/HBW-DEMO/state",
+  "payload": {
+    "headerId": 1,
+    "type": "HBW",
+    "timestamp": "2025-10-01T12:00:00.000Z",
+    "serialNumber": "HBW-DEMO",
+    "orderId": "",
+    "orderUpdateId": 0,
+    "paused": false,
+    "errors": [],
+    "loads": [
+      {"loadId": "wp-blue-1", "loadType": "BLUE", "loadPosition": "A1", "loadTimestamp": 0},
+      {"loadId": "wp-blue-2", "loadType": "BLUE", "loadPosition": "A2", "loadTimestamp": 0},
+      {"loadId": "wp-red-1", "loadType": "RED", "loadPosition": "B1", "loadTimestamp": 0},
+      {"loadId": "wp-red-2", "loadType": "RED", "loadPosition": "B2", "loadTimestamp": 0},
+      {"loadId": "wp-white-1", "loadType": "WHITE", "loadPosition": "C1", "loadTimestamp": 0},
+      {"loadId": "wp-white-2", "loadType": "WHITE", "loadPosition": "C2", "loadTimestamp": 0}
+    ]
+  },
+  "qos": 1,
+  "retain": false
+}

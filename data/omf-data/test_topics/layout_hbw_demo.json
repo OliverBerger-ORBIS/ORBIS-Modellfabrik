@@ -1,0 +1,23 @@
+{
+  "modules": [
+    {"type": "HBW", "serialNumber": "HBW-DEMO"},
+    {"type": "DRILL", "serialNumber": "DRILL-MISSING", "placeholder": true},
+    {"type": "MILL", "serialNumber": "MILL-MISSING", "placeholder": true},
+    {"type": "DPS", "serialNumber": "DPS-MISSING", "placeholder": true},
+    {"type": "AIQS", "serialNumber": "AIQS-MISSING", "placeholder": true},
+    {"type": "CHRG", "serialNumber": "CHRG0"}
+  ],
+  "intersections": [{"id": "1"}, {"id": "2"}, {"id": "3"}, {"id": "4"}],
+  "roads": [
+    {"length": 360, "from": "1", "to": "2", "direction": "EAST"},
+    {"length": 360, "from": "3", "to": "1", "direction": "NORTH"},
+    {"length": 360, "from": "3", "to": "4", "direction": "EAST"},
+    {"length": 360, "from": "4", "to": "2", "direction": "NORTH"},
+    {"direction": "EAST", "from": "HBW-DEMO", "to": "1", "length": 380},
+    {"direction": "EAST", "from": "DRILL-MISSING", "to": "3", "length": 380},
+    {"direction": "SOUTH", "from": "MILL-MISSING", "to": "1", "length": 380},
+    {"direction": "WEST", "from": "DPS-MISSING", "to": "2", "length": 380},
+    {"direction": "SOUTH", "from": "AIQS-MISSING", "to": "2", "length": 380},
+    {"direction": "WEST", "from": "CHRG0", "to": "4", "length": 430}
+  ]
+}

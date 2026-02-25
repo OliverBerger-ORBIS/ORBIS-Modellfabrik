@@ -29,8 +29,8 @@
 **Doku-Audit-Pfad:** ✅ [AS-IS vs. Fischertechnik Vergleich](../07-analysis/AS-IS-FISCHERTECHNIK-COMPARISON.md) – Abweichungen und Lücken dokumentiert. Autoritative Quelle: [fischertechnik-official/](../06-integrations/fischertechnik-official/).
   
 ### ERP/MES Integration
-- [ ] Erweiterung der APS/FMF/CCU-Komponente: Order/request-Topic von (DSP_Edge) sendet zusätzlich eine request-ID, CCU sendet eine Order/request-ack mit Request-ID und order-id  
-  → **Analyse CCU-Deployment:** [ccu-modification-and-deployment-analysis.md](../07-analysis/ccu-modification-and-deployment-analysis.md)
+- [x] Erweiterung der APS/FMF/CCU-Komponente: Order/request-Topic von (DSP_Edge) sendet zusätzlich eine request-ID, CCU sendet Order/response mit requestId und orderId  
+  → **Doku:** [order-requestid-extension.md](../07-analysis/order-requestid-extension.md) | **Analyse Deployment:** [ccu-modification-and-deployment-analysis.md](../07-analysis/ccu-modification-and-deployment-analysis.md)
 - [ ] OSF-UI sendet ein Topic ERP-Order-request-Meta, DSP sendet response mit ERP-Info zur Order (-> Track & Trace) mit SAP/EREP-Daten
 
 ### Marketing & Konsistenz

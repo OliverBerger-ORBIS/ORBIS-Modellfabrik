@@ -131,6 +131,30 @@ integrations/APS-CCU/
 
 **Ergebnis:** Vollständiger Test der requestId-Logik ohne Pi, ohne Docker-Build.
 
+**Lagerbestand für Order-Test:** Die CCU prüft vor jeder Production-Order, ob Workpieces (BLUE, RED, WHITE) im HBW verfügbar sind. Ohne echte HBW-Hardware:
+1. **Layout** mit HBW-DEMO setzen: `data/omf-data/test_topics/layout_hbw_demo.json`
+2. **Preloads** senden (aus `data/omf-data/test_topics/preloads/`): `module_v1_ff_HBW-DEMO_connection.json`, `_factsheet.json`, `_state.json` – das **State-Topic** enthält den Lagerbestand im Feld `loads` (loadId, loadType, loadPosition, loadTimestamp)
+3. Danach Orders – CCU bestätigt mit `ccu/order/response`
+
+**Testskript:** `./data/omf-data/test_topics/test_order_flow.sh` führt den kompletten Ablauf aus.
+
+**Modul-Registrierung:** Jedes Modul muss mit seiner **Serial-ID** das Factsheet-Topic senden: `module/v1/ff/<Serial>/factsheet`. Das Factsheet enthält u.a. `typeSpecification.moduleClass` (HBW, DRILL, …) und `loadSpecification` (Kapazität: loadPositions, loadSets mit maxAmount).
+
+**Lagerbestand (HBW):** Die CCU liest den aktuellen Bestand aus `module/v1/ff/<HBW-Serial>/state` (Feld `loads`). Das Factsheet definiert nur die Kapazität; der tatsächliche Inhalt kommt aus dem State. *Hinweis:* Bei HBW könnte in manchen Implementierungen auch das Factsheet initiale Ladungsdaten enthalten – die aktuelle 24V-CCU nutzt jedoch ausschließlich das State-Topic.
+
+**Kein MQTT-Topic zum direkten Setzen des Lagers** – Preloads simulieren Modul-Messages (connection, factsheet, state) auf `module/v1/ff/<Serial>/*`.
+
+### Korrelation OSF-UI ↔ CCU
+
+| Aspekt | OSF-UI | CCU |
+|--------|--------|-----|
+| **Order auslösen** | Publiziert `ccu/order/request` (type, orderType, timestamp) | Subscribes, prüft Lager |
+| **Lagerbestand** | Liest `ccu/state/stock` (Anzeige) | Erhält von `module/v1/ff/+/state` (HBW loads) |
+| **Order-Bestätigung** | Subscribes `ccu/order/response` | Reserviert Workpiece, publiziert Response |
+| **Voraussetzung** | Replay-Umgebung → localhost:9001 | Lokal mit `MQTT_URL=mqtt://localhost:1883` |
+
+**Ohne Lager:** CCU antwortet nicht mit Response, loggt „No workpiece available“. → Preloads senden.
+
 ### Variante B++: Replay-Umgebung (realistischer Fabrik-Zustand)
 
 **Ziel:** OSF-UI mit aufgezeichneten Fabrik-Daten testen; CCU reagiert auf replayed/reale Messages.
@@ -264,6 +288,8 @@ ssh ff22@192.168.0.100 "ls -la /home/ff22/fischertechnik/"
 
 ## 8. Referenzen
 
+- [Order-Request: Erweiterung um requestId](./order-requestid-extension.md) – requestId-Roundtrip, Sequenzdiagramm
+- [Fischertechnik 24V-Dev: Tests und Lagerbestand](./fischertechnik-24v-dev-testing-and-stock.md) – Testing-Doku, SET_STORAGE, BLOCKED-Analyse
 - [FISCHERTECHNIK-OFFICIAL](../06-integrations/FISCHERTECHNIK-OFFICIAL.md) – Repo-Zuordnung
 - [ccu-backend-orchestration](../06-integrations/00-REFERENCE/ccu-backend-orchestration.md) – Order-Flow Details
 - [Mosquitto lokale Setup](../04-howto/setup/mosquitto/README.md) – Lokaler MQTT-Broker (Replay & Entwicklung)

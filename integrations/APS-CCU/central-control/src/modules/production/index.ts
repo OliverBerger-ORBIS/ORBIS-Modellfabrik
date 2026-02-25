@@ -71,7 +71,8 @@ export const handleModuleAvailability = async (state: ModuleState): Promise<void
      That will skip loads stored in the HBW, which is desired and makes the special casing for pick commands unnecessary.
      */
     if (!state.actionState) {
-      if (pairingInstance.getModuleType(state.serialNumber) === ModuleType.DPS) {
+      const moduleType = pairingInstance.getModuleType(state.serialNumber);
+      if (moduleType === ModuleType.DPS) {
         // The DPS can have an active workpiece without an action when it is processing input
         // In that case it is only ready for the orderId it is processing
         if (state.orderId) {
@@ -79,8 +80,23 @@ export const handleModuleAvailability = async (state: ModuleState): Promise<void
         } else {
           await pairingInstance.updateAvailability(state.serialNumber, AvailableState.BUSY);
         }
+      } else if (moduleType === ModuleType.HBW) {
+        // HBW: Loads with loadPosition are stored in warehouse, not "active". Treat as READY.
+        // (isLoadedWithWorkpiece should be false for stored loads; this guards against timing/parsing edge cases)
+        const allStored = state.loads?.every(load => !!load.loadPosition) ?? true;
+        if (allStored) {
+          await pairingInstance.updateAvailability(state.serialNumber, AvailableState.READY);
+        } else {
+          await pairingInstance.updateAvailability(state.serialNumber, AvailableState.BLOCKED);
+        }
+      } else if (moduleType !== undefined) {
+        // Other modules: having a loaded active workpiece without an action state is an error
+        await pairingInstance.updateAvailability(state.serialNumber, AvailableState.BLOCKED);
+      } else if (state.loads?.every(load => !!load.loadPosition)) {
+        // moduleType unknown (e.g. state before factsheet): if all loads stored, treat as READY (likely HBW mock)
+        await pairingInstance.updateAvailability(state.serialNumber, AvailableState.READY);
       } else {
-        // having a loaded active workpiece without an action state is an error that requires user intervention
+        // moduleType unknown with active load (no position): error requiring user intervention (original fallback)
         await pairingInstance.updateAvailability(state.serialNumber, AvailableState.BLOCKED);
       }
       return;
