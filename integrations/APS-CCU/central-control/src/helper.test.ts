@@ -7,6 +7,12 @@ describe('Topic matching', () => {
     expect(matchTopics(subscribeSingleLevelWildCard, topicSingleLevelWildCard)).toBe(true);
   });
 
+  it('should match serial numbers with hyphens (e.g. HBW-DEMO)', () => {
+    const subscribeTopic = 'module/v1/ff/+/state';
+    expect(matchTopics(subscribeTopic, 'module/v1/ff/HBW-DEMO/state')).toBe(true);
+    expect(matchTopics(subscribeTopic, 'module/v1/ff/DRILL-MISSING/state')).toBe(true);
+  });
+
   it('should match the single level wildcard topics with multiple subscribed topics', () => {
     const subscribeSingleLevelWildCard = 'level1/level2/+/level4';
     const subscribeSingleLevelWildCard2 = 'noMatch/level2/noMatch/level4';

@@ -1,0 +1,14 @@
+{
+  "topic": "module/v1/ff/HBW-DEMO/connection",
+  "payload": {
+    "headerId": 1,
+    "timestamp": "2025-10-01T12:00:00.000Z",
+    "ip": "127.0.0.1",
+    "version": "1.3.0",
+    "manufacturer": "Fischertechnik",
+    "serialNumber": "HBW-DEMO",
+    "connectionState": "ONLINE"
+  },
+  "qos": 1,
+  "retain": true
+}

@@ -28,20 +28,38 @@ export const clearStock = async () => {
 /**
  * Send the stock state to ccu/state/stock topic when an update from an HBW module is received.
  */
+/** Cache last HBW state when it arrives before factsheet (MQTT ordering) */
+const pendingHbwState = new Map<string, ModuleState>();
+
 export const handleStock = async (state: ModuleState): Promise<void> => {
   const pairingInstance = PairingStates.getInstance();
   const factsheet = pairingInstance.getFactsheet(state.serialNumber);
   if (factsheet?.typeSpecification.moduleClass !== ModuleType.HBW) {
+    if (state.serialNumber?.includes('HBW') && state.loads?.length) {
+      pendingHbwState.set(state.serialNumber, state);
+      console.log(`CLOUD_STOCK: Cached pending state for ${state.serialNumber} (factsheet not yet HBW)`);
+    }
     return;
   }
-  console.debug(`CLOUD_STOCK: Update stock for HBW`);
-  // cache the stock and send it to the cloud
-  StockManagementService.setStock(state.serialNumber, state.loads || []);
+  pendingHbwState.delete(state.serialNumber);
+  const loads = state.loads || [];
+  console.log(`CLOUD_STOCK: Update stock for HBW ${state.serialNumber}, loads=${loads.length}`);
+  StockManagementService.setStock(state.serialNumber, loads);
   await OrderManagement.getInstance().startNextOrder();
   try {
     await publishStock();
   } catch (error) {
     console.error(error);
+  }
+};
+
+/** Apply pending HBW state when factsheet arrives (handles MQTT message ordering) */
+export const applyPendingStockForHbw = async (serialNumber: string): Promise<void> => {
+  const state = pendingHbwState.get(serialNumber);
+  if (state) {
+    pendingHbwState.delete(serialNumber);
+    console.log(`CLOUD_STOCK: Applying pending state for ${serialNumber}`);
+    await handleStock(state);
   }
 };
 

@@ -59,7 +59,7 @@ repos:
       # Mermaid Diagram Validation
       - id: validate-mermaid-diagrams
         name: validate-mermaid-diagrams
-        entry: python tools/validate_mermaid_diagrams.py
+        entry: python3 tools/validate_mermaid_diagrams.py
         language: system
         files: \.md$
         pass_filenames: false

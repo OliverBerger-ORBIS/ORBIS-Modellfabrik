@@ -6,6 +6,8 @@ import { jsonIsoDateReviver } from '../../../../common/util/json.revivers';
 import { FtsPairingStates } from '../pairing/fts-pairing-states';
 import { sendPairingState } from '../pairing';
 import { StockManagementService } from '../order/stock/stock-management-service';
+import { ModuleType } from '../../../../common/protocol/module';
+import { applyPendingStockForHbw } from '../production/cloud-stock';
 import { FactoryLayoutService } from '../layout/factory-layout-service';
 import { VersionPlausibilityService } from '../version-checker/version-plausibility-service';
 
@@ -31,6 +33,9 @@ export const handleMessage = async (message: string, topic: string): Promise<voi
       await FactoryLayoutService.replacePlaceholder(moduleType, facts.serialNumber);
     }
     StockManagementService.updateBaysFromModule(facts.serialNumber);
+    if (modState.getModuleType(facts.serialNumber) === ModuleType.HBW) {
+      await applyPendingStockForHbw(facts.serialNumber);
+    }
   } else if (topic.startsWith(FtsTopic.ROOT)) {
     ftsState.updateFacts(facts);
   } else {

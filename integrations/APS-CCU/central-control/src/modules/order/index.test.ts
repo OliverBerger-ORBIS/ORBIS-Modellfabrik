@@ -143,6 +143,114 @@ describe('Test order request handling', () => {
     expect(mqtt.publish).toHaveBeenCalledWith(CcuTopic.ORDER_RESPONSE, JSON.stringify(expectedOrderResponse));
   });
 
+  it('should pass through requestId from OrderRequest to OrderResponse', async () => {
+    const requestId = 'dsp-edge-4711';
+    const type = 'BLUE';
+    const productionOrderJson = `{
+      "orderType": "PRODUCTION",
+      "timestamp": "2023-05-10T07:33:16.154840Z",
+      "type": "${type}",
+      "requestId": "${requestId}"
+    }`;
+    const orderRequest: OrderRequest = JSON.parse(productionOrderJson);
+    const orderId = 'order-id-456';
+    const productionDefinition: ProductionDefinition = {
+      navigationSteps: [],
+      productionSteps: [],
+    };
+
+    const mqtt = {
+      publish: () => Promise.resolve(),
+    } as unknown as AsyncMqttClient;
+    jest.spyOn(mqtt, 'publish');
+    jest.spyOn(localMqtt, 'getMqttClient').mockReturnValue(mqtt);
+
+    jest.spyOn(OrderManagement, 'getInstance').mockReturnValue({
+      cacheOrder: jest.fn().mockResolvedValue(undefined),
+    } as unknown as OrderManagement);
+
+    await sendResponse(orderRequest, orderId, productionDefinition);
+
+    const expectedOrderResponse: OrderResponse = {
+      orderType: 'PRODUCTION',
+      type,
+      timestamp: orderRequest.timestamp,
+      orderId,
+      productionSteps: [],
+      receivedAt: MOCK_DATE,
+      state: OrderState.ENQUEUED,
+      requestId,
+    };
+    expect(OrderManagement.getInstance().cacheOrder).toHaveBeenCalledWith(expectedOrderResponse);
+    const publishedPayload = JSON.parse((mqtt.publish as jest.Mock).mock.calls[0][1]);
+    expect(publishedPayload.requestId).toBe(requestId);
+    expect(publishedPayload.orderId).toBe(orderId);
+  });
+
+  it('should pass through OSF-UI style requestId (long UUID format)', async () => {
+    const requestId = 'OSF-UI_a1b2c3d4-e5f6-4789-ab12-cdef12345678';
+    const type = 'WHITE';
+    const productionOrderJson = `{
+      "orderType": "PRODUCTION",
+      "timestamp": "2023-05-10T07:33:16.154840Z",
+      "type": "${type}",
+      "requestId": "${requestId}"
+    }`;
+    const orderRequest: OrderRequest = JSON.parse(productionOrderJson);
+    const orderId = 'order-id-abc';
+    const productionDefinition: ProductionDefinition = {
+      navigationSteps: [],
+      productionSteps: [],
+    };
+
+    const mqtt = {
+      publish: () => Promise.resolve(),
+    } as unknown as AsyncMqttClient;
+    jest.spyOn(mqtt, 'publish');
+    jest.spyOn(localMqtt, 'getMqttClient').mockReturnValue(mqtt);
+
+    jest.spyOn(OrderManagement, 'getInstance').mockReturnValue({
+      cacheOrder: jest.fn().mockResolvedValue(undefined),
+    } as unknown as OrderManagement);
+
+    await sendResponse(orderRequest, orderId, productionDefinition);
+
+    const publishedPayload = JSON.parse((mqtt.publish as jest.Mock).mock.calls[0][1]);
+    expect(publishedPayload.requestId).toBe(requestId);
+    expect(publishedPayload.requestId).toMatch(/^OSF-UI_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+    expect(publishedPayload.orderId).toBe(orderId);
+  });
+
+  it('should send response without requestId when OrderRequest has no requestId', async () => {
+    const type = 'RED';
+    const orderRequest: OrderRequest = {
+      orderType: 'PRODUCTION',
+      type,
+      timestamp: new Date('2023-05-10T08:00:00.000Z'),
+    };
+    const orderId = 'order-id-789';
+    const productionDefinition: ProductionDefinition = {
+      navigationSteps: [],
+      productionSteps: [],
+    };
+
+    const mqtt = {
+      publish: () => Promise.resolve(),
+    } as unknown as AsyncMqttClient;
+    jest.spyOn(mqtt, 'publish');
+    jest.spyOn(localMqtt, 'getMqttClient').mockReturnValue(mqtt);
+
+    jest.spyOn(OrderManagement, 'getInstance').mockReturnValue({
+      cacheOrder: jest.fn().mockResolvedValue(undefined),
+    } as unknown as OrderManagement);
+
+    await sendResponse(orderRequest, orderId, productionDefinition);
+
+    const publishedPayload = JSON.parse((mqtt.publish as jest.Mock).mock.calls[0][1]);
+    expect(publishedPayload).not.toHaveProperty('requestId');
+    expect(publishedPayload.orderId).toBe(orderId);
+  });
+
   it('should validate that a storage order can be generated', async () => {
     const prodDef: ProductionDefinition = {
       navigationSteps: [{ id: 'first', source: ModuleType.START, target: ModuleType.DPS, type: 'NAVIGATION', state: OrderState.ENQUEUED }],
