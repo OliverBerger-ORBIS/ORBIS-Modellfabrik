@@ -83,6 +83,14 @@
 - **Push:** Nur nach User-Bestätigung
 - **Workflow:** Änderungen → User-Freigabe → Commit → Push
 
+### "Commit vorbereiten" (bei User-Auftrag)
+- **Umfang:** Umgang mit unstaged und untracked Dateien gehört dazu.
+- **Agent-Urteil:** Der Agent hat die Dateien angelegt bzw. geändert – er kennt Kontext:
+  - Was gehört zur Feature-Änderung (stagen)
+  - Was war temporär / Skizze / nicht funktionsfähig (nicht stagen)
+  - Was gehört in .gitignore (z.B. lokale Build-Artefakte)
+- **Vorgehen:** `git status` prüfen → gezielt `git add` nur der relevanten Dateien → User informieren (was gestaged, was ausgelassen und warum). Bei Unsicherheit nachfragen.
+
 ### Angular-Komponenten-Regeln (KRITISCH)
 - **Component-basierte Architektur:** Services für Business Logic, Components für UI
 - **RxJS Observable Patterns:** Korrekte Verwendung von `shareReplay`, `refCount`, `startWith`
