@@ -31,11 +31,18 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 
 response_received = threading.Event()
 response_payload: list = []
+connect_failed = threading.Event()
 
 
 def on_message(client, userdata, msg):
     response_payload.append(msg.payload.decode("utf-8"))
     response_received.set()
+
+
+def on_connect(client, userdata, flags, rc):
+    """Connection callback – rc != 0 wird im Hauptthread geprüft, nicht hier sys.exit (terminiert nur Thread)."""
+    if rc != 0:
+        connect_failed.set()
 
 
 def publish_correlation_info(client: mqtt.Client, order_id: str, order_type: str = "CUSTOMER") -> None:
@@ -167,11 +174,17 @@ def main():
         parser.error("order_id angeben oder --from-order verwenden")
 
     print("=== Correlation-Test ===")
+    connect_failed.clear()
     client = mqtt.Client(client_id="correlation-test")
-    client.on_connect = lambda c, u, f, rc: print("  MQTT verbunden" if rc == 0 else sys.exit(1))
+    client.on_connect = on_connect
+    client.on_message = on_message
     client.connect(args.host, args.port, 60)
     client.loop_start()
     time.sleep(1)
+    if connect_failed.is_set():
+        print("❌ MQTT-Verbindung fehlgeschlagen")
+        return 1
+    print("  MQTT verbunden")
 
     if args.from_order:
         print("=== 1. Order-Test ausführen ===")

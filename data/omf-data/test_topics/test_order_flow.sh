@@ -11,7 +11,8 @@ RESP_FILE=$(mktemp)
 trap 'rm -f "$RESP_FILE"' EXIT
 
 # Subscriber ganz am Anfang starten – hat dann die gesamte Setup-Phase zum Verbinden
-(mosquitto_sub -h $HOST -p $PORT -t "ccu/order/response" -C 1 -W 25 > "$RESP_FILE" 2>/dev/null &)
+# Ohne Subshell, damit $! den mosquitto_sub-PID erfasst (nicht einen Subshell-PID)
+mosquitto_sub -h $HOST -p $PORT -t "ccu/order/response" -C 1 -W 25 > "$RESP_FILE" 2>/dev/null &
 SUB_PID=$!
 sleep 1
 

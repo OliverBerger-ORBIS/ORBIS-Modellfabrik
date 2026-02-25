@@ -39,7 +39,7 @@
 
 ### Marketing & Konsistenz
 - [x] Marketing-Präsentation zu DSP und Cross-Selling – Analyse: Die Präsentation ist inhaltlich konsistent zu eurer Blog-Storyline: Interoperabilität als Fundament, DSP als Schlüsseltechnologie (Edge+Cloud, plattformunabhängig), und der zentrale Claim „Interoperabilität wird nicht programmiert – sie wird aktiviert.“ lässt sich direkt und glaubwürdig in A1/UC-00 verwenden.
-- [ ] Konsistenz-Check: Marketing-Inhalte vs. Use-Cases der OSF-UI analysis with TODOS:        \docs\07-analysis\Marketing-DSP-Präsentation-Use-Case-Konsistency
+- [x] Konsistenz-Check: Marketing-Inhalte vs. Use-Cases der OSF-UI analysis with TODOS:        \docs\07-analysis\Marketing-DSP-Präsentation-Use-Case-Konsistency
 
 ### Blog-Serie
 - [x] UC-06 -> UC-00 umbenennen 

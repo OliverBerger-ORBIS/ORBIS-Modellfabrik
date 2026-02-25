@@ -6,6 +6,27 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-02-25
+
+**ERP/MES Integration (Sprint 16):** Order-requestId-Erweiterung und Vorbereitung für dsp/correlation (Request/Info).
+
+### Added
+- **CCU Order-RequestId:** Order/request und Order/response um optionales `requestId` erweitert – Korrelation von externen Systemen (ERP, MES) mit CCU-Orders
+- **OSF-UI Correlation:** `CorrelationInfoService` empfängt `dsp/correlation/info`, speichert nach `ccuOrderId`/`requestId`
+- **OSF-UI Request:** `requestCorrelationInfo({ ccuOrderId?, requestId? })` sendet an `dsp/correlation/request` – Vorbereitung für DSP_Edge-Anfragen
+- **Order-Card:** Button „Request ERP info“, Anzeige von ERP-Daten (customerOrderId, purchaseOrderId etc.) aus CorrelationInfoService
+- **Track & Trace:** ERP-Kontext aus CorrelationInfoService (primär) und ErpOrderDataService (Fallback)
+- **CCU Ein-Repo:** Vollständige 24V-Dev-Quelle in `integrations/APS-CCU/` – lokale Entwicklung ohne Pi
+- **Test-Scripts:** `correlation_test.py`, `run-correlation-test.sh`, `watch-order-topics.sh` für Replay-Tests
+
+### Changed
+- **Order-Tab:** Replay/Live nutzt MessageMonitor für `ccu/order/active` und `ccu/order/completed` (CCU-Snapshot-Semantik wie CCU-Frontend)
+- **Dokumentation:** [order-requestid-extension.md](docs/07-analysis/order-requestid-extension.md), [ccu-modification-and-deployment-analysis.md](docs/07-analysis/ccu-modification-and-deployment-analysis.md)
+
+### Fixed
+- **correlation_test.py:** `on_message`-Callback zuweisen, `connect_failed`-Event statt `sys.exit` im MQTT-Thread
+- **test_order_flow.sh:** Subshell bei `mosquitto_sub` entfernt für korrekte PID-Erfassung
+
 ## [0.8.0] - 2026-02-23
 
 **Versionskreis 0.8.x:** Arduino-Erweiterung, ggf. ERP/MES-Integration
