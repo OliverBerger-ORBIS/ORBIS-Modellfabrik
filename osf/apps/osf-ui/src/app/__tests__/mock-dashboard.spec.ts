@@ -255,6 +255,11 @@ describe('MockDashboard', () => {
       expect(typeof controller.commands.requestRawMaterial).toBe('function');
     });
 
+    it('should have requestCorrelationInfo command', () => {
+      expect(controller.commands.requestCorrelationInfo).toBeDefined();
+      expect(typeof controller.commands.requestCorrelationInfo).toBe('function');
+    });
+
     it('should have moveCamera command', () => {
       expect(controller.commands.moveCamera).toBeDefined();
       expect(typeof controller.commands.moveCamera).toBe('function');

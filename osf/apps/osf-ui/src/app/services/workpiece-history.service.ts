@@ -6,6 +6,7 @@ import { ModuleNameService } from './module-name.service';
 import { EnvironmentService } from './environment.service';
 import { AgvRouteService } from './agv-route.service';
 import { ErpOrderDataService } from './erp-order-data.service';
+import { CorrelationInfoService } from './correlation-info.service';
 
 /**
  * Track & Trace event for workpiece history
@@ -164,6 +165,7 @@ export class WorkpieceHistoryService implements OnDestroy {
   private readonly environmentService = inject(EnvironmentService);
   private readonly ftsRouteService = inject(AgvRouteService);
   private readonly erpOrderDataService = inject(ErpOrderDataService);
+  private readonly correlationInfoService = inject(CorrelationInfoService);
   // TURN direction lookup (from order stream) - similar to FTS-Tab
   private readonly turnDirectionByActionId = new Map<string, 'LEFT' | 'RIGHT' | string>();
 
@@ -1052,43 +1054,62 @@ export class WorkpieceHistoryService implements OnDestroy {
           const extractedDates = events ? this.extractDatesFromEvents(events, orderType as 'STORAGE' | 'PRODUCTION') : {};
 
           if (orderType === 'STORAGE') {
-            // Try to get ERP Purchase Order data from ErpOrderDataService
-            // Match by workpieceType (BLUE, WHITE, RED)
+            // Primary: CorrelationInfoService (dsp/correlation/info from DSP)
+            // Fallback: ErpOrderDataService (transition period until DSP sends correlation)
+            const correlationInfo = this.correlationInfoService.getCorrelationInfo(orderId);
+            const fromCorrelation = correlationInfo?.orderType === 'PURCHASE' ? correlationInfo : null;
             const workpieceTypeUpper = workpieceType.toUpperCase() as 'BLUE' | 'WHITE' | 'RED';
-            const erpPurchaseData = this.erpOrderDataService.popPurchaseOrderForWorkpieceType(workpieceTypeUpper);
-            
+            const erpPurchaseData = fromCorrelation
+              ? null
+              : this.erpOrderDataService.popPurchaseOrderForWorkpieceType(workpieceTypeUpper);
+
             contexts.push({
               orderId,
               orderType: 'STORAGE',
-              purchaseOrderId: purchaseOrderId || erpPurchaseData?.purchaseOrderId || generatePurchaseOrderId(),
-              supplierId: erpPurchaseData?.supplierId || generateSupplierId(),
-              orderDate: erpPurchaseData?.orderDate || orderDate, // Bestellung-Datum RAW-Material
-              rawMaterialOrderDate: erpPurchaseData?.orderDate, // Bestellung-Datum RAW-Material (explicit)
-              deliveryDate: extractedDates.deliveryDate, // Lieferung-Datum (wann angeliefert im DPS)
-              storageDate: extractedDates.storageDate, // Storage-Datum (wann im HBW eingelagert)
+              purchaseOrderId:
+                purchaseOrderId ||
+                fromCorrelation?.purchaseOrderId ||
+                erpPurchaseData?.purchaseOrderId ||
+                generatePurchaseOrderId(),
+              supplierId: fromCorrelation?.supplierId ?? erpPurchaseData?.supplierId ?? generateSupplierId(),
+              orderDate: fromCorrelation?.orderDate ?? erpPurchaseData?.orderDate ?? orderDate,
+              rawMaterialOrderDate: fromCorrelation?.orderDate ?? erpPurchaseData?.orderDate,
+              deliveryDate: extractedDates.deliveryDate ?? fromCorrelation?.plannedDeliveryDate,
+              storageDate: extractedDates.storageDate,
               fromLocation,
               toLocation,
-              startTime: 'startedAt' in order ? String(order.startedAt) : undefined, // Storage-Start
-              endTime: 'stoppedAt' in order ? String(order.stoppedAt) : undefined, // Storage-Ende
+              startTime: 'startedAt' in order ? String(order.startedAt) : undefined,
+              endTime: 'stoppedAt' in order ? String(order.stoppedAt) : undefined,
               status: orderStatus,
             });
           } else if (orderType === 'PRODUCTION') {
-            // Try to get ERP Customer Order data from ErpOrderDataService
-            const erpCustomerData = this.erpOrderDataService.popCustomerOrder();
-            
+            // Primary: CorrelationInfoService (dsp/correlation/info from DSP)
+            // Fallback: ErpOrderDataService (transition period until DSP sends correlation)
+            const correlationInfo = this.correlationInfoService.getCorrelationInfo(orderId);
+            const fromCorrelation = correlationInfo?.orderType === 'CUSTOMER' ? correlationInfo : null;
+            const erpCustomerData = fromCorrelation ? null : this.erpOrderDataService.popCustomerOrder();
+
             contexts.push({
               orderId,
               orderType: 'PRODUCTION',
-              customerOrderId: customerOrderId || erpCustomerData?.customerOrderId || generateCustomerOrderId(),
-              customerId: erpCustomerData?.customerId || generateCustomerId(),
-              orderDate: erpCustomerData?.orderDate || orderDate, // Bestellung-Datum Customer-Order
-              customerOrderDate: erpCustomerData?.orderDate, // Bestellung-Datum Customer-Order (explicit)
-              productionStartDate: extractedDates.productionStartDate || ('startedAt' in order ? String(order.startedAt) : undefined), // Produktions-Start (Auslagerung aus HBW)
-              deliveryEndDate: extractedDates.deliveryEndDate || ('stoppedAt' in order ? String(order.stoppedAt) : undefined), // Auslieferungs-Datum (Production-Ende im DPS)
+              customerOrderId:
+                customerOrderId ||
+                fromCorrelation?.customerOrderId ||
+                erpCustomerData?.customerOrderId ||
+                generateCustomerOrderId(),
+              customerId: fromCorrelation?.customerId ?? erpCustomerData?.customerId ?? generateCustomerId(),
+              orderDate: fromCorrelation?.orderDate ?? erpCustomerData?.orderDate ?? orderDate,
+              customerOrderDate: fromCorrelation?.orderDate ?? erpCustomerData?.orderDate,
+              productionStartDate:
+                extractedDates.productionStartDate ?? ('startedAt' in order ? String(order.startedAt) : undefined),
+              deliveryEndDate:
+                extractedDates.deliveryEndDate ??
+                fromCorrelation?.plannedDeliveryDate ??
+                ('stoppedAt' in order ? String(order.stoppedAt) : undefined),
               fromLocation,
               toLocation,
-              startTime: 'startedAt' in order ? String(order.startedAt) : undefined, // Produktions-Start
-              endTime: 'stoppedAt' in order ? String(order.stoppedAt) : undefined, // Auslieferungs-Datum
+              startTime: 'startedAt' in order ? String(order.startedAt) : undefined,
+              endTime: 'stoppedAt' in order ? String(order.stoppedAt) : undefined,
               status: orderStatus,
             });
           }
@@ -1102,29 +1123,31 @@ export class WorkpieceHistoryService implements OnDestroy {
       const now = new Date();
       const oneHourAgo = new Date(now.getTime() - 3600000);
 
-      // Try to get ERP data from ErpOrderDataService
+      // Primary: CorrelationInfoService | Fallback: ErpOrderDataService
+      const correlationInfo = this.correlationInfoService.getCorrelationInfo(ftsOrderId);
+      const fromCorrStorage = correlationInfo?.orderType === 'PURCHASE' ? correlationInfo : null;
+      const fromCorrProduction = correlationInfo?.orderType === 'CUSTOMER' ? correlationInfo : null;
       const workpieceTypeUpper = workpieceType.toUpperCase() as 'BLUE' | 'WHITE' | 'RED';
-      const erpPurchaseData = this.erpOrderDataService.popPurchaseOrderForWorkpieceType(workpieceTypeUpper);
-      const erpCustomerData = this.erpOrderDataService.popCustomerOrder();
+      const erpPurchaseData = fromCorrStorage ? null : this.erpOrderDataService.popPurchaseOrderForWorkpieceType(workpieceTypeUpper);
+      const erpCustomerData = fromCorrProduction ? null : this.erpOrderDataService.popCustomerOrder();
 
-      // Determine order type based on workpiece history (will be refined by determineOrderType)
-      // For now, create both contexts and let the event system determine which one to use
-      // The orderId will be the real UUID from FTS state
       return [
         {
-          orderId: ftsOrderId, // Use real UUID from FTS state, not generated!
+          orderId: ftsOrderId,
           orderType: 'STORAGE',
-          purchaseOrderId: erpPurchaseData?.purchaseOrderId || generatePurchaseOrderId(), // Use ERP data if available
-          supplierId: erpPurchaseData?.supplierId || generateSupplierId(), // Use ERP data if available
-          orderDate: erpPurchaseData?.orderDate || oneHourAgo.toISOString(),
+          purchaseOrderId:
+            fromCorrStorage?.purchaseOrderId ?? erpPurchaseData?.purchaseOrderId ?? generatePurchaseOrderId(),
+          supplierId: fromCorrStorage?.supplierId ?? erpPurchaseData?.supplierId ?? generateSupplierId(),
+          orderDate: fromCorrStorage?.orderDate ?? erpPurchaseData?.orderDate ?? oneHourAgo.toISOString(),
           startTime: oneHourAgo.toISOString(),
         },
         {
-          orderId: ftsOrderId, // Use real UUID from FTS state, not generated!
+          orderId: ftsOrderId,
           orderType: 'PRODUCTION',
-          customerOrderId: erpCustomerData?.customerOrderId || generateCustomerOrderId(), // Use ERP data if available
-          customerId: erpCustomerData?.customerId || generateCustomerId(), // Use ERP data if available
-          orderDate: erpCustomerData?.orderDate || now.toISOString(),
+          customerOrderId:
+            fromCorrProduction?.customerOrderId ?? erpCustomerData?.customerOrderId ?? generateCustomerOrderId(),
+          customerId: fromCorrProduction?.customerId ?? erpCustomerData?.customerId ?? generateCustomerId(),
+          orderDate: fromCorrProduction?.orderDate ?? erpCustomerData?.orderDate ?? now.toISOString(),
           startTime: now.toISOString(),
         },
       ];

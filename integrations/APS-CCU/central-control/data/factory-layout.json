@@ -2,8 +2,7 @@
   "modules": [
     {
       "type": "HBW",
-      "serialNumber": "HBW-MISSING",
-      "placeholder": true
+      "serialNumber": "HBW-DEMO"
     },
     {
       "type": "DRILL",
@@ -71,7 +70,7 @@
     },
     {
       "direction": "EAST",
-      "from": "HBW-MISSING",
+      "from": "HBW-DEMO",
       "to": "1",
       "length": 380
     },

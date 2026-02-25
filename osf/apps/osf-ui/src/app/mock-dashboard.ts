@@ -53,6 +53,7 @@ export interface DashboardCommandSet {
   dockFts: (serialNumber: string, nodeId?: string) => Promise<void>;
   sendCustomerOrder: (workpieceType: string) => Promise<void>;
   requestRawMaterial: (workpieceType: string) => Promise<void>;
+  requestCorrelationInfo: (params: { ccuOrderId?: string; requestId?: string }) => Promise<void>;
   moveCamera: (command: 'relmove_up' | 'relmove_down' | 'relmove_left' | 'relmove_right' | 'home' | 'stop', degree: number) => Promise<void>;
   resetFactory: (withStorage?: boolean) => Promise<void>;
 }
@@ -253,6 +254,7 @@ const createStreamSet = (
       dockFts: business.dockFts,
       sendCustomerOrder: business.sendCustomerOrder,
       requestRawMaterial: business.requestRawMaterial,
+      requestCorrelationInfo: business.requestCorrelationInfo,
       moveCamera: business.moveCamera,
       resetFactory: business.resetFactory,
     },

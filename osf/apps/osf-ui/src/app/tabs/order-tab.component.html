@@ -38,7 +38,11 @@
           <p class="empty" *ngIf="orders.length === 0" i18n="@@orderTabProductionActiveEmpty">
             No active production orders.
           </p>
-          <app-order-card *ngFor="let order of orders" [order]="order" />
+          <app-order-card
+            *ngFor="let order of orders"
+            [order]="order"
+            [onRequestCorrelation]="requestCorrelation"
+          />
         </ng-container>
       </article>
 
@@ -67,6 +71,7 @@
               *ngFor="let order of orders; trackBy: trackOrder"
               [order]="order"
               [isCompleted]="true"
+              [onRequestCorrelation]="requestCorrelation"
             />
           </ng-container>
         </ng-container>
@@ -85,7 +90,11 @@
           <p class="empty" *ngIf="orders.length === 0" i18n="@@orderTabStorageActiveEmpty">
             No active storage orders.
           </p>
-          <app-order-card *ngFor="let order of orders" [order]="order" />
+          <app-order-card
+            *ngFor="let order of orders"
+            [order]="order"
+            [onRequestCorrelation]="requestCorrelation"
+          />
         </ng-container>
       </article>
 
@@ -115,6 +124,7 @@
               [order]="order"
               [isCompleted]="true"
               [expanded]="order.orderId === expandedStorageOrderId"
+              [onRequestCorrelation]="requestCorrelation"
             />
           </ng-container>
         </ng-container>

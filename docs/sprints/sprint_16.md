@@ -31,7 +31,11 @@
 ### ERP/MES Integration
 - [x] Erweiterung der APS/FMF/CCU-Komponente: Order/request-Topic von (DSP_Edge) sendet zusätzlich eine request-ID, CCU sendet Order/response mit requestId und orderId  
   → **Doku:** [order-requestid-extension.md](../07-analysis/order-requestid-extension.md) | **Analyse Deployment:** [ccu-modification-and-deployment-analysis.md](../07-analysis/ccu-modification-and-deployment-analysis.md)
-- [ ] OSF-UI sendet ein Topic ERP-Order-request-Meta, DSP sendet response mit ERP-Info zur Order (-> Track & Trace) mit SAP/EREP-Daten
+- [x] OSF-UI: Sendet `dsp/correlation/request`, empfängt `dsp/correlation/info`, Anzeige in Order-Tab + Track & Trace (ErpOrderDataService als Fallback)
+  → **Doku:** [order-requestid-extension.md](../07-analysis/order-requestid-extension.md) §8 | **Replay-Test:** `./scripts/run-correlation-test.sh [orderId]`
+- [ ] **CCU Deployment RPi:** Image bauen und auf RPi deployen – Prozedur: [ccu-modification-and-deployment-analysis.md](../07-analysis/ccu-modification-and-deployment-analysis.md) §4 | `integrations/APS-CCU/DEPLOYMENT.md`
+- [ ] **OSF-UI Live-Mode-Test:** Order-Tab Snapshot-Semantik (MessageMonitor statt Gateway) in Live-Umgebung prüfen, ob weiterhin funktionsfähig
+- [ ] DSP_Edge: Sendet `dsp/correlation/info` (als Response auf Request oder Unsolicited nach Order-Response)
 
 ### Marketing & Konsistenz
 - [x] Marketing-Präsentation zu DSP und Cross-Selling – Analyse: Die Präsentation ist inhaltlich konsistent zu eurer Blog-Storyline: Interoperabilität als Fundament, DSP als Schlüsseltechnologie (Edge+Cloud, plattformunabhängig), und der zentrale Claim „Interoperabilität wird nicht programmiert – sie wird aktiviert.“ lässt sich direkt und glaubwürdig in A1/UC-00 verwenden.
@@ -75,4 +79,4 @@
 
 ---
 
-*Letzte Aktualisierung: 19.02.2026*
+*Letzte Aktualisierung: 25.02.2026*
