@@ -10,7 +10,8 @@
 ## 🎯 Ziele
 
 ### Übernommen aus Sprint 15
-- [ ] Azure DevOps Migration & Docker-Setup
+- [ ] Azure DevOps Migration (Von Github zu Azure Devops)
+- [x] **OSF-UI Docker-Setup & RPi-Deploy:** Dockerfile, docker-compose, Deployment auf RPi (Port 8080).
 - [x] ORBIS-Projekt-Abschlussbericht finalisieren (für ORBIS-Modellfabrik Sprint 01-12 )
 - [ ] Projektantrag ORBIS-Smartfactory Q1/Q2 2026
 
@@ -64,6 +65,7 @@
 *Tasks bei Gelegenheit angehen – kein separates Backlog-System.*
 
 - [ ] **Session-Log-Analyse:** QoS/Retained für State-Topics empirisch verifizieren → [Anleitung](../04-howto/session-log-analyse.md), Kontext: [AS-IS vs. Fischertechnik](../07-analysis/AS-IS-FISCHERTECHNIK-COMPARISON.md)
+- [x] **OSF-UI fehlende Übersetzungen:** ~400 Keys de/fr ergänzt, src/public locale synchron.
 
 ---
 

@@ -1,0 +1,10 @@
+# OSF-UI standalone – lokal testen oder auf RPi (Port 8080)
+# Mit RPi: in docker-compose-prod.yml integrieren oder separat starten
+
+services:
+  osf-ui:
+    image: orbis-osf-ui:latest
+    container_name: osf-ui
+    restart: unless-stopped
+    ports:
+      - "8080:80"

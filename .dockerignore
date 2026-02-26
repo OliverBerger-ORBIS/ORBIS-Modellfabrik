@@ -1,0 +1,24 @@
+# OSF-UI Docker build – reduce context
+.git
+.github
+node_modules
+dist
+!dist/apps/osf-ui/browser
+coverage
+.angular
+.nx
+*.log
+.env*
+.venv
+__pycache__
+*.pyc
+.idea
+.vscode
+*.md
+!osf/**/*.md
+data
+integrations
+docs
+session_manager
+backend
+# Keep deploy/osf-ui/ for nginx.conf COPY

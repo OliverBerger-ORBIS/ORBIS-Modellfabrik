@@ -4,6 +4,54 @@ This directory contains Docker Compose configurations for deploying the ORBIS Sm
 
 ## Available Configurations
 
+### `docker-compose.osf-ui.yml` - OSF-UI Dashboard
+
+Deploys the OSF (ORBIS Shopfloor) Dashboard – Port **8080**.
+
+#### Build
+
+```bash
+# ARM64 (Raspberry Pi 4/5, aarch64)
+npm run docker:osf-ui:arm
+
+# AMD64 (lokal testen)
+npm run docker:osf-ui:local
+```
+
+#### Lokal starten
+
+```bash
+docker compose -f deploy/docker-compose.osf-ui.yml up -d
+# → http://localhost:8080
+```
+
+#### RPi-Integration
+
+Auf dem RPi parallel zu Fischertechnik-Dashboard (Port 80):
+- Fischertechnik: `http://192.168.0.100`
+- OSF-UI: `http://192.168.0.100:8080`
+
+**RPi Deployment (Image + Compose gemeinsam übertragen):**
+
+```bash
+# 1. Image speichern (nach npm run docker:osf-ui:arm)
+mkdir -p deploy/osf-ui/docker-images
+docker save orbis-osf-ui:latest -o deploy/osf-ui/docker-images/osf-ui-arm64.tar
+
+# 2. Beide Dateien auf RPi kopieren (Fischertechnik: User ff22, Passwort ff22+)
+scp deploy/osf-ui/docker-images/osf-ui-arm64.tar deploy/docker-compose.osf-ui.yml ff22@192.168.0.100:~/
+
+# 3. Auf RPi: Image laden und starten
+ssh ff22@192.168.0.100
+docker load -i ~/osf-ui-arm64.tar
+docker compose -f ~/docker-compose.osf-ui.yml up -d
+# → http://192.168.0.100:8080
+```
+
+Dockerfile: `deploy/osf-ui/Dockerfile`
+
+---
+
 ### `docker-compose.metrics.yml` - Metrics Stack
 
 Deploys the metrics collection and visualization infrastructure:

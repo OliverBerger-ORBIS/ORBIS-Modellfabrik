@@ -32,3 +32,6 @@ integrations/Arduino/libraries/
 
 # Built CCU Docker images (regeneratable)
 integrations/APS-CCU/docker-images/
+
+# OSF-UI Docker images
+deploy/osf-ui/docker-images/
