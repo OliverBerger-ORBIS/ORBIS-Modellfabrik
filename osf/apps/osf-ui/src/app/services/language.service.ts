@@ -27,24 +27,28 @@ export class LanguageService {
       return;
     }
     localStorage?.setItem(STORAGE_KEY, locale);
-    
-    // Get current route without locale
+    const newUrl = this.buildLocaleSwitchUrl(locale);
+    window.location.assign(newUrl);
+  }
+
+  /**
+   * Build URL for locale switch. Public for testing.
+   * Navigates to locale-specific path so the correct build loads (/en/, /de/, /fr/).
+   */
+  buildLocaleSwitchUrl(locale: LocaleKey): string {
     const urlSegments = this.router.url.split('/').filter(Boolean);
     const currentLocale = urlSegments[0] as LocaleKey;
     let routePath = 'dsp';
-    
-    // If current URL has a locale, extract the route after it
     if (this.supportedLocales.includes(currentLocale)) {
       routePath = urlSegments.slice(1).join('/') || 'dsp';
     } else {
-      // No locale in URL, use current path
       routePath = urlSegments.join('/') || 'dsp';
     }
-    
-    // Navigate to new locale with same route
-    this.router.navigate([locale, routePath]).then(() => {
-      // Reload to apply translations
-      window.location.reload();
-    });
+    const hash = `#/${locale}/${routePath}`;
+    const pathname = typeof window !== 'undefined' ? window.location.pathname : '/en/';
+    const replaced = pathname.replace(/\/(en|de|fr)\/?/, `/${locale}/`);
+    const pathWithLocale = replaced.match(/\/(en|de|fr)\/?/) ? replaced : `${pathname.replace(/\/$/, '')}/${locale}/`;
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost';
+    return `${origin}${pathWithLocale}${hash}`;
   }
 }

@@ -254,64 +254,24 @@ describe('SettingsTabComponent', () => {
       expect(component.getLanguageLabel('fr')).toBe('Français');
     });
 
-    it('should extract path correctly from pagePath with locale', async () => {
-      const navigateSpy = jest.spyOn(router, 'navigate').mockResolvedValue(true);
-      const reloadSpy = jest.spyOn(window.location, 'reload').mockImplementation(() => {});
+    it('should extract path correctly from pagePath with locale', () => {
+      const assignSpy = jest.spyOn(window.location, 'assign').mockImplementation(() => {});
 
       component.navigateToLanguageForPage('de', '/#/en/dsp-animation');
 
-      expect(navigateSpy).toHaveBeenCalledWith(['de', 'dsp-animation']);
-      
-      // Wait for navigation promise to resolve and reload to be called
-      await new Promise(resolve => setTimeout(resolve, 10));
-      
-      expect(reloadSpy).toHaveBeenCalled();
+      expect(assignSpy).toHaveBeenCalledWith(expect.stringContaining('/de/#/de/dsp-animation'));
+      assignSpy.mockRestore();
     });
 
-    it('should extract nested path correctly', async () => {
-      const navigateSpy = jest.spyOn(router, 'navigate').mockResolvedValue(true);
-      const reloadSpy = jest.spyOn(window.location, 'reload').mockImplementation(() => {});
+    it('should extract nested path correctly', () => {
+      const assignSpy = jest.spyOn(window.location, 'assign').mockImplementation(() => {});
 
       component.navigateToLanguageForPage('fr', '/#/en/dsp/use-case/track-trace');
 
-      expect(navigateSpy).toHaveBeenCalledWith(['fr', 'dsp', 'use-case', 'track-trace']);
-      
-      // Wait for navigation promise to resolve and reload to be called
-      await new Promise(resolve => setTimeout(resolve, 10));
-      
-      expect(reloadSpy).toHaveBeenCalled();
-    });
-
-    it('should handle navigation error with fallback', async () => {
-      const navigateSpy = jest.spyOn(router, 'navigate').mockRejectedValue(new Error('Navigation failed'));
-      // Mock window.location.href
-      const originalLocation = window.location;
-      let hrefValue = '';
-      delete (window as any).location;
-      (window as any).location = {
-        ...originalLocation,
-        set href(val: string) {
-          hrefValue = val;
-        },
-        get href() {
-          return hrefValue || originalLocation.href;
-        },
-        reload: jest.fn(),
-      };
-
-      component.navigateToLanguageForPage('de', '/#/en/dsp-animation');
-
-      expect(navigateSpy).toHaveBeenCalled();
-      
-      // Wait for the catch block to execute
-      await new Promise(resolve => setTimeout(resolve, 10));
-      
-      // Verify that fallback href was set (the error path is covered)
-      // Note: The actual href assignment is hard to test synchronously,
-      // but we verify that navigate was called, which is the main behavior
-      
-      // Restore original location
-      (window as any).location = originalLocation;
+      expect(assignSpy).toHaveBeenCalledWith(
+        expect.stringContaining('/fr/#/fr/dsp/use-case/track-trace')
+      );
+      assignSpy.mockRestore();
     });
 
     it('should get language URL for path', () => {

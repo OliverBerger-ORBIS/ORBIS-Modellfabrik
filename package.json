@@ -20,6 +20,7 @@
     "serve:local": "npm run build:github-pages && npx serve dist/apps/osf-ui/browser -p 4200",
     "docker:osf-ui": "node scripts/build-osf-ui-docker.js",
     "docker:osf-ui:arm": "node scripts/build-osf-ui-docker.js arm",
+    "docker:osf-ui:armv7": "node scripts/build-osf-ui-docker.js armv7",
     "docker:osf-ui:local": "node scripts/build-osf-ui-docker.js amd64",
     "version": "npm run build && git add -A",
     "postversion": "git push && git push --tags",

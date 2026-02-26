@@ -72,6 +72,9 @@ try {
   if (platformArg === 'arm' || platformArg === 'arm64') {
     console.log('  1. Save: docker save orbis-osf-ui:latest -o deploy/osf-ui/docker-images/osf-ui-arm64.tar');
     console.log('  2. Deploy: scp to RPi, docker load');
+  } else if (platformArg === 'armv7') {
+    console.log('  1. Save: docker save orbis-osf-ui:latest -o deploy/osf-ui/docker-images/osf-ui-arm32.tar');
+    console.log('  2. Deploy: scp to RPi (32-bit), docker load');
   } else {
     console.log('  Run locally: docker compose -f deploy/docker-compose.osf-ui.yml up -d');
     console.log('  Access: http://localhost:8080');

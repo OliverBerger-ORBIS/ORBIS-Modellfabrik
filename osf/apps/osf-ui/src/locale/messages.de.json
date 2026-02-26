@@ -1012,7 +1012,7 @@
     "aiqsLabelCommand": "Befehl",
     "aiqsLabelConnection": "Verbindung",
     "aiqsLabelFailed": "Fehlgeschlagen",
-    "aiqsLabelHistory": "Check History ({$INTERPOLATION})",
+    "aiqsLabelHistory": "Prüfverlauf",
     "aiqsLabelNoOrder": "Nein Auftrag",
     "aiqsLabelNoTimestamp": "Nein Zeitstempel",
     "aiqsLabelOrderId": "Auftrag ID",

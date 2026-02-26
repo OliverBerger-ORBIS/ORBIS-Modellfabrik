@@ -279,18 +279,12 @@ export class SettingsTabComponent implements OnInit {
       cleanPath = localeMatch[2]; // Get path after locale
     }
     
-    // Navigate using Angular Router (works with hash routing)
-    // Router expects array format: ['locale', 'route', 'parts']
-    const routeParts = cleanPath.split('/').filter(Boolean);
-    this.router.navigate([locale, ...routeParts]).then(() => {
-      // Reload to apply translations
-      window.location.reload();
-    }).catch((error) => {
-      console.error('Navigation error:', error);
-      // Fallback to window.location if router fails
-      const newPath = `/#/${locale}/${cleanPath}`;
-      window.location.href = newPath;
-    });
+    // Navigate to locale-specific path so the correct build loads (/en/, /de/, /fr/).
+    const hash = `#/${locale}/${cleanPath}`;
+    const pathname = window.location.pathname.replace(/\/(en|de|fr)\/?/, `/${locale}/`);
+    const pathWithLocale = pathname.match(/\/(en|de|fr)\/?/) ? pathname : `${pathname.replace(/\/$/, '')}/${locale}/`;
+    const newUrl = `${window.location.origin}${pathWithLocale}${hash}`;
+    window.location.assign(newUrl);
   }
 
   /**

@@ -11,8 +11,11 @@ Deploys the OSF (ORBIS Shopfloor) Dashboard – Port **8080**.
 #### Build
 
 ```bash
-# ARM64 (Raspberry Pi 4/5, aarch64)
+# ARM64 (Raspberry Pi 4/5, 64-bit OS)
 npm run docker:osf-ui:arm
+
+# ARM32/armv7 (Raspberry Pi mit 32-bit OS, z.B. ff-ccu-armv7)
+npm run docker:osf-ui:armv7
 
 # AMD64 (lokal testen)
 npm run docker:osf-ui:local
@@ -34,16 +37,22 @@ Auf dem RPi parallel zu Fischertechnik-Dashboard (Port 80):
 **RPi Deployment (Image + Compose gemeinsam übertragen):**
 
 ```bash
-# 1. Image speichern (nach npm run docker:osf-ui:arm)
+# 1. Image bauen – ARM64 ODER ARM32 je nach RPi-OS
+#    RPi 64-bit: npm run docker:osf-ui:arm
+#    RPi 32-bit (armv7): npm run docker:osf-ui:armv7
 mkdir -p deploy/osf-ui/docker-images
+# Für ARM64:
 docker save orbis-osf-ui:latest -o deploy/osf-ui/docker-images/osf-ui-arm64.tar
+# Für ARM32:
+docker save orbis-osf-ui:latest -o deploy/osf-ui/docker-images/osf-ui-arm32.tar
 
-# 2. Beide Dateien auf RPi kopieren (Fischertechnik: User ff22, Passwort ff22+)
-scp deploy/osf-ui/docker-images/osf-ui-arm64.tar deploy/docker-compose.osf-ui.yml ff22@192.168.0.100:~/
+# 2. Auf RPi kopieren (Dateiname anpassen: arm64 oder arm32)
+scp deploy/osf-ui/docker-images/osf-ui-arm32.tar deploy/docker-compose.osf-ui.yml ff22@192.168.0.100:~/
 
 # 3. Auf RPi: Image laden und starten
 ssh ff22@192.168.0.100
-docker load -i ~/osf-ui-arm64.tar
+docker compose -f ~/docker-compose.osf-ui.yml down
+docker load -i ~/osf-ui-arm32.tar
 docker compose -f ~/docker-compose.osf-ui.yml up -d
 # → http://192.168.0.100:8080
 ```

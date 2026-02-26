@@ -11,6 +11,19 @@ describe('LanguageService', () => {
     navigate: jest.fn().mockResolvedValue(true),
   };
 
+  let assignMock: jest.Mock;
+  let originalLocation: Location;
+
+  beforeEach(() => {
+    assignMock = jest.fn();
+    originalLocation = window.location;
+    Object.defineProperty(window, 'location', {
+      value: { ...originalLocation, assign: assignMock },
+      configurable: true,
+      writable: true,
+    });
+  });
+
   const mockActivatedRoute = {
     snapshot: { params: {} },
     params: { subscribe: jest.fn() },
@@ -40,6 +53,11 @@ describe('LanguageService', () => {
   afterEach(() => {
     localStorage.clear();
     jest.clearAllMocks();
+    Object.defineProperty(window, 'location', {
+      value: originalLocation,
+      configurable: true,
+      writable: true,
+    });
   });
 
   describe('Initialization', () => {
@@ -83,39 +101,34 @@ describe('LanguageService', () => {
 
     it('should not set locale if already set', () => {
       mockRouter.url = '/en/overview';
-      const navigateSpy = jest.spyOn(router, 'navigate');
 
       service.setLocale('en');
 
-      // Should not navigate if locale is already set
-      expect(navigateSpy).not.toHaveBeenCalled();
+      expect(assignMock).not.toHaveBeenCalled();
     });
 
     it('should navigate to new locale with same route', () => {
       mockRouter.url = '/en/order';
-      const navigateSpy = jest.spyOn(router, 'navigate');
 
       service.setLocale('de');
 
-      expect(navigateSpy).toHaveBeenCalledWith(['de', 'order']);
+      expect(assignMock).toHaveBeenCalledWith(expect.stringContaining('/de/#/de/order'));
     });
 
     it('should handle route without locale prefix', () => {
       mockRouter.url = '/order';
-      const navigateSpy = jest.spyOn(router, 'navigate');
 
       service.setLocale('fr');
 
-      expect(navigateSpy).toHaveBeenCalledWith(['fr', 'order']);
+      expect(assignMock).toHaveBeenCalledWith(expect.stringContaining('/fr/#/fr/order'));
     });
 
-    it('should default to "overview" when route is empty', () => {
+    it('should default to "dsp" when route is empty', () => {
       mockRouter.url = '/en';
-      const navigateSpy = jest.spyOn(router, 'navigate');
 
       service.setLocale('de');
 
-      expect(navigateSpy).toHaveBeenCalledWith(['de', 'dsp']);
+      expect(assignMock).toHaveBeenCalledWith(expect.stringContaining('/de/#/de/dsp'));
     });
   });
 
@@ -213,26 +226,14 @@ describe('LanguageService', () => {
       localStorage.setItem = originalSetItem;
     });
 
-    it('should handle router navigation errors gracefully', () => {
-      mockRouter.navigate = jest.fn().mockRejectedValue(new Error('Navigation failed'));
-      mockRouter.url = '/en/overview';
-
-      // Should not throw immediately (error happens in promise)
-      expect(() => {
-        service.setLocale('de');
-      }).not.toThrow();
-      
-      // Navigation should be attempted
-      expect(mockRouter.navigate).toHaveBeenCalled();
-    });
-
     it('should handle complex route paths', () => {
       mockRouter.url = '/en/configuration/module/DSP';
-      const navigateSpy = jest.spyOn(router, 'navigate');
 
       service.setLocale('fr');
 
-      expect(navigateSpy).toHaveBeenCalledWith(['fr', 'configuration/module/DSP']);
+      expect(assignMock).toHaveBeenCalledWith(
+        expect.stringContaining('/fr/#/fr/configuration/module/DSP')
+      );
     });
 
     it('should handle route with query parameters', () => {
@@ -251,12 +252,10 @@ describe('LanguageService', () => {
 
     it('should not set locale if already set (edge case)', () => {
       mockRouter.url = '/de/dsp';
-      const navigateSpy = jest.spyOn(router, 'navigate');
 
       service.setLocale('de');
 
-      // Should not navigate if locale is already set
-      expect(navigateSpy).not.toHaveBeenCalled();
+      expect(assignMock).not.toHaveBeenCalled();
     });
   });
 });
