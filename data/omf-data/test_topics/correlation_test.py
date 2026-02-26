@@ -45,31 +45,42 @@ def on_connect(client, userdata, flags, rc):
         connect_failed.set()
 
 
-def publish_correlation_info(client: mqtt.Client, order_id: str, order_type: str = "CUSTOMER") -> None:
+def publish_correlation_info(
+    client: mqtt.Client,
+    order_id: str,
+    order_type: str = "CUSTOMER",
+    *,
+    request_id: Optional[str] = None,
+    customer_order_id: Optional[str] = None,
+    customer_id: Optional[str] = None,
+    order_amount: Optional[int] = None,
+    planned_delivery_date: Optional[str] = None,
+) -> None:
     """Publiziert dsp/correlation/info als simulierte DSP-Antwort."""
+    ts = time.strftime("%Y-%m-%dT%H:%M:%S.000Z", time.gmtime())
     if order_type.upper() == "PURCHASE":
         payload = {
             "ccuOrderId": order_id,
-            "requestId": f"PO-{order_id[:8]}",
+            "requestId": request_id or f"PO-{order_id[:8]}",
             "orderType": "PURCHASE",
             "purchaseOrderId": "ERP-PO-TEST-001",
             "supplierId": "SUP-DEMO",
             "orderDate": "2026-02-24T08:00:00.000Z",
-            "orderAmount": 1,
-            "plannedDeliveryDate": "2026-03-01T12:00:00.000Z",
-            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S.000Z", time.gmtime()),
+            "orderAmount": order_amount if order_amount is not None else 1,
+            "plannedDeliveryDate": planned_delivery_date or "2026-03-01T12:00:00.000Z",
+            "timestamp": ts,
         }
     else:
         payload = {
             "ccuOrderId": order_id,
-            "requestId": "CO-TEST-001",
+            "requestId": request_id or "CO-TEST-001",
             "orderType": "CUSTOMER",
-            "customerOrderId": "ERP-CO-4711",
-            "customerId": "CUST-001",
+            "customerOrderId": customer_order_id or "ERP-CO-4711",
+            "customerId": customer_id or "CUST-001",
             "orderDate": "2026-02-24T08:00:00.000Z",
-            "orderAmount": 1,
-            "plannedDeliveryDate": "2026-03-01T12:00:00.000Z",
-            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S.000Z", time.gmtime()),
+            "orderAmount": order_amount if order_amount is not None else 1,
+            "plannedDeliveryDate": planned_delivery_date or "2026-03-01T12:00:00.000Z",
+            "timestamp": ts,
         }
     client.publish("dsp/correlation/info", json.dumps(payload), qos=1, retain=False)
     print(f"  dsp/correlation/info publiziert für orderId={order_id}")
@@ -167,6 +178,18 @@ def main():
     )
     parser.add_argument("--host", default=HOST, help=f"MQTT-Host (default: {HOST})")
     parser.add_argument("--port", type=int, default=PORT, help=f"MQTT-Port (default: {PORT})")
+    parser.add_argument(
+        "--websocket",
+        action="store_true",
+        help="WebSocket-Transport (FMF Live: gleicher Port wie OSF-UI, z.B. --port 9001)",
+    )
+    parser.add_argument("--username", help="MQTT-Benutzername (FMF: default)")
+    parser.add_argument("--password", help="MQTT-Passwort (FMF: default)")
+    parser.add_argument("--request-id", help="Override: requestId in dsp/correlation/info")
+    parser.add_argument("--customer-order-id", help="Override: customerOrderId (z.B. ERP-CO-UPDATED)")
+    parser.add_argument("--customer-id", help="Override: customerId (z.B. CUST-UPDATED)")
+    parser.add_argument("--order-amount", type=int, help="Override: orderAmount")
+    parser.add_argument("--planned-delivery-date", help="Override: plannedDeliveryDate (ISO)")
     args = parser.parse_args()
 
     order_id = args.order_id
@@ -175,16 +198,19 @@ def main():
 
     print("=== Correlation-Test ===")
     connect_failed.clear()
-    client = mqtt.Client(client_id="correlation-test")
+    transport = "websockets" if args.websocket else "tcp"
+    client = mqtt.Client(client_id="correlation-test", transport=transport)
     client.on_connect = on_connect
     client.on_message = on_message
+    if args.username:
+        client.username_pw_set(args.username, args.password or "")
     client.connect(args.host, args.port, 60)
     client.loop_start()
     time.sleep(1)
     if connect_failed.is_set():
         print("❌ MQTT-Verbindung fehlgeschlagen")
         return 1
-    print("  MQTT verbunden")
+    print(f"  MQTT verbunden ({'WebSocket' if args.websocket else 'TCP'})")
 
     if args.from_order:
         print("=== 1. Order-Test ausführen ===")
@@ -195,7 +221,16 @@ def main():
     else:
         print("=== Correlation-Info publizieren ===")
 
-    publish_correlation_info(client, order_id, args.type)
+    publish_correlation_info(
+        client,
+        order_id,
+        args.type,
+        request_id=args.request_id,
+        customer_order_id=args.customer_order_id,
+        customer_id=args.customer_id,
+        order_amount=args.order_amount,
+        planned_delivery_date=args.planned_delivery_date,
+    )
     time.sleep(0.5)
 
     print("\n✅ Fertig. OSF-UI (Replay/Live) sollte jetzt ERP-Info in Order-Tab und Track & Trace anzeigen.")

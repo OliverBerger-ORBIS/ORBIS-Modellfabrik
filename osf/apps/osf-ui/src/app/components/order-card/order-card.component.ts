@@ -39,8 +39,8 @@ const THREE_D_ICON_MAP: Record<'BLUE' | 'WHITE' | 'RED', string> = {
 
 const DEFAULT_SHOPFLOOR_ICON = resolveLegacyShopfloorPath('assets/svg/shopfloor/shared/question.svg');
 
-/** Callback to request ERP correlation info for an order (ccuOrderId). */
-export type RequestCorrelationFn = (ccuOrderId: string) => Promise<void>;
+/** Callback to request ERP correlation info for an order. Passes full order so requestId can be sent when available. */
+export type RequestCorrelationFn = (order: OrderActive) => Promise<void>;
 
 @Component({
   standalone: true,
@@ -75,9 +75,8 @@ export class OrderCardComponent implements OnInit, OnChanges {
   }
 
   async requestCorrelation(): Promise<void> {
-    const id = this.order?.orderId;
-    if (id && this.onRequestCorrelation) {
-      await this.onRequestCorrelation(id);
+    if (this.order && this.onRequestCorrelation) {
+      await this.onRequestCorrelation(this.order);
     }
   }
 

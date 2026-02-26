@@ -9,6 +9,7 @@ import { LanguageService, LocaleKey } from './services/language.service';
 import { ConnectionService, ConnectionState } from './services/connection.service';
 import { getDashboardController, type DashboardMessageMonitor } from './mock-dashboard';
 import { MessageMonitorService } from './services/message-monitor.service';
+import { WorkpieceHistoryService } from './services/workpiece-history.service';
 import { Subscription } from 'rxjs';
 import { VERSION } from '../environments/version';
 
@@ -157,7 +158,8 @@ export class AppComponent implements OnDestroy {
     private readonly roleService: RoleService,
     private readonly connectionService: ConnectionService,
     public readonly languageService: LanguageService,
-    private readonly messageMonitor: MessageMonitorService
+    private readonly messageMonitor: MessageMonitorService,
+    private readonly workpieceHistoryService: WorkpieceHistoryService
   ) {
     this.environments = this.environmentService.environments;
     this.environment$ = this.environmentService.environment$;
@@ -209,6 +211,11 @@ export class AppComponent implements OnDestroy {
               controller.updateMqttClient(mqttClient);
             }
             console.log('[app] Dashboard controller updated with MQTT client');
+          }
+          // Initialize Track & Trace history so messages are processed even before the tab is opened
+          const envKey = this.environmentService.current.key;
+          if (envKey !== 'mock') {
+            this.workpieceHistoryService.initialize(envKey);
           }
         }
       })

@@ -25,7 +25,7 @@ interface ModuleInfo {
   icon: string;
 }
 
-type TopicTypeFilter = 'all' | 'ccu' | 'module-fts';
+type TopicTypeFilter = 'all' | 'ccu' | 'dsp' | 'module-fts';
 type StatusFilter = 'all' | 'connection' | 'state' | 'factsheet';
 
 const CCU_ICON = 'assets/svg/ui/heading-ccu.svg';
@@ -128,9 +128,13 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
   }
 
   filterMessage(message: MonitoredMessage): boolean {
-    // Topic type filter (All Topics, ccu-topics, Module/FTS topics)
+    // Topic type filter (All Topics, CCU, DSP, Module/FTS topics)
     if (this.filterTopicType === 'ccu') {
       if (!message.topic.startsWith('ccu/')) {
+        return false;
+      }
+    } else if (this.filterTopicType === 'dsp') {
+      if (!message.topic.startsWith('dsp/')) {
         return false;
       }
     } else if (this.filterTopicType === 'module-fts') {

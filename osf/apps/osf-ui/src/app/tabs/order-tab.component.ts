@@ -126,9 +126,14 @@ export class OrderTabComponent implements OnInit, OnDestroy {
       : $localize`:@@orderTabCollapseCompleted:Collapse completed orders`;
   }
 
-  requestCorrelation = async (ccuOrderId: string): Promise<void> => {
+  requestCorrelation = async (order: { orderId: string; requestId?: string }): Promise<void> => {
     try {
-      await this.dashboard.commands.requestCorrelationInfo({ ccuOrderId });
+      const ccuOrderId = order.orderId;
+      const requestId = order.requestId;
+      // Prefer requestId when available (logical: OSF-UI initiated with that ID); include ccuOrderId for DSP compatibility
+      await this.dashboard.commands.requestCorrelationInfo(
+        requestId ? { requestId, ccuOrderId } : { ccuOrderId }
+      );
     } catch (error) {
       console.error('[order-tab] requestCorrelationInfo failed:', error);
     }

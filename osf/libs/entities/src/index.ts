@@ -24,6 +24,7 @@ export interface ProductionStep {
 
 export interface OrderActive {
   orderId: string;
+  requestId?: string; // From CCU response when OSF-UI sent it in request (ERP/MES correlation)
   type?: string;
   orderType?: 'PRODUCTION' | 'STORAGE' | string;
   productId?: string;

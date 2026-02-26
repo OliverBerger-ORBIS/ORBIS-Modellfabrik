@@ -70,6 +70,58 @@ Die Nachrichten-Struktur von **Order-Request** und **Order-Response** wurde um e
 | `common/protocol/ccu.ts` | `OrderRequest`, `OrderResponse`: optionales `requestId?: string` |
 | `central-control/.../order/index.ts` | `sendResponse`: `requestId` aus Request in Response übernehmen |
 
+### 3.4 Topic-Abfolge mit Beispielnachrichten (Live-Test 26.02.2026)
+
+Die CCU publiziert bei jeder Order drei Topics in folgender Reihenfolge:
+
+| Reihenfolge | Topic | Beschreibung |
+|-------------|-------|--------------|
+| 1 | `ccu/order/request` | Order-Anfrage (OSF-UI, DSP_Edge oder anderes System) |
+| 2 | `ccu/order/active` | Aktualisierte Liste aktiver Orders (CCU-Snapshot) |
+| 3 | `ccu/order/response` | Order-Bestätigung mit `orderId` und `requestId` |
+
+**Beispiel 1: ccu/order/request** (von OSF-UI mit requestId):
+```json
+{
+  "type": "WHITE",
+  "timestamp": "2026-02-26T07:32:15.003Z",
+  "orderType": "PRODUCTION",
+  "requestId": "OSF-UI_a4552c06-e1c6-4dda-805a-faece17f8b9c"
+}
+```
+
+**Beispiel 2: ccu/order/response** (von CCU mit requestId-Echo):
+```json
+{
+  "orderType": "PRODUCTION",
+  "type": "WHITE",
+  "timestamp": "2026-02-26T07:32:15.003Z",
+  "orderId": "953d62f7-6074-4ba1-bd63-9a88cc1ef4a5",
+  "requestId": "OSF-UI_a4552c06-e1c6-4dda-805a-faece17f8b9c",
+  "productionSteps": [
+    {"id": "...", "type": "NAVIGATION", "state": "ENQUEUED", "source": "START", "target": "HBW"},
+    {"id": "...", "type": "MANUFACTURE", "command": "DROP", "moduleType": "HBW"},
+    {"id": "...", "type": "NAVIGATION", "source": "HBW", "target": "DRILL"},
+    {"id": "...", "type": "MANUFACTURE", "command": "PICK", "moduleType": "DRILL"},
+    {"id": "...", "type": "MANUFACTURE", "command": "DRILL", "moduleType": "DRILL"},
+    {"id": "...", "type": "MANUFACTURE", "command": "DROP", "moduleType": "DRILL"},
+    {"id": "...", "type": "NAVIGATION", "source": "DRILL", "target": "AIQS"},
+    {"id": "...", "type": "MANUFACTURE", "command": "PICK", "moduleType": "AIQS"},
+    {"id": "...", "type": "MANUFACTURE", "command": "CHECK_QUALITY", "moduleType": "AIQS"},
+    {"id": "...", "type": "MANUFACTURE", "command": "DROP", "moduleType": "AIQS"},
+    {"id": "...", "type": "NAVIGATION", "source": "AIQS", "target": "DPS"},
+    {"id": "...", "type": "MANUFACTURE", "command": "PICK", "moduleType": "DPS"}
+  ],
+  "receivedAt": "2026-02-26T07:32:15.037Z",
+  "state": "IN_PROGRESS",
+  "startedAt": "2026-02-26T07:32:15.040Z"
+}
+```
+
+**Beispiel 3: ccu/order/active** – Enthält ein Array mit allen aktiven Orders. Bei einer neuen Order ist die Response-Struktur (ohne `receivedAt`/`startedAt` je nach CCU-Version) als Array-Element enthalten. Bei leerem Bestand: `[]`.
+
+*Quelle:* Live-Test FMF am 26.02.2026 mit CCU userdev (requestId-Support), OSF-UI v0.8.2.
+
 ---
 
 ## 4. Sequenzdiagramm
@@ -359,6 +411,19 @@ Beim Aufbau des `OrderContext` für Track & Trace:
 3. **Sonst:** `ErpOrderDataService` nutzen (`popPurchaseOrderForWorkpieceType` / `popCustomerOrder`)
 
 So wird in Track & Trace immer ERP-Kontext angezeigt – aus CorrelationInfoService, wenn der DSP sendet, andernfalls aus dem bestehenden ErpOrderDataService.
+
+### 8.6 Order-Initiator-Szenarien (OSF-UI vs. DSP/ERP)
+
+Die aktuelle OSF-Logik ist speziell für den Fall optimiert, dass Orders über die OSF-UI ausgelöst werden. Für Orders aus DSP oder ERP/SAP gelten andere Pfade – die Implementierung unterstützt beide.
+
+| Initiator | Ablauf | ERP-Info im Process-Tab / Order-Card / Track & Trace |
+|-----------|--------|------------------------------------------------------|
+| **OSF-UI** (aktuell) | OSF-UI sendet `ccu/order/request` mit `requestId` → CCU antwortet mit `orderId` + `requestId` → OSF-UI sendet `dsp/correlation/request` → DSP antwortet mit `dsp/correlation/info` (oder ErpOrderDataService-Fallback bei manueller Order) | ✅ Sofort sichtbar (Request/Response oder Fallback) |
+| **DSP / ERP** (zukünftig) | DSP/ERP sendet `ccu/order/request` (optional mit `requestId`) → CCU antwortet → **Variante A:** OSF-UI kann `dsp/correlation/request` mit `requestId`/`ccuOrderId` senden; **Variante B:** DSP publiziert `dsp/correlation/info` **unsolicited** (bevorzugt) | ✅ Via Unsolicited oder auf User-Anfrage („ERP abrufen“) |
+
+**Variante B (Unsolicited)** ist bevorzugt: DSP kennt die Korrelation zu SAP/ERP und kann `dsp/correlation/info` direkt nach `ccu/order/response` publizieren – ohne vorherigen Request. OSF-UI subscribet `dsp/#` und speichert die Info in `CorrelationInfoService`; Order-Tab und Track & Trace aktualisieren sich automatisch.
+
+**Implementierungsstand (26.02.2026):** Test erfolgreich abgeschlossen. OSF-UI-Seite fertig; es fehlt die DSP-Implementierung für `dsp/correlation/info` (Response auf Request oder Unsolicited).
 
 ---
 

@@ -226,7 +226,6 @@ export class WorkpieceHistoryService implements OnDestroy {
         if (!msg?.valid || !msg.payload) return null;
         try {
           const payload = typeof msg.payload === 'string' ? JSON.parse(msg.payload) : msg.payload;
-          // Extract module serial ID from topic
           const moduleSerialId = this.extractModuleSerialFromTopic(msg.topic);
           return {
             ...payload,
@@ -353,8 +352,12 @@ export class WorkpieceHistoryService implements OnDestroy {
       }))
     );
     
+    // Correlation map: when it changes, refresh order context for ALL workpieces in Track & Trace
+    const correlationMap$ = this.correlationInfoService.map$.pipe(
+      startWith(this.correlationInfoService.mapSnapshot)
+    );
+
     // Combine FTS state and orders to update history
-    // Use startWith(null) to ensure combineLatest emits even if one stream hasn't emitted yet
     const ftsSubscription = combineLatest([
       ftsState$.pipe(startWith(null)),
       allOrders$.pipe(startWith({ active: {}, completed: {} }))
@@ -369,7 +372,6 @@ export class WorkpieceHistoryService implements OnDestroy {
     });
 
     // Subscribe to module state messages to process PICK/PROCESS/DROP events
-    // Combine with allOrders to have order context available
     const moduleSubscription = combineLatest([
       moduleState$.pipe(startWith(null)),
       allOrders$.pipe(startWith({ active: {}, completed: {} }))
@@ -383,10 +385,23 @@ export class WorkpieceHistoryService implements OnDestroy {
       }
     });
 
-    // Combine both subscriptions
+    // When correlation info changes, refresh order context for ALL workpieces (Order-Tab and Track & Trace stay in sync)
+    const correlationSubscription = combineLatest([
+      correlationMap$,
+      allOrders$.pipe(startWith({ active: {}, completed: {} }))
+    ]).subscribe(([, orders]) => {
+      try {
+        this.refreshAllOrderContexts(environmentKey, orders);
+      } catch (error) {
+        console.error('[WorkpieceHistoryService] Error refreshing order contexts from correlation:', error);
+      }
+    });
+
+    // Combine all subscriptions
     const combinedSubscription = new Subscription();
     combinedSubscription.add(ftsSubscription);
     combinedSubscription.add(moduleSubscription);
+    combinedSubscription.add(correlationSubscription);
 
     this.subscriptions.set(environmentKey, combinedSubscription);
   }
@@ -464,6 +479,41 @@ export class WorkpieceHistoryService implements OnDestroy {
 
     // Check if station is in the workflow for this workpiece type
     return workflow.includes(stationName.toUpperCase());
+  }
+
+  /**
+   * Refresh order context for all workpieces when correlation info changes.
+   * Ensures Track & Trace shows updated ERP data (customerOrderId, customerId, etc.) in sync with Order-Tab.
+   */
+  private refreshAllOrderContexts(
+    environmentKey: string,
+    orders: { active: Record<string, any>; completed: Record<string, any> } | unknown
+  ): void {
+    const historyMap = new Map(this.getStore(environmentKey).value);
+    let hasChanges = false;
+
+    for (const [, history] of historyMap) {
+      const orderId =
+        history.orders?.[0]?.orderId ??
+        history.events?.[0]?.orderId ??
+        (history.events?.length ? history.events[history.events.length - 1]?.orderId : undefined);
+      if (!orderId) continue;
+
+      const newOrders = this.generateOrderContext(
+        history.workpieceType,
+        orders,
+        orderId,
+        history.events
+      );
+      if (JSON.stringify(history.orders ?? []) !== JSON.stringify(newOrders)) {
+        history.orders = newOrders;
+        hasChanges = true;
+      }
+    }
+
+    if (hasChanges) {
+      this.getStore(environmentKey).next(historyMap);
+    }
   }
 
   /**

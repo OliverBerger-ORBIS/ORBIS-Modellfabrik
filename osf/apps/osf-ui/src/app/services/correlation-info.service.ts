@@ -59,6 +59,8 @@ function parseCorrelationPayload(payload: unknown): CorrelationInfo | null {
 @Injectable({ providedIn: 'root' })
 export class CorrelationInfoService implements OnDestroy {
   private readonly mapSubject = new BehaviorSubject<Map<string, CorrelationInfo>>(new Map());
+  /** Emits when correlation data changes – use to refresh Track & Trace order context. */
+  readonly map$ = this.mapSubject.asObservable();
   private subscription?: Subscription;
 
   constructor(private readonly messageMonitor: MessageMonitorService) {
@@ -128,6 +130,11 @@ export class CorrelationInfoService implements OnDestroy {
    */
   getCorrelationInfo(ccuOrderId: string): CorrelationInfo | null {
     return this.mapSubject.value.get(ccuOrderId) ?? null;
+  }
+
+  /** Current map snapshot – for startWith when subscribing to map$. */
+  get mapSnapshot(): Map<string, CorrelationInfo> {
+    return this.mapSubject.value;
   }
 
   ngOnDestroy(): void {

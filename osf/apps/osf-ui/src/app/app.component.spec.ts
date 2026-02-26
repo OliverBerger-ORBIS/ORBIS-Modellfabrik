@@ -6,6 +6,7 @@ import { LanguageService } from './services/language.service';
 import { RoleService } from './services/role.service';
 import { ConnectionService } from './services/connection.service';
 import { MessageMonitorService } from './services/message-monitor.service';
+import { WorkpieceHistoryService } from './services/workpiece-history.service';
 import * as mockDashboard from './mock-dashboard';
 
 // Mock getDashboardController to avoid createGateway issues in tests
@@ -67,6 +68,7 @@ describe('AppComponent', () => {
         RoleService,
         ConnectionService,
         MessageMonitorService,
+        { provide: WorkpieceHistoryService, useValue: { initialize: jest.fn() } },
       ],
     }).compileComponents();
   });

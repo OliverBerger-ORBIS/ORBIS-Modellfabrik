@@ -33,8 +33,8 @@
   → **Doku:** [order-requestid-extension.md](../07-analysis/order-requestid-extension.md) | **Analyse Deployment:** [ccu-modification-and-deployment-analysis.md](../07-analysis/ccu-modification-and-deployment-analysis.md)
 - [x] OSF-UI: Sendet `dsp/correlation/request`, empfängt `dsp/correlation/info`, Anzeige in Order-Tab + Track & Trace (ErpOrderDataService als Fallback)
   → **Doku:** [order-requestid-extension.md](../07-analysis/order-requestid-extension.md) §8 | **Replay-Test:** `./scripts/run-correlation-test.sh [orderId]`
-- [ ] **CCU Deployment RPi:** Image bauen und auf RPi deployen – Prozedur: [ccu-modification-and-deployment-analysis.md](../07-analysis/ccu-modification-and-deployment-analysis.md) §4 | `integrations/APS-CCU/DEPLOYMENT.md`
-- [ ] **OSF-UI Live-Mode-Test:** Order-Tab Snapshot-Semantik (MessageMonitor statt Gateway) in Live-Umgebung prüfen, ob weiterhin funktionsfähig
+- [x] **CCU Deployment RPi:** Image bauen und auf RPi deployen – Prozedur: [ccu-modification-and-deployment-analysis.md](../07-analysis/ccu-modification-and-deployment-analysis.md) §4 | `integrations/APS-CCU/DEPLOYMENT.md`
+- [x] **OSF-UI Live-Mode-Test:** Order-Tab Snapshot-Semantik (MessageMonitor statt Gateway) in Live-Umgebung prüfen, ob weiterhin funktionsfähig
 - [ ] DSP_Edge: Sendet `dsp/correlation/info` (als Response auf Request oder Unsolicited nach Order-Response)
 
 ### Marketing & Konsistenz
@@ -79,4 +79,4 @@
 
 ---
 
-*Letzte Aktualisierung: 25.02.2026*
+*Letzte Aktualisierung: 26.02.2026*

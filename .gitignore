@@ -29,3 +29,6 @@ backend/metrics-service/*.log
 
 # Arduino - Libraries per Library Manager installieren
 integrations/Arduino/libraries/
+
+# Built CCU Docker images (regeneratable)
+integrations/APS-CCU/docker-images/
