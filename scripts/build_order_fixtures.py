@@ -27,8 +27,7 @@ import argparse
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable, Iterator, List, Sequence, Set
-
+from typing import Iterator, Sequence
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -44,9 +43,9 @@ def topic_matches(topic: str, patterns: Sequence[str]) -> bool:
     return False
 
 
-def extract_order_ids(payload: object) -> Set[str]:
+def extract_order_ids(payload: object) -> set[str]:
     """Collect order ids from a decoded payload."""
-    collected: Set[str] = set()
+    collected: set[str] = set()
 
     if isinstance(payload, dict):
         order_id = payload.get("orderId")
@@ -84,7 +83,7 @@ def iter_messages(paths: Sequence[Path]) -> Iterator[dict]:
                     raise RuntimeError(f"Failed to parse line in {path}: {exc}") from exc
 
 
-def normalize_message(message: dict, decoded_payload: object) -> List[dict]:
+def normalize_message(message: dict, decoded_payload: object) -> list[dict]:
     """
     Normalize a single MQTT message into one or multiple JSON objects.
 
@@ -101,7 +100,7 @@ def normalize_message(message: dict, decoded_payload: object) -> List[dict]:
         return payload_obj
 
     if topic in {"ccu/order/active", "ccu/order/completed"} and isinstance(decoded_payload, list):
-        normalized: List[dict] = []
+        normalized: list[dict] = []
         for entry in decoded_payload:
             normalized.append({**base, "payload": encode_payload(entry)})
         return normalized
@@ -112,13 +111,13 @@ def normalize_message(message: dict, decoded_payload: object) -> List[dict]:
 @dataclass
 class FixtureConfig:
     name: str
-    sources: List[Path]
+    sources: list[Path]
     output: Path
-    topic_patterns: List[str]
-    order_ids: Set[str] = field(default_factory=set)
-    passthrough_patterns: List[str] = field(default_factory=list)
+    topic_patterns: list[str]
+    order_ids: set[str] = field(default_factory=set)
+    passthrough_patterns: list[str] = field(default_factory=list)
 
-    def resolve_sources(self) -> List[Path]:
+    def resolve_sources(self) -> list[Path]:
         return [source if source.is_absolute() else REPO_ROOT / source for source in self.sources]
 
     def resolve_output(self) -> Path:
@@ -131,7 +130,7 @@ def build_fixture(config: FixtureConfig, dry_run: bool = False) -> int:
     output_path = config.resolve_output()
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    retained: List[str] = []
+    retained: list[str] = []
 
     for message in iter_messages(resolved_sources):
         topic = message.get("topic", "")
@@ -154,9 +153,9 @@ def build_fixture(config: FixtureConfig, dry_run: bool = False) -> int:
             if config.order_ids:
                 normalized_payload = decode_payload(normalized.get("payload"))
                 topic = normalized.get("topic", "")
-                if not (
-                    extract_order_ids(normalized_payload) & config.order_ids
-                ) and not any(topic_matches(topic, [pattern]) for pattern in config.passthrough_patterns):
+                if not (extract_order_ids(normalized_payload) & config.order_ids) and not any(
+                    topic_matches(topic, [pattern]) for pattern in config.passthrough_patterns
+                ):
                     continue
             retained.append(json.dumps(normalized, ensure_ascii=False))
 
@@ -172,13 +171,13 @@ def build_fixture(config: FixtureConfig, dry_run: bool = False) -> int:
     return len(retained)
 
 
-def load_default_configs() -> List[FixtureConfig]:
+def load_default_configs() -> list[FixtureConfig]:
     """Return fixture configurations for standard order demos."""
     return [
         FixtureConfig(
             name="white",
             sources=[
-                Path("data/omf-data/sessions/production_order_white_20251110_184459.log"),
+                Path("data/osf-data/sessions/production_order_white_20251110_184459.log"),
             ],
             output=Path("osf/testing/fixtures/orders/white/orders.log"),
             topic_patterns=[
@@ -196,7 +195,7 @@ def load_default_configs() -> List[FixtureConfig]:
         FixtureConfig(
             name="blue",
             sources=[
-                Path("data/omf-data/sessions/production_order_blue_20251110_180619.log"),
+                Path("data/osf-data/sessions/production_order_blue_20251110_180619.log"),
             ],
             output=Path("osf/testing/fixtures/orders/blue/orders.log"),
             topic_patterns=[
@@ -214,7 +213,7 @@ def load_default_configs() -> List[FixtureConfig]:
         FixtureConfig(
             name="red",
             sources=[
-                Path("data/omf-data/sessions/production_order_red_20251110_180152.log"),
+                Path("data/osf-data/sessions/production_order_red_20251110_180152.log"),
             ],
             output=Path("osf/testing/fixtures/orders/red/orders.log"),
             topic_patterns=[
@@ -232,7 +231,7 @@ def load_default_configs() -> List[FixtureConfig]:
         FixtureConfig(
             name="mixed",
             sources=[
-                Path("data/omf-data/sessions/production_order_bwr_20251110_182819.log"),
+                Path("data/osf-data/sessions/production_order_bwr_20251110_182819.log"),
             ],
             output=Path("osf/testing/fixtures/orders/mixed/orders.log"),
             topic_patterns=[
@@ -255,7 +254,7 @@ def load_default_configs() -> List[FixtureConfig]:
         FixtureConfig(
             name="storage",
             sources=[
-                Path("data/omf-data/sessions/storage_order_white_20251110_181619.log"),
+                Path("data/osf-data/sessions/storage_order_white_20251110_181619.log"),
             ],
             output=Path("osf/testing/fixtures/orders/storage/orders.log"),
             topic_patterns=[
@@ -308,4 +307,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

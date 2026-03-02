@@ -23,7 +23,7 @@ if ! mosquitto_pub -h "$HOST" -p "$PORT" -t "test/ping" -m "" -q 0 2>/dev/null; 
   exit 1
 fi
 
-TEST_PY="$PROJECT_ROOT/data/omf-data/test_topics/correlation_test.py"
+TEST_PY="$PROJECT_ROOT/data/osf-data/test_topics/correlation_test.py"
 PY_CMD=""
 [[ -f "$PROJECT_ROOT/.venv/bin/python" ]] && PY_CMD="$PROJECT_ROOT/.venv/bin/python"
 [[ -z "$PY_CMD" ]] && PY_CMD="python3"

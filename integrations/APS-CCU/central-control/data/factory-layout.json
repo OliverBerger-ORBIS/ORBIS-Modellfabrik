@@ -2,7 +2,7 @@
   "modules": [
     {
       "type": "HBW",
-      "serialNumber": "HBW-DEMO"
+      "serialNumber": "SVR3QA0022"
     },
     {
       "type": "DRILL",
@@ -70,7 +70,7 @@
     },
     {
       "direction": "EAST",
-      "from": "HBW-DEMO",
+      "from": "SVR3QA0022",
       "to": "1",
       "length": 380
     },

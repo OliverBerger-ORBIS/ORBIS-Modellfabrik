@@ -2,7 +2,7 @@
 Session Manager - Standalone MQTT Session Management Tool
 
 Ein eigenständiges Tool für die Verwaltung und Analyse von MQTT-Sessions
-in der ORBIS Modellfabrik.
+in der ORBIS Smart-Factory.
 
 ## Features
 - Session Recording & Replay
@@ -17,5 +17,5 @@ streamlit run session_manager/app.py
 ```
 """
 
-__version__ = "2.0.0"
-__author__ = "ORBIS Modellfabrik Team"
+__version__ = "1.2.0"
+__author__ = "ORBIS Smart-Factory Team"

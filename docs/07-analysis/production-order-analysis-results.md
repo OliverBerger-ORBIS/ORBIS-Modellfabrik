@@ -1,6 +1,6 @@
 # 📋 Order Manager - Analyse-Erkenntnisse (vormals Production Order Manager)
 
-**Quelle:** Session-Analyse von auftrag-*.db und *.log Sessions  
+**Quelle:** Session-Analyse von auftrag-*.log Sessions  
 **Datum:** 2025-10-08  
 **Analyse-Tool:** `session_manager/components/order_analyzer.py` (Order Analyzer Tab)
 
@@ -60,7 +60,7 @@ Payload: { orderId, ... }
 
 ### 4. **Module-Orders**
 ```
-Topics: 
+Topics:
   - module/v1/ff/SVR3QA0022/order
   - module/v1/ff/SVR4H73275/order
   - module/v1/ff/SVR3QA2098/order
@@ -93,7 +93,7 @@ Payload: { orderId, state, ... }
 ```json
 {
   "orderId": "uuid-string",
-  "workpieceId": "string", 
+  "workpieceId": "string",
   "state": "IN_PROGRESS|COMPLETED|...",
   "status": "string",
   "command": "PICK|PLACE|DRILL|...",
@@ -136,7 +136,7 @@ def find_order_sequences(messages) -> Dict[str, List]:
         order_id = extract_order_id(msg)
         if is_valid_order_id(order_id):
             order_sequences[order_id].append(msg)
-    
+
     # Filter: Nur signifikante Orders
     return {oid: msgs for oid, msgs in order_sequences.items() if len(msgs) > 10}
 
@@ -153,21 +153,18 @@ def get_first_order_topic(order_id: str, messages: List) -> str:
 
 ## 📁 Test-Daten
 
-### Sessions verfügbar (beide Formate)
-- `data/omf-data/sessions/auftrag-blau_1.db` (120 msgs)
-- `data/omf-data/sessions/auftrag-blau_1.log` (gleiche Daten)
-- `data/omf-data/sessions/auftrag-rot_1.db` (94 msgs)
-- `data/omf-data/sessions/auftrag-rot_1.log` (gleiche Daten)
-- `data/omf-data/sessions/auftrag-weiss_1.db` (100 msgs)
-- `data/omf-data/sessions/auftrag-weiss_1.log` (gleiche Daten)
-- `data/omf-data/sessions/auftrag-rot-omf_20250915_104029.db` (94 msgs)
+### Sessions verfügbar
+- `data/osf-data/sessions/auftrag-blau_1.log` (120 msgs)
+- `data/osf-data/sessions/auftrag-rot_1.log` (94 msgs)
+- `data/osf-data/sessions/auftrag-weiss_1.log` (100 msgs)
+- `data/osf-data/sessions/auftrag-rot-omf_20250915_104029.log` (94 msgs)
 
 ### Analyse-Tool
 ```bash
 # Session Manager starten – Order Analyzer Tab nutzen
 python -m session_manager
 
-# Analysiert Session-Daten aus data/omf-data/sessions/ (auftrag-*.db, *.log)
+# Analysiert Session-Daten aus data/osf-data/sessions/ (*.log, JSON-Zeilen)
 ```
 
 ## 🎯 Implementierungs-Prioritäten für Order Manager
@@ -206,13 +203,10 @@ python -m session_manager
 ## 🔗 Verwandte Dokumentation
 
 - **Analyse-Tool:** `session_manager/components/order_analyzer.py`
+- **Fischertechnik Order-Protokoll:** `docs/06-integrations/fischertechnik-official/02-architecture.md`
+- **Track & Trace:** `docs/03-decision-records/13-track-trace-architecture.md`
 
 ---
-
-**Status:** Bereit für Order Manager Implementation 🚀
-
-
-## 🔍 Order-Trigger-Sequenz (VOR der ersten OrderID)
 
 ## 🔍 Order-Trigger-Sequenz (VOR der ersten OrderID)
 
@@ -240,36 +234,16 @@ Payload: {"orderId":"598cba14-5cb5-43e7-b8cc-530d87d2cfa3",...}
 
 1. **TXT-Controller** sendet Order-Anfrage: `/j1/txt/1/f/o/order` mit `type: "BLUE"`
 2. **CCU** empfängt TXT-Request und published: `ccu/order/request` mit `type: "BLUE"` und `orderType: "PRODUCTION"`
-3. **??? UNKNOWN ORDER-ID GENERATOR** subscribes `ccu/order/request` und generiert UUID
-4. **??? UNKNOWN ORDER-ID GENERATOR** sendet Order an **FTS**: `fts/v1/ff/5iO4/order` mit UUID
+3. **CCU-Backend** subscribes `ccu/order/request` und generiert UUID
+4. **CCU-Backend** sendet Order an **FTS**: `fts/v1/ff/5iO4/order` mit UUID
 
 ### 🎯 Order-Creation-Topics:
 
 | Position | Topic | Publisher | Subscriber | Zweck |
 |----------|-------|-----------|------------|-------|
 | #89 | `/j1/txt/1/f/o/order` | TXT | CCU | TXT initiiert Order |
-| #90 | `ccu/order/request` | CCU | **??? UNKNOWN** | CCU broadcast Order-Request |
-| #95 | `fts/v1/ff/5iO4/order` | **??? UNKNOWN** | FTS | FTS bekommt Order mit UUID |
-
-### ⚠️ OFFENE FRAGE:
-
-**Wer generiert die OrderID?**
-
-Es gibt eine **unbekannte Komponente**, die:
-1. ✅ Topic `ccu/order/request` subscribes
-2. ✅ UUID für OrderID generiert
-3. ✅ `fts/v1/ff/5iO4/order` published
-
-**Mögliche Kandidaten:**
-- **NodeRed** (als Orchestrator/Workflow-Engine)
-- **Dedizierter Order-Management-Service**
-- **FTS selbst** (generiert eigene Order-IDs)
-- **CCU interner Service** (aber warum dann MQTT-Publish?)
-
-**Zu prüfen:**
-- Welche Komponente subscribes `ccu/order/request`?
-- Analyse der NodeRed-Flows
-- FTS-Logs prüfen
+| #90 | `ccu/order/request` | CCU | CCU-Backend | CCU broadcast Order-Request |
+| #95 | `fts/v1/ff/5iO4/order` | CCU-Backend | FTS | FTS bekommt Order mit UUID |
 
 ### 💡 Order Manager Anforderungen:
 
@@ -283,55 +257,7 @@ Es gibt eine **unbekannte Komponente**, die:
    - Publish: `fts/v1/ff/5iO4/order` mit `orderId`
 
 3. **Farb-Mapping:**
-   - TXT sendet Farbe → CCU published Request → ??? generiert UUID → FTS erhält Order
-   - Pattern: `ccu/order/request` mit `type` + `orderType` → `fts/v1/ff/5iO4/order` mit `orderId`
-
-### ⭐ WICHTIGE ERKENNTNIS: Order-Start-Befehl
-
-**Message #89** (6 Messages VOR der ersten OrderID):
-```
-Topic: /j1/txt/1/f/o/order
-Payload: {"type":"BLUE","ts":"2025-08-19T09:28:37.422Z"}
-```
-
-**Message #90** (5 Messages VOR der ersten OrderID):
-```
-Topic: ccu/order/request
-Payload: {"type":"BLUE","timestamp":"2025-08-19T09:28:37.422Z","orderType":"PRODUCTION"}
-```
-
-**Message #95** (ERSTE OrderID):
-```
-Topic: fts/v1/ff/5iO4/order
-Payload: {"orderId":"598cba14-5cb5-43e7-b8cc-530d87d2cfa3",...}
-```
-
-### Ablauf:
-
-1. **TXT-Controller** sendet Order-Anfrage: `/j1/txt/1/f/o/order` mit `type: "BLUE"`
-2. **CCU** empfängt Request: `ccu/order/request` mit `type: "BLUE"` und `orderType: "PRODUCTION"`
-3. **CCU** erstellt OrderID und sendet an **FTS**: `fts/v1/ff/5iO4/order` mit UUID
-
-### 🎯 Order-Creation-Topics:
-
-| Position | Topic | Payload | Zweck |
-|----------|-------|---------|-------|
-| #89 | `/j1/txt/1/f/o/order` | `{"type":"BLUE"}` | TXT initiiert Order |
-| #90 | `ccu/order/request` | `{"type":"BLUE","orderType":"PRODUCTION"}` | CCU empfängt Order-Request |
-| #95 | `fts/v1/ff/5iO4/order` | `{"orderId":"<uuid>"}` | FTS bekommt Order mit UUID |
-
-### 💡 Order Manager Anforderungen:
-
-1. **Order-Request-Detection:**
-   - Topic: `/j1/txt/1/f/o/order` oder `ccu/order/request`
-   - Payload: `type: "BLUE"|"RED"|"WHITE"`
-
-2. **Order-Creation:**
-   - CCU erstellt UUID nach `ccu/order/request`
-   - Erste OrderID erscheint in `fts/v1/ff/5iO4/order`
-
-3. **Farb-Mapping:**
-   - TXT sendet Farbe → CCU erstellt Production Order → UUID wird generiert
+   - TXT sendet Farbe → CCU published Request → CCU-Backend generiert UUID → FTS erhält Order
    - Pattern: `ccu/order/request` mit `type` + `orderType` → `fts/v1/ff/5iO4/order` mit `orderId`
 
 ---
@@ -392,7 +318,7 @@ CCU-Backend macht alles intern (gleicher Prozess):
             ↓
 3. CCU-Backend published → ccu/order/request (Event-Notification)
             ↓ (gleicher Prozess, anderer Thread)
-4. CCU-Backend generiert UUID  
+4. CCU-Backend generiert UUID
             ↓
 5. CCU-Backend published → fts/v1/ff/5iO4/order
 ```
@@ -411,10 +337,6 @@ CCU-Backend macht alles intern (gleicher Prozess):
    - Auf CCU Raspberry Pi?
    - Eigene Software-Komponente?
 
+---
 
-
-
-
-
-
-
+**Status:** OSF Order Manager / Track & Trace Implementation basiert auf diesen Erkenntnissen. Referenziert von `docs/03-decision-records/13-track-trace-architecture.md`.

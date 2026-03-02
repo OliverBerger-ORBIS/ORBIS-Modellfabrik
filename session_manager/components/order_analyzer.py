@@ -52,7 +52,7 @@ def _show_message_analysis_section():
 
     # Session-Auswahl
     st.markdown("#### 1️⃣ Session auswählen")
-    sessions_dir = "data/omf-data/sessions"
+    sessions_dir = "data/osf-data/sessions"
 
     if not os.path.exists(sessions_dir):
         st.error("❌ Sessions-Verzeichnis nicht gefunden")
@@ -236,7 +236,7 @@ def _show_message_chains_section():
 
     # Session-Auswahl
     st.markdown("#### 1️⃣ Session auswählen")
-    sessions_dir = "data/omf-data/sessions"
+    sessions_dir = "data/osf-data/sessions"
 
     if not os.path.exists(sessions_dir):
         st.error("❌ Sessions-Verzeichnis nicht gefunden")

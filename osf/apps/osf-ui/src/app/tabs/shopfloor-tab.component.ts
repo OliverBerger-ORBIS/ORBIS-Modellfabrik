@@ -1392,7 +1392,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const response = await this.http.get(`data/omf-data/${sequenceFile}`, { responseType: 'text' }).toPromise();
+      const response = await this.http.get(`data/osf-data/${sequenceFile}`, { responseType: 'text' }).toPromise();
       if (!response) {
         this.sequenceCommands = null;
         this.sentSequenceCommands = [];

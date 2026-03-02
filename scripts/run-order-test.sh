@@ -9,7 +9,7 @@
 set -e
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CCU_DIR="$PROJECT_ROOT/integrations/APS-CCU/central-control"
-TEST_SCRIPT="$PROJECT_ROOT/data/omf-data/test_topics/test_order_flow.sh"
+TEST_SCRIPT="$PROJECT_ROOT/data/osf-data/test_topics/test_order_flow.sh"
 HOST=localhost
 PORT=1883
 
@@ -57,7 +57,7 @@ fi
 # --- 4. Order-Test ausführen ---
 echo ""
 echo "=== Order-Test ausführen ==="
-TEST_PY="$PROJECT_ROOT/data/omf-data/test_topics/order_test.py"
+TEST_PY="$PROJECT_ROOT/data/osf-data/test_topics/order_test.py"
 PY_CMD=""
 [[ -f "$PROJECT_ROOT/.venv/bin/python" ]] && PY_CMD="$PROJECT_ROOT/.venv/bin/python"
 [[ -z "$PY_CMD" ]] && PY_CMD="python3"

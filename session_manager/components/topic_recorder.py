@@ -156,7 +156,7 @@ def show_topic_recorder():
             "analysis_start_time": None,
             "start_time": None,
             "mqtt_client": None,
-            "topics_directory": PROJECT_ROOT / "data/aps-data/topics",
+            "topics_directory": PROJECT_ROOT / "data/osf-data/topics",
             "recording_name": "",
             "current_recording_dir": None,
             "periodic_topics": set(),  # Erkannte periodische Topics

@@ -29,8 +29,8 @@ PROJECT_ROOT = get_project_root()
 
 # Session Manager spezifische Verzeichnisse
 DATA_DIR = PROJECT_ROOT / "data"
-OMF_DATA_DIR = DATA_DIR / "omf-data"
-SESSIONS_DIR = OMF_DATA_DIR / "sessions"
+OSF_DATA_DIR = DATA_DIR / "osf-data"
+SESSIONS_DIR = OSF_DATA_DIR / "sessions"
 LOGS_DIR = DATA_DIR / "logs"
 
 # Session Manager spezifische Pfade
@@ -40,7 +40,7 @@ SESSION_MANAGER_LOGS_DIR = LOGS_DIR / "session_manager"
 # Validierung
 def validate_paths():
     """Validiert, dass alle wichtigen Pfade existieren"""
-    required_dirs = [DATA_DIR, OMF_DATA_DIR, SESSIONS_DIR]
+    required_dirs = [DATA_DIR, OSF_DATA_DIR, SESSIONS_DIR]
     missing_dirs = [d for d in required_dirs if not d.exists()]
 
     if missing_dirs:

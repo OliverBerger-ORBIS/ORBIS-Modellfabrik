@@ -27,7 +27,7 @@ build/
 out/
 
 # Große Session-Dateien (werden nicht für Code-Analyse benötigt)
-data/omf-data/sessions/*.log
-data/omf-data/sessions/*.db
+data/osf-data/sessions/*.log
+data/osf-data/sessions/*.db
 
 

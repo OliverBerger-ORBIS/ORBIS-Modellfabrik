@@ -126,7 +126,7 @@ Der Service subscribet folgende Topics und mapped sie zu InfluxDB-Measurements:
 
 **Topic**: `ccu/order/completed`
 
-**Beispiel-Payload**: Siehe [`data/omf-data/test_topics/ccu_order_completed_storage_005.json`](../../data/omf-data/test_topics/ccu_order_completed_storage_005.json)
+**Beispiel-Payload**: Siehe [`data/osf-data/test_topics/ccu_order_completed_storage_005.json`](../../data/osf-data/test_topics/ccu_order_completed_storage_005.json)
 
 **InfluxDB-Mappings**:
 - **Measurement**: `order_durations`
@@ -203,7 +203,7 @@ Der Service subscribet folgende Topics und mapped sie zu InfluxDB-Measurements:
 
 **Topic**: `/j1/txt/1/f/i/stock`
 
-**Beispiel-Payload**: Siehe [`data/omf-data/test_topics/_j1_txt_1_f_i_stock__000089.json`](../../data/omf-data/test_topics/_j1_txt_1_f_i_stock__000089.json)
+**Beispiel-Payload**: Siehe [`data/osf-data/test_topics/_j1_txt_1_f_i_stock__000089.json`](../../data/osf-data/test_topics/_j1_txt_1_f_i_stock__000089.json)
 
 **InfluxDB-Mappings**:
 - **Measurement**: `stock_levels` (pro Location)

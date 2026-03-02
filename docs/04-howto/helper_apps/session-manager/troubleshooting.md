@@ -21,7 +21,7 @@ Error: Failed to save session
 ```
 
 **Lösung:**
-1. **Verzeichnis prüfen:** `data/omf-data/sessions/` existiert?
+1. **Verzeichnis prüfen:** `data/osf-data/sessions/` existiert?
 2. **Berechtigung:** Schreibrechte auf Verzeichnis?
 3. **Speicherplatz:** Ausreichend Platz verfügbar?
 4. **SQLite:** SQLite3 installiert?
@@ -121,7 +121,7 @@ netstat -an | grep 1883
 ### **Session-Daten prüfen**
 ```bash
 # SQLite-Datenbank öffnen
-sqlite3 data/omf-data/sessions/session_name.db
+sqlite3 data/osf-data/sessions/session_name.db
 
 # Tabellen anzeigen
 .tables
@@ -153,10 +153,10 @@ mosquitto -v
 ### **Session-Daten zurücksetzen**
 ```bash
 # Session-Verzeichnis leeren
-rm -rf data/omf-data/sessions/*
+rm -rf data/osf-data/sessions/*
 
 # Verzeichnis neu erstellen
-mkdir -p data/omf-data/sessions/
+mkdir -p data/osf-data/sessions/
 ```
 
 ## 📞 Support

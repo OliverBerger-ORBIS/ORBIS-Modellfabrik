@@ -3,7 +3,7 @@
  * Session Replay Script
  * 
  * Replays MQTT session logs to test application stability under realistic traffic.
- * Reads session logs from data/omf-data/sessions/*.log and emits messages via MockMqttAdapter.
+ * Reads session logs from data/osf-data/sessions/*.log and emits messages via MockMqttAdapter.
  * 
  * Usage:
  *   tsx scripts/replay-sessions.ts --session <path> [--speedFactor <number>] [--once]
@@ -14,8 +14,8 @@
  *   --once                   Play session once and exit (default: loop continuously)
  * 
  * Examples:
- *   tsx scripts/replay-sessions.ts --session data/omf-data/sessions/default_test_session.log
- *   tsx scripts/replay-sessions.ts --session data/omf-data/sessions/default_test_session.log --speedFactor 10
+ *   tsx scripts/replay-sessions.ts --session data/osf-data/sessions/default_test_session.log
+ *   tsx scripts/replay-sessions.ts --session data/osf-data/sessions/default_test_session.log --speedFactor 10
  */
 
 import * as fs from 'fs';
@@ -234,9 +234,9 @@ Options:
   --once                   Play session once and exit (default: loop continuously)
 
 Examples:
-  tsx scripts/replay-sessions.ts --session data/omf-data/sessions/default_test_session.log
-  tsx scripts/replay-sessions.ts --session data/omf-data/sessions/default_test_session.log --speedFactor 10
-  tsx scripts/replay-sessions.ts --session data/omf-data/sessions/default_test_session.log --once
+  tsx scripts/replay-sessions.ts --session data/osf-data/sessions/default_test_session.log
+  tsx scripts/replay-sessions.ts --session data/osf-data/sessions/default_test_session.log --speedFactor 10
+  tsx scripts/replay-sessions.ts --session data/osf-data/sessions/default_test_session.log --once
   `);
 }
 

@@ -1,6 +1,6 @@
 # 📋 Module Serial Mapping - Single Source of Truth
 
-**Quellen:** Empirische Analyse (Session Factsheets auftrag-*.db, Mosquitto Logs). Mit Fischertechnik-Doku abgeglichen (Will Message Topics, Connection-Format).  
+**Quellen:** Empirische Analyse (Session Factsheets *.log, Mosquitto Logs). Mit Fischertechnik-Doku abgeglichen (Will Message Topics, Connection-Format).  
 **Datum:** 2025-10-08
 
 ---
@@ -177,15 +177,7 @@ FTS TXT (MQTT) ↔ MQTT Broker ↔ CCU-Backend
 ## 📖 Quellen
 
 ### Session Factsheets:
-```sql
-sqlite3 data/omf-data/sessions/auftrag-blau_1.db "
-  SELECT topic, 
-         json_extract(payload, '$.serialNumber'), 
-         json_extract(payload, '$.typeSpecification.moduleClass') 
-  FROM mqtt_messages 
-  WHERE topic LIKE '%factsheet%'
-"
-```
+Session-Dateien in `data/osf-data/sessions/*.log` (JSON-Zeilen). Factshelf-Topics z.B. mit `grep factsheet session.log` oder Session Manager Analyse-Tab.
 
 ### Mosquitto Logs:
 ```

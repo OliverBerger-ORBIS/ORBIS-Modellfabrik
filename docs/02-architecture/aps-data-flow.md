@@ -124,7 +124,7 @@ classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
     end
     
     subgraph "Data Layer"
-        LOGS[Session Logs<br/>SQLite + JSON]:::external
+        LOGS[Session Logs<br/>JSON (.log)]:::external
         CACHE[Cloud Cache<br/>Service Worker]:::external
     end
     

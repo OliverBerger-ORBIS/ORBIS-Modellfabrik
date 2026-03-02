@@ -2,6 +2,9 @@
 
 Sprint-bezogene und projektweite Analysen für OSF.
 
+> **Archiv (2026-02):** Obsolete empirische Analysen → [analysis-obsolete-2026](../archive/analysis-obsolete-2026/)  
+> Grund: Fischertechnik-Doku und CCU-Source sind maßgeblich.
+
 ---
 
 ## Test Coverage & Build
@@ -15,16 +18,22 @@ Sprint-bezogene und projektweite Analysen für OSF.
 ## MQTT, Registry, Topics
 
 - [publish-buttons-analysis.md](publish-buttons-analysis.md) – OSF Buttons vs. OMF2, MQTT-Topics
-- [production-order-analysis-results.md](production-order-analysis-results.md) – Order-Workflow, Track & Trace Basis
 - [ccu-backend-mqtt-orchestration.md](ccu-backend-mqtt-orchestration.md) – CCU-Backend MQTT
-- [registry-missing-topics-proposals.md](registry-missing-topics-proposals.md) – Fehlende Topics
-- [registry-mosquitto-log-analysis.md](registry-mosquitto-log-analysis.md) – Log-Analyse
 - [REGISTRY_TOPIC_STRUCTURE.md](REGISTRY_TOPIC_STRUCTURE.md) – Topic-Struktur
 - [TOPIC_SCHEMA_CORRELATION.md](TOPIC_SCHEMA_CORRELATION.md) – Schema-Korrelation
 - [topic-naming-convention-analysis.md](topic-naming-convention-analysis.md) – Naming Conventions
 
 ---
 
+## Order / Track & Trace
+
+- [production-order-analysis-results.md](production-order-analysis-results.md) – Order-Workflow aus Session-Analyse, OSF Order Manager Anforderungen, CCU-Backend-Analyse (referenziert von 13-track-trace-architecture)
+
+---
+
 ## Weitere Analysen
 
 - [publish-buttons-tests-summary.md](publish-buttons-tests-summary.md) – Publish-Button Tests
+- [AS-IS-FISCHERTECHNIK-COMPARISON.md](AS-IS-FISCHERTECHNIK-COMPARISON.md) – Abgleich AS-IS vs. Fischertechnik
+- [INTEGRATIONS-VENDOR-ANALYSIS.md](INTEGRATIONS-VENDOR-ANALYSIS.md) – integrations vs. vendor
+- [DOKU-AUFRÄUMEN-2026-02.md](DOKU-AUFRÄUMEN-2026-02.md) – Doku-Cleanup Plan

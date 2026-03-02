@@ -171,7 +171,7 @@ Zum Testen der Message-Monitor-Erweiterung ohne laufenden Arduino oder MQTT-Brok
 
 1. MQTT-Broker starten (z. B. Mosquitto mit WebSocket-Port 9001).
 2. **Session Manager** starten → Tab „Replay Station“ → MQTT-Broker verbinden.
-3. „Preloads jetzt senden“ klicken. Die Dateien in `data/omf-data/test_topics/preloads/` werden an den Broker gesendet:
+3. „Preloads jetzt senden“ klicken. Die Dateien in `data/osf-data/test_topics/preloads/` werden an den Broker gesendet:
    - `osf_arduino_vibration_sw420-1_connection.json` – Online-Status
    - `osf_arduino_vibration_sw420-1_state.json` – Ruhezustand (GRUEN)
    - `osf_arduino_vibration_sw420-1_state_alarm.json` – Alarm (ROT)

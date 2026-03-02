@@ -33,7 +33,7 @@
 
 ### Pfad-Standards (KRITISCH)
 - **Source-Pfade (Paket-relativ):** `Path(__file__).parent` für Paket-interne Pfade ✅
-- **Data-Pfade (Projekt-root-relativ):** `project_root / "data/omf-data/sessions"` für Nutzdaten ✅ (Verzeichnisname bleibt)
+- **Data-Pfade (Projekt-root-relativ):** `project_root / "data/osf-data/sessions"` für Nutzdaten ✅ (Verzeichnisname bleibt)
 - **KEINE absoluten Pfade:** `/Users/oliver/Projects/ORBIS-Modellfabrik/path/to/file` ❌
 - **KEINE relativen Pfade:** `../path/to/file` ❌
 - **Unterscheidung:** Source-Pfade vs. Data-Pfade je nach Verwendungszweck
@@ -42,7 +42,7 @@
 - **Aktive Sourcen:** `osf/` (OSF Angular Dashboard - aktuell in Entwicklung)
 - **Helper-Apps:** `session_manager/` (Session-Replay Helper-App)
 - **Dokumentation:** `docs/` (Alle Projekt-Dokumente)
-- **Session-Daten:** `data/omf-data/sessions/` (SQLite + Log-Dateien)
+- **Session-Daten:** `data/osf-data/sessions/` (Log-Dateien, JSON-Zeilen-Format)
 - **Log-Dateien:** `data/logs/` (nicht mehr ins Projekt-Root)
 
 ### Code-Qualität (OSF - Produktiver Code)

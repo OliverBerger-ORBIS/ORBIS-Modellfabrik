@@ -36,7 +36,7 @@ Branch‑Konzept
 
 ### Fixtures & Replay
 
-- Rohdaten liegen unter `data/omf-data/sessions/production_order_*.log`.
+- Rohdaten liegen unter `data/osf-data/sessions/production_order_*.log`.
 - `scripts/build_order_fixtures.py` filtert die relevanten Topics (Orders/Module/FTS)
   und schreibt kompakte JSONL-Dateien nach `OSF/testing/fixtures/orders/<name>/orders.log`.
 - `libs/testing-fixtures` stellt `createOrderFixtureStream()` bereit – der Angular Mock-Dashboard

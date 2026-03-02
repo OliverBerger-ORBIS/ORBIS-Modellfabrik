@@ -8,7 +8,7 @@
 > → Siehe [FISCHERTECHNIK-OFFICIAL](../FISCHERTECHNIK-OFFICIAL.md) für Details.
 
 Diese Sektion ergänzt die offizielle Dokumentation mit **ORBIS-spezifischen, verifizierten Informationen**, basierend auf:
-- ✅ Session-Analysen (auftrag-*.db)
+- ✅ Session-Analysen (data/osf-data/sessions/*.log)
 - ✅ CCU-Backend Source-Code
 - ✅ NodeRed Flow-Analyse
 - ✅ MQTT-Log-Analysen

@@ -21,15 +21,15 @@ streamlit run session_manager/app.py --server.port 8502
 ## 📋 Features
 
 ### 🎙️ Session Recording
-- **SQLite + JSON-Logs:** Aufzeichnung aller MQTT-Messages
+- **Log (JSON-Zeilen):** Aufzeichnung aller MQTT-Messages als `.log` Dateien
 - **Pause/Resume:** Recording kann pausiert und fortgesetzt werden
 - **Auto-Stop:** Automatisches Stoppen nach konfigurierbarer Zeit
 
 ### 🔄 Session Replay
-- **Vollständiger Replay:** Wiederholung aufgezeichneter Sessions
+- **Vollständiger Replay:** Wiederholung aufgezeichneter Sessions (`.log` Dateien, JSON-Zeilen-Format)
 - **Test-Topic Management:** 
   - Einzelne JSON-Testdaten laden und senden
-  - Automatischer Preload aus `data/omf-data/test_topics/preloads/`
+  - Automatischer Preload aus `data/osf-data/test_topics/preloads/`
 - **Speed Control:** Replay-Geschwindigkeit anpassbar
 
 ### 📊 Session Analysis
@@ -84,7 +84,8 @@ session_manager/
 └── tests/                         # Python-Tests (pytest)
     ├── test_session_manager_logging.py
     ├── test_session_logger.py
-    └── test_logging_cleanup.py
+    ├── test_logging_cleanup.py
+    └── test_session_log_format.py   # Session .log (JSON-Zeilen) Roundtrip
 ```
 
 ---
@@ -98,9 +99,9 @@ Konfiguration über **Settings-Tab** in der App:
 - Client-ID (Default: `session_manager`)
 
 ### Session-Verzeichnis
-- **Sessions:** `data/omf-data/sessions/`
-- **Test-Topics:** `data/omf-data/test_topics/`
-- **Preloads:** `data/omf-data/test_topics/preloads/`
+- **Sessions:** `data/osf-data/sessions/`
+- **Test-Topics:** `data/osf-data/test_topics/`
+- **Preloads:** `data/osf-data/test_topics/preloads/`
 
 ### Logging
 - **Log-Verzeichnis:** `logs/`
@@ -130,7 +131,7 @@ ORBIS-Modellfabrik/
 ├── session_manager/    ← Dieses Tool (eigenständig)
 ├── omf2/               ← Hauptmodul (unabhängig)
 ├── data/               ← Shared data directory
-│   └── omf-data/
+│   └── osf-data/
 │       ├── sessions/
 │       └── test_topics/
 └── logs/               ← Shared logs directory
@@ -161,7 +162,7 @@ ORBIS-Modellfabrik/
 
 ### 4. Session analysieren
 1. Öffne **"📊 Session Analysis"** Tab
-2. Wähle Session-Datei (`.db` oder `.log`)
+2. Wähle Session-Datei (`.log`)
 3. Nutze Filter und Suche
 4. Visualisiere Timeline und Order-Flows
 
@@ -186,7 +187,7 @@ pip install -r requirements.txt
 ### Streamlit startet nicht
 ```bash
 # Port ändern
-streamlit run session_manager/session_manager.py --server.port 8502
+streamlit run session_manager/app.py --server.port 8502
 
 # Cache löschen
 streamlit cache clear
@@ -205,9 +206,9 @@ Diese Features sind aktuell **auskommentiert** und können bei Bedarf reaktivier
 
 ### Registry Watch Mode
 ```python
-# In session_manager.py
+# In app.py
 # registry_manager implementieren
-# Dann: streamlit run session_manager/session_manager.py --registry-watch
+# Dann: streamlit run session_manager/app.py --registry-watch
 ```
 
 ### Topic Categorization
@@ -237,7 +238,7 @@ logger.info("Message")
 ```python
 from .utils.path_constants import PROJECT_ROOT
 
-session_dir = PROJECT_ROOT / "data/omf-data/sessions"
+session_dir = PROJECT_ROOT / "data/osf-data/sessions"
 ```
 
 ---

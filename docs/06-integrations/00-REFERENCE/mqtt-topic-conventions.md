@@ -1,6 +1,6 @@
 # 🏷️ Topic-Naming-Convention - Analyse der Future Factory
 
-**Quellen:** Empirische Analyse (Session auftrag-*.db, NodeRed Flows). QoS- und Retained-Strategie mit Fischertechnik-Doku abgeglichen.  
+**Quellen:** Empirische Analyse (Session *.log, NodeRed Flows). QoS- und Retained-Strategie mit Fischertechnik-Doku abgeglichen.  
 **Datum:** 2025-10-08
 
 ## 🔑 Trennung: Fischertechnik (v1/ff) vs. ORBIS-Erweiterungen

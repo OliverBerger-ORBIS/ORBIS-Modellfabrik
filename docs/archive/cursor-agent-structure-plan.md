@@ -42,7 +42,7 @@ Dieses Dokument dient als Leitfaden für die Dokumentationsstruktur der ORBIS-Mo
 /logs/                   # Nicht versionierte Log-Dateien (lokal)
 /data/                   # MQTT-Sessions für Replay-Tests ohne reale APS
 ├── aps-data/           # APS-Sessions
-├── omf-data/           # OMF-Sessions
+├── osf-data/           # OSF-Sessions (früher omf-data)
 └── mqtt-data/          # MQTT-Sessions
 
 /registry/               # MQTT-Kontrakte, Templates, Topic-Spezifikationen

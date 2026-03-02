@@ -469,7 +469,7 @@ def load_session_data(session_file: str) -> list:
     import json
     import os
 
-    sessions_dir = "data/omf-data/sessions"
+    sessions_dir = "data/osf-data/sessions"
     log_path = os.path.join(sessions_dir, session_file)
 
     if not os.path.exists(log_path):
@@ -498,7 +498,7 @@ def analyze_auftrag_rot_with_root(session_file: str, root_message: dict, time_ra
     import os
 
     analyzer = AuftragRotAnalyzer()
-    os.path.join("data/omf-data/sessions", session_file)
+    os.path.join("data/osf-data/sessions", session_file)
 
     # Verwandte Messages finden
     session_data = load_session_data(session_file)
@@ -589,7 +589,7 @@ def show_auftrag_rot_analysis():
 
     # Schritt 1: Session-Auswahl
     st.markdown("### 1️⃣ Session auswählen")
-    sessions_dir = "data/omf-data/sessions"
+    sessions_dir = "data/osf-data/sessions"
     import os
 
     if os.path.exists(sessions_dir):

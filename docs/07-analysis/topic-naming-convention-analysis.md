@@ -1,6 +1,6 @@
 # 🏷️ Topic-Naming-Convention - Analyse der Future Factory
 
-**Quelle:** Session-Analyse auftrag-*.db + NodeRed Flows  
+**Quelle:** Session-Analyse *.log + NodeRed Flows  
 **Datum:** 2025-10-08
 
 ## 🎯 Module-Kategorien

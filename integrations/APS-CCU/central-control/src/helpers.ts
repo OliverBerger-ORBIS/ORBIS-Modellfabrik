@@ -3,7 +3,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import * as packageJson from '../package.json';
 
 const generateRegexForTopicSub = (subscribedTopic: string): RegExp => {
-  // MQTT + matches any chars except /; use [^/]+ (not \w+) to allow hyphens e.g. HBW-DEMO
+  // MQTT + matches any chars except /; use [^/]+ (not \w+) to allow hyphens e.g. HBW-DEMO, DRILL-MISSING
   return new RegExp(`^${subscribedTopic}\$`.replaceAll('/+', '/[^/]+').replace('/#', '/.+$').replaceAll('/', '\\/'));
 };
 export const matchTopics = (subscribedTopics: string | string[], topic: string): boolean => {

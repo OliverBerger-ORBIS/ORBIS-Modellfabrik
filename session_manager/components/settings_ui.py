@@ -342,14 +342,6 @@ class SettingsUI:
         col1, col2 = st.columns(2)
 
         with col1:
-            file_format = st.selectbox(
-                "Datei-Format",
-                options=["sqlite", "log"],
-                index=0 if recording_settings.get("file_format", "sqlite") == "sqlite" else 1,
-                help="Format für gespeicherte Session-Dateien",
-                key="recorder_file_format",
-            )
-
             auto_save = st.checkbox(
                 "Automatisches Speichern",
                 value=recording_settings.get("auto_save", True),
@@ -382,7 +374,6 @@ class SettingsUI:
                 "session_recorder",
                 "recording",
                 {
-                    "file_format": file_format,
                     "auto_save": auto_save,
                     "save_interval": save_interval,
                     "max_file_size": max_file_size,

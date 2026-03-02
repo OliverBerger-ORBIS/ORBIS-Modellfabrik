@@ -42,7 +42,7 @@ class SettingsManager:
         """Gibt die Standard-Einstellungen zurück"""
         return {
             "session_analysis": {
-                "session_directory": "data/omf-data/sessions",
+                "session_directory": "data/osf-data/sessions",
                 "prefilter_topics": [
                     "/j1/txt/1/i/cam",  # Kamera-Daten
                     "/j1/txt/1/i/bme",  # BME680-Sensor-Daten
@@ -55,22 +55,21 @@ class SettingsManager:
                 "max_topics_display": 50,
             },
             "replay_station": {
-                "session_directory": "data/omf-data/sessions",
+                "session_directory": "data/osf-data/sessions",
                 "mqtt_broker": {"host": "localhost", "port": 1883, "qos": 1, "timeout": 5},
                 "replay": {"default_speed": 1.0, "auto_play": False, "loop_playback": False},
             },
             "session_recorder": {
-                "session_directory": "data/omf-data/sessions",
+                "session_directory": "data/osf-data/sessions",
                 "mqtt_broker": {"host": "localhost", "port": 1883, "qos": 1, "timeout": 5},
                 "recording": {
                     "auto_save": True,
                     "save_interval": 300,  # 5 Minuten
                     "max_file_size": 100,  # MB
-                    "file_format": "sqlite",  # sqlite oder log
                 },
             },
             "topic_recorder": {
-                "topics_directory": "data/aps-data/topics",
+                "topics_directory": "data/osf-data/topics",
                 "mqtt_broker": {"host": "localhost", "port": 1883, "qos": 1, "timeout": 5},
                 "periodic_topics": [
                     "ccu/pairing/state",
@@ -161,9 +160,9 @@ class SettingsManager:
     def get_session_directory(self, section: str = "replay_station") -> str:
         """Gibt das Session-Verzeichnis zurück"""
         if section == "session_analysis":
-            directory = self.settings.get("session_analysis", {}).get("session_directory", "data/omf-data/sessions")
+            directory = self.settings.get("session_analysis", {}).get("session_directory", "data/osf-data/sessions")
         else:
-            directory = self.settings.get("replay_station", {}).get("session_directory", "data/omf-data/sessions")
+            directory = self.settings.get("replay_station", {}).get("session_directory", "data/osf-data/sessions")
         logger.debug(f"🔍 Settings: get_session_directory({section}) = {directory}")
         return directory
 
@@ -181,7 +180,7 @@ class SettingsManager:
 
     def get_session_recorder_directory(self) -> str:
         """Gibt das Session-Verzeichnis für Recorder zurück"""
-        return self.settings.get("session_recorder", {}).get("session_directory", "data/omf-data/sessions")
+        return self.settings.get("session_recorder", {}).get("session_directory", "data/osf-data/sessions")
 
     def get_session_recorder_mqtt_settings(self) -> Dict[str, Any]:
         """Gibt die MQTT Broker Einstellungen für Recorder zurück"""
@@ -222,7 +221,7 @@ class SettingsManager:
 
     def get_topic_recorder_directory(self) -> str:
         """Gibt das Topics-Verzeichnis für Topic Recorder zurück"""
-        return self.settings.get("topic_recorder", {}).get("topics_directory", "data/aps-data/topics")
+        return self.settings.get("topic_recorder", {}).get("topics_directory", "data/osf-data/topics")
 
     def update_topic_recorder_mqtt_settings(
         self, host: str, port: int, qos: int, timeout: int, username: str = "", password: str = ""

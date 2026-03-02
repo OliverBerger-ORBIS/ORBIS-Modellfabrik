@@ -1,6 +1,6 @@
 /**
  * Type definitions for MQTT payload structures
- * Based on actual payloads from data/omf-data/test_topics/
+ * Based on actual payloads from data/osf-data/test_topics/
  */
 
 // Order completion payload types

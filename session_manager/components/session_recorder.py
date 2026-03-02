@@ -4,7 +4,6 @@ Einfache 1:1 Aufnahme von MQTT-Nachrichten
 """
 
 import json
-import sqlite3
 import threading
 from datetime import datetime
 from pathlib import Path
@@ -66,7 +65,6 @@ def show_session_recorder():
     settings_manager = SettingsManager()
     mqtt_settings = settings_manager.get_session_recorder_mqtt_settings()
     session_directory = settings_manager.get_session_recorder_directory()
-    recording_settings = settings_manager.get_setting("session_recorder", "recording", {})
 
     # Tab-spezifische Session State initialisieren (vollständig unabhängig)
     if "session_recorder" not in st.session_state:
@@ -100,7 +98,7 @@ def show_session_recorder():
     with col2:
         st.subheader("📁 Konfiguration")
         st.info(f"**Session-Verzeichnis:** `{session_directory}`")
-        st.info(f"**Format:** {recording_settings.get('file_format', 'sqlite')}")
+        st.info("**Format:** log (JSON-Zeilen)")
         st.markdown("**Einstellungen** können hier konfiguriert werden")
         st.info("💡 Recording-Einstellungen werden automatisch geladen")
 
@@ -386,71 +384,24 @@ def save_session():
         # Dateiname generieren
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         session_name = st.session_state.session_recorder["session_name"]
-        # file_format = recording_settings.get("file_format", "sqlite")  # Unused for now
 
-        # Beide Formate speichern (SQLite + Log)
+        # Log-Format speichern (JSON-Zeilen)
         messages = message_buffer.get_messages()
         message_count = len(messages)
         logger.info(f"📊 {message_count} Messages werden gespeichert...")
 
-        # SQLite speichern
-        sqlite_filename = f"{session_name}_{timestamp}.db"
-        sqlite_filepath = session_dir / sqlite_filename
-        logger.info(f"💾 SQLite-Datei wird erstellt: {sqlite_filename}")
-        save_sqlite_session(sqlite_filepath, messages)
-        logger.info(f"✅ SQLite Session gespeichert: {sqlite_filepath}")
-
-        # Log speichern
         log_filename = f"{session_name}_{timestamp}.log"
         log_filepath = session_dir / log_filename
         logger.info(f"📝 Log-Datei wird erstellt: {log_filename}")
         save_log_session(log_filepath, messages)
         logger.info(f"✅ Log Session gespeichert: {log_filepath}")
 
-        st.success(f"💾 Session gespeichert: {sqlite_filename} + {log_filename}")
-        logger.info(f"🎉 Session erfolgreich gespeichert: {message_count} Messages in 2 Formaten")
+        st.success(f"💾 Session gespeichert: {log_filename}")
+        logger.info(f"🎉 Session erfolgreich gespeichert: {message_count} Messages")
 
     except Exception as e:
         logger.error(f"❌ Session Speichern Fehler: {e}")
         st.error(f"❌ Fehler beim Speichern: {e}")
-
-
-def save_sqlite_session(filepath: Path, messages: List[Dict[str, Any]]):
-    """Speichert Session als SQLite-Datei"""
-    try:
-        logger.debug(f"🗄️ SQLite-Datenbank wird erstellt: {filepath}")
-
-        conn = sqlite3.connect(filepath)
-        cursor = conn.cursor()
-
-        # Tabelle erstellen
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS mqtt_messages (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                topic TEXT NOT NULL,
-                payload TEXT NOT NULL,
-                timestamp TEXT NOT NULL
-            )
-        """
-        )
-        logger.debug("📋 SQLite-Tabelle 'mqtt_messages' erstellt/verifiziert")
-
-        # Nachrichten einfügen
-        for msg in messages:
-            cursor.execute(
-                "INSERT INTO mqtt_messages (topic, payload, timestamp) VALUES (?, ?, ?)",
-                (msg["topic"], msg["payload"], msg["timestamp"]),
-            )
-
-        conn.commit()
-        conn.close()
-
-        logger.debug(f"✅ SQLite Session gespeichert: {len(messages)} Messages in {filepath}")
-
-    except Exception as e:
-        logger.error(f"❌ SQLite Speichern Fehler: {e}")
-        raise
 
 
 def save_log_session(filepath: Path, messages: List[Dict[str, Any]]):

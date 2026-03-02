@@ -7,7 +7,6 @@ Isolierte Version ohne OMF-Dependencies
 import json
 import logging
 import re
-import sqlite3
 import threading
 import time
 from dataclasses import dataclass
@@ -279,8 +278,8 @@ def show_replay_station():
 
     if not session_files:
         st.warning("❌ Keine Session-Dateien gefunden")
-        st.info(f"💡 Legen Sie SQLite-Dateien (.db) in `{session_directory}/` ab")
-        st.info("ℹ️ **Hinweis:** Nur .db Dateien werden für Replay unterstützt")
+        st.info(f"💡 Legen Sie Log-Dateien (.log) in `{session_directory}/` ab")
+        st.info("ℹ️ **Hinweis:** Nur .log Dateien (JSON-Zeilen-Format) werden für Replay unterstützt")
     else:
         # Regex-Filter
         col1, col2 = st.columns([2, 1])
@@ -316,7 +315,7 @@ def show_replay_station():
                         "Wähle Test-Topics zum Senden:",
                         options=test_topic_files,
                         format_func=lambda x: x.name,
-                        help="Wähle eine oder mehrere JSON-Dateien aus data/omf-data/test_topics/",
+                        help="Wähle eine oder mehrere JSON-Dateien aus data/osf-data/test_topics/",
                     )
 
                     col1, col2 = st.columns([2, 1])
@@ -332,7 +331,7 @@ def show_replay_station():
                             )
                             send_selected_test_topics(selected_test_topics, replay_ctrl)
                 else:
-                    st.warning("❌ Keine Test-Topic-Dateien in data/omf-data/test_topics/ gefunden")
+                    st.warning("❌ Keine Test-Topic-Dateien in data/osf-data/test_topics/ gefunden")
 
                 st.markdown("---")
 
@@ -344,7 +343,7 @@ def show_replay_station():
                     send_preloads = st.checkbox(
                         "🚀 Test-Topics vor Session-Replay senden",
                         value=True,
-                        help="Sendet automatisch alle Test-Topics aus data/omf-data/test_topics/preloads/ vor dem Session-Replay",
+                        help="Sendet automatisch alle Test-Topics aus data/osf-data/test_topics/preloads/ vor dem Session-Replay",
                     )
 
                 with col2:
@@ -362,7 +361,7 @@ def show_replay_station():
                         if len(preload_files) > 10:
                             st.text(f"... und {len(preload_files) - 10} weitere")
                 else:
-                    st.info("ℹ️ Keine Preload-Test-Topics in data/omf-data/test_topics/preloads/ gefunden")
+                    st.info("ℹ️ Keine Preload-Test-Topics in data/osf-data/test_topics/preloads/ gefunden")
 
                 # Session laden
                 if st.button("📂 Session laden"):
@@ -569,7 +568,7 @@ def send_preload_test_topics(replay_ctrl: ReplayController):
     """Preload Test-Topic-Messages aus JSON-Dateien laden und an Broker senden (alle aus preloads/)"""
     try:
         # Preload-Verzeichnis
-        preload_dir = PROJECT_ROOT / "data/omf-data/test_topics/preloads"
+        preload_dir = PROJECT_ROOT / "data/osf-data/test_topics/preloads"
 
         if not preload_dir.exists():
             st.warning(f"❌ Preload-Verzeichnis nicht gefunden: {preload_dir}")
@@ -579,7 +578,7 @@ def send_preload_test_topics(replay_ctrl: ReplayController):
         preload_files = list(preload_dir.glob("*.json"))
 
         if not preload_files:
-            st.warning("❌ Keine Preload-JSON-Dateien in data/omf-data/test_topics/preloads/ gefunden")
+            st.warning("❌ Keine Preload-JSON-Dateien in data/osf-data/test_topics/preloads/ gefunden")
             return False
 
         logger.info(f"🚀 Lade {len(preload_files)} Preload-Test-Topic(s)...")
@@ -649,7 +648,7 @@ def send_preload_test_topics(replay_ctrl: ReplayController):
 
 
 # Session Replay Funktionen
-def get_test_topic_files(test_topic_directory: str = "data/omf-data/test_topics"):
+def get_test_topic_files(test_topic_directory: str = "data/osf-data/test_topics"):
     """Test-Topic-Dateien aus konfiguriertem Verzeichnis laden - nur .json Dateien"""
     logger.debug(f"🔍 get_test_topic_files: Suche in {test_topic_directory}")
 
@@ -680,7 +679,7 @@ def get_test_topic_files(test_topic_directory: str = "data/omf-data/test_topics"
     return sorted(test_topic_files, key=lambda x: x.name)
 
 
-def get_preload_test_topic_files(preload_directory: str = "data/omf-data/test_topics/preloads"):
+def get_preload_test_topic_files(preload_directory: str = "data/osf-data/test_topics/preloads"):
     """Preload-Test-Topic-Dateien aus konfiguriertem Verzeichnis laden - nur .json Dateien"""
     logger.debug(f"🔍 get_preload_test_topic_files: Suche in {preload_directory}")
 
@@ -711,14 +710,13 @@ def get_preload_test_topic_files(preload_directory: str = "data/omf-data/test_to
     return sorted(preload_files, key=lambda x: x.name)
 
 
-def get_session_files(session_directory: str = "data/omf-data/sessions"):
-    """Session-Dateien aus konfiguriertem Verzeichnis laden - nur .db Dateien"""
+def get_session_files(session_directory: str = "data/osf-data/sessions"):
+    """Session-Dateien aus konfiguriertem Verzeichnis laden - nur .log Dateien (JSON-Zeilen-Format)"""
     logger.debug(f"🔍 get_session_files: Suche in {session_directory}")
 
     # Moderne Paket-Struktur - State of the Art
     if not Path(session_directory).is_absolute():
         # Projekt-Root-relative Pfade für Nutz-Daten verwenden
-        # Von omf/helper_apps/session_manager/components/ -> Projekt-Root
         project_root = PROJECT_ROOT
         session_dir = project_root / session_directory
     else:
@@ -731,10 +729,10 @@ def get_session_files(session_directory: str = "data/omf-data/sessions"):
         logger.warning(f"❌ Verzeichnis existiert nicht: {session_dir.absolute()}")
         return []
 
-    # Nur SQLite-Dateien finden (Replay Station kann nur .db Dateien verarbeiten)
-    session_files = list(session_dir.glob("*.db"))
+    # Nur Log-Dateien finden (Replay Station nutzt JSON-Zeilen-Format)
+    session_files = list(session_dir.glob("*.log"))
 
-    logger.debug(f"📊 Gefundene .db Dateien: {len(session_files)}")
+    logger.debug(f"📊 Gefundene .log Dateien: {len(session_files)}")
 
     logger.debug(f"📁 Gesamt Session-Dateien: {len(session_files)}")
     for f in session_files:
@@ -756,12 +754,9 @@ def filter_sessions(session_files, regex_filter):
 
 
 def load_session(session_file, replay_ctrl: ReplayController):
-    """Session laden und in Session State speichern"""
+    """Session laden und in Session State speichern (nur .log mit JSON-Zeilen-Format)"""
     try:
-        if session_file.suffix == ".db":
-            messages = load_sqlite_session(session_file)
-        else:
-            messages = load_log_session(session_file)
+        messages = load_log_session(session_file)
 
         if messages:
             # Sequenz vorbereiten: (ts_rel, topic, payload_bytes, qos, retain)
@@ -816,42 +811,27 @@ def load_session(session_file, replay_ctrl: ReplayController):
         st.error(f"❌ Fehler beim Laden: {e}")
 
 
-def load_sqlite_session(session_file):
-    """SQLite Session laden"""
-    try:
-        conn = sqlite3.connect(session_file)
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT topic, payload, timestamp FROM mqtt_messages ORDER BY timestamp")
-        rows = cursor.fetchall()
-
-        messages = []
-        for row in rows:
-            topic, payload, timestamp = row
-            if topic and payload:
-                messages.append({"topic": topic, "payload": payload, "timestamp": timestamp})
-
-        conn.close()
-        return messages
-    except Exception:
-        return []
-
-
 def load_log_session(session_file):
-    """Log Session laden"""
+    """Log Session laden (JSON-Zeilen-Format: eine JSON-Nachricht pro Zeile)"""
     try:
         messages = []
-        with open(session_file) as f:
+        with open(session_file, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
-                if line and "|" in line:
-                    parts = line.split("|", 2)
-                    if len(parts) == 3:
-                        timestamp, topic, payload = parts
-                        if topic.strip() and payload.strip():
-                            messages.append(
-                                {"topic": topic.strip(), "payload": payload.strip(), "timestamp": timestamp.strip()}
-                            )
+                if not line:
+                    continue
+                try:
+                    data = json.loads(line)
+                    if "topic" in data and "payload" in data and "timestamp" in data:
+                        messages.append(
+                            {
+                                "topic": data["topic"],
+                                "payload": data["payload"],
+                                "timestamp": data["timestamp"],
+                            }
+                        )
+                except json.JSONDecodeError:
+                    continue
         return messages
     except Exception:
         return []

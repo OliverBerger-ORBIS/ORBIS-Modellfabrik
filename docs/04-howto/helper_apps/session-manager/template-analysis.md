@@ -82,7 +82,7 @@ graph TD
 ## 🎮 Bedienung
 
 ### 1. **Session-Auswahl**
-- **Verzeichnis:** `data/omf-data/sessions/`
+- **Verzeichnis:** `data/osf-data/sessions/`
 - **Filter:** Regex-basierte Session-Suche
 - **Formate:** SQLite (.db) Dateien
 - **Auswahl:** Dropdown mit gefilterten Sessions

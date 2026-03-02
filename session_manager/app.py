@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Session Manager - Streamlit Dashboard
-Verwaltung und Analyse von MQTT-Sessions für die ORBIS Modellfabrik
+Verwaltung und Analyse von MQTT-Sessions für die ORBIS Smart-Factory
 """
 
 import sys
@@ -179,7 +179,7 @@ def main():
 
     # Header
     st.title("🎙️ Session Manager")
-    st.markdown("Verwaltung und Analyse von MQTT-Sessions für die ORBIS Modellfabrik")
+    st.markdown("Verwaltung und Analyse von MQTT-Sessions für die ORBIS Smart-Factory")
 
     # Settings Manager initialisieren
     if "settings_manager" not in st.session_state:
@@ -191,17 +191,18 @@ def main():
     # Sidebar Navigation
     st.sidebar.title("Navigation")
 
-    # Tab selection - Topic Recorder als Default
+    # Tab selection - Replay Station als Default
     tab = st.sidebar.selectbox(
         "Wähle einen Tab:",
         [
-            "📂 Topic Recorder",
             "📡 Replay Station",
+            "📂 Topic Recorder",
             "🎙️ Session Recorder",
             "📊 Session Analyse",
             "⚙️ Einstellungen",
             "📝 Logging",
         ],
+        index=0,
     )
 
     # Tab content
@@ -222,8 +223,8 @@ def main():
 
     # Footer
     st.sidebar.markdown("---")
-    st.sidebar.markdown("**Session Manager v1.1.0**")
-    st.sidebar.markdown("ORBIS Modellfabrik")
+    st.sidebar.markdown("**Session Manager v1.2.0**")
+    st.sidebar.markdown("ORBIS Smart-Factory")
 
 
 def parse_args():

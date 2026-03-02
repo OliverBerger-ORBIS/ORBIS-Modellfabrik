@@ -27,7 +27,7 @@ graph LR
 ## 🎮 Bedienung
 
 ### 1. **Session-Auswahl**
-- **Verzeichnis:** `data/omf-data/sessions/`
+- **Verzeichnis:** `data/osf-data/sessions/`
 - **Filter:** Regex-basierte Session-Suche
 - **Formate:** SQLite (.db) Dateien
 - **Auswahl:** Dropdown mit gefilterten Sessions
@@ -37,7 +37,7 @@ graph LR
 Die Replay Station bietet zwei Modi für das Senden von Test-Topics:
 
 #### **🎯 Individuelle Test-Topics**
-- **Verzeichnis:** `data/omf-data/test_topics/*.json`
+- **Verzeichnis:** `data/osf-data/test_topics/*.json`
 - **Auswahl:** Multiselect für einzelne oder mehrere Test-Topics
 - **Verwendung:** Integrationstests einzelner Topics
 - **Button:** "📤 Ausgewählte jetzt senden"
@@ -48,7 +48,7 @@ Die Replay Station bietet zwei Modi für das Senden von Test-Topics:
 - Debugging von Message-Handling
 
 #### **🚀 Automatischer Preload**
-- **Verzeichnis:** `data/omf-data/test_topics/preloads/*.json`
+- **Verzeichnis:** `data/osf-data/test_topics/preloads/*.json`
 - **Modus:** Alle Test-Topics werden automatisch gesendet
 - **Verwendung:** Setup-Messages (z.B. Factsheets) vor Session-Replay
 - **Optionen:**
@@ -70,7 +70,7 @@ Die Replay Station bietet zwei Modi für das Senden von Test-Topics:
 }
 ```
 
-> 📖 Siehe [Test-Topics README](../../../../data/omf-data/test_topics/README.md) für Details
+> 📖 Siehe [Test-Topics README](../../../../data/osf-data/test_topics/README.md) für Details
 
 ### 3. **Replay-Kontrollen**
 - **▶️ Play:** Session starten/fortsetzen

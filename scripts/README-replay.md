@@ -21,7 +21,7 @@ npx tsx scripts/replay-sessions.ts --session <path-to-log-file>
 
 | Option | Description | Default | Example |
 |--------|-------------|---------|---------|
-| `--session <path>` | Path to session log file (required) | - | `data/omf-data/sessions/default_test_session.log` |
+| `--session <path>` | Path to session log file (required) | - | `data/osf-data/sessions/default_test_session.log` |
 | `--speedFactor <number>` | Speed multiplier for replay | 1.0 | `10` (10x faster) |
 | `--once` | Play session once and exit | Loop continuously | - |
 | `--help` | Display help message | - | - |
@@ -31,34 +31,34 @@ npx tsx scripts/replay-sessions.ts --session <path-to-log-file>
 #### 1. Replay at normal speed (real-time)
 ```bash
 npx tsx scripts/replay-sessions.ts \
-  --session data/omf-data/sessions/default_test_session.log
+  --session data/osf-data/sessions/default_test_session.log
 ```
 
 #### 2. Replay 10x faster for quick smoke testing
 ```bash
 npx tsx scripts/replay-sessions.ts \
-  --session data/omf-data/sessions/production_order_blue_20251110_180619.log \
+  --session data/osf-data/sessions/production_order_blue_20251110_180619.log \
   --speedFactor 10
 ```
 
 #### 3. Replay once and exit
 ```bash
 npx tsx scripts/replay-sessions.ts \
-  --session data/omf-data/sessions/storage_order_white_20251110_181619.log \
+  --session data/osf-data/sessions/storage_order_white_20251110_181619.log \
   --once
 ```
 
 #### 4. Continuous stress testing (loop mode)
 ```bash
 npx tsx scripts/replay-sessions.ts \
-  --session data/omf-data/sessions/Start_20251110_175151.log \
+  --session data/osf-data/sessions/Start_20251110_175151.log \
   --speedFactor 5
 ```
 Press `Ctrl+C` to stop the loop.
 
 ## Session Log Format
 
-Session logs are stored in `data/omf-data/sessions/*.log` and use JSON Lines format (one JSON object per line):
+Session logs are stored in `data/osf-data/sessions/*.log` and use JSON Lines format (one JSON object per line):
 
 ```json
 {
@@ -96,7 +96,7 @@ Run a recorded session continuously to detect memory leaks or stability issues:
 
 ```bash
 npx tsx scripts/replay-sessions.ts \
-  --session data/omf-data/sessions/production_order_white_20251110_184459.log \
+  --session data/osf-data/sessions/production_order_white_20251110_184459.log \
   --speedFactor 2
 ```
 
@@ -108,7 +108,7 @@ Replay at high speed to test message processing performance:
 
 ```bash
 npx tsx scripts/replay-sessions.ts \
-  --session data/omf-data/sessions/default_test_session.log \
+  --session data/osf-data/sessions/default_test_session.log \
   --speedFactor 100 \
   --once
 ```
@@ -119,7 +119,7 @@ Replay a session that previously caused issues to verify fixes:
 
 ```bash
 npx tsx scripts/replay-sessions.ts \
-  --session data/omf-data/sessions/auftrag-weiss_1.log \
+  --session data/osf-data/sessions/auftrag-weiss_1.log \
   --once
 ```
 
@@ -133,7 +133,7 @@ npm run serve:local
 
 # Terminal 2: Replay session
 npx tsx scripts/replay-sessions.ts \
-  --session data/omf-data/sessions/default_test_session.log \
+  --session data/osf-data/sessions/default_test_session.log \
   --speedFactor 5 \
   --once
 ```

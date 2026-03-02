@@ -132,11 +132,11 @@ integrations/APS-CCU/
 **Ergebnis:** Vollständiger Test der requestId-Logik ohne Pi, ohne Docker-Build.
 
 **Lagerbestand für Order-Test:** Die CCU prüft vor jeder Production-Order, ob Workpieces (BLUE, RED, WHITE) im HBW verfügbar sind. Ohne echte HBW-Hardware:
-1. **Layout** mit HBW-DEMO setzen: `data/omf-data/test_topics/layout_hbw_demo.json`
-2. **Preloads** senden (aus `data/omf-data/test_topics/preloads/`): `module_v1_ff_HBW-DEMO_connection.json`, `_factsheet.json`, `_state.json` – das **State-Topic** enthält den Lagerbestand im Feld `loads` (loadId, loadType, loadPosition, loadTimestamp)
+1. **Layout** mit HBW SVR3QA0022 setzen: `data/osf-data/test_topics/layout_hbw_demo.json`
+2. **Preloads** senden (aus `data/osf-data/test_topics/preloads/`): `module_v1_ff_SVR3QA0022_connection.json`, `_factsheet.json`, `_state.json` – das **State-Topic** enthält den Lagerbestand im Feld `loads` (loadId, loadType, loadPosition, loadTimestamp)
 3. Danach Orders – CCU bestätigt mit `ccu/order/response`
 
-**Testskript:** `./data/omf-data/test_topics/test_order_flow.sh` führt den kompletten Ablauf aus.
+**Testskript:** `./data/osf-data/test_topics/test_order_flow.sh` führt den kompletten Ablauf aus.
 
 **Modul-Registrierung:** Jedes Modul muss mit seiner **Serial-ID** das Factsheet-Topic senden: `module/v1/ff/<Serial>/factsheet`. Das Factsheet enthält u.a. `typeSpecification.moduleClass` (HBW, DRILL, …) und `loadSpecification` (Kapazität: loadPositions, loadSets mit maxAmount).
 
@@ -161,7 +161,7 @@ integrations/APS-CCU/
 
 1. **Wie Variante A** – Mosquitto + CCU lokal
 2. **Session Manager** starten, **Replay Station** öffnen
-3. **Session laden** (aus `data/omf-data/sessions/`), optional **Preloads** für Factsheets
+3. **Session laden** (aus `data/osf-data/sessions/`), optional **Preloads** für Factsheets
 4. **Replay abspielen** → MQTT-Traffic auf `localhost:1883`
 5. **OSF-UI** (Replay-Umgebung) zeigt Fabrik-Zustand; **CCU** reagiert auf `ccu/order/request` aus Replay oder manuell getriggert
 6. **Order testen:** Aus OSF-UI Order senden → CCU antwortet mit requestId

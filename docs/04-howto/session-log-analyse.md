@@ -17,7 +17,7 @@ streamlit run app.py
 ```
 
 **Tab „Session Analysis“:**
-- Session aus `data/omf-data/sessions/` auswählen (`.db`)
+- Session aus `data/osf-data/sessions/` auswählen (`.log`)
 - Timeline-Visualisierung (Plotly)
 - Topic-Statistiken
 - Payload-Anzeige
@@ -30,13 +30,13 @@ Für DPS, AIQS, FTS, HBW, DRILL, MILL:
 
 ```bash
 # Beispiel DPS
-python scripts/analyze_dps_sessions.py data/omf-data/sessions/auftrag-blau_1.log
+python scripts/analyze_dps_sessions.py data/osf-data/sessions/auftrag-blau_1.log
 
 # Beispiel AIQS
-python scripts/analyze_aiqs_sessions.py data/omf-data/sessions/auftrag-rot_1.log
+python scripts/analyze_aiqs_sessions.py data/osf-data/sessions/auftrag-rot_1.log
 
 # Mit Ausgabeverzeichnis
-python scripts/analyze_dps_sessions.py data/omf-data/sessions/auftrag-blau_1.log --output-dir data/omf-data/dps-analysis
+python scripts/analyze_dps_sessions.py data/osf-data/sessions/auftrag-blau_1.log --output-dir data/osf-data/dps-analysis
 ```
 
 **Ausgabe:** Topic-Verteilung, Commands, Kontext-Messages.
@@ -44,7 +44,7 @@ python scripts/analyze_dps_sessions.py data/omf-data/sessions/auftrag-blau_1.log
 ### 1.3 SQLite-Direktabfragen
 
 ```bash
-sqlite3 data/omf-data/sessions/auftrag-blau_1.db
+sqlite3 data/osf-data/sessions/auftrag-blau_1.db
 ```
 
 ```sql
@@ -71,7 +71,7 @@ WHERE topic LIKE '%/factsheet';
 ### 1.4 Session Replay (OSF-Tests)
 
 ```bash
-npx tsx scripts/replay-sessions.ts --session data/omf-data/sessions/auftrag-blau_1.log
+npx tsx scripts/replay-sessions.ts --session data/osf-data/sessions/auftrag-blau_1.log
 ```
 
 **Dokumentation:** [scripts/README-replay.md](../../scripts/README-replay.md)
@@ -133,7 +133,7 @@ Falls `mqtt_bridge_logger` oder `comprehensive_mqtt_logger` (siehe [mqtt-traffic
 ### 3.5 Option D: Topic Recorder nutzen
 
 Der **Topic Recorder** speichert pro Topic-Datei `qos` und `retain`.  
-Daten liegen in `data/omf-data/test_topics/` – dort können retained-Topics gezählt bzw. ausgewertet werden.
+Daten liegen in `data/osf-data/test_topics/` – dort können retained-Topics gezählt bzw. ausgewertet werden.
 
 ---
 
@@ -142,7 +142,7 @@ Daten liegen in `data/omf-data/test_topics/` – dort können retained-Topics ge
 ### Topic-Struktur prüfen
 
 ```bash
-sqlite3 data/omf-data/sessions/auftrag-blau_1.db \
+sqlite3 data/osf-data/sessions/auftrag-blau_1.db \
   "SELECT DISTINCT topic FROM mqtt_messages ORDER BY topic;"
 ```
 
@@ -158,7 +158,7 @@ GROUP BY topic;
 ### State-Updates pro Modul
 
 ```bash
-python scripts/analyze_dps_sessions.py data/omf-data/sessions/<session>.log
+python scripts/analyze_dps_sessions.py data/osf-data/sessions/<session>.log
 # Zeigt Topic-Verteilung inkl. module/v1/ff/.../state
 ```
 

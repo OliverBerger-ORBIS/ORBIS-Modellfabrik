@@ -48,7 +48,7 @@ graph LR
 
 ### 3. **Session-Management**
 - **Session-Name:** Automatisch generiert mit Timestamp
-- **Speicherort:** `data/omf-data/sessions/`
+- **Speicherort:** `data/osf-data/sessions/`
 - **Formate:** SQLite (.db) + Log (.log) Dateien
 
 ## 📊 Datenfluss
