@@ -6,6 +6,17 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.8.3] - 2026-02-18
+
+**I18n-Übersetzungsqualität und Duplikat-Behebung**
+
+### Changed
+- **Übersetzungen DE:** „Nein Auftrag“ → „Kein Auftrag“, „Befehl History“ → „Befehlsverlauf“, Anglizismen bereinigt; Platzhalter für moduleTab*CommandHistory, overviewCurrentStock, trackTraceWorkpiecesTitle ergänzt; AI-Lifecycle-Texte ins Deutsche übersetzt
+- **Übersetzungen FR:** „Commande History“ → „Historique des commandes“, messageMonitorSubheading übersetzt; AI-Lifecycle-Texte ins Französische (IA-konsistent); trackTraceWorkpiecesTitle mit Zähler-Placeholder
+- **Übersetzung EN:** navSensor „Environment Data“ → „Environmental Data“
+- **I18n-Duplikate behoben:** Eindeutige IDs für ftsStatusLabel/Driving, dpsLabelNfcCode/NfcCodeWorkpieceId, dpsLabelHistory/HistoryWithCount, aiqsLabelHistory/HistoryWithCount, dspActionFixtureLabel/TabButtonLabel
+- **Ungenutzte I18n-Keys entfernt:** uc00.note.connector, uc02.note.connector (nach connectorNote-Entfernung aus UC-Diagrammen)
+
 ## [0.8.2] - 2026-02-26
 
 **Vibrationssensor SW-420 in osf-ui integriert (Sprint 16).**

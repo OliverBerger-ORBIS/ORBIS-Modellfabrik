@@ -188,14 +188,6 @@ export interface Uc00Structure {
     width: number;
     height: number;
   };
-  
-  connectorNote: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    key: string;
-  };
 
   footer: {
     x: number;
@@ -412,8 +404,7 @@ export function createUc00Structure(): Uc00Structure {
       };
       })(),
     },
-    connectorNote: { x: 40, y: UC00_VIEWBOX.height - 110, width: 360, height: 80, key: 'uc00.note.connector' },
-    footer: { x: 960, y: UC00_VIEWBOX.height - 30, key: 'uc00.footer' },
+    footer: { x: 960, y: UC00_VIEWBOX.height - 24, key: 'uc00.footer' },
   };
   
   calculateLaneLayout(structure.columns.sources);

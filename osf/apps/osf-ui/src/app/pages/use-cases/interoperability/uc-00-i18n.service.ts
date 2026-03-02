@@ -27,7 +27,7 @@ export class Uc00I18nService {
       const messages = messagesResponse.translations || messagesResponse as unknown as Record<string, string>;
       const uc00Texts: Record<string, string> = {};
       Object.keys(messages).forEach((key) => {
-        if (key.startsWith('@@uc00')) {
+        if (key.startsWith('uc00.') || key.startsWith('@@uc00')) {
           uc00Texts[key.replace(/^@@/, '')] = messages[key];
         }
       });

@@ -572,7 +572,7 @@
             </div>
 
             <div class="detail-row" *ngIf="getDpsNfcCode(dpsState) as nfcCode">
-              <span class="detail-label" i18n="@@dpsLabelNfcCode">NFC Code (WorkpieceId)</span>
+              <span class="detail-label" i18n="@@dpsLabelNfcCodeWorkpieceId">NFC Code (WorkpieceId)</span>
               <span class="detail-value mono">{{ nfcCode }}</span>
             </div>
 
@@ -584,7 +584,7 @@
 
           <!-- Command History -->
           <details class="module-specific-section__history" *ngIf="dpsState?.actionState || getDpsRecentActions(dpsState).length > 0">
-            <summary class="module-specific-section__history-toggle" i18n="@@dpsLabelHistory">Command History ({{ getDpsRecentActions(dpsState).length || (dpsState?.actionState ? 1 : 0) }})</summary>
+            <summary class="module-specific-section__history-toggle" i18n="@@dpsLabelHistoryWithCount">Command History ({{ getDpsRecentActions(dpsState).length || (dpsState?.actionState ? 1 : 0) }})</summary>
             <div class="module-specific-section__history-table-wrapper">
               <table class="module-specific-section__history-table">
                 <thead>
@@ -752,7 +752,7 @@
 
           <!-- Check History -->
           <details class="module-specific-section__history" *ngIf="aiqsState?.actionState || getAiqsRecentActions(aiqsState).length > 0">
-            <summary class="module-specific-section__history-toggle" i18n="@@aiqsLabelHistory">Check History ({{ getAiqsRecentActions(aiqsState).length || (aiqsState?.actionState ? 1 : 0) }})</summary>
+            <summary class="module-specific-section__history-toggle" i18n="@@aiqsLabelHistoryWithCount">Check History ({{ getAiqsRecentActions(aiqsState).length || (aiqsState?.actionState ? 1 : 0) }})</summary>
             <div class="module-specific-section__history-table-wrapper">
               <table class="module-specific-section__history-table">
                 <thead>

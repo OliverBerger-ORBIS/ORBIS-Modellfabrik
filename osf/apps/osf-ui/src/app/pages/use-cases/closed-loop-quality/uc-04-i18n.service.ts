@@ -33,7 +33,7 @@ export class Uc04I18nService {
 
       const texts: Record<string, string> = { ...this.getEnglishTranslations() };
       Object.keys(messages).forEach((key) => {
-        if (key.startsWith('@@uc04')) {
+        if (key.startsWith('uc04.') || key.startsWith('@@uc04')) {
           const k = key.replace(/^@@/, '');
           texts[k] = messages[key];
         }

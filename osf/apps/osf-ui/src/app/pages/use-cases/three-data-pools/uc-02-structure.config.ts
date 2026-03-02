@@ -48,7 +48,6 @@ export interface Uc02Structure {
   containerDsp: { x: number; y: number; width: number; height: number };
   dspSteps: Uc02DspStep[];
   note: { x: number; y: number; width: number; height: number; textKey: string };
-  connectorNote: { x: number; y: number; width: number; height: number; textKey: string };
   targets: Uc02Target[];
 }
 
@@ -97,7 +96,6 @@ export function createUc02Structure(): Uc02Structure {
     ],
 
     note: { x: centerX + 320, y: 150, width: 160, height: 90, textKey: 'uc02.note.context' },
-    connectorNote: { x: 80, y: 820, width: 220, height: 90, textKey: 'uc02.note.connector' },
 
     targets: [
       { id: 'tgt_analytics', x: 1480, y: 200, width: 300, height: 140, textKey: 'uc02.tgt.analytics' },

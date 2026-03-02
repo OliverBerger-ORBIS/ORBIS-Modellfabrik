@@ -40,8 +40,7 @@ export class Uc01I18nService {
       // Extract UC-01 keys (keys starting with @@uc01)
       const uc01Texts: Record<string, string> = {};
       Object.keys(messages).forEach((key) => {
-        if (key.startsWith('@@uc01')) {
-          // Remove @@ prefix for internal use
+        if (key.startsWith('uc01.') || key.startsWith('@@uc01')) {
           const internalKey = key.replace(/^@@/, '');
           uc01Texts[internalKey] = messages[key];
         }

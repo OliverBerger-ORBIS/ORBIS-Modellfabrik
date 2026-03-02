@@ -43,7 +43,6 @@ export class Uc00SvgGeneratorService {
     svg += '</g>';
     svg += this.generateDspColumn(structure.columns.dsp, getText);
     svg += this.generateTargetsColumn(structure.columns.targets, getText);
-    svg += this.generateConnectorNote(structure.connectorNote, getText);
     svg += `
     <g id="uc00_footer"><text x="${structure.footer.x}" y="${structure.footer.y}" text-anchor="middle" font-family="Segoe UI" font-size="14" fill="${ORBIS_COLORS.neutralDarkGrey}">${this.escapeXml(getText(structure.footer.key))}</text></g>
     `;
@@ -53,39 +52,6 @@ export class Uc00SvgGeneratorService {
     return svg;
   }
   
-  private generateConnectorNote(note: { x: number; y: number; width: number; height: number; key: string }, getText: (key: string) => string): string {
-    const text = getText(note.key);
-    const words = text.split(/\s+/);
-    const lines: string[] = [];
-    let currentLine = words[0];
-
-    for (let i = 1; i < words.length; i++) {
-      if ((currentLine + ' ' + words[i]).length < 45) {
-        currentLine += ' ' + words[i];
-      } else {
-        lines.push(currentLine);
-        currentLine = words[i];
-      }
-    }
-    lines.push(currentLine);
-
-    const lh = 18;
-    const contentH = lines.length * lh;
-    const startY = note.y + (note.height - contentH) / 2 + 14; 
-    const cx = note.x + note.width / 2;
-    const laneTraceStroke = ORBIS_COLORS.diagram.laneTraceStroke;
-
-    let out = `<g id="uc00_note_connector">`;
-    out += `<rect x="${note.x}" y="${note.y}" width="${note.width}" height="${note.height}" rx="4" ry="4" fill="#FEF9E7" stroke="${laneTraceStroke}" stroke-width="1" stroke-dasharray="4 2"/>`;
-    
-    lines.forEach((l, i) => {
-      out += `<text x="${cx}" y="${startY + i * lh}" text-anchor="middle" font-size="14" fill="${ORBIS_COLORS.neutralDarkGrey}" font-family="Segoe UI">${this.escapeXml(l)}</text>`;
-    });
-    
-    out += '</g>';
-    return out;
-  }
-
   private generateDefs(): string {
     const orbisBlueStrong = ORBIS_COLORS.orbisBlue.strong;
     return `

@@ -98,7 +98,7 @@ export class AppComponent implements OnDestroy {
       'shopfloor': $localize`:@@navShopfloor:Shopfloor`,
       'order': $localize`:@@navOrder:Orders`,
       'process': $localize`:@@navProcess:Processes`,
-      'sensor': $localize`:@@navSensor:Environment Data`,
+      'sensor': $localize`:@@navSensor:Environmental Data`,
       'module': $localize`:@@navModule:Modules`,
       'configuration': $localize`:@@navConfiguration:Configuration`,
       'message-monitor': $localize`:@@navMessageMonitor:Message Monitor`,
