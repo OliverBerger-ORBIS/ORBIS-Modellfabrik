@@ -1,0 +1,10 @@
+{
+  "topic": "osf/arduino/vibration/sw420-1/state",
+  "payload": {
+    "ampel": "GRUEN",
+    "impulseCount": 0,
+    "ts": ""
+  },
+  "qos": 1,
+  "retain": true
+}

@@ -6,6 +6,23 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-02-26
+
+**Vibrationssensor SW-420 in osf-ui integriert (Sprint 16).**
+
+### Added
+- **OSF-Topics:** ConnectionService abonniert `osf/#` für Arduino-Erweiterungen
+- **Message Monitor:** Filter „OSF Topics“ für Topics mit Präfix `osf/`
+- **Sensor-Tab:** Vibrations-Kachel mit Ampel-Anzeige (Grün/Rot), Impulse-Zähler und Status-Label
+- **Mock-Modus:** Buttons „Ruhe senden“ und „Alarm senden“ zum Simulieren von Vibrations-Alarm
+- **Fixtures:** sensor-startup und osf-vibration-test Preset mit Vibrations-Nachrichten (connection, state)
+- **Replay-Preloads:** JSON-Dateien für `osf/arduino/vibration/sw420-1/connection` und `state` (GRUEN/ROT)
+- **package.json:** Script `serve:osf-ui` für `nx run osf-ui:serve`
+
+### Changed
+- **Arduino Sketch:** USE_MQTT=1, nicht blockierender MQTT-Reconnect (5s Intervall), High-Level-Relais (Pin 5→Grün, Pin 6→Rot+Sirene)
+- **arduino-vibrationssensor.md:** Gekürzt, Verdrahtungs-Tabellen verdichtet, OSF-Topics-Test (Mock/Replay) dokumentiert, Status Mock/Replay positiv getestet
+
 ## [0.8.1] - 2026-02-25
 
 **ERP/MES Integration (Sprint 16):** Order-requestId-Erweiterung und Vorbereitung für dsp/correlation (Request/Info).

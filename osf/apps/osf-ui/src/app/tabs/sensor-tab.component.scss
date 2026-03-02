@@ -312,6 +312,30 @@
       }
     }
   }
+
+  .vibration-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+
+    button {
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      cursor: pointer;
+      border: 1px solid currentColor;
+
+      &.btn-secondary {
+        background: rgba(15, 52, 95, 0.08);
+        color: var(--orbis-nightblue);
+      }
+
+      &.btn-danger {
+        background: rgba(239, 68, 68, 0.12);
+        color: #b91c1c;
+      }
+    }
+  }
 }
 
 .camera-section {

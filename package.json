@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "nx": "nx",
+    "serve:osf-ui": "nx run osf-ui:serve",
     "graph": "nx graph",
     "test": "nx run-many -t test",
     "test:osf-ui": "nx test osf-ui",

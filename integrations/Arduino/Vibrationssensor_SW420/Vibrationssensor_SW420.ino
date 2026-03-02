@@ -5,17 +5,23 @@
  *
  * LAN/MQTT: 0 = nur Serial (ohne Ethernet Shield). 1 = MQTT aktiv (Shield + LAN verbunden).
  */
-#define USE_MQTT 0
+#define USE_MQTT 1
 
-// Pin Definitionen
+// Pin Definitionen – bei diesem Board: Pin 5→Relais 1 (Grün), Pin 6→Relais 2 (Rot+Sirene). Reihenfolge kann je nach Shield/Relais abweichen!
 const int SENSOR_PIN = 2;   // SW-420 Digital Out
-const int RELAY_GRUEN = 5;   // Relais für grüne Lampe
-const int RELAY_ROT = 6;    // Relais für rote Lampe + Sirene
+const int RELAY_GRUEN = 5;  // Pin 5 → Relais 1 → Grün (Ruhezustand)
+const int RELAY_ROT = 6;    // Pin 6 → Relais 2 → Rot+Sirene (Alarm)
 
 // Einstellungen
 int alarmDauer = 2000;       // Wie lange der Alarm nach Erschütterung aktiv bleibt (ms)
 unsigned long impulseCount = 0;
 
+// Sensor-Polarität: 1 = HIGH = Vibration erkannt (typisch), 0 = LOW = Vibration erkannt (manche SW-420 Varianten)
+// Wenn Stimmgabel/Alarm nicht auslöst: Zwischen 0 und 1 wechseln und erneut flashen.
+#define SENSOR_ACTIVE_HIGH 1
+#define VIBRATION_DETECTED (SENSOR_ACTIVE_HIGH ? HIGH : LOW)
+
+// Relais: Pin 5 = High-Level (HIGH=AN), Pin 6 = High-Level (HIGH=AN)
 #if USE_MQTT
 #include <Ethernet2.h>
 #include <PubSubClient.h>
@@ -36,15 +42,12 @@ EthernetClient ethClient;
 PubSubClient mqttClient(ethClient);
 
 void mqttReconnect() {
-  while (!mqttClient.connected()) {
-    if (mqttClient.connect(MQTT_CLIENT_ID, TOPIC_CONNECTION, 1, true, "{\"online\":false}")) {
-      char payload[64];
-      snprintf(payload, sizeof(payload), "{\"online\":true,\"ip\":\"%d.%d.%d.%d\"}",
-               ip[0], ip[1], ip[2], ip[3]);
-      mqttClient.publish(TOPIC_CONNECTION, payload, true);
-    } else {
-      delay(3000);
-    }
+  // Ein Versuch pro Aufruf, KEIN while – sonst blockiert die Sensor-Auswertung!
+  if (mqttClient.connect(MQTT_CLIENT_ID, TOPIC_CONNECTION, 1, true, "{\"online\":false}")) {
+    char payload[64];
+    snprintf(payload, sizeof(payload), "{\"online\":true,\"ip\":\"%d.%d.%d.%d\"}",
+             ip[0], ip[1], ip[2], ip[3]);
+    mqttClient.publish(TOPIC_CONNECTION, payload, true);
   }
 }
 
@@ -63,8 +66,8 @@ void setup() {
   pinMode(SENSOR_PIN, INPUT);
   pinMode(RELAY_GRUEN, OUTPUT);
   pinMode(RELAY_ROT, OUTPUT);
-  digitalWrite(RELAY_GRUEN, LOW);
-  digitalWrite(RELAY_ROT, HIGH);
+  digitalWrite(RELAY_GRUEN, HIGH);  // Grün AN
+  digitalWrite(RELAY_ROT, LOW);    // Rot AUS
 
 #if USE_MQTT
   Ethernet.begin(mac, ip, gateway, subnet);
@@ -77,28 +80,39 @@ void setup() {
   Serial.println("System bereit. Warte auf Vibration...");
 }
 
+#if USE_MQTT
+unsigned long lastReconnectAttempt = 0;
+const unsigned long RECONNECT_INTERVAL = 5000;
+#endif
+
 void loop() {
 #if USE_MQTT
-  if (!mqttClient.connected()) mqttReconnect();
+  if (!mqttClient.connected()) {
+    unsigned long now = millis();
+    if (lastReconnectAttempt == 0 || now - lastReconnectAttempt >= RECONNECT_INTERVAL) {
+      lastReconnectAttempt = now;
+      mqttReconnect();
+    }
+  }
   mqttClient.loop();
 #endif
 
   int vibration = digitalRead(SENSOR_PIN);
 
-  if (vibration == HIGH) {
+  if (vibration == VIBRATION_DETECTED) {
     impulseCount++;
     Serial.println("!!! VIBRATION ERKANNT !!!");
 
-    digitalWrite(RELAY_GRUEN, HIGH);
-    digitalWrite(RELAY_ROT, LOW);
+    digitalWrite(RELAY_GRUEN, LOW);   // Grün AUS
+    digitalWrite(RELAY_ROT, HIGH);   // Rot/Sirene AN
 #if USE_MQTT
     publishState("ROT");
 #endif
 
     delay(alarmDauer);
 
-    digitalWrite(RELAY_GRUEN, LOW);
-    digitalWrite(RELAY_ROT, HIGH);
+    digitalWrite(RELAY_GRUEN, HIGH);  // Grün AN
+    digitalWrite(RELAY_ROT, LOW);    // Rot/Sirene AUS
 #if USE_MQTT
     publishState("GRUEN");
 #endif

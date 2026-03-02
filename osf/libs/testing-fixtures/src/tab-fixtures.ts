@@ -112,6 +112,30 @@ export interface TabFixtureConfig {
 }
 
 /**
+ * OSF Arduino vibration sensor (SW-420) fixture – für Message-Monitor OSF-Topics-Filter-Test
+ */
+function createOsfVibrationFixture(): Observable<RawMqttMessage> {
+  const ts = new Date().toISOString();
+  return from([
+    {
+      topic: 'osf/arduino/vibration/sw420-1/connection',
+      payload: { online: true, ip: '192.168.0.95' },
+      timestamp: ts,
+    },
+    {
+      topic: 'osf/arduino/vibration/sw420-1/state',
+      payload: { ampel: 'GRUEN', impulseCount: 0, ts: '' },
+      timestamp: ts,
+    },
+    {
+      topic: 'osf/arduino/vibration/sw420-1/state',
+      payload: { ampel: 'ROT', impulseCount: 42, ts: '' },
+      timestamp: new Date(Date.now() + 1000).toISOString(),
+    },
+  ]);
+}
+
+/**
  * Preset fixture configurations for common tab scenarios
  */
 export const TAB_FIXTURE_PRESETS: Record<string, TabFixtureConfig> = {
@@ -211,6 +235,18 @@ export const TAB_FIXTURE_PRESETS: Record<string, TabFixtureConfig> = {
     flows: 'startup',
     config: 'startup',
     sensors: 'startup',
+    customFixtures: [createOsfVibrationFixture],
+  },
+
+  // OSF extensions (Arduino, vibration sensor) – für Message-Monitor OSF-Topics-Test
+  'osf-vibration-test': {
+    orders: 'startup',
+    modules: 'startup',
+    stock: 'startup',
+    flows: 'startup',
+    config: 'startup',
+    sensors: 'startup',
+    customFixtures: [createOsfVibrationFixture],
   },
   
   // Configuration tab presets

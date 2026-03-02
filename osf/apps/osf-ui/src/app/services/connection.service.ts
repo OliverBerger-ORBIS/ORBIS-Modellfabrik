@@ -181,6 +181,7 @@ export class ConnectionService {
       'module/v1/#',           // All module topics (states, factsheets, etc.)
       'fts/v1/#',              // All FTS topics (fts/v1/ff/<serial>/...)
       'dsp/#',                 // DSP topics (dsp/drill/action, dsp/correlation/info, etc.)
+      'osf/#',                 // OSF extensions (Arduino, sensors, e.g. osf/arduino/vibration/*)
       '/j1/txt/1/i/bme680',    // Sensor: BME680
       '/j1/txt/1/i/ldr',       // Sensor: LDR
       '/j1/txt/1/i/cam',       // Sensor: Camera

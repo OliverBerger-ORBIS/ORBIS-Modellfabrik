@@ -173,5 +173,25 @@ describe('SensorTabComponent', () => {
     component.ngOnDestroy();
     expect(unsubscribeSpy).toHaveBeenCalled();
   });
+
+  describe('vibration sensor', () => {
+    it('should return green level for GRUEN', () => {
+      expect(component.vibrationLevel({ ampel: 'GRUEN', impulseCount: 0 })).toBe('green');
+    });
+    it('should return red level for ROT', () => {
+      expect(component.vibrationLevel({ ampel: 'ROT', impulseCount: 42 })).toBe('red');
+    });
+    it('should return yellow level for GELB (reserved for MPU-6050)', () => {
+      expect(component.vibrationLevel({ ampel: 'GELB', impulseCount: 1 })).toBe('yellow');
+    });
+    it('should return unknown for null or missing ampel', () => {
+      expect(component.vibrationLevel(null)).toBe('unknown');
+      expect(component.vibrationLevel({ ampel: '' as any, impulseCount: 0 })).toBe('unknown');
+    });
+    it('should have vibrationStatus for GRUEN and ROT', () => {
+      expect(component.vibrationStatus({ ampel: 'GRUEN', impulseCount: 0 })).toBeDefined();
+      expect(component.vibrationStatus({ ampel: 'ROT', impulseCount: 1 })).toBeDefined();
+    });
+  });
 });
 

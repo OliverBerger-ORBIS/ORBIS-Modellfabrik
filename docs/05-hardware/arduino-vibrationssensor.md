@@ -1,76 +1,18 @@
-# Projektplan: Vibrationsüberwachung APS-Modellfabrik
+# Vibrationsüberwachung APS-Modellfabrik
 
-Dieses Dokument beschreibt den Aufbau eines Überwachungssystems mit Arduino, Ethernet Shield 2 und einer 12V-Signalampel zur Detektion von Vibrationen (z. B. mittels Stimmgabel).
+Arduino, Ethernet Shield 2, SW-420 und 12V-Signalampel zur Detektion von Vibrationen.
 
-## Voraussetzung: Arduino IDE
-
-Zum Programmieren des Arduinos wird die **Arduino IDE** benötigt. Die Einrichtung (Installation, Board, Port) ist in einem eigenen How-To beschrieben:
-
-- **[Arduino IDE Setup](../04-howto/setup/arduino-ide-setup.md)** – Installation und Konfiguration der Entwicklungsumgebung
-
-Sobald die IDE installiert ist, führe den **Systemtest (Blink-Test)** durch – erst dann beginnt die Projektverkabelung.
+**Voraussetzung:** [Arduino IDE Setup](../04-howto/setup/arduino-ide-setup.md) – zuerst Blink-Test durchführen.
 
 ---
 
-## Systemtest (Hardware-Software-Check)
+## 1. Hardware & Verdrahtung
 
-Bevor die eigentliche Projektverkabelung beginnt, muss sichergestellt werden, dass der Computer den Mikrocontroller korrekt anspricht. Dies geschieht über den sogenannten **Blink-Test**.
+**Komponenten:** Arduino Uno, Ethernet Shield 2, SW-420 (ohne Potentiometer), 4-Kanal-Relais, 12V-Ampel, Jumperkabel.
 
-### 1. Verbindung herstellen
+### Verdrahtungsdiagramm
 
-Verbinde den Arduino Uno über das USB-Typ-B-Kabel mit dem Computer.
-
-Die grüne „ON“-LED auf dem Board muss leuchten.
-
-### 2. Port- und Board-Konfiguration
-
-Öffne die Arduino IDE (z. B. 2.3.x).
-
-- Wähle im oberen Dropdown-Menü das Board **Arduino Uno** aus.
-- Stelle sicher, dass der zugehörige Port (z. B. `COM3` unter Windows oder `/dev/cu.usbmodem...` unter macOS) mit einem Häkchen markiert ist.
-
-### 3. Laden des Beispiel-Sketches
-
-Navigiere zu: **Datei → Beispiele → 01.Basics → Blink**.
-
-Es öffnet sich ein neues Fenster mit dem fertigen Test-Code.
-
-### 4. Kompilieren und Hochladen
-
-1. Klicke auf das **Häkchen-Symbol** (Verify), um den Code zu kompilieren. In der Statuszeile muss „Done compiling“ erscheinen.
-2. Klicke auf den **Pfeil nach rechts** (Upload). Der Code wird auf den Arduino geschrieben. Währenddessen blinken die TX/RX-LEDs auf dem Board.
-
-### 5. Erfolgskontrolle
-
-Der Test ist erfolgreich abgeschlossen, wenn:
-
-- die Statuszeile der IDE „Done uploading“ anzeigt;
-- die auf dem Arduino fest verbaute **orangerote LED** (markiert mit „L“) im Rhythmus von einer Sekunde blinkt.
-
-Damit ist nachgewiesen, dass die Entwicklungsumgebung einsatzbereit ist.
-
----
-
-## 1. Vorbereitung & Hardware-Check
-
-Bevor du startest, stelle sicher, dass folgende Komponenten bereitliegen:
-
-* [ ] Arduino Uno & Ethernet Shield 2
-* [ ] SW-420 Vibrationssensor
-* [ ] 4-Kanal Relais Modul (5V)
-* [ ] 12V Signalampel & 12V Netzteil
-* [ ] Jumperkabel (M/M, M/F) & USB-Kabel
-* [ ] DC-Adapter für das Netzteil
-
----
-
-## 2. Schritt-für-Schritt Aufbau
-
-Hier ist deine Master-Anleitung für den kompletten Aufbau. Dieses Dokument führt dich von der ersten Steckverbindung bis zur 12V-Hochspannung der Ampel.
-
-### Verdrahtungsdiagramm (Übersicht)
-
-Das folgende Diagramm zeigt die Komponenten und Kabelverbindungen. L-förmige Kanten, Kabel-Farben (Rot, Schwarz, Grün, Lila) entsprechen der realen Verdrahtung. Quelldatei: [arduino-vibrationssensor-verdrahtung.mermaid](arduino-vibrationssensor-verdrahtung.mermaid)
+Quelldatei: [arduino-vibrationssensor-verdrahtung.mermaid](arduino-vibrationssensor-verdrahtung.mermaid)
 
 ```mermaid
 %%{init: {'flowchart': {'curve': 'stepBefore'}}}%%
@@ -96,14 +38,14 @@ flowchart TB
         end
     end
 
-    subgraph SW420["SW-420 – 3 Pins an einer Seite"]
+    subgraph SW420["SW-420 – 3 Pins"]
         direction LR
         S_VCC["VCC"]
         S_GND["GND"]
         S_DO["DO"]
     end
 
-    subgraph RELAIS_IN["4-Kanal Relais – Steckerleiste 5V"]
+    subgraph RELAIS_IN["4-Kanal Relais – Steuerung"]
         direction TB
         R_VCC["VCC"]
         R_GND["GND"]
@@ -119,13 +61,13 @@ flowchart TB
         R_NO2["NO2"]
     end
 
-    subgraph DC["12V DC-Netzteil + Adapter"]
+    subgraph DC["12V DC-Netzteil"]
         direction TB
         DC_PLUS["(+)"]
         DC_MINUS["(−)"]
     end
 
-    subgraph AMPEL["12V Signalampel – 1 Spalte, 4 Reihen"]
+    subgraph AMPEL["12V Signalampel"]
         direction TB
         AMP_SIRENE["Sirene"]
         AMP_ROT["Rot"]
@@ -168,186 +110,115 @@ flowchart TB
     linkStyle 15 stroke:#1f2937,stroke-width:3px
 ```
 
-### Aufbauanleitung: APS-Vibrationswächter
+### Sensor (SW-420)
 
-#### Vorbereitung
+| Anschluss   | Verbindung                   |
+|-------------|------------------------------|
+| VCC         | Breadboard (+)               |
+| GND         | Breadboard (−)               |
+| DO (Signal) | Pin 2 am Arduino             |
 
-Lege dir alle Teile bereit. Wir trennen strikt zwischen der 5V-Logik (Arduino/Sensor) und der 12V-Last (Ampel).
+### Relais (erprobtes Setup)
 
-#### Schritt 1: Das „Gehirn“ vorbereiten
+Beide Relais High-Level (HIGH = AN): Pin 5 → Grün, Pin 6 → Rot+Sirene.
 
-1. Setze das Arduino Ethernet Shield 2 vorsichtig auf den Arduino Uno.
-2. Drücke es fest, bis die Pins komplett in den Buchsen des Uno verschwinden.
-3. Verbinde den Arduino noch nicht mit dem PC.
+| Anschluss      | Verbindung                                   |
+|----------------|-----------------------------------------------|
+| VCC            | Breadboard (+)                               |
+| GND            | Breadboard (−)                               |
+| Relais 1 (Grün)| Pin **5** → Grün an NO (Ruhezustand)         |
+| Relais 2 (Rot) | Pin **6** → Rot+Lila an NO (Alarm)           |
 
-#### Schritt 2: Die 5V-Stromverteilung (Breadboard)
+### Ampel (12V)
 
-Da wir mehrere Module mit Strom versorgen müssen, nutzen wir das Breadboard als Verteiler:
+| Kabel  | Anschluss                               |
+|--------|-----------------------------------------|
+| Grau   | Common → DC-Adapter (−)                  |
+| Grün   | Relais 1, NO                            |
+| Rot+Lila | Relais 2, NO (gemeinsam)              |
 
-- **GND verbinden:** Nimm ein schwarzes M/M-Jumperkabel. Stecke ein Ende in einen GND-Pin des Arduinos und das andere Ende in die blaue Leiste (−) am Rand des Breadboards.
-- **5V verbinden:** Nimm ein rotes M/M-Jumperkabel. Stecke es in den 5V-Pin des Arduinos und das andere Ende in die rote Leiste (+) des Breadboards.
-
-#### Schritt 3: Sensor & Relais anschließen (Logik)
-
-**A. Vibrationssensor (SW-420)**
-
-Verwende M/W-Jumperkabel:
-
-| Anschluss   | Verbindung                      |
-|-------------|----------------------------------|
-| VCC (Sensor)| Rote Leiste (+) am Breadboard    |
-| GND (Sensor)| Blaue Leiste (−) am Breadboard   |
-| DO (Signal) | Digitaler Pin 2 am Arduino       |
-
-**B. Relais-Modul (Eingangsseite)**
-
-Verwende M/W-Jumperkabel:
-
-| Anschluss      | Verbindung                                  |
-|----------------|----------------------------------------------|
-| VCC (Relais)   | Rote Leiste (+) am Breadboard                |
-| GND (Relais)   | Blaue Leiste (−) am Breadboard               |
-| IN1 (Steuerung)| Digitaler Pin 5 am Arduino (für Grün)        |
-| IN2 (Steuerung)| Digitaler Pin 6 am Arduino (für Rot/Sirene)   |
-
-#### Schritt 4: Die 12V-Leistung (Ampel & Netzteil)
-
-**A. Den DC-Adapter (Weiblich) vorbereiten**
-
-- Nimm deine rote Litze. Schraube ein Ende in den Plus-Pol (+) des Adapters.
-- Nimm deine schwarze Litze. Schraube ein Ende in den Minus-Pol (−) des Adapters.
-
-**B. Das Relais „brücken“ (Die COM-Kette)**
-
-Damit alle Lampen Strom bekommen, müssen wir die mittleren Kontakte (COM) der Relais verbinden:
-
-1. Führe das rote Kabel vom DC-Adapter (+) zum COM-Anschluss von Relais 1.
-2. Nimm ein kurzes Stück rote Litze („Brücke“) und verbinde damit COM 1 mit COM 2.
-3. Schraube beide Enden fest zu (bei COM 1 liegen also zwei Kabelenden in einer Klemme).
-
-**C. Ampel anschließen**
-
-- **Minus-Pol:** Verbinde das graue (oder lila) gemeinsame Kabel der Ampel mit dem schwarzen Kabel vom DC-Adapter (−). (Nutze eine Wago- oder Lüsterklemme.)
-- **Grünes Licht:** Stecke das grüne Kabel der Ampel in den NO-Anschluss von Relais 1.
-- **Rotes Licht & Sirene:** Stecke das rote Kabel UND das lila Kabel der Ampel zusammen in den NO-Anschluss von Relais 2.
-
-#### Schritt 5: Common Ground (WICHTIG!)
-
-Damit die Signale sauber fließen, müssen die Minuspole (Massen) beider Systeme verbunden werden:
-
-1. Nimm ein schwarzes M/M-Jumperkabel.
-2. Stecke ein Ende in die blaue Leiste (−) am Breadboard (5V-Welt).
-3. Stecke das andere Ende mit in die Minus-Schraubklemme (−) deines 12V-DC-Adapters (oder in die Lüsterklemme der Ampel-Masse).
-
-#### Zusammenfassung der Farblogik
-
-| Farbe      | Bedeutung                                         |
-|------------|---------------------------------------------------|
-| **Rot**    | Überall dort, wo Strom fließt (+5V oder +12V).    |
-| **Schwarz**| Überall dort, wo die Masse zurückfließt (GND / −).|
-| **Andere** | Nur für Daten-Signale (Sensor, Relais-Steuerung).  |
-
-#### Nächste Schritte
-
-1. Prüfe alle Schraubklemmen auf festen Sitz (kurz am Kabel ziehen).
-2. Schließe das USB-Kabel an den PC an.
-3. Stecke erst ganz zum Schluss das 12V-Netzteil in die Steckdose.
-
+**Common Ground:** Breadboard (−) mit DC-Adapter (−) verbinden.
 
 ---
 
-## 3. Test-Software (Basis-Logik)
+## 2. Sketch & Verhalten
 
-Dieser Code prüft den Sensor und schaltet die Ampel bei Vibration von Grün auf Rot/Alarm um.
+**Sketch:** `integrations/Arduino/Vibrationssensor_SW420/Vibrationssensor_SW420.ino`
 
-**Quellcode:** Der vollständige Sketch liegt in `integrations/Arduino/Vibrationssensor_SW420/`. Arduino IDE mit Sketchbook = `integrations/Arduino` öffnen und `Vibrationssensor_SW420` auswählen.
-
-```cpp
-/*
- * Projekt: Vibrationsüberwachung APS-Modellfabrik
- * Hardware: Arduino Uno, Ethernet Shield 2, SW-420, 4-Ch Relais, 12V Ampel
- */
-
-// Pin Definitionen
-const int SENSOR_PIN = 2;   // SW-420 Digital Out
-const int RELAY_GRUEN = 5;  // Relais für grüne Lampe
-const int RELAY_ROT = 6;    // Relais für rote Lampe + Sirene
-
-// Einstellungen
-int alarmDauer = 2000;      // Wie lange der Alarm nach Erschütterung aktiv bleibt (ms)
-
-void setup() {
-  Serial.begin(9600);
-  
-  // Pin Modi festlegen
-  pinMode(SENSOR_PIN, INPUT);
-  pinMode(RELAY_GRUEN, OUTPUT);
-  pinMode(RELAY_ROT, OUTPUT);
-
-  // Initialzustand: Grün an, Rot aus
-  // Hinweis: Viele Relais-Module sind "Low-Level Triggered" (LOW = AN)
-  digitalWrite(RELAY_GRUEN, LOW); 
-  digitalWrite(RELAY_ROT, HIGH);
-  
-  Serial.println("System bereit. Warte auf Vibration...");
-}
-
-void loop() {
-  // Sensor auslesen
-  int vibration = digitalRead(SENSOR_PIN);
-
-  if (vibration == HIGH) {
-    Serial.println("!!! VIBRATION ERKANNT !!!");
-    
-    // Ampel umschalten
-    digitalWrite(RELAY_GRUEN, HIGH); // Grün AUS
-    digitalWrite(RELAY_ROT, LOW);    // Rot/Alarm AN
-    
-    delay(alarmDauer);               // Alarmzeit abwarten
-    
-    // Zurück in Normalzustand
-    digitalWrite(RELAY_GRUEN, LOW);  // Grün AN
-    digitalWrite(RELAY_ROT, HIGH);   // Rot/Alarm AUS
-    Serial.println("System beruhigt. Überwachung läuft...");
-  }
-}
-```
+- Ruhe: Grün an. Bei Vibration: Rot+Sirene für 2 s, dann zurück zu Grün.
+- Serial Monitor (9600 Baud): `!!! VIBRATION ERKANNT !!!` bei Auslösung.
 
 ---
 
-## 4. Nächste Schritte nach dem Hardware-Test
+## 3. Netzwerk & osf-ui
 
-1. **Serial Monitor:** Arduino IDE → Lupen-Symbol (Serial Monitor) → 9600 Baud. Bei Vibration erscheint `!!! VIBRATION ERKANNT !!!` – ideal zur Kontrolle vor der MQTT-Integration.
-2. **Kalibrierung:** Drehe am blauen Potentiometer des SW-420, bis die Status-LED gerade so erlischt. Teste die Empfindlichkeit mit der Stimmgabel.
-3. **Netzwerk-Einbindung:** Sobald die lokale Logik läuft, ergänzen wir den Code um Ethernet und MQTT ([arduino-mqtt-ethernet-setup.md](arduino-mqtt-ethernet-setup.md)), um die Alarme per LAN zu senden.
-4. **Integration:** Mechanische Befestigung des Sensors an den fischertechnik-U-Profilen der Modellfabrik.
+**MQTT (USE_MQTT = 1):** Arduino IP 192.168.0.95, Broker 192.168.0.100.
+
+| Topic | Inhalt |
+|-------|--------|
+| `osf/arduino/vibration/sw420-1/state` | `{"ampel":"GRUEN"\|"ROT","impulseCount":n}` |
+| `osf/arduino/vibration/sw420-1/connection` | LWT, Online-Status |
+
+**osf-ui:** Das Topic `osf/#` ist abonniert. Im Message Monitor Filter „OSF Topics“ wählen. Vibrations-Kachel im Sensor-Tab zeigt Ampel (Grün/Rot) und Impulse.
+
+**Status:** Mock und Replay positiv getestet. Live-Umgebung (Arduino → Broker → osf-ui) noch ausstehend.
+
+### OSF-Topics testen (ohne Arduino/Broker)
+
+Zum Testen der Message-Monitor-Erweiterung ohne laufenden Arduino oder MQTT-Broker:
+
+**Option A – Replay-Preload (echter MQTT-Broker):**
+
+1. MQTT-Broker starten (z. B. Mosquitto mit WebSocket-Port 9001).
+2. **Session Manager** starten → Tab „Replay Station“ → MQTT-Broker verbinden.
+3. „Preloads jetzt senden“ klicken. Die Dateien in `data/omf-data/test_topics/preloads/` werden an den Broker gesendet:
+   - `osf_arduino_vibration_sw420-1_connection.json` – Online-Status
+   - `osf_arduino_vibration_sw420-1_state.json` – Ruhezustand (GRUEN)
+   - `osf_arduino_vibration_sw420-1_state_alarm.json` – Alarm (ROT)
+4. **osf-ui** im Replay-Modus starten und mit dem Broker verbinden.
+5. Message Monitor öffnen → Filter „OSF Topics“ – Topics `osf/arduino/vibration/sw420-1/*` sollten erscheinen.
+
+**Option B – Mock-Fixture (ohne Broker):**
+
+1. **osf-ui** im Mock-Modus starten.
+2. **Sensor-Tab** öffnen (lädt `sensor-startup` inkl. Vibrations-Fixture).
+3. Message Monitor öffnen → Filter „OSF Topics“ – Topics `osf/arduino/vibration/sw420-1/*` sollten erscheinen.
+4. **Vibrations-Kachel:** Buttons „Ruhe senden“ und „Alarm senden“ (nur Mock) injizieren Test-Nachrichten und aktualisieren die Ampel-Anzeige.
+
+**Hinweis:** Fixture-Buttons und Vibrations-Steuerung erscheinen nur, wenn Environment = **Mock** gewählt ist.
 
 ---
 
-## 5. Ausblick – Erweiterung auf MPU-6050 (Präzisionsmessung)
+## 4. Troubleshooting
 
-Sollte die Schwellenwert-Messung mit dem mechanischen SW-420 Sensor für die Analyse feinerer Schwingungen der APS-Modellfabrik nicht ausreichen, ist ein Upgrade auf den MPU-6050 (Beschleunigungssensor & Gyroskop) vorgesehen. Dieses Modul ist bereits in deinem Sensor-Kit enthalten.
+**Alarm löst nicht aus:** Serial Monitor prüfen – erscheint „VIBRATION ERKANNT“? Wenn ja: Relais/12V prüfen. Wenn nein: `SENSOR_ACTIVE_HIGH` im Sketch umstellen (0/1), Verdrahtung DO → Pin 2 prüfen.
 
-### 5.1 Warum das Upgrade?
+**Relais-LED leuchtet, Ampel bleibt aus:** 12V-Stromkreis prüfen – COM mit Plus, Ampel-Kabel in **NO** (nicht NC), Grau (Common) an Minus.
 
-Während der SW-420 lediglich „Ereignisse“ zählt, liefert der MPU-6050 echte physikalische Beschleunigungswerte für drei Achsen. Dies ermöglicht:
+---
 
-- **Echte Frequenzanalyse:** Unterscheidung zwischen einem dumpfen Rumpeln (Motoren) und einem hellen Surren (Stimmgabel).
-- **Höhere Sensibilität:** Erfassung von Vibrationen, die zu schwach sind, um die mechanische Feder im SW-420 auszulösen.
-- **Zustandsüberwachung (Condition Monitoring):** Erkennung von beginnendem Verschleiß an den fischertechnik-Motoren durch Veränderung des Vibrationsmusters.
+## 5. Ausblick – Erweiterung auf MPU-6050
 
-### 5.2 Geplante Änderungen an der Hardware
+Die gewünschte Änderung des Setups: Ersatz des SW-420 durch den MPU-6050 (Beschleunigungssensor & Gyroskop) für präzisere Messung. Das Modul ist im Sensor-Kit enthalten.
 
-- **Schnittstelle:** Der Anschluss wechselt von einem einfachen Digital-Pin auf den I2C-Bus des Arduinos.
-- **Verkabelung:** Der Sensor benötigt vier Verbindungen (VCC, GND sowie die Datenleitungen SDA und SCL). Beim Ethernet Shield 2 liegen diese Pins meist an den dedizierten Anschlüssen oberhalb von Pin 13 oder an A4/A5.
-- **Stromversorgung:** Der MPU-6050 wird ebenfalls über die 5V-Schiene des Breadboards versorgt.
+### Warum das Upgrade?
 
-### 5.3 Geplante Änderungen an der Software
+- **Frequenzanalyse:** Unterscheidung z.B. zwischen Motoren-Rumpeln und Stimmgabel-Surren
+- **Höhere Sensibilität:** Erfassung schwacher Vibrationen, die der SW-420 nicht auslöst
+- **Condition Monitoring:** Erkennung von Verschleiß durch Veränderung des Vibrationsmusters
 
-- **Bibliotheken:** Einbindung der `Wire.h` (für I2C) und einer MPU-6050 Library zur Rohdaten-Auslesung.
-- **Mathematik:** Implementierung einer einfachen gleitenden Durchschnittsberechnung oder einer schnellen Fourier-Transformation (FFT) im Code.
-- **Ampel-Logik:** Die Schwellenwerte für Grün, Gelb und Rot basieren dann nicht mehr auf der Anzahl der Impulse, sondern auf der gemessenen Amplitude (Stärke) oder einer spezifischen Ziel-Frequenz.
+### Geplante Hardware-Änderungen
 
-### 5.4 Fazit
+- **Schnittstelle:** Digital-Pin → I2C-Bus (SDA, SCL – typisch A4/A5 oder dedizierte Pins oberhalb Pin 13)
+- **Verkabelung:** VCC, GND, SDA, SCL (4 Leitungen)
+- **Stromversorgung:** Weiterhin 5V über Breadboard
 
-Die bestehende Infrastruktur (Arduino, Ethernet Shield, Relais-Modul und 12V-Signalampel) bleibt komplett identisch. Lediglich das „Auge“ des Systems (der Sensor) wird durch ein präziseres Modul ersetzt, was das Projekt auf ein industrielles Niveau der Qualitätsüberwachung hebt.
+### Geplante Software-Änderungen
+
+- **Bibliotheken:** `Wire.h` (I2C) + MPU-6050-Library
+- **Auswertung:** Gleitender Mittelwert oder FFT
+- **Ampel-Logik:** Schwellenwerte basieren auf Amplitude/Frequenz statt Impulsanzahl
+
+### Fazit
+
+Arduino, Ethernet Shield, Relais und 12V-Ampel bleiben unverändert. Nur der Sensor wird ausgetauscht.

@@ -25,7 +25,7 @@ interface ModuleInfo {
   icon: string;
 }
 
-type TopicTypeFilter = 'all' | 'ccu' | 'dsp' | 'module-fts';
+type TopicTypeFilter = 'all' | 'ccu' | 'dsp' | 'module-fts' | 'osf';
 type StatusFilter = 'all' | 'connection' | 'state' | 'factsheet';
 
 const CCU_ICON = 'assets/svg/ui/heading-ccu.svg';
@@ -142,6 +142,10 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
       const isModuleTopic = message.topic.startsWith('module/');
       const isFtsTopic = message.topic.startsWith('fts/');
       if (!isModuleTopic && !isFtsTopic) {
+        return false;
+      }
+    } else if (this.filterTopicType === 'osf') {
+      if (!message.topic.startsWith('osf/')) {
         return false;
       }
     }

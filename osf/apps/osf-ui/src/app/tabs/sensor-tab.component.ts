@@ -5,6 +5,13 @@ import type { Observable } from 'rxjs';
 import { map, shareReplay, filter, startWith, distinctUntilChanged } from 'rxjs/operators';
 import { merge, combineLatest, Subscription } from 'rxjs';
 import type { SensorOverviewState, CameraFrame, Bme680Snapshot, LdrSnapshot } from '@osf/entities';
+
+/** osf/arduino/vibration/sw420-1/state payload – GELB reserviert für MPU-6050 */
+export interface VibrationStatePayload {
+  ampel: 'GRUEN' | 'ROT' | 'GELB';
+  impulseCount: number;
+  ts?: string;
+}
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { EnvironmentService } from '../services/environment.service';
 import type { OrderFixtureName } from '@osf/testing-fixtures';
@@ -50,6 +57,10 @@ export class SensorTabComponent implements OnInit, OnDestroy {
       shareReplay({ bufferSize: 1, refCount: false })
     );
 
+  /** osf/arduino/vibration/sw420-1/state – SW-420 Vibrationssensor (Grün/Rot, später Gelb für MPU-6050) */
+  readonly VIBRATION_STATE_TOPIC = 'osf/arduino/vibration/sw420-1/state';
+  vibrationState$!: Observable<VibrationStatePayload | null>;
+
   constructor(
     private readonly messageMonitor: MessageMonitorService,
     private readonly environmentService: EnvironmentService,
@@ -57,6 +68,13 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     private readonly sensorState: SensorStateService
   ) {
     this.currentEnvironmentKey = this.environmentService.current.key;
+    this.vibrationState$ = this.messageMonitor
+      .getLastMessage<VibrationStatePayload>(this.VIBRATION_STATE_TOPIC)
+      .pipe(
+        map((msg) => (msg !== null && msg.valid ? (msg.payload as VibrationStatePayload) : null)),
+        startWith(null as VibrationStatePayload | null),
+        shareReplay({ bufferSize: 1, refCount: false })
+      );
     this.bindCacheOutputs();
     this.initializeStreams();
   }
@@ -239,6 +257,50 @@ export class SensorTabComponent implements OnInit, OnDestroy {
   airQualityRemaining(sensor: SensorOverviewState | null): string {
     const ratio = this.computeRatio(sensor?.airQualityScore, 0, 5, 'linear');
     return `${(100 - ratio * 100).toFixed(1)}%`;
+  }
+
+  /** Vibrationssensor: GRUEN=grün, ROT=rot, sonst unknown. Gelb reserviert für MPU-6050. */
+  vibrationLevel(vibration: VibrationStatePayload | null): 'green' | 'red' | 'yellow' | 'unknown' {
+    if (!vibration?.ampel) return 'unknown';
+    switch (vibration.ampel.toUpperCase()) {
+      case 'GRUEN':
+        return 'green';
+      case 'ROT':
+        return 'red';
+      case 'GELB':
+        return 'yellow'; // Reserviert für MPU-6050
+      default:
+        return 'unknown';
+    }
+  }
+
+  vibrationStatus(vibration: VibrationStatePayload | null): string {
+    if (!vibration?.ampel) return $localize`:@@sensorVibrationNoData:No data`;
+    switch (vibration.ampel.toUpperCase()) {
+      case 'GRUEN':
+        return $localize`:@@sensorVibrationStatusGreen:Idle`;
+      case 'ROT':
+        return $localize`:@@sensorVibrationStatusRed:Alarm`;
+      case 'GELB':
+        return $localize`:@@sensorVibrationStatusYellow:Warning`;
+      default:
+        return vibration.ampel;
+    }
+  }
+
+  /** Mock only: Vibration-State per injectMessage setzen (zum Testen der Anzeige) */
+  injectVibrationState(ampel: 'GRUEN' | 'ROT'): void {
+    const payload: VibrationStatePayload = {
+      ampel,
+      impulseCount: ampel === 'ROT' ? 99 : 0,
+      ts: new Date().toISOString(),
+    };
+    const message = {
+      topic: this.VIBRATION_STATE_TOPIC,
+      payload,
+      timestamp: new Date().toISOString(),
+    };
+    this.dashboard.injectMessage?.(message);
   }
 
   private computeRatio(
