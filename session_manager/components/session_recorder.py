@@ -348,7 +348,13 @@ def stop_recording():
 def on_message_received(client, userdata, msg):
     """Callback für empfangene MQTT-Nachrichten (thread-sicher)"""
     try:
-        message = {"topic": msg.topic, "payload": msg.payload.decode("utf-8"), "timestamp": datetime.now().isoformat()}
+        message = {
+            "topic": msg.topic,
+            "payload": msg.payload.decode("utf-8"),
+            "timestamp": datetime.now().isoformat(),
+            "qos": getattr(msg, "qos", 0),
+            "retain": getattr(msg, "retain", False),
+        }
 
         # Thread-sichere Nachrichten-Sammlung
         message_buffer.add_message(message)
@@ -411,7 +417,13 @@ def save_log_session(filepath: Path, messages: List[Dict[str, Any]]):
 
         with open(filepath, "w", encoding="utf-8") as f:
             for msg in messages:
-                log_entry = {"topic": msg["topic"], "payload": msg["payload"], "timestamp": msg["timestamp"]}
+                log_entry = {
+                    "topic": msg["topic"],
+                    "payload": msg["payload"],
+                    "timestamp": msg["timestamp"],
+                    "qos": msg.get("qos", 0),
+                    "retain": msg.get("retain", False),
+                }
                 f.write(json.dumps(log_entry) + "\n")
 
         logger.debug(f"✅ Log Session gespeichert: {len(messages)} Messages in {filepath}")

@@ -95,3 +95,26 @@ class TestSessionLogFormat(unittest.TestCase):
                 self.assertEqual(msg["timestamp"], original[i]["timestamp"])
         finally:
             log_path.unlink(missing_ok=True)
+
+    def test_save_and_load_roundtrip_with_qos_retain(self):
+        """Test Roundtrip mit qos/retain für retain-Verifizierung"""
+        original = [
+            {
+                "topic": "module/v1/ff/SVR3QA0022/state",
+                "payload": "{}",
+                "timestamp": "2025-01-15T10:00:00Z",
+                "qos": 1,
+                "retain": True,
+            },
+        ]
+        with tempfile.NamedTemporaryFile(suffix=".log", delete=False) as f:
+            log_path = Path(f.name)
+
+        try:
+            save_log_session(log_path, original)
+            loaded = load_log_session(log_path)
+            self.assertEqual(len(loaded), 1)
+            self.assertEqual(loaded[0]["qos"], 1)
+            self.assertEqual(loaded[0]["retain"], True)
+        finally:
+            log_path.unlink(missing_ok=True)

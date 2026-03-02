@@ -44,7 +44,7 @@ Interoperabilität ist mehr als „ein System kann Daten senden“. In der Ferti
 
 Merksatz: **„Interoperabilität wird nicht programmiert – sie wird aktiviert.“** 
 
-Der entscheidende Effekt: Interoperabilität reduziert Punkt-zu-Punkt-Integration und schafft eine wiederverwendbare **Event-to-Process Logik**. Damit können neue Use Cases schneller umgesetzt werden, weil sie auf einer konsistenten Basis aufsetzen.
+Der entscheidende Effekt: Interoperabilität reduziert Punkt-zu-Punkt-Integration und schafft eine wiederverwendbare **Event-to-Process Logik**. Damit können neue Use Cases schneller umgesetzt werden, weil sie auf einer konsistenten Basis aufsetzen. Neue Datenquellen – Maschinen, Sensoren, Anlagen – werden über wiederverwendbare Templates und Connectoren angebunden, statt für jeden Use Case individuell verdrahtet zu werden. Das verkürzt Onboarding-Zeiten und hält die Integrationsarchitektur wartbar.
 
 ### 4. Anwendungs- und zielsystemoffen: Best-of-Breed in Kundenarchitekturen
 Eine skalierbare Smart Factory muss unterschiedliche Zielarchitekturen unterstützen. Manche Unternehmen nutzen klassische ERP- und MES-Landschaften, andere setzen auf Cloud Analytics oder spezialisierte Plattformen. Entscheidend ist nicht das einzelne Produkt, sondern die Fähigkeit, Daten und Prozesse durchgängig zu verbinden.

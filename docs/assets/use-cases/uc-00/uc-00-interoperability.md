@@ -123,6 +123,7 @@ UC-00 visualisiert das Prinzip „Event-to-Process“: technische Shopfloor-Even
   - **Top:** Use-Case-Cards (Grid) inkl. Icon, Titel, One-liner.
   - **Detailbereich:** „Aktionen“ (links) + „Smart Factory“ (rechts) als Bullet-Listen.
   - **Footer-Disclaimer:** OSF ist Demonstrator (konzeptionell, kundenspezifische Umsetzung).
+- **Plug-and-Play/Templates:** Der Aspekt „Neue Quellen über wiederverwendbare Templates/Connectoren“ wird in der Grafik über die Bar „Reusable instead of point-to-point“ adressiert; die detaillierte Erklärung erfolgt im Blog A1 (Abschnitt Interoperabilität).
 
 ### Inhaltliche Elemente (statisch)
 - **Use-Case-Card (Kurz)**

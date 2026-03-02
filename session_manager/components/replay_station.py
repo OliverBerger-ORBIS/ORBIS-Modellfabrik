@@ -792,7 +792,9 @@ def load_session(session_file, replay_ctrl: ReplayController):
                     if isinstance(payload, (dict, list)):
                         payload = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
                     payload_b = (payload if isinstance(payload, (bytes, bytearray)) else str(payload)).encode("utf-8")
-                    items.append((ts_rel, topic, payload_b, 1, False))  # qos=1, retain=False als Default
+                    qos = m.get("qos", 1)
+                    retain = m.get("retain", False)
+                    items.append((ts_rel, topic, payload_b, qos, retain))
 
             # in Controller laden
             replay_ctrl.load(items)
@@ -823,13 +825,16 @@ def load_log_session(session_file):
                 try:
                     data = json.loads(line)
                     if "topic" in data and "payload" in data and "timestamp" in data:
-                        messages.append(
-                            {
-                                "topic": data["topic"],
-                                "payload": data["payload"],
-                                "timestamp": data["timestamp"],
-                            }
-                        )
+                        msg = {
+                            "topic": data["topic"],
+                            "payload": data["payload"],
+                            "timestamp": data["timestamp"],
+                        }
+                        if "qos" in data:
+                            msg["qos"] = data["qos"]
+                        if "retain" in data:
+                            msg["retain"] = data["retain"]
+                        messages.append(msg)
                 except json.JSONDecodeError:
                     continue
         return messages

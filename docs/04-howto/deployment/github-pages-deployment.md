@@ -131,7 +131,7 @@ Nach dem Deployment prüfen:
 
 ## 🔗 Verwandte Dokumentation
 
-- [Deployment Alternatives](../../deployment-alternatives.md) - Weitere Deployment-Optionen
+- [Decision Record 19: OSF-UI Deployment-Strategie](../../03-decision-records/19-osf-ui-deployment-strategy.md) - Deployment-Ziele, Betriebsmodi, Build-Strategie
 - [Build Commands Guide](../07-analysis/build-commands-guide.md) - Build-Konfiguration Details
 
 ---

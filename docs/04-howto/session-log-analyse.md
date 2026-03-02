@@ -101,18 +101,20 @@ JSON-Lines (eine Zeile = ein Objekt):
 
 **Ziel:** Prüfen, ob State-/Connection-/Factsheet-Topics tatsächlich mit `retained=true` publiziert werden (Fischertechnik-Doku).
 
-### 3.1 Einschränkung
+**⚠️ Wichtig:** qos/retain-Werte müssen aus **realen Sessions der Fischertechnik-Modellfabrik** stammen. Bestehende Sessions wurden **ohne** diese Parameter aufgezeichnet – empirische Verifizierung ist erst nach **Neuaufnahme** an der echten APS möglich.
 
-Der **Session Recorder** speichert aktuell **kein** QoS und Retain. Daher:
+### 3.1 Session Recorder (ab v1.2)
 
-- Keine QoS/Retain-Analyse aus bestehenden `.db`/`.log`-Sessions möglich.
-- Alternativen siehe unten.
+Der **Session Recorder** speichert ab v1.2 **qos** und **retain** in `.log`-Dateien:
 
-### 3.2 Option A: Session Recorder erweitern
+```json
+{"topic": "module/v1/ff/.../state", "payload": "{...}", "timestamp": "...", "qos": 1, "retain": true}
+```
 
-Session Recorder so anpassen, dass der MQTT-Client-Callback `qos` und `retain` erhält und beide Felder mit speichert (analog Topic Recorder).
+**Analyse-Script:** `python scripts/analyze_retain_in_logs.py [path/to/session.log]`  
+(gilt nur für Logs, die **an der realen Modellfabrik** mit Session Recorder v1.2+ aufgezeichnet wurden)
 
-### 3.3 Option B: mosquitto_sub
+### 3.2 Option B: mosquitto_sub
 
 Retain-Status ist im Broker gespeichert. Bei direktem Subscribe sichtbar:
 
@@ -126,11 +128,11 @@ mosquitto_sub -h 192.168.0.100 -t 'module/v1/ff/+/state' -v
 
 Retain wird hier nicht explizit angezeigt; man kann aber prüfen, ob beim Reconnect sofort Messages ankommen (typisch für retained).
 
-### 3.4 Option C: MQTT Traffic Logger (wenn verfügbar)
+### 3.3 Option C: MQTT Traffic Logger (wenn verfügbar)
 
 Falls `mqtt_bridge_logger` oder `comprehensive_mqtt_logger` (siehe [mqtt-traffic-logging.md](setup/mqtt-traffic-logging.md)) verwendet werden – diese können `qos` und `retained` loggen, sofern in der DB-Schema vorgesehen.
 
-### 3.5 Option D: Topic Recorder nutzen
+### 3.4 Option D: Topic Recorder nutzen
 
 Der **Topic Recorder** speichert pro Topic-Datei `qos` und `retain`.  
 Daten liegen in `data/osf-data/test_topics/` – dort können retained-Topics gezählt bzw. ausgewertet werden.
@@ -142,18 +144,13 @@ Daten liegen in `data/osf-data/test_topics/` – dort können retained-Topics ge
 ### Topic-Struktur prüfen
 
 ```bash
-sqlite3 data/osf-data/sessions/auftrag-blau_1.db \
-  "SELECT DISTINCT topic FROM mqtt_messages ORDER BY topic;"
+python scripts/analyze_retain_in_logs.py data/osf-data/sessions/<session>.log
+# Oder: Session Manager → Tab „Session Analysis“
 ```
 
 ### Connection-Topics (Standard vs. NodeRed)
 
-```sql
-SELECT topic, COUNT(*) 
-FROM mqtt_messages 
-WHERE topic LIKE '%/connection%' 
-GROUP BY topic;
-```
+Session Manager „Session Analysis“ oder `scripts/analyze_*_sessions.py`
 
 ### State-Updates pro Modul
 

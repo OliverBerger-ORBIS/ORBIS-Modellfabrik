@@ -17,7 +17,7 @@
 
 ### Vibration-Sensor
 - [x] Vorbereitung der IDE (Arduino-IDE) mit einfachem Test
-- [ ] Wiring der Arduino-Komponenten und Test von sketch Vibrationsensor_SW420
+- [x] Wiring der Arduino-Komponenten und Test von sketch Vibrationsensor_SW420
 - [ ] Integrieren in OSF-UI
 - Projektplan: [arduino-vibrationssensor.md](../05-hardware/arduino-vibrationssensor.md)
 
@@ -28,6 +28,7 @@
 - [x] dsp-architecture-inventory Dokumentation der SVGs
 
 **Doku-Audit-Pfad:** ✅ [AS-IS vs. Fischertechnik Vergleich](../07-analysis/AS-IS-FISCHERTECHNIK-COMPARISON.md) – Abweichungen und Lücken dokumentiert. Autoritative Quelle: [fischertechnik-official/](../06-integrations/fischertechnik-official/).
+- [x] **Tiefenanalyse Fischertechnik vs. OSF-UI:** Aktualisierung bei App-Start, Datenspeicherung, Topics, Architektur-Pattern → [FISCHERTECHNIK-VS-OSF-UI-STARTUP-AND-DATA.md](../07-analysis/FISCHERTECHNIK-VS-OSF-UI-STARTUP-AND-DATA.md)
   
 ### ERP/MES Integration
 - [x] Erweiterung der APS/FMF/CCU-Komponente: Order/request-Topic von (DSP_Edge) sendet zusätzlich eine request-ID, CCU sendet Order/response mit requestId und orderId  
@@ -64,7 +65,7 @@
 
 *Tasks bei Gelegenheit angehen – kein separates Backlog-System.*
 
-- [ ] **Session-Log-Analyse:** QoS/Retained für State-Topics empirisch verifizieren → [Anleitung](../04-howto/session-log-analyse.md), Kontext: [AS-IS vs. Fischertechnik](../07-analysis/AS-IS-FISCHERTECHNIK-COMPARISON.md)
+- [ ] **Session-Log-Analyse:** QoS/Retained für State-Topics empirisch verifizieren – **erfordert Neuaufnahme an realer Fischertechnik-Modellfabrik** (bestehende Sessions haben keine qos/retain-Daten). Session Recorder v1.2+ speichert sie; danach `scripts/analyze_retain_in_logs.py` → [Anleitung](../04-howto/session-log-analyse.md), Kontext: [AS-IS vs. Fischertechnik](../07-analysis/AS-IS-FISCHERTECHNIK-COMPARISON.md)
 - [x] **OSF-UI fehlende Übersetzungen:** ~400 Keys de/fr ergänzt, src/public locale synchron.
 
 ---

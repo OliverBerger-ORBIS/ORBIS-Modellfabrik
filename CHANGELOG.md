@@ -6,6 +6,25 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.8.4] - 2026-02-18
+
+**Deployment-Dokumentation und Session Recorder qos/retain**
+
+### Added
+- **ADR 19:** [OSF-UI Deployment-Strategie](docs/03-decision-records/19-osf-ui-deployment-strategy.md) – Deployment-Ziele (lokal, GitHub Pages, Docker/RPi), Betriebsmodi pro Ziel, ein Build für alle
+- **Session Recorder v1.2:** Speichert `qos` und `retain` in `.log`-Dateien für retain-Verifizierung
+- **Replay Station:** Liest qos/retain aus Log-Sessions, übergibt an Replay-Controller
+- **Analyse-Script:** `scripts/analyze_retain_in_logs.py` für Logs mit qos/retain-Feldern
+- **Fischertechnik-Tiefenanalyse:** [FISCHERTECHNIK-VS-OSF-UI-STARTUP-AND-DATA.md](docs/07-analysis/FISCHERTECHNIK-VS-OSF-UI-STARTUP-AND-DATA.md) – App-Start, Datenspeicherung, Topics
+- **Tests:** Roundtrip `save_log_session`/`load_log_session` mit qos/retain
+
+### Changed
+- **Deployment-Doku:** `deployment-alternatives.md` entfernt, Verweis auf ADR 19 in github-pages-deployment.md
+- **session-log-analyse.md:** Session Recorder v1.2 dokumentiert, Option A–D neu nummeriert, Analyse-Script erwähnt
+- **AS-IS-FISCHERTECHNIK-COMPARISON:** Session-Log-Analyse-Status aktualisiert (v1.2, analyze_retain_in_logs.py)
+- **Sprint 16:** Wiring abgehakt, Tiefenanalyse Fischertechnik ergänzt, Session-Log-Kontext präzisiert
+- **A1-DE / uc-00-interoperability:** Templates/Connectoren-Aspekt ergänzt
+
 ## [0.8.3] - 2026-02-18
 
 **I18n-Übersetzungsqualität und Duplikat-Behebung**
