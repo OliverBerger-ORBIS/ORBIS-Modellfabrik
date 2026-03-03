@@ -6,6 +6,25 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.8.5] - 2026-03-03
+
+**Vibrationssensor SW-420: Live-Hardware, semantische Payload, Will-Message**
+
+### Added
+- **MQTT-Auth:** Arduino-Sketch nutzt Credentials (default/default) für APS-Broker
+- **Will-Message:** connectionState OFFLINE bei ungraceful disconnect – wie Fischertechnik-Module
+- **Connection-Payload:** connectionState ONLINE/OFFLINE, ip, serialNumber (Fischertechnik-konform)
+- **Troubleshooting:** [arduino-vibrationssensor.md](docs/05-hardware/arduino-vibrationssensor.md) §4.1 – Schicht-für-Schicht Debug (LAN → Broker → mosquitto_sub mit Auth → Arduino-Connect)
+
+### Changed
+- **State-Payload:** `ampel` → `vibrationDetected` (boolean) – SW-420-Sensorsignal direkt, OSF-UI mappt auf Ampel-Darstellung
+- **OSF-UI:** vibrationLevel/vibrationStatus aus vibrationDetected; Legacy ampel für Session-Replay
+- **Mock-Buttons:** „Send idle“ / „Send alarm“ → injectVibrationState(false/true)
+- **Preloads/Fixtures:** vibrationDetected, connectionState-Format
+
+### Fixed
+- **Live-Hardware:** Roundtrip Arduino→Broker→OSF-UI erfolgreich (MQTT-Auth war Ursache)
+
 ## [0.8.4] - 2026-02-18
 
 **Deployment-Dokumentation und Session Recorder qos/retain**

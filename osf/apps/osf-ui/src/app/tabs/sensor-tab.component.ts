@@ -6,11 +6,13 @@ import { map, shareReplay, filter, startWith, distinctUntilChanged } from 'rxjs/
 import { merge, combineLatest, Subscription } from 'rxjs';
 import type { SensorOverviewState, CameraFrame, Bme680Snapshot, LdrSnapshot } from '@osf/entities';
 
-/** osf/arduino/vibration/sw420-1/state payload – GELB reserviert für MPU-6050 */
+/** osf/arduino/vibration/sw420-1/state – SW-420 Sensor-Status; OSF-UI mappt auf Ampel-Darstellung */
 export interface VibrationStatePayload {
-  ampel: 'GRUEN' | 'ROT' | 'GELB';
+  vibrationDetected: boolean;
   impulseCount: number;
   ts?: string;
+  /** @deprecated Legacy: ampel (GRUEN/ROT) – Backward-Compat für Session-Replay */
+  ampel?: string;
 }
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { EnvironmentService } from '../services/environment.service';
@@ -259,40 +261,36 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     return `${(100 - ratio * 100).toFixed(1)}%`;
   }
 
-  /** Vibrationssensor: GRUEN=grün, ROT=rot, sonst unknown. Gelb reserviert für MPU-6050. */
+  /** SW-420 vibrationDetected → Ampel-Darstellung (Grün/Rot). Legacy ampel für Session-Replay. */
   vibrationLevel(vibration: VibrationStatePayload | null): 'green' | 'red' | 'yellow' | 'unknown' {
-    if (!vibration?.ampel) return 'unknown';
-    switch (vibration.ampel.toUpperCase()) {
-      case 'GRUEN':
-        return 'green';
-      case 'ROT':
-        return 'red';
-      case 'GELB':
-        return 'yellow'; // Reserviert für MPU-6050
-      default:
-        return 'unknown';
+    if (!vibration) return 'unknown';
+    if (typeof vibration.vibrationDetected === 'boolean') {
+      return vibration.vibrationDetected ? 'red' : 'green';
     }
+    const a = vibration.ampel?.toUpperCase();
+    if (a === 'GRUEN' || a === 'GREEN') return 'green';
+    if (a === 'ROT' || a === 'RED') return 'red';
+    if (a === 'GELB' || a === 'YELLOW') return 'yellow';
+    return 'unknown';
   }
 
   vibrationStatus(vibration: VibrationStatePayload | null): string {
-    if (!vibration?.ampel) return $localize`:@@sensorVibrationNoData:No data`;
-    switch (vibration.ampel.toUpperCase()) {
-      case 'GRUEN':
-        return $localize`:@@sensorVibrationStatusGreen:Idle`;
-      case 'ROT':
-        return $localize`:@@sensorVibrationStatusRed:Alarm`;
-      case 'GELB':
-        return $localize`:@@sensorVibrationStatusYellow:Warning`;
-      default:
-        return vibration.ampel;
-    }
+    if (!vibration) return $localize`:@@sensorVibrationNoData:No data`;
+    const isAlarm =
+      typeof vibration.vibrationDetected === 'boolean'
+        ? vibration.vibrationDetected
+        : ['ROT', 'RED'].includes(vibration.ampel?.toUpperCase() ?? '');
+    const isWarning = ['GELB', 'YELLOW'].includes(vibration.ampel?.toUpperCase() ?? '');
+    if (isAlarm) return $localize`:@@sensorVibrationStatusRed:Alarm`;
+    if (isWarning) return $localize`:@@sensorVibrationStatusYellow:Warning`;
+    return $localize`:@@sensorVibrationStatusGreen:Idle`;
   }
 
   /** Mock only: Vibration-State per injectMessage setzen (zum Testen der Anzeige) */
-  injectVibrationState(ampel: 'GRUEN' | 'ROT'): void {
+  injectVibrationState(vibrationDetected: boolean): void {
     const payload: VibrationStatePayload = {
-      ampel,
-      impulseCount: ampel === 'ROT' ? 99 : 0,
+      vibrationDetected,
+      impulseCount: vibrationDetected ? 99 : 0,
       ts: new Date().toISOString(),
     };
     const message = {

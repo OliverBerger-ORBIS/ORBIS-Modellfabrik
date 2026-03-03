@@ -1,7 +1,7 @@
 {
   "topic": "osf/arduino/vibration/sw420-1/state",
   "payload": {
-    "ampel": "GRUEN",
+    "vibrationDetected": false,
     "impulseCount": 0,
     "ts": ""
   },

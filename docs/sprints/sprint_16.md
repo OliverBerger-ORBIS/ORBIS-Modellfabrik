@@ -18,7 +18,8 @@
 ### Vibration-Sensor
 - [x] Vorbereitung der IDE (Arduino-IDE) mit einfachem Test
 - [x] Wiring der Arduino-Komponenten und Test von sketch Vibrationsensor_SW420
-- [ ] Integrieren in OSF-UI
+- [x] **Integrieren in OSF-UI:** Replay und Mock – Topics `osf/arduino/vibration/sw420-1/state` und `osf/arduino/vibration/sw420-1/connection` werden angezeigt und ausgewertet (Integration erstmals abgeschlossen)
+- [x] **Live-Hardware:** Arduino + Ethernet-Shield mit Broker verbunden, Topics werden angezeigt. **Fix:** MQTT-Credentials (default/default), Payload `vibrationDetected` statt `ampel`
 - Projektplan: [arduino-vibrationssensor.md](../05-hardware/arduino-vibrationssensor.md)
 
 ### Dokumentation
@@ -85,4 +86,4 @@
 
 ---
 
-*Letzte Aktualisierung: 26.02.2026*
+*Letzte Aktualisierung: 03.03.2026*

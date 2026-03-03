@@ -1,7 +1,7 @@
 {
   "topic": "osf/arduino/vibration/sw420-1/state",
   "payload": {
-    "ampel": "ROT",
+    "vibrationDetected": true,
     "impulseCount": 42,
     "ts": ""
   },

@@ -175,22 +175,22 @@ describe('SensorTabComponent', () => {
   });
 
   describe('vibration sensor', () => {
-    it('should return green level for GRUEN', () => {
-      expect(component.vibrationLevel({ ampel: 'GRUEN', impulseCount: 0 })).toBe('green');
+    it('should return green/red from vibrationDetected (SW-420 payload)', () => {
+      expect(component.vibrationLevel({ vibrationDetected: false, impulseCount: 0 })).toBe('green');
+      expect(component.vibrationLevel({ vibrationDetected: true, impulseCount: 42 })).toBe('red');
     });
-    it('should return red level for ROT', () => {
-      expect(component.vibrationLevel({ ampel: 'ROT', impulseCount: 42 })).toBe('red');
+    it('should support legacy ampel for session replay', () => {
+      expect(component.vibrationLevel({ ampel: 'GRUEN', impulseCount: 0 } as any)).toBe('green');
+      expect(component.vibrationLevel({ ampel: 'ROT', impulseCount: 42 } as any)).toBe('red');
+      expect(component.vibrationLevel({ ampel: 'GELB', impulseCount: 1 } as any)).toBe('yellow');
     });
-    it('should return yellow level for GELB (reserved for MPU-6050)', () => {
-      expect(component.vibrationLevel({ ampel: 'GELB', impulseCount: 1 })).toBe('yellow');
-    });
-    it('should return unknown for null or missing ampel', () => {
+    it('should return unknown for null or invalid payload', () => {
       expect(component.vibrationLevel(null)).toBe('unknown');
-      expect(component.vibrationLevel({ ampel: '' as any, impulseCount: 0 })).toBe('unknown');
+      expect(component.vibrationLevel({ impulseCount: 0 } as any)).toBe('unknown');
     });
-    it('should have vibrationStatus for GRUEN and ROT', () => {
-      expect(component.vibrationStatus({ ampel: 'GRUEN', impulseCount: 0 })).toBeDefined();
-      expect(component.vibrationStatus({ ampel: 'ROT', impulseCount: 1 })).toBeDefined();
+    it('should have vibrationStatus for vibrationDetected', () => {
+      expect(component.vibrationStatus({ vibrationDetected: false, impulseCount: 0 })).toBeDefined();
+      expect(component.vibrationStatus({ vibrationDetected: true, impulseCount: 1 })).toBeDefined();
     });
   });
 });

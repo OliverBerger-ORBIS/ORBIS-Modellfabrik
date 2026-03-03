@@ -290,11 +290,11 @@
         {{ (vibrationState$ | async)?.impulseCount ?? '—' }}
       </p>
       <div class="vibration-controls" *ngIf="isMockMode">
-        <button type="button" class="btn-secondary" (click)="injectVibrationState('GRUEN')" i18n="@@sensorVibrationInjectGreen">
-          Ruhe senden
+        <button type="button" class="btn-secondary" (click)="injectVibrationState(false)" i18n="@@sensorVibrationInjectGreen">
+          Send idle
         </button>
-        <button type="button" class="btn-danger" (click)="injectVibrationState('ROT')" i18n="@@sensorVibrationInjectRed">
-          Alarm senden
+        <button type="button" class="btn-danger" (click)="injectVibrationState(true)" i18n="@@sensorVibrationInjectRed">
+          Send alarm
         </button>
       </div>
     </article>

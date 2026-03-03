@@ -156,7 +156,7 @@ Beide Relais High-Level (HIGH = AN): Pin 5 → Grün, Pin 6 → Rot+Sirene.
 
 | Topic | Inhalt |
 |-------|--------|
-| `osf/arduino/vibration/sw420-1/state` | `{"ampel":"GRUEN"\|"ROT","impulseCount":n}` |
+| `osf/arduino/vibration/sw420-1/state` | `{"vibrationDetected":false\|true,"impulseCount":n}` (SW-420-Signal, UI mappt auf Ampel) |
 | `osf/arduino/vibration/sw420-1/connection` | LWT, Online-Status |
 
 **osf-ui:** Das Topic `osf/#` ist abonniert. Im Message Monitor Filter „OSF Topics“ wählen. Vibrations-Kachel im Sensor-Tab zeigt Ampel (Grün/Rot) und Impulse.
@@ -173,8 +173,9 @@ Zum Testen der Message-Monitor-Erweiterung ohne laufenden Arduino oder MQTT-Brok
 2. **Session Manager** starten → Tab „Replay Station“ → MQTT-Broker verbinden.
 3. „Preloads jetzt senden“ klicken. Die Dateien in `data/osf-data/test_topics/preloads/` werden an den Broker gesendet:
    - `osf_arduino_vibration_sw420-1_connection.json` – Online-Status
-   - `osf_arduino_vibration_sw420-1_state.json` – Ruhezustand (GRUEN)
-   - `osf_arduino_vibration_sw420-1_state_alarm.json` – Alarm (ROT)
+   - `osf_arduino_vibration_sw420-1_state.json` – Idle (vibrationDetected: false)
+   - `osf_arduino_vibration_sw420-1_state_alarm.json` – Alarm (vibrationDetected: true)
+   - Connection: `connectionState` (ONLINE/OFFLINE), Will-Message bei ungraceful disconnect
 4. **osf-ui** im Replay-Modus starten und mit dem Broker verbinden.
 5. Message Monitor öffnen → Filter „OSF Topics“ – Topics `osf/arduino/vibration/sw420-1/*` sollten erscheinen.
 
@@ -194,6 +195,28 @@ Zum Testen der Message-Monitor-Erweiterung ohne laufenden Arduino oder MQTT-Brok
 **Alarm löst nicht aus:** Serial Monitor prüfen – erscheint „VIBRATION ERKANNT“? Wenn ja: Relais/12V prüfen. Wenn nein: `SENSOR_ACTIVE_HIGH` im Sketch umstellen (0/1), Verdrahtung DO → Pin 2 prüfen.
 
 **Relais-LED leuchtet, Ampel bleibt aus:** 12V-Stromkreis prüfen – COM mit Plus, Ampel-Kabel in **NO** (nicht NC), Grau (Common) an Minus.
+
+### 4.1 Live-Hardware: Topics kommen nicht am Broker an
+
+**Symptom:** Arduino + Ethernet-Shield publiziert keine Topics oder sie erreichen den Broker (RPi) nicht – OSF-UI zeigt im Live-Modus keine Vibrations-Daten.
+
+**Systematisches Vorgehen (Schicht für Schicht):**
+
+| Schritt | Prüfung | Tool/Aktion |
+|---------|---------|-------------|
+| **1. LAN-Verbindung** | Arduino im gleichen Netz wie RPi (192.168.0.x)? | Kabel prüfen, LED am Ethernet-Shield, ggf. `ping 192.168.0.95` vom Laptop (falls Arduino per Serial erreichbar: IP im `connection`-Payload prüfen) |
+| **2. Broker erreichbar** | Arduino erreicht 192.168.0.100:1883? | Broker-IP im Sketch: `MQTT_BROKER = "192.168.0.100"`. RPi-Netzwerk: `ping 192.168.0.100`. Mosquitto läuft: `systemctl status mosquitto` |
+| **3. Topics am Broker** | Kommen Nachrichten im Broker an? | Auf RPi oder Laptop: `mosquitto_sub -h 192.168.0.100 -t 'osf/arduino/#' -v -u default -P default` (APS-Broker verlangt Auth; Credentials: [credentials.md](../credentials.md), [03-ui-integration.md](../06-integrations/fischertechnik-official/03-ui-integration.md)) |
+| **4. Arduino-Connect** | MQTT-Connect erfolgreich? | Serial Monitor: Sketch könnte `Serial.println` bei Connect/Reconnect ergänzen. PubSubClient: `mqttClient.connected()` prüfen |
+| **5. OSF-UI Subscription** | UI abonniert `osf/#`? | Connection Service subscribt `osf/#` – prüfen ob WebSocket-Verbindung zum Broker steht (Replay-Mode mit gleichem Broker funktioniert?) |
+
+**Typische Ursachen:**
+
+- **Broker verlangt Auth:** Ohne `-u default -P default` erhält man „Connection Refused: not authorised“. Arduino-Sketch nutzt `connect(id, user, pass, willTopic, ...)` mit `MQTT_USER`/`MQTT_PASS` (default/default).
+- **Falsche Broker-IP:** RPi hat nicht 192.168.0.100 (DHCP?) – [arduino-mqtt-ethernet-setup.md](arduino-mqtt-ethernet-setup.md) §2 prüfen
+- **Port 1883 geblockt:** Firewall auf RPi: `sudo ufw status` (falls aktiv: Port 1883 erlauben)
+- **Ethernet-Shield W5500:** Library `Ethernet2` (nicht `Ethernet`) – [arduino-mqtt-ethernet-setup.md](arduino-mqtt-ethernet-setup.md) §4
+- **MAC-Kollision:** Zwei Arduinos gleiche MAC? → Letztes Byte in `mac[]` ändern
 
 ---
 

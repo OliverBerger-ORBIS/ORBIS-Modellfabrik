@@ -34,6 +34,8 @@ IPAddress subnet(255, 255, 255, 0);
 
 const char* MQTT_BROKER = "192.168.0.100";
 const int MQTT_PORT = 1883;
+const char* MQTT_USER = "default";
+const char* MQTT_PASS = "default";
 const char* MQTT_CLIENT_ID = "arduino_sw420_1";
 const char* TOPIC_STATE = "osf/arduino/vibration/sw420-1/state";
 const char* TOPIC_CONNECTION = "osf/arduino/vibration/sw420-1/connection";
@@ -43,19 +45,19 @@ PubSubClient mqttClient(ethClient);
 
 void mqttReconnect() {
   // Ein Versuch pro Aufruf, KEIN while – sonst blockiert die Sensor-Auswertung!
-  if (mqttClient.connect(MQTT_CLIENT_ID, TOPIC_CONNECTION, 1, true, "{\"online\":false}")) {
-    char payload[64];
-    snprintf(payload, sizeof(payload), "{\"online\":true,\"ip\":\"%d.%d.%d.%d\"}",
+  if (mqttClient.connect(MQTT_CLIENT_ID, MQTT_USER, MQTT_PASS, TOPIC_CONNECTION, 1, true, "{\"connectionState\":\"OFFLINE\"}")) {
+    char payload[80];
+    snprintf(payload, sizeof(payload), "{\"connectionState\":\"ONLINE\",\"ip\":\"%d.%d.%d.%d\",\"serialNumber\":\"sw420-1\"}",
              ip[0], ip[1], ip[2], ip[3]);
     mqttClient.publish(TOPIC_CONNECTION, payload, true);
   }
 }
 
-void publishState(const char* ampel) {
+void publishState(bool vibrationDetected) {
   if (!mqttClient.connected()) return;
   char payload[80];
-  snprintf(payload, sizeof(payload), "{\"ampel\":\"%s\",\"impulseCount\":%lu,\"ts\":\"\"}",
-           ampel, impulseCount);
+  snprintf(payload, sizeof(payload), "{\"vibrationDetected\":%s,\"impulseCount\":%lu,\"ts\":\"\"}",
+           vibrationDetected ? "true" : "false", impulseCount);
   mqttClient.publish(TOPIC_STATE, payload, true);
 }
 #endif
@@ -74,7 +76,7 @@ void setup() {
   mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
   mqttClient.setBufferSize(256);
   mqttReconnect();
-  publishState("GRUEN");
+  publishState(false);
 #endif
 
   Serial.println("System bereit. Warte auf Vibration...");
@@ -106,7 +108,7 @@ void loop() {
     digitalWrite(RELAY_GRUEN, LOW);   // Grün AUS
     digitalWrite(RELAY_ROT, HIGH);   // Rot/Sirene AN
 #if USE_MQTT
-    publishState("ROT");
+    publishState(true);
 #endif
 
     delay(alarmDauer);
@@ -114,7 +116,7 @@ void loop() {
     digitalWrite(RELAY_GRUEN, HIGH);  // Grün AN
     digitalWrite(RELAY_ROT, LOW);    // Rot/Sirene AUS
 #if USE_MQTT
-    publishState("GRUEN");
+    publishState(false);
 #endif
     Serial.println("System beruhigt. Überwachung läuft...");
   }

@@ -33,20 +33,20 @@
 
 | Topic                                              | Zweck                         |
 |----------------------------------------------------|-------------------------------|
-| `osf/arduino/vibration/sw420-1/state`             | Status (ampel, impulseCount)   |
-| `osf/arduino/vibration/sw420-1/connection`        | LWT, Online-Status, IP        |
+| `osf/arduino/vibration/sw420-1/state`             | SW-420 Status (vibrationDetected, impulseCount) |
+| `osf/arduino/vibration/sw420-1/connection`        | LWT (connectionState OFFLINE), Online: connectionState, ip, serialNumber |
 | `osf/arduino/vibration/sw420-1/value`             | (optional) Rohwert            |
 
-**state-Payload:**
+**state-Payload (SW-420 Sensor-Signal, OSF-UI mappt auf Ampel):**
 ```json
 {
-  "ampel": "GRUEN",
+  "vibrationDetected": false,
   "impulseCount": 0,
-  "lastImpulseAt": "2026-02-23T12:05:00Z",
   "ts": "2026-02-23T12:05:01Z"
 }
 ```
-Werte für `ampel`: `GRUEN`, `ROT`, ggf. `GELB`.
+- `vibrationDetected`: boolean – direktes SW-420-Signal (Vibration erkannt ja/nein)
+- Hardware: SW-420 → Relais → Ampel (Grün/Rot+Sirene). UI: vibrationDetected → Ampel-Darstellung.
 
 ---
 

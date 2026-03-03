@@ -119,17 +119,17 @@ function createOsfVibrationFixture(): Observable<RawMqttMessage> {
   return from([
     {
       topic: 'osf/arduino/vibration/sw420-1/connection',
-      payload: { online: true, ip: '192.168.0.95' },
+      payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'sw420-1' },
       timestamp: ts,
     },
     {
       topic: 'osf/arduino/vibration/sw420-1/state',
-      payload: { ampel: 'GRUEN', impulseCount: 0, ts: '' },
+      payload: { vibrationDetected: false, impulseCount: 0, ts: '' },
       timestamp: ts,
     },
     {
       topic: 'osf/arduino/vibration/sw420-1/state',
-      payload: { ampel: 'ROT', impulseCount: 42, ts: '' },
+      payload: { vibrationDetected: true, impulseCount: 42, ts: '' },
       timestamp: new Date(Date.now() + 1000).toISOString(),
     },
   ]);
