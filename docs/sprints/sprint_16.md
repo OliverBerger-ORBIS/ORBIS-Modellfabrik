@@ -54,9 +54,10 @@
 - [x] UC-00  Outcomes: 6 Use-Cases (UC-01 bis UC-06) als Outcomes in Process view & target systems darstellen als 6 Boxen mit Titel uns SVG-ICON.
 - [x] a1-DE: TODO Review-Kommentare einarbeiten
 - [x] UC-00: Prüfung ob DSP-Spalte angepasst werden soll: Erweiterung von Normalize -> Enrich -> Correlate , ggf Darstellung des Vorgehensmodells. Wir halten die DSP-Spalte im UC-00 bewusst schlank, weil UC-00 das Architektur-Prinzip „Event-to-Process“ (Normalize/Enrich/Correlate) visualisiert, während das Vorgehensmodell/Reifegradmodell eine Delivery-/Transformationssicht ist
-- [ ] A2: Review-Prozess, 
-- [ ] A3 Review mit UC-06 überarbeiten
-- [ ] A4 Closed Loops – Draft erstellen
+- [ ] **A2 Review** (UC-01 Track & Trace): Review-Prozess
+- [ ] **A3 Review** (UC-02 3 Datentöpfe, UC-06 Process Optimization): Überarbeiten
+- [x] **A4 Draft** (UC-03 AI Lifecycle, UC-04 Closed Loop Quality, UC-05 Predictive Maintenance): Erstellt
+- [ ] **A4 Review** (UC-03, UC-04, UC-05): Review-Prozess
 
 ### Sprint-Abschluss (Pflicht vor Neuanlage Sprint 17)
 - [ ] Sprint-Dokument: Status → "Abgeschlossen", Abschlussdatum setzen
@@ -70,7 +71,9 @@
 
 *Tasks bei Gelegenheit angehen. Offene `[ ]` beim nächsten Sprint übernehmen.*
 
-- *(aktuell leer)*
+- **Arduino MPU-6050:** Vibrationssensor-Upgrade (I2C, Beschleunigung/Gyro) – Vorgehen: [arduino-vibrationssensor.md](../05-hardware/arduino-vibrationssensor.md) §5; Sketch analog SW-420 (Ethernet+MQTT), Topic `osf/arduino/vibration/mpu6050-1/state` mit amplitude/frequency statt vibrationDetected; OSF-UI Sensor-Tab erweitern (Gelb für Schwellenwert)
+- **Customer Architecture Netzsch:** Neue DSP-Customer-Config `NETZSCH_CONFIG` anlegen – Vorlage: `osf/apps/osf-ui/.../customer/ecme/` und `customer-selector-page.component.ts` (FMF_CONFIG, ECME_CONFIG); Netzsch-Page-Komponente, Route `/dsp/customer/netzsch`, in `availableCustomers` registrieren; Doku in `docs/` oder `osf/apps/osf-ui/.../components/dsp-animation/configs/`
+- **CCU: Quality-Fail ersetzt Order:** Bei CHECK_QUALITY result=FAILED erstellt CCU automatisch neuen Production-Order (FITEFF22-657). Soll deaktivierbar sein – Änderung: `integrations/APS-CCU/central-control/src/modules/order/management/order-management.ts` in `handleActionUpdateQualityCheckFailure` (Zeile 614–633); Config/Env `SKIP_REPLACE_ORDER_ON_QUALITY_FAILURE=true` einführen; bei true nur Order auf ERROR setzen, kein `createOrder`; Deploy: CCU Docker-Image neu bauen, auf RPi deployen ([DEPLOYMENT.md](../../integrations/APS-CCU/DEPLOYMENT.md))
 
 ---
 

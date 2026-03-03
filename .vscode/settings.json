@@ -24,6 +24,9 @@
     "**/dist/**": true,
     "**/build/**": true,
     "**/data/osf-data/sessions/**": true,
+    "**/.venv/**": true,
+    "**/.nx/**": true,
+    "**/coverage/**": true,
     "**/*.log": true,
     "**/*.db": true
   },
@@ -35,6 +38,9 @@
     "**/dist": true,
     "**/build": true,
     "**/data/osf-data/sessions": true,
+    "**/.venv": true,
+    "**/.nx": true,
+    "**/coverage": true,
     "**/*.log": true,
     "**/*.db": true
   },
