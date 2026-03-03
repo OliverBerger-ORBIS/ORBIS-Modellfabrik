@@ -258,15 +258,18 @@ CCU-Backend publishes: fts/v1/ff/5iO4/order
 
 | Topic-Typ | Retain | Begründung |
 |-----------|--------|------------|
-| `*/connection` | Yes | Letzter Status bei Broker-Reconnect sofort verfügbar |
+| `*/connection` | Yes | Letzter Status bei Connect/Reconnect sofort verfügbar |
 | `*/state` | Yes | UI-Persistenz, „Reduces MQTT traffic by ~95%“ (nur bei Änderung) |
 | `*/factsheet` | Yes | Modul-Metadaten beim Start laden |
+| `ccu/state/*`, `ccu/order/active`, `ccu/order/completed` | Yes | Fabrik-Setup für UI-Seitenaufbau |
 | Commands | No | Keine Persistenz nötig |
+
+**Merksatz:** Die Nachrichten, die die UI zum Aufbau der Seiten benötigt (layout, state, connection, factsheet, stock, order/active, order/completed), liegen im Broker als retained. Bei **Connect** oder **Reconnect** ist die notwendige Info sofort verfügbar – keine Leer-Anzeige.
 
 ### State-Message-Verhalten
 
 - State **nur bei Änderung** (event-driven), kein periodischer 30s-Refresh
-- Retained für UI-Persistenz nach Reconnect
+- Retained für UI-Persistenz bei Connect/Reconnect
 
 ---
 

@@ -142,21 +142,26 @@ def show_session_recorder():
 
     # Recording-Controls
     st.subheader("🔴 Aufnahme")
+    st.caption(
+        "💡 **Tipp:** Aufnahme vor dem Verbinden starten – dann werden retained Messages (State/Connection/Factsheet) mit erfasst."
+    )
 
-    if not st.session_state.session_recorder["connected"]:
-        st.warning("⚠️ Bitte zuerst MQTT Broker verbinden")
-    elif not st.session_state.session_recorder["session_name"]:
+    if not st.session_state.session_recorder["session_name"]:
         st.warning("⚠️ Bitte Session-Name eingeben")
     else:
         col1, col2 = st.columns(2)
 
         with col1:
             if st.button("▶️ Aufnahme Starten", disabled=st.session_state.session_recorder["recording"], type="primary"):
-                start_recording()
-                st.session_state.session_recorder["recording"] = True
-                st.session_state.session_recorder["start_time"] = datetime.now()
-                st.success("🔴 Aufnahme gestartet!")
-                rerun_controller.request_rerun()
+                started = start_recording(mqtt_settings, rerun_controller)
+                if started:
+                    st.session_state.session_recorder["recording"] = True
+                    st.session_state.session_recorder["connected"] = True
+                    st.session_state.session_recorder["start_time"] = datetime.now()
+                    st.success("🔴 Aufnahme gestartet! (inkl. retained Messages)")
+                    rerun_controller.request_rerun()
+                else:
+                    st.error("❌ Verbindung/Aufnahme fehlgeschlagen!")
 
         with col2:
             if st.button(
@@ -272,27 +277,40 @@ def on_connect(client, userdata, flags, rc):
         logger.error(f"❌ MQTT Verbindung fehlgeschlagen: {rc}")
 
 
-def start_recording():
-    """Startet die Aufnahme"""
+def start_recording(mqtt_settings=None, rerun_controller=None) -> bool:
+    """
+    Startet die Aufnahme. Verbindet bei Bedarf automatisch zum Broker.
+    Wenn vor dem Verbinden gestartet wird, werden retained Messages mit erfasst.
+    """
     try:
         logger.info("🔴 Session-Aufnahme wird gestartet...")
 
-        # MQTT Client für Aufnahme konfigurieren
-        if st.session_state.session_recorder["mqtt_client"]:
-            mqtt_client = st.session_state.session_recorder["mqtt_client"]
-            # Topics abonnieren (falls sie deabonniert waren)
+        # Falls nicht verbunden: zuerst verbinden (damit retained Messages erfasst werden)
+        if not st.session_state.session_recorder["mqtt_client"]:
+            if not mqtt_settings:
+                from .settings_manager import SettingsManager
+
+                settings_manager = SettingsManager()
+                mqtt_settings = settings_manager.get_session_recorder_mqtt_settings()
+            message_buffer.clear()  # Frische Session – retained Messages kommen nach Connect in leeren Buffer
+            if not connect_to_broker(mqtt_settings):
+                return False
+            if rerun_controller:
+                rerun_controller.request_rerun()
+
+        mqtt_client = st.session_state.session_recorder["mqtt_client"]
+        if mqtt_client:
+            # Topics abonnieren – retained Messages kommen sofort nach Subscribe
             mqtt_client.subscribe("#")
-
-            # Session State aktualisieren
-            st.session_state.session_recorder["recording"] = True
-            st.session_state.session_recorder["message_buffer"].clear()
-
-            logger.info("✅ Session-Aufnahme gestartet - alle Topics abonniert")
-        else:
-            logger.error("❌ Kein MQTT Client verfügbar für Aufnahme")
+            # Buffer nur leeren, wenn wir gerade frisch verbunden haben (bereits oben)
+            # Sonst: bereits verbunden → retained schon da → nicht leeren
+            logger.info("✅ Session-Aufnahme gestartet - alle Topics abonniert (inkl. retained)")
+            return True
+        return False
 
     except Exception as e:
         logger.error(f"❌ Fehler beim Starten der Aufnahme: {e}")
+        return False
 
 
 def pause_recording():

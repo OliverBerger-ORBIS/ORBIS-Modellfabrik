@@ -36,4 +36,5 @@ Sprint-bezogene und projektweite Analysen für OSF.
 - [publish-buttons-tests-summary.md](publish-buttons-tests-summary.md) – Publish-Button Tests
 - [AS-IS-FISCHERTECHNIK-COMPARISON.md](AS-IS-FISCHERTECHNIK-COMPARISON.md) – Abgleich AS-IS vs. Fischertechnik
 - [INTEGRATIONS-VENDOR-ANALYSIS.md](INTEGRATIONS-VENDOR-ANALYSIS.md) – integrations vs. vendor
-- [DOKU-AUFRÄUMEN-2026-02.md](DOKU-AUFRÄUMEN-2026-02.md) – Doku-Cleanup Plan
+- [SESSION-QOS-RETAIN-ANALYSIS-20260303.md](SESSION-QOS-RETAIN-ANALYSIS-20260303.md) – QoS/Retain empirische Verifizierung (03.03.2026)
+- [SESSION-RECORDINGS-USAGE-AND-PRELOAD-AUDIT.md](SESSION-RECORDINGS-USAGE-AND-PRELOAD-AUDIT.md) – Session-Verwendung, start-osf Default, Preload-Strategie

@@ -41,6 +41,7 @@ Diese JSON-Dateien werden **automatisch alle zusammen** gesendet:
 - ✅ Typischerweise Factsheets oder andere Setup-Messages
 
 **Beispiele:**
+- `ccu_state_layout.json` - Fabrik-Layout (ccu/state/layout, retained)
 - `module_v1_ff_SVR3QA0022_factsheet.json` - HBW Module Factsheet
 - `module_v1_ff_SVR4H73275_factsheet.json` - DRILL Module Factsheet
 - `fts_v1_ff_5iO4_factsheet.json` - FTS Module Factsheet

@@ -71,7 +71,7 @@ WHERE topic LIKE '%/factsheet';
 ### 1.4 Session Replay (OSF-Tests)
 
 ```bash
-npx tsx scripts/replay-sessions.ts --session data/osf-data/sessions/auftrag-blau_1.log
+npx tsx scripts/replay-sessions.ts --session data/osf-data/sessions/start-osf_20260303_075408.log
 ```
 
 **Dokumentation:** [scripts/README-replay.md](../../scripts/README-replay.md)
@@ -84,15 +84,15 @@ npx tsx scripts/replay-sessions.ts --session data/osf-data/sessions/auftrag-blau
 
 | Quelle | Format | Felder | QoS/Retain |
 |--------|--------|--------|------------|
-| **Session Recorder** (Session Manager) | `.db` + `.log` | topic, payload, timestamp | ❌ nicht gespeichert |
+| **Session Recorder** (Session Manager, ab v1.2) | `.log` (JSON-Zeilen) | topic, payload, timestamp, qos, retain | ✅ |
 | **Topic Recorder** (Session Manager) | JSON pro Topic | topic, payload, qos, retain, timestamp | ✅ |
 
-### Log-Format (Session Recorder)
+### Log-Format (Session Recorder, ab v1.2)
 
-JSON-Lines (eine Zeile = ein Objekt):
+JSON-Lines (eine Zeile = ein Objekt), inkl. qos/retain:
 
 ```json
-{"topic": "module/v1/ff/SVR4H73275/state", "payload": "{...}", "timestamp": "2025-08-14T16:14:45.240146"}
+{"topic": "module/v1/ff/SVR4H73275/state", "payload": "{...}", "timestamp": "...", "qos": 1, "retain": true}
 ```
 
 ---
@@ -166,4 +166,5 @@ python scripts/analyze_dps_sessions.py data/osf-data/sessions/<session>.log
 - [Session Manager README](../../session_manager/README.md)
 - [Session Analysis Tab](helper_apps/session-manager/session-analysis.md)
 - [MQTT Traffic Logging](setup/mqtt-traffic-logging.md)
-- [AS-IS-FISCHERTECHNIK-COMPARISON](../../docs/07-analysis/AS-IS-FISCHERTECHNIK-COMPARISON.md) – Kontext „Session-Log-Analyse“
+- [AS-IS-FISCHERTECHNIK-COMPARISON](../07-analysis/AS-IS-FISCHERTECHNIK-COMPARISON.md) – Kontext „Session-Log-Analyse“
+- [SESSION-QOS-RETAIN-ANALYSIS-20260303](../07-analysis/SESSION-QOS-RETAIN-ANALYSIS-20260303.md) – **Empirische Verifizierung** (03.03.2026): State/Connection/Factsheet retained an realer Fischertechnik-Modellfabrik bestätigt

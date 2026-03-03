@@ -118,7 +118,7 @@
 2. ~~**00-REFERENCE/MQTT-Topic-Conventions** – Retained-Strategie ergänzen~~ ✅
 3. ~~**OSF-UI Module-Details-Sidebar** – Connection-Anzeige auf Standard-Topics umstellen~~ ✅
 4. ~~**module-serial-mapping.md** – Connection Topics Standard vs. NodeRed dokumentieren~~ ✅
-5. ~~**Optional:** Session-Log-Analyse – verifizieren, ob State-Topics retained publiziert werden~~ ⏳ **Vorbereitet, nicht verifizierbar:** Bestehende Sessions enthalten **keine** qos/retain-Daten (Session Recorder speicherte das bislang nicht). Empirische Verifizierung erfordert **Neuaufnahme an realer Fischertechnik-Modellfabrik**. Session Recorder ab v1.2 speichert qos/retain; `scripts/analyze_retain_in_logs.py` analysiert Logs mit diesen Feldern.
+5. ~~**Optional:** Session-Log-Analyse – verifizieren, ob State-Topics retained publiziert werden~~ ✅ **Verifiziert (03.03.2026):** Neuaufnahmen an realer Fischertechnik-Modellfabrik mit Session Recorder v1.2. State, Connection und Factsheet werden retained publiziert; Live-Updates sind non_retained. Siehe [SESSION-QOS-RETAIN-ANALYSIS-20260303.md](SESSION-QOS-RETAIN-ANALYSIS-20260303.md).
 
 ---
 

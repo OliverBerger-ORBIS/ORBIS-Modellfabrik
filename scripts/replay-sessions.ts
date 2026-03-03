@@ -14,8 +14,8 @@
  *   --once                   Play session once and exit (default: loop continuously)
  * 
  * Examples:
- *   tsx scripts/replay-sessions.ts --session data/osf-data/sessions/default_test_session.log
- *   tsx scripts/replay-sessions.ts --session data/osf-data/sessions/default_test_session.log --speedFactor 10
+ *   tsx scripts/replay-sessions.ts --session data/osf-data/sessions/start-osf_20260303_075408.log
+ *   tsx scripts/replay-sessions.ts --session data/osf-data/sessions/start-osf_20260303_075408.log --speedFactor 10
  */
 
 import * as fs from 'fs';
@@ -234,9 +234,9 @@ Options:
   --once                   Play session once and exit (default: loop continuously)
 
 Examples:
-  tsx scripts/replay-sessions.ts --session data/osf-data/sessions/default_test_session.log
-  tsx scripts/replay-sessions.ts --session data/osf-data/sessions/default_test_session.log --speedFactor 10
-  tsx scripts/replay-sessions.ts --session data/osf-data/sessions/default_test_session.log --once
+  tsx scripts/replay-sessions.ts --session data/osf-data/sessions/start-osf_20260303_075408.log
+  tsx scripts/replay-sessions.ts --session data/osf-data/sessions/start-osf_20260303_075408.log --speedFactor 10
+  tsx scripts/replay-sessions.ts --session data/osf-data/sessions/start-osf_20260303_075408.log --once
   `);
 }
 

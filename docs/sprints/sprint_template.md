@@ -27,7 +27,7 @@
 
 ## 📋 Backlog (optional)
 
-*Tasks bei Gelegenheit angehen – kein separates Backlog-System. Offene `[ ]` aus vorherigen Sprints übernehmen.*
+*Tasks bei Gelegenheit angehen. Offene `[ ]` beim nächsten Sprint übernehmen.*
 
 - [ ] *(Beispiel: Session-Log-Analyse, Dokumentations-Lücken, …)*
 

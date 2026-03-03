@@ -29,7 +29,11 @@
 
 **Doku-Audit-Pfad:** ✅ [AS-IS vs. Fischertechnik Vergleich](../07-analysis/AS-IS-FISCHERTECHNIK-COMPARISON.md) – Abweichungen und Lücken dokumentiert. Autoritative Quelle: [fischertechnik-official/](../06-integrations/fischertechnik-official/).
 - [x] **Tiefenanalyse Fischertechnik vs. OSF-UI:** Aktualisierung bei App-Start, Datenspeicherung, Topics, Architektur-Pattern → [FISCHERTECHNIK-VS-OSF-UI-STARTUP-AND-DATA.md](../07-analysis/FISCHERTECHNIK-VS-OSF-UI-STARTUP-AND-DATA.md)
-  
+- [x] **Session-Log-Analyse:** QoS/Retained für State-Topics empirisch verifiziert (03.03.2026) – 13 Sessions an realer Fischertechnik-Modellfabrik mit Session Recorder v1.2. State/Connection/Factsheet retained bestätigt. → [SESSION-QOS-RETAIN-ANALYSIS-20260303.md](../07-analysis/SESSION-QOS-RETAIN-ANALYSIS-20260303.md)
+
+### OSF-UI
+- [x] **I18n/Übersetzungen:** ~400 Keys de/fr ergänzt, src/public locale synchron
+
 ### ERP/MES Integration
 - [x] Erweiterung der APS/FMF/CCU-Komponente: Order/request-Topic von (DSP_Edge) sendet zusätzlich eine request-ID, CCU sendet Order/response mit requestId und orderId  
   → **Doku:** [order-requestid-extension.md](../07-analysis/order-requestid-extension.md) | **Analyse Deployment:** [ccu-modification-and-deployment-analysis.md](../07-analysis/ccu-modification-and-deployment-analysis.md)
@@ -63,10 +67,9 @@
 
 ## 📋 Backlog (optional)
 
-*Tasks bei Gelegenheit angehen – kein separates Backlog-System.*
+*Tasks bei Gelegenheit angehen. Offene `[ ]` beim nächsten Sprint übernehmen.*
 
-- [ ] **Session-Log-Analyse:** QoS/Retained für State-Topics empirisch verifizieren – **erfordert Neuaufnahme an realer Fischertechnik-Modellfabrik** (bestehende Sessions haben keine qos/retain-Daten). Session Recorder v1.2+ speichert sie; danach `scripts/analyze_retain_in_logs.py` → [Anleitung](../04-howto/session-log-analyse.md), Kontext: [AS-IS vs. Fischertechnik](../07-analysis/AS-IS-FISCHERTECHNIK-COMPARISON.md)
-- [x] **OSF-UI fehlende Übersetzungen:** ~400 Keys de/fr ergänzt, src/public locale synchron.
+- *(aktuell leer)*
 
 ---
 
