@@ -23,6 +23,9 @@
     - ~~Bei `CHECK_QUALITY result=FAILED` erstellt CCU automatisch neuen Production-Order.~~ **Umgesetzt:** Kein Ersatzauftrag mehr; Order bleibt auf ERROR (Option B, siehe [ccu-quality-fail-behaviour-2026-03.md](../07-analysis/ccu-quality-fail-behaviour-2026-03.md)).
     - OSF-MODIFICATIONS.md Modifikation 2; Unit-Test angepasst.
     - Deploy: CCU Docker-Image neu bauen, auf RPi deployen ([DEPLOYMENT.md](../../integrations/APS-CCU/DEPLOYMENT.md)); E2E-Test nach Deploy (T5).
+- [x] **TXT-AIQS: QoS 1 für quality_check:** 
+    - `sorting_line.py` / `sorting_line.blockly`: QoS von 2 auf 1 (Status-Topic, kein Command). Beide Varianten (`_cam`, `_cam_clfn`), Doku aktualisiert, .ft-Archive repackt.
+    - Deploy: .ft per RoboPro auf TXT flashen – erfolgt später.
 
 ### Arduino-Hardware & LogiMAT
 - [ ] **Arduino MPU-6050:** Vibrationssensor-Upgrade (I2C, Beschleunigung/Gyro) – Vorgehen: [arduino-vibrationssensor.md](../05-hardware/arduino-vibrationssensor.md) §5 und Topic `osf/arduino/vibration/mpu6050-1/state`.

@@ -13,7 +13,7 @@
 |-------------|------|
 | **Topic** | `/j1/txt/1/i/quality_check` |
 | **Publisher** | TXT-AIQS (192.168.0.103), Varianten `_cam` oder `_cam_clfn` |
-| **QoS** | 2, Retain: true |
+| **QoS** | 1, Retain: true |
 | **Trigger** | Nach jedem Quality-Check (CHECK_QUALITY) |
 
 **Payload (JSON):**

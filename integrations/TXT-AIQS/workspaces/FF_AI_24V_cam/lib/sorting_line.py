@@ -184,7 +184,7 @@ def publish_quality_check_image(result, num):
       mqtt_get_client().publish(
           topic='/j1/txt/1/i/quality_check',
           payload=json.dumps(payload_obj),
-          qos=2,
+          qos=1,
           retain=True
       )
       print('Quality check image published')

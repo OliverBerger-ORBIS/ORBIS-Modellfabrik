@@ -11,7 +11,7 @@
 | Eigenschaft | Wert |
 |-------------|------|
 | **Topic** | `/j1/txt/1/i/quality_check` |
-| **QoS** | 2 |
+| **QoS** | 1 |
 | **Retain** | true |
 | **Publisher** | TXT-AIQS Controller (RoboPro-Projekt `FF_AI_24V_cam_clfn`) |
 | **Trigger** | Nach jedem Quality-Check (CHECK_QUALITY Command oder manuell) |
