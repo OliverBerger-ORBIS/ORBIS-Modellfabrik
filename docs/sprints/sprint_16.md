@@ -1,7 +1,7 @@
 # Sprint 16 – Vibration-Sensor, Doku-Check, Marketing-Konsistenz
 
 **Zeitraum:** 19.02.2026 - 04.03.2026 (2 Wochen)  
-**Status:** Laufend  
+**Status:** Abgeschlossen
 
 **Stakeholder-Update:** Fokus auf Hardware-Integration (Vibration-Sensor), Dokumentationsbereinigung und Konsistenz-Check Marketing vs. Use-Cases.
 
@@ -60,10 +60,10 @@
 - [ ] **A4 Review** (UC-03, UC-04, UC-05): Review-Prozess
 
 ### Sprint-Abschluss (Pflicht vor Neuanlage Sprint 17)
-- [ ] Sprint-Dokument: Status → "Abgeschlossen", Abschlussdatum setzen
-- [ ] Neuer Sprint: Aus Template anlegen (`sprint_17.md`), offene `[ ]` übernehmen (inklusive Backlog)
-- [ ] PROJECT_STATUS: Neue Tabellenzeile (Sprint 17, Zeitraum, ORBIS-Projekt, OSF-Phase, Externe Events)
-- [ ] Roadmap prüfen: Phasen/Daten noch stimmig? (bei Bedarf anpassen)
+- [x] Sprint-Dokument: Status → "Abgeschlossen", Abschlussdatum setzen
+- [x] Neuer Sprint: Aus Template anlegen (`sprint_17.md`), offene `[ ]` übernehmen (inklusive Backlog)
+- [x] PROJECT_STATUS: Neue Tabellenzeile (Sprint 17, Zeitraum, ORBIS-Projekt, OSF-Phase, Externe Events)
+- [x] Roadmap prüfen: Phasen/Daten noch stimmig? (bei Bedarf anpassen)
 
 ---
 
@@ -74,6 +74,9 @@
 - **Arduino MPU-6050:** Vibrationssensor-Upgrade (I2C, Beschleunigung/Gyro) – Vorgehen: [arduino-vibrationssensor.md](../05-hardware/arduino-vibrationssensor.md) §5; Sketch analog SW-420 (Ethernet+MQTT), Topic `osf/arduino/vibration/mpu6050-1/state` mit amplitude/frequency statt vibrationDetected; OSF-UI Sensor-Tab erweitern (Gelb für Schwellenwert)
 - **Customer Architecture Netzsch:** Neue DSP-Customer-Config `NETZSCH_CONFIG` anlegen – Vorlage: `osf/apps/osf-ui/.../customer/ecme/` und `customer-selector-page.component.ts` (FMF_CONFIG, ECME_CONFIG); Netzsch-Page-Komponente, Route `/dsp/customer/netzsch`, in `availableCustomers` registrieren; Doku in `docs/` oder `osf/apps/osf-ui/.../components/dsp-animation/configs/`
 - **CCU: Quality-Fail ersetzt Order:** Bei CHECK_QUALITY result=FAILED erstellt CCU automatisch neuen Production-Order (FITEFF22-657). Soll deaktivierbar sein – Änderung: `integrations/APS-CCU/central-control/src/modules/order/management/order-management.ts` in `handleActionUpdateQualityCheckFailure` (Zeile 614–633); Config/Env `SKIP_REPLACE_ORDER_ON_QUALITY_FAILURE=true` einführen; bei true nur Order auf ERROR setzen, kein `createOrder`; Deploy: CCU Docker-Image neu bauen, auf RPi deployen ([DEPLOYMENT.md](../../integrations/APS-CCU/DEPLOYMENT.md))
+- **Anpassung Produktions-Auftrag "2-mal Bohren" (Product WHITE):** Szenario-Analyse für Prozessanpassung über gesamte Kette (ERP -> CCU -> Shopfloor -> UI).
+  - **Fragestellung:** Was muss geändert werden, um Product WHITE im Default-Prozess 2-mal bohren zu lassen?
+  - **Zu klären:** Anpassung Workplan (CCU `default-workplans.ts`?), Orchestrierungs-Logik (Loop/Repeat Step?), Auswirkungen auf MQTT-Befehle an Bohrmaschine und UI-Fortschrittsanzeige. Dient als Blueprint für "Customizing/Change Request".
 
 ---
 

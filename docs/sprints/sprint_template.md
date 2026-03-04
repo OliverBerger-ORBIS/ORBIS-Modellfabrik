@@ -17,10 +17,11 @@
 ### [Kategorie 2]
 - [ ] Task 3
 
-### Sprint-Abschluss (Pflicht vor Neuanlage nächster Sprint)
-- [ ] Sprint-Dokument: Status → "Abgeschlossen", Abschlussdatum setzen
-- [ ] Neuer Sprint: Aus Template anlegen, offene `[ ]` übernehmen
-- [ ] PROJECT_STATUS: Neue Tabellenzeile (Sprint, Zeitraum, ORBIS-Projekt, OSF-Phase, Externe Events)
+### Sprint-Abschluss (Vorbereitung Sprint [X+1])
+*Erledigung dieser Aufgaben bevor Sprint X+1 startet.*
+- [ ] Sprint-Dokument [Sprint X]: Status → "Abgeschlossen", Abschlussdatum setzen
+- [ ] Neuer Sprint [Sprint X+1]: Aus Template anlegen, offene `[ ]` übernehmen
+- [ ] PROJECT_STATUS: Neue Zeile für Sprint X+1 anlegen (Zeitraum korrekt füllen)
 - [ ] Roadmap prüfen: Phasen/Daten noch stimmig? (bei Bedarf anpassen)
 
 ---

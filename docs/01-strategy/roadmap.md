@@ -1,7 +1,7 @@
 # ORBIS SmartFactory – Roadmap & Entwicklungsphasen
 
 **Version:** 2.0  
-**Letzte Aktualisierung:** 2026-02-18  
+**Letzte Aktualisierung:** 2026-03-04  
 
 ---
 
@@ -70,13 +70,13 @@ OSF-UI ←→ APS-CCU ←→ APS-NodeRED ←→ ORBIS-DSP ←→ OPC-UA Module
 ---
 
 ### **Phase 5: Erweiterbare Plattform – Messevorbereitung**
-- **Status:** 🔄 In Bearbeitung
+- **Status:** 🔄 In Bearbeitung (Fokus Sprint 16/17)
 - **Ausgangslage:** Fischertechnik-Dokumentation liegt vor und erleichtert Erweiterungen.
 - **Erweiterungsrichtungen:**
-  - **Hardware:** z.B. Arduino Vibrationssensor → Use Case Predictive Maintenance (`docs/05-hardware/arduino-vibrationssensor.md`)
-  - **APS-CCU:** ERP/MES-Integration (geplant, ggf. temporär bis DSP CCU übernimmt; Parallelbetrieb möglich)
+  - **Hardware:** ✅ Arduino Vibrationssensor integriert (Sprint 16). 🔄 **Neu:** Ampel-System (neuer Sensor) für LogiMAT. Use Case: Predictive Maintenance / Monitoring.
+  - **APS-CCU:** 🔄 ERP/MES-Integration (QM-Check Verlagerung, Order-Steuerung) – **Aktueller Fokus.**
 - **Aktuelle Prioritäten:**
-  - **LogiMAT 2026**
+  - **LogiMAT 2026:** (24.–26.03.2026) – Showcase Readiness sicherstellen.
   - **Hannover Messe 2026**
   - **ORBIS Customer-Connect Event 2026** (Ende April 2026)
 

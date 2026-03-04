@@ -27,11 +27,15 @@ Jeder Sprint dokumentiert Ziele, Fortschritt (Checkliste) und offene Punkte.
 ### Strategy & Roadmap (01-strategy/)
 - **Aktualisierung:** Seltener; bei Sprint-Abschluss als impliziter Check: Sind Phasen/Daten noch stimmig?
 
-### Sprint-Abschluss (Pflicht ab Sprint 16)
-1. **Sprint-Dokument:** Status → „Abgeschlossen“, Abschlussdatum setzen
-2. **Neuer Sprint:** Aus Template anlegen (`sprint_XX.md`), offene `[ ]` übernehmen
-3. **PROJECT_STATUS:** Neue Tabellenzeile für nächsten Sprint, Externe Events eintragen
-4. **Roadmap prüfen:** Sind Phasen/Versionen/Daten noch aktuell? (bei Bedarf anpassen)
+### Sprint-Abschluss (Pflicht vor Neuanlage nächster Sprint)
+Diese Aufgaben sind **Teil des laufenden Sprints** und müssen erledigt sein, **bevor** der neue Sprint gestartet wird.
+
+1. **Sprint-Dokument:** Status → „Abgeschlossen“, Abschlussdatum setzen.
+2. **Neuer Sprint:** Aus Template anlegen (`sprint_XX.md`), offene `[ ]` aus dem alten Sprint übernehmen.
+3. **PROJECT_STATUS:** Neue Tabellenzeile für nächsten Sprint anlegen, Externe Events eintragen.
+4. **Roadmap prüfen:** Sind Phasen/Versionen/Daten noch aktuell? (bei Bedarf anpassen).
+
+*Hinweis: Der neue Sprint enthält dann wieder einen eigenen "Sprint-Abschluss"-Block für den darauf folgenden Wechsel.*
 
 ---
 

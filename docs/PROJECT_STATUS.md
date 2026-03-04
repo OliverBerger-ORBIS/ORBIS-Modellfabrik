@@ -1,22 +1,30 @@
 # ORBIS SmartFactory – Projektstatus
 
-**Letzte Aktualisierung:** 2026-02-18
+**Letzte Aktualisierung:** 2026-03-04
 
 > **Workflow:** Die Sprint-Tabelle wird bei jedem Sprint-Abschluss aktualisiert (neue Zeile, Events).  
 > Details: [sprints_README.md – Dokumenten-Workflow](sprints/sprints_README.md#-dokumenten-workflow-aktualität-sicherstellen)
 
 ## 🚦 Aktueller Status
-- OSF (vormals OMF3) produktionsreif für Kunden-Demos
-- OMF2 als Legacy eingefroren
-- Aktuelle Entwicklung: Phase 5 – Erweiterbare Plattform (LogiMAT, Hannover Messe, Customer-Connect 2026)
-- **ORBIS-SmartFactory** ab Sprint 13 (Genehmigung ausstehend, Arbeit wird fortgeführt)
+- OSF (vormals OMF3) produktionsreif für Kunden-Demos / LogiMAT 2026.
+- OMF2 als Legacy eingefroren.
+- Aktuelle Entwicklung: Phase 5 – Erweiterbare Plattform (LogiMAT, Hannover Messe, Customer-Connect 2026).
+- **ORBIS-SmartFactory** ab Sprint 13 (Genehmigung ausstehend, Arbeit wird fortgeführt).
 
 ## 🔥 Aktuelle Schwerpunkte
-- Messevorbereitung: LogiMAT 2026, Hannover Messe 2026, ORBIS Customer-Connect 2026 (Ende April)
-- Arduino Vibrationssensor (Predictive Maintenance)
-- Azure DevOps Migration & Docker-Setup
-- Storytelling-Blog-Serie
-- ERP/MES-Integration (geplant)
+- LogiMAT-Vorbereitung (Messe-Setup, Hardware: Ampel-System).
+- MES-Integration: Prozessanpassungen (z.B. "2-mal Bohren").
+- Azure DevOps Migration.
+- Arduino: Vibrationssensor (Basis) fertig, Erweiterung Ampel-System in Arbeit.
+- Storytelling-Blog-Serie.
+
+## 📅 Roadmap & Meilensteine
+
+| Sprint | Zeitraum | Ereignis / Fokus | Status |
+|--------|----------|------------------|--------|
+| **17** | **05.03.26 - 18.03.26** | **MES/Integration & LogiMAT Vorbereitung** | **Laufend** |
+| 16 | 19.02.26 - 04.03.26 | Vibration-Sensor, Doku-Check, Marketing-Konsistenz | Abgeschlossen |
+| 15 | 05.02.26 - 18.02.26 | OSF-UI Docker, RPi-Deploy, Abschlussbericht | Abgeschlossen |
 
 ## 📊 Sprint-Übersicht
 
@@ -38,6 +46,7 @@
 | 14 | 22.01 - 04.02.2026 | ORBIS-SmartFactory | Phase 4 | — |
 | 15 | 05.02 - 18.02.2026 | ORBIS-SmartFactory | Phase 4 (v0.7.10) | OSF-Präsentation Glaston (10.02.) |
 | 16 | 19.02 - 04.03.2026 | ORBIS-SmartFactory | Phase 5 | — |
+| 17 | 05.03 - 18.03.2026 | ORBIS-SmartFactory | Phase 5 | LogiMAT Vorbereitung |
 
 > **Spalten-Erläuterung:**  
 > - **ORBIS-Projekt:** Interne Projektzuordnung für Abrechnung (ORBIS-Modellfabrik bzw. ORBIS-SmartFactory).  
