@@ -18,6 +18,7 @@ TXT-AIQS is the AI Quality System TXT controller responsible for quality control
 - **Configuration:** `/integrations/TXT-AIQS/data/config.json`
 - **Main Program:** `/integrations/TXT-AIQS/FF_AI_24V.py` (minimal, extracted)
 - **Source Archive:** `FF_AI_24V.ft` (ZIP archive with complete source)
+- **DSP OPC-UA Referenz:** [AIQS-OPCUA-DSP-REFERENCE.md](AIQS-OPCUA-DSP-REFERENCE.md) – Good/Bad-Status direkt aus OPC-UA auslesen
 
 ## Projekt-Struktur und FF_AI_24V-Varianten
 

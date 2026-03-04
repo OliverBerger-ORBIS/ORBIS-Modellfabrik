@@ -11,7 +11,6 @@
 
 ### Übernommen aus Sprint 16 (Open Tasks)
 - [ ] **Azure DevOps Migration:** Von Github zu Azure Devops (Repo + Boards)
-- [ ] **Doku Cleanup:** PROJECT_STATUS und Roadmap prüfen
 - [ ] **Projektantrag:** ORBIS-Smartfactory Q1/Q2 2026 finalisieren
 - [ ] **DSP_Edge:** Implementierung `dsp/correlation/info` (als Response auf Request oder Unsolicited nach Order-Response)
 
@@ -20,11 +19,10 @@
 - [ ] **QM-Check Verlagerung (CCU Ausbau):** 
     - Logik implementieren, damit der QM-Check (Quality Result) von DSP/MES übernommen werden kann.
     - Ausbau der Funktionalität in der CCU (`integrations/APS-CCU`), um externe QM-Entscheidungen zu verarbeiten.
-- [ ] **CCU: Quality-Fail ersetzt Order (WESENTLICHER SCHRITT):** 
-    - Bei `CHECK_QUALITY result=FAILED` erstellt CCU aktuell automatisch neuen Production-Order.
-    - Dies muss konfigurierbar sein: Config/Env `SKIP_REPLACE_ORDER_ON_QUALITY_FAILURE=true` einführen.
-    - Bei `true` nur Order auf ERROR setzen, kein `createOrder`. 
-    - Deploy: CCU Docker-Image neu bauen, auf RPi deployen ([DEPLOYMENT.md](../../integrations/APS-CCU/DEPLOYMENT.md)).
+- [x] **CCU: Quality-Fail ersetzt Order (WESENTLICHER SCHRITT):** 
+    - ~~Bei `CHECK_QUALITY result=FAILED` erstellt CCU automatisch neuen Production-Order.~~ **Umgesetzt:** Kein Ersatzauftrag mehr; Order bleibt auf ERROR (Option B, siehe [ccu-quality-fail-behaviour-2026-03.md](../07-analysis/ccu-quality-fail-behaviour-2026-03.md)).
+    - OSF-MODIFICATIONS.md Modifikation 2; Unit-Test angepasst.
+    - Deploy: CCU Docker-Image neu bauen, auf RPi deployen ([DEPLOYMENT.md](../../integrations/APS-CCU/DEPLOYMENT.md)); E2E-Test nach Deploy (T5).
 
 ### Arduino-Hardware & LogiMAT
 - [ ] **Arduino MPU-6050:** Vibrationssensor-Upgrade (I2C, Beschleunigung/Gyro) – Vorgehen: [arduino-vibrationssensor.md](../05-hardware/arduino-vibrationssensor.md) §5 und Topic `osf/arduino/vibration/mpu6050-1/state`.
@@ -65,13 +63,15 @@
 
 ## 🔗 Entscheidungen
 
-*Wird bei Bedarf ergänzt.*
+- [docs/03-decision-records/](../03-decision-records/)
+- *Temporäre Analyse (CCU Quality-Fail):* [docs/07-analysis/ccu-quality-fail-behaviour-2026-03.md](../07-analysis/ccu-quality-fail-behaviour-2026-03.md) – vor Commit prüfen: behalten, integrieren oder löschen
 
 ---
 
 ## 📎 Referenzen
 - [Use-Case Bibliothek](../02-architecture/use-case-library.md)
 - [Arduino Vibrationssensor](../05-hardware/arduino-vibrationssensor.md)
+- Session (Quality-Fail Ablauf): `data/osf-data/sessions/mixed-sw-pw-sw-pwnok-pw_20260303_093559.log`
 
 ---
 

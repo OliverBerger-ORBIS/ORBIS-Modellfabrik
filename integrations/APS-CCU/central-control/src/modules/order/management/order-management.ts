@@ -618,18 +618,9 @@ export class OrderManagement {
     step.state = OrderState.ERROR;
     // cancel the remaining order steps
     this.cancelRemainingSteps(order, step);
-    // as of FITEFF22-657 create a new order instead of updating the old one.
+    // OSF: No automatic replacement order – order remains ERROR; MES/DSP can decide (see OSF-MODIFICATIONS.md)
     order.state = OrderState.ERROR;
     await this.deleteFinishedOrders(order);
-
-    const orderRequest: OrderRequest = {
-      orderType: order.orderType,
-      type: order.type,
-      timestamp: order.timestamp,
-      simulationId: order.simulationId,
-    };
-    const response = await this.createOrder(orderRequest);
-    console.debug(`QUALITY_FAILURE: Replacing order ${order.orderId} with new order ${response?.orderId ?? 'FAILED'}`);
   }
 
   public async createOrder(orderRequest: OrderRequest): Promise<OrderResponse | null> {

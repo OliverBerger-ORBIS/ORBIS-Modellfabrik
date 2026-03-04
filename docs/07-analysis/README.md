@@ -38,3 +38,4 @@ Sprint-bezogene und projektweite Analysen für OSF.
 - [INTEGRATIONS-VENDOR-ANALYSIS.md](INTEGRATIONS-VENDOR-ANALYSIS.md) – integrations vs. vendor
 - [SESSION-QOS-RETAIN-ANALYSIS-20260303.md](SESSION-QOS-RETAIN-ANALYSIS-20260303.md) – QoS/Retain empirische Verifizierung (03.03.2026)
 - [SESSION-RECORDINGS-USAGE-AND-PRELOAD-AUDIT.md](SESSION-RECORDINGS-USAGE-AND-PRELOAD-AUDIT.md) – Session-Verwendung, start-osf Default, Preload-Strategie
+- [ccu-quality-fail-behaviour-2026-03.md](ccu-quality-fail-behaviour-2026-03.md) – CCU Quality-Fail: Ersatzauftrag vs. Order ERROR (Sprint 17, temporär)

@@ -650,8 +650,8 @@ describe('Test order management handling', () => {
     expect(underTest.isQualityCheckFailure(prodStepD, QualityResult.FAILED)).toBe(false);
   });
 
-  it('should try to create a new order when the quality check fails', async () => {
-    const configSpy = jest.spyOn(OrderManagement.getInstance(), 'createOrder').mockResolvedValue(null);
+  it('should NOT create replacement order when quality check fails (order remains ERROR)', async () => {
+    const createOrderSpy = jest.spyOn(OrderManagement.getInstance(), 'createOrder');
 
     const orderId = 'orderId';
     const navStepId = 'navStepId';
@@ -698,6 +698,9 @@ describe('Test order management handling', () => {
 
     await underTest.handleActionUpdate(orderId, prodStepId, State.FINISHED, QualityResult.FAILED);
 
+    // OSF: No automatic replacement order - MES/DSP will decide (see OSF-MODIFICATIONS.md)
+    expect(createOrderSpy).not.toHaveBeenCalled();
+
     const expectedProdStep: OrderManufactureStep = {
       type: 'MANUFACTURE',
       state: OrderState.ERROR,
@@ -727,16 +730,10 @@ describe('Test order management handling', () => {
       stoppedAt: MOCKED_DATE,
     };
 
-    expect(configSpy).toHaveBeenCalledWith(<OrderRequest>{
-      type: workpiece,
-      timestamp: MOCKED_DATE,
-      orderType: 'PRODUCTION',
-    });
     expect(mqtt.publish).toHaveBeenNthCalledWith(1, CcuTopic.COMPLETED_ORDERS, JSON.stringify([expectedActiveOrder]), {
       qos: 2,
       retain: true,
     });
-    // The testcase does not create a new order, only checks if the function to create a new order is called
     expect(mqtt.publish).toHaveBeenNthCalledWith(3, CcuTopic.ACTIVE_ORDERS, JSON.stringify([]), {
       qos: 2,
       retain: true,

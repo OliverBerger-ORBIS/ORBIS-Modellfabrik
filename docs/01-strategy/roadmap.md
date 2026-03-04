@@ -69,12 +69,13 @@ OSF-UI ←→ APS-CCU ←→ APS-NodeRED ←→ ORBIS-DSP ←→ OPC-UA Module
 
 ---
 
-### **Phase 5: Erweiterbare Plattform – Messevorbereitung**
+### **Phase 5: Erweiterbare Plattform – MES/DSP-Integration**
 - **Status:** 🔄 In Bearbeitung (Fokus Sprint 16/17)
+- **Strategic direction:** ORBIS MES und DSP übernehmen zunehmend die Steuerung (z.B. QM-Check, Order-Entscheidungen). APS-CCU dient als Interim-Layer bis zur vollständigen Übernahme.
 - **Ausgangslage:** Fischertechnik-Dokumentation liegt vor und erleichtert Erweiterungen.
 - **Erweiterungsrichtungen:**
   - **Hardware:** ✅ Arduino Vibrationssensor integriert (Sprint 16). 🔄 **Neu:** Ampel-System (neuer Sensor) für LogiMAT. Use Case: Predictive Maintenance / Monitoring.
-  - **APS-CCU:** 🔄 ERP/MES-Integration (QM-Check Verlagerung, Order-Steuerung) – **Aktueller Fokus.**
+  - **APS-CCU:** 🔄 ERP/MES-Integration (QM-Check Verlagerung, Order-Steuerung, Quality-Fail-Verhalten). CCU-Modifikationen: [OSF-MODIFICATIONS.md](../../integrations/APS-CCU/OSF-MODIFICATIONS.md) (siehe [DR-20](../03-decision-records/20-aps-ccu-osf-modifications-documentation.md)).
 - **Aktuelle Prioritäten:**
   - **LogiMAT 2026:** (24.–26.03.2026) – Showcase Readiness sicherstellen.
   - **Hannover Messe 2026**

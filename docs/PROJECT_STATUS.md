@@ -13,6 +13,7 @@
 
 ## 🔥 Aktuelle Schwerpunkte
 - LogiMAT-Vorbereitung (Messe-Setup, Hardware: Ampel-System).
+- **Phase 5 – MES/DSP-Integration:** ORBIS MES und DSP übernehmen zunehmend die Steuerung (QM-Check, Order-Entscheidungen). APS-CCU als Interim-Layer; Modifikationen: [integrations/APS-CCU/OSF-MODIFICATIONS.md](../integrations/APS-CCU/OSF-MODIFICATIONS.md).
 - MES-Integration: Prozessanpassungen (z.B. "2-mal Bohren").
 - Azure DevOps Migration.
 - Arduino: Vibrationssensor (Basis) fertig, Erweiterung Ampel-System in Arbeit.

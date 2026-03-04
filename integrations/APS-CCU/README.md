@@ -290,6 +290,7 @@ For detailed MQTT protocol and module communication, see [MQTT Protocol Docs](do
 
 ## Additional Documentation
 
+- [OSF-MODIFICATIONS.md](OSF-MODIFICATIONS.md) - **OSF:** Abweichungen vom Fischertechnik-Original (ORBIS-Modellfabrik)
 - [DEPLOYMENT.md](DEPLOYMENT.md) - Advanced deployment options and hybrid development
 - [examples/FTS_SPIN_EXAMPLE.md](examples/FTS_SPIN_EXAMPLE.md) - **Example:** Modifying FTS Logic (Spin before docking)
 - [docs/README.md](docs/README.md) - Full MQTT protocol documentation hub

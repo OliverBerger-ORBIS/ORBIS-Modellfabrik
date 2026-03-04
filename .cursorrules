@@ -45,6 +45,13 @@
 - **Session-Daten:** `data/osf-data/sessions/` (Log-Dateien, JSON-Zeilen-Format)
 - **Log-Dateien:** `data/logs/` (nicht mehr ins Projekt-Root)
 
+### Dokumentations-Struktur (docs/) – Agent: richtige Stelle nutzen!
+- **Analysen, temporäre Planung, empirische Auswertungen:** `docs/07-analysis/` (Index: [README.md](docs/07-analysis/README.md))
+- **Architektur-Entscheidungen (formelle DR):** `docs/03-decision-records/` (nicht ausführliche Planung in Sprints)
+- **How-to, Setup, Deployment:** `docs/04-howto/`
+- **Integrations-Specs (CCU, AIQS, etc.):** `docs/06-integrations/`
+- **Sprints:** `docs/sprints/` – Entscheidungen nur Verweise; Detailplanung → 07-analysis oder 03-decision-records
+
 ### Code-Qualität (OSF - Produktiver Code)
 - **TypeScript:** Strikte Typisierung, keine `any` ohne Begründung
 - **ESLint:** Alle Linting-Regeln müssen erfüllt sein (Pre-commit Hook)

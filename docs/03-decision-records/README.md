@@ -66,6 +66,10 @@ IP-Range 192.168.0.91–99 für ORBIS Extensions; Topic-Schema `osf/arduino/<sen
 **Status:** Accepted | **Datum:** 2026-02-18  
 Deployment-Ziele (lokal, GitHub Pages, Docker/RPi); Betriebsmodi pro Ziel; ein Build für alle.
 
+### 20. [APS-CCU OSF-Modifikationen – zentrale Dokumentation](20-aps-ccu-osf-modifications-documentation.md)
+**Status:** Accepted | **Datum:** 2026-03-04  
+Zentrale Dokumentation aller CCU-Abweichungen vom Fischertechnik-Original in `integrations/APS-CCU/OSF-MODIFICATIONS.md`. Phase-5-Kontext: MES/DSP-Steuerungsübernahme.
+
 ---
 
 ## Template
@@ -74,4 +78,4 @@ Für neue Decision Records: [decision_template.md](decision_template.md)
 
 ---
 
-*Letzte Aktualisierung: 2026-02-18*
+*Letzte Aktualisierung: 2026-03-04*
