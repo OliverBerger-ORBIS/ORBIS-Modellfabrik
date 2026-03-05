@@ -27,16 +27,3 @@ Eigene Sessions werden als `{Session-Name}_{Timestamp}.log` gespeichert.
 
 - **Log-Format:** JSON-Zeilen: `{"topic":"...","payload":"...","timestamp":"..."}`
 - Keine .db-Dateien mehr – nur .log (JSON-Zeilen)
-
-## 📎 Session-Logs zusammenführen (merge)
-
-Falls du zwei Sessions aufnimmst (z.B. Teil 1 bis FTS-Neustart, Teil 2 danach) und den gesamten Verlauf in einer Datei brauchst:
-
-```bash
-python scripts/merge-session-logs.py \
-  data/osf-data/sessions/mixed-pr-prnok_20260305_111948.log \
-  data/osf-data/sessions/mixed-pr-prnok-part2_20260305_120500.log \
-  -o data/osf-data/sessions/mixed-pr-prnok-combined.log
-```
-
-Optional `--dedupe` um exakte Duplikate zu entfernen.
