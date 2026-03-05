@@ -652,6 +652,9 @@ describe('Test order management handling', () => {
 
   it('should NOT create replacement order when quality check fails (order remains ERROR)', async () => {
     const createOrderSpy = jest.spyOn(OrderManagement.getInstance(), 'createOrder');
+    const aiqsModuleSerial = 'aiqsModuleSerial';
+    jest.spyOn(navCommandSender, 'sendClearModuleNodeNavigationRequest').mockResolvedValue();
+    jest.spyOn(OrderManagement.getInstance(), 'retriggerFTSSteps').mockResolvedValue(0);
 
     const orderId = 'orderId';
     const navStepId = 'navStepId';
@@ -665,6 +668,7 @@ describe('Test order management handling', () => {
       moduleType: ModuleType.AIQS,
       command: ModuleCommandType.CHECK_QUALITY,
       startedAt: MOCKED_DATE,
+      serialNumber: aiqsModuleSerial,
     };
     const navStep: OrderNavigationStep = {
       id: navStepId,
@@ -700,6 +704,9 @@ describe('Test order management handling', () => {
 
     // OSF: No automatic replacement order - MES/DSP will decide (see OSF-MODIFICATIONS.md)
     expect(createOrderSpy).not.toHaveBeenCalled();
+    // OSF: FTS must be moved away from AIQS so it does not block the module
+    expect(navCommandSender.sendClearModuleNodeNavigationRequest).toHaveBeenCalledWith(aiqsModuleSerial);
+    expect(underTest.retriggerFTSSteps).toHaveBeenCalled();
 
     const expectedProdStep: OrderManufactureStep = {
       type: 'MANUFACTURE',
@@ -708,6 +715,7 @@ describe('Test order management handling', () => {
       moduleType: ModuleType.AIQS,
       command: ModuleCommandType.CHECK_QUALITY,
       startedAt: MOCKED_DATE,
+      serialNumber: aiqsModuleSerial,
       stoppedAt: MOCKED_DATE,
     };
     const expectedNavStep: OrderNavigationStep = {

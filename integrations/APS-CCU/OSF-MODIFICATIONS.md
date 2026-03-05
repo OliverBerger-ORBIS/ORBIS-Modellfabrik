@@ -55,7 +55,8 @@ Vorbereitung für MES/DSP-Übernahme der QM-Entscheidung. Die CCU soll bei `CHEC
 
 - **Original-Verhalten:** Bei Quality-Fail erstellt die CCU automatisch einen neuen Production-Order (wenn Rohmaterial im HBW verfügbar).
 - **OSF-Verhalten:** Kein automatischer Ersatzauftrag. Order bleibt auf ERROR, verbleibende Steps werden gecancelt, Order wird in `completedOrders` verschoben.
-- **Betroffener Code:** `handleActionUpdateQualityCheckFailure()` in `order-management.ts` – Aufruf von `createOrder()` entfernt.
+- **FTS-Weiterfahrt:** Das FTS fährt per `sendClearModuleNodeNavigationRequest()` vom AIQS weg (Navigationsanweisung ohne neuen Production-Order), damit die Fabrik nicht blockiert bleibt.
+- **Betroffener Code:** `handleActionUpdateQualityCheckFailure()` in `order-management.ts` – Aufruf von `createOrder()` entfernt; Aufruf von `sendClearModuleNodeNavigationRequest(aiqsModuleSerial)` und `retriggerFTSSteps()` ergänzt.
 - **Unit-Test:** `order-management.test.ts` – "should NOT create replacement order when quality check fails"
 
 **Referenz:** [ccu-quality-fail-behaviour-2026-03.md](../../docs/07-analysis/ccu-quality-fail-behaviour-2026-03.md), [sprint_17.md](../../docs/sprints/sprint_17.md). Version: v1.3.0-osf.1 ([DR-21](../../docs/03-decision-records/21-ccu-osf-versioning.md)).

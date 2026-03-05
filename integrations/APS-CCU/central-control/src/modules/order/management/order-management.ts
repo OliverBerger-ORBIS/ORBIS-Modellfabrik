@@ -621,6 +621,14 @@ export class OrderManagement {
     // OSF: No automatic replacement order – order remains ERROR; MES/DSP can decide (see OSF-MODIFICATIONS.md)
     order.state = OrderState.ERROR;
     await this.deleteFinishedOrders(order);
+
+    // OSF: Move FTS away from AIQS so it does not block the module. No new production order is created.
+    const aiqsModuleSerial = step.serialNumber;
+    if (aiqsModuleSerial) {
+      await sendClearModuleNodeNavigationRequest(aiqsModuleSerial);
+    }
+    await this.retriggerFTSSteps();
+    return this.sendOrderListUpdate();
   }
 
   public async createOrder(orderRequest: OrderRequest): Promise<OrderResponse | null> {

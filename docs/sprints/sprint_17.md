@@ -22,10 +22,12 @@
 - [x] **CCU: Quality-Fail ersetzt Order (WESENTLICHER SCHRITT):** 
     - ~~Bei `CHECK_QUALITY result=FAILED` erstellt CCU automatisch neuen Production-Order.~~ **Umgesetzt:** Kein Ersatzauftrag mehr; Order bleibt auf ERROR (Option B, siehe [ccu-quality-fail-behaviour-2026-03.md](../07-analysis/ccu-quality-fail-behaviour-2026-03.md)).
     - OSF-MODIFICATIONS.md Modifikation 2; Unit-Test angepasst.
-    - Deploy: CCU Docker-Image neu bauen, auf RPi deployen ([DEPLOYMENT.md](../../integrations/APS-CCU/DEPLOYMENT.md)); E2E-Test nach Deploy (T5).
+    - Deploy: CCU Docker-Image neu bauen, auf RPi deployen ([DEPLOYMENT.md](../../integrations/APS-CCU/DEPLOYMENT.md)).
+    - **E2E-Test erfolgreich:** Session `mixed-sr-pr-prnok_20260305_121602.log` – nach Quality-Fail fährt FTS weg vom AIQS, kein Ersatzauftrag.
 - [x] **TXT-AIQS: QoS 1 für quality_check:** 
     - `sorting_line.py` / `sorting_line.blockly`: QoS von 2 auf 1 (Status-Topic, kein Command). Beide Varianten (`_cam`, `_cam_clfn`), Doku aktualisiert, .ft-Archive repackt.
     - Deploy: .ft per RoboPro auf TXT flashen – erfolgt später.
+    - **E2E-Test erfolgreich:** TXT publiziert quality_check mit QoS 1.
 
 ### Arduino-Hardware & LogiMAT
 - [ ] **Arduino MPU-6050:** Vibrationssensor-Upgrade (I2C, Beschleunigung/Gyro) – Vorgehen: [arduino-vibrationssensor.md](../05-hardware/arduino-vibrationssensor.md) §5 und Topic `osf/arduino/vibration/mpu6050-1/state`.
@@ -67,15 +69,18 @@
 ## 🔗 Entscheidungen
 
 - [docs/03-decision-records/](../03-decision-records/)
-- *Temporäre Analyse (CCU Quality-Fail):* [docs/07-analysis/ccu-quality-fail-behaviour-2026-03.md](../07-analysis/ccu-quality-fail-behaviour-2026-03.md) – vor Commit prüfen: behalten, integrieren oder löschen
+- [x] **[DR-20](../03-decision-records/20-aps-ccu-osf-modifications-documentation.md):** APS-CCU OSF-Modifikationen – zentrale Dokumentation in OSF-MODIFICATIONS.md
+- [x] **[DR-21](../03-decision-records/21-ccu-osf-versioning.md):** CCU OSF-Versionierung – package.json `-osf.N`, Docker-Tags, selektives Build/Deploy
+- [x] *Analyse (CCU Quality-Fail):* [docs/07-analysis/ccu-quality-fail-behaviour-2026-03.md](../07-analysis/ccu-quality-fail-behaviour-2026-03.md) – umgesetzt (Option B, FTS fährt weg, kein Ersatzauftrag)
 
 ---
 
 ## 📎 Referenzen
 - [Use-Case Bibliothek](../02-architecture/use-case-library.md)
 - [Arduino Vibrationssensor](../05-hardware/arduino-vibrationssensor.md)
-- Session (Quality-Fail Ablauf): `data/osf-data/sessions/mixed-sw-pw-sw-pwnok-pw_20260303_093559.log`
+- Session (Quality-Fail E2E erfolgreich): `data/osf-data/sessions/mixed-sr-pr-prnok_20260305_121602.log`
+- Session (Quality-Fail Ablauf historisch): `data/osf-data/sessions/mixed-sw-pw-sw-pwnok-pw_20260303_093559.log`
 
 ---
 
-*Letzte Aktualisierung: 04.03.2026*
+*Letzte Aktualisierung: 05.03.2026*
