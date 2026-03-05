@@ -1,14 +1,19 @@
 # Vibrationsüberwachung APS-Modellfabrik
 
-Arduino, Ethernet Shield 2, SW-420 und 12V-Signalampel zur Detektion von Vibrationen.
+Arduino, Ethernet Shield 2, Sensor und 12V-Signalampel zur Detektion von Vibrationen.
+
+| Phase | Sensor | Stromversorgung |
+|-------|--------|------------------|
+| **Aktuell** | SW-420 | Eigenes 12V-Netzteil für Ampel |
+| **Messe (geplant)** | MPU-6050 | 24V-Kaskade → LM2596S → 12V-Ampel, ordentliche Montage im Shopfloor-Layout |
 
 **Voraussetzung:** [Arduino IDE Setup](../04-howto/setup/arduino-ide-setup.md) – zuerst Blink-Test durchführen.
 
 ---
 
-## 1. Hardware & Verdrahtung
+## 1. Hardware & Verdrahtung (aktuell: SW-420)
 
-**Komponenten:** Arduino Uno, Ethernet Shield 2, SW-420 (ohne Potentiometer), 4-Kanal-Relais, 12V-Ampel, Jumperkabel.
+**Komponenten:** Arduino Uno, Ethernet Shield 2, SW-420 (ohne Potentiometer), 4-Kanal-Relais, 12V-Ampel, externes 12V-Netzteil, Jumperkabel.
 
 ### Verdrahtungsdiagramm
 
@@ -152,7 +157,16 @@ Beide Relais High-Level (HIGH = AN): Pin 5 → Grün, Pin 6 → Rot+Sirene.
 
 ## 3. Netzwerk & osf-ui
 
-**MQTT (USE_MQTT = 1):** Arduino IP 192.168.0.95, Broker 192.168.0.100.
+**Arduino MQTT-Konfiguration (richtig einstellen, dann funktioniert alles):**
+
+| Einstellung | Wert |
+|-------------|------|
+| `USE_MQTT` | 1 |
+| `MQTT_BROKER` | 192.168.0.100 |
+| `MQTT_USER` / `MQTT_PASS` | default / default ([credentials.md](../credentials.md)) |
+| Arduino IP | 192.168.0.95 |
+
+Sketch muss `mqttClient.connect(id, MQTT_USER, MQTT_PASS, willTopic, ...)` nutzen – Broker verlangt Authentifizierung.
 
 | Topic | Inhalt |
 |-------|--------|
@@ -161,7 +175,7 @@ Beide Relais High-Level (HIGH = AN): Pin 5 → Grün, Pin 6 → Rot+Sirene.
 
 **osf-ui:** Das Topic `osf/#` ist abonniert. Im Message Monitor Filter „OSF Topics“ wählen. Vibrations-Kachel im Sensor-Tab zeigt Ampel (Grün/Rot) und Impulse.
 
-**Status:** Mock und Replay positiv getestet. Live-Umgebung (Arduino → Broker → osf-ui) noch ausstehend.
+**Status:** Mock, Replay und Live getestet. Arduino publiziert `osf/*`-Topics, osf-ui stellt sie im Sensor-Tab dar.
 
 ### OSF-Topics testen (ohne Arduino/Broker)
 
@@ -196,52 +210,45 @@ Zum Testen der Message-Monitor-Erweiterung ohne laufenden Arduino oder MQTT-Brok
 
 **Relais-LED leuchtet, Ampel bleibt aus:** 12V-Stromkreis prüfen – COM mit Plus, Ampel-Kabel in **NO** (nicht NC), Grau (Common) an Minus.
 
-### 4.1 Live-Hardware: Topics kommen nicht am Broker an
-
-**Symptom:** Arduino + Ethernet-Shield publiziert keine Topics oder sie erreichen den Broker (RPi) nicht – OSF-UI zeigt im Live-Modus keine Vibrations-Daten.
-
-**Systematisches Vorgehen (Schicht für Schicht):**
-
-| Schritt | Prüfung | Tool/Aktion |
-|---------|---------|-------------|
-| **1. LAN-Verbindung** | Arduino im gleichen Netz wie RPi (192.168.0.x)? | Kabel prüfen, LED am Ethernet-Shield, ggf. `ping 192.168.0.95` vom Laptop (falls Arduino per Serial erreichbar: IP im `connection`-Payload prüfen) |
-| **2. Broker erreichbar** | Arduino erreicht 192.168.0.100:1883? | Broker-IP im Sketch: `MQTT_BROKER = "192.168.0.100"`. RPi-Netzwerk: `ping 192.168.0.100`. Mosquitto läuft: `systemctl status mosquitto` |
-| **3. Topics am Broker** | Kommen Nachrichten im Broker an? | Auf RPi oder Laptop: `mosquitto_sub -h 192.168.0.100 -t 'osf/arduino/#' -v -u default -P default` (APS-Broker verlangt Auth; Credentials: [credentials.md](../credentials.md), [03-ui-integration.md](../06-integrations/fischertechnik-official/03-ui-integration.md)) |
-| **4. Arduino-Connect** | MQTT-Connect erfolgreich? | Serial Monitor: Sketch könnte `Serial.println` bei Connect/Reconnect ergänzen. PubSubClient: `mqttClient.connected()` prüfen |
-| **5. OSF-UI Subscription** | UI abonniert `osf/#`? | Connection Service subscribt `osf/#` – prüfen ob WebSocket-Verbindung zum Broker steht (Replay-Mode mit gleichem Broker funktioniert?) |
-
-**Typische Ursachen:**
-
-- **Broker verlangt Auth:** Ohne `-u default -P default` erhält man „Connection Refused: not authorised“. Arduino-Sketch nutzt `connect(id, user, pass, willTopic, ...)` mit `MQTT_USER`/`MQTT_PASS` (default/default).
-- **Falsche Broker-IP:** RPi hat nicht 192.168.0.100 (DHCP?) – [arduino-mqtt-ethernet-setup.md](arduino-mqtt-ethernet-setup.md) §2 prüfen
-- **Port 1883 geblockt:** Firewall auf RPi: `sudo ufw status` (falls aktiv: Port 1883 erlauben)
-- **Ethernet-Shield W5500:** Library `Ethernet2` (nicht `Ethernet`) – [arduino-mqtt-ethernet-setup.md](arduino-mqtt-ethernet-setup.md) §4
-- **MAC-Kollision:** Zwei Arduinos gleiche MAC? → Letztes Byte in `mac[]` ändern
-
 ---
 
-## 5. Ausblick – Erweiterung auf MPU-6050
+## 5. Messe-Setup (geplant): MPU-6050 + optimierte Stromversorgung
 
-Die gewünschte Änderung des Setups: Ersatz des SW-420 durch den MPU-6050 (Beschleunigungssensor & Gyroskop) für präzisere Messung. Das Modul ist im Sensor-Kit enthalten.
+Erweiterung für Messe/LogiMAT: MPU-6050 statt SW-420, Ampel aus APS-24V, ordentliche Montage im Shopfloor-Layout.
 
-### Warum das Upgrade?
+### 5.1 Sensor: MPU-6050
 
-- **Frequenzanalyse:** Unterscheidung z.B. zwischen Motoren-Rumpeln und Stimmgabel-Surren
-- **Höhere Sensibilität:** Erfassung schwacher Vibrationen, die der SW-420 nicht auslöst
-- **Condition Monitoring:** Erkennung von Verschleiß durch Veränderung des Vibrationsmusters
+- **Schnittstelle:** I2C (SDA, SCL – A4/A5 am Arduino Uno)
+- **Verkabelung:** VCC, GND, SDA, SCL (4 Leitungen) → [Verdrahtungsdiagramm](arduino-vibrationssensor-mpu6050-verdrahtung.mermaid)
+- **Vorteil:** Präzisere Erfassung, Frequenzanalyse, höhere Sensibilität
 
-### Geplante Hardware-Änderungen
+### 5.2 Stromversorgung
 
-- **Schnittstelle:** Digital-Pin → I2C-Bus (SDA, SCL – typisch A4/A5 oder dedizierte Pins oberhalb Pin 13)
-- **Verkabelung:** VCC, GND, SDA, SCL (4 Leitungen)
-- **Stromversorgung:** Weiterhin 5V über Breadboard
+**Arduino:** 5V über USB (unverändert).
 
-### Geplante Software-Änderungen
+**Ampel (12V):** Abgriff aus der APS-24V-Kaskade.
+
+| Stufe | Komponente | Anschluss |
+|-------|------------|-----------|
+| 1 | APS 24V-Kaskade | Abgriff nach Drilling Station (letzte Station) |
+| 2 | Inline-Sicherung | Jeder neue Zweig abgesichert |
+| 3 | LM2596S DC/DC | 24V → 12V |
+| 4 | TB42-3T/W-J DC12V | Ampel (Grün, Gelb, Rot, Lila/Sirene, GND) |
+
+**LM2596S Inbetriebnahme:** Ohne Last einschalten, Ausgang auf 12,0 V einstellen, Last anschließen, unter Belastung prüfen.
+
+**Wichtige Hinweise:** 12V-Geräte nie direkt an 24V. Pins an Mini-Fit-Jr-Steckern vor Anschluss messen – keine Annahmen. Referenz: APS „Agile Production Simulation 24V“ (DE-02-2025, PDF).
+
+**Benötigt:** Molex Stecker (Mini-Fit Jr, passend zur Ampel TB42-3T/W-J), Kabel, ggf. Kabelfüße.
+
+**Test-Vorgehen:** Die .ino-Sketches können zunächst mit dem alten Stromversorgungsmuster (externes 12V-Netzteil, §1) getestet werden. 24V-Kaskade und LM2596S erst bei finaler Montage im Shopfloor-Layout.
+
+### 5.3 Ampel-Anschluss (analog bestehendem Schema)
+
+Ampel TB42-3T/W-J über Relais ansteuern. Verdrahtung analog §1. **Verdrahtungsdiagramm:** [arduino-vibrationssensor-mpu6050-verdrahtung.mermaid](arduino-vibrationssensor-mpu6050-verdrahtung.mermaid) (Relais Pin 5/6, NO-Anschlüsse). Alle vier Kanäle (Grün, Gelb, Rot, Lila/Sirene) nutzbar für 4-stufige Zustandslogik.
+
+### 5.4 Software
 
 - **Bibliotheken:** `Wire.h` (I2C) + MPU-6050-Library
 - **Auswertung:** Gleitender Mittelwert oder FFT
-- **Ampel-Logik:** Schwellenwerte basieren auf Amplitude/Frequenz statt Impulsanzahl
-
-### Fazit
-
-Arduino, Ethernet Shield, Relais und 12V-Ampel bleiben unverändert. Nur der Sensor wird ausgetauscht.
+- **Zustände:** Normal → Grün, Vibration → Gelb, stark → Rot, Alarm → Lila/Sirene
