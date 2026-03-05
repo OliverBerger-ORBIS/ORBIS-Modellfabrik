@@ -182,6 +182,11 @@ describe('OrderCardComponent', () => {
       expect(component.headerStateClass).toBe('state--failed');
     });
 
+    it('should apply state--failed class for ERROR (e.g. quality-check failure)', () => {
+      component.order = { ...mockOrder, state: 'ERROR' };
+      expect(component.headerStateClass).toBe('state--failed');
+    });
+
     it('should apply state--queued as default', () => {
       component.order = { ...mockOrder, state: 'PENDING' };
       expect(component.headerStateClass).toBe('state--queued');
@@ -274,6 +279,12 @@ describe('OrderCardComponent', () => {
 
     it('should return failed status for FAILED', () => {
       component.order = { ...mockOrder, state: 'FAILED' };
+      const status = component.headerStatus;
+      expect(status.class).toBe('state--failed');
+    });
+
+    it('should return failed status for ERROR (CCU quality-check failure)', () => {
+      component.order = { ...mockOrder, state: 'ERROR' };
       const status = component.headerStatus;
       expect(status.class).toBe('state--failed');
     });
@@ -679,6 +690,18 @@ describe('OrderCardComponent', () => {
       const step = { ...mockOrder.productionSteps![0], state: '' };
       const bgClass = component.stepBackgroundClass(step);
       expect(bgClass).toContain('step--queued');
+    });
+
+    it('should map step state ERROR to failed (e.g. CHECK_QUALITY result FAILED)', () => {
+      const step = { ...mockOrder.productionSteps![0], state: 'ERROR' };
+      const bgClass = component.stepBackgroundClass(step);
+      expect(bgClass).toContain('step--failed');
+    });
+
+    it('should map step state CANCELLED to cancelled (remaining steps after quality fail)', () => {
+      const step = { ...mockOrder.productionSteps![0], state: 'CANCELLED' };
+      const bgClass = component.stepBackgroundClass(step);
+      expect(bgClass).toContain('step--cancelled');
     });
   });
 });

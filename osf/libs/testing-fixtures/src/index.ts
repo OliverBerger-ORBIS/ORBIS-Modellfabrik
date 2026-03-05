@@ -9,6 +9,7 @@ export type OrderFixtureName =
   | 'blue'
   | 'red'
   | 'mixed'
+  | 'mixed_pr_prnok'
   | 'storage'
   | 'startup'
   | 'track-trace'
@@ -111,6 +112,7 @@ const FIXTURE_PATHS: Record<OrderFixtureName, string> = {
   blue: 'blue/orders.log',
   red: 'red/orders.log',
   mixed: 'mixed/orders.log',
+  mixed_pr_prnok: 'mixed_pr_prnok/mixed_pr_prnok.log',
   storage: 'storage/orders.log',
   startup: 'startup/orders.log',
   'track-trace': 'track-trace/track-trace.log',

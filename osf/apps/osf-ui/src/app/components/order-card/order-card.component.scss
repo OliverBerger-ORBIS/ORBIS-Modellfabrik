@@ -190,6 +190,11 @@
   color: var(--status-error-strong);
 }
 
+.step-row.step--cancelled {
+  background: rgba(148, 163, 184, 0.15);
+  color: var(--orbis-grey-strong);
+}
+
 .step__number {
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -221,6 +226,10 @@
 
 .step__status-icon--failed {
   color: #ef4444;
+}
+
+.step__status-icon--cancelled {
+  color: var(--orbis-grey-strong);
 }
 
 .step__module {

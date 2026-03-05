@@ -57,7 +57,7 @@ export interface OrderContext {
   endTime?: string; // Auslieferungs-Datum (Production-Ende im DPS) / Storage-Ende
   fromLocation?: string;
   toLocation?: string;
-  status?: 'ACTIVE' | 'COMPLETED'; // Order status from Orders-Tab
+  status?: 'ACTIVE' | 'COMPLETED' | 'FAILED' | 'ERROR'; // Order status (FAILED/ERROR = quality-check failure, aborted)
   // Additional date fields for better tracking
   rawMaterialOrderDate?: string; // Bestellung-Datum RAW-Material (wann bestellt im Process-Tab)
   deliveryDate?: string; // Lieferung-Datum (wann angeliefert im DPS)
@@ -1096,9 +1096,15 @@ export class WorkpieceHistoryService implements OnDestroy {
 
           const orderDate = 'startedAt' in order ? String(order.startedAt) : new Date().toISOString();
           
-          // Determine order status (ACTIVE or COMPLETED)
+          // Determine order status: ERROR/FAILED from order.state take precedence (e.g. quality-check failure)
+          const orderState = String((order.state ?? order.status ?? '')).toUpperCase();
+          const isFailed = ['ERROR', 'FAILED'].includes(orderState);
           const isCompleted = normalizedOrders.completed[orderId] !== undefined;
-          const orderStatus: 'ACTIVE' | 'COMPLETED' = isCompleted ? 'COMPLETED' : 'ACTIVE';
+          const orderStatus: 'ACTIVE' | 'COMPLETED' | 'FAILED' | 'ERROR' = isFailed
+            ? (orderState === 'ERROR' ? 'ERROR' : 'FAILED')
+            : isCompleted
+              ? 'COMPLETED'
+              : 'ACTIVE';
 
           // Extract date information from events if available
           const extractedDates = events ? this.extractDatesFromEvents(events, orderType as 'STORAGE' | 'PRODUCTION') : {};

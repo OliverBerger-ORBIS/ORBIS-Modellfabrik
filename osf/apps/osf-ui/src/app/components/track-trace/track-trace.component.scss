@@ -587,6 +587,10 @@
           color: var(--orbis-grey-strong);
           font-weight: 600;
         }
+        .status-failed {
+          color: var(--status-error-strong);
+          font-weight: 600;
+        }
         margin-bottom: 0;
 
         .order-context-title {

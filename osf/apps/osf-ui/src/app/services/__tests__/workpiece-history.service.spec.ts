@@ -198,6 +198,93 @@ describe('WorkpieceHistoryService', () => {
     });
   });
 
+  describe('Order Status (FAILED/ERROR from order.state)', () => {
+    it('should set status ERROR when order has state ERROR (e.g. quality-check failure)', () => {
+      const servicePrivate = service as unknown as {
+        generateOrderContext: (
+          workpieceType: string,
+          orders: { active: Record<string, unknown>; completed: Record<string, unknown> },
+          ftsOrderId?: string,
+          events?: TrackTraceEvent[]
+        ) => OrderContext[];
+      };
+      const orders = {
+        active: {
+          'order-fail': {
+            orderId: 'order-fail',
+            orderType: 'PRODUCTION',
+            state: 'ERROR',
+            productionSteps: [{ id: 's1', source: 'START', target: 'DPS', type: 'NAVIGATION' }],
+          },
+        },
+        completed: {},
+      };
+      const contexts = servicePrivate.generateOrderContext?.('RED', orders, 'order-fail');
+      expect(contexts).toBeDefined();
+      expect(contexts!.length).toBeGreaterThan(0);
+      expect(contexts![0].status).toBe('ERROR');
+    });
+
+    it('should set status FAILED when order has state FAILED', () => {
+      const servicePrivate = service as unknown as {
+        generateOrderContext: (
+          workpieceType: string,
+          orders: { active: Record<string, unknown>; completed: Record<string, unknown> },
+          ftsOrderId?: string,
+          events?: TrackTraceEvent[]
+        ) => OrderContext[];
+      };
+      const orders = {
+        active: {
+          'order-fail': {
+            orderId: 'order-fail',
+            orderType: 'PRODUCTION',
+            state: 'FAILED',
+            productionSteps: [],
+          },
+        },
+        completed: {},
+      };
+      const contexts = servicePrivate.generateOrderContext?.('RED', orders, 'order-fail');
+      expect(contexts).toBeDefined();
+      expect(contexts!.length).toBeGreaterThan(0);
+      expect(contexts![0].status).toBe('FAILED');
+    });
+
+    it('should prefer order.state ERROR over completed list membership', () => {
+      const servicePrivate = service as unknown as {
+        generateOrderContext: (
+          workpieceType: string,
+          orders: { active: Record<string, unknown>; completed: Record<string, unknown> },
+          ftsOrderId?: string,
+          events?: TrackTraceEvent[]
+        ) => OrderContext[];
+      };
+      const orders = {
+        active: {
+          'order-err': {
+            orderId: 'order-err',
+            orderType: 'PRODUCTION',
+            state: 'ERROR',
+            productionSteps: [],
+          },
+        },
+        completed: {
+          'order-err': {
+            orderId: 'order-err',
+            orderType: 'PRODUCTION',
+            state: 'ERROR',
+            productionSteps: [],
+          },
+        },
+      };
+      const contexts = servicePrivate.generateOrderContext?.('RED', orders, 'order-err');
+      expect(contexts).toBeDefined();
+      expect(contexts!.length).toBeGreaterThan(0);
+      expect(contexts![0].status).toBe('ERROR');
+    });
+  });
+
   describe('Date Extraction from Events', () => {
     it('should extract delivery date from DPS events for storage orders', () => {
       const events: TrackTraceEvent[] = [

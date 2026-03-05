@@ -28,6 +28,14 @@
     - `sorting_line.py` / `sorting_line.blockly`: QoS von 2 auf 1 (Status-Topic, kein Command). Beide Varianten (`_cam`, `_cam_clfn`), Doku aktualisiert, .ft-Archive repackt.
     - Deploy: .ft per RoboPro auf TXT flashen – erfolgt später.
     - **E2E-Test erfolgreich:** TXT publiziert quality_check mit QoS 1.
+- [x] **Track & Trace: Order-Status FAILED/ERROR anzeigen:**
+    - Kontext: Bei Quality-Fail (Order `state: ERROR`) zeigt Track & Trace im Order Context weiterhin "Active". Soll "Fehlgeschlagen"/"Abgebrochen" anzeigen.
+    - WorkpieceHistoryService: `order.state` (ERROR/FAILED) aus CCU-Daten berücksichtigen, nicht nur ACTIVE vs COMPLETED aus Listen-Zugehörigkeit.
+    - OrderContext: `status` um `'FAILED' | 'ERROR'` erweitert.
+    - Track & Trace Template: Anzeige für `order.status === 'ERROR'`/`'FAILED'` ergänzt (Label "Fehlgeschlagen", styling .status-failed).
+    - Unit-Tests für Service (generateOrderContext) und Component (track-trace.component.spec.ts).
+    - **Nächster Schritt:** Neue osf-ui Version anlegen/ausrollen.
+- [x] **Fixture mixed-pr-prnok:** Session `mixed-sr-pr-prnok_20260305_121602.log` als Mock-Fixture. `scripts/build_order_fixtures.py --only mixed_pr_prnok`. Order-Tab und Track & Trace: Fixture-Option "Mixed PR Quality-Fail".
 
 ### Arduino-Hardware & LogiMAT
 - [ ] **Arduino MPU-6050:** Vibrationssensor-Upgrade (I2C, Beschleunigung/Gyro) – Vorgehen: [arduino-vibrationssensor.md](../05-hardware/arduino-vibrationssensor.md) §5 und Topic `osf/arduino/vibration/mpu6050-1/state`.

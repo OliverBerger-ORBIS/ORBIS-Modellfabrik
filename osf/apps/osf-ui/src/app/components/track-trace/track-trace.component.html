@@ -218,9 +218,15 @@
                 <!-- Order Status -->
                 <div class="order-field" *ngIf="order.status">
                   <span class="field-label" i18n="@@trackTraceOrderStatus">Status:</span>
-                  <span class="field-value" [class.status-active]="order.status === 'ACTIVE'" [class.status-completed]="order.status === 'COMPLETED'">
+                  <span
+                    class="field-value"
+                    [class.status-active]="order.status === 'ACTIVE'"
+                    [class.status-completed]="order.status === 'COMPLETED'"
+                    [class.status-failed]="order.status === 'FAILED' || order.status === 'ERROR'"
+                  >
                     <ng-container *ngIf="order.status === 'ACTIVE'" i18n="@@trackTraceOrderStatusActive">Active</ng-container>
                     <ng-container *ngIf="order.status === 'COMPLETED'" i18n="@@trackTraceOrderStatusCompleted">Completed</ng-container>
+                    <ng-container *ngIf="order.status === 'FAILED' || order.status === 'ERROR'" i18n="@@trackTraceOrderStatusFailed">Failed</ng-container>
                   </span>
                 </div>
                 

@@ -64,10 +64,11 @@ describe('TrackTraceTabComponent', () => {
   });
 
   it('should have fixture options', () => {
-    expect(component.fixtureOptions.length).toBe(3);
+    expect(component.fixtureOptions.length).toBe(4);
     expect(component.fixtureOptions).toContain('production_bwr');
     expect(component.fixtureOptions).toContain('production_white');
     expect(component.fixtureOptions).toContain('storage_blue');
+    expect(component.fixtureOptions).toContain('mixed_pr_prnok');
   });
 
   it('should have fixture labels', () => {
@@ -75,6 +76,7 @@ describe('TrackTraceTabComponent', () => {
     expect(component.fixtureLabels.production_bwr).toBeDefined();
     expect(component.fixtureLabels.production_white).toBeDefined();
     expect(component.fixtureLabels.storage_blue).toBeDefined();
+    expect(component.fixtureLabels.mixed_pr_prnok).toBeDefined();
   });
 
   it('should initialize with active fixture from dashboard', () => {
@@ -147,6 +149,9 @@ describe('TrackTraceTabComponent', () => {
 
     await component.loadFixture('storage_blue');
     expect(mockDashboard.getDashboardController().loadTabFixture).toHaveBeenCalledWith('track-trace-storage-blue');
+
+    await component.loadFixture('mixed_pr_prnok');
+    expect(mockDashboard.getDashboardController().loadTabFixture).toHaveBeenCalledWith('track-trace-mixed-pr-prnok');
   });
 
   it('should use default preset for unknown fixture', async () => {

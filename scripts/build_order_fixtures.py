@@ -252,6 +252,38 @@ def load_default_configs() -> list[FixtureConfig]:
             passthrough_patterns=["warehouse/stock", "ccu/pairing/state"],
         ),
         FixtureConfig(
+            name="mixed_pr_prnok",
+            sources=[
+                Path("data/osf-data/sessions/mixed-sr-pr-prnok_20260305_121602.log"),
+            ],
+            output=Path("osf/testing/fixtures/orders/mixed_pr_prnok/mixed_pr_prnok.log"),
+            topic_patterns=[
+                "ccu/order/active",
+                "ccu/order/completed",
+                "module/v1/ff/*",
+                "ccu/pairing/state",
+                "ccu/state/layout",
+                "ccu/state/stock",
+                "ccu/state/stock/*",
+                "warehouse/stock",
+                "warehouse/stock/*",
+                "fts/v1/ff/*",
+            ],
+            order_ids={
+                "64c65b62-4af0-4461-aeb4-2cd016c16935",
+                "726aa26a-2990-43a4-8c3c-88946b0a4bea",
+                "7ad877f1-c5f3-4cd8-9667-c51e2e7f0268",
+                "ae18c33c-77f3-4735-9c44-26b47a3655ee",
+                "8e4d0d35-8ea0-43ec-ba71-7ed381ae6683",
+                "c2095177-72b6-4c23-9e98-4ae877d79436",
+                "cef40bbf-895e-47ce-9ce4-6d3b10b5e2f1",
+                "ed8572ea-d46b-44cc-b86f-e156e7e8fd3b",
+                "0b2fc32b-8928-40f5-bae1-fffce1310dea",
+                "4037fb18-b389-42ae-bfdc-c52dc9785cc0",
+            },
+            passthrough_patterns=["warehouse/stock", "ccu/pairing/state", "ccu/state/layout", "ccu/state/stock"],
+        ),
+        FixtureConfig(
             name="storage",
             sources=[
                 Path("data/osf-data/sessions/storage_order_white_20251110_181619.log"),

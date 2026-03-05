@@ -17,6 +17,7 @@ export type OrderFixtureName =
   | 'blue'
   | 'red'
   | 'mixed'
+  | 'mixed_pr_prnok'
   | 'storage'
   | 'startup'
   | 'track-trace'
@@ -182,6 +183,14 @@ export const TAB_FIXTURE_PRESETS: Record<string, TabFixtureConfig> = {
     config: 'default',
     sensors: 'default',
   },
+  'order-mixed-pr-prnok': {
+    orders: 'mixed_pr_prnok',
+    modules: 'mixed',
+    stock: 'default',
+    flows: 'default',
+    config: 'default',
+    sensors: 'default',
+  },
   'order-storage': {
     orders: 'storage',
     modules: 'storage',
@@ -298,6 +307,14 @@ export const TAB_FIXTURE_PRESETS: Record<string, TabFixtureConfig> = {
   'track-trace-storage-blue': {
     orders: 'storage_blue',
     modules: 'default',
+    stock: 'default',
+    flows: 'default',
+    config: 'default',
+    sensors: 'default',
+  },
+  'track-trace-mixed-pr-prnok': {
+    orders: 'mixed_pr_prnok',
+    modules: 'mixed',
     stock: 'default',
     flows: 'default',
     config: 'default',

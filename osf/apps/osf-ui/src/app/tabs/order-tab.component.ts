@@ -68,13 +68,14 @@ export class OrderTabComponent implements OnInit, OnDestroy {
   private currentStorageCompleted: OrderActive[] = [];
   expandedStorageOrderId: string | null = null;
 
-  readonly fixtureOptions: OrderFixtureName[] = ['white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];
+  readonly fixtureOptions: OrderFixtureName[] = ['white', 'white_step3', 'blue', 'red', 'mixed', 'mixed_pr_prnok', 'storage'];
   readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
     white: $localize`:@@fixtureLabelWhite:White`,
     white_step3: $localize`:@@fixtureLabelWhiteStep3:White • Step 3`,
     blue: $localize`:@@fixtureLabelBlue:Blue`,
     red: $localize`:@@fixtureLabelRed:Red`,
     mixed: $localize`:@@fixtureLabelMixed:Mixed`,
+    mixed_pr_prnok: $localize`:@@fixtureLabelMixedPrPrnok:Mixed PR Quality-Fail`,
     storage: $localize`:@@fixtureLabelStorage:Storage`,
     startup: $localize`:@@fixtureLabelStartup:Startup`,
   };
@@ -294,6 +295,7 @@ export class OrderTabComponent implements OnInit, OnDestroy {
       blue: 'order-blue',
       red: 'order-red',
       mixed: 'order-mixed',
+      mixed_pr_prnok: 'order-mixed-pr-prnok',
       storage: 'order-storage',
     };
     

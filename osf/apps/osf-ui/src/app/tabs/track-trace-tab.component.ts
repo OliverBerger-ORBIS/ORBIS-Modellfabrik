@@ -60,11 +60,12 @@ export class TrackTraceTabComponent implements OnInit {
     return this.environmentService.current.key === 'mock';
   }
 
-  readonly fixtureOptions: OrderFixtureName[] = ['production_bwr', 'production_white', 'storage_blue'];
+  readonly fixtureOptions: OrderFixtureName[] = ['production_bwr', 'production_white', 'storage_blue', 'mixed_pr_prnok'];
   readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
     production_bwr: $localize`:@@fixtureLabelProductionBwr:Production BWR`,
     production_white: $localize`:@@fixtureLabelProductionWhite:Production White`,
     storage_blue: $localize`:@@fixtureLabelStorageBlue:Storage Blue`,
+    mixed_pr_prnok: $localize`:@@fixtureLabelMixedPrPrnok:Mixed PR Quality-Fail`,
   };
   activeFixture: OrderFixtureName | null = this.dashboard.getCurrentFixture();
 
@@ -89,6 +90,7 @@ export class TrackTraceTabComponent implements OnInit {
       production_bwr: 'track-trace-production-bwr',
       production_white: 'track-trace-production-white',
       storage_blue: 'track-trace-storage-blue',
+      mixed_pr_prnok: 'track-trace-mixed-pr-prnok',
     };
     
     const presetName = presetMap[fixture] || 'track-trace-default';

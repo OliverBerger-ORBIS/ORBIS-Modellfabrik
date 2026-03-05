@@ -11,13 +11,18 @@ import { CorrelationInfoService, type CorrelationInfo } from '../../services/cor
 import { resolveLegacyShopfloorPath } from '../../shared/icons/legacy-shopfloor-map';
 import { ICONS } from '../../shared/icons/icon.registry';
 
-type StepState = 'queued' | 'running' | 'completed' | 'failed';
+type StepState = 'queued' | 'running' | 'completed' | 'failed' | 'cancelled';
 
 const STEP_STATE_MAP: Record<StepState, { class: string; label: () => string; icon: string }> = {
   queued: { class: 'queued', label: () => $localize`:@@orderCardStepQueued:Queued`, icon: '⏳' },
   running: { class: 'running', label: () => $localize`:@@orderCardStepInProgress:In progress`, icon: '🟠' },
   completed: { class: 'completed', label: () => $localize`:@@orderCardStepFinished:Finished`, icon: '✅' },
   failed: { class: 'failed', label: () => $localize`:@@orderCardStepFailed:Failed`, icon: '❌' },
+  cancelled: {
+    class: 'cancelled',
+    label: () => $localize`:@@orderCardStepCancelled:Cancelled`,
+    icon: '⊘',
+  },
 };
 
 const ORDER_TYPE_ICONS: Record<'PRODUCTION' | 'STORAGE', string> = {
@@ -130,7 +135,7 @@ export class OrderCardComponent implements OnInit, OnChanges {
     if (['COMPLETED', 'FINISHED'].includes(state)) {
       return 'state--completed';
     }
-    if (state === 'FAILED') {
+    if (['FAILED', 'ERROR'].includes(state)) {
       return 'state--failed';
     }
     return 'state--queued';
@@ -145,7 +150,7 @@ export class OrderCardComponent implements OnInit, OnChanges {
     if (['COMPLETED', 'FINISHED'].includes(state)) {
       return { class: 'state--completed', label: $localize`:@@orderCardStatusFinished:Finished` };
     }
-    if (state === 'FAILED') {
+    if (['FAILED', 'ERROR'].includes(state)) {
       return { class: 'state--failed', label: $localize`:@@orderCardStatusFailed:Failed` };
     }
     return { class: 'state--queued', label: $localize`:@@orderCardStatusQueued:Queued` };
@@ -258,8 +263,11 @@ export class OrderCardComponent implements OnInit, OnChanges {
 
   private resolveStepState(step: ProductionStep): StepState {
     const normalized = (step.state ?? '').toUpperCase();
-    if (normalized === 'FAILED') {
+    if (['FAILED', 'ERROR'].includes(normalized)) {
       return 'failed';
+    }
+    if (normalized === 'CANCELLED') {
+      return 'cancelled';
     }
     if (['IN_PROGRESS', 'RUNNING'].includes(normalized)) {
       return 'running';
