@@ -11,6 +11,14 @@ Dieses How-To beschreibt den vollständigen Workflow für Deployment von Code au
 
 **Ziel:** Code-Änderungen auf TXT-Controller deployen und testen.
 
+### Schnell-Anleitung: FF_AI_24V_cam_clfn bearbeiten
+
+1. **Öffnen** (aus Repo, nicht vom Controller): `Datei → Öffnen` → `integrations/TXT-AIQS/archives/FF_AI_24V_cam_clfn.ft`
+2. **Verbinden:** Controller verbinden, API-Key vom Display
+3. **Ändern** (z.B. QoS in sorting_line.py): Professional Modus → `lib/sorting_line.py`
+4. **Deployen:** `Controller → Download`
+5. **Auf TXT:** Programm laden (Load), Autostart aktivieren
+
 ---
 
 ## ⚠️ Wichtige Hinweise
@@ -43,6 +51,24 @@ Dieses How-To beschreibt den vollständigen Workflow für Deployment von Code au
 
 ---
 
+## 📌 Projektnamen: Controller vs. Archives (AIQS)
+
+**Problem:** Der TXT-Controller zeigt oft abweichende Projektnamen (z.B. `FF_AI_24V_1`) – der Controller speichert nicht zwingend die vollen Archivnamen.
+
+| Quelle | Beispiel-Projektname | Bedeutung |
+|--------|---------------------|-----------|
+| **Archives (Repo)** | `FF_AI_24V_cam.ft`, `FF_AI_24V_cam_clfn.ft` | Eindeutige Varianten |
+| **Vom Controller geladen** | `FF_AI_24V_1`, `FF_AI_24V`, … | Unklare Zuordnung – kann _cam oder _cam_clfn sein |
+
+**Empfehlung:** Immer aus **archives/** öffnen, um die richtige Variante zu wählen:
+
+- **`FF_AI_24V_cam.ft`** – Basis mit Kamera, ohne classification
+- **`FF_AI_24V_cam_clfn.ft`** – Mit classification + classificationDesc (MQTT)
+
+**Workflow:** `Datei → Öffnen` → `integrations/TXT-AIQS/archives/FF_AI_24V_cam_clfn.ft` → verbinden → ändern → deployen. Nicht vom Controller laden, wenn du eine bestimmte Variante brauchst.
+
+---
+
 ## 📁 Verzeichnis-Struktur
 
 **Alle OSF-Versionen liegen in integrations.**
@@ -52,7 +78,8 @@ integrations/TXT-{MODULE}/
 ├── archives/                       # .ft Archive – für ROBO Pro öffnen/deployen
 │   ├── FF_AI_24V.ft               # Original
 │   ├── FF_AI_24V_wav.ft
-│   └── FF_AI_24V_cam.ft           # … weitere Varianten
+│   ├── FF_AI_24V_cam.ft           # Basis mit Kamera
+│   └── FF_AI_24V_cam_clfn.ft      # Mit classification (MQTT)
 └── workspaces/                     # Entpackt für Code-Analyse (grep, diff)
     └── FF_AI_24V_cam/              # unzip ../archives/FF_AI_24V_cam.ft -d .
 ```
@@ -68,9 +95,10 @@ integrations/TXT-{MODULE}/
 ### Phase 1: Projekt öffnen
 
 1. **ROBO Pro Coding öffnen**
-2. **Projekt öffnen** (zwei Quellen möglich):
-   - Aus **integrations:** `Datei → Öffnen` → `integrations/TXT-AIQS/archives/FF_AI_24V_cam.ft`
-   - Vom **Controller:** Controller verbinden → Projekt vom Controller laden
+2. **Projekt öffnen** – empfohlen aus **archives/** (nicht vom Controller):
+   - `Datei → Öffnen` → `integrations/TXT-AIQS/archives/FF_AI_24V_cam_clfn.ft` (mit classification)
+   - Oder: `FF_AI_24V_cam.ft` (ohne classification)
+   - *Vom Controller laden* ergibt oft andere Namen (z.B. `FF_AI_24V_1`) – Zuordnung unklar.
 3. **Modus wählen:**
    - **Grafischer Modus:** Für visuelle Programmierung (Blockly)
    - **Professional Modus:** Für Python-Code-Änderungen
