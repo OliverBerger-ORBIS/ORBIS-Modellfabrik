@@ -70,6 +70,10 @@ Deployment-Ziele (lokal, GitHub Pages, Docker/RPi); Betriebsmodi pro Ziel; ein B
 **Status:** Accepted | **Datum:** 2026-03-04  
 Zentrale Dokumentation aller CCU-Abweichungen vom Fischertechnik-Original in `integrations/APS-CCU/OSF-MODIFICATIONS.md`. Phase-5-Kontext: MES/DSP-Steuerungsübernahme.
 
+### 21. [CCU OSF-Versionierung](21-ccu-osf-versioning.md)
+**Status:** Accepted | **Datum:** 2026-03-04  
+package.json als Source of Truth, SemVer, Docker-Tags an Version gekoppelt. Selektives CCU-Build/Deploy als Standard.
+
 ---
 
 ## Template

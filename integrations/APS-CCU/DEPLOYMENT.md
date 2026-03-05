@@ -13,27 +13,35 @@ This guide covers all deployment scenarios, from quick automated updates to manu
 
 ## Standard Deployment Options
 
+**OSF-Empfehlung (DR-21):** Selektives Build/Deploy – nur die geänderten Services bauen und deployen. Bei CCU-Änderungen (OSF-MODIFICATIONS) in der Regel nur `central`.
+
 ### Option 1: Automated Deployment (Recommended)
 
 This automatically handles all steps: build, save, transfer, load, and restart.
 
-**Full Deployment:**
+**Selective Deployment – CCU only (Standard bei OSF-CCU-Änderungen):**
 ```bash
-npm run docker:build
-npm run docker:deploy -- ff22@192.168.0.100
+# Nur Central Control (CCU) bauen und deployen
+npm run docker:build v1.3.0-osf.1 central
+npm run docker:deploy -- ff22@192.168.0.100 v1.3.0-osf.1 central
 # Enter password when prompted: ff22+
 ```
 
-**Selective Deployment (Faster):**
-If you only changed specific services, you can deploy just those:
+**Selective Deployment – andere Services:**
 ```bash
-# Build only frontend
+# Build nur Frontend
 npm run docker:build -- userdev frontend
 
-# Deploy only central-control and nodered
+# Deploy nur central-control und nodered
 npm run docker:deploy -- ff22@192.168.0.100 userdev central nodered
 ```
 Available services: `central`, `frontend`, `nodered`
+
+**Full Deployment (alle drei Images):** Nur bei Änderungen an mehreren Services:
+```bash
+npm run docker:build v1.3.0-osf.1
+npm run docker:deploy -- ff22@192.168.0.100 v1.3.0-osf.1
+```
 
 ### Option 2: Manual Step-by-Step
 
@@ -309,3 +317,4 @@ docker compose -f docker-compose-prod.yml config
 - [README.md](README.md) - Quick start and basic usage
 - [central-control/README.md](central-control/README.md) - MQTT protocol documentation
 - [nodeRed/readme.md](nodeRed/readme.md) - Node-RED configuration
+- [docs/03-decision-records/21-ccu-osf-versioning.md](../../docs/03-decision-records/21-ccu-osf-versioning.md) - OSF-Versionierung (DR-21)

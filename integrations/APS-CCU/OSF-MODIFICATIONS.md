@@ -16,7 +16,7 @@ Phase-5-Kontext: MES und DSP (ORBIS) übernehmen zunehmend die Steuerung; die CC
 | Nr. | Kurzbeschreibung | Status | Betroffene Datei(en) | Anlass |
 |-----|------------------|--------|----------------------|--------|
 | 1   | ccu/order/request: Optionale Erweiterung um requestId | ✅ Umgesetzt | `common/protocol/ccu.ts`, `central-control/.../order/index.ts` | Sprint 16, Commit d2052f95 |
-| 2   | Quality-Fail: Kein automatischer Ersatzauftrag | ✅ Umgesetzt | `central-control/src/modules/order/management/order-management.ts` | Sprint 17, [Analyse](../../docs/07-analysis/ccu-quality-fail-behaviour-2026-03.md) |
+| 2   | Quality-Fail: Kein automatischer Ersatzauftrag | ✅ Umgesetzt (seit v1.3.0-osf.1) | `central-control/src/modules/order/management/order-management.ts` | Sprint 17, [Analyse](../../docs/07-analysis/ccu-quality-fail-behaviour-2026-03.md), [DR-21](../../docs/03-decision-records/21-ccu-osf-versioning.md) |
 
 ---
 
@@ -58,7 +58,7 @@ Vorbereitung für MES/DSP-Übernahme der QM-Entscheidung. Die CCU soll bei `CHEC
 - **Betroffener Code:** `handleActionUpdateQualityCheckFailure()` in `order-management.ts` – Aufruf von `createOrder()` entfernt.
 - **Unit-Test:** `order-management.test.ts` – "should NOT create replacement order when quality check fails"
 
-**Referenz:** [ccu-quality-fail-behaviour-2026-03.md](../../docs/07-analysis/ccu-quality-fail-behaviour-2026-03.md), [sprint_17.md](../../docs/sprints/sprint_17.md)
+**Referenz:** [ccu-quality-fail-behaviour-2026-03.md](../../docs/07-analysis/ccu-quality-fail-behaviour-2026-03.md), [sprint_17.md](../../docs/sprints/sprint_17.md). Version: v1.3.0-osf.1 ([DR-21](../../docs/03-decision-records/21-ccu-osf-versioning.md)).
 
 ---
 

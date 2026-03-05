@@ -227,24 +227,24 @@ The deployment scripts use SSH. You will be prompted for the password multiple t
 
 ### Automated Deployment
 
-**Option 1: Deploy All (Standard)**
-Build and deploy all services to the Raspberry Pi.
+**Option 1: Selective Deploy (Empfohlen – DR-21)**
 
-> **Note:** The compilation process (`npm run docker:build`) involves cross-compiling for ARM architecture via QEMU emulation. This step can take a considerable amount of time (up to 40 min) to complete depending on your system performance.
-
+Bei OSF-CCU-Änderungen nur den zentralen Service bauen und deployen:
 ```bash
-npm run docker:build
-npm run docker:deploy -- ff22@192.168.0.100
-```
-
-**Option 2: Selective Deploy (Faster)**
-Deploy only specific services to save time.
-```bash
-# Example: Deploy only central-control
-npm run docker:build -- userdev central
-npm run docker:deploy -- ff22@192.168.0.100 userdev central
+npm run docker:build v1.3.0-osf.1 central
+npm run docker:deploy -- ff22@192.168.0.100 v1.3.0-osf.1 central
 ```
 Available service names: `central`, `frontend`, `nodered`
+
+**Option 2: Deploy All**
+
+Nur bei Änderungen an mehreren Services:
+```bash
+npm run docker:build v1.3.0-osf.1
+npm run docker:deploy -- ff22@192.168.0.100 v1.3.0-osf.1
+```
+
+> **Note:** The compilation process involves cross-compiling for ARM architecture. Building only `central` is significantly faster than a full build (all three images).
 
 ## Troubleshooting
 
