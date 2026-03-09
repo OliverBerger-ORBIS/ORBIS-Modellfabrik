@@ -144,10 +144,13 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
       
       // CRITICAL: Check that startWith is used in combineLatest and after map (Pattern 2 requirement)
       // SensorTab uses combineLatest, so we check that startWith is used in the combineLatest pipe
-      const combineLatestSection = content.match(/combineLatest\s*\([^)]+\)[^}]*\.pipe\s*\([^)]+\)/);
+      // Use [\s\S]*? to capture nested parens in pipe content (e.g. map(([bme, ldr]) => ...))
+      const combineLatestSection = content.match(
+        /combineLatest\s*\([^)]+\)\s*\.pipe\s*\(([\s\S]*?)\n\s+\)/
+      );
       expect(combineLatestSection).toBeTruthy();
       if (combineLatestSection) {
-        const pipeChain = combineLatestSection[0];
+        const pipeChain = combineLatestSection[1];
         const mapIndex = pipeChain.indexOf('map');
         const startWithIndex = pipeChain.indexOf('startWith');
         expect(mapIndex).toBeGreaterThan(-1);

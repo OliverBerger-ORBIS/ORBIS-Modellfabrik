@@ -1,8 +1,10 @@
 {
-  "topic": "osf/arduino/vibration/sw420-1/state",
+  "topic": "osf/arduino/vibration/mpu6050-1/state",
   "payload": {
+    "vibrationLevel": "green",
     "vibrationDetected": false,
     "impulseCount": 0,
+    "magnitude": 17000,
     "timestamp": ""
   },
   "qos": 1,

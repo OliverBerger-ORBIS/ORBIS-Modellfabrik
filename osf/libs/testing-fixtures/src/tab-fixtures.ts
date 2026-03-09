@@ -125,12 +125,12 @@ function createOsfVibrationFixture(): Observable<RawMqttMessage> {
     },
     {
       topic: 'osf/arduino/vibration/sw420-1/state',
-      payload: { vibrationDetected: false, impulseCount: 0, ts: '' },
+      payload: { vibrationDetected: false, impulseCount: 0, timestamp: '' },
       timestamp: ts,
     },
     {
       topic: 'osf/arduino/vibration/sw420-1/state',
-      payload: { vibrationDetected: true, impulseCount: 42, ts: '' },
+      payload: { vibrationDetected: true, impulseCount: 42, timestamp: '' },
       timestamp: new Date(Date.now() + 1000).toISOString(),
     },
   ]);

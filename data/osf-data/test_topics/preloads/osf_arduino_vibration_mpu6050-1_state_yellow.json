@@ -1,0 +1,12 @@
+{
+  "topic": "osf/arduino/vibration/mpu6050-1/state",
+  "payload": {
+    "vibrationLevel": "yellow",
+    "vibrationDetected": true,
+    "impulseCount": 1,
+    "magnitude": 21000,
+    "timestamp": ""
+  },
+  "qos": 1,
+  "retain": true
+}

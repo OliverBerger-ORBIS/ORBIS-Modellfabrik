@@ -6,6 +6,25 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.8.6] - 2026-03-09
+
+**Arduino MPU-6050, Relais vereinheitlicht, timestamp analog Fischertechnik**
+
+### Added
+- **Arduino MPU-6050:** Vibrationssensor mit I2C, 3-Stufen-Ampel (Grün/Gelb/Rot+Sirene), NTP für ISO-8601-timestamp
+- **Schritt-für-Schritt SW-420 (§1.1):** Verdrahtungsanleitung analog MPU §5.3.1, einheitliche Relais-Logik
+- **Preloads MPU-6050:** osf_arduino_vibration_mpu6050-1_* (state, connection, yellow, red)
+- **Sprint 17:** Arduino-Tasks erledigt, E2E-Test Vibrationssensor als Task ergänzt
+
+### Changed
+- **Relais aktiv-niedrig (einheitlich):** SW-420 und MPU-6050 nutzen gleiche Logik (LOW = ein), Sketch SW-420 angepasst
+- **Feldname timestamp:** `ts` → `timestamp` in state-Payload (analog Fischertechnik/DSP), keine Rückwärtskompat
+- **DR-18, Doku:** state-Payload mit timestamp, NTPClient (nicht NTPClient_Generic)
+- **Fixtures/Preloads:** timestamp statt ts in allen OSF-Arduino-Vibration-Payloads
+
+### Fixed
+- **Doku Relais:** SW-420 war fälschlich aktiv-high dokumentiert, vereinheitlicht
+
 ## [0.8.5] - 2026-03-03
 
 **Vibrationssensor SW-420: Live-Hardware, semantische Payload, Will-Message**

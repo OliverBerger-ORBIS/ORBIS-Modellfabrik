@@ -17,11 +17,13 @@ Arduino, Ethernet Shield 2, Sensor und 12V-Signalampel zur Detektion von Vibrati
 
 ### Verdrahtungsdiagramm
 
-Quelldatei: [arduino-vibrationssensor-verdrahtung.mermaid](arduino-vibrationssensor-verdrahtung.mermaid)
+Zwei Teildiagramme – Verbindungen laufen nicht durch andere Knoten. Quelldateien: [5V](arduino-vibrationssensor-verdrahtung-5v.mermaid) · [12V](arduino-vibrationssensor-verdrahtung-12v.mermaid) · **Farbig im Browser:** [arduino-vibrationssensor-verdrahtung.html](arduino-vibrationssensor-verdrahtung.html)
+
+**5V & Signal (Arduino, Breadboard, Sensor, Relais-Steuerung):**
 
 ```mermaid
 %%{init: {'flowchart': {'curve': 'stepBefore'}}}%%
-flowchart TB
+flowchart LR
     subgraph ARDUINO["Arduino Uno + Ethernet Shield 2"]
         direction TB
         A_5V["5V"]
@@ -31,26 +33,20 @@ flowchart TB
         A_P6["Pin 6"]
     end
 
-    subgraph BREADBOARD["Breadboard – 6×2 Raster: links 6 (+), rechts 6 (−)"]
-        direction LR
-        subgraph BB_PLUS["(+) Bus"]
-            direction TB
-            BB_P1["(+)"]; BB_P2["(+)"]; BB_P3["(+)"]; BB_P4["(+)"]; BB_P5["(+)"]; BB_P6["(+)"]
-        end
-        subgraph BB_MINUS["(−) Bus"]
-            direction TB
-            BB_M1["(−)"]; BB_M2["(−)"]; BB_M3["(−)"]; BB_M4["(−)"]; BB_M5["(−)"]; BB_M6["(−)"]
-        end
+    subgraph BB["Breadboard"]
+        direction TB
+        BB_P["(+) Bus"]
+        BB_M["(−) Bus"]
     end
 
-    subgraph SW420["SW-420 – 3 Pins"]
-        direction LR
+    subgraph SENSOR["SW-420"]
+        direction TB
         S_VCC["VCC"]
         S_GND["GND"]
         S_DO["DO"]
     end
 
-    subgraph RELAIS_IN["4-Kanal Relais – Steuerung"]
+    subgraph RELAIS["Relais 5V"]
         direction TB
         R_VCC["VCC"]
         R_GND["GND"]
@@ -58,62 +54,51 @@ flowchart TB
         R_IN2["IN2"]
     end
 
-    subgraph RELAIS_OUT["Relais – Schraubklemmen 12V"]
-        direction LR
-        R_COM1["COM1"]
-        R_COM2["COM2"]
+    A_5V -->|"ROT"| BB_P
+    A_GND -->|"SCHWARZ"| BB_M
+    BB_P -->|"ROT"| S_VCC
+    BB_M -->|"SCHWARZ"| S_GND
+    S_DO -->|"BLAU"| A_P2
+    BB_P -->|"ROT"| R_VCC
+    BB_M -->|"SCHWARZ"| R_GND
+    A_P5 -->|"BLAU"| R_IN1
+    A_P6 -->|"BLAU"| R_IN2
+```
+
+**12V & Ampel (Netzteil, Relais, Ampel):**
+
+```mermaid
+%%{init: {'flowchart': {'curve': 'stepBefore'}}}%%
+flowchart LR
+    subgraph DC["12V Netzteil"]
+        direction TB
+        DC_P["(+)"]
+        DC_M["(−)"]
+    end
+
+    subgraph RELAIS["Relais 12V"]
+        direction TB
+        R_COM["COM"]
         R_NO1["NO1"]
         R_NO2["NO2"]
     end
 
-    subgraph DC["12V DC-Netzteil"]
+    subgraph AMPEL["12V Ampel"]
         direction TB
-        DC_PLUS["(+)"]
-        DC_MINUS["(−)"]
+        AMP_C["Common"]
+        AMP_G["Grün"]
+        AMP_R["Rot"]
+        AMP_S["Sirene"]
     end
 
-    subgraph AMPEL["12V Signalampel"]
-        direction TB
-        AMP_SIRENE["Sirene"]
-        AMP_ROT["Rot"]
-        AMP_GRUEN["Grün"]
-        AMP_COMMON["Common"]
-    end
-
-    A_5V -->|"M/M"| BB_P1
-    A_GND -->|"M/M"| BB_M1
-    BB_P2 -->|"M/W"| S_VCC
-    BB_M2 -->|"M/W"| S_GND
-    S_DO -->|"M/W"| A_P2
-    BB_P3 -->|"M/W"| R_VCC
-    BB_M3 -->|"M/W"| R_GND
-    A_P5 -->|"M/W"| R_IN1
-    A_P6 -->|"M/W"| R_IN2
-    DC_PLUS -->|"Litze"| R_COM1
-    R_COM1 <-->|"Brücke"| R_COM2
-    DC_MINUS --> AMP_COMMON
-    R_NO1 --> AMP_GRUEN
-    R_NO2 --> AMP_ROT
-    R_NO2 --> AMP_SIRENE
-    BB_M4 <-->|"M/M"| DC_MINUS
-
-    linkStyle 0 stroke:#dc2626,stroke-width:3px
-    linkStyle 1 stroke:#1f2937,stroke-width:3px
-    linkStyle 2 stroke:#dc2626,stroke-width:3px
-    linkStyle 3 stroke:#1f2937,stroke-width:3px
-    linkStyle 4 stroke:#4b5563,stroke-width:2px
-    linkStyle 5 stroke:#dc2626,stroke-width:3px
-    linkStyle 6 stroke:#1f2937,stroke-width:3px
-    linkStyle 7 stroke:#4b5563,stroke-width:2px
-    linkStyle 8 stroke:#4b5563,stroke-width:2px
-    linkStyle 9 stroke:#dc2626,stroke-width:3px
-    linkStyle 10 stroke:#dc2626,stroke-width:3px
-    linkStyle 11 stroke:#1f2937,stroke-width:3px
-    linkStyle 12 stroke:#16a34a,stroke-width:3px
-    linkStyle 13 stroke:#dc2626,stroke-width:3px
-    linkStyle 14 stroke:#9333ea,stroke-width:3px
-    linkStyle 15 stroke:#1f2937,stroke-width:3px
+    DC_P -->|"ROT"| R_COM
+    DC_M -->|"SCHWARZ"| AMP_C
+    R_NO1 -->|"GRÜN"| AMP_G
+    R_NO2 -->|"LILA"| AMP_R
+    R_NO2 -->|"LILA"| AMP_S
 ```
+
+**Common Ground:** Breadboard (−) mit DC-Adapter (−) verbinden (M/M-Kabel).
 
 ### Sensor (SW-420)
 
@@ -125,14 +110,16 @@ flowchart TB
 
 ### Relais (erprobtes Setup)
 
-Beide Relais High-Level (HIGH = AN): Pin 5 → Grün, Pin 6 → Rot+Sirene.
+**Relais aktiv-niedrig:** LOW = Relais ein, HIGH = aus (gleiche Logik wie MPU-6050 §5). Ruhe = Grün an = Pin 5 LOW.
 
 | Anschluss      | Verbindung                                   |
 |----------------|-----------------------------------------------|
 | VCC            | Breadboard (+)                               |
 | GND            | Breadboard (−)                               |
-| Relais 1 (Grün)| Pin **5** → Grün an NO (Ruhezustand)         |
-| Relais 2 (Rot) | Pin **6** → Rot+Lila an NO (Alarm)           |
+| Relais 1 (Grün)| Pin **5** → **IN1** → NO1 → Grün (Ruhezustand) |
+| Relais 2 (Rot) | Pin **6** → **IN2** → NO2 → Rot+Lila (Alarm)  |
+
+**Schritt-für-Schritt Anschluss** (siehe §1.1).
 
 ### Ampel (12V)
 
@@ -143,6 +130,84 @@ Beide Relais High-Level (HIGH = AN): Pin 5 → Grün, Pin 6 → Rot+Sirene.
 | Rot+Lila | Relais 2, NO (gemeinsam)              |
 
 **Common Ground:** Breadboard (−) mit DC-Adapter (−) verbinden.
+
+### 1.1 Schritt-für-Schritt: Kabel verbinden (SW-420)
+
+*Gleiche Logik wie MPU-6050 §5.3.1 (Relais aktiv-niedrig, gleiches Modul). SW-420 nutzt 2 Kanäle (Grün, Rot+Sirene), kein Gelb.*
+
+**Voraussetzung:** Arduino mit USB verbunden, SW-420 und Relais 5V-Seite bereits angeschlossen (VCC, GND, IN1–IN2 vom Breadboard). 12V-Netzteil **ausgeschaltet**.
+
+---
+
+#### A. Relais-Steuerung (5V, Arduino → Relais)
+
+| Schritt | Von | Nach | Kabel |
+|--------|-----|------|-------|
+| A1 | Arduino **D5** | Relais **IN1** | Jumper (z.B. blau) |
+| A2 | Arduino **D6** | Relais **IN2** | Jumper |
+
+*Prüfung:* Beim Upload des Sketches sollte **Grün** in Ruhe leuchten (D5 LOW = IN1 ein).
+
+---
+
+#### B. 12V-Netzteil vorbereiten
+
+| Schritt | Aktion |
+|---------|--------|
+| B1 | 12V-Adapter **nicht** einstecken |
+| B2 | Netzteil-Ausgang prüfen: (+) und (−) identifizieren |
+
+---
+
+#### C. Common Ground (wichtig – vor dem 12V-Einschalten)
+
+| Schritt | Von | Nach | Kabel |
+|---------|-----|------|-------|
+| C1 | Breadboard **(−) Bus** | 12V-Adapter **(−)** | M/M-Kabel (schwarz) |
+
+---
+
+#### D. 12V-plus an Relais
+
+| Schritt | Von | Nach | Kabel |
+|---------|-----|------|-------|
+| D1 | 12V-Adapter **(+)** | Relais **COM1** | Litze/Adapterkabel |
+| D2 | **COM1** | **COM2** | Brücke |
+
+*Falls nur eine COM-Klemme:* Direkt verwenden.
+
+---
+
+#### E. Ampel-Kabel an Relais NO-Klemmen
+
+Ampel: Grün, Rot, Lila (Sirene), Common (Grau). Rot und Sirene teilen sich NO2.
+
+| Schritt | Von (Relais) | Nach (Ampel) | Kabel |
+|---------|--------------|--------------|-------|
+| E1 | **NO1** | Ampel **Grün** | Grünes Kabel |
+| E2 | **NO2** | Ampel **Rot** | Rotes Kabel |
+| E3 | **NO2** (gleiche Klemme wie E2) | Ampel **Lila/Sirene** | Lilafarbenes Kabel |
+
+---
+
+#### F. Ampel Common an 12V-Minus
+
+| Schritt | Von | Nach | Kabel |
+|---------|-----|------|-------|
+| F1 | 12V-Adapter **(−)** | Ampel **Common** (Grau) | Kabel |
+
+---
+
+#### G. Abschluss und Test
+
+| Schritt | Aktion |
+|---------|--------|
+| G1 | Alle Schraubklemmen auf festen Sitz prüfen |
+| G2 | 12V-Netzteil einstecken und einschalten |
+| G3 | Sketch starten – **Grün** sollte leuchten (Ruhezustand) |
+| G4 | Auf Tisch klopfen / Stimmgabel → **Rot + Sirene** für 2 s, dann zurück zu Grün |
+
+**Verdrahtungsdiagramm:** [arduino-vibrationssensor-verdrahtung.mermaid](arduino-vibrationssensor-verdrahtung.mermaid) (5V) · [12V](arduino-vibrationssensor-verdrahtung-12v.mermaid)
 
 ---
 
@@ -210,16 +275,24 @@ Zum Testen der Message-Monitor-Erweiterung ohne laufenden Arduino oder MQTT-Brok
 
 **Relais-LED leuchtet, Ampel bleibt aus:** 12V-Stromkreis prüfen – COM mit Plus, Ampel-Kabel in **NO** (nicht NC), Grau (Common) an Minus.
 
+**Ampel schaltet invertiert (Ruhe = Rot, Alarm = Grün):** Relais-Modul prüfen – manche Module haben Jumper für High-/Low-Trigger. Beide Sketches (SW-420, MPU-6050) nutzen aktiv-niedrig (LOW = ein). Bei High-Trigger-Modul: Logik im Sketch invertieren.
+
 ---
 
-## 5. Messe-Setup (geplant): MPU-6050 + optimierte Stromversorgung
+## 5. MPU-6050-Setup (Entwicklung → Messe)
 
-Erweiterung für Messe/LogiMAT: MPU-6050 statt SW-420, Ampel aus APS-24V, ordentliche Montage im Shopfloor-Layout.
+**Vorgehen:** Zunächst MPU-6050 mit 12V-Stromversorgung wie SW-420 (§1) entwickeln und testen. Danach Erweiterung auf 24V-Kaskade für Messe/LogiMAT.
+
+### Verdrahtungsdiagramm MPU-6050
+
+Quelldatei: [arduino-vibrationssensor-mpu6050-verdrahtung.mermaid](arduino-vibrationssensor-mpu6050-verdrahtung.mermaid) · **Farbig im Browser:** [arduino-vibrationssensor-mpu6050-verdrahtung.html](arduino-vibrationssensor-mpu6050-verdrahtung.html)
+
+Siehe [arduino-vibrationssensor-mpu6050-verdrahtung.mermaid](arduino-vibrationssensor-mpu6050-verdrahtung.mermaid) – D7=IN1 (Grün), D8=IN2 (Gelb), D9=IN3 (Rot+Sirene).
 
 ### 5.1 Sensor: MPU-6050
 
 - **Schnittstelle:** I2C (SDA, SCL – A4/A5 am Arduino Uno)
-- **Verkabelung:** VCC, GND, SDA, SCL (4 Leitungen) → [Verdrahtungsdiagramm](arduino-vibrationssensor-mpu6050-verdrahtung.mermaid)
+- **Verkabelung:** VCC, GND, SDA, SCL (4 Leitungen) – siehe Verdrahtungsdiagramm oben
 - **Vorteil:** Präzisere Erfassung, Frequenzanalyse, höhere Sensibilität
 
 ### 5.2 Stromversorgung
@@ -243,12 +316,173 @@ Erweiterung für Messe/LogiMAT: MPU-6050 statt SW-420, Ampel aus APS-24V, ordent
 
 **Test-Vorgehen:** Die .ino-Sketches können zunächst mit dem alten Stromversorgungsmuster (externes 12V-Netzteil, §1) getestet werden. 24V-Kaskade und LM2596S erst bei finaler Montage im Shopfloor-Layout.
 
-### 5.3 Ampel-Anschluss (analog bestehendem Schema)
+### 5.3 Ampel-Anschluss (3 Stufen: Grün, Gelb, Rot+Sirene)
 
-Ampel TB42-3T/W-J über Relais ansteuern. Verdrahtung analog §1. **Verdrahtungsdiagramm:** [arduino-vibrationssensor-mpu6050-verdrahtung.mermaid](arduino-vibrationssensor-mpu6050-verdrahtung.mermaid) (Relais Pin 5/6, NO-Anschlüsse). Alle vier Kanäle (Grün, Gelb, Rot, Lila/Sirene) nutzbar für 4-stufige Zustandslogik.
+Ampel TB42-3T/W-J über 3 Relais-Kanäle: IN1=Grün, IN2=Gelb, IN3=Rot+Sirene. Arduino Pins: D7→IN1, D8→IN2, D9→IN3.
 
-### 5.4 Software
+**Relais aktiv-niedrig:** Wie SW-420 (§1, §1.1) – LOW = Relais ein, HIGH = aus (gleiches Modul). Ruhe = Grün ein = D7 LOW.
 
-- **Bibliotheken:** `Wire.h` (I2C) + MPU-6050-Library
-- **Auswertung:** Gleitender Mittelwert oder FFT
-- **Zustände:** Normal → Grün, Vibration → Gelb, stark → Rot, Alarm → Lila/Sirene
+**Schritt-für-Schritt Anschluss** (siehe §5.3.1 – Struktur analog §1.1).
+
+### 5.3.1 Schritt-für-Schritt: Kabel verbinden
+
+**Voraussetzung:** Arduino mit USB verbunden, MPU-6050 und Relais 5V-Seite bereits angeschlossen (VCC, GND, IN1–IN3 vom Breadboard). 12V-Netzteil **ausgeschaltet**.
+
+---
+
+#### A. Relais-Steuerung (5V, Arduino → Relais-„Steckerleiste“)
+
+| Schritt | Von | Nach | Kabel |
+|--------|-----|------|-------|
+| A1 | Arduino **D7** | Relais **IN1** | Jumper (z.B. blau) |
+| A2 | Arduino **D8** | Relais **IN2** | Jumper |
+| A3 | Arduino **D9** | Relais **IN3** | Jumper |
+
+*Prüfung:* Beim Upload des Sketches sollten die Relais beim Start kurz klicken.
+
+---
+
+#### B. 12V-Netzteil vorbereiten
+
+| Schritt | Aktion |
+|---------|--------|
+| B1 | 12V-Adapter **nicht** einstecken |
+| B2 | Netzteil-Ausgang prüfen: (+) und (−) identifizieren (meist rot/schwarz oder beschriftet) |
+
+---
+
+#### C. Common Ground (wichtig – vor dem 12V-Einschalten)
+
+| Schritt | Von | Nach | Kabel |
+|---------|-----|------|-------|
+| C1 | Breadboard **(−) Bus** | 12V-Adapter **(−)** | M/M-Kabel (schwarz) |
+
+*Wichtig:* Ohne diese Verbindung liegen Arduino und 12V-Kreis nicht auf gleichem Potential – kann zu Störungen oder Schäden führen.
+
+---
+
+#### D. 12V-plus an Relais
+
+| Schritt | Von | Nach | Kabel |
+|---------|-----|------|-------|
+| D1 | 12V-Adapter **(+)** | Relais **COM1** | Litze/Adapterkabel |
+| D2 | **COM1** | **COM2** | Brücke (Kurzschluss) |
+| D3 | **COM2** | **COM3** | Brücke (für Kanal 3) |
+
+*Falls nur eine COM-Klemme:* Direkt verwenden. *Falls 4 getrennte COMs:* COM1, COM2, COM3 miteinander verbinden.
+
+---
+
+#### E. Ampel-Kabel an Relais NO-Klemmen
+
+Ampel hat typisch: Grün, Gelb, Rot, Lila (Sirene), Common (Grau). Common bleibt für Schritt F.
+
+| Schritt | Von (Relais) | Nach (Ampel) | Kabel |
+|---------|--------------|--------------|-------|
+| E1 | **NO1** | Ampel **Grün** | Grünes Kabel |
+| E2 | **NO2** | Ampel **Gelb** | Gelbes Kabel |
+| E3 | **NO3** | Ampel **Rot** | Rotes Kabel |
+| E4 | **NO3** (gleiche Klemme wie E3) | Ampel **Lila/Sirene** | Lilafarbenes Kabel |
+
+*Hinweis:* Rot und Sirene teilen sich NO3 – beide Kabel in dieselbe Schraubklemme NO3 stecken (oder verlöten/verzweigen).
+
+---
+
+#### F. Ampel Common an 12V-Minus
+
+| Schritt | Von | Nach | Kabel |
+|---------|-----|------|-------|
+| F1 | 12V-Adapter **(−)** | Ampel **Common** (Grau) | Kabel |
+
+Oder: 12V (−) → Breadboard (−) (bereits in C1), Breadboard (−) mit Ampel Common verbinden.
+
+---
+
+#### G. Abschluss und Test
+
+| Schritt | Aktion |
+|---------|--------|
+| G1 | Alle Schraubklemmen auf festen Sitz prüfen |
+| G2 | 12V-Netzteil einstecken und einschalten |
+| G3 | Sketch starten – **Grün** sollte leuchten (Ruhezustand) |
+| G4 | Leicht auf Tisch klopfen → **Gelb** |
+| G5 | Stärker klopfen / Sensor antippen → **Rot + Sirene** |
+
+**Verdrahtungsdiagramm:** [arduino-vibrationssensor-mpu6050-verdrahtung.mermaid](arduino-vibrationssensor-mpu6050-verdrahtung.mermaid)
+
+### 5.4 Software & MQTT
+
+- **Bibliotheken:** `Wire.h` (I2C), MPU-6050 (ElectronicCats), Ethernet2, NTPClient (Library Manager)
+- **Zustände:** Grün (Ruhe), Gelb (leicht), Rot+Sirene (stark)
+- **Topics:** `osf/arduino/vibration/mpu6050-1/state`, `.../connection` ([DR-18](../03-decision-records/18-osf-extensions-ip-and-mqtt-topics.md))
+
+**state-Payload (MPU-6050):**
+
+| Feld | Typ | Beschreibung |
+|------|-----|--------------|
+| `vibrationLevel` | `"green"` \| `"yellow"` \| `"red"` | Ampel-Zustand |
+| `vibrationDetected` | boolean | true bei gelb oder rot |
+| `impulseCount` | number | Kumulierte Vibrationen |
+| `magnitude` | number | Beschleunigungs-Magnitude (~16k Ruhe) |
+| `timestamp` | string | ISO 8601 (analog Fischertechnik/DSP). Bei USE_MQTT 1 + NTP-Sync: echte Zeit; sonst `""` |
+
+**NTP:** Bei `USE_MQTT 1` wird NTPClient genutzt (pool.ntp.org, UTC). Bibliothek: **NTPClient** (Library Manager → „NTPClient“ by arduino-libraries, nicht NTPClient_Generic). Ohne Sync bleibt `timestamp` leer.
+
+**Publish-Frequenz:** Bei Zustandsänderung sofort; bei Grün stabil alle 15 s (Heartbeat).
+
+**OSF-UI:** Sensor-Tab zeigt MPU-6050 oder SW-420 (MPU bevorzugt). 3-Stufen-Ampel (Grün/Gelb/Rot).
+
+---
+
+## 6. Sensor-Erweiterungen (Roadmap)
+
+**Voraussetzung:** MPU-6050 + Ampel laufen mit 12V und publizieren per MQTT.  
+**Ziel:** Zusätzliche Umwelt-/Kontextsensorik für Mehrwert-Demos, verteilt auf R3 (Ethernet) und R4 (Wi-Fi).
+
+### 6.1 Topic-Schema (unverändert)
+
+Wir behalten das bestehende Pattern ([DR-18](../03-decision-records/18-osf-extensions-ip-and-mqtt-topics.md)):
+
+| Topic | Zweck |
+|-------|-------|
+| `osf/arduino/<sensorTyp>/<deviceId>/state` | Messwerte, Zustand |
+| `osf/arduino/<sensorTyp>/<deviceId>/connection` | LWT, Health, Online-Status |
+| `osf/arduino/derived/<signal>/state` | Abgeleitete Zustände (Korrelation, optional) |
+
+**Beispiele:** `osf/arduino/temperature/dht11-1/state`, `osf/arduino/motion/pir-1/state`, `osf/arduino/vibration/mpu6050-1/state`.
+
+### 6.2 Rollenmodell (R3 vs. R4)
+
+| Node | Anbindung | Rolle |
+|------|-----------|-------|
+| **R3 + Ethernet Shield** | Kabel, stabil | Dauerhaft laufende Sensorik, deterministisch |
+| **R4 WiFi** | WLAN, flexibel | Experimentelle/Showcase-Sensoren, ggf. mobil |
+
+**R3:** DHT11, DS18B20, LDR, MQ-2, PIR, HC-SR04, DS3231 (optional).  
+**R4:** Zweiter MPU-6050 (anderer Messpunkt), Regensensor, Flammensensor, Lichtschranke, Sound-Sensor.
+
+Bestand: [inventory-electronics.md](inventory-electronics.md).
+
+### 6.3 Architekturprinzipien
+
+1. **One responsibility per node** – R3: Backbone, R4: Aux/Showcase
+2. **Non-blocking loop** – Sensor-Reads entkoppelt (Poll-Schedule), Publish nicht blockierend
+3. **Rate limiting** – IMU: Feature-Extraktion on-device (RMS/Peak), keine Rohdaten-Flut; DHT11: wenige Werte/Minute
+4. **Device identity** – eindeutige `deviceId` je Node, `sensorId` je Kanal
+
+### 6.4 Ausbau-Phasen
+
+| Phase | Ziel |
+|-------|------|
+| **A** | R3 + R4 als MQTT-Publisher standardisieren (gleiches Message-Envelope, Health, unique clientId) |
+| **B** | Umwelt-Daten (DHT11, LDR, PIR) publizieren, in osf-ui visualisieren |
+| **C** | Korrelations-Demo (z. B. Vibration + PIR → „Operator activity“) – `osf/arduino/derived/*` |
+| **D** | Optional: R4 mobil, 433 MHz, erweiterte Ampel-Patterns – Backlog |
+
+### 6.5 Definition of Done (Erweiterung)
+
+- [ ] R3 + R4 publizieren parallel stabil über MQTT
+- [ ] Sensorwerte normalisiert (Einheiten, Timestamp)
+- [ ] Health/Connection-Topic pro Node
+- [ ] Mindestens 1 UI-Verbraucher nutzt neue Topics
+- [ ] Doku: inventory, Verdrahtung, Topic-Liste aktualisiert

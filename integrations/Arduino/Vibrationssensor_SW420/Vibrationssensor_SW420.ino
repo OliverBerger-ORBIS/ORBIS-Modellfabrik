@@ -21,7 +21,7 @@ unsigned long impulseCount = 0;
 #define SENSOR_ACTIVE_HIGH 1
 #define VIBRATION_DETECTED (SENSOR_ACTIVE_HIGH ? HIGH : LOW)
 
-// Relais: Pin 5 = High-Level (HIGH=AN), Pin 6 = High-Level (HIGH=AN)
+// Relais aktiv-niedrig (wie MPU-6050, gleiches Modul): LOW = ein, HIGH = aus
 #if USE_MQTT
 #include <Ethernet2.h>
 #include <PubSubClient.h>
@@ -55,8 +55,8 @@ void mqttReconnect() {
 
 void publishState(bool vibrationDetected) {
   if (!mqttClient.connected()) return;
-  char payload[80];
-  snprintf(payload, sizeof(payload), "{\"vibrationDetected\":%s,\"impulseCount\":%lu,\"ts\":\"\"}",
+  char payload[96];
+  snprintf(payload, sizeof(payload), "{\"vibrationDetected\":%s,\"impulseCount\":%lu,\"timestamp\":\"\"}",
            vibrationDetected ? "true" : "false", impulseCount);
   mqttClient.publish(TOPIC_STATE, payload, true);
 }
@@ -105,16 +105,16 @@ void loop() {
     impulseCount++;
     Serial.println("!!! VIBRATION ERKANNT !!!");
 
-    digitalWrite(RELAY_GRUEN, LOW);   // Grün AUS
-    digitalWrite(RELAY_ROT, HIGH);   // Rot/Sirene AN
+    digitalWrite(RELAY_GRUEN, HIGH);  // Grün AUS
+    digitalWrite(RELAY_ROT, LOW);     // Rot/Sirene AN
 #if USE_MQTT
     publishState(true);
 #endif
 
     delay(alarmDauer);
 
-    digitalWrite(RELAY_GRUEN, HIGH);  // Grün AN
-    digitalWrite(RELAY_ROT, LOW);    // Rot/Sirene AUS
+    digitalWrite(RELAY_GRUEN, LOW);   // Grün AN
+    digitalWrite(RELAY_ROT, HIGH);    // Rot/Sirene AUS
 #if USE_MQTT
     publishState(false);
 #endif

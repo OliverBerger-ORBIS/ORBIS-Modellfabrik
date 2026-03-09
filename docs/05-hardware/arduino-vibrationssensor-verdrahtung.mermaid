@@ -64,48 +64,31 @@ flowchart TB
         AMP_COMMON["Common"]
     end
 
-    %% 5V-Stromverteilung (je Breadboard-Anschluss max. 1 Verbindung)
-    A_5V -->|"M/M"| BB_P1
-    A_GND -->|"M/M"| BB_M1
+    %% Dicke Kanten (==>) + Farb-Labels – linkStyle wird oft ignoriert
+    %% 5V-Stromverteilung
+    A_5V ==>|"ROT M/M"| BB_P1
+    A_GND ==>|"SCHWARZ M/M"| BB_M1
 
     %% Sensor
-    BB_P2 -->|"M/W"| S_VCC
-    BB_M2 -->|"M/W"| S_GND
-    S_DO -->|"M/W"| A_P2
+    BB_P2 ==>|"ROT M/W"| S_VCC
+    BB_M2 ==>|"SCHWARZ M/W"| S_GND
+    S_DO ==>|"BLAU M/W"| A_P2
 
     %% Relais-Eingang
-    BB_P3 -->|"M/W"| R_VCC
-    BB_M3 -->|"M/W"| R_GND
-    A_P5 -->|"M/W"| R_IN1
-    A_P6 -->|"M/W"| R_IN2
+    BB_P3 ==>|"ROT M/W"| R_VCC
+    BB_M3 ==>|"SCHWARZ M/W"| R_GND
+    A_P5 ==>|"BLAU M/W"| R_IN1
+    A_P6 ==>|"BLAU M/W"| R_IN2
 
     %% 12V-Versorgung Relais
-    DC_PLUS -->|"Litze"| R_COM1
-    R_COM1 <-->|"Brücke"| R_COM2
+    DC_PLUS ==>|"ROT Litze"| R_COM1
+    R_COM1 <==>|"Brücke"| R_COM2
 
     %% Ampel
-    DC_MINUS --> AMP_COMMON
-    R_NO1 --> AMP_GRUEN
-    R_NO2 --> AMP_ROT
-    R_NO2 --> AMP_SIRENE
+    DC_MINUS ==> AMP_COMMON
+    R_NO1 ==>|"GRÜN"| AMP_GRUEN
+    R_NO2 ==>|"LILA Rot+Sirene"| AMP_ROT
+    R_NO2 ==>|"LILA"| AMP_SIRENE
 
     %% Common Ground
-    BB_M4 <-->|"M/M"| DC_MINUS
-
-    %% Kabel-Farben: Rot #dc2626, Schwarz #1f2937, Grün #16a34a, Lila #9333ea, Grau #6b7280
-    linkStyle 0 stroke:#dc2626,stroke-width:3px
-    linkStyle 1 stroke:#1f2937,stroke-width:3px
-    linkStyle 2 stroke:#dc2626,stroke-width:3px
-    linkStyle 3 stroke:#1f2937,stroke-width:3px
-    linkStyle 4 stroke:#4b5563,stroke-width:2px
-    linkStyle 5 stroke:#dc2626,stroke-width:3px
-    linkStyle 6 stroke:#1f2937,stroke-width:3px
-    linkStyle 7 stroke:#4b5563,stroke-width:2px
-    linkStyle 8 stroke:#4b5563,stroke-width:2px
-    linkStyle 9 stroke:#dc2626,stroke-width:3px
-    linkStyle 10 stroke:#dc2626,stroke-width:3px
-    linkStyle 11 stroke:#1f2937,stroke-width:3px
-    linkStyle 12 stroke:#16a34a,stroke-width:3px
-    linkStyle 13 stroke:#dc2626,stroke-width:3px
-    linkStyle 14 stroke:#9333ea,stroke-width:3px
-    linkStyle 15 stroke:#1f2937,stroke-width:3px
+    BB_M4 <==>|"SCHWARZ M/M"| DC_MINUS

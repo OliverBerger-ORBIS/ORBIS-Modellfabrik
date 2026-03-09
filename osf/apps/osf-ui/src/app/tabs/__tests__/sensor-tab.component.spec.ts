@@ -175,6 +175,11 @@ describe('SensorTabComponent', () => {
   });
 
   describe('vibration sensor', () => {
+    it('should return vibrationLevel (MPU-6050 payload)', () => {
+      expect(component.vibrationLevel({ vibrationLevel: 'green', impulseCount: 0 } as any)).toBe('green');
+      expect(component.vibrationLevel({ vibrationLevel: 'yellow', impulseCount: 1 } as any)).toBe('yellow');
+      expect(component.vibrationLevel({ vibrationLevel: 'red', impulseCount: 42 } as any)).toBe('red');
+    });
     it('should return green/red from vibrationDetected (SW-420 payload)', () => {
       expect(component.vibrationLevel({ vibrationDetected: false, impulseCount: 0 })).toBe('green');
       expect(component.vibrationLevel({ vibrationDetected: true, impulseCount: 42 })).toBe('red');

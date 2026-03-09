@@ -1,0 +1,10 @@
+{
+  "topic": "osf/arduino/vibration/mpu6050-1/connection",
+  "payload": {
+    "connectionState": "ONLINE",
+    "ip": "192.168.0.96",
+    "serialNumber": "mpu6050-1"
+  },
+  "qos": 1,
+  "retain": true
+}

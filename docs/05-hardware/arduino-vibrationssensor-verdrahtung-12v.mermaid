@@ -1,0 +1,32 @@
+%% Arduino SW-420 – 12V & Ampel (Teil 2)
+%% Siehe: arduino-vibrationssensor.md
+%% Stand: 2026-03
+
+%%{init: {'flowchart': {'curve': 'stepBefore'}}}%%
+flowchart LR
+    subgraph DC["12V Netzteil"]
+        direction TB
+        DC_P["(+)"]
+        DC_M["(−)"]
+    end
+
+    subgraph RELAIS["Relais 12V"]
+        direction TB
+        R_COM["COM"]
+        R_NO1["NO1"]
+        R_NO2["NO2"]
+    end
+
+    subgraph AMPEL["12V Ampel"]
+        direction TB
+        AMP_C["Common"]
+        AMP_G["Grün"]
+        AMP_R["Rot"]
+        AMP_S["Sirene"]
+    end
+
+    DC_P -->|"ROT"| R_COM
+    DC_M -->|"SCHWARZ"| AMP_C
+    R_NO1 -->|"GRÜN"| AMP_G
+    R_NO2 -->|"LILA"| AMP_R
+    R_NO2 -->|"LILA"| AMP_S

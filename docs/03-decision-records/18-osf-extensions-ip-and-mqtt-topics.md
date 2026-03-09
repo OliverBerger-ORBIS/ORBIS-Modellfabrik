@@ -37,16 +37,17 @@
 | `osf/arduino/vibration/sw420-1/connection`        | LWT (connectionState OFFLINE), Online: connectionState, ip, serialNumber |
 | `osf/arduino/vibration/sw420-1/value`             | (optional) Rohwert            |
 
-**state-Payload (SW-420 Sensor-Signal, OSF-UI mappt auf Ampel):**
+**state-Payload (SW-420/MPU-6050, OSF-UI mappt auf Ampel):**
 ```json
 {
   "vibrationDetected": false,
   "impulseCount": 0,
-  "ts": "2026-02-23T12:05:01Z"
+  "timestamp": "2026-02-23T12:05:01Z"
 }
 ```
-- `vibrationDetected`: boolean – direktes SW-420-Signal (Vibration erkannt ja/nein)
-- Hardware: SW-420 → Relais → Ampel (Grün/Rot+Sirene). UI: vibrationDetected → Ampel-Darstellung.
+- `vibrationDetected`: boolean – SW-420 direkt; MPU-6050: true bei gelb/rot
+- `timestamp`: ISO 8601 (analog Fischertechnik/DSP). MPU-6050: per NTP bei USE_MQTT 1; SW-420 ohne RTC: `""`
+- Hardware: Relais → Ampel (Grün/Gelb/Rot+Sirene). UI: vibrationLevel/vibrationDetected → Ampel-Darstellung.
 
 ---
 

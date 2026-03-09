@@ -1,0 +1,45 @@
+%% Arduino SW-420 – 5V & Signal (Teil 1)
+%% Siehe: arduino-vibrationssensor.md
+%% Stand: 2026-03
+
+%%{init: {'flowchart': {'curve': 'stepBefore'}}}%%
+flowchart LR
+    subgraph ARDUINO["Arduino Uno + Ethernet Shield 2"]
+        direction TB
+        A_5V["5V"]
+        A_GND["GND"]
+        A_P2["Pin 2"]
+        A_P5["Pin 5"]
+        A_P6["Pin 6"]
+    end
+
+    subgraph BB["Breadboard"]
+        direction TB
+        BB_P["(+) Bus"]
+        BB_M["(−) Bus"]
+    end
+
+    subgraph SENSOR["SW-420"]
+        direction TB
+        S_VCC["VCC"]
+        S_GND["GND"]
+        S_DO["DO"]
+    end
+
+    subgraph RELAIS["Relais 5V"]
+        direction TB
+        R_VCC["VCC"]
+        R_GND["GND"]
+        R_IN1["IN1"]
+        R_IN2["IN2"]
+    end
+
+    A_5V -->|"ROT"| BB_P
+    A_GND -->|"SCHWARZ"| BB_M
+    BB_P -->|"ROT"| S_VCC
+    BB_M -->|"SCHWARZ"| S_GND
+    S_DO -->|"BLAU"| A_P2
+    BB_P -->|"ROT"| R_VCC
+    BB_M -->|"SCHWARZ"| R_GND
+    A_P5 -->|"BLAU"| R_IN1
+    A_P6 -->|"BLAU"| R_IN2

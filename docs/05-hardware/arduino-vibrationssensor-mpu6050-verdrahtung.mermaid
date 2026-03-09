@@ -11,8 +11,9 @@ flowchart TB
         A_GND["GND"]
         A_A4["A4 (SDA)"]
         A_A5["A5 (SCL)"]
-        A_P5["Pin 5"]
-        A_P6["Pin 6"]
+        A_P7["D7"]
+        A_P8["D8"]
+        A_P9["D9"]
     end
 
     subgraph BREADBOARD["Breadboard – 6×2 Raster: links 6 (+), rechts 6 (−)"]
@@ -41,14 +42,17 @@ flowchart TB
         R_GND["GND"]
         R_IN1["IN1"]
         R_IN2["IN2"]
+        R_IN3["IN3"]
     end
 
     subgraph RELAIS_OUT["Relais – Schraubklemmen 12V"]
         direction LR
         R_COM1["COM1"]
         R_COM2["COM2"]
+        R_COM3["COM3"]
         R_NO1["NO1"]
         R_NO2["NO2"]
+        R_NO3["NO3"]
     end
 
     subgraph DC["12V DC-Netzteil + Adapter"]
@@ -59,56 +63,42 @@ flowchart TB
 
     subgraph AMPEL["12V Signalampel – 1 Spalte, 4 Reihen"]
         direction TB
-        AMP_SIRENE["Sirene"]
-        AMP_ROT["Rot"]
         AMP_GRUEN["Grün"]
+        AMP_GELB["Gelb"]
+        AMP_ROT["Rot"]
+        AMP_SIRENE["Sirene"]
         AMP_COMMON["Common"]
     end
 
+    %% Dicke Kanten (==>) + Farb-Labels – linkStyle wird oft ignoriert
     %% 5V-Stromverteilung
-    A_5V -->|"M/M"| BB_P1
-    A_GND -->|"M/M"| BB_M1
+    A_5V ==>|"ROT M/M"| BB_P1
+    A_GND ==>|"SCHWARZ M/M"| BB_M1
 
     %% Sensor MPU-6050 (I2C)
-    BB_P2 -->|"M/W"| S_VCC
-    BB_M2 -->|"M/W"| S_GND
-    S_SDA -->|"M/W"| A_A4
-    S_SCL -->|"M/W"| A_A5
+    BB_P2 ==>|"ROT M/W"| S_VCC
+    BB_M2 ==>|"SCHWARZ M/W"| S_GND
+    S_SDA ==>|"BLAU SDA"| A_A4
+    S_SCL ==>|"BLAU SCL"| A_A5
 
     %% Relais-Eingang
-    BB_P3 -->|"M/W"| R_VCC
-    BB_M3 -->|"M/W"| R_GND
-    A_P5 -->|"M/W"| R_IN1
-    A_P6 -->|"M/W"| R_IN2
+    BB_P3 ==>|"ROT M/W"| R_VCC
+    BB_M3 ==>|"SCHWARZ M/W"| R_GND
+    A_P7 ==>|"BLAU"| R_IN1
+    A_P8 ==>|"BLAU"| R_IN2
+    A_P9 ==>|"BLAU"| R_IN3
 
-    %% 12V-Versorgung Relais
-    DC_PLUS -->|"Litze"| R_COM1
-    R_COM1 <-->|"Brücke"| R_COM2
+    %% 12V-Versorgung Relais (COM1-3 brücken wenn getrennt)
+    DC_PLUS ==>|"ROT Litze"| R_COM1
+    R_COM1 <==>|"Brücke"| R_COM2
+    R_COM2 <==>|"Brücke"| R_COM3
 
     %% Ampel
-    DC_MINUS --> AMP_COMMON
-    R_NO1 --> AMP_GRUEN
-    R_NO2 --> AMP_ROT
-    R_NO2 --> AMP_SIRENE
+    DC_MINUS ==> AMP_COMMON
+    R_NO1 ==>|"GRÜN"| AMP_GRUEN
+    R_NO2 ==>|"GELB"| AMP_GELB
+    R_NO3 ==>|"LILA"| AMP_ROT
+    R_NO3 ==>|"LILA"| AMP_SIRENE
 
     %% Common Ground
-    BB_M4 <-->|"M/M"| DC_MINUS
-
-    %% Kabel-Farben: Rot #dc2626, Schwarz #1f2937, Grün #16a34a, Lila #9333ea, I2C #4b5563
-    linkStyle 0 stroke:#dc2626,stroke-width:3px
-    linkStyle 1 stroke:#1f2937,stroke-width:3px
-    linkStyle 2 stroke:#dc2626,stroke-width:3px
-    linkStyle 3 stroke:#1f2937,stroke-width:3px
-    linkStyle 4 stroke:#4b5563,stroke-width:2px
-    linkStyle 5 stroke:#4b5563,stroke-width:2px
-    linkStyle 6 stroke:#dc2626,stroke-width:3px
-    linkStyle 7 stroke:#1f2937,stroke-width:3px
-    linkStyle 8 stroke:#4b5563,stroke-width:2px
-    linkStyle 9 stroke:#4b5563,stroke-width:2px
-    linkStyle 10 stroke:#dc2626,stroke-width:3px
-    linkStyle 11 stroke:#dc2626,stroke-width:3px
-    linkStyle 12 stroke:#1f2937,stroke-width:3px
-    linkStyle 13 stroke:#16a34a,stroke-width:3px
-    linkStyle 14 stroke:#dc2626,stroke-width:3px
-    linkStyle 15 stroke:#9333ea,stroke-width:3px
-    linkStyle 16 stroke:#1f2937,stroke-width:3px
+    BB_M4 <==>|"SCHWARZ M/M"| DC_MINUS

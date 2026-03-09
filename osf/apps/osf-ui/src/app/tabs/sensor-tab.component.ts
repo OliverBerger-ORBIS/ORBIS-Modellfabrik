@@ -6,12 +6,18 @@ import { map, shareReplay, filter, startWith, distinctUntilChanged } from 'rxjs/
 import { merge, combineLatest, Subscription } from 'rxjs';
 import type { SensorOverviewState, CameraFrame, Bme680Snapshot, LdrSnapshot } from '@osf/entities';
 
-/** osf/arduino/vibration/sw420-1/state – SW-420 Sensor-Status; OSF-UI mappt auf Ampel-Darstellung */
+/** osf/arduino/vibration/{sw420-1|mpu6050-1}/state – Vibrationssensor; OSF-UI mappt auf Ampel */
 export interface VibrationStatePayload {
-  vibrationDetected: boolean;
+  /** MPU-6050: direkt; SW-420: abgeleitet aus vibrationDetected */
+  vibrationLevel?: 'green' | 'yellow' | 'red';
+  /** SW-420: direkt; MPU-6050: true bei gelb/rot */
+  vibrationDetected?: boolean;
   impulseCount: number;
-  ts?: string;
-  /** @deprecated Legacy: ampel (GRUEN/ROT) – Backward-Compat für Session-Replay */
+  /** MPU-6050: Beschleunigungs-Magnitude */
+  magnitude?: number;
+  /** ISO 8601 (analog Fischertechnik/DSP) – MPU-6050 via NTP, SW-420 ohne RTC: "" */
+  timestamp?: string;
+  /** @deprecated Legacy: ampel (GRUEN/GELB/ROT) */
   ampel?: string;
 }
 import { MessageMonitorService } from '../services/message-monitor.service';
@@ -59,8 +65,9 @@ export class SensorTabComponent implements OnInit, OnDestroy {
       shareReplay({ bufferSize: 1, refCount: false })
     );
 
-  /** osf/arduino/vibration/sw420-1/state – SW-420 Vibrationssensor (Grün/Rot, später Gelb für MPU-6050) */
-  readonly VIBRATION_STATE_TOPIC = 'osf/arduino/vibration/sw420-1/state';
+  readonly VIBRATION_TOPIC_SW420 = 'osf/arduino/vibration/sw420-1/state';
+  readonly VIBRATION_TOPIC_MPU6050 = 'osf/arduino/vibration/mpu6050-1/state';
+  /** MPU-6050 bevorzugt (3 Stufen), sonst SW-420 */
   vibrationState$!: Observable<VibrationStatePayload | null>;
 
   constructor(
@@ -70,13 +77,18 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     private readonly sensorState: SensorStateService
   ) {
     this.currentEnvironmentKey = this.environmentService.current.key;
-    this.vibrationState$ = this.messageMonitor
-      .getLastMessage<VibrationStatePayload>(this.VIBRATION_STATE_TOPIC)
-      .pipe(
-        map((msg) => (msg !== null && msg.valid ? (msg.payload as VibrationStatePayload) : null)),
-        startWith(null as VibrationStatePayload | null),
-        shareReplay({ bufferSize: 1, refCount: false })
-      );
+    this.vibrationState$ = combineLatest([
+      this.messageMonitor.getLastMessage<VibrationStatePayload>(this.VIBRATION_TOPIC_SW420),
+      this.messageMonitor.getLastMessage<VibrationStatePayload>(this.VIBRATION_TOPIC_MPU6050),
+    ]).pipe(
+      map(([sw, mpu]) => {
+        if (mpu?.valid && mpu?.payload) return mpu.payload as VibrationStatePayload;
+        if (sw?.valid && sw?.payload) return sw.payload as VibrationStatePayload;
+        return null;
+      }),
+      startWith(null as VibrationStatePayload | null),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
     this.bindCacheOutputs();
     this.initializeStreams();
   }
@@ -261,9 +273,12 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     return `${(100 - ratio * 100).toFixed(1)}%`;
   }
 
-  /** SW-420 vibrationDetected → Ampel-Darstellung (Grün/Rot). Legacy ampel für Session-Replay. */
+  /** vibrationLevel (MPU-6050) oder vibrationDetected/ampel (SW-420) → Ampel-Darstellung */
   vibrationLevel(vibration: VibrationStatePayload | null): 'green' | 'red' | 'yellow' | 'unknown' {
     if (!vibration) return 'unknown';
+    if (vibration.vibrationLevel === 'green' || vibration.vibrationLevel === 'yellow' || vibration.vibrationLevel === 'red') {
+      return vibration.vibrationLevel;
+    }
     if (typeof vibration.vibrationDetected === 'boolean') {
       return vibration.vibrationDetected ? 'red' : 'green';
     }
@@ -276,11 +291,9 @@ export class SensorTabComponent implements OnInit, OnDestroy {
 
   vibrationStatus(vibration: VibrationStatePayload | null): string {
     if (!vibration) return $localize`:@@sensorVibrationNoData:No data`;
-    const isAlarm =
-      typeof vibration.vibrationDetected === 'boolean'
-        ? vibration.vibrationDetected
-        : ['ROT', 'RED'].includes(vibration.ampel?.toUpperCase() ?? '');
-    const isWarning = ['GELB', 'YELLOW'].includes(vibration.ampel?.toUpperCase() ?? '');
+    const level = this.vibrationLevel(vibration);
+    const isAlarm = level === 'red';
+    const isWarning = level === 'yellow';
     if (isAlarm) return $localize`:@@sensorVibrationStatusRed:Alarm`;
     if (isWarning) return $localize`:@@sensorVibrationStatusYellow:Warning`;
     return $localize`:@@sensorVibrationStatusGreen:Idle`;
@@ -291,10 +304,10 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     const payload: VibrationStatePayload = {
       vibrationDetected,
       impulseCount: vibrationDetected ? 99 : 0,
-      ts: new Date().toISOString(),
+      timestamp: new Date().toISOString(),
     };
     const message = {
-      topic: this.VIBRATION_STATE_TOPIC,
+      topic: this.VIBRATION_TOPIC_SW420,
       payload,
       timestamp: new Date().toISOString(),
     };

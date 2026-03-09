@@ -31,8 +31,9 @@
 - [x] **Fixture mixed-pr-prnok:** Session `mixed-sr-pr-prnok_20260305_121602.log` als Mock-Fixture. `scripts/build_order_fixtures.py --only mixed_pr_prnok`. Order-Tab und Track & Trace: Fixture-Option "Mixed PR Quality-Fail".
 
 ### Arduino-Hardware & LogiMAT
-- [ ] **Arduino MPU-6050:** Vibrationssensor-Upgrade (I2C, Beschleunigung/Gyro) – Vorgehen: [arduino-vibrationssensor.md](../05-hardware/arduino-vibrationssensor.md) §5 und Topic `osf/arduino/vibration/mpu6050-1/state`.
-- [ ] **Hardware-Erweiterung (Ampel-System):** Neuer Sensor/Aktor für Messe-Demo integrieren.
+- [x] **Arduino MPU-6050:** Vibrationssensor-Upgrade (I2C, 3-Stufen-Ampel, NTP/timestamp) – Sketch, Doku §5. **Done wenn:** a) MQTT per LAN funktioniert, b) Sensor-Info im Tab Sensor angezeigt wird (OSF-UI bereits ausgelegt).
+- [x] **Hardware-Erweiterung (Ampel-System):** SW-420 + MPU-6050 einheitlich (Relais aktiv-niedrig), Doku §1.1 Schritt-für-Schritt analog §5.3.1.
+- [ ] **E2E-Test Vibrationssensor:** Arduino (SW-420 oder MPU-6050) per LAN → MQTT-Broker → osf-ui Replay/Live → Sensor-Tab zeigt Ampel + Impulse. Optional: Preload-Test dokumentieren.
 
 ### LogiMAT Vorbereitung (Readiness)
 *Detail-Tasks werden extern verwaltet. Wesentliche Checkpoints:*
@@ -86,4 +87,4 @@
 
 ---
 
-*Letzte Aktualisierung: 05.03.2026*
+*Letzte Aktualisierung: 09.03.2026*
