@@ -74,6 +74,10 @@ Zentrale Dokumentation aller CCU-Abweichungen vom Fischertechnik-Original in `in
 **Status:** Accepted | **Datum:** 2026-03-04  
 package.json als Source of Truth, SemVer, Docker-Tags an Version gekoppelt. Selektives CCU-Build/Deploy als Standard.
 
+### 22. [DSP Use-Cases – Konzept vs. Live Demo](22-dsp-use-case-konzept-live-demo.md)
+**Status:** Accepted | **Datum:** 2026-03-10  
+Ein Kachel pro Use-Case; Auswahl „Konzept“ oder „Live Demo“; UC-05 Live-Demo mit Gefahrensimulation; Quick Win vor UC-01-Refactoring. OSF-Zweck: Demo von DSP/MES-Funktionalität.
+
 ---
 
 ## Template
@@ -82,4 +86,4 @@ Für neue Decision Records: [decision_template.md](decision_template.md)
 
 ---
 
-*Letzte Aktualisierung: 2026-03-04*
+*Letzte Aktualisierung: 2026-03-10*

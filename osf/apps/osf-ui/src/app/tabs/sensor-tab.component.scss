@@ -336,6 +336,32 @@
       }
     }
   }
+
+  .danger-simulation {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+
+    button {
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      cursor: pointer;
+      border: 1px solid currentColor;
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    .danger-simulation__hint {
+      font-size: 0.8rem;
+      color: var(--orbis-grey-strong);
+    }
+  }
 }
 
 .camera-section {

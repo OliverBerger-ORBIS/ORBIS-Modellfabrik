@@ -41,7 +41,7 @@
 | Command | Topic | QoS | Retain | Payload-Struktur |
 |---------|-------|-----|--------|------------------|
 | Factory Reset | `ccu/set/reset` | 1 | false | `{ timestamp: ISO, withStorage: false }` |
-| Emergency Stop | `ccu/set/emergency` | 2 | false | `{ timestamp: ISO, emergency: true }` |
+| Emergency Stop | `ccu/set/emergency` | 2 | false | *(Existiert nicht in CCU – siehe alarm-fabrik-stop-ccu-commands)* |
 | Calibrate Module | `ccu/set/calibration` | 1 | false | `{ timestamp: ISO, serialNumber: string, command: 'startCalibration' }` |
 | FTS Charge (Start) | `ccu/set/charge` | 1 | false | `{ serialNumber: string, charge: true, timestamp: ISO }` |
 | FTS Charge (Stop) | `ccu/set/charge` | 1 | false | `{ serialNumber: string, charge: false, timestamp: ISO }` |
@@ -78,7 +78,7 @@
 ## 📝 Nächste Schritte
 
 1. **Reset Factory (Live-Mode)** - noch nicht implementiert
-2. **Emergency Stop** - noch nicht implementiert
+2. **Gefahrensimulation** - park + cancel statt emergency (CCU unterstützt kein ccu/set/emergency)
 3. **UI Integration** - Camera-Control ist jetzt verbunden ✅
 
 ## 🔍 Assert-Prüfung

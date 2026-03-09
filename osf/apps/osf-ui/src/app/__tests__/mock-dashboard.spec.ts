@@ -269,6 +269,11 @@ describe('MockDashboard', () => {
       expect(controller.commands.resetFactory).toBeDefined();
       expect(typeof controller.commands.resetFactory).toBe('function');
     });
+
+    it('should have simulateDanger command', () => {
+      expect(controller.commands.simulateDanger).toBeDefined();
+      expect(typeof controller.commands.simulateDanger).toBe('function');
+    });
   });
 
   describe('MessageMonitor Integration', () => {

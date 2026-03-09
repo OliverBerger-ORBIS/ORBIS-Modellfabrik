@@ -136,7 +136,7 @@ UUID v4, eindeutig je Aktion.
 PICK, DROP, STORE, DRILL, MILL, CHECK_QUALITY
 
 ### CCU
-RESET_FACTORY, PAUSE_PRODUCTION, RESUME_PRODUCTION
+RESET_FACTORY, PAUSE_PRODUCTION, RESUME_PRODUCTION (konzeptionell; `ccu/set/emergency` existiert nicht – nutze `ccu/set/park` + `ccu/order/cancel`)
 
 ---
 

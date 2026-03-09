@@ -1,7 +1,7 @@
 # ORBIS SmartFactory – Roadmap & Entwicklungsphasen
 
 **Version:** 2.0  
-**Letzte Aktualisierung:** 2026-03-04  
+**Letzte Aktualisierung:** 2026-03-09  
 
 ---
 
@@ -71,7 +71,7 @@ OSF-UI ←→ APS-CCU ←→ APS-NodeRED ←→ ORBIS-DSP ←→ OPC-UA Module
 
 ### **Phase 5: Erweiterbare Plattform – MES/DSP-Integration**
 - **Status:** 🔄 In Bearbeitung (Fokus Sprint 16/17)
-- **Strategic direction:** ORBIS MES und DSP übernehmen zunehmend die Steuerung (z.B. QM-Check, Order-Entscheidungen). APS-CCU dient als Interim-Layer bis zur vollständigen Übernahme.
+- **Strategic direction:** Entscheidungen und Orchestrierung werden aus der CCU ausgelagert und durch MES/DSP ersetzt. ORBIS MES und DSP übernehmen zunehmend die Steuerung (z.B. Ersatzauftrag bei Quality-Fail, Order-Entscheidungen). APS-CCU dient als Interim-Layer bis zur vollständigen Übernahme. **OSF-UI bleibt zentrale alternative Quelle** zur Auftragsanlage – gleichberechtigt neben MES/DSP.
 - **Ausgangslage:** Fischertechnik-Dokumentation liegt vor und erleichtert Erweiterungen.
 - **Erweiterungsrichtungen:**
   - **Hardware:** ✅ Arduino Vibrationssensor integriert (Sprint 16). 🔄 **Neu:** Ampel-System (neuer Sensor) für LogiMAT. Use Case: Predictive Maintenance / Monitoring.

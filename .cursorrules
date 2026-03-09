@@ -11,6 +11,28 @@
 **Nicht:** Sofort mit search_replace/write/delete beginnen.
 **Nicht:** Nach jeder kleinen Änderung erneut fragen.
 
+### Strukturierte Aufgaben (User-Praxis)
+
+User kann Tasks mit Präfix kennzeichnen – Agent muss entsprechend handeln:
+
+| Präfix | Bedeutung | Agent-Verhalten |
+|--------|-----------|-----------------|
+| **Design:** | Wo?, Wie?, Optionen, Architektur | **Nur Analyse + Optionen.** Keine Implementierung. Abwägungen, Empfehlung, auf User-Entscheidung warten. |
+| **Plan:** | Schritte festlegen | Plan formulieren, auf "go" warten, **dann** implementieren. |
+| **Implementieren:** | Umsetzung (Plan steht) | Nach kurzer Bestätigung des Plans direkt umsetzen. |
+
+### Design-Fragen erkennen (KRITISCH)
+
+**Signale:** "Wo soll …?", "Wie können wir …?", "Optionen?", "Analysiere …", "Könnte man …?", "Sollte es …?"
+
+**Agent-Pflicht:** Bei solchen Formulierungen **keinen Code** schreiben. Stattdessen:
+1. Codebase analysieren (bestehende Struktur, Patterns, Use-Cases)
+2. Optionen mit Vor-/Nachteilen darstellen
+3. Empfehlung begründen
+4. Auf User-Entscheidung warten (dann ggf. Plan → go → Implementierung)
+
+**Bei Unsicherheit:** Lieber als Design behandeln – Optionen präsentieren, nicht implementieren.
+
 ---
 
 ## 🚨 KRITISCHE VERBOTE (POSITION 1 - HÖCHSTE PRIORITÄT)

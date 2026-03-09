@@ -297,6 +297,20 @@
           Send alarm
         </button>
       </div>
+      <div class="danger-simulation" *ngIf="!isMockMode">
+        <button
+          type="button"
+          class="btn-danger"
+          [disabled]="(connectionState$ | async) !== 'connected'"
+          (click)="simulateDanger()"
+          i18n="@@sensorDangerSimulateButton"
+        >
+          Gefahr simulieren
+        </button>
+        <span class="danger-simulation__hint" *ngIf="(connectionState$ | async) !== 'connected'" i18n="@@sensorDangerSimulateHint">
+          Verbindung mit MQTT-Broker erforderlich (Live/Replay)
+        </span>
+      </div>
     </article>
   </div>
 

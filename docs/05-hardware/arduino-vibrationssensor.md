@@ -459,7 +459,7 @@ Wir behalten das bestehende Pattern ([DR-18](../03-decision-records/18-osf-exten
 | **R4 WiFi** | WLAN, flexibel | Experimentelle/Showcase-Sensoren, ggf. mobil |
 
 **R3:** DHT11, DS18B20, LDR, MQ-2, PIR, HC-SR04, DS3231 (optional).  
-**R4:** Zweiter MPU-6050 (anderer Messpunkt), Regensensor, Flammensensor, Lichtschranke, Sound-Sensor.
+**R4:** SW-420 (anderer Messpunkt; Bestand: 1× MPU-6050, 1× SW-420), Flammensensor (für Alert-Auslösung), Sound-Sensor.
 
 Bestand: [inventory-electronics.md](inventory-electronics.md).
 

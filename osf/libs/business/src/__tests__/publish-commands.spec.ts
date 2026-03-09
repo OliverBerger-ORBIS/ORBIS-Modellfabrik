@@ -464,3 +464,34 @@ test('resetFactory publishes ccu/set/reset with withStorage=false when explicitl
   assert.equal(options?.retain, false);
 });
 
+test('simulateDanger publishes ccu/set/park and ccu/order/cancel with enqueued IDs', async () => {
+  const { streams, publishLog } = createGateway();
+  const business = createBusiness(streams);
+
+  await business.simulateDanger(['order-1', 'order-2']);
+
+  assert.equal(publishLog.length, 2);
+  assert.equal(publishLog[0]?.topic, 'ccu/set/park');
+  assert.equal(publishLog[1]?.topic, 'ccu/order/cancel');
+
+  const parkPayload = publishLog[0]?.payload as { timestamp: string };
+  assert.equal(typeof parkPayload?.timestamp, 'string');
+  assert.ok(parkPayload.timestamp.match(/^\d{4}-\d{2}-\d{2}T/), 'park timestamp ISO');
+
+  const cancelPayload = publishLog[1]?.payload as string[];
+  assert.deepEqual(cancelPayload, ['order-1', 'order-2']);
+
+  assert.equal(publishLog[0]?.options?.qos, 2);
+  assert.equal(publishLog[1]?.options?.qos, 2);
+});
+
+test('simulateDanger with empty array publishes only park', async () => {
+  const { streams, publishLog } = createGateway();
+  const business = createBusiness(streams);
+
+  await business.simulateDanger([]);
+
+  assert.equal(publishLog.length, 1);
+  assert.equal(publishLog[0]?.topic, 'ccu/set/park');
+});
+

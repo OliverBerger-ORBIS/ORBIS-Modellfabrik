@@ -12,14 +12,13 @@
 ### Übernommen aus Sprint 16 (Open Tasks)
 - [ ] **Azure DevOps Migration:** Von Github zu Azure Devops (Repo + Boards)
 - [ ] **Projektantrag:** ORBIS-Smartfactory Q1/Q2 2026 finalisieren
-- [ ] **DSP_Edge:** Implementierung `dsp/correlation/info` (als Response auf Request oder Unsolicited nach Order-Response)
+- [ ] **DSP_Edge:** Implementierung `dsp/correlation/info` (als Response auf Request oder Unsolicited nach Order-Response) – *osf-ui vorbereitet (CorrelationInfoService, dsp/#). DSP_Edge wird in anderem Projekt entwickelt. Offen: E2E-Test mit simuliertem dsp/correlation/info.*
 
 ### MES / Integration (Fokus)
 - [ ] **Einfache MES/ERP Integration:** Fokus auf Zusammenspiel mit DSP.
-- [ ] **QM-Check Verlagerung (CCU Ausbau):** 
-    - Logik implementieren, damit der QM-Check (Quality Result) von DSP/MES übernommen werden kann.
-    - Ausbau der Funktionalität in der CCU (`integrations/APS-CCU`), um externe QM-Entscheidungen zu verarbeiten.
+- [x] **QM-Check Verlagerung (CCU Ausbau):** Erledigt durch Quality-Fail (Option B). CCU erstellt bei FAILED keinen Ersatzauftrag; MES/DSP senden zukünftig `ccu/order/request` bei Bedarf (anderes Projekt). osf-ui ist senderneutral.
 - [x] **CCU: Quality-Fail (Option B):** Bei `CHECK_QUALITY result=FAILED` kein Ersatzauftrag, Order bleibt ERROR. OSF-MODIFICATIONS.md Mod², Unit-Test. E2E ✓. Deploy ✓.
+- [ ] **E2E-Test ccu/order/request von MES/DSP:** Simulieren, dass MES/DSP nach Quality-Fail einen Ersatzauftrag per `ccu/order/request` stellt. osf-ui vorbereitet (egal wer sendet).
 - [x] **TXT-AIQS: QoS 1 für quality_check:** `sorting_line.py`/`.blockly` QoS 2→1, beide Varianten (`_cam`, `_cam_clfn`), Doku, .ft-Archive. E2E ✓. Deploy ✓.
 - [x] **Track & Trace: Order-Status FAILED/ERROR anzeigen:**
     - Kontext: Bei Quality-Fail (Order `state: ERROR`) zeigt Track & Trace im Order Context weiterhin "Active". Soll "Fehlgeschlagen"/"Abgebrochen" anzeigen.
@@ -34,6 +33,21 @@
 - [x] **Arduino MPU-6050:** Vibrationssensor-Upgrade (I2C, 3-Stufen-Ampel, NTP/timestamp) – Sketch, Doku §5. **Done wenn:** a) MQTT per LAN funktioniert, b) Sensor-Info im Tab Sensor angezeigt wird (OSF-UI bereits ausgelegt).
 - [x] **Hardware-Erweiterung (Ampel-System):** SW-420 + MPU-6050 einheitlich (Relais aktiv-niedrig), Doku §1.1 Schritt-für-Schritt analog §5.3.1.
 - [ ] **E2E-Test Vibrationssensor:** Arduino (SW-420 oder MPU-6050) per LAN → MQTT-Broker → osf-ui Replay/Live → Sensor-Tab zeigt Ampel + Impulse. Optional: Preload-Test dokumentieren.
+- [ ] **UC-05 Live-Demo: Gefahrensimulation** *(Reihenfolge: 1 – vor UC-01)*
+  - **Kontext:** Gemäß [DR-22](../03-decision-records/22-dsp-use-case-konzept-live-demo.md), [Analyse alarm-fabrik-stop](../07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md).
+  - **Umsetzung:** „Gefahr simulieren“ in UC-05 Live-Demo (Tabs „Konzept" | „Live Demo"). Button aus Sensor-Tab entfernen. Sendet `ccu/set/park` + `ccu/order/cancel` (ENQUEUED-IDs aus `ccu/order/active`). Business-Layer `simulateDanger` bleibt (wird in UC-05 eingebunden).
+  - **Betroffene Dateien:** `osf/apps/osf-ui/src/app/pages/use-cases/predictive-maintenance/` (Tabs + Live-Demo mit Button), `osf/apps/osf-ui/src/app/tabs/sensor-tab.component.ts` (Button entfernen).
+  - **Definition of Done:**
+    - Konzept-Anzeige: UC-05-Konzept (Diagramm/Steps) ist klar und nachvollziehbar.
+    - E2E-Nachweis: Der E2E-Test (oder empirische Live-Demo) zeigt:
+      1. **Prozess-Anhalt:** Beim Auslösen von „Gefahr simulieren" wird der Produktionsprozess angehalten.
+      2. **Stillstand im Shopfloor:** Die Aktion führt zu sichtbarem/erkennbarem Stillstand auf dem Shopfloor (z.B. Module parken, FTS stoppt, keine neuen Aufträge).
+      3. **Produktion fortsetzen:** Nach virtuellem „Fix" (z.B. Bestätigung, Reset oder manuelles Eingreifen gemäß [08-manual-intervention](../06-integrations/fischertechnik-official/08-manual-intervention.md)) kann die Produktion wieder aufgenommen werden.
+    - Optional dokumentiert: empirischer Test `ccu/set/park` bei laufender AIQS-Aktion.
+- [ ] **UC-01 anpassen (gemäß UC-05 / DR-22)** *(Reihenfolge: 2 – nach UC-05)*
+  - **Umsetzung:** Beide Track-&-Trace-Kacheln zu einer zusammenführen; Auswahl „Konzept" | „Live Demo" statt zweier Kacheln.
+  - **UseCase-Interface:** `conceptRoute`, `liveDemoRoute`; Detail-UI: zwei Buttons.
+  - **Betroffene Dateien:** `osf/apps/osf-ui/src/app/pages/dsp/components/dsp-use-cases/dsp-use-cases.component.ts` (Kacheln `track-trace-genealogy`, `track-trace-live` → eine Kachel), UseCase-Interface/Config, Routing.
 
 ### LogiMAT Vorbereitung (Readiness)
 *Detail-Tasks werden extern verwaltet. Wesentliche Checkpoints:*
@@ -68,6 +82,10 @@
 
 - **Customer Architecture Netzsch:** Neue DSP-Customer-Config `NETZSCH_CONFIG` anlegen – Vorlage: `osf/apps/osf-ui/.../customer/ecme/` und `customer-selector-page.component.ts`.
 
+### Sensor-Erweiterung Arduino R3 (Backlog)
+
+*Siehe [Arduino Vibrationssensor](../05-hardware/arduino-vibrationssensor.md) §6.* R3 weitere Sensoren anbinden, Werte im Sensor-Tab; Flammensensor (Prio 1); R4 zweite Priorität.
+
 ---
 
 ## 🔗 Entscheidungen
@@ -76,15 +94,17 @@
 - [x] **[DR-20](../03-decision-records/20-aps-ccu-osf-modifications-documentation.md):** APS-CCU OSF-Modifikationen – zentrale Dokumentation in OSF-MODIFICATIONS.md
 - [x] **[DR-21](../03-decision-records/21-ccu-osf-versioning.md):** CCU OSF-Versionierung – package.json `-osf.N`, Docker-Tags, selektives Build/Deploy
 - [x] *Analyse (CCU Quality-Fail):* [docs/07-analysis/ccu-quality-fail-behaviour-2026-03.md](../07-analysis/ccu-quality-fail-behaviour-2026-03.md) – umgesetzt (Option B, FTS fährt weg, kein Ersatzauftrag)
+- [x] **[DR-22](../03-decision-records/22-dsp-use-case-konzept-live-demo.md):** Use-Cases – Konzept vs. Live Demo; eine Kachel pro UC; Gefahrensimulation in UC-05 Live-Demo
 
 ---
 
 ## 📎 Referenzen
 - [Use-Case Bibliothek](../02-architecture/use-case-library.md)
 - [Arduino Vibrationssensor](../05-hardware/arduino-vibrationssensor.md)
+- [Alarm → Fabrik-Stop (CCU-Commands)](../07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md)
 - Session (Quality-Fail E2E erfolgreich): `data/osf-data/sessions/mixed-sr-pr-prnok_20260305_121602.log`
 - Session (Quality-Fail Ablauf historisch): `data/osf-data/sessions/mixed-sw-pw-sw-pwnok-pw_20260303_093559.log`
 
 ---
 
-*Letzte Aktualisierung: 09.03.2026*
+*Letzte Aktualisierung: 11.03.2026*

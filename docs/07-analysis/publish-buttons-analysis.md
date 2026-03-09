@@ -71,7 +71,7 @@ Diese Analyse vergleicht alle Buttons in OSF (vormals OMF3), die MQTT Topics pub
 | Topic | OMF2 Location | OSF Status | OSF Location |
 |-------|--------------|------------|---------------|
 | `ccu/set/reset` | `factory_steering_subtab.py:99` | ⚠️ Teilweise | `app.component.ts:252` (nur Mock) |
-| `ccu/set/emergency` | `factory_steering_subtab.py:122` | ❌ Fehlt | - |
+| `ccu/set/emergency` | OMF2 | ❌ Existiert nicht in CCU | Nutze park + cancel, siehe alarm-fabrik-stop |
 | `fts/v1/ff/{serial}/instantAction` | `factory_steering_subtab.py:154` | ✅ Implementiert | `shopfloor-tab.component.ts:251` |
 | `ccu/set/charge` | `factory_steering_subtab.py:176,198` | ✅ Implementiert | `shopfloor-tab.component.ts:260` |
 | `ccu/order/request` | `factory_steering_subtab.py:220` | ✅ Implementiert | `overview-tab.component.ts:159` |
@@ -86,14 +86,10 @@ Diese Analyse vergleicht alle Buttons in OSF (vormals OMF3), die MQTT Topics pub
 - **Topic**: `ccu/set/reset`
 - **Payload**: `{ timestamp: ISO, withStorage: false }`
 
-### 2. Emergency Stop
-- **Problem**: Button existiert nicht
-- **Lösung**: 
-  - Button im Header hinzufügen (neben Reset Factory)
-  - `dashboard.commands.emergencyStop()` implementieren
-- **Topic**: `ccu/set/emergency`
-- **Payload**: `{ timestamp: ISO, emergency: true }`
-- **QoS**: 2 (höchste Priorität)
+### 2. Emergency Stop / Gefahrensimulation
+- **Hinweis:** `ccu/set/emergency` existiert **nicht** im APS-CCU. OMF2 hatte es spezifiziert, CCU implementiert es nicht.
+- **Alternativ:** `ccu/set/park` + `ccu/order/cancel` (Array ENQUEUED-Order-IDs). Siehe [alarm-fabrik-stop-ccu-commands-2026-03.md](alarm-fabrik-stop-ccu-commands-2026-03.md).
+- **Lösung:** Gefahrensimulation-Button sendet park + cancel; kein separater Emergency-Topic.
 
 ### 3. Camera Control
 - **Problem**: Buttons existieren, publishen aber nichts

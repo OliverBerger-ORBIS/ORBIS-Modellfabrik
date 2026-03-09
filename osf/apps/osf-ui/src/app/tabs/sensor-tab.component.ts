@@ -23,7 +23,7 @@ export interface VibrationStatePayload {
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { EnvironmentService } from '../services/environment.service';
 import type { OrderFixtureName } from '@osf/testing-fixtures';
-import { ConnectionService } from '../services/connection.service';
+import { ConnectionService, type ConnectionState } from '../services/connection.service';
 import { SensorStateService } from '../services/sensor-state.service';
 
 @Component({
@@ -70,12 +70,16 @@ export class SensorTabComponent implements OnInit, OnDestroy {
   /** MPU-6050 bevorzugt (3 Stufen), sonst SW-420 */
   vibrationState$!: Observable<VibrationStatePayload | null>;
 
+  /** Für Template: Gefahrensimulation-Button (Connection-State) */
+  connectionState$!: Observable<ConnectionState>;
+
   constructor(
     private readonly messageMonitor: MessageMonitorService,
     private readonly environmentService: EnvironmentService,
     private readonly connectionService: ConnectionService,
     private readonly sensorState: SensorStateService
   ) {
+    this.connectionState$ = this.connectionService.state$;
     this.currentEnvironmentKey = this.environmentService.current.key;
     this.vibrationState$ = combineLatest([
       this.messageMonitor.getLastMessage<VibrationStatePayload>(this.VIBRATION_TOPIC_SW420),
@@ -299,6 +303,18 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     return $localize`:@@sensorVibrationStatusGreen:Idle`;
   }
 
+  /** ENQUEUED-Order-IDs aus ccu/order/active (für Gefahrensimulation: cancel) */
+  enqueuedOrderIds: string[] = [];
+
+  /** Gefahrensimulation: ccu/set/park + ccu/order/cancel. Nur in Live/Replay bei Verbindung. */
+  async simulateDanger(): Promise<void> {
+    try {
+      await this.dashboard.commands.simulateDanger(this.enqueuedOrderIds);
+    } catch (error) {
+      console.warn('[sensor-tab] simulateDanger failed:', error);
+    }
+  }
+
   /** Mock only: Vibration-State per injectMessage setzen (zum Testen der Anzeige) */
   injectVibrationState(vibrationDetected: boolean): void {
     const payload: VibrationStatePayload = {
@@ -404,6 +420,25 @@ export class SensorTabComponent implements OnInit, OnDestroy {
           if (state === 'connected') {
             this.initializeStreams();
           }
+        })
+    );
+
+    this.subscriptions.add(
+      this.messageMonitor
+        .getLastMessage<{ orderId?: string; state?: string; status?: string }[] | { orderId?: string; state?: string; status?: string }>('ccu/order/active')
+        .pipe(
+          filter((msg) => msg !== null && msg.valid && msg.payload != null),
+          map((msg) => {
+            const payload = msg!.payload;
+            const arr = Array.isArray(payload) ? payload : [payload];
+            return arr
+              .filter((o) => o && (o.state ?? o.status ?? '').toUpperCase() === 'ENQUEUED' && o.orderId)
+              .map((o) => o.orderId as string);
+          }),
+          startWith([] as string[])
+        )
+        .subscribe((ids) => {
+          this.enqueuedOrderIds = ids;
         })
     );
 
