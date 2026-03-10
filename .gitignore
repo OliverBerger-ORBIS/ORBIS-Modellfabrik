@@ -39,6 +39,3 @@ deploy/osf-ui/docker-images/
 # Mosquitto runtime (persistence)
 mosquitto.db
 
-# Version files (local/build overrides)
-VERSION
-osf/apps/osf-ui/src/environments/version.ts
