@@ -2,7 +2,8 @@
 # Unterstützt sowohl TCP MQTT (1883) als auch WebSocket MQTT (9001)
 
 # TCP MQTT (Port 1883) - für Backend-Services wie Session Manager
-listener 1883
+# 0.0.0.0 = auch von LAN (z.B. Arduino) erreichbar; sonst nur localhost
+listener 1883 0.0.0.0
 persistence true
 # Log-Datei im Homebrew-Verzeichnis
 log_dest file /opt/homebrew/var/log/mosquitto/mosquitto.log
@@ -15,9 +16,6 @@ allow_anonymous false
 password_file /opt/homebrew/etc/mosquitto/passwd
 
 # WebSocket MQTT (Port 9001) - für Browser-Anwendungen
-listener 9001
+listener 9001 0.0.0.0
 protocol websockets
-# WebSocket verwendet die gleiche Authentifizierung wie TCP
-allow_anonymous false
-password_file /opt/homebrew/etc/mosquitto/passwd
-
+# Authentifizierung wie oben (allow_anonymous, password_file) gilt für alle Listener

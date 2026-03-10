@@ -240,7 +240,7 @@ Sketch muss `mqttClient.connect(id, MQTT_USER, MQTT_PASS, willTopic, ...)` nutze
 
 **osf-ui:** Das Topic `osf/#` ist abonniert. Im Message Monitor Filter „OSF Topics“ wählen. Vibrations-Kachel im Sensor-Tab zeigt Ampel (Grün/Rot) und Impulse.
 
-**Status:** Mock, Replay und Live getestet. Arduino publiziert `osf/*`-Topics, osf-ui stellt sie im Sensor-Tab dar.
+**Status (5. März 2026):** Mock, Replay und Live getestet. Arduino publiziert `osf/*`-Topics, osf-ui stellt sie im Sensor-Tab dar.
 
 ### OSF-Topics testen (ohne Arduino/Broker)
 
@@ -276,6 +276,24 @@ Zum Testen der Message-Monitor-Erweiterung ohne laufenden Arduino oder MQTT-Brok
 **Relais-LED leuchtet, Ampel bleibt aus:** 12V-Stromkreis prüfen – COM mit Plus, Ampel-Kabel in **NO** (nicht NC), Grau (Common) an Minus.
 
 **Ampel schaltet invertiert (Ruhe = Rot, Alarm = Grün):** Relais-Modul prüfen – manche Module haben Jumper für High-/Low-Trigger. Beide Sketches (SW-420, MPU-6050) nutzen aktiv-niedrig (LOW = ein). Bei High-Trigger-Modul: Logik im Sketch invertieren.
+
+**Ethernet IP 0.0.0.0 (MPU-6050):** W5500 antwortet nicht über SPI. Prüfen: Shield fest aufgesteckt, LAN-Kabel, externes 5V (USB reicht evtl. nicht), SD-Karte aus dem Shield entfernen. Alternative: `USE_OFFICIAL_ETH 1` im Sketch, „Ethernet“ (Arduino, 2.x) über Library Manager installieren.
+
+### 4.1 Live MQTT schlägt fehl (Ethernet Shield verdächtig)
+
+**Hintergrund:** Live funktionierte am 5. März 2026. Danach qualmte das Ethernet Shield bei einem Test. Seither MQTT-Verbindung (state -2) trotz funktionierendem Broker.
+
+**Durchgeführte Tests (ohne Erfolg):**
+
+| Test | Ergebnis |
+|------|----------|
+| Sketch-Vergleich funktionierender Stand (5. März 2026) vs. aktuell | MQTT/Ethernet-Code identisch, nur Relais-Logik geändert |
+| RPi: `ss -tn` auf Port 1883 (20 s während Arduino-Reset) | Keine SYN-Pakete vom Arduino sichtbar |
+| Mac-Broker statt RPi (192.168.0.105) | `tcpdump` zeigt SYN vom Arduino; Mac antwortet mit RST (Mosquitto-Config: `listener 1883 0.0.0.0` nötig) |
+| Mosquitto auf Mac (local-simple, 0.0.0.0) | `mosquitto_pub` von Mac → OK; `lsof` zeigte ESTABLISHED von 192.168.0.95; Serial Monitor weiter „MQTT fehlgeschlagen" |
+| Power-Cycle, sauberer Reconnect | Kein Durchbruch |
+
+**Fazit:** Warten auf Ersatz-Ethernet Shield 2. Alternativ: Arduino R4 mit WiFi statt Ethernet Shield.
 
 ---
 

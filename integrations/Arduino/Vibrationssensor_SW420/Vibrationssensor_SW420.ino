@@ -44,12 +44,15 @@ EthernetClient ethClient;
 PubSubClient mqttClient(ethClient);
 
 void mqttReconnect() {
-  // Ein Versuch pro Aufruf, KEIN while – sonst blockiert die Sensor-Auswertung!
   if (mqttClient.connect(MQTT_CLIENT_ID, MQTT_USER, MQTT_PASS, TOPIC_CONNECTION, 1, true, "{\"connectionState\":\"OFFLINE\"}")) {
+    Serial.println("MQTT verbunden.");
     char payload[80];
     snprintf(payload, sizeof(payload), "{\"connectionState\":\"ONLINE\",\"ip\":\"%d.%d.%d.%d\",\"serialNumber\":\"sw420-1\"}",
              ip[0], ip[1], ip[2], ip[3]);
     mqttClient.publish(TOPIC_CONNECTION, payload, true);
+  } else {
+    Serial.print("MQTT fehlgeschlagen. state=");
+    Serial.println(mqttClient.state());
   }
 }
 
