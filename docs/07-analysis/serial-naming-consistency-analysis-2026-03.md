@@ -144,7 +144,7 @@ In allen Fischertechnik-Payloads wird **`serialNumber`** (camelCase) verwendet:
 - [Fischertechnik Message Structure](../06-integrations/fischertechnik-official/05-message-structure.md) – `serialNumber`
 - [APS-CCU 11-appendices](../../integrations/APS-CCU/docs/11-appendices.md) – Topic `<serial>`, Payload `serialNumber`
 - [Module Serial Mapping](../06-integrations/00-REFERENCE/module-serial-mapping.md)
-- [second-agv-integration-analysis-2026-03.md](second-agv-integration-analysis-2026-03.md)
+- [second-agv-2026-03.md](second-agv-2026-03.md)
 
 ---
 

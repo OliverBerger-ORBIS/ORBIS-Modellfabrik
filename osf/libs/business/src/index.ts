@@ -414,7 +414,8 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
   const ftsStates$ = gateway.fts$.pipe(
     scan(
       (acc, fts) => {
-        const id = fts.ftsId ?? 'unknown';
+        // Payload uses ftsId or serialNumber (Fischertechnik: serialNumber)
+        const id = fts.ftsId ?? fts.serialNumber ?? 'unknown';
         return { ...acc, [id]: fts };
       },
       {} as Record<string, FtsState>

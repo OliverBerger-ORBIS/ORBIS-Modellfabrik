@@ -24,6 +24,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { ShopfloorLayoutConfig, ShopfloorCellConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
 import { ShopfloorMappingService, type ModuleInfo } from '../services/shopfloor-mapping.service';
+import { AgvRouteService } from '../services/agv-route.service';
 import { ICONS } from '../shared/icons/icon.registry';
 
 // DPS/AIQS Serial Numbers
@@ -246,6 +247,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     private readonly cdr: ChangeDetectorRef,
     private readonly http: HttpClient,
     private readonly mappingService: ShopfloorMappingService,
+    private readonly agvRouteService: AgvRouteService,
     private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {
@@ -404,6 +406,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       next: (config) => {
         this.layoutConfig = config;
         this.mappingService.initializeLayout(config);
+        this.agvRouteService.initializeLayout(config);
         this.initializeRegistry();
         
         // Check for module query parameter from architecture click
@@ -769,15 +772,15 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
 
     // Note: DPS/AIQS streams are subscribed in updateSelectedMeta when module is selected
     
-    // Subscribe to FTS states to get FTS position
+    // Subscribe to FTS states to get FTS position (for potential future use; layout has showFtsOverlay=false)
     this.subscriptions.add(
       this.dashboard.streams.ftsStates$.pipe(
         map((ftsStates) => {
-          // Get first FTS position (assuming single FTS for now)
           const ftsEntries = Object.values(ftsStates);
-          if (ftsEntries.length > 0 && ftsEntries[0].position) {
-            return ftsEntries[0].position;
-          }
+          if (ftsEntries.length === 0) return null;
+          const first = ftsEntries[0] as FtsState & { lastNodeId?: string };
+          if (first.position) return first.position;
+          if (first.lastNodeId) return this.getPositionFromNodeId(first.lastNodeId);
           return null;
         })
       ).subscribe((position) => {
@@ -785,6 +788,18 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       })
     );
+  }
+
+  private getPositionFromNodeId(nodeId: string): { x: number; y: number } | null {
+    let pos = this.agvRouteService.getNodePosition(nodeId);
+    if (!pos) {
+      const canonical = this.agvRouteService.resolveNodeRef(nodeId);
+      if (canonical) pos = this.agvRouteService.getNodePosition(canonical);
+    }
+    if (!pos && nodeId.match(/^\d+$/)) {
+      pos = this.agvRouteService.getNodePosition(`intersection:${nodeId}`) ?? this.agvRouteService.getNodePosition(nodeId);
+    }
+    return pos ? { x: pos.x, y: pos.y } : null;
   }
 
   private bindModuleOverviewStream(source: Observable<ModuleOverviewState>): void {

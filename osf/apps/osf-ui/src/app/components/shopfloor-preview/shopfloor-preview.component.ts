@@ -102,13 +102,22 @@ interface RouteSegment {
   y2: number;
 }
 
+export interface FtsPositionItem {
+  serial: string;
+  x: number;
+  y: number;
+  color?: string;
+}
+
 interface RouteOverlay {
   x: number;
   y: number;
   icon: string;
-  svgContent?: SafeHtml; // SVG content for inline rendering with color change
+  svgContent?: SafeHtml;
   width?: number;
   height?: number;
+  color?: string; // AGV-specific color for glow/shadow/ring (AGV-1 orange, AGV-2 yellow)
+  colorRgb?: string; // "249, 115, 22" for rgba() in CSS
 }
 
 const DEFAULT_SHOPFLOOR_ICON = resolveLegacyShopfloorPath('assets/svg/shopfloor/shared/question.svg');
@@ -120,10 +129,10 @@ interface ShopfloorView {
   fixedPositions: RenderFixed[];
   intersections: RenderIntersection[];
   roads: RenderRoad[];
-  activeRouteSegments?: RouteSegment[]; // Orange - currently driving
+  activeRouteSegments?: RouteSegment[];
   routeEndpoints?: ShopfloorPoint[];
   routeOverlay?: RouteOverlay;
-  ftsOverlay?: RouteOverlay; // FTS position overlay (when no active route)
+  ftsOverlays: RouteOverlay[]; // FTS position overlays (one per AGV, with colors)
 }
 
 interface RouteGraphEdge {
@@ -152,7 +161,9 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   @Input() showBaseRoads = true;
   @Input() showZoomControls = false;
   @Input() moduleStatusMap: Map<string, ModuleStatus> | null = null; // Module status data for overlays
-  @Input() ftsPosition: { x: number; y: number } | null = null; // FTS position for display (when no active route)
+  @Input() ftsPosition: { x: number; y: number } | null = null; // Single FTS position (backward compat)
+  @Input() ftsPositions: FtsPositionItem[] | null = null; // Multiple AGVs with positions and colors
+  @Input() showFtsOverlay = true; // If false, hide FTS overlays (e.g. Shopfloor-Tab layout)
   @Input() ftsRouteSegments: RouteSegment[] | null = null; // FTS route segments for display (when driving - orange)
   @Output() cellSelected = new EventEmitter<{ id: string; kind: 'module' | 'fixed' }>();
   @Output() cellDoubleClicked = new EventEmitter<{ id: string; kind: 'module' | 'fixed' }>();
@@ -215,7 +226,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
         this.currentScale = this.scale;
       }
     }
-    if (changes['activeStep'] || changes['order'] || changes['highlightModulesOverride'] || changes['highlightFixedOverride'] || changes['currentPositionModulesOverride'] || changes['moduleStatusMap'] || changes['ftsPosition'] || changes['ftsRouteSegments']) {
+    if (changes['activeStep'] || changes['order'] || changes['highlightModulesOverride'] || changes['highlightFixedOverride'] || changes['currentPositionModulesOverride'] || changes['moduleStatusMap'] || changes['ftsPosition'] || changes['ftsPositions'] || changes['showFtsOverlay'] || changes['ftsRouteSegments']) {
       this.updateViewModel();
     }
   }
@@ -565,25 +576,44 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       y: route.overlay.y + PADDING,
     } : undefined;
     
-    // Compute FTS overlay if position is provided
-    let ftsOverlay: RouteOverlay | undefined;
-    if (this.ftsPosition) {
-      const ftsIcon = this.getAssetPath('FTS');
-      if (ftsIcon) {
-        // Increase FTS size by 30% for stronger presence (48 * 1.3 = 62.4, rounded to 62)
-        // Offset position by padding to match module positions
-        ftsOverlay = {
-          x: this.ftsPosition.x + PADDING,
-          y: this.ftsPosition.y + PADDING,
+    // Compute FTS overlays from ftsPositions (multi-AGV) or ftsPosition (single, backward compat)
+    const ftsOverlays: RouteOverlay[] = [];
+    const items: Array<{ x: number; y: number; color: string }> = [];
+
+    if (!this.showFtsOverlay) {
+      // Skip FTS overlays (e.g. Shopfloor-Tab layout section)
+    } else if (this.ftsPositions && this.ftsPositions.length > 0) {
+      for (const item of this.ftsPositions) {
+        const color = item.color ?? this.mappingService.getAgvColor(item.serial);
+        items.push({ x: item.x, y: item.y, color });
+      }
+    } else if (this.ftsPosition) {
+      items.push({
+        x: this.ftsPosition.x,
+        y: this.ftsPosition.y,
+        color: ORBIS_COLORS.highlightGreen.strong,
+      });
+    }
+
+    const ftsIcon = this.getAssetPath('FTS');
+    if (ftsIcon && items.length > 0) {
+      const svgPath = ftsIcon.startsWith('/') ? ftsIcon : `/${ftsIcon}`;
+      for (let i = 0; i < items.length; i++) {
+        const it = items[i];
+        const rgb = this.hexToRgb(it.color);
+        ftsOverlays.push({
+          x: it.x + PADDING,
+          y: it.y + PADDING,
           icon: ftsIcon,
           width: 62,
           height: 62,
-        };
-        // Load SVG with green fill color for FTS (current position)
-        const svgPath = ftsIcon.startsWith('/') ? ftsIcon : `/${ftsIcon}`;
-        this.loadSvgWithGreenFill(svgPath).then((content) => {
-          if (content && this.viewModel?.ftsOverlay) {
-            this.viewModel.ftsOverlay.svgContent = content;
+          color: it.color,
+          colorRgb: rgb,
+        });
+        const idx = i;
+        this.loadSvgWithColor(svgPath, it.color).then((content) => {
+          if (content && this.viewModel?.ftsOverlays?.[idx]) {
+            this.viewModel.ftsOverlays[idx].svgContent = content;
             this.cdr.markForCheck();
           }
         });
@@ -600,7 +630,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       activeRouteSegments,
       routeEndpoints,
       routeOverlay,
-      ftsOverlay,
+      ftsOverlays,
     };
   }
 
@@ -943,38 +973,44 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     return asset.startsWith('/') ? asset.slice(1) : asset;
   }
 
+  /** Parse hex color to "r, g, b" for rgba() in CSS */
+  private hexToRgb(hex: string): string {
+    const m = hex?.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+    return m
+      ? `${parseInt(m[1], 16)}, ${parseInt(m[2], 16)}, ${parseInt(m[3], 16)}`
+      : '249, 115, 22'; // Fallback: AGV-1 orange
+  }
+
   /**
-   * Load SVG and change fill color from #154194 to highlight green (#16a34a)
-   * Returns SafeHtml for inline rendering
+   * Load SVG and replace fill/stroke color (#154194) with given color.
+   * Returns SafeHtml for inline rendering.
    */
-  private async loadSvgWithGreenFill(svgPath: string): Promise<SafeHtml | undefined> {
+  private async loadSvgWithColor(svgPath: string, fillColor: string): Promise<SafeHtml | undefined> {
     try {
       const response = await firstValueFrom(this.http.get(svgPath, { responseType: 'text' }));
       if (!response) {
         return undefined;
       }
-      // Replace all occurrences of #154194 (blue) with highlight green in SVG
-      // Also replace RGB equivalent rgb(21, 65, 148) and any stroke/fill attributes
-      const highlightGreen = ORBIS_COLORS.highlightGreen.strong;
-      const highlightGreenRgb = '22, 163, 74';
-      let greenSvg = response.replace(/#154194/g, highlightGreen);
-      greenSvg = greenSvg.replace(/rgb\(21,\s*65,\s*148\)/gi, `rgb(${highlightGreenRgb})`);
-      greenSvg = greenSvg.replace(/fill="#154194"/g, `fill="${highlightGreen}"`);
-      greenSvg = greenSvg.replace(/stroke="#154194"/g, `stroke="${highlightGreen}"`);
-      greenSvg = greenSvg.replace(/fill:#154194/g, `fill:${highlightGreen}`);
-      greenSvg = greenSvg.replace(/stroke:#154194/g, `stroke:${highlightGreen}`);
-      
-      // Debug: Check if replacement worked
-      if (greenSvg.includes('#154194')) {
-        console.warn('[ShopfloorPreview] SVG color replacement may have failed, still contains #154194');
-      }
-      
-      // Use bypassSecurityTrustHtml to preserve SVG content (SVG is safe)
-      return this.sanitizer.bypassSecurityTrustHtml(greenSvg);
+      const rgbMatch = fillColor.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+      const rgbStr = rgbMatch
+        ? `${parseInt(rgbMatch[1], 16)}, ${parseInt(rgbMatch[2], 16)}, ${parseInt(rgbMatch[3], 16)}`
+        : '22, 163, 74';
+      let coloredSvg = response.replace(/#154194/g, fillColor);
+      coloredSvg = coloredSvg.replace(/rgb\(21,\s*65,\s*148\)/gi, `rgb(${rgbStr})`);
+      coloredSvg = coloredSvg.replace(/fill="#154194"/g, `fill="${fillColor}"`);
+      coloredSvg = coloredSvg.replace(/stroke="#154194"/g, `stroke="${fillColor}"`);
+      coloredSvg = coloredSvg.replace(/fill:#154194/g, `fill:${fillColor}`);
+      coloredSvg = coloredSvg.replace(/stroke:#154194/g, `stroke:${fillColor}`);
+      return this.sanitizer.bypassSecurityTrustHtml(coloredSvg);
     } catch (error) {
       console.error('Failed to load SVG:', error);
       return undefined;
     }
+  }
+
+  /** @deprecated Use loadSvgWithColor(path, color) instead */
+  private async loadSvgWithGreenFill(svgPath: string): Promise<SafeHtml | undefined> {
+    return this.loadSvgWithColor(svgPath, ORBIS_COLORS.highlightGreen.strong);
   }
 
   private computeActiveRoute(): { segments: RouteSegment[]; endpoints: ShopfloorPoint[]; overlay?: RouteOverlay } | null {

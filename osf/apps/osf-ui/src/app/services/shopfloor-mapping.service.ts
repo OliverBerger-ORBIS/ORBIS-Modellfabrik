@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { ORBIS_COLORS } from '../assets/color-palette';
 import type {
   ShopfloorCellConfig,
   ShopfloorFtsConfig,
@@ -177,6 +178,16 @@ export class ShopfloorMappingService {
   getAgvLabel(serial: string): string | null {
     const fts = this.ftsConfig.find((f) => f.serial === serial);
     return fts?.label ?? null;
+  }
+
+  /** Color for AGV by serial – feste Zuordnung aus color-palette (AGV-1 orange, AGV-2 gelb) */
+  getAgvColor(serial: string): string {
+    const opts = this.getAgvOptions();
+    const idx = opts.findIndex((o) => o.serial === serial);
+    if (idx === 0) return ORBIS_COLORS.agv.agv1;
+    if (idx === 1) return ORBIS_COLORS.agv.agv2;
+    const fallbacks = [ORBIS_COLORS.agv.agv1, ORBIS_COLORS.agv.agv2, ORBIS_COLORS.highlightGreen.strong, ORBIS_COLORS.sapBlue.medium] as const;
+    return fallbacks[idx % fallbacks.length] ?? ORBIS_COLORS.orbisGrey.medium;
   }
 }
 

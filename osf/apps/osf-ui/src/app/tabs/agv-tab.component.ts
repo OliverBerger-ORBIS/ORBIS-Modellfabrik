@@ -194,8 +194,10 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   loads$!: Observable<FtsLoadInfo[]>;
   ftsOrder$!: Observable<any | null>;
   
-  // FTS position for shopfloor preview
+  // FTS position for shopfloor preview (single AGV - backward compat)
   ftsPosition$!: Observable<{ x: number; y: number } | null>;
+  // FTS positions for all AGVs (multi-AGV with colors)
+  ftsPositions$!: Observable<Array<{ serial: string; x: number; y: number; color?: string }>>;
   
   // Active route segments for animation (orange - currently driving) - from animation service
   activeRouteSegments$!: Observable<Array<{ x1: number; y1: number; x2: number; y2: number }>>;
@@ -614,6 +616,92 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     map((state) => state?.lastNodeId ? [state.lastNodeId] : null),
     shareReplay({ bufferSize: 1, refCount: false })
   );
+
+  // FTS positions for all AGVs (multi-AGV with colors) - for shopfloor preview
+  // Merge: multi-AGV from ftsStates$ when available, else fallback to single AGV from ftsPosition$ (MessageMonitor)
+  this.ftsPositions$ = combineLatest([
+    this.dashboard.streams.ftsStates$,
+    this.ftsPosition$,
+    this.animationState$.pipe(
+      map((a) => a.animatedPosition),
+      distinctUntilChanged((p, c) => {
+        if (!p && !c) return true;
+        if (!p || !c) return false;
+        return Math.abs(p.x - c.x) < 2 && Math.abs(p.y - c.y) < 2;
+      })
+    ),
+  ]).pipe(
+    map(([ftsStates, singlePosition, animatedPos]) => {
+      const opts = this.agvOptions;
+      const selectedSerial = this.selectedAgvSerial$.value;
+      const animState = this.agvAnimationService.getState();
+      const result: Array<{ serial: string; x: number; y: number; color?: string }> = [];
+
+      // Try multi-AGV from ftsStates (keys: ftsId or serialNumber from payload)
+      for (const opt of opts) {
+        const state = ftsStates[opt.serial] ?? (ftsStates as Record<string, { lastNodeId?: string; serialNumber?: string }>)[opt.serial];
+        // Also check entries keyed by serialNumber (business may use ftsId ?? serialNumber)
+        const bySerial = Object.entries(ftsStates).find(([, s]) => (s as { serialNumber?: string }).serialNumber === opt.serial);
+        const rawState = (state ?? bySerial?.[1]) as { lastNodeId?: string; driving?: boolean } | undefined;
+        const nodeId = rawState?.lastNodeId;
+        if (!nodeId) continue;
+        let pos: { x: number; y: number } | null = null;
+        if (opt.serial === selectedSerial && animatedPos && animState.isAnimating && rawState?.driving) {
+          pos = animatedPos;
+        }
+        if (!pos) {
+          pos = this.getPositionFromNodeId(nodeId);
+        }
+        if (pos) {
+          result.push({
+            serial: opt.serial,
+            x: pos.x,
+            y: pos.y,
+            color: this.mappingService.getAgvColor(opt.serial),
+          });
+        }
+      }
+
+      // Fallback: when no positions from ftsStates, use single AGV from MessageMonitor (ftsPosition$)
+      if (result.length === 0 && singlePosition) {
+        result.push({
+          serial: selectedSerial,
+          x: singlePosition.x,
+          y: singlePosition.y,
+          color: this.mappingService.getAgvColor(selectedSerial),
+        });
+      }
+      return result;
+    }),
+    distinctUntilChanged((a, b) => {
+      if (a.length !== b.length) return false;
+      return a.every((item, i) => {
+        const o = b[i];
+        return o && item.serial === o.serial && Math.abs(item.x - o.x) < 2 && Math.abs(item.y - o.y) < 2;
+      });
+    }),
+    debounceTime(100),
+    shareReplay({ bufferSize: 1, refCount: false })
+  );
+  }
+
+  /** Helper: resolve lastNodeId to shopfloor coordinates */
+  private getPositionFromNodeId(nodeId: string): { x: number; y: number } | null {
+    let nodePos = this.agvRouteService.getNodePosition(nodeId);
+    if (!nodePos) {
+      const canonical = this.resolveNodeRef(nodeId);
+      if (canonical) nodePos = this.agvRouteService.getNodePosition(canonical);
+    }
+    if (!nodePos) {
+      const moduleType = SERIAL_TO_MODULE_TYPE[nodeId];
+      if (moduleType) {
+        nodePos = this.agvRouteService.getNodePosition(moduleType) ?? this.agvRouteService.getNodePosition(`serial:${moduleType}`);
+      }
+    }
+    if (!nodePos && nodeId.match(/^\d+$/)) {
+      nodePos = this.agvRouteService.getNodePosition(`intersection:${nodeId}`) ?? this.agvRouteService.getNodePosition(nodeId);
+    }
+    return nodePos ? { x: nodePos.x, y: nodePos.y } : null;
   }
 
   // Helper methods for template

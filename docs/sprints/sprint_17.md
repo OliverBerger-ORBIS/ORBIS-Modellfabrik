@@ -53,7 +53,8 @@
 *Detail-Tasks werden extern verwaltet. Wesentliche Checkpoints:*
 - [ ] **Animation:** DSP-Architecture und Use-Cases (Check!)
 - [ ] **OBS-Präsentation:** Startklar für Demos (Check!)
-- [ ] **Zweites FTS/AGV:** Unterstützung eines zweiten/Ersatz FTS mit Serial-ID jp93. Komplette Analyse + Tests‚
+- [ ] **Zweites FTS/AGV:** Unterstützung eines zweiten FTS (Serial jp93) – erledigt. **Offen:** E2E-Test mit AGV-2.
+  - **Erreicht:** Zweites AGV in allen Tabs; AGV-Tab mit Dropdown pro AGV; Darstellung beider AGVs im Shopfloor; AGV-1/AGV-2 Farblich unterscheidbar (orange/gelb inkl. Hervorhebung); Fixtures storage_blue_agv2, storage_blue_parallel
 
 ### Blog-Serie & Marketing
 - [ ] **A1 Review mit Marketing:**  (Carola Stammen) durchführen
@@ -103,6 +104,7 @@
 ---
 
 ## 📎 Referenzen
+- [Zweites AGV (jp93)](../07-analysis/second-agv-2026-03.md)
 - [Use-Case Bibliothek](../02-architecture/use-case-library.md)
 - [Arduino Vibrationssensor](../05-hardware/arduino-vibrationssensor.md)
 - [Alarm → Fabrik-Stop (CCU-Commands)](../07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md)
@@ -111,4 +113,4 @@
 
 ---
 
-*Letzte Aktualisierung: 11.03.2026*
+*Letzte Aktualisierung: 10.03.2026*

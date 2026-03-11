@@ -33,7 +33,7 @@ Sprint-bezogene und projektweite Analysen für OSF.
 
 ## Hardware / FTS / AGV
 
-- [second-agv-integration-analysis-2026-03.md](second-agv-integration-analysis-2026-03.md) – Zweites AGV (jp93) einbinden – Analyse inkl. AGV/FTS-Tab (Sprint 17)
+- [second-agv-2026-03.md](second-agv-2026-03.md) – Zweites AGV (jp93) – Implementierung & Referenz (Sprint 17)
 
 ---
 

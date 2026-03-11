@@ -76,11 +76,15 @@ export interface ModuleState {
 }
 
 export interface FtsState {
-  ftsId: string;
+  /** Identifier – payload may use ftsId or serialNumber (Fischertechnik: serialNumber) */
+  ftsId?: string;
+  serialNumber?: string;
   position?: { x: number; y: number };
   speed?: number;
   status?: 'idle' | 'moving' | 'error';
   lastSeen?: string;
+  /** Node ID for position lookup when position not in payload (Fischertechnik format) */
+  lastNodeId?: string;
 }
 
 export type ModuleAvailabilityStatus = 'READY' | 'BUSY' | 'BLOCKED' | 'Unknown' | string;

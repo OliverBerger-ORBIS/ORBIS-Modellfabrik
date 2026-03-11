@@ -6,6 +6,14 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.8.7] - 2026-03-10
+
+**AGV-2 Farbkorrektur (LogiMAT-Vorbereitung)**
+
+### Fixed
+- **AGV-2 Farbe:** CSS override entfernt – AGV-2 (jp93) zeigt nun Gelb statt Orange im Shopfloor-Preview
+- **AGV-Hervorhebung:** Schatten, Glow und gestrichelter Ring AGV-spezifisch (AGV-1 orange, AGV-2 gelb)
+
 ## [0.8.6] - 2026-03-09
 
 **Arduino MPU-6050, Relais vereinheitlicht, timestamp analog Fischertechnik**

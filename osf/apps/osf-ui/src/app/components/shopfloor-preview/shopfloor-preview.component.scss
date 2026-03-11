@@ -385,13 +385,13 @@
   height: 62px;
   transform: translate(-50%, -50%);
   z-index: 15; // Increased from 8 to 15 to be above intersections (z-index: 2) and other elements
-  // Stronger visual presence: larger shadow, glow effect
-  filter: drop-shadow(0 8px 16px rgba(249, 115, 22, 0.5)) 
-          drop-shadow(0 0 20px rgba(249, 115, 22, 0.4))
-          drop-shadow(0 0 40px rgba(249, 115, 22, 0.2));
-  // Removed scale(1.1) - size is already increased via width/height (62px = 30% larger than 48px)
-  
-  // Dashed circle around FTS (80px diameter for better visibility)
+  // Stronger visual presence: shadow and glow in AGV color (--fts-accent-rgb from overlay)
+  // AGV-1 orange, AGV-2 yellow – fallback orange for backward compat
+  filter: drop-shadow(0 8px 16px rgba(var(--fts-accent-rgb, 249, 115, 22), 0.5))
+          drop-shadow(0 0 20px rgba(var(--fts-accent-rgb, 249, 115, 22), 0.4))
+          drop-shadow(0 0 40px rgba(var(--fts-accent-rgb, 249, 115, 22), 0.2));
+
+  // Dashed circle around FTS (80px diameter) in AGV color
   &::before {
     content: '';
     position: absolute;
@@ -400,7 +400,7 @@
     transform: translate(-50%, -50%);
     width: 80px; // 80px diameter for better visibility
     height: 80px;
-    border: 2px dashed rgba(249, 115, 22, 0.6);
+    border: 2px dashed rgba(var(--fts-accent-rgb, 249, 115, 22), 0.6);
     border-radius: 50%;
     pointer-events: none;
     z-index: -1;
@@ -421,7 +421,8 @@
     z-index: -2; // Behind dashed circle but above shopfloor elements
   }
   
-  // Inline SVG: Orange fill color is already applied in SVG content
+  // Inline SVG: Fill color is applied per-AGV in loadSvgWithColor (AGV-1 orange, AGV-2 yellow)
+  // Do NOT override with CSS – would force all AGVs to same color
   &.preview__fts--inline {
     display: flex;
     align-items: center;
@@ -432,11 +433,6 @@
       width: 100%;
       height: 100%;
       display: block;
-    }
-    
-    // Ensure all paths use orange fill (fallback if replace didn't catch all)
-    ::ng-deep path {
-      fill: var(--shopfloor-highlight-strong) !important;
     }
   }
 }

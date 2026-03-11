@@ -10,6 +10,7 @@ import type { MessageMonitorService } from '../../services/message-monitor.servi
 import type { HttpClient } from '@angular/common/http';
 import type { ChangeDetectorRef } from '@angular/core';
 import type { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
+import type { AgvRouteService } from '../../services/agv-route.service';
 import type { ActivatedRoute, Router } from '@angular/router';
 
 jest.mock('../../mock-dashboard', () => {
@@ -83,6 +84,12 @@ const createComponent = () => {
     getAgvLabel: jest.fn((_serial: string) => null),
   } as unknown as ShopfloorMappingService;
 
+  const agvRouteServiceStub = {
+    initializeLayout: jest.fn(),
+    getNodePosition: jest.fn(() => null),
+    resolveNodeRef: jest.fn(() => null),
+  } as unknown as AgvRouteService;
+
   const routeStub = {
     queryParams: new BehaviorSubject({}),
   } as unknown as ActivatedRoute;
@@ -104,6 +111,7 @@ const createComponent = () => {
     cdrStub,
     httpStub,
     mappingServiceStub,
+    agvRouteServiceStub,
     routeStub,
     routerStub
   );

@@ -17,6 +17,7 @@ import * as mockDashboard from '../../mock-dashboard';
 jest.spyOn(mockDashboard, 'getDashboardController').mockReturnValue({
   streams: {
     orders$: of({}),
+    ftsStates$: of({}),
   },
   loadTabFixture: jest.fn().mockResolvedValue(undefined),
   getCurrentFixture: jest.fn(() => 'startup'),
