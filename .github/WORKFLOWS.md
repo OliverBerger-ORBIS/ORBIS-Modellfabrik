@@ -31,7 +31,8 @@ Danach deployt nur noch unser Workflow **Deploy to GitHub Pages**. pages-build-d
 ## Deploy to GitHub Pages
 
 - **URL:** https://oliverberger-orbis.github.io/ORBIS-Modellfabrik/
-- **Trigger:** Push auf main; oder manuell (Run workflow)
+- **Trigger:** Push auf main; oder nach erfolgreichem CI (workflow_run); oder manuell (Run workflow)
+- **Hinweis:** Wenn Push nicht startet, läuft Deploy spätestens nach CI-Erfolg (~5–10 min Verzögerung)
 - **Doku:** [github-pages-deployment.md](../docs/04-howto/deployment/github-pages-deployment.md)
 
 ---
