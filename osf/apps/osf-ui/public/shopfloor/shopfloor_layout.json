@@ -47,7 +47,7 @@
       "size": { "w": 200, "h": 200 },
       "center": { "x": 300, "y": 100 },
       "role": "module",
-      "serial_number": "SVR3QA2098",
+      "serial": "SVR3QA2098",
       "icon": "MILL",
       "show_name": true,
       "has_details": true
@@ -59,7 +59,7 @@
       "size": { "w": 200, "h": 200 },
       "center": { "x": 500, "y": 100 },
       "role": "module",
-      "serial_number": "SVR4H76530",
+      "serial": "SVR4H76530",
       "icon": "AIQS",
       "show_name": true,
       "has_details": true
@@ -83,7 +83,7 @@
       "size": { "w": 200, "h": 300 },
       "center": { "x": 100, "y": 250 },
       "role": "module",
-      "serial_number": "SVR3QA0022",
+      "serial": "SVR3QA0022",
       "icon": "HBW",
       "is_compound": true,
       "show_name": true,
@@ -151,7 +151,7 @@
       "size": { "w": 200, "h": 300 },
       "center": { "x": 700, "y": 250 },
       "role": "module",
-      "serial_number": "SVR4H73275",
+      "serial": "SVR4H73275",
       "icon": "DPS",
       "is_compound": true,
       "show_name": true,
@@ -197,7 +197,7 @@
       "size": { "w": 200, "h": 200 },
       "center": { "x": 100, "y": 500 },
       "role": "module",
-      "serial_number": "SVR4H76449",
+      "serial": "SVR4H76449",
       "icon": "DRILL",
       "show_name": true,
       "has_details": true
@@ -231,7 +231,7 @@
       "size": { "w": 200, "h": 200 },
       "center": { "x": 700, "y": 500 },
       "role": "module",
-      "serial_number": "CHRG0",
+      "serial": "CHRG0",
       "icon": "CHRG",
       "show_name": true,
       "has_details": true
@@ -325,8 +325,18 @@
   ],
   "fts": [
     {
-      "id": "FTS-1",
-      "label": "FTS-01",
+      "id": "AGV-1",
+      "label": "AGV-1",
+      "serial": "5iO4",
+      "icon": "FTS",
+      "capacity": 1,
+      "current_position": { "x": 100, "y": 150 },
+      "status": "idle"
+    },
+    {
+      "id": "AGV-2",
+      "label": "AGV-2",
+      "serial": "jp93",
       "icon": "FTS",
       "capacity": 1,
       "current_position": { "x": 100, "y": 150 },

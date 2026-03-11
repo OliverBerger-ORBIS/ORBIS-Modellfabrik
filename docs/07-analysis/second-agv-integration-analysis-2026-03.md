@@ -224,13 +224,65 @@ Der **WorkpieceHistoryService** baut die Werkstück-Historie für Track & Trace 
 
 ---
 
-## 7. Referenzen
+## 7. Implementierungsplan
+
+### 7.1 Randbedingungen
+
+- **Kein Live-Modus-Test:** Validierung nur über Mock/Replay und Unit-Tests.
+- **Fixtures:** FTS-1 (5iO4) Topics liegen vor. FTS-2 (jp93) Topics sind strukturell identisch – Simulation durch duplizierte Fixtures mit Serial-ID jp93.
+- **Schrittweise Umsetzung** mit Tests pro Schritt.
+
+### 7.2 Namensgebung (Anzeige)
+
+- **Serial-ID:** 5iO4, jp93 (technische Identifikation).
+- **Logischer Name (Anzeige):** **AGV-1**, **AGV-2** – nicht FTS-1/FTS-2, nicht Serial-ID.
+- **Referenz:** [MARKETING_CONSISTENCY_PLAN.md](MARKETING_CONSISTENCY_PLAN.md) – DE: „FTS (AGV)“, EN: „AGV“; für die konkrete Fahrzeugbezeichnung einheitlich AGV-1/AGV-2.
+
+Mapping: `5iO4` → AGV-1, `jp93` → AGV-2.
+
+### 7.3 Implementierungsschritte (Reihenfolge)
+
+| Schritt | Aufgabe | Test |
+|---------|---------|------|
+| **1** | **AGV-Config/Layout erweitern** – `shopfloor_layout.json`: FTS-Array um `serial_number` ergänzen; erstes FTS: `serial_number: "5iO4"`, `label: "AGV-1"`; zweites: `serial_number: "jp93"`, `label: "AGV-2"` | Layout laden, beide Einträge mit Mapping |
+| **2** | **WorkpieceHistoryService** – beide Topics abonnieren (`merge(fts5iO4$, ftsJp93$)`), `getModuleNameFromSerial` dynamisch (Serials aus Layout/Config) | Unit-Test: Events von beiden Serials erzeugen |
+| **3** | **Fixtures jp93** – z.B. `storage_blue` um jp93-Variante erweitern oder neues Fixture „storage_blue_agv2“ (5iO4 → jp93 ersetzen in Kopie) | Replay: Track & Trace zeigt Werkstücke von jp93 |
+| **4** | **AGV-Tab Phase A** – FTS-Auswahl-Dropdown: AGV-1 (5iO4), AGV-2 (jp93); Topics/Commands dynamisch nach Auswahl | Unit-Test: Dropdown-Wechsel; Fixture mit beiden AGVs |
+| **5** | **Shopfloor-Tab** – Fallback von `5iO4` auf dynamische FTS-Liste (aus Layout); Transport-Rows zeigen AGV-1/AGV-2 statt FTS | Unit-Test: beide Serials im Registry |
+| **5b** | **Orders/Steps** – Bei NAVIGATION-Steps: FTS → AGV (generisch) bzw. AGV-1/AGV-2 wenn `serialNumber` im Step vorhanden (CCU fügt dies evtl. bei In-Progress/Completed hinzu) | Order-Card mit optionalem serialNumber |
+| **6** | **I18n** – Keys für AGV-1, AGV-2 falls nötig | Lint/Extract |
+
+### 7.4 Test-Strategie
+
+- **Unit-Tests:** WorkpieceHistoryService (multi-AGV-Subscription), agv-tab (Dropdown, Command-Target), shopfloor-tab.
+- **Fixtures:** storage_blue + jp93-Variante; Order-Fixtures mit beiden FTS-Topics.
+- **Replay:** Session mit 5iO4 + jp93 Messages (falls Replay-Tool die Topics filtert: beide einbinden).
+
+### 7.5 jp93-Fixture (storage_blue_agv2)
+
+AGV-2 (jp93) Fixture vorhanden: `storage_blue_agv2` – Kopie von storage_blue mit 5iO4→jp93 in Topics und Payload. AGV-Tab bietet es als „Storage Blue (AGV-2)“ an.
+
+### 7.6 Fixture „storage_blue_parallel“ (Option A)
+
+Beide AGVs (5iO4 und jp93) in derselben Session für Replay-Tests von Track-Trace und WorkpieceHistory. Merge aus `storage_blue` (5iO4 mit Storage-Order 3adc738c) und jp93-Messages (RED-Order c9da720e, Werkstück 04d78cca341290). Erreichbar im Track & Trace- und AGV-Tab als „Storage Blue (Both AGVs)“.
+
+### 7.7 Orders/Steps: AGV-Anzeige (Schritt 5b)
+
+- **Vor dem Zuweisen:** Wir wissen noch nicht, ob AGV-1 oder AGV-2 den NAVIGATION-Step übernimmt – Anzeige: **AGV** (generisch).
+- **Nach Zuweisung/Completion:** Wenn die CCU `serialNumber` im ProductionStep ergänzt (wie bei MANUFACTURE-Steps), zeigt die Order-Card **AGV-1** oder **AGV-2**.
+- **Implementierung:** `ProductionStep` hat optionales `serialNumber`. Order-Card nutzt `ShopfloorMappingService.getAgvLabel(step.serialNumber)` und fällt auf AGV zurück, wenn kein Serial/Label verfügbar ist.
+- **CCU-Erweiterung:** Falls die CCU `serialNumber` bei NAVIGATION-Steps noch nicht setzt, kann diese Erweiterung später nachgezogen werden – die UI ist vorbereitet.
+
+---
+
+## 8. Referenzen
 
 - [agv.md](../06-integrations/fischertechnik-official/06-modules/agv.md) – AGV-Modul-Doku
 - [TXT-FTS README](../06-integrations/TXT-FTS/README.md)
 - [13-track-trace-architecture.md](../03-decision-records/13-track-trace-architecture.md) – Track & Trace Architektur
 - [sprint_17.md](../sprints/sprint_17.md)
+- [MARKETING_CONSISTENCY_PLAN.md](MARKETING_CONSISTENCY_PLAN.md) – FTS/AGV Namensgebung
 
 ---
 
-*Erstellt: März 2026*
+*Erstellt: März 2026 | Implementierungsplan ergänzt*

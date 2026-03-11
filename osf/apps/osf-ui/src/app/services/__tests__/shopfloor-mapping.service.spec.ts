@@ -51,7 +51,7 @@ describe('ShopfloorMappingService', () => {
             id: 'cell-1',
             name: 'DRILL',
             role: 'module',
-            serial_number: 'SVR001',
+            serial: 'SVR001',
           } as ShopfloorCellConfig,
         ],
         intersection_map: {},
@@ -80,7 +80,7 @@ describe('ShopfloorMappingService', () => {
             id: 'cell-drill',
             name: 'DRILL',
             role: 'module',
-            serial_number: 'SVR001',
+            serial: 'SVR001',
             icon: 'drill',
           } as ShopfloorCellConfig,
         ],
@@ -94,7 +94,7 @@ describe('ShopfloorMappingService', () => {
       const module = service.getModuleBySerial('SVR001');
       expect(module).toEqual({
         moduleType: 'DRILL',
-        serialId: 'SVR001',
+        serialNumber: 'SVR001',
         cellId: 'cell-drill',
         icon: 'drill',
       });
@@ -221,13 +221,13 @@ describe('ShopfloorMappingService', () => {
             id: 'cell-1',
             name: 'MODULE1',
             role: 'module',
-            serial_number: 'SVR011',
+            serial: 'SVR011',
           } as ShopfloorCellConfig,
           {
             id: 'cell-2',
             name: 'MODULE2',
             role: 'module',
-            serial_number: 'SVR012',
+            serial: 'SVR012',
           } as ShopfloorCellConfig,
         ],
         intersection_map: {},
@@ -238,8 +238,8 @@ describe('ShopfloorMappingService', () => {
 
       const modules = service.getAllModules();
       expect(modules.length).toBe(2);
-      expect(modules.map(m => m.serialId)).toContain('SVR011');
-      expect(modules.map(m => m.serialId)).toContain('SVR012');
+      expect(modules.map(m => m.serialNumber)).toContain('SVR011');
+      expect(modules.map(m => m.serialNumber)).toContain('SVR012');
     });
   });
 

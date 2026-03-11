@@ -80,6 +80,7 @@ const createComponent = () => {
   const mappingServiceStub = {
     initializeLayout: jest.fn(),
     getAllModules: jest.fn(() => []),
+    getAgvLabel: jest.fn((_serial: string) => null),
   } as unknown as ShopfloorMappingService;
 
   const routeStub = {
@@ -160,7 +161,7 @@ describe('ShopfloorTabComponent sidebar and selection', () => {
       connectionLabel: 'Connected',
     };
 
-    component.selectedModuleSerialId = testSerialId;
+    component.selectedModuleSerialNumber = testSerialId;
     component.selectedModuleName = testModuleName;
     component.selectedModuleIcon = testIcon;
     component.selectedModuleMeta = testMeta;
@@ -173,7 +174,7 @@ describe('ShopfloorTabComponent sidebar and selection', () => {
     expect(component.sidebarOpen).toBe(false);
     
     // Verify selection is preserved
-    expect(component.selectedModuleSerialId).toBe(testSerialId);
+    expect(component.selectedModuleSerialNumber).toBe(testSerialId);
     expect(component.selectedModuleName).toBe(testModuleName);
     expect(component.selectedModuleIcon).toBe(testIcon);
     expect(component.selectedModuleMeta).toEqual(testMeta);
@@ -186,7 +187,7 @@ describe('ShopfloorTabComponent sidebar and selection', () => {
     const testSerialId = 'SVR3QA0022';
     const testModuleName = 'MILL Station';
     
-    component.selectedModuleSerialId = testSerialId;
+    component.selectedModuleSerialNumber = testSerialId;
     component.selectedModuleName = testModuleName;
     component.sidebarOpen = false;
 
@@ -197,7 +198,7 @@ describe('ShopfloorTabComponent sidebar and selection', () => {
     expect(component.sidebarOpen).toBe(true);
     
     // Verify selection is still there
-    expect(component.selectedModuleSerialId).toBe(testSerialId);
+    expect(component.selectedModuleSerialNumber).toBe(testSerialId);
     expect(component.selectedModuleName).toBe(testModuleName);
 
     // Close sidebar again
@@ -205,7 +206,7 @@ describe('ShopfloorTabComponent sidebar and selection', () => {
 
     // Verify sidebar is closed but selection remains
     expect(component.sidebarOpen).toBe(false);
-    expect(component.selectedModuleSerialId).toBe(testSerialId);
+    expect(component.selectedModuleSerialNumber).toBe(testSerialId);
     expect(component.selectedModuleName).toBe(testModuleName);
   });
 
@@ -220,7 +221,7 @@ describe('ShopfloorTabComponent sidebar and selection', () => {
       cells: [{
         id: 'SVR3QA0022',
         name: 'DRILL',
-        serial_number: 'SVR3QA0022',
+        serial: 'SVR3QA0022',
         position: { x: 100, y: 200 },
         size: { w: 50, h: 50 },
       }],
@@ -249,7 +250,7 @@ describe('ShopfloorTabComponent sidebar and selection', () => {
     component.onModuleCellSelected(testEvent);
     
     // Verify module is selected
-    expect(component.selectedModuleSerialId).toBe('SVR3QA0022');
+    expect(component.selectedModuleSerialNumber).toBe('SVR3QA0022');
     expect(component.selectedModuleName).toBeDefined();
 
     // Open sidebar (via double-click)
@@ -261,7 +262,7 @@ describe('ShopfloorTabComponent sidebar and selection', () => {
 
     // Verify selection is preserved
     expect(component.sidebarOpen).toBe(false);
-    expect(component.selectedModuleSerialId).toBe('SVR3QA0022');
+    expect(component.selectedModuleSerialNumber).toBe('SVR3QA0022');
     expect(component.selectedModuleName).toBeDefined();
     expect(component.selectedModuleIcon).toBeDefined();
     expect(component.selectedModuleMeta).toBeDefined();
@@ -342,7 +343,7 @@ Payload:
     // Trigger restore
     (component as any).restoreOrSetDefaultModuleSelection();
     
-    expect(component.selectedModuleSerialId).toBe(savedSerialId);
+    expect(component.selectedModuleSerialNumber).toBe(savedSerialId);
     getItemSpy.mockRestore();
   });
 
@@ -376,8 +377,8 @@ Payload:
     // Trigger restore
     (component as any).restoreOrSetDefaultModuleSelection();
     
-    expect(component.selectedModuleSerialId).toBe(hbwSerialId);
-    expect(setItemSpy).toHaveBeenCalledWith('shopfloor-tab-selected-module-serial-id', hbwSerialId);
+    expect(component.selectedModuleSerialNumber).toBe(hbwSerialId);
+    expect(setItemSpy).toHaveBeenCalledWith('shopfloor-tab-selected-module-serial-number', hbwSerialId);
     
     getItemSpy.mockRestore();
     setItemSpy.mockRestore();
@@ -407,7 +408,7 @@ Payload:
     
     component.onModuleCellSelected({ id: serialId, kind: 'module' });
     
-    expect(setItemSpy).toHaveBeenCalledWith('shopfloor-tab-selected-module-serial-id', serialId);
+    expect(setItemSpy).toHaveBeenCalledWith('shopfloor-tab-selected-module-serial-number', serialId);
     setItemSpy.mockRestore();
   });
 
@@ -415,7 +416,7 @@ Payload:
     const component = createComponent();
     const serialId = 'SVR3QA0022';
     
-    component.selectedModuleSerialId = serialId;
+    component.selectedModuleSerialNumber = serialId;
     component.selectedModuleMeta = {
       availability: 'UNKNOWN' as any,
       availabilityLabel: 'Unknown',
@@ -665,21 +666,21 @@ Payload:
   });
 
   describe('module selection highlighting', () => {
-    it('should have selectedModuleSerialId property', () => {
+    it('should have selectedModuleSerialNumber property', () => {
       const component = createComponent();
       const testSerialId = 'SVR3QA0022';
       
-      component.selectedModuleSerialId = testSerialId;
+      component.selectedModuleSerialNumber = testSerialId;
       
-      expect(component.selectedModuleSerialId).toBe(testSerialId);
+      expect(component.selectedModuleSerialNumber).toBe(testSerialId);
     });
 
-    it('should allow null selectedModuleSerialId', () => {
+    it('should allow null selectedModuleSerialNumber', () => {
       const component = createComponent();
       
-      component.selectedModuleSerialId = null;
+      component.selectedModuleSerialNumber = null;
       
-      expect(component.selectedModuleSerialId).toBeNull();
+      expect(component.selectedModuleSerialNumber).toBeNull();
     });
   });
 

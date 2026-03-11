@@ -86,6 +86,10 @@
 
 *Siehe [Arduino Vibrationssensor](../05-hardware/arduino-vibrationssensor.md) §6.* R3 weitere Sensoren anbinden, Werte im Sensor-Tab; Flammensensor (Prio 1); R4 zweite Priorität.
 
+### EPIC: Aufbau eines Test-Frameworks für osf-ui (Backlog)
+
+*Siehe [Test-Framework vs. Replay – Analyse](../07-analysis/test-framework-replay-comparison-2026-03.md).* Optionale Ergänzung zum Replay-Workflow: Framework-Evaluierung (Playwright/Cypress), Fixture-Anbindung, Pilot-Tests für kritische Szenarien (z.B. beide AGVs, Quality-Fail). Replay bleibt primärer Ansatz.
+
 ---
 
 ## 🔗 Entscheidungen

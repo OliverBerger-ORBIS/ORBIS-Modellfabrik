@@ -4,14 +4,14 @@
   <div class="sidebar-header">
     <h2>
       <span *ngIf="moduleName">{{ moduleName }}</span>
-      <span *ngIf="!moduleName && serialId">{{ serialId }}</span>
-      <span *ngIf="!moduleName && !serialId" i18n="@@moduleDetailsTitle">Module Details</span>
+      <span *ngIf="!moduleName && serialNumber">{{ serialNumber }}</span>
+      <span *ngIf="!moduleName && !serialNumber" i18n="@@moduleDetailsTitle">Module Details</span>
     </h2>
     <button class="close-btn" (click)="closeSidebar()" [attr.aria-label]="closeLabel">×</button>
   </div>
 
   <div class="sidebar-content">
-    <div *ngIf="serialId; else noSelection">
+    <div *ngIf="serialNumber; else noSelection">
       <p class="sidebar-description" i18n="@@moduleDetailsDescription">
         Latest messages for this module (Connection, State, Factsheet)
       </p>

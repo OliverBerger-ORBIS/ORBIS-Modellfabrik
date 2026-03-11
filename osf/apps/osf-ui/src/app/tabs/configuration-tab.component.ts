@@ -304,10 +304,10 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
           icon: this.resolveAssetPath(
             SHOPFLOOR_ASSET_MAP[cell.icon ?? cell.name ?? cell.id] ?? SHOPFLOOR_ASSET_MAP[cell.name ?? cell.id] ?? ''
           ),
-          serialNumber: cell.serial_number,
+          serialNumber: cell.serial,
           type: cell.name ?? cell.id,
-          tooltip: cell.serial_number
-            ? `${cell.name ?? cell.id} • ${cell.serial_number}`
+          tooltip: cell.serial
+            ? `${cell.name ?? cell.id} • ${cell.serial}`
             : `${cell.name ?? cell.id} • ${$localize`:@@configurationNoSerial:No serial`}`,
         })
       );

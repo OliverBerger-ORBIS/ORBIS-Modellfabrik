@@ -22,7 +22,7 @@ interface ModuleTopicMessage {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModuleDetailsSidebarComponent implements OnInit, OnChanges, AfterViewChecked {
-  @Input() serialId: string | null = null;
+  @Input() serialNumber: string | null = null;
   @Input() moduleName: string | null = null;
   @Input() isOpen = false;
   @Output() close = new EventEmitter<void>();
@@ -45,7 +45,7 @@ export class ModuleDetailsSidebarComponent implements OnInit, OnChanges, AfterVi
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['serialId'] && this.serialId) {
+    if (changes['serialNumber'] && this.serialNumber) {
       this.updateMessages();
     }
     if (changes['isOpen'] && this.isOpen) {
@@ -71,7 +71,7 @@ export class ModuleDetailsSidebarComponent implements OnInit, OnChanges, AfterVi
   }
 
   private updateMessages(): void {
-    if (!this.serialId) {
+    if (!this.serialNumber) {
       this.messages$ = of([]);
       this.cdr.markForCheck();
       return;
@@ -82,16 +82,16 @@ export class ModuleDetailsSidebarComponent implements OnInit, OnChanges, AfterVi
     const moduleTopics: string[] = [];
     
     // Patterns to match (Standard-Modul-Topics bevorzugt):
-    // - module/v1/ff/<serialId>/connection, state, factsheet
-    // - fts/v1/ff/<serialId>/... (for FTS)
-    // NodeRed-Topics (module/v1/ff/NodeRed/<serialId>/...) werden für connection NICHT verwendet,
+    // - module/v1/ff/<serial>/connection, state, factsheet
+    // - fts/v1/ff/<serial>/... (for FTS)
+    // NodeRed-Topics (module/v1/ff/NodeRed/<serial>/...) werden für connection NICHT verwendet,
     // um mit Fischertechnik-Standard konform zu sein.
     
     allTopics.forEach((topic) => {
-      const knownSerials = this.mappingService.getAllModules().map((m) => m.serialId);
+      const knownSerials = this.mappingService.getAllModules().map((m) => m.serialNumber);
       const matchingSerial = knownSerials.find((s) => topic.includes(s));
 
-      if (this.serialId && matchingSerial === this.serialId) {
+      if (this.serialNumber && matchingSerial === this.serialNumber) {
         if (topic.startsWith('module/') || topic.startsWith('fts/')) {
           if (topic.includes('/connection') || topic.includes('/state') || topic.includes('/factsheet')) {
             // Connection-Info: nur Standard-Topics, keine NodeRed-Topics
@@ -120,7 +120,7 @@ export class ModuleDetailsSidebarComponent implements OnInit, OnChanges, AfterVi
           if (topic === 'ccu/pairing/state') {
             const payload = msg.payload as any;
             if (payload?.modules) {
-              const module = payload.modules.find((m: any) => m.serialNumber === this.serialId);
+              const module = payload.modules.find((m: any) => m.serialNumber === this.serialNumber);
               if (!module) {
                 return null;
               }

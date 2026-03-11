@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { OrderCardComponent } from '../order-card.component';
 import { ModuleNameService } from '../../../services/module-name.service';
+import { ShopfloorMappingService } from '../../../services/shopfloor-mapping.service';
 import { CorrelationInfoService } from '../../../services/correlation-info.service';
 import { MessageMonitorService } from '../../../services/message-monitor.service';
 import { MessageValidationService } from '../../../services/message-validation.service';
@@ -57,6 +58,12 @@ describe('OrderCardComponent', () => {
       imports: [OrderCardComponent, HttpClientTestingModule],
       providers: [
         ModuleNameService,
+        {
+          provide: ShopfloorMappingService,
+          useValue: {
+            getAgvLabel: (serial: string) => (serial === '5iO4' ? 'AGV-1' : serial === 'jp93' ? 'AGV-2' : null),
+          },
+        },
         CorrelationInfoService,
         MessageMonitorService,
         MessageValidationService,
@@ -524,10 +531,19 @@ describe('OrderCardComponent', () => {
       expect(name).toBeDefined();
     });
 
-    it('should get FTS name for navigation', () => {
+    it('should get AGV name for navigation without serialNumber', () => {
       const navStep = mockOrder.productionSteps![2];
       const name = component.moduleName(navStep);
+      expect(name).toContain('AGV');
       expect(name).toBeDefined();
+    });
+
+    it('should get AGV-1 name for navigation with serialNumber 5iO4', () => {
+      const navStep = { ...mockOrder.productionSteps![2], serialNumber: '5iO4' } as ProductionStep;
+      const name = component.moduleName(navStep);
+      expect(name).toContain('AGV-1');
+      const fullName = component.moduleFullName(navStep);
+      expect(fullName).toBe('AGV-1');
     });
 
     it('should get module full name', () => {

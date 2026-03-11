@@ -104,7 +104,7 @@
                         <ng-container *ngIf="getLocationInfo(subOrderGroup.events[0].location!) as locationInfo">
                           <span class="location-module-type">{{ locationInfo.moduleType }}</span>
                           <span class="location-full-name">({{ locationInfo.fullName }})</span>
-                          <span class="location-serial" *ngIf="locationInfo.serialId">({{ locationInfo.serialId }})</span>
+                          <span class="location-serial" *ngIf="locationInfo.serialNumber">({{ locationInfo.serialNumber }})</span>
                         </ng-container>
                       </span>
                     </div>
@@ -170,7 +170,7 @@
                               <ng-container *ngIf="getLocationInfo(event.location) as locationInfo">
                                 <span class="location-module-type">{{ locationInfo.moduleType }}</span>
                                 <span class="location-full-name">({{ locationInfo.fullName }})</span>
-                                <span class="location-serial" *ngIf="locationInfo.serialId">({{ locationInfo.serialId }})</span>
+                                <span class="location-serial" *ngIf="locationInfo.serialNumber">({{ locationInfo.serialNumber }})</span>
                               </ng-container>
                             </div>
                           </div>

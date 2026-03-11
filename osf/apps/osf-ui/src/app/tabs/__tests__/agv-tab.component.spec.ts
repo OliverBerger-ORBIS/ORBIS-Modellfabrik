@@ -6,6 +6,7 @@ import { EnvironmentService } from '../../services/environment.service';
 import { MessageMonitorService } from '../../services/message-monitor.service';
 import { ConnectionService } from '../../services/connection.service';
 import { ModuleNameService } from '../../services/module-name.service';
+import { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
 import { AgvRouteService } from '../../services/agv-route.service';
 import { AgvAnimationService } from '../../services/agv-animation.service';
 import { LanguageService } from '../../services/language.service';
@@ -89,6 +90,11 @@ describe('AgvTabComponent', () => {
       getModuleDisplayText: jest.fn((id: string) => id),
     };
 
+    const mappingServiceMock = {
+      getAgvOptions: jest.fn(() => [{ serial: '5iO4', label: 'AGV-1' }] as const),
+      getAgvLabel: jest.fn((serial: string) => (serial === '5iO4' ? 'AGV-1' : serial === 'jp93' ? 'AGV-2' : null)),
+    };
+
     const ftsRouteServiceMock = {
       initializeLayout: jest.fn(),
       getNodePosition: jest.fn(() => ({ x: 100, y: 100 })),
@@ -132,6 +138,7 @@ describe('AgvTabComponent', () => {
         { provide: MessageMonitorService, useValue: messageMonitorMock },
         { provide: ConnectionService, useValue: connectionServiceMock },
         { provide: ModuleNameService, useValue: moduleNameServiceMock },
+        { provide: ShopfloorMappingService, useValue: mappingServiceMock },
         { provide: AgvRouteService, useValue: ftsRouteServiceMock },
         { provide: AgvAnimationService, useValue: ftsAnimationServiceMock },
         { provide: LanguageService, useValue: languageServiceMock },
@@ -186,6 +193,7 @@ describe('AgvTabComponent', () => {
       environment$: replayEnvironmentSubject.asObservable(),
     };
     
+    const mappingMock = { getAgvOptions: () => [{ serial: '5iO4', label: 'AGV-1' }], getAgvLabel: () => null };
     TestBed.resetTestingModule();
     await TestBed.configureTestingModule({
       imports: [AgvTabComponent],
@@ -194,6 +202,7 @@ describe('AgvTabComponent', () => {
         { provide: MessageMonitorService, useValue: messageMonitor },
         { provide: ConnectionService, useValue: connectionService },
         { provide: ModuleNameService, useValue: moduleNameService },
+        { provide: ShopfloorMappingService, useValue: mappingMock },
         { provide: AgvRouteService, useValue: ftsRouteService },
         { provide: AgvAnimationService, useValue: ftsAnimationService },
         { provide: LanguageService, useValue: languageService },

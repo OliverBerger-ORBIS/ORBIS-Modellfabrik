@@ -24,6 +24,8 @@ export type OrderFixtureName =
   | 'production_bwr'
   | 'production_white'
   | 'storage_blue'
+  | 'storage_blue_agv2'
+  | 'storage_blue_parallel'
   | 'track-trace-production-bwr';
 
 export type ModuleFixtureName =
@@ -306,6 +308,22 @@ export const TAB_FIXTURE_PRESETS: Record<string, TabFixtureConfig> = {
   },
   'track-trace-storage-blue': {
     orders: 'storage_blue',
+    modules: 'default',
+    stock: 'default',
+    flows: 'default',
+    config: 'default',
+    sensors: 'default',
+  },
+  'track-trace-storage-blue-agv2': {
+    orders: 'storage_blue_agv2',
+    modules: 'default',
+    stock: 'default',
+    flows: 'default',
+    config: 'default',
+    sensors: 'default',
+  },
+  'track-trace-storage-blue-parallel': {
+    orders: 'storage_blue_parallel',
     modules: 'default',
     stock: 'default',
     flows: 'default',

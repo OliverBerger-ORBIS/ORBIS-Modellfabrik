@@ -7,6 +7,7 @@ import type { OrderActive, ProductionStep } from '@osf/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@osf/testing-fixtures';
 import { ShopfloorPreviewComponent } from '../shopfloor-preview/shopfloor-preview.component';
 import { ModuleNameService } from '../../services/module-name.service';
+import { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
 import { CorrelationInfoService, type CorrelationInfo } from '../../services/correlation-info.service';
 import { resolveLegacyShopfloorPath } from '../../shared/icons/legacy-shopfloor-map';
 import { ICONS } from '../../shared/icons/icon.registry';
@@ -71,6 +72,7 @@ export class OrderCardComponent implements OnInit, OnChanges {
 
   constructor(
     private readonly moduleNameService: ModuleNameService,
+    private readonly mappingService: ShopfloorMappingService,
     private readonly correlationInfoService: CorrelationInfoService
   ) {}
 
@@ -393,7 +395,12 @@ export class OrderCardComponent implements OnInit, OnChanges {
 
   moduleName(step: ProductionStep): string {
     if (step.type === 'NAVIGATION') {
-      return this.moduleNameService.getModuleDisplayText('FTS', 'id-full');
+      const agvLabel = step.serialNumber
+        ? this.mappingService.getAgvLabel(step.serialNumber)
+        : null;
+      const id = agvLabel ?? $localize`:@@moduleNameAGV:AGV`;
+      const full = this.moduleNameService.getModuleFullName('FTS');
+      return `${id} (${full})`;
     }
     const moduleType = step.moduleType ?? step.type ?? '';
     return this.moduleNameService.getModuleDisplayText(moduleType, 'id-full');
@@ -401,7 +408,10 @@ export class OrderCardComponent implements OnInit, OnChanges {
 
   moduleFullName(step: ProductionStep): string {
     if (step.type === 'NAVIGATION') {
-      return this.moduleNameService.getModuleFullName('FTS');
+      const agvLabel = step.serialNumber
+        ? this.mappingService.getAgvLabel(step.serialNumber)
+        : null;
+      return agvLabel ?? $localize`:@@moduleNameAGV:AGV`;
     }
     const moduleType = step.moduleType ?? step.type ?? '';
     return this.moduleNameService.getModuleFullName(moduleType);

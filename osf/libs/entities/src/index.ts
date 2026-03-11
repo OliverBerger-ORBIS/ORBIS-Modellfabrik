@@ -20,6 +20,8 @@ export interface ProductionStep {
   description?: string;
   startedAt?: string;
   stoppedAt?: string;
+  /** FTS/AGV serial when step is in progress or completed (CCU may add this for NAVIGATION) */
+  serialNumber?: string;
 }
 
 export interface OrderActive {

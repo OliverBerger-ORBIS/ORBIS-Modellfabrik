@@ -1,15 +1,22 @@
 import { Injectable } from '@angular/core';
 import type {
   ShopfloorCellConfig,
+  ShopfloorFtsConfig,
   ShopfloorLayoutConfig,
   ShopfloorModuleBySerial,
 } from '../components/shopfloor-preview/shopfloor-layout.types';
 
 export interface ModuleInfo {
   moduleType: string;
-  serialId: string;
+  serialNumber: string;
   cellId?: string;
   icon?: string;
+}
+
+/** AGV option for dropdown (serial for topics, label for display) */
+export interface AgvOption {
+  serial: string;
+  label: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -20,6 +27,7 @@ export class ShopfloorMappingService {
   private cellById = new Map<string, ShopfloorCellConfig>();
   private intersectionIdToCellId = new Map<string, string>();
   private cellIdToIntersectionId = new Map<string, string>();
+  private ftsConfig: ShopfloorFtsConfig[] = [];
 
   getAllModules(): ModuleInfo[] {
     return Array.from(this.serialToModule.values());
@@ -39,18 +47,18 @@ export class ShopfloorMappingService {
         // intersection_map contains the stable ID mapping; use it below
         continue;
       }
-      if (cell.role === 'module' && cell.serial_number) {
+      if (cell.role === 'module' && cell.serial) {
         const moduleType = cell.name ?? cell.id;
-        this.serialToModule.set(cell.serial_number, {
+        this.serialToModule.set(cell.serial, {
           moduleType,
-          serialId: cell.serial_number,
+          serialNumber: cell.serial,
           cellId: cell.id,
           icon: cell.icon,
         });
         if (!this.moduleTypeToSerials.has(moduleType)) {
           this.moduleTypeToSerials.set(moduleType, new Set());
         }
-        this.moduleTypeToSerials.get(moduleType)!.add(cell.serial_number);
+        this.moduleTypeToSerials.get(moduleType)!.add(cell.serial);
       }
     }
 
@@ -68,7 +76,7 @@ export class ShopfloorMappingService {
       const moduleType = meta.type;
       this.serialToModule.set(serial, {
         moduleType,
-        serialId: serial,
+        serialNumber: serial,
         cellId: meta.cell_id,
         icon: cell?.icon,
       });
@@ -78,6 +86,23 @@ export class ShopfloorMappingService {
       this.moduleTypeToSerials.get(moduleType)!.add(serial);
     });
 
+    // fts array (AGV/FTS with serial -> type FTS; enables AGV-1, AGV-2)
+    this.ftsConfig = config.fts ?? [];
+    this.ftsConfig.forEach((fts) => {
+      const serial = fts.serial;
+      if (serial) {
+        this.serialToModule.set(serial, {
+          moduleType: 'FTS',
+          serialNumber: serial,
+          icon: fts.icon,
+        });
+        if (!this.moduleTypeToSerials.has('FTS')) {
+          this.moduleTypeToSerials.set('FTS', new Set());
+        }
+        this.moduleTypeToSerials.get('FTS')!.add(serial);
+      }
+    });
+
     this.initialized = true;
   }
 
@@ -85,20 +110,20 @@ export class ShopfloorMappingService {
     return this.initialized;
   }
 
-  getModuleBySerial(serialId: string): ModuleInfo | null {
-    return this.serialToModule.get(serialId) ?? null;
+  getModuleBySerial(serialNumber: string): ModuleInfo | null {
+    return this.serialToModule.get(serialNumber) ?? null;
   }
 
-  getModuleTypeFromSerial(serialId: string): string | null {
-    return this.serialToModule.get(serialId)?.moduleType ?? null;
+  getModuleTypeFromSerial(serialNumber: string): string | null {
+    return this.serialToModule.get(serialNumber)?.moduleType ?? null;
   }
 
-  getCellIdFromSerial(serialId: string): string | null {
-    return this.serialToModule.get(serialId)?.cellId ?? null;
+  getCellIdFromSerial(serialNumber: string): string | null {
+    return this.serialToModule.get(serialNumber)?.cellId ?? null;
   }
 
-  getCellBySerial(serialId: string): ShopfloorCellConfig | null {
-    const cellId = this.getCellIdFromSerial(serialId);
+  getCellBySerial(serialNumber: string): ShopfloorCellConfig | null {
+    const cellId = this.getCellIdFromSerial(serialNumber);
     return cellId ? this.getCellById(cellId) : null;
   }
 
@@ -128,8 +153,8 @@ export class ShopfloorMappingService {
     return this.cellById.get(cellId) ?? null;
   }
 
-  getModuleIcon(serialId: string): string | null {
-    const cell = this.getCellBySerial(serialId);
+  getModuleIcon(serialNumber: string): string | null {
+    const cell = this.getCellBySerial(serialNumber);
     return cell?.icon ?? null;
   }
 
@@ -139,6 +164,19 @@ export class ShopfloorMappingService {
       return null;
     }
     return this.getModuleIcon(serial);
+  }
+
+  /** AGV options for dropdown: serial (for MQTT topics) and label (e.g. AGV-1, AGV-2) */
+  getAgvOptions(): AgvOption[] {
+    return this.ftsConfig
+      .filter((fts) => fts.serial)
+      .map((fts) => ({ serial: fts.serial!, label: fts.label }));
+  }
+
+  /** Display label for AGV by serial (e.g. AGV-1, AGV-2) */
+  getAgvLabel(serial: string): string | null {
+    const fts = this.ftsConfig.find((f) => f.serial === serial);
+    return fts?.label ?? null;
   }
 }
 

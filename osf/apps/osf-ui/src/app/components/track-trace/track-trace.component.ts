@@ -177,13 +177,13 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
 
   getLocationLabel(location: string): string {
     const locationInfo = this.moduleNameService.getLocationDisplayText(location);
-    if (locationInfo.serialId) {
-      return `${locationInfo.moduleType} (${locationInfo.fullName}) (${locationInfo.serialId})`;
+    if (locationInfo.serialNumber) {
+      return `${locationInfo.moduleType} (${locationInfo.fullName}) (${locationInfo.serialNumber})`;
     }
     return `${locationInfo.moduleType} (${locationInfo.fullName})`;
   }
 
-  getLocationInfo(location: string): { moduleType: string; fullName: string; serialId: string | null } {
+  getLocationInfo(location: string): { moduleType: string; fullName: string; serialNumber: string | null } {
     return this.moduleNameService.getLocationDisplayText(location);
   }
 

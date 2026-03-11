@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { filter, map, shareReplay, startWith, switchMap, catchError, tap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -7,6 +8,7 @@ import { EnvironmentService } from '../services/environment.service';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { ConnectionService } from '../services/connection.service';
 import { ModuleNameService } from '../services/module-name.service';
+import { ShopfloorMappingService, type AgvOption } from '../services/shopfloor-mapping.service';
 import { AgvRouteService } from '../services/agv-route.service';
 import { AgvAnimationService, type AnimationState } from '../services/agv-animation.service';
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
@@ -63,12 +65,12 @@ interface FtsState {
   errors: unknown[];
 }
 
-// FTS Serial Number (from message-monitor-tab.component.ts)
-const FTS_SERIAL = '5iO4';
-const FTS_STATE_TOPIC = `fts/v1/ff/${FTS_SERIAL}/state`;
-const FTS_ORDER_TOPIC = `fts/v1/ff/${FTS_SERIAL}/order`;
-const FTS_INSTANT_ACTION_TOPIC = `fts/v1/ff/${FTS_SERIAL}/instantAction`;
+// Fallback serial when layout has no FTS config (Phase A: AGV selection via dropdown)
+const FTS_SERIAL_FALLBACK = '5iO4';
 const CCU_SET_CHARGE_TOPIC = 'ccu/set/charge';
+const ftsStateTopic = (serial: string) => `fts/v1/ff/${serial}/state`;
+const ftsOrderTopic = (serial: string) => `fts/v1/ff/${serial}/order`;
+const ftsInstantActionTopic = (serial: string) => `fts/v1/ff/${serial}/instantAction`;
 const DOCK_NODE_DPS = 'SVR4H73275'; // DPS serial (from fixtures/tests)
 const START_NODE_MAP: Record<string, string> = {
   MILL: 'SVR3QA2098',
@@ -92,7 +94,7 @@ const SERIAL_TO_MODULE_TYPE: Record<string, string> = {
 @Component({
   standalone: true,
   selector: 'app-agv-tab',
-  imports: [CommonModule, ShopfloorPreviewComponent],
+  imports: [CommonModule, FormsModule, ShopfloorPreviewComponent],
   templateUrl: './agv-tab.component.html',
   styleUrl: './agv-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -117,9 +119,17 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   readonly turnLeftIcon = 'assets/svg/shopfloor/shared/turn-left-event.svg';
   readonly turnRightIcon = 'assets/svg/shopfloor/shared/turn-right-event.svg';
   readonly turnDefaultIcon = 'assets/svg/shopfloor/shared/turn-right-event.svg';
-  readonly ftsOrderTopic = FTS_ORDER_TOPIC;
-  readonly ftsInstantActionTopic = FTS_INSTANT_ACTION_TOPIC;
   readonly ccuSetChargeTopic = CCU_SET_CHARGE_TOPIC;
+
+  /** Selected AGV serial for state/order/commands (Phase A: dropdown selection) */
+  readonly selectedAgvSerial$ = new BehaviorSubject<string>(FTS_SERIAL_FALLBACK);
+
+  get ftsOrderTopic(): string {
+    return ftsOrderTopic(this.selectedAgvSerial$.value);
+  }
+  get ftsInstantActionTopic(): string {
+    return ftsInstantActionTopic(this.selectedAgvSerial$.value);
+  }
   readonly startNodeOptions = ['auto', 'MILL', 'DRILL', 'HBW', 'DPS', 'AIQS', 'CHRG'] as const;
   selectedStartNode: (typeof this.startNodeOptions)[number] = 'auto';
   // Labels aligned to Module-Tab naming; default EN text, ready for translation (DE/FR)
@@ -158,6 +168,8 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     'production_bwr',
     'production_white',
     'storage_blue',
+    'storage_blue_agv2',
+    'storage_blue_parallel',
     'track-trace-production-bwr',
   ];
   readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
@@ -170,6 +182,8 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     production_bwr: $localize`:@@fixtureLabelProductionBwr:Production BWR`,
     production_white: $localize`:@@fixtureLabelProductionWhite:Production White`,
     storage_blue: $localize`:@@fixtureLabelStorageBlue:Storage Blue`,
+    storage_blue_agv2: $localize`:@@fixtureLabelStorageBlueAgv2:Storage Blue (AGV-2)`,
+    storage_blue_parallel: $localize`:@@fixtureLabelStorageBlueParallel:Storage Blue (Both AGVs)`,
     'track-trace-production-bwr': $localize`:@@fixtureLabelTrackTraceBwr:TrackTrace Production BWR`,
   };
   activeFixture: OrderFixtureName | null = this.dashboard.getCurrentFixture();
@@ -199,6 +213,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     private readonly environmentService: EnvironmentService,
     private readonly connectionService: ConnectionService,
     private readonly moduleNameService: ModuleNameService,
+    private readonly mappingService: ShopfloorMappingService,
     private readonly agvRouteService: AgvRouteService,
     private readonly agvAnimationService: AgvAnimationService,
     private readonly languageService: LanguageService,
@@ -237,12 +252,36 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   }
   
   private parseLayout(config: ShopfloorLayoutConfig): void {
-    // Initialize route service with layout
+    // Initialize route service with layout (also initializes mappingService)
     this.agvRouteService.initializeLayout(config);
-    
+
+    // Ensure selected AGV is in options; default to first AGV if not
+    const opts = this.mappingService.getAgvOptions();
+    if (opts.length > 0 && !opts.some((o) => o.serial === this.selectedAgvSerial$.value)) {
+      this.selectedAgvSerial$.next(opts[0].serial);
+    }
+
     // Re-initialize streams to update position calculation
     this.initializeStreams();
     this.cdr.markForCheck();
+  }
+
+  /** AGV options for dropdown (AGV-1, AGV-2); fallback if layout not loaded */
+  get agvOptions(): AgvOption[] {
+    const opts = this.mappingService.getAgvOptions();
+    return opts.length > 0 ? opts : [{ serial: FTS_SERIAL_FALLBACK, label: 'AGV-1' }];
+  }
+
+  onSelectedAgvChange(serial: string): void {
+    this.selectedAgvSerial$.next(serial);
+    this.previousNodeId = null; // Reset animation context when switching AGV
+    this.initializeStreams();
+    this.cdr.markForCheck();
+  }
+
+  /** Display label for AGV by serial (e.g. AGV-1, AGV-2) – for badge/UI */
+  getAgvLabel(serial: string): string | null {
+    return this.mappingService.getAgvLabel(serial);
   }
   
   /**
@@ -423,8 +462,12 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   }
 
   private initializeStreams(): void {
-    // Pattern 2: MessageMonitor + Streams (analog zu OrderTabComponent)
-    this.ftsState$ = this.messageMonitor.getLastMessage<FtsState>(FTS_STATE_TOPIC).pipe(
+    const serial = this.selectedAgvSerial$.value;
+    const stateTopic = ftsStateTopic(serial);
+    const orderTopic = ftsOrderTopic(serial);
+
+    // Pattern 2: MessageMonitor + Streams; topics depend on selected AGV
+    this.ftsState$ = this.messageMonitor.getLastMessage<FtsState>(stateTopic).pipe(
       filter((msg) => msg !== null && msg.valid),
       map((msg) => msg!.payload as FtsState),
       tap((state) => {
@@ -438,23 +481,21 @@ export class AgvTabComponent implements OnInit, OnDestroy {
 
     // Battery state stream
     this.batteryState$ = this.ftsState$.pipe(
-      map((state) => state?.batteryState ?? null),
+      map((s) => s?.batteryState ?? null),
       shareReplay({ bufferSize: 1, refCount: false })
     );
 
     // Loads stream
     this.loads$ = this.ftsState$.pipe(
-      map((state) => state?.load ?? []),
+      map((s) => s?.load ?? []),
       shareReplay({ bufferSize: 1, refCount: false })
     );
 
-    // Order stream (for TURN direction etc.)
-    this.ftsOrder$ = this.messageMonitor.getLastMessage<any>(FTS_ORDER_TOPIC).pipe(
+    // Order stream (for TURN direction etc.) - per selected AGV
+    this.ftsOrder$ = this.messageMonitor.getLastMessage<any>(orderTopic).pipe(
       map((msg) => msg?.payload ?? null),
       tap((order) => {
         if (!order) return;
-        // Build actionId -> direction map for TURN actions
-        // Order schema: nodes[].action.id / type / metadata.direction
         if (Array.isArray(order.nodes)) {
           order.nodes.forEach((node: any) => {
             const action = node?.action;
@@ -688,6 +729,8 @@ export class AgvTabComponent implements OnInit, OnDestroy {
         production_bwr: 'track-trace-production-bwr',
         production_white: 'track-trace-production-white',
         storage_blue: 'track-trace-storage-blue',
+        storage_blue_agv2: 'track-trace-storage-blue-agv2',
+        storage_blue_parallel: 'track-trace-storage-blue-parallel',
       };
       
       const preset = presetMap[fixture] || 'startup';
@@ -876,11 +919,15 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   }
 
   // Example payloads for developer view
+  private get selectedAgvSerial(): string {
+    return this.selectedAgvSerial$.value;
+  }
+
   get chargeExamplePayload() {
     return {
       topic: CCU_SET_CHARGE_TOPIC,
       payload: {
-        serialNumber: FTS_SERIAL,
+        serialNumber: this.selectedAgvSerial,
         charge: true,
       },
       options: { qos: 1, retain: false },
@@ -889,9 +936,9 @@ export class AgvTabComponent implements OnInit, OnDestroy {
 
   get dockExamplePayload() {
     return {
-      topic: FTS_INSTANT_ACTION_TOPIC,
+      topic: this.ftsInstantActionTopic,
       payload: {
-        serialNumber: FTS_SERIAL,
+        serialNumber: this.selectedAgvSerial,
         timestamp: '2025-01-01T12:00:00.000Z',
         actions: [
           {
@@ -907,7 +954,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
 
   get driveExamplePayload() {
     return {
-      topic: FTS_ORDER_TOPIC,
+      topic: this.ftsOrderTopic,
       payload: {
         timestamp: '2025-01-01T12:00:00.000Z',
         orderId: 'example-order-id',
@@ -930,7 +977,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
             linkedNodes: ['1', '2'],
           },
         ],
-        serialNumber: FTS_SERIAL,
+        serialNumber: this.selectedAgvSerial,
         metadata: {
           requestedFrom: '1',
         },
@@ -941,9 +988,9 @@ export class AgvTabComponent implements OnInit, OnDestroy {
 
   get driveInstantExamplePayload() {
     return {
-      topic: FTS_INSTANT_ACTION_TOPIC,
+      topic: this.ftsInstantActionTopic,
       payload: {
-        serialNumber: FTS_SERIAL,
+        serialNumber: this.selectedAgvSerial,
         timestamp: '2025-01-01T12:00:00.000Z',
         actions: [
           {
@@ -988,19 +1035,17 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   // --- Command publishing (AGV controls) ---
 
   async sendCharge(enable: boolean): Promise<void> {
-    // Reuse business command to ensure exact payload/topic as Module-Tab tests
-    await this.dashboard.commands.setFtsCharge(FTS_SERIAL, enable);
+    await this.dashboard.commands.setFtsCharge(this.selectedAgvSerial, enable);
   }
 
   async sendDockInitial(): Promise<void> {
-    // Use the same command as Module-Tab (instantAction findInitialDockPosition with nodeId DPS)
-    await this.dashboard.commands.dockFts(FTS_SERIAL, DOCK_NODE_DPS);
+    await this.dashboard.commands.dockFts(this.selectedAgvSerial, DOCK_NODE_DPS);
   }
 
   async sendDriveToIntersection2Instant(): Promise<void> {
     const actionId = `drive-${this.uuid()}`;
     const payload = {
-      serialNumber: FTS_SERIAL,
+      serialNumber: this.selectedAgvSerial,
       timestamp: new Date().toISOString(),
       actions: [
         {
@@ -1010,7 +1055,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
         },
       ],
     };
-    await this.connectionService.publish(FTS_INSTANT_ACTION_TOPIC, payload, { qos: 1 });
+    await this.connectionService.publish(this.ftsInstantActionTopic, payload, { qos: 1 });
   }
 
   private buildOrderToIntersection2(): {
@@ -1090,7 +1135,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
       orderUpdateId: 0,
       nodes,
       edges,
-      serialNumber: FTS_SERIAL,
+      serialNumber: this.selectedAgvSerial,
       metadata: {
         requestedFrom: start ?? undefined,
       },
@@ -1101,7 +1146,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
 
   async sendDriveToIntersection2Order(): Promise<void> {
     const { payload } = this.buildOrderToIntersection2();
-    await this.connectionService.publish(FTS_ORDER_TOPIC, payload, { qos: 1 });
+    await this.connectionService.publish(this.ftsOrderTopic, payload, { qos: 1 });
   }
 
   trackByActionId(_index: number, action: FtsActionState): string {

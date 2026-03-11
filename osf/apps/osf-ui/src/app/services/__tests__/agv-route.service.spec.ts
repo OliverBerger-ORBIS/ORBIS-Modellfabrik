@@ -41,7 +41,7 @@ describe('AgvRouteService', () => {
         size: { w: 80, h: 80 },
         center: { x: 140, y: 140 },
         role: 'module',
-        serial_number: 'SVR3QA0022',
+        serial: 'SVR3QA0022',
       },
       {
         id: 'cell-aiqs',
@@ -51,7 +51,7 @@ describe('AgvRouteService', () => {
         size: { w: 80, h: 80 },
         center: { x: 340, y: 140 },
         role: 'module',
-        serial_number: 'SVR4H76530',
+        serial: 'SVR4H76530',
       },
       {
         id: 'cell-int1',

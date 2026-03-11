@@ -64,10 +64,12 @@ describe('TrackTraceTabComponent', () => {
   });
 
   it('should have fixture options', () => {
-    expect(component.fixtureOptions.length).toBe(4);
+    expect(component.fixtureOptions.length).toBe(6);
     expect(component.fixtureOptions).toContain('production_bwr');
     expect(component.fixtureOptions).toContain('production_white');
     expect(component.fixtureOptions).toContain('storage_blue');
+    expect(component.fixtureOptions).toContain('storage_blue_agv2');
+    expect(component.fixtureOptions).toContain('storage_blue_parallel');
     expect(component.fixtureOptions).toContain('mixed_pr_prnok');
   });
 
@@ -76,6 +78,8 @@ describe('TrackTraceTabComponent', () => {
     expect(component.fixtureLabels.production_bwr).toBeDefined();
     expect(component.fixtureLabels.production_white).toBeDefined();
     expect(component.fixtureLabels.storage_blue).toBeDefined();
+    expect(component.fixtureLabels.storage_blue_agv2).toBeDefined();
+    expect(component.fixtureLabels.storage_blue_parallel).toBeDefined();
     expect(component.fixtureLabels.mixed_pr_prnok).toBeDefined();
   });
 
@@ -149,6 +153,9 @@ describe('TrackTraceTabComponent', () => {
 
     await component.loadFixture('storage_blue');
     expect(mockDashboard.getDashboardController().loadTabFixture).toHaveBeenCalledWith('track-trace-storage-blue');
+
+    await component.loadFixture('storage_blue_agv2');
+    expect(mockDashboard.getDashboardController().loadTabFixture).toHaveBeenCalledWith('track-trace-storage-blue-agv2');
 
     await component.loadFixture('mixed_pr_prnok');
     expect(mockDashboard.getDashboardController().loadTabFixture).toHaveBeenCalledWith('track-trace-mixed-pr-prnok');

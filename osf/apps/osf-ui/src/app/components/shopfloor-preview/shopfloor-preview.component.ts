@@ -682,9 +682,9 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       .filter((attachment) => attachment.icon.length > 0);
 
     const highlightCandidates = [cell.id, cell.name ?? '', iconKey];
-    if (cell.serial_number) {
-      highlightCandidates.push(`serial:${cell.serial_number}`);
-      highlightCandidates.push(cell.serial_number);
+    if (cell.serial) {
+      highlightCandidates.push(`serial:${cell.serial}`);
+      highlightCandidates.push(cell.serial);
     }
     const highlighted = highlightCandidates.some((candidate) => candidate && highlightAliases.has(candidate));
     const isCurrentPosition = highlightCandidates.some((candidate) => candidate && currentPositionAliases.has(candidate));
@@ -695,15 +695,15 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       : (cell.name ?? cell.id);
 
     // Get module status from moduleStatusMap (for module tab integration)
-    // Priority: 1) serial_number (most reliable), 2) cell.name (module type), 3) cell.id
+    // Priority: 1) serial (most reliable), 2) cell.name (module type), 3) cell.id
     let status: ModuleStatus | undefined;
     
-    // First try serial_number (most reliable match)
-    if (cell.serial_number) {
-      status = this.moduleStatusMap?.get(cell.serial_number);
+    // First try serial (most reliable match)
+    if (cell.serial) {
+      status = this.moduleStatusMap?.get(cell.serial);
     }
     
-    // If no match by serial_number, try by module type/name
+    // If no match by serial, try by module type/name
     if (!status && cell.name) {
       status = this.moduleStatusMap?.get(cell.name) ?? 
                this.moduleStatusMap?.get(cell.name.toUpperCase()) ?? 

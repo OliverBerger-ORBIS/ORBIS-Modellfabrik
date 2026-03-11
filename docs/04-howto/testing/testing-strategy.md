@@ -16,6 +16,7 @@ Begründung: Tests spiegeln das gewünschte Verhalten wider. Wenn sich die fachl
 **Verwandte Dokumentation:**
 - [Coverage Monitoring](coverage-monitoring.md) - Test Coverage Monitoring Setup
 - Integration Tests: siehe Testing-Strategie und Projekt-spezifische Patterns
+- [Replay vs. Test-Framework](../../07-analysis/test-framework-replay-comparison-2026-03.md) – OSF-UI: Session-Replay vs. automatisierte Fixture-Tests
 
 ## 🎯 Test-Philosophie
 

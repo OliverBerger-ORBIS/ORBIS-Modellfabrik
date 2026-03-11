@@ -60,7 +60,7 @@ export interface ShopfloorCellConfig {
   size: ShopfloorSize;
   center?: ShopfloorPoint;
   role: ShopfloorCellRole;
-  serial_number?: string;
+  serial?: string;
   icon?: string;
   background_color?: string;
   is_compound?: boolean;
@@ -95,6 +95,8 @@ export interface ParsedRoad {
 export interface ShopfloorFtsConfig {
   id: string;
   label: string;
+  /** MQTT Serial-ID (e.g. 5iO4, jp93). Used for topic subscription and command targeting. */
+  serial?: string;
   icon?: string;
   capacity?: number;
   current_position?: ShopfloorPoint;

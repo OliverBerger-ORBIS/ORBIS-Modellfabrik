@@ -235,7 +235,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   private readonly shopfloorPreviewStorageKey = 'shopfloor-tab-shopfloor-preview-expanded';
   
   // Module selection persistence
-  private readonly moduleSelectionStorageKey = 'shopfloor-tab-selected-module-serial-id';
+  private readonly moduleSelectionStorageKey = 'shopfloor-tab-selected-module-serial-number';
 
   constructor(
     private readonly environmentService: EnvironmentService,
@@ -298,7 +298,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
 
   // Module details sidebar state
   sidebarOpen = false;
-  selectedModuleSerialId: string | null = null;
+  selectedModuleSerialNumber: string | null = null;
   selectedModuleName: string | null = null;
   selectedModuleIcon: string | null = null;
   selectedModuleMeta: {
@@ -372,17 +372,24 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   readonly modulesStatusBadgeText = $localize`:@@moduleTabModulesStatusBadge:Modules Status`;
 
   private initializeRegistry(): void {
-    // Build registry from mapping service; fallback: add common FTS serial if not present
+    // Build registry from mapping service (includes FTS from shopfloor_layout.json fts array)
     const modules = this.mappingService.getAllModules();
     this.moduleRegistry = modules.map((m: ModuleInfo) => ({
-      id: m.serialId,
+      id: m.serialNumber,
       type: (m.moduleType as keyof typeof MODULE_NAME_MAP) ?? 'UNKNOWN',
-      kind: 'module',
+      kind: m.moduleType === 'FTS' ? 'transport' : 'module',
     }));
 
-    // Ensure FTS placeholder exists (common serial for AGV)
-    if (!this.moduleRegistry.find((e) => e.id === '5iO4')) {
-      this.moduleRegistry.push({ id: '5iO4', type: 'FTS', kind: 'transport' });
+    // Fallback: if no FTS in layout (e.g. old layout), use getAgvOptions or add 5iO4 for backward compatibility
+    if (!this.moduleRegistry.some((e) => e.type === 'FTS')) {
+      const agvOpts = this.mappingService.getAgvOptions();
+      if (agvOpts.length > 0) {
+        agvOpts.forEach((opt) =>
+          this.moduleRegistry.push({ id: opt.serial, type: 'FTS', kind: 'transport' })
+        );
+      } else {
+        this.moduleRegistry.push({ id: '5iO4', type: 'FTS', kind: 'transport' });
+      }
     }
 
     this.moduleRegistryOrder = this.moduleRegistry.map((entry) => entry.id);
@@ -805,8 +812,8 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         this.currentModuleStatusMap = map;
         
         // Update selectedModuleMeta when status changes
-        if (this.selectedModuleSerialId && this.selectedModuleMeta) {
-          const currentStatus = map.get(this.selectedModuleSerialId);
+        if (this.selectedModuleSerialNumber && this.selectedModuleMeta) {
+          const currentStatus = map.get(this.selectedModuleSerialNumber);
           if (currentStatus) {
             // Update availability status
             this.selectedModuleMeta.availability = currentStatus.availability;
@@ -958,10 +965,15 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     // Calculate message count for this specific transport (by serial-Id)
     const messageCount = this.getModuleMessageCount(transport.id);
 
+    const agvLabel = this.mappingService.getAgvLabel(transport.id);
+    const transportName = agvLabel
+      ? `${agvLabel} (${this.moduleNameService.getModuleFullName('FTS')})`
+      : this.moduleNameService.getModuleDisplayText('FTS', 'id-full');
+
     return {
       id: transport.id,
       kind: 'transport',
-      name: this.moduleNameService.getModuleDisplayText('FTS', 'id-full'),
+      name: transportName,
       iconPath: this.resolveIconPath('FTS'),
       registryActive: Boolean(isRegistryTransport),
       connected: transport.connected,
@@ -1110,15 +1122,15 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
 
   private updateSelectedMeta(cell: ShopfloorCellConfig | null): void {
     const snapshot = this.moduleOverviewState.getSnapshot(this.currentEnvironmentKey);
-    const moduleId = this.selectedModuleSerialId ?? cell?.id ?? null;
+    const moduleId = this.selectedModuleSerialNumber ?? cell?.id ?? null;
     const moduleDetails =
       moduleId ? snapshot?.modules?.[moduleId] ?? snapshot?.modules?.[cell?.id ?? ''] : null;
     
     // If cell is not provided but we have a serial ID, try to find the cell from layout config
     let resolvedCell = cell;
-    if (!resolvedCell && this.selectedModuleSerialId && this.layoutConfig) {
+    if (!resolvedCell && this.selectedModuleSerialNumber && this.layoutConfig) {
       resolvedCell = this.layoutConfig.cells.find(
-        (c: ShopfloorCellConfig) => c.serial_number === this.selectedModuleSerialId
+        (c: ShopfloorCellConfig) => c.serial === this.selectedModuleSerialNumber
       ) ?? null;
     }
 
@@ -1144,15 +1156,15 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     let moduleType = moduleDetails?.subType ?? resolvedCell?.name ?? 'UNKNOWN';
     
     // If still UNKNOWN and we have a serial ID, try to get module type from mapping service
-    if (moduleType === 'UNKNOWN' && this.selectedModuleSerialId && this.mappingService.isInitialized()) {
-      const moduleInfo = this.mappingService.getModuleBySerial(this.selectedModuleSerialId);
+    if (moduleType === 'UNKNOWN' && this.selectedModuleSerialNumber && this.mappingService.isInitialized()) {
+      const moduleInfo = this.mappingService.getModuleBySerial(this.selectedModuleSerialNumber);
       if (moduleInfo) {
         moduleType = moduleInfo.moduleType;
       }
     }
     
     // Ensure selectedModuleName is always set when we have a serial ID
-    if (this.selectedModuleSerialId) {
+    if (this.selectedModuleSerialNumber) {
       // Only update if not set or if it's currently "Unknown" or empty
       if (!this.selectedModuleName || this.selectedModuleName === 'Unknown' || this.selectedModuleName === 'UNKNOWN') {
         const display = this.moduleNameService.getModuleDisplayName(moduleType);
@@ -1168,10 +1180,10 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     this.aiqsStateSub?.unsubscribe();
     
     // Clear accumulated history when switching modules
-    if (this.selectedModuleSerialId !== DPS_SERIAL) {
+    if (this.selectedModuleSerialNumber !== DPS_SERIAL) {
       this.allDpsActions = [];
     }
-    if (this.selectedModuleSerialId !== AIQS_SERIAL) {
+    if (this.selectedModuleSerialNumber !== AIQS_SERIAL) {
       this.allAiqsActions = [];
     }
     
@@ -1203,8 +1215,8 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     };
     
     // Subscribe to DPS/AIQS streams when module is selected
-    if (this.selectedModuleSerialId === DPS_SERIAL) {
-      console.log('[module-tab] DPS selected, subscribing to stream:', DPS_STATE_TOPIC, 'Serial:', this.selectedModuleSerialId);
+    if (this.selectedModuleSerialNumber === DPS_SERIAL) {
+      console.log('[module-tab] DPS selected, subscribing to stream:', DPS_STATE_TOPIC, 'Serial:', this.selectedModuleSerialNumber);
       // Subscribe to get current value and updates
       this.dpsStateSub = this.dpsState$.pipe(
         distinctUntilChanged((prev, curr) => prev?.timestamp === curr?.timestamp)
@@ -1216,7 +1228,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         console.log('[module-tab] DPS actionStates:', state?.actionStates);
         console.log('[module-tab] DPS orderId:', state?.orderId);
         console.log('[module-tab] DPS workpiece color:', this.getDpsWorkpieceColor(state));
-        if (this.selectedModuleMeta && this.selectedModuleSerialId === DPS_SERIAL) {
+        if (this.selectedModuleMeta && this.selectedModuleSerialNumber === DPS_SERIAL) {
           this.selectedModuleMeta.dpsData = state;
           this.cdr.markForCheck();
         }
@@ -1224,14 +1236,14 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       this.subscriptions.add(this.dpsStateSub);
     }
     
-    if (this.selectedModuleSerialId === AIQS_SERIAL) {
-      console.log('[module-tab] AIQS selected, subscribing to stream:', AIQS_STATE_TOPIC, 'Serial:', this.selectedModuleSerialId);
+    if (this.selectedModuleSerialNumber === AIQS_SERIAL) {
+      console.log('[module-tab] AIQS selected, subscribing to stream:', AIQS_STATE_TOPIC, 'Serial:', this.selectedModuleSerialNumber);
       // Subscribe to get current value and updates
       this.aiqsStateSub = this.aiqsState$.pipe(
         distinctUntilChanged((prev, curr) => prev?.timestamp === curr?.timestamp)
       ).subscribe((state) => {
         console.log('[module-tab] AIQS state update:', state);
-        if (this.selectedModuleMeta && this.selectedModuleSerialId === AIQS_SERIAL) {
+        if (this.selectedModuleMeta && this.selectedModuleSerialNumber === AIQS_SERIAL) {
           this.selectedModuleMeta.aiqsData = state;
           this.cdr.markForCheck();
         }
@@ -1244,7 +1256,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   }
 
   openSidebarForSelected(): void {
-    if (!this.selectedModuleSerialId) {
+    if (!this.selectedModuleSerialNumber) {
       return;
     }
     this.sidebarOpen = true;
@@ -1252,10 +1264,10 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   }
 
   get selectedStatus(): { connected: boolean; availability: ModuleAvailabilityStatus } | null {
-    if (!this.selectedModuleSerialId || !this.currentModuleStatusMap) {
+    if (!this.selectedModuleSerialNumber || !this.currentModuleStatusMap) {
       return null;
     }
-    return this.currentModuleStatusMap.get(this.selectedModuleSerialId) ?? null;
+    return this.currentModuleStatusMap.get(this.selectedModuleSerialNumber) ?? null;
   }
 
   get selectedAvailabilityLabel(): string {
@@ -1316,12 +1328,12 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       );
 
       if (moduleEntry) {
-        this.selectedModuleSerialId = moduleEntry.id;
+        this.selectedModuleSerialNumber = moduleEntry.id;
         const display = this.moduleNameService.getModuleDisplayName(moduleEntry.subType ?? moduleType);
         this.selectedModuleName = display.fullName;
         
         // Save selection to localStorage
-        this.saveModuleSelection(this.selectedModuleSerialId);
+        this.saveModuleSelection(this.selectedModuleSerialNumber);
         
         this.updateSelectedMeta(null);
         this.loadSequenceCommands(moduleEntry.subType ?? moduleType);
@@ -1339,27 +1351,27 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     const snapshot = this.moduleOverviewState.getSnapshot(this.currentEnvironmentKey);
     const moduleStates = snapshot?.modules ?? {};
     const moduleDetails =
-      Object.values(moduleStates).find((m) => m.id === (cell?.serial_number ?? event.id)) ??
+      Object.values(moduleStates).find((m) => m.id === (cell?.serial ?? event.id)) ??
       moduleStates[event.id];
 
     const moduleType = moduleDetails?.subType ?? cell?.name ?? 'UNKNOWN';
     const display = this.moduleNameService.getModuleDisplayName(moduleType);
 
-    this.selectedModuleSerialId = moduleDetails?.id ?? cell?.serial_number ?? event.id;
+    this.selectedModuleSerialNumber = moduleDetails?.id ?? cell?.serial ?? event.id;
     this.selectedModuleName = display.fullName;
 
     // Save selection to localStorage
-    this.saveModuleSelection(this.selectedModuleSerialId);
+    this.saveModuleSelection(this.selectedModuleSerialNumber);
 
     // Debug: Log selected module info
     console.log('[module-tab] Selected module:', {
       eventId: event.id,
-      cellSerialNumber: cell?.serial_number,
+      cellSerialNumber: cell?.serial,
       moduleDetailsId: moduleDetails?.id,
-      selectedModuleSerialId: this.selectedModuleSerialId,
+      selectedModuleSerialNumber: this.selectedModuleSerialNumber,
       moduleType,
-      isDPS: this.selectedModuleSerialId === DPS_SERIAL,
-      isAIQS: this.selectedModuleSerialId === AIQS_SERIAL,
+      isDPS: this.selectedModuleSerialNumber === DPS_SERIAL,
+      isAIQS: this.selectedModuleSerialNumber === AIQS_SERIAL,
     });
 
     this.updateSelectedMeta(cell);
@@ -1369,7 +1381,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
 
   closeSidebar(): void {
     this.sidebarOpen = false;
-    // Preserve selection - don't clear selectedModuleSerialId, selectedModuleName, etc.
+    // Preserve selection - don't clear selectedModuleSerialNumber, selectedModuleName, etc.
     // This allows the user to reopen the sidebar without losing their selection
     this.cdr.markForCheck();
   }
@@ -1983,7 +1995,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
    * Get message count for a specific module/transport by serial-Id.
    * Counts all messages from topics that belong to this module.
    */
-  private getModuleMessageCount(serialId: string): number {
+  private getModuleMessageCount(serialNumber: string): number {
     try {
       const allTopics = this.messageMonitor.getTopics();
       let count = 0;
@@ -2000,17 +2012,17 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         if (topic.startsWith('module/')) {
           const parts = topic.split('/');
           // Check for NodeRed pattern: module/v1/ff/NodeRed/<serial>/...
-          if (parts.length >= 5 && parts[3] === 'NodeRed' && parts[4] === serialId) {
+          if (parts.length >= 5 && parts[3] === 'NodeRed' && parts[4] === serialNumber) {
             const history = this.messageMonitor.getHistory(topic);
             count += history.length;
           }
           // Check for direct pattern: module/v1/ff/<serial>/...
-          else if (parts.length >= 4 && parts[1] === 'v1' && parts[2] === 'ff' && parts[3] === serialId) {
+          else if (parts.length >= 4 && parts[1] === 'v1' && parts[2] === 'ff' && parts[3] === serialNumber) {
             const history = this.messageMonitor.getHistory(topic);
             count += history.length;
           }
           // Check for generic pattern: module/<serial>/...
-          else if (parts.length >= 2 && parts[1] === serialId) {
+          else if (parts.length >= 2 && parts[1] === serialNumber) {
             const history = this.messageMonitor.getHistory(topic);
             count += history.length;
           }
@@ -2019,12 +2031,12 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         else if (topic.startsWith('fts/')) {
           const parts = topic.split('/');
           // Check for pattern: fts/v1/ff/<serial>/...
-          if (parts.length >= 4 && parts[1] === 'v1' && parts[2] === 'ff' && parts[3] === serialId) {
+          if (parts.length >= 4 && parts[1] === 'v1' && parts[2] === 'ff' && parts[3] === serialNumber) {
             const history = this.messageMonitor.getHistory(topic);
             count += history.length;
           }
           // Check for generic pattern: fts/<serial>/...
-          else if (parts.length >= 2 && parts[1] === serialId) {
+          else if (parts.length >= 2 && parts[1] === serialNumber) {
             const history = this.messageMonitor.getHistory(topic);
             count += history.length;
           }
@@ -2033,7 +2045,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
 
       return count;
     } catch (error) {
-      console.warn(`[ModuleTab] Failed to get message count for ${serialId}:`, error);
+      console.warn(`[ModuleTab] Failed to get message count for ${serialNumber}:`, error);
       return 0;
     }
   }
@@ -2093,7 +2105,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   /**
    * Get HBW-specific data from MQTT state messages
    */
-  private getHbwData(serialId: string): {
+  private getHbwData(serialNumber: string): {
     currentAction?: { command: string; state: string; timestamp?: string };
     storageSlot?: string;
     storageLevel?: string;
@@ -2104,7 +2116,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
   } | null {
     try {
-      const stateTopic = `module/v1/ff/${serialId}/state`;
+      const stateTopic = `module/v1/ff/${serialNumber}/state`;
       const history = this.messageMonitor.getHistory(stateTopic);
       
       if (history.length === 0) {
@@ -2160,7 +2172,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   /**
    * Get DRILL-specific data from MQTT state messages
    */
-  private getDrillData(serialId: string): {
+  private getDrillData(serialNumber: string): {
     currentAction?: { command: string; state: string; timestamp?: string };
     drillDepth?: number;
     drillSpeed?: number;
@@ -2170,7 +2182,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
   } | null {
     try {
-      const stateTopic = `module/v1/ff/${serialId}/state`;
+      const stateTopic = `module/v1/ff/${serialNumber}/state`;
       const history = this.messageMonitor.getHistory(stateTopic);
       
       if (history.length === 0) {
@@ -2243,7 +2255,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
           const lastPairing = pairingHistory[pairingHistory.length - 1];
           const pairingPayload = this.parseModuleStatePayload(lastPairing);
           if (pairingPayload?.modules && Array.isArray(pairingPayload.modules)) {
-            const moduleInfo = pairingPayload.modules.find((m: any) => m.serialNumber === serialId);
+            const moduleInfo = pairingPayload.modules.find((m: any) => m.serialNumber === serialNumber);
             if (moduleInfo?.productionDuration !== undefined) {
               processingTime = moduleInfo.productionDuration;
             }
@@ -2273,7 +2285,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   /**
    * Get MILL-specific data from MQTT state messages
    */
-  private getMillData(serialId: string): {
+  private getMillData(serialNumber: string): {
     currentAction?: { command: string; state: string; timestamp?: string };
     millDepth?: number;
     millSpeed?: number;
@@ -2283,7 +2295,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     recentActions?: Array<{ command: string; state: string; timestamp: string; result?: string }>;
   } | null {
     try {
-      const stateTopic = `module/v1/ff/${serialId}/state`;
+      const stateTopic = `module/v1/ff/${serialNumber}/state`;
       const history = this.messageMonitor.getHistory(stateTopic);
       
       if (history.length === 0) {
@@ -2356,7 +2368,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
           const lastPairing = pairingHistory[pairingHistory.length - 1];
           const pairingPayload = this.parseModuleStatePayload(lastPairing);
           if (pairingPayload?.modules && Array.isArray(pairingPayload.modules)) {
-            const moduleInfo = pairingPayload.modules.find((m: any) => m.serialNumber === serialId);
+            const moduleInfo = pairingPayload.modules.find((m: any) => m.serialNumber === serialNumber);
             if (moduleInfo?.productionDuration !== undefined) {
               processingTime = moduleInfo.productionDuration;
             }
@@ -2417,10 +2429,10 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         // Restore saved selection
         const moduleType = moduleEntry.subType ?? 'UNKNOWN';
         const display = this.moduleNameService.getModuleDisplayName(moduleType);
-        this.selectedModuleSerialId = savedSerialId;
+        this.selectedModuleSerialNumber = savedSerialId;
         this.selectedModuleName = display.fullName;
         
-        const cell = this.layoutConfig?.cells.find((c: ShopfloorCellConfig) => c.serial_number === savedSerialId) ?? null;
+        const cell = this.layoutConfig?.cells.find((c: ShopfloorCellConfig) => c.serial === savedSerialId) ?? null;
         this.updateSelectedMeta(cell);
         this.loadSequenceCommands(moduleType);
         this.cdr.markForCheck();
@@ -2432,10 +2444,10 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     const hbwModule = Object.values(moduleStates).find((m) => m.subType?.toUpperCase() === 'HBW');
     if (hbwModule) {
       const display = this.moduleNameService.getModuleDisplayName('HBW');
-      this.selectedModuleSerialId = hbwModule.id;
+      this.selectedModuleSerialNumber = hbwModule.id;
       this.selectedModuleName = display.fullName;
       
-      const cell = this.layoutConfig?.cells.find((c: ShopfloorCellConfig) => c.serial_number === hbwModule.id) ?? null;
+      const cell = this.layoutConfig?.cells.find((c: ShopfloorCellConfig) => c.serial === hbwModule.id) ?? null;
       this.updateSelectedMeta(cell);
       this.loadSequenceCommands('HBW');
       this.saveModuleSelection(hbwModule.id);
@@ -2446,10 +2458,10 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   /**
    * Save module selection to localStorage
    */
-  private saveModuleSelection(serialId: string | null): void {
+  private saveModuleSelection(serialNumber: string | null): void {
     try {
-      if (serialId) {
-        localStorage.setItem(this.moduleSelectionStorageKey, serialId);
+      if (serialNumber) {
+        localStorage.setItem(this.moduleSelectionStorageKey, serialNumber);
       } else {
         localStorage.removeItem(this.moduleSelectionStorageKey);
       }

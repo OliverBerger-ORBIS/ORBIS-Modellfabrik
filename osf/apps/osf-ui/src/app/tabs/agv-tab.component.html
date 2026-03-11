@@ -53,6 +53,17 @@
         </p>
       </div>
     </div>
+    <div class="fts-tab__agv-select" *ngIf="agvOptions.length > 1">
+      <span class="badge" i18n="@@agvTabSelectLabel">AGV</span>
+      <select
+        [ngModel]="selectedAgvSerial$ | async"
+        (ngModelChange)="onSelectedAgvChange($event)"
+      >
+        <option *ngFor="let opt of agvOptions" [value]="opt.serial">
+          {{ opt.label }}
+        </option>
+      </select>
+    </div>
     <div class="fts-tab__fixtures" *ngIf="isMockMode">
       <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
       <div class="fixture-switch">
@@ -80,7 +91,7 @@
           <h2>
             <img [src]="statusIcon" alt="Status" class="section-icon-img" width="24" height="24" />
             <span>{{ vehicleLabelShort }} Status</span>
-            <span class="serial-badge">{{ ftsState.serialNumber }}</span>
+            <span class="serial-badge">{{ getAgvLabel(ftsState.serialNumber) || ftsState.serialNumber }}</span>
           </h2>
           
           <div class="status-card">

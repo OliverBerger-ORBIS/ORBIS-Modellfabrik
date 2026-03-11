@@ -25,7 +25,7 @@ Diese Module haben einen **Webserver** und können aktiv senden/empfangen:
 
 ### Pattern 1: Module MIT NodeRed-Vermittlung
 ```
-module/v1/ff/NodeRed/<serialId>/<action>
+module/v1/ff/NodeRed/<serial>/<action>
   ↑     ↑   ↑     ↑        ↑         ↑
  Type  Vers NS  Sender  Receiver  Action
 ```
@@ -41,7 +41,7 @@ module/v1/ff/NodeRed/<serialId>/<action>
 
 ### Pattern 2: Module OHNE NodeRed (Direkt)
 ```
-module/v1/ff/<serialId>/<action>
+module/v1/ff/<serial>/<action>
   ↑     ↑   ↑      ↑         ↑
  Type  Vers NS  Receiver  Action
 ```
@@ -61,7 +61,7 @@ module/v1/ff/<serialId>/<action>
 
 ### Pattern 3: FTS Topics
 ```
-fts/v1/ff/<serialId>/<action>
+fts/v1/ff/<serial>/<action>
  ↑   ↑   ↑      ↑         ↑
 Type Vers NS  Receiver  Action
 ```

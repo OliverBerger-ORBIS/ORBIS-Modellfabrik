@@ -150,7 +150,7 @@
         <app-shopfloor-preview
           [order]="null"
           [scale]="0.6"
-          [highlightModulesOverride]="selectedModuleSerialId ? [selectedModuleSerialId] : null"
+          [highlightModulesOverride]="selectedModuleSerialNumber ? [selectedModuleSerialNumber] : null"
           [highlightFixedOverride]="null"
           [selectionEnabled]="true"
           [showBaseRoads]="true"
@@ -164,12 +164,12 @@
         ></app-shopfloor-preview>
       </div>
 
-      <div *ngIf="selectedModuleSerialId" class="shopfloor-tab__selection-card">
+      <div *ngIf="selectedModuleSerialNumber" class="shopfloor-tab__selection-card">
         <div class="selection-card__header">
           <div>
             <p class="selection-card__label" i18n="@@moduleTabSelectedModule">Selected module</p>
-            <h3 class="selection-card__title">{{ selectedModuleName || selectedModuleSerialId }}</h3>
-            <p class="selection-card__meta">{{ selectedModuleSerialId }}</p>
+            <h3 class="selection-card__title">{{ selectedModuleName || selectedModuleSerialNumber }}</h3>
+            <p class="selection-card__meta">{{ selectedModuleSerialNumber }}</p>
           </div>
           <button type="button" class="selection-card__cta" (click)="openSidebarForSelected()" i18n="@@moduleTabOpenSidebar">
             Open sidebar
@@ -182,7 +182,7 @@
           <div class="selection-card__details">
             <div class="detail-row">
               <span class="detail-label" i18n="@@moduleTabDetailSerial">Serial</span>
-              <span class="detail-value">{{ selectedModuleSerialId }}</span>
+              <span class="detail-value">{{ selectedModuleSerialNumber }}</span>
             </div>
             <div class="detail-row">
               <span class="detail-label" i18n="@@moduleTabDetailAvailability">Availability</span>
@@ -892,7 +892,7 @@
 <!-- Module Details Sidebar -->
 <app-module-details-sidebar
   [isOpen]="sidebarOpen"
-  [serialId]="selectedModuleSerialId"
+  [serialNumber]="selectedModuleSerialNumber"
   [moduleName]="selectedModuleName"
   (close)="closeSidebar()"
 ></app-module-details-sidebar>

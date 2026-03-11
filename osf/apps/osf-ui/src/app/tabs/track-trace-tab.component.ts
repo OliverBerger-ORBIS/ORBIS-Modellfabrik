@@ -60,11 +60,20 @@ export class TrackTraceTabComponent implements OnInit {
     return this.environmentService.current.key === 'mock';
   }
 
-  readonly fixtureOptions: OrderFixtureName[] = ['production_bwr', 'production_white', 'storage_blue', 'mixed_pr_prnok'];
+  readonly fixtureOptions: OrderFixtureName[] = [
+    'production_bwr',
+    'production_white',
+    'storage_blue',
+    'storage_blue_agv2',
+    'storage_blue_parallel',
+    'mixed_pr_prnok',
+  ];
   readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
     production_bwr: $localize`:@@fixtureLabelProductionBwr:Production BWR`,
     production_white: $localize`:@@fixtureLabelProductionWhite:Production White`,
     storage_blue: $localize`:@@fixtureLabelStorageBlue:Storage Blue`,
+    storage_blue_agv2: $localize`:@@fixtureLabelStorageBlueAgv2:Storage Blue (AGV-2)`,
+    storage_blue_parallel: $localize`:@@fixtureLabelStorageBlueParallel:Storage Blue (Both AGVs)`,
     mixed_pr_prnok: $localize`:@@fixtureLabelMixedPrPrnok:Mixed PR Quality-Fail`,
   };
   activeFixture: OrderFixtureName | null = this.dashboard.getCurrentFixture();
@@ -90,6 +99,8 @@ export class TrackTraceTabComponent implements OnInit {
       production_bwr: 'track-trace-production-bwr',
       production_white: 'track-trace-production-white',
       storage_blue: 'track-trace-storage-blue',
+      storage_blue_agv2: 'track-trace-storage-blue-agv2',
+      storage_blue_parallel: 'track-trace-storage-blue-parallel',
       mixed_pr_prnok: 'track-trace-mixed-pr-prnok',
     };
     

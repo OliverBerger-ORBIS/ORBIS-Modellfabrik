@@ -91,6 +91,7 @@ open coverage/osf-ui/index.html
 
 - [Test Coverage Status](../07-analysis/test-coverage-status.md)
 - [Test Coverage Summary](../07-analysis/test-coverage-summary.md)
+- [Replay vs. Test-Framework – Analyse](../07-analysis/test-framework-replay-comparison-2026-03.md) – Varianten, Vergleich, Backlog-Empfehlung
 
 ---
 

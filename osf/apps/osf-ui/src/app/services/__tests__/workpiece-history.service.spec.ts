@@ -8,6 +8,7 @@ import { AgvRouteService } from '../agv-route.service';
 import { ErpOrderDataService } from '../erp-order-data.service';
 import { MessageValidationService } from '../message-validation.service';
 import { MessagePersistenceService } from '../message-persistence.service';
+import { ShopfloorMappingService } from '../shopfloor-mapping.service';
 import { of } from 'rxjs';
 import type { TrackTraceEvent, OrderContext } from '../workpiece-history.service';
 
@@ -343,6 +344,44 @@ describe('WorkpieceHistoryService', () => {
         expect(extractedDates.productionStartDate).toBe('2025-12-20T10:00:00Z');
         expect(extractedDates.deliveryEndDate).toBe('2025-12-20T12:00:00Z');
       }
+    });
+  });
+
+  describe('multi-AGV (5iO4 and jp93)', () => {
+    it('should subscribe to FTS state topics for both AGVs when layout has two FTS', () => {
+      const mappingMock = {
+        getAgvOptions: jest.fn(() => [
+          { serial: '5iO4', label: 'AGV-1' },
+          { serial: 'jp93', label: 'AGV-2' },
+        ]),
+      };
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [HttpClientTestingModule],
+        providers: [
+          WorkpieceHistoryService,
+          MessageMonitorService,
+          ModuleNameService,
+          EnvironmentService,
+          AgvRouteService,
+          ErpOrderDataService,
+          MessageValidationService,
+          MessagePersistenceService,
+          { provide: ShopfloorMappingService, useValue: mappingMock },
+        ],
+      });
+
+      const svc = TestBed.inject(WorkpieceHistoryService);
+      const mm = TestBed.inject(MessageMonitorService);
+      jest.spyOn(mm, 'getLastMessage').mockReturnValue(of(null));
+
+      svc.initialize('mock');
+
+      expect(mm.getLastMessage).toHaveBeenCalledWith('fts/v1/ff/5iO4/state');
+      expect(mm.getLastMessage).toHaveBeenCalledWith('fts/v1/ff/jp93/state');
+
+      svc.ngOnDestroy();
     });
   });
 

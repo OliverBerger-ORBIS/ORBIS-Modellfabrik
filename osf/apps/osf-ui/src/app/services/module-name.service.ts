@@ -12,7 +12,7 @@ export interface ModuleDisplayName {
 
 export interface SerialToModuleInfo {
   moduleType: string;
-  serialId: string;
+  serialNumber: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -38,8 +38,8 @@ export class ModuleNameService {
   /**
    * Get module type from serial ID
    */
-  getModuleTypeFromSerial(serialId: string): string | null {
-    return this.mappingService.getModuleTypeFromSerial(serialId);
+  getModuleTypeFromSerial(serialNumber: string): string | null {
+    return this.mappingService.getModuleTypeFromSerial(serialNumber);
   }
 
   /**
@@ -88,7 +88,7 @@ export class ModuleNameService {
    * Returns: "MODULE_TYPE (Full Name) (Serial-ID)"
    * Handles intersections: "1" -> "1 (Intersection 1)"
    */
-  getLocationDisplayText(location: string): { moduleType: string; fullName: string; serialId: string | null } {
+  getLocationDisplayText(location: string): { moduleType: string; fullName: string; serialNumber: string | null } {
     // Check if it's an intersection using AgvRouteService mapping
     const resolved = this.ftsRouteService.resolveNodeRef(location);
     if (resolved && resolved.startsWith('intersection:')) {
@@ -103,7 +103,7 @@ export class ModuleNameService {
       return {
         moduleType: intersectionNumber,
         fullName: intersectionNames[intersectionNumber] || `Intersection ${intersectionNumber}`,
-        serialId: null,
+        serialNumber: null,
       };
     }
 
@@ -113,7 +113,7 @@ export class ModuleNameService {
       return {
         moduleType,
         fullName: this.getModuleFullName(moduleType),
-        serialId: location,
+        serialNumber: location,
       };
     }
 
@@ -122,7 +122,7 @@ export class ModuleNameService {
       return {
         moduleType: 'FTS',
         fullName: this.getModuleFullName('FTS'),
-        serialId: null,
+        serialNumber: null,
       };
     }
 
@@ -130,7 +130,7 @@ export class ModuleNameService {
     return {
       moduleType: location.toUpperCase(),
       fullName: this.getModuleFullName(location),
-      serialId: null,
+      serialNumber: null,
     };
   }
 

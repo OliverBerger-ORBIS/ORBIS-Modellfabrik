@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, combineLatest, Subscription, merge } from 
 import { map, distinctUntilChanged, shareReplay, startWith, filter } from 'rxjs/operators';
 import { MessageMonitorService } from './message-monitor.service';
 import { ModuleNameService } from './module-name.service';
+import { ShopfloorMappingService } from './shopfloor-mapping.service';
 import { EnvironmentService } from './environment.service';
 import { AgvRouteService } from './agv-route.service';
 import { ErpOrderDataService } from './erp-order-data.service';
@@ -162,6 +163,7 @@ export class WorkpieceHistoryService implements OnDestroy {
   private subscriptions = new Map<string, Subscription>();
   private readonly messageMonitor = inject(MessageMonitorService);
   private readonly moduleNameService = inject(ModuleNameService);
+  private readonly mappingService = inject(ShopfloorMappingService);
   private readonly environmentService = inject(EnvironmentService);
   private readonly ftsRouteService = inject(AgvRouteService);
   private readonly erpOrderDataService = inject(ErpOrderDataService);
@@ -220,23 +222,31 @@ export class WorkpieceHistoryService implements OnDestroy {
 
     const historyMap = this.getStore(environmentKey);
 
-    // Subscribe to FTS state messages
-    const ftsState$ = this.messageMonitor.getLastMessage('fts/v1/ff/5iO4/state').pipe(
-      map((msg) => {
-        if (!msg?.valid || !msg.payload) return null;
-        try {
-          const payload = typeof msg.payload === 'string' ? JSON.parse(msg.payload) : msg.payload;
-          const moduleSerialId = this.extractModuleSerialFromTopic(msg.topic);
-          return {
-            ...payload,
-            _topic: msg.topic,
-            _moduleSerialId: moduleSerialId,
-          };
-        } catch {
-          return null;
-        }
-      })
+    // FTS serials from layout (AGV-1, AGV-2, …); fallback to 5iO4 if layout not loaded
+    const ftsSerials = this.mappingService.getAgvOptions().map((o) => o.serial);
+    const ftsTopics = ftsSerials.length > 0 ? ftsSerials : ['5iO4'];
+
+    // Subscribe to FTS state messages (all configured AGVs)
+    const ftsStateStreams = ftsTopics.map((serial) =>
+      this.messageMonitor.getLastMessage(`fts/v1/ff/${serial}/state`).pipe(
+        map((msg) => {
+          if (!msg?.valid || !msg.payload) return null;
+          try {
+            const payload = typeof msg.payload === 'string' ? JSON.parse(msg.payload) : msg.payload;
+            const moduleSerialId = this.extractModuleSerialFromTopic(msg.topic);
+            return {
+              ...payload,
+              _topic: msg.topic,
+              _moduleSerialId: moduleSerialId,
+            };
+          } catch {
+            return null;
+          }
+        }),
+        filter((state): state is NonNullable<typeof state> => state !== null)
+      )
     );
+    const ftsState$ = merge(...ftsStateStreams);
 
     // Subscribe to active orders for order context
     // Subscribe to FTS order stream to extract TURN direction information
@@ -437,23 +447,25 @@ export class WorkpieceHistoryService implements OnDestroy {
   /**
    * Get module name from serial ID or location
    */
-  private getModuleNameFromSerial(serialId: string | null | undefined): string | null {
-    if (!serialId) return null;
+  private getModuleNameFromSerial(serialNumber: string | null | undefined): string | null {
+    if (!serialNumber) return null;
     
     // Check if it's an intersection using AgvRouteService mapping
-    const resolved = this.ftsRouteService.resolveNodeRef(serialId);
+    const resolved = this.ftsRouteService.resolveNodeRef(serialNumber);
     if (resolved && resolved.startsWith('intersection:')) {
       return null; // Intersections are handled separately
     }
 
-    // Try to resolve via ModuleNameService
-    const moduleType = this.moduleNameService.getModuleTypeFromSerial(serialId);
+    // Try to resolve via ModuleNameService (uses layout: 5iO4→FTS, jp93→FTS, etc.)
+    const moduleType = this.moduleNameService.getModuleTypeFromSerial(serialNumber);
     if (moduleType) {
       return moduleType;
     }
 
-    // Check if it's FTS (common serial: 5iO4)
-    if (serialId === '5iO4' || serialId.toLowerCase().includes('fts')) {
+    // Fallback: FTS from layout getAgvOptions, or known serials if layout not yet loaded
+    const agvSerials = this.mappingService.getAgvOptions().map((o) => o.serial);
+    const knownFtsSerials = agvSerials.length > 0 ? agvSerials : ['5iO4'];
+    if (knownFtsSerials.includes(serialNumber) || serialNumber.toLowerCase().includes('fts')) {
       return 'FTS';
     }
 
@@ -528,7 +540,10 @@ export class WorkpieceHistoryService implements OnDestroy {
 
     // Extract module serial ID from topic
     const moduleSerialId = state._moduleSerialId || state.serialNumber || '5iO4';
-    const moduleName = this.getModuleNameFromSerial(moduleSerialId) || 'FTS';
+    // For FTS: use layout label (AGV-1, AGV-2) instead of generic 'FTS' for event display
+    const moduleType = this.getModuleNameFromSerial(moduleSerialId);
+    const moduleName =
+      (moduleType === 'FTS' ? this.mappingService.getAgvLabel(moduleSerialId) : null) || moduleType || 'FTS';
 
     // Debug: Log FTS state
     if (state.load && state.load.length > 0) {
@@ -860,11 +875,11 @@ export class WorkpieceHistoryService implements OnDestroy {
     // Generate sub-order ID - find the most recent FTS event that brought the workpiece to this module
     // This ensures Module-Events use the same Sub-Order-ID as the FTS DOCK event
     const ftsDockEvent = matchingHistory.events
-      .filter((e) => 
+      .filter((e) =>
         e.orderId === moduleState.orderId &&
         e.location === moduleSerialId &&
         e.eventType === 'DOCK' &&
-        e.moduleName === 'FTS'
+        this.getModuleNameFromSerial(e.moduleId ?? '') === 'FTS'
       )
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0];
     

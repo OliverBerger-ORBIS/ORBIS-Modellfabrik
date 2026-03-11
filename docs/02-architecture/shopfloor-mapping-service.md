@@ -12,12 +12,12 @@
 
 ## API (Auszug)
 - `initializeLayout(config)`: MUSS einmalig nach Laden des Layouts aufgerufen werden.
-- `getModuleBySerial(serialId)` → `{ moduleType, serialId, cellId?, icon? } | null`
-- `getModuleTypeFromSerial(serialId)` / `getCellIdFromSerial(serialId)` / `getCellBySerial(serialId)`
+- `getModuleBySerial(serialNumber)` → `{ moduleType, serialNumber, cellId?, icon? } | null`
+- `getModuleTypeFromSerial(serialNumber)` / `getCellIdFromSerial(serialNumber)` / `getCellBySerial(serialNumber)`
 - `getSerialFromModuleType(moduleType)` / `getAllSerialsForModuleType(moduleType)`
 - `getCellIdFromIntersection(id)` / `getIntersectionIdFromCell(cellId)`
 - `getCellById(cellId)`
-- `getModuleIcon(serialId)` / `getModuleIconByType(moduleType)`
+- `getModuleIcon(serialNumber)` / `getModuleIconByType(moduleType)`
 - `getAllModules()` → Array aller Module aus Layout/Mapping
 
 ## Konsumenten (Stand jetzt)
