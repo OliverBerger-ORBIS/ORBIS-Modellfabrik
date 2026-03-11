@@ -60,6 +60,12 @@ User kann Tasks mit Präfix kennzeichnen – Agent muss entsprechend handeln:
 - **KEINE relativen Pfade:** `../path/to/file` ❌
 - **Unterscheidung:** Source-Pfade vs. Data-Pfade je nach Verwendungszweck
 
+### Version (Single Source of Truth – KRITISCH)
+- **NUR `package.json`** (root) → Feld `"version"` anpassen. Keine andere Datei.
+- **NICHT** manuell ändern: `version.ts`, `VERSION`, CHANGELOG-Versionszeile
+- Nach Änderung: `npm run update-version` (sync zu version.ts, VERSION)
+- **Agent:** Bei Release/Version-Bump ausschließlich package.json ändern, dann update-version ausführen
+
 ### Projekt-Struktur
 - **Aktive Sourcen:** `osf/` (OSF Angular Dashboard - aktuell in Entwicklung)
 - **Helper-Apps:** `session_manager/` (Session-Replay Helper-App)

@@ -1,45 +1,47 @@
 # Versionsnummer – Single Source of Truth
 
-**Es gibt genau eine Stelle, an der die Versionsnummer gepflegt wird.**
+**Eine einzige Datei: `package.json` → `"version"`**
 
-## Source of Truth
+---
 
-**Datei:** `package.json` (Projektroot)  
-**Feld:** `"version"`
+## 🎯 Release-Version setzen (empfohlen)
 
-```json
-{
-  "name": "osf-workspace",
-  "version": "0.7.10",
-  ...
-}
+**Ein Befehl für alles:**
+
+```bash
+npm run version:bump -- 0.8.8
 ```
 
-## Änderung der Version
+Das aktualisiert: `package.json` → `version.ts` → `VERSION`
 
-**Nur hier anpassen:** `package.json` → Feld `"version"`
+---
 
-Alle anderen Stellen werden daraus abgeleitet:
-- **`osf/apps/osf-ui/src/environments/version.ts`** – wird bei jedem Build generiert (Skript: `scripts/update-ui-version.js`)
-- **`VERSION`** – wird von `scripts/update-ui-version.js` aus `package.json` geschrieben
-- **`pyproject.toml` (orbis-smartfactory)** – liest Version aus `VERSION` zur Installationszeit
+## Manuell (falls nötig)
 
-Session Manager teilt dieselbe Version mit OSF (u.a. für Docker-Deployment und Replay-Umgebung).
+1. **Nur** `package.json` → Feld `"version"` ändern
+2. `npm run update-version` ausführen
+3. **Nicht** `version.ts` oder `VERSION` manuell anfassen – die werden generiert
 
-## Ablauf
+---
 
-1. Version in `package.json` ändern
-2. Build ausführen (z.B. `nx build osf-ui` oder `npm run build:github-pages`) → `version.ts` wird automatisch aktualisiert
-3. `pip install -e ".[dev]"` verwendet die Version aus `package.json` automatisch
-4. Keine weiteren manuellen Schritte nötig
+## Abgeleitete Dateien (nicht manuell ändern)
 
-## Versionskreise (0.8.x)
+| Datei | Wird geschrieben von |
+|-------|----------------------|
+| `version.ts` | `update-ui-version.js` |
+| `VERSION` | `update-ui-version.js` |
+| GitHub Pages Build | Deploy-Workflow liest `package.json` direkt |
 
-| Bereich | Thematik |
-|---------|----------|
-| **0.8.x** | Arduino-Erweiterung, ggf. ERP/MES-Integration |
+---
 
-## Für KI-Assistenten
+## Ablauf bei Release
 
-- **Suchbegriff:** `"version"` in `package.json` (root)
-- **Nicht:** `version.ts`, `setup.py` oder andere Dateien manuell ändern – sie sind abgeleitet
+1. `npm run version:bump -- 0.8.8`
+2. CHANGELOG.md Eintrag ergänzen
+3. Commit, Push → Deploy nutzt package.json automatisch
+
+## Für KI-Assistenten / Cursor
+
+- **Version ändern:** Nur `package.json` → `"version"`, danach `npm run update-version`
+- **Oder:** `npm run version:bump -- X.Y.Z` (macht beides)
+- **Nie:** `version.ts` oder `VERSION` manuell editieren

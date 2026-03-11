@@ -1,6 +1,6 @@
 {
   "name": "osf-workspace",
-  "version": "0.8.6",
+  "version": "0.8.8",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -13,6 +13,7 @@
     "test:coverage": "nx test osf-ui --coverage",
     "test:coverage:check": "nx test osf-ui --coverage --coverageThreshold",
     "update-version": "node scripts/update-ui-version.js",
+    "version:bump": "node scripts/version-bump.js",
     "export-use-case-svgs": "node scripts/export-use-case-svgs.js",
     "export-dsp-architecture-svgs": "node scripts/export-dsp-architecture-svgs.js",
     "build": "npm run update-version && nx build mqtt-client",

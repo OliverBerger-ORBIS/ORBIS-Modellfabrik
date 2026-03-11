@@ -6,11 +6,6 @@ on:
       - main
     tags:
       - 'v*.*.*'
-    paths:
-      - 'osf/**'
-      - 'package.json'
-      - 'CHANGELOG.md'
-      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 permissions:

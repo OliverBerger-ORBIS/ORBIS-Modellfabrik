@@ -6,6 +6,15 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.8.8] - 2026-03-11
+
+**Version Single Source of Truth, Workflow-Aufräumung**
+
+### Changed
+- **Versionierung:** Ein Befehl `npm run version:bump -- X.Y.Z` – package.json bleibt Source of Truth
+- **Workflows:** Deploy bei jedem main-Push; obsolete Workflows entfernt (Heading Icons, Struktur, Shopfloor-Check)
+- **VERSIONING.md:** Klarere Doku; .cursorrules ergänzt
+
 ## [0.8.7] - 2026-03-10
 
 **AGV-2 Farbkorrektur (LogiMAT-Vorbereitung)**
