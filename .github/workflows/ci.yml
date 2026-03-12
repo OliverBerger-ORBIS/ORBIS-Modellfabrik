@@ -67,11 +67,6 @@ jobs:
         else
           echo "⚠️ validate-structure target not found, skipping"
         fi
-    
-    - name: Check submodule status
-      run: |
-        git submodule status
-        ls -la vendor/fischertechnik/
 
   lint:
     runs-on: ubuntu-latest
