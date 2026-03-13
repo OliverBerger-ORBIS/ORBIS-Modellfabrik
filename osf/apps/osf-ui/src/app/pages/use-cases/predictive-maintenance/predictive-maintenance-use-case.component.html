@@ -1,5 +1,30 @@
 <section class="predictive-maintenance-use-case">
-  <header class="predictive-maintenance-use-case__header">
+  <nav class="predictive-maintenance-use-case__tabs" role="tablist">
+    <button
+      type="button"
+      role="tab"
+      class="predictive-maintenance-use-case__tab"
+      [attr.aria-selected]="activeTab === 'concept'"
+      [class.predictive-maintenance-use-case__tab--active]="activeTab === 'concept'"
+      (click)="activeTab = 'concept'"
+      i18n="@@uc05TabConcept"
+    >
+      Concept
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="predictive-maintenance-use-case__tab"
+      [attr.aria-selected]="activeTab === 'live-demo'"
+      [class.predictive-maintenance-use-case__tab--active]="activeTab === 'live-demo'"
+      (click)="activeTab = 'live-demo'"
+      i18n="@@uc05TabLiveDemo"
+    >
+      Live Demo
+    </button>
+  </nav>
+
+  <header class="predictive-maintenance-use-case__header" *ngIf="activeTab === 'concept'">
     <app-use-case-controls
       useCaseCode="UC-05"
       [useCaseTitle]="useCaseTitle"
@@ -24,7 +49,7 @@
     />
   </header>
 
-  <div class="predictive-maintenance-use-case__content">
+  <div class="predictive-maintenance-use-case__content" *ngIf="activeTab === 'concept'">
     <div class="predictive-maintenance-use-case__diagram-wrapper">
       <div class="predictive-maintenance-use-case__diagram" [style.transform]="'scale(' + zoom + ')'">
         <div *ngIf="isLoading" class="predictive-maintenance-use-case__loading" i18n="@@loadingSvg">Loading SVG...</div>
@@ -37,5 +62,50 @@
         <div *ngIf="!isLoading && !svgContent" class="predictive-maintenance-use-case__loading" i18n="@@svgLoadError">Failed to load SVG.</div>
       </div>
     </div>
+  </div>
+
+  <div class="predictive-maintenance-use-case__live-demo" *ngIf="activeTab === 'live-demo'">
+    <h3 class="predictive-maintenance-use-case__live-demo-title" i18n="@@uc05LiveDemoTitle">Danger Simulation</h3>
+    <p class="predictive-maintenance-use-case__live-demo-desc" i18n="@@uc05LiveDemoDesc">
+      When enabled, a vibration alarm (RED) triggers park + cancel of ENQUEUED orders automatically. Use the Park button in the header for manual park.
+    </p>
+
+    <div class="predictive-maintenance-use-case__live-demo-toggle">
+      <label class="toggle-label">
+        <input
+          type="checkbox"
+          [checked]="autoParkOnVibrationAlarm"
+          (change)="toggleAutoParkOnVibration($event)"
+          i18n-aria-label="@@uc05LiveDemoToggleAria"
+          aria-label="Enable auto-park on vibration alarm"
+        />
+        <span i18n="@@uc05LiveDemoToggleLabel">Auto-park on vibration alarm (Demo)</span>
+      </label>
+    </div>
+
+    <div class="predictive-maintenance-use-case__live-demo-steps">
+      <h4 i18n="@@uc05LiveDemoStepsTitle">Demo steps</h4>
+      <ol class="predictive-maintenance-use-case__steps-list">
+        <li i18n="@@uc05LiveDemoStep1">Activate the toggle above</li>
+        <li i18n="@@uc05LiveDemoStep2">Trigger order in Process tab</li>
+        <li i18n="@@uc05LiveDemoStep3">During order process, generate vibration (impact or tuning fork on sensor)</li>
+        <li i18n="@@uc05LiveDemoStep4">Observe order flow in Orders tab</li>
+      </ol>
+    </div>
+
+    <span
+      *ngIf="(canUseAutoPark$ | async) !== true && !isMockMode"
+      class="predictive-maintenance-use-case__live-demo-hint"
+      i18n="@@uc05LiveDemoHintConnection"
+    >
+      Connection to MQTT broker required (Live/Replay)
+    </span>
+    <span
+      *ngIf="simulateFeedback"
+      class="predictive-maintenance-use-case__live-demo-feedback"
+      i18n="@@uc05LiveDemoFeedback"
+    >
+      Alarm triggered – park + cancel sent
+    </span>
   </div>
 </section>

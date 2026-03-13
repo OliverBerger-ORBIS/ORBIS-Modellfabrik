@@ -107,7 +107,21 @@ mosquitto_pub -t "ccu/order/cancel" -m '["uuid-1","uuid-2"]'
 
 ---
 
-## 5. Offene Punkte
+## 5. Verifikation: ccu/set/park löst KEIN Cancel aus (2026-03)
+
+**Quelle:** APS-CCU `central-control/src/modules/park/index.ts`
+
+Bei Empfang von `ccu/set/park` führt die CCU ausschließlich aus:
+- Calibration/Park an alle DPS- und HBW-Module (Position PARK)
+- **Kein** automatisches `ccu/order/cancel`, **keine** Stornierung von Orders
+
+**Fischertechnik-UI** (`factory-park.component.ts`): sendet nur `ccu/set/park`, kein Cancel.
+
+**Folge:** Für vollständigen Fabrik-Stop (Park + Stornierung ENQUEUED-Orders) müssen **beide** Befehle gesendet werden: `ccu/set/park` und `ccu/order/cancel` mit ENQUEUED-IDs.
+
+---
+
+## 6. Offene Punkte
 
 - Wirkung von `ccu/set/park` auf Module mit laufender Aktion (z.B. AIQS während CHECK_QUALITY): Wird die Aktion abgebrochen oder erst nach Abschluss geparkt?
 - Unterstützung von `orderId: "*"` oder „cancel all“ in der CCU: derzeit nicht vorhanden.

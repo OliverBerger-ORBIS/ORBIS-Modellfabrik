@@ -56,6 +56,7 @@ export interface DashboardCommandSet {
   requestCorrelationInfo: (params: { ccuOrderId?: string; requestId?: string }) => Promise<void>;
   moveCamera: (command: 'relmove_up' | 'relmove_down' | 'relmove_left' | 'relmove_right' | 'home' | 'stop', degree: number) => Promise<void>;
   resetFactory: (withStorage?: boolean) => Promise<void>;
+  parkFactory: () => Promise<void>;
   simulateDanger: (enqueuedOrderIds: string[]) => Promise<void>;
 }
 
@@ -258,6 +259,7 @@ const createStreamSet = (
       requestCorrelationInfo: business.requestCorrelationInfo,
       moveCamera: business.moveCamera,
       resetFactory: business.resetFactory,
+      parkFactory: business.parkFactory,
       simulateDanger: business.simulateDanger,
     },
   };

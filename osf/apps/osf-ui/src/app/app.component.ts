@@ -123,6 +123,7 @@ export class AppComponent implements OnDestroy {
   readonly headerTitle = $localize`:@@headerTitle:SmartFactory`;
   readonly headerSubtitle =
     $localize`:@@headerSubtitle:Fischertechnik Model Factory (APS) orchestrated by ORBIS DSP — IT/OT integration, ERP connectivity and AI-enabled shopfloor intelligence.`;
+  readonly parkLabel = $localize`:@@headerParkButton:Park factory`;
   readonly resetLabel = $localize`:@@headerResetButton:Reset factory`;
   readonly connectButtonLabel = $localize`:@@headerConnectButtonLabel:Connect`;
   readonly orbitLogoPath = 'assets/svg/brand/orbis-logo.svg';
@@ -272,6 +273,22 @@ export class AppComponent implements OnDestroy {
   changeLanguage(locale: LocaleKey): void {
     this.selectedLocale = locale;
     this.languageService.setLocale(locale);
+  }
+
+  async parkFactory(): Promise<void> {
+    const environment = this.environmentService.current.key;
+    if (environment === 'mock') {
+      // In mock, publish logs only – no MQTT
+      const dashboard = getDashboardController();
+      await dashboard.commands.parkFactory();
+      return;
+    }
+    try {
+      const dashboard = getDashboardController();
+      await dashboard.commands.parkFactory();
+    } catch (error) {
+      console.warn('Failed to park factory', error);
+    }
   }
 
   async resetFactory(): Promise<void> {

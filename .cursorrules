@@ -94,7 +94,12 @@ User kann Tasks mit Präfix kennzeichnen – Agent muss entsprechend handeln:
 - **Architektur-Entscheidungen (formelle DR):** `docs/03-decision-records/` (nicht ausführliche Planung in Sprints)
 - **How-to, Setup, Deployment:** `docs/04-howto/`
 - **Integrations-Specs (CCU, AIQS, etc.):** `docs/06-integrations/`
-- **Sprints:** `docs/sprints/` – Entscheidungen nur Verweise; Detailplanung → 07-analysis oder 03-decision-records
+- **Sprints:** `docs/sprints/` – Entscheidungen nur Verweise; keine Umsetzungspläne pro Task (würde Repo überladen). Wichtige Infos → How-tos, DRs. Source-Code und Implementierung sind führend.
+
+### I18n / Sprache (OSF)
+- **Default-Sprache:** Englisch (EN). Template-Source-Strings, UI-Labels, Buttons in EN formulieren.
+- **I18n:** DE und FR können nach Implementierung in `messages.de.json` / `messages.fr.json` nachgepflegt werden.
+- **Anforderungen:** User formuliert oft auf Deutsch – Implementierung trotzdem mit EN als Default.
 
 ### Code-Qualität (OSF - Produktiver Code)
 - **TypeScript:** Strikte Typisierung, keine `any` ohne Begründung
@@ -145,6 +150,7 @@ User kann Tasks mit Präfix kennzeichnen – Agent muss entsprechend handeln:
  - Was gehört in .gitignore (z.B. lokale Build-Artefakte)
  - **Session-Logs:** aufwendig erstellt, schwer reproduzierbar → lieber mitnehmen (vgl. [git-commit-rules](docs/04-howto/git-commit-rules.md))
  - **Analyse-Skripte on-the-fly** → in der Regel nicht commit-würdig
+ - **Umsetzungspläne/Implementierungspläne** → in der Regel nicht commit-würdig (Workflow-Tool, nicht Dokumentation)
 - **Vorgehen:** `git status` prüfen → gezielt `git add` nur der relevanten Dateien → User informieren (was gestaged, was ausgelassen und warum). Bei Unsicherheit nachfragen.
 
 ### Angular-Komponenten-Regeln (KRITISCH)

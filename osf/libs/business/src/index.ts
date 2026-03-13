@@ -66,6 +66,8 @@ export interface BusinessCommands {
   requestCorrelationInfo: (params: { ccuOrderId?: string; requestId?: string }) => Promise<void>;
   moveCamera: (command: 'relmove_up' | 'relmove_down' | 'relmove_left' | 'relmove_right' | 'home' | 'stop', degree: number) => Promise<void>;
   resetFactory: (withStorage?: boolean) => Promise<void>;
+  /** Park factory modules (DPS, HBW). Like Fischertechnik header button. Only ccu/set/park, no cancel. */
+  parkFactory: () => Promise<void>;
   /** Gefahrensimulation: Park + Cancel ENQUEUED orders. Siehe docs/07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md */
   simulateDanger: (enqueuedOrderIds: string[]) => Promise<void>;
 }
@@ -605,6 +607,11 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     await publish('ccu/set/reset', payload, { qos: 1, retain: false });
   };
 
+  const parkFactory: BusinessCommands['parkFactory'] = async () => {
+    const payload = { timestamp: new Date().toISOString() };
+    await publish('ccu/set/park', payload, { qos: 2, retain: false });
+  };
+
   const simulateDanger: BusinessCommands['simulateDanger'] = async (enqueuedOrderIds) => {
     // Gefahrensimulation: ccu/set/park + ccu/order/cancel (nur ENQUEUED-IDs)
     // docs/07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md
@@ -638,6 +645,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     requestRawMaterial,
     moveCamera,
     resetFactory,
+    parkFactory,
     simulateDanger,
   };
 };

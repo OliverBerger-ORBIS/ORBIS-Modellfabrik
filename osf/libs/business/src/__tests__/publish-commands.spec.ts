@@ -464,6 +464,23 @@ test('resetFactory publishes ccu/set/reset with withStorage=false when explicitl
   assert.equal(options?.retain, false);
 });
 
+test('parkFactory publishes only ccu/set/park', async () => {
+  const { streams, publishLog } = createGateway();
+  const business = createBusiness(streams);
+
+  await business.parkFactory();
+
+  assert.equal(publishLog.length, 1);
+  assert.equal(publishLog[0]?.topic, 'ccu/set/park');
+
+  const payload = publishLog[0]?.payload as { timestamp: string };
+  assert.equal(typeof payload?.timestamp, 'string');
+  assert.ok(payload.timestamp.match(/^\d{4}-\d{2}-\d{2}T/), 'timestamp should be ISO format');
+
+  assert.equal(publishLog[0]?.options?.qos, 2);
+  assert.equal(publishLog[0]?.options?.retain, false);
+});
+
 test('simulateDanger publishes ccu/set/park and ccu/order/cancel with enqueued IDs', async () => {
   const { streams, publishLog } = createGateway();
   const business = createBusiness(streams);

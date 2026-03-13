@@ -35,6 +35,7 @@ jest.spyOn(mockDashboard, 'getDashboardController').mockReturnValue({
     requestCorrelationInfo: jest.fn(),
     moveCamera: jest.fn(),
     resetFactory: jest.fn(),
+    parkFactory: jest.fn(),
   },
   loadFixture: jest.fn(),
   getCurrentFixture: jest.fn(() => 'startup'),

@@ -18,7 +18,7 @@
 - [ ] **Einfache MES/ERP Integration:** Fokus auf Zusammenspiel mit DSP.
 - [x] **QM-Check Verlagerung (CCU Ausbau):** Erledigt durch Quality-Fail (Option B). CCU erstellt bei FAILED keinen Ersatzauftrag; MES/DSP senden zukünftig `ccu/order/request` bei Bedarf (anderes Projekt). osf-ui ist senderneutral.
 - [x] **CCU: Quality-Fail (Option B):** Bei `CHECK_QUALITY result=FAILED` kein Ersatzauftrag, Order bleibt ERROR. OSF-MODIFICATIONS.md Mod², Unit-Test. E2E ✓. Deploy ✓.
-- [ ] **E2E-Test ccu/order/request von MES/DSP:** Simulieren, dass MES/DSP nach Quality-Fail einen Ersatzauftrag per `ccu/order/request` stellt. osf-ui vorbereitet (egal wer sendet).
+- [ ] **E2E-Test ccu/order/request von MES/DSP:** Simulieren, dass MES/DSP nach Quality-Fail einen Ersatzauftrag per `ccu/order/request` stellt. osf-ui vorbereitet (egal wer sendet). *(Verifikation → siehe E2E-Tests (manuell))*
 - [x] **Positiver Test requestId (Mod 1):** `requestId` aus `ccu/order/request` wird in `ccu/order/response` und `ccu/order/active` mitgegeben. Verifiziert 12.03.2026 (OSF-UI → CCU auf RPi 192.168.0.100).
 - [x] **TXT-AIQS: QoS 1 für quality_check:** `sorting_line.py`/`.blockly` QoS 2→1, beide Varianten (`_cam`, `_cam_clfn`), Doku, .ft-Archive. E2E ✓. Deploy ✓.
 - [x] **Track & Trace: Order-Status FAILED/ERROR anzeigen:**
@@ -27,13 +27,13 @@
     - OrderContext: `status` um `'FAILED' | 'ERROR'` erweitert.
     - Track & Trace Template: Anzeige für `order.status === 'ERROR'`/`'FAILED'` ergänzt (Label "Fehlgeschlagen", styling .status-failed).
     - Unit-Tests für Service (generateOrderContext) und Component (track-trace.component.spec.ts).
-    - **Nächster Schritt:** Neue osf-ui Version anlegen/ausrollen.
+    - *(E2E-Verifikation → siehe E2E-Tests (manuell): Track & Trace FAILED/ERROR)*
 - [x] **Fixture mixed-pr-prnok:** Session `mixed-sr-pr-prnok_20260305_121602.log` als Mock-Fixture. `scripts/build_order_fixtures.py --only mixed_pr_prnok`. Order-Tab und Track & Trace: Fixture-Option "Mixed PR Quality-Fail".
 
 ### Arduino-Hardware & LogiMAT
 - [x] **Arduino MPU-6050:** Vibrationssensor-Upgrade (I2C, 3-Stufen-Ampel, NTP/timestamp) – Sketch, Doku §5. **Done wenn:** a) MQTT per LAN funktioniert, b) Sensor-Info im Tab Sensor angezeigt wird (OSF-UI bereits ausgelegt).
 - [x] **Hardware-Erweiterung (Ampel-System):** SW-420 + MPU-6050 einheitlich (Relais aktiv-niedrig), Doku §1.1 Schritt-für-Schritt analog §5.3.1.
-- [ ] **E2E-Test Vibrationssensor:** Arduino (SW-420 oder MPU-6050) per LAN → MQTT-Broker → osf-ui Replay/Live → Sensor-Tab zeigt Ampel + Impulse. Optional: Preload-Test dokumentieren.
+- [ ] **E2E-Test Vibrationssensor:** Arduino (SW-420 oder MPU-6050) per LAN → MQTT-Broker → osf-ui Replay/Live → Sensor-Tab zeigt Ampel + Impulse. *(Verifikation → siehe E2E-Tests (manuell))*
 - [ ] **UC-05 Live-Demo: Gefahrensimulation** *(Reihenfolge: 1 – vor UC-01)*
   - **Kontext:** Gemäß [DR-22](../03-decision-records/22-dsp-use-case-konzept-live-demo.md), [Analyse alarm-fabrik-stop](../07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md).
   - **Umsetzung:** „Gefahr simulieren“ in UC-05 Live-Demo (Tabs „Konzept" | „Live Demo"). Button aus Sensor-Tab entfernen. Sendet `ccu/set/park` + `ccu/order/cancel` (ENQUEUED-IDs aus `ccu/order/active`). Business-Layer `simulateDanger` bleibt (wird in UC-05 eingebunden).
@@ -54,11 +54,22 @@
 *Detail-Tasks werden extern verwaltet. Wesentliche Checkpoints:*
 - [ ] **Animation:** DSP-Architecture und Use-Cases (Check!)
 - [ ] **OBS-Präsentation:** Startklar für Demos (Check!)
-- [x] **Zweites FTS/AGV:** Unterstützung eines zweiten FTS (Serial jp93) – umgesetzt. **Offen:** E2E-Test mit AGV-2.
+- [x] **Zweites FTS/AGV:** Unterstützung eines zweiten FTS (Serial jp93) – umgesetzt.
   - **Erreicht:** Zweites AGV in allen Tabs; AGV-Tab und Presentation-Tab mit Dropdown pro AGV; Darstellung beider AGVs im Shopfloor; AGV-1/AGV-2 farblich unterscheidbar (orange/gelb inkl. Hervorhebung); Fixtures storage_blue_agv2, storage_blue_parallel; DR-24 Shopfloor-Highlight-Farben
+  - *(E2E-Verifikation → siehe E2E-Tests (manuell): Zwei AGVs)*
 - [ ] **Analyse/Klärung Stillstand bei zwei AGVs im mixed-Modus:** Zur Info. Nicht unbedingt messerelevant – entweder keine mixed-Szenarien oder nur ein AGV aktiv.
 - [ ] **Deployment v0.8.10 auf RPi:** osf-ui v0.8.10 auf RPi (192.168.0.100) ausrollen
 - [x] **GitHub Pages Auto-Deploy:** Bei Version-Bump und Push auf main läuft CI → Deploy automatisch (v0.8.10 13.03.2026)
+
+### E2E-Tests (manuell, mit osf-Version)
+
+*Diese Tests werden manuell verifiziert. Nach Durchführung abhaken inkl. Version.*
+
+- [ ] **Track & Trace FAILED/ERROR:** Fixture mixed_pr_prnok → Order Context zeigt „Fehlgeschlagen“ bei Quality-Fail *(osf v0.8.10)*
+- [ ] **Zwei AGVs:** Beide AGVs (jp93 + zweites) im Shopfloor/Replay sichtbar, Farben orange/gelb, Fixtures storage_blue_agv2, storage_blue_parallel *(osf v0.8.10)*
+- [ ] **Vibrationssensor:** Arduino (SW-420 oder MPU-6050) per LAN → MQTT → osf-ui Replay/Live → Sensor-Tab Ampel + Impulse *(osf v0.8.10)*
+- [ ] **ccu/order/request von MES/DSP:** Simulierter Ersatzauftrag nach Quality-Fail; osf-ui zeigt neue Order *(osf vorbereitet)*
+- [ ] **UC-05 Live-Demo testen:** Toggle aktivieren → Order im Process-Tab auslösen → Vibration erzeugen (Stoß/Stimmgabel) → Reaktion im Orders-Tab prüfen. Abhängigkeit: Arduino-Vibrationssensor (SW-420 oder MPU-6050) fertiggestellt. *(osf v0.8.11)*
 
 ### Blog-Serie & Marketing
 - [ ] **A1 Review mit Marketing:**  (Carola Stammen) durchführen

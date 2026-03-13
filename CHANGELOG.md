@@ -6,6 +6,18 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.8.11] - 2026-03-10
+
+**UC-05 Live Demo, Park-Button, I18n**
+
+### Added
+- **UC-05 Live Demo:** Tabs Konzept | Live Demo; Toggle „Auto-park on vibration alarm“; Vibration RED → Park + Cancel (ENQUEUED)
+- **Park-Button im Header:** Neben Reset, sendet `ccu/set/park` (analog Fischertechnik-UI)
+- **I18n DE/FR:** headerParkButton, uc05TabConcept, uc05TabLiveDemo, uc05LiveDemoTitle/Desc/Toggle/Steps/Hint/Feedback
+
+### Changed
+- **E2E-Task:** UC-05 Live-Demo testen (Toggle → Order → Vibration → Orders-Tab); Abhängigkeit Arduino-Sensor
+
 ## [0.8.10] - 2026-03-13
 
 **Shopfloor Tab, Production Flow, CI/CD, SSH-Setup**

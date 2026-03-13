@@ -303,18 +303,6 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     return $localize`:@@sensorVibrationStatusGreen:Idle`;
   }
 
-  /** ENQUEUED-Order-IDs aus ccu/order/active (für Gefahrensimulation: cancel) */
-  enqueuedOrderIds: string[] = [];
-
-  /** Gefahrensimulation: ccu/set/park + ccu/order/cancel. Nur in Live/Replay bei Verbindung. */
-  async simulateDanger(): Promise<void> {
-    try {
-      await this.dashboard.commands.simulateDanger(this.enqueuedOrderIds);
-    } catch (error) {
-      console.warn('[sensor-tab] simulateDanger failed:', error);
-    }
-  }
-
   /** Mock only: Vibration-State per injectMessage setzen (zum Testen der Anzeige) */
   injectVibrationState(vibrationDetected: boolean): void {
     const payload: VibrationStatePayload = {
@@ -420,25 +408,6 @@ export class SensorTabComponent implements OnInit, OnDestroy {
           if (state === 'connected') {
             this.initializeStreams();
           }
-        })
-    );
-
-    this.subscriptions.add(
-      this.messageMonitor
-        .getLastMessage<{ orderId?: string; state?: string; status?: string }[] | { orderId?: string; state?: string; status?: string }>('ccu/order/active')
-        .pipe(
-          filter((msg) => msg !== null && msg.valid && msg.payload != null),
-          map((msg) => {
-            const payload = msg!.payload;
-            const arr = Array.isArray(payload) ? payload : [payload];
-            return arr
-              .filter((o) => o && (o.state ?? o.status ?? '').toUpperCase() === 'ENQUEUED' && o.orderId)
-              .map((o) => o.orderId as string);
-          }),
-          startWith([] as string[])
-        )
-        .subscribe((ids) => {
-          this.enqueuedOrderIds = ids;
         })
     );
 

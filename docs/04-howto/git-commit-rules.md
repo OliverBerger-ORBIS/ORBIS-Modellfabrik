@@ -26,6 +26,7 @@
 ## Was nicht in den Commit gehört
 
 - **On-the-fly Analyse-Skripte** – temporär erstellt, nicht produktiv genutzt
+- **Umsetzungspläne/Implementierungspläne** – dienen der strukturierten Vorgehensweise (und Cursor-Crash-Recovery), nicht der dauerhaften Dokumentation. Wichtige Infos gehören in How-tos und DRs.
 - **Lokale Build-Artefakte** – gehören in .gitignore
 - **Persönliche/experimentelle** Änderungen, die verworfen werden
 
