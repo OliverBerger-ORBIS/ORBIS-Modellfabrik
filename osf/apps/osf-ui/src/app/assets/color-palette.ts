@@ -123,8 +123,8 @@ export const ORBIS_COLORS = {
     bgGradientEnd: '#ffffff',         // White — Background gradient bottom
   },
 
-  // ========== AGV Colors (Shopfloor, AGV-Tab, Orders) ==========
-  // Fixed assignment: AGV-1 orange, AGV-2 yellow – konsistent in allen Tabs
+  // ========== AGV Colors (AGV-Tab, Presentation-Tab) ==========
+  // Fixed assignment: AGV-1 orange, AGV-2 yellow – AGV-Tab und Presentation-Tab (DR-24)
   agv: {
     agv1: '#f97316',   // RGB: 249, 115, 22 – shopfloorHighlight.strong, orange
     agv2: '#eab308',   // RGB: 234, 179, 8 – yellow (statusWarning näher)

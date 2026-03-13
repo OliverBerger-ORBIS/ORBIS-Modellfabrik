@@ -54,8 +54,10 @@
 *Detail-Tasks werden extern verwaltet. Wesentliche Checkpoints:*
 - [ ] **Animation:** DSP-Architecture und Use-Cases (Check!)
 - [ ] **OBS-Präsentation:** Startklar für Demos (Check!)
-- [ ] **Zweites FTS/AGV:** Unterstützung eines zweiten FTS (Serial jp93) – erledigt. **Offen:** E2E-Test mit AGV-2.
-  - **Erreicht:** Zweites AGV in allen Tabs; AGV-Tab mit Dropdown pro AGV; Darstellung beider AGVs im Shopfloor; AGV-1/AGV-2 Farblich unterscheidbar (orange/gelb inkl. Hervorhebung); Fixtures storage_blue_agv2, storage_blue_parallel
+- [x] **Zweites FTS/AGV:** Unterstützung eines zweiten FTS (Serial jp93) – umgesetzt. **Offen:** E2E-Test mit AGV-2.
+  - **Erreicht:** Zweites AGV in allen Tabs; AGV-Tab und Presentation-Tab mit Dropdown pro AGV; Darstellung beider AGVs im Shopfloor; AGV-1/AGV-2 farblich unterscheidbar (orange/gelb inkl. Hervorhebung); Fixtures storage_blue_agv2, storage_blue_parallel; DR-24 Shopfloor-Highlight-Farben
+- [ ] **Analyse/Klärung Stillstand bei zwei AGVs im mixed-Modus:** Zur Info. Nicht unbedingt messerelevant – entweder keine mixed-Szenarien oder nur ein AGV aktiv.
+- [ ] **Deployment v0.8.9 auf RPi:** osf-ui v0.8.9 auf RPi (192.168.0.100) ausrollen
 
 ### Blog-Serie & Marketing
 - [ ] **A1 Review mit Marketing:**  (Carola Stammen) durchführen

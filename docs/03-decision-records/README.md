@@ -82,6 +82,10 @@ Ein Kachel pro Use-Case; Auswahl „Konzept“ oder „Live Demo“; UC-05 Live-
 **Status:** Accepted | **Datum:** 2026-03-12  
 RPi mit CCU-Stack nutzt 32-bit (armv7). OSF-UI muss armv7 bauen – arm64 führt zu Container-Crash (Exit 159). Deploy-Skript Default = armv7.
 
+### 24. [Shopfloor-Highlight-Farben: Order-Tab vs. AGV-Tab](24-shopfloor-highlight-colors.md)
+**Status:** Accepted | **Datum:** 2026-03-10  
+Order-Tab: Aktives Modul und FTS auf Route in Grün (aktiver Schritt). AGV-1/2-Farben im AGV-Tab und Presentation-Tab.
+
 ---
 
 ## Template

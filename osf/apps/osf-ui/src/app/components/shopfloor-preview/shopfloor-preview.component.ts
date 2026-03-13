@@ -165,6 +165,8 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   @Input() ftsPositions: FtsPositionItem[] | null = null; // Multiple AGVs with positions and colors
   @Input() showFtsOverlay = true; // If false, hide FTS overlays (e.g. Shopfloor-Tab layout)
   @Input() ftsRouteSegments: RouteSegment[] | null = null; // FTS route segments for display (when driving - orange)
+  /** 'active-step' = green highlight for Order-Tab (matches FTS); 'selection' = blue for Configuration/Shopfloor */
+  @Input() highlightStyle: 'selection' | 'active-step' = 'selection';
   @Output() cellSelected = new EventEmitter<{ id: string; kind: 'module' | 'fixed' }>();
   @Output() cellDoubleClicked = new EventEmitter<{ id: string; kind: 'module' | 'fixed' }>();
 

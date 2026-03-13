@@ -57,7 +57,8 @@
       <ng-container *ngFor="let fixed of vm.fixedPositions">
         <div
           class="preview__fixed"
-          [class.preview__element--highlight]="fixed.highlighted"
+          [class.preview__element--highlight]="fixed.highlighted && highlightStyle !== 'active-step'"
+          [class.preview__element--active-step]="fixed.highlighted && highlightStyle === 'active-step'"
           [class.preview__element--selectable]="selectionEnabled"
           [class.preview__fixed--label-right]="fixed.labelPosition === 'right'"
           [class.preview__fixed--label-left]="fixed.labelPosition === 'left'"
@@ -87,7 +88,8 @@
       <ng-container *ngFor="let module of vm.modules">
         <div
           class="preview__module"
-          [class.preview__element--highlight]="module.highlighted"
+          [class.preview__element--highlight]="module.highlighted && highlightStyle !== 'active-step'"
+          [class.preview__element--active-step]="module.highlighted && highlightStyle === 'active-step'"
           [class.preview__element--current-position]="module.isCurrentPosition"
           [class.preview__element--selectable]="selectionEnabled"
           [class.preview__module--connected]="module.status?.connected"

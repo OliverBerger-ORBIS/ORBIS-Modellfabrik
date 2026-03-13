@@ -28,12 +28,16 @@ Sprint-bezogene und projektweite Analysen für OSF.
 ## Order / Track & Trace
 
 - [production-order-analysis-results.md](production-order-analysis-results.md) – Order-Workflow aus Session-Analyse, OSF Order Manager Anforderungen, CCU-Backend-Analyse (referenziert von 13-track-trace-architecture)
+- [order-agv-mapping-without-mod3-2026-03.md](order-agv-mapping-without-mod3-2026-03.md) – Order↔AGV-Zuordnung ohne Mod-3-Wiederherstellung (Optionen, Empfehlung: Ableitung aus fts/order)
 
 ---
 
 ## Hardware / FTS / AGV
 
 - [second-agv-2026-03.md](second-agv-2026-03.md) – Zweites AGV (jp93) – Implementierung & Referenz (Sprint 17)
+- [agv-overlay-rendering-differences-2026-03.md](agv-overlay-rendering-differences-2026-03.md) – AGV-Overlay: Rendering-Unterschiede Mac vs. RPi (z-index, filter, Cache)
+- [agv-order-tab-color-analysis-2026-03.md](agv-order-tab-color-analysis-2026-03.md) – AGV-Darstellung ORDER-Tab vs. AGV-Tab (→ DR-24)
+- [order-tab-active-module-highlight-analysis-2026-03.md](order-tab-active-module-highlight-analysis-2026-03.md) – ORDER-Tab: Aktives Modul blau vs. Grün (→ DR-24)
 
 ---
 

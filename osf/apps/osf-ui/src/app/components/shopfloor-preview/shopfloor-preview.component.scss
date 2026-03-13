@@ -214,6 +214,21 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
+// Active step highlighting (Order-Tab) - matches FTS on route (highlightGreen)
+// DR-24: Grün für konsistente Semantik „aktiver Schritt“
+.preview__element--active-step {
+  border: 3px solid var(--highlight-green-strong) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--highlight-green-strong-rgb), 0.3),
+    0 0 0 3px rgba(var(--highlight-green-strong-rgb), 0.2),
+    0 0 12px 4px rgba(var(--highlight-green-strong-rgb), 0.25),
+    0 4px 16px 0 rgba(var(--highlight-green-strong-rgb), 0.3);
+  background-color: rgba(var(--highlight-green-strong-rgb), 0.10);
+  z-index: 5;
+  transform: scale(1.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
 // Current position highlighting (use success/ORBiS highlight green) - for FTS tab
 .preview__element--current-position {
   border: 3px solid var(--status-success-strong) !important;

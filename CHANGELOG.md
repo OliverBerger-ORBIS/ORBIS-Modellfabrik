@@ -6,6 +6,22 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.8.9] - 2026-03-12
+
+**Order-Tab Highlight, AGV-Farben, DR-24**
+
+### Added
+- **DR-24:** [Shopfloor-Highlight-Farben](docs/03-decision-records/24-shopfloor-highlight-colors.md) – Order-Tab Grün (aktiver Schritt), AGV-1/2-Farben im AGV-Tab und Presentation-Tab
+- **Presentation-Tab:** Doku ergänzt – AGV-1 orange, AGV-2 gelb (nutzt AGV-Tab mit presentationMode)
+
+### Changed
+- **Order-Tab:** Aktives Modul (z.B. HBW bei PROCESS-Step) in ORBIS-Highlight-Grün statt Blau – konsistent mit FTS auf Route
+- **Shopfloor-Preview:** Neuer Input `highlightStyle: 'selection' | 'active-step'`; Order-Card übergibt `'active-step'`
+- **AGV-Farben:** Festlegung „nur AGV-Tab“ → „AGV-Tab und Presentation-Tab“ (second-agv-2026-03.md, color-palette.ts)
+
+### Fixed
+- Semantische Einheit „aktiver Schritt“ im Order-Tab: FTS und Modul beide grün
+
 ## [0.8.8] - 2026-03-11
 
 **Version Single Source of Truth, Workflow-Aufräumung**

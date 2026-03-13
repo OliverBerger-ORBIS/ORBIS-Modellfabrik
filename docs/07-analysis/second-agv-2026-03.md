@@ -10,7 +10,7 @@
 | Bereich | Inhalt |
 |---------|--------|
 | **AGV-Tab** | Dropdown AGV-1/AGV-2; beide AGVs im Shopfloor sichtbar; Status/Battery/Loads/Commands pro ausgewähltem AGV |
-| **Shopfloor** | Beide AGVs mit Farben (AGV-1 orange, AGV-2 gelb); Hervorhebung (Schatten, Glow, Ring) AGV-spezifisch |
+| **Shopfloor** | Beide AGVs mit Farben (AGV-1 orange, AGV-2 gelb) – im AGV-Tab und Presentation-Tab (DR-24) |
 | **Shopfloor-Tab** | Layout-Section ohne AGV-Overlay (`showFtsOverlay=false`); Transport-Rows pro AGV mit Dock/Charge |
 | **Track & Trace** | WorkpieceHistoryService dynamisch für beide Serials; Fixtures mit jp93 |
 | **Fixtures** | `storage_blue_agv2` (nur jp93), `storage_blue_parallel` (beide AGVs) |
