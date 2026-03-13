@@ -57,7 +57,8 @@
 - [x] **Zweites FTS/AGV:** Unterstützung eines zweiten FTS (Serial jp93) – umgesetzt. **Offen:** E2E-Test mit AGV-2.
   - **Erreicht:** Zweites AGV in allen Tabs; AGV-Tab und Presentation-Tab mit Dropdown pro AGV; Darstellung beider AGVs im Shopfloor; AGV-1/AGV-2 farblich unterscheidbar (orange/gelb inkl. Hervorhebung); Fixtures storage_blue_agv2, storage_blue_parallel; DR-24 Shopfloor-Highlight-Farben
 - [ ] **Analyse/Klärung Stillstand bei zwei AGVs im mixed-Modus:** Zur Info. Nicht unbedingt messerelevant – entweder keine mixed-Szenarien oder nur ein AGV aktiv.
-- [ ] **Deployment v0.8.9 auf RPi:** osf-ui v0.8.9 auf RPi (192.168.0.100) ausrollen
+- [ ] **Deployment v0.8.10 auf RPi:** osf-ui v0.8.10 auf RPi (192.168.0.100) ausrollen
+- [x] **GitHub Pages Auto-Deploy:** Bei Version-Bump und Push auf main läuft CI → Deploy automatisch (v0.8.10 13.03.2026)
 
 ### Blog-Serie & Marketing
 - [ ] **A1 Review mit Marketing:**  (Carola Stammen) durchführen
@@ -116,4 +117,4 @@
 
 ---
 
-*Letzte Aktualisierung: 12.03.2026*
+*Letzte Aktualisierung: 13.03.2026*

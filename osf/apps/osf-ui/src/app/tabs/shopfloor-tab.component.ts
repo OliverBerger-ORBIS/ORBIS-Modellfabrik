@@ -958,24 +958,27 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     const registryEntry = this.moduleRegistryLookup.get(transport.id);
     const isRegistryTransport = registryEntry?.kind === 'transport';
 
-    const needsInitialDock =
-      !transport.lastModuleSerialNumber || transport.lastModuleSerialNumber === 'UNKNOWN';
+    // Dock and Charge commands only when AGV is connected (matches original ff UI Modules tab)
+    if (transport.connected === true) {
+      const needsInitialDock =
+        !transport.lastModuleSerialNumber || transport.lastModuleSerialNumber === 'UNKNOWN';
 
-    if (needsInitialDock) {
+      if (needsInitialDock) {
+        actions.push({
+          label: $localize`:@@moduleCommandDock:Dock`,
+          handler: () => this.dashboard.commands.dockFts(transport.id, transport.lastNodeId),
+        });
+      }
+
       actions.push({
-        label: $localize`:@@moduleCommandDock:Dock`,
-        handler: () => this.dashboard.commands.dockFts(transport.id, transport.lastNodeId),
+        label: transport.charging
+          ? $localize`:@@moduleCommandStopCharging:Stop Charging`
+          : $localize`:@@moduleCommandCharge:Charge`,
+        secondary: transport.charging ?? false,
+        handler: () =>
+          this.dashboard.commands.setFtsCharge(transport.id, !(transport.charging ?? false)),
       });
     }
-
-    actions.push({
-      label: transport.charging 
-        ? $localize`:@@moduleCommandStopCharging:Stop Charging`
-        : $localize`:@@moduleCommandCharge:Charge`,
-      secondary: transport.charging ?? false,
-      handler: () =>
-        this.dashboard.commands.setFtsCharge(transport.id, !(transport.charging ?? false)),
-    });
 
     // Calculate message count for this specific transport (by serial-Id)
     const messageCount = this.getModuleMessageCount(transport.id);

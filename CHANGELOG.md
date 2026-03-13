@@ -6,6 +6,24 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.8.10] - 2026-03-13
+
+**Shopfloor Tab, Production Flow, CI/CD, SSH-Setup**
+
+### Added
+- **Production Flow auf GitHub Pages:** Fixtures in github-pages Build; Deploy nutzt github-pages Config; Process-Tab zeigt BLUE/WHITE/RED korrekt
+- **CI workflow_dispatch:** Manueller CI-Start möglich
+- **.github/README.md:** Aktualisiert mit aktuellen Workflows (ci, deploy, pull-request, release)
+
+### Changed
+- **Shopfloor Tab:** Dock- und Charge-Buttons für AGVs nur wenn `connected` (analog Original ff UI Modules-Tab)
+- **Workflows:** Node 22, FORCE_JAVASCRIPT_ACTIONS_TO_NODE24; Codecov continue-on-error
+- **Deploy:** github-pages Config statt production; Fixtures an Root für Mock/Process-Tab
+
+### Fixed
+- **CI-Trigger:** Push von Mac triggert CI (SSH github.com-orbis für OliverBerger-ORBIS)
+- **Node-Deprecation:** Opt-in Node 24 für Actions
+
 ## [0.8.9] - 2026-03-12
 
 **Order-Tab Highlight, AGV-Farben, DR-24**
