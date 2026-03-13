@@ -63,12 +63,14 @@ jobs:
           EOF
 
       - name: Build OSF (All Locales)
-        run: npx nx build osf-ui --configuration=production --localize --baseHref=/ORBIS-Modellfabrik/
+        run: npx nx build osf-ui --configuration=github-pages
 
       - name: Prepare deployment
         run: |
           mkdir -p _site
           cp -r dist/apps/osf-ui/browser/* _site/
+          # Fixtures at root so app can load /ORBIS-Modellfabrik/fixtures/... (used by Mock/Process tab)
+          cp -r dist/apps/osf-ui/browser/en/fixtures _site/fixtures
 
           cat > _site/index.html << 'EOF'
           <!DOCTYPE html>
