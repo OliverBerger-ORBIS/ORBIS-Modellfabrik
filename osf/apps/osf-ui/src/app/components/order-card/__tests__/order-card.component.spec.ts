@@ -3,12 +3,14 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { OrderCardComponent } from '../order-card.component';
 import { ModuleNameService } from '../../../services/module-name.service';
 import { ShopfloorMappingService } from '../../../services/shopfloor-mapping.service';
+import { FtsOrderAssignmentService } from '../../../services/fts-order-assignment.service';
 import { CorrelationInfoService } from '../../../services/correlation-info.service';
 import { MessageMonitorService } from '../../../services/message-monitor.service';
 import { MessageValidationService } from '../../../services/message-validation.service';
 import { MessagePersistenceService } from '../../../services/message-persistence.service';
 import type { OrderActive, ProductionStep } from '@osf/entities';
 import { SimpleChange } from '@angular/core';
+import { of } from 'rxjs';
 
 describe('OrderCardComponent', () => {
   let component: OrderCardComponent;
@@ -62,6 +64,13 @@ describe('OrderCardComponent', () => {
           provide: ShopfloorMappingService,
           useValue: {
             getAgvLabel: (serial: string) => (serial === '5iO4' ? 'AGV-1' : serial === 'jp93' ? 'AGV-2' : null),
+          },
+        },
+        {
+          provide: FtsOrderAssignmentService,
+          useValue: {
+            getFtsSerialForStep: () => null,
+            getAssignments$: () => of(new Map()),
           },
         },
         CorrelationInfoService,

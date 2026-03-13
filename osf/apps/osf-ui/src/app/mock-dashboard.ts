@@ -518,6 +518,8 @@ export const createMockDashboardController = (options?: {
       'order-production-bwr': 'production_bwr',
       'order-production-white': 'production_white',
       'order-storage-blue': 'storage_blue',
+      'order-storage-blue-agv2': 'storage_blue_agv2',
+      'order-storage-blue-parallel': 'storage_blue_parallel',
       'track-trace-storage-blue-agv2': 'storage_blue_agv2',
       'track-trace-storage-blue-parallel': 'storage_blue_parallel',
       'order-white-step3': 'white_step3',

@@ -136,11 +136,15 @@ User kann Tasks mit Präfix kennzeichnen – Agent muss entsprechend handeln:
 - **Pre-commit mit .venv (KRITISCH):** `git commit` ruft Pre-commit auf (black, ruff für Python). Diese Tools liegen in `.venv`. Der Agent MUSS immer `.venv` aktivieren vor `git commit`: `source .venv/bin/activate && git commit ...`
 
 ### "Commit vorbereiten" (bei User-Auftrag)
+- **Entscheidend:** Was wurde seit dem letzten Commit gemacht? Ist es wichtig? Sollen wir es behalten?
+- **Alles behalten** → in den Commit (auch wenn 2+ Features). **Nicht behalten** → löschen.
 - **Umfang:** Umgang mit unstaged und untracked Dateien gehört dazu.
 - **Agent-Urteil:** Der Agent hat die Dateien angelegt bzw. geändert – er kennt Kontext:
-  - Was gehört zur Feature-Änderung (stagen)
-  - Was war temporär / Skizze / nicht funktionsfähig (nicht stagen)
-  - Was gehört in .gitignore (z.B. lokale Build-Artefakte)
+ - Was gehört zur Feature-Änderung (stagen)
+ - Was war temporär / Skizze / nicht funktionsfähig (nicht stagen)
+ - Was gehört in .gitignore (z.B. lokale Build-Artefakte)
+ - **Session-Logs:** aufwendig erstellt, schwer reproduzierbar → lieber mitnehmen (vgl. [git-commit-rules](docs/04-howto/git-commit-rules.md))
+ - **Analyse-Skripte on-the-fly** → in der Regel nicht commit-würdig
 - **Vorgehen:** `git status` prüfen → gezielt `git add` nur der relevanten Dateien → User informieren (was gestaged, was ausgelassen und warum). Bei Unsicherheit nachfragen.
 
 ### Angular-Komponenten-Regeln (KRITISCH)

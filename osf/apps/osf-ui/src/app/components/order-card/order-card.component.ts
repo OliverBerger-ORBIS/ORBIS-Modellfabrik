@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import type { OrderActive, ProductionStep } from '@osf/entities';
@@ -9,6 +9,7 @@ import { ShopfloorPreviewComponent } from '../shopfloor-preview/shopfloor-previe
 import { ModuleNameService } from '../../services/module-name.service';
 import { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
 import { CorrelationInfoService, type CorrelationInfo } from '../../services/correlation-info.service';
+import { FtsOrderAssignmentService } from '../../services/fts-order-assignment.service';
 import { resolveLegacyShopfloorPath } from '../../shared/icons/legacy-shopfloor-map';
 import { ICONS } from '../../shared/icons/icon.registry';
 
@@ -56,7 +57,7 @@ export type RequestCorrelationFn = (order: OrderActive) => Promise<void>;
   styleUrl: './order-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrderCardComponent implements OnInit, OnChanges {
+export class OrderCardComponent implements OnInit, OnChanges, OnDestroy {
   @Input({ required: true }) order: OrderActive | null | undefined;
   @Input({ transform: (v: unknown) => Boolean(v) }) isCompleted = false;
   @Input({ transform: (v: unknown) => Boolean(v) }) expanded = false;
@@ -66,6 +67,8 @@ export class OrderCardComponent implements OnInit, OnChanges {
   collapsed = false;
 
   private readonly orderIdSubject = new BehaviorSubject<string>('');
+  private assignmentsSubscription?: Subscription;
+
   correlationInfo$: Observable<CorrelationInfo | null> = this.orderIdSubject.pipe(
     switchMap((id) => (id ? this.correlationInfoService.getCorrelationInfo$(id) : of(null)))
   );
@@ -73,12 +76,21 @@ export class OrderCardComponent implements OnInit, OnChanges {
   constructor(
     private readonly moduleNameService: ModuleNameService,
     private readonly mappingService: ShopfloorMappingService,
-    private readonly correlationInfoService: CorrelationInfoService
+    private readonly correlationInfoService: CorrelationInfoService,
+    private readonly ftsAssignmentService: FtsOrderAssignmentService,
+    private readonly cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.orderIdSubject.next(this.order?.orderId ?? '');
     this.updateCollapsedState();
+    this.assignmentsSubscription = this.ftsAssignmentService
+      .getAssignments$()
+      .subscribe(() => this.cdr.markForCheck());
+  }
+
+  ngOnDestroy(): void {
+    this.assignmentsSubscription?.unsubscribe();
   }
 
   async requestCorrelation(): Promise<void> {
@@ -395,9 +407,9 @@ export class OrderCardComponent implements OnInit, OnChanges {
 
   moduleName(step: ProductionStep): string {
     if (step.type === 'NAVIGATION') {
-      const agvLabel = step.serialNumber
-        ? this.mappingService.getAgvLabel(step.serialNumber)
-        : null;
+      const ftsSerial =
+        step.serialNumber ?? this.ftsAssignmentService.getFtsSerialForStep(this.order?.orderId, step.id);
+      const agvLabel = ftsSerial ? this.mappingService.getAgvLabel(ftsSerial) : null;
       const id = agvLabel ?? $localize`:@@moduleNameAGV:AGV`;
       const full = this.moduleNameService.getModuleFullName('FTS');
       return `${id} (${full})`;
@@ -408,9 +420,9 @@ export class OrderCardComponent implements OnInit, OnChanges {
 
   moduleFullName(step: ProductionStep): string {
     if (step.type === 'NAVIGATION') {
-      const agvLabel = step.serialNumber
-        ? this.mappingService.getAgvLabel(step.serialNumber)
-        : null;
+      const ftsSerial =
+        step.serialNumber ?? this.ftsAssignmentService.getFtsSerialForStep(this.order?.orderId, step.id);
+      const agvLabel = ftsSerial ? this.mappingService.getAgvLabel(ftsSerial) : null;
       return agvLabel ?? $localize`:@@moduleNameAGV:AGV`;
     }
     const moduleType = step.moduleType ?? step.type ?? '';

@@ -54,6 +54,8 @@
     "fixtureLabelProductionBwr": "Production BWR",
     "fixtureLabelProductionWhite": "Production White",
     "fixtureLabelStorageBlue": "Storage Blue",
+    "fixtureLabelStorageBlueAgv2": "Storage Blue (AGV-2)",
+    "fixtureLabelStorageBlueParallel": "Storage Blue (Beide AGVs)",
     "commonYes": "Ja",
     "commonNo": "Nein",
     "overviewOrderButton": "Auftrag",

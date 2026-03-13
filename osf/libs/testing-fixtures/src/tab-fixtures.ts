@@ -209,7 +209,31 @@ export const TAB_FIXTURE_PRESETS: Record<string, TabFixtureConfig> = {
     config: 'default',
     sensors: 'default',
   },
-  
+  'order-storage-blue': {
+    orders: 'storage_blue',
+    modules: 'default',
+    stock: 'default',
+    flows: 'default',
+    config: 'default',
+    sensors: 'default',
+  },
+  'order-storage-blue-agv2': {
+    orders: 'storage_blue_agv2',
+    modules: 'default',
+    stock: 'default',
+    flows: 'default',
+    config: 'default',
+    sensors: 'default',
+  },
+  'order-storage-blue-parallel': {
+    orders: 'storage_blue_parallel',
+    modules: 'default',
+    stock: 'default',
+    flows: 'default',
+    config: 'default',
+    sensors: 'default',
+  },
+
   // Module tab presets
   'module-default': {
     orders: 'startup',

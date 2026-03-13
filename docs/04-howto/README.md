@@ -1,5 +1,6 @@
 # How-To Guides
 
+- [Git Commit-Regeln](git-commit-rules.md)
 - [UI Symbols Usage Guide](ui_symbols.md)
 - Development
   - [Cursor AI Mermaid Rules](development/cursor-ai-mermaid-rules.md)

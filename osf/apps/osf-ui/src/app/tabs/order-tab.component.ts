@@ -68,7 +68,18 @@ export class OrderTabComponent implements OnInit, OnDestroy {
   private currentStorageCompleted: OrderActive[] = [];
   expandedStorageOrderId: string | null = null;
 
-  readonly fixtureOptions: OrderFixtureName[] = ['white', 'white_step3', 'blue', 'red', 'mixed', 'mixed_pr_prnok', 'storage'];
+  readonly fixtureOptions: OrderFixtureName[] = [
+    'white',
+    'white_step3',
+    'blue',
+    'red',
+    'mixed',
+    'mixed_pr_prnok',
+    'storage',
+    'storage_blue',
+    'storage_blue_agv2',
+    'storage_blue_parallel',
+  ];
   readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
     white: $localize`:@@fixtureLabelWhite:White`,
     white_step3: $localize`:@@fixtureLabelWhiteStep3:White • Step 3`,
@@ -77,6 +88,9 @@ export class OrderTabComponent implements OnInit, OnDestroy {
     mixed: $localize`:@@fixtureLabelMixed:Mixed`,
     mixed_pr_prnok: $localize`:@@fixtureLabelMixedPrPrnok:Mixed PR Quality-Fail`,
     storage: $localize`:@@fixtureLabelStorage:Storage`,
+    storage_blue: $localize`:@@fixtureLabelStorageBlue:Storage Blue`,
+    storage_blue_agv2: $localize`:@@fixtureLabelStorageBlueAgv2:Storage Blue AGV-2`,
+    storage_blue_parallel: $localize`:@@fixtureLabelStorageBlueParallel:Storage Blue Parallel`,
     startup: $localize`:@@fixtureLabelStartup:Startup`,
   };
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
@@ -291,12 +305,15 @@ export class OrderTabComponent implements OnInit, OnDestroy {
     const presetMap: Partial<Record<OrderFixtureName, string>> = {
       startup: 'startup',
       white: 'order-white',
-      white_step3: 'order-white-step3', // Stops at step 3
+      white_step3: 'order-white-step3',
       blue: 'order-blue',
       red: 'order-red',
       mixed: 'order-mixed',
       mixed_pr_prnok: 'order-mixed-pr-prnok',
       storage: 'order-storage',
+      storage_blue: 'order-storage-blue',
+      storage_blue_agv2: 'order-storage-blue-agv2',
+      storage_blue_parallel: 'order-storage-blue-parallel',
     };
     
     const preset = presetMap[fixture] || 'startup';
