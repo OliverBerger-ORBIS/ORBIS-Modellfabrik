@@ -45,7 +45,7 @@ services:
       - "1883:1883"
       - "9001:9001"
   nodered:
-    image: ghcr.io/ommsolutions/ff-nodered-armv7:release-24v
+    image: ghcr.io/ommsolutions/ff-nodered-armv7:release-24v-v130
     container_name: nodered-prod
     restart: on-failure
     networks:
@@ -61,6 +61,14 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --cleanup --include-stopped --include-restarting --run-once
+  osf-ui:
+    image: orbis-osf-ui:latest
+    container_name: osf-ui-prod
+    restart: unless-stopped
+    networks:
+      - ff-future-factory-prod
+    ports:
+      - "8080:80"
 
 volumes:
   mosquittodata-prod: ~

@@ -4,20 +4,22 @@
  * Build OSF-UI Docker image for RPi (ARM) or local (AMD64).
  * Builds Angular app on host first (avoids QEMU/Node WebAssembly issues for ARM cross-build).
  * Usage: node scripts/build-osf-ui-docker.js [platform] [tag]
- *   platform: arm (default, for RPi) | amd64 (local test)
+ *   platform: armv7 (RPi mit CCU!) | arm (64-bit RPi) | amd64 (local test)
  *   tag: image tag (default: latest)
+ *
+ * DR-23: RPi mit CCU-Stack = armv7 (32-bit). Deploy-Skript nutzt armv7 per Default.
  */
 
 const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-const platformArg = process.argv[2] || 'arm';
+const platformArg = process.argv[2] || 'armv7';
 const tag = process.argv[3] || 'latest';
 
 const PLATFORMS = {
-  arm: 'linux/arm64',  // 64-bit ARM for RPi 4/5 (aarch64)
-  armv7: 'linux/arm/v7',  // 32-bit for older RPi
+  armv7: 'linux/arm/v7',  // 32-bit – RPi mit CCU (ff-*-armv7), DR-23
+  arm: 'linux/arm64',  // 64-bit – nur wenn RPi 64-bit OS hat
   amd64: 'linux/amd64',
 };
 
@@ -46,7 +48,7 @@ try {
 // Step 1: Build Angular app on host (fast, native - avoids QEMU/WASM issues)
 console.log('Step 1/2: Building OSF-UI on host...\n');
 try {
-  execSync('npm run update-version && npx nx reset && npx nx build osf-ui --configuration=production', {
+  execSync('npm run update-version && npx nx reset && npx nx build osf-ui --configuration=production --localize', {
     cwd: rootDir,
     stdio: 'inherit',
   });

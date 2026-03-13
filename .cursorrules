@@ -21,6 +21,15 @@ User kann Tasks mit Präfix kennzeichnen – Agent muss entsprechend handeln:
 | **Plan:** | Schritte festlegen | Plan formulieren, auf "go" warten, **dann** implementieren. |
 | **Implementieren:** | Umsetzung (Plan steht) | Nach kurzer Bestätigung des Plans direkt umsetzen. |
 
+### Refactoring – bestehende Lösung prüfen (KRITISCH)
+
+**Vor jeder Änderung an funktionierendem Code:**
+1. **`git log` / `git show`** – wie sah die funktionierende Version aus?
+2. **Bestehende Patterns** im Repo prüfen – nicht neu erfinden.
+3. **Tests ergänzen**, wenn kritische Pfade manuell getestet werden müssen (hoher Zeitaufwand).
+
+**Beispiel Session Recorder:** Paho MQTT erfordert `subscribe()` in `on_connect` (nicht vor/nach `connect()`). Änderung daran bricht die Aufnahme.
+
 ### Design-Fragen erkennen (KRITISCH)
 
 **Signale:** "Wo soll …?", "Wie können wir …?", "Optionen?", "Analysiere …", "Könnte man …?", "Sollte es …?"
@@ -65,6 +74,13 @@ User kann Tasks mit Präfix kennzeichnen – Agent muss entsprechend handeln:
 - **NICHT** manuell ändern: `version.ts`, `VERSION`, CHANGELOG-Versionszeile
 - Nach Änderung: `npm run update-version` (sync zu version.ts, VERSION)
 - **Agent:** Bei Release/Version-Bump ausschließlich package.json ändern, dann update-version ausführen
+
+### RPi / Shopfloor-Interaktion (KRITISCH)
+- **User arbeitet von Mac** – Docker-Container laufen auf dem RPi, nicht lokal
+- **SSH:** `ssh ff22@192.168.0.100` (User: **ff22**, NICHT pi)
+- **Docker auf RPi:** Immer via SSH wrappen: `ssh ff22@192.168.0.100 "docker exec ..."`
+- **Beispiel mosquitto_pub:** `ssh ff22@192.168.0.100 "docker exec mqtt-broker-prod mosquitto_pub -h localhost -p 1883 -u default -P default -t 'TOPIC' -r -n"`
+- **NICHT:** `docker exec mqtt-broker-prod ...` (läuft nur auf RPi, nicht auf Mac)
 
 ### Projekt-Struktur
 - **Aktive Sourcen:** `osf/` (OSF Angular Dashboard - aktuell in Entwicklung)
@@ -117,6 +133,7 @@ User kann Tasks mit Präfix kennzeichnen – Agent muss entsprechend handeln:
 - **Staging:** `git add` ist erlaubt, aber nicht `git commit`
 - **Push:** Nur nach User-Bestätigung
 - **Workflow:** Änderungen → User-Freigabe → Commit → Push
+- **Pre-commit mit .venv (KRITISCH):** `git commit` ruft Pre-commit auf (black, ruff für Python). Diese Tools liegen in `.venv`. Der Agent MUSS immer `.venv` aktivieren vor `git commit`: `source .venv/bin/activate && git commit ...`
 
 ### "Commit vorbereiten" (bei User-Auftrag)
 - **Umfang:** Umgang mit unstaged und untracked Dateien gehört dazu.

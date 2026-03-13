@@ -29,7 +29,7 @@
 ## 3. Offen / Optional
 
 - **E2E-Test** mit AGV-2 (Fixtures nutzbar)
-- **CCU-Erweiterung:** Optionales `serialNumber` in `ccu/order/active` / `completed` (ProductionStep), damit Order-Card AGV-1/AGV-2 anzeigt. OSF-UI bereits vorbereitet.
+- **CCU-Erweiterung:** ✅ Umgesetzt (v1.3.0-osf.2). Optionales `serialNumber` in NAVIGATION-Steps in `ccu/order/active` / `completed`. OSF-UI vorbereitet.
 
 ---
 

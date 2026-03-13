@@ -19,6 +19,7 @@
 - [x] **QM-Check Verlagerung (CCU Ausbau):** Erledigt durch Quality-Fail (Option B). CCU erstellt bei FAILED keinen Ersatzauftrag; MES/DSP senden zukünftig `ccu/order/request` bei Bedarf (anderes Projekt). osf-ui ist senderneutral.
 - [x] **CCU: Quality-Fail (Option B):** Bei `CHECK_QUALITY result=FAILED` kein Ersatzauftrag, Order bleibt ERROR. OSF-MODIFICATIONS.md Mod², Unit-Test. E2E ✓. Deploy ✓.
 - [ ] **E2E-Test ccu/order/request von MES/DSP:** Simulieren, dass MES/DSP nach Quality-Fail einen Ersatzauftrag per `ccu/order/request` stellt. osf-ui vorbereitet (egal wer sendet).
+- [x] **Positiver Test requestId (Mod 1):** `requestId` aus `ccu/order/request` wird in `ccu/order/response` und `ccu/order/active` mitgegeben. Verifiziert 12.03.2026 (OSF-UI → CCU auf RPi 192.168.0.100).
 - [x] **TXT-AIQS: QoS 1 für quality_check:** `sorting_line.py`/`.blockly` QoS 2→1, beide Varianten (`_cam`, `_cam_clfn`), Doku, .ft-Archive. E2E ✓. Deploy ✓.
 - [x] **Track & Trace: Order-Status FAILED/ERROR anzeigen:**
     - Kontext: Bei Quality-Fail (Order `state: ERROR`) zeigt Track & Trace im Order Context weiterhin "Active". Soll "Fehlgeschlagen"/"Abgebrochen" anzeigen.
@@ -113,4 +114,4 @@
 
 ---
 
-*Letzte Aktualisierung: 10.03.2026*
+*Letzte Aktualisierung: 12.03.2026*

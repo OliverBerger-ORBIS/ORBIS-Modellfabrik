@@ -11,6 +11,20 @@ This guide covers all deployment scenarios, from quick automated updates to manu
 
 **Note:** During deployment, you'll be prompted to enter the SSH password multiple times.
 
+## RPi-Deploy Checkliste (vor dem Deployment)
+
+| Schritt | Aktion |
+|---------|--------|
+| 1 | Version in `package.json` prüfen (z.B. `1.3.0-osf.2`) |
+| 2 | CCU bauen: `npm run docker:build v1.3.0-osf.2 central` |
+| 3 | Deploy: `npm run docker:deploy -- ff22@192.168.0.100 v1.3.0-osf.2 central` |
+| 4 | Auf Pi: `docker compose -f docker-compose-prod.yml up -d` (oder erfolgt automatisch) |
+| 5 | Verifizieren: `docker ps` auf Pi, Logs prüfen |
+
+**Tipp:** SSH-Keys einrichten, um wiederholte Passwort-Eingaben zu vermeiden: `ssh-copy-id ff22@192.168.0.100`
+
+**OSF-UI zusätzlich:** Siehe [rpi-deployment.md](../../docs/04-howto/deployment/rpi-deployment.md) – aus Repo-Root: `npm run docker:osf-ui:deploy -- ff22@192.168.0.100`
+
 ## Standard Deployment Options
 
 **OSF-Empfehlung (DR-21):** Selektives Build/Deploy – nur die geänderten Services bauen und deployen. Bei CCU-Änderungen (OSF-MODIFICATIONS) in der Regel nur `central`.
@@ -22,8 +36,9 @@ This automatically handles all steps: build, save, transfer, load, and restart.
 **Selective Deployment – CCU only (Standard bei OSF-CCU-Änderungen):**
 ```bash
 # Nur Central Control (CCU) bauen und deployen
-npm run docker:build v1.3.0-osf.1 central
-npm run docker:deploy -- ff22@192.168.0.100 v1.3.0-osf.1 central
+# Version aus package.json (z.B. v1.3.0-osf.2)
+npm run docker:build v1.3.0-osf.2 central
+npm run docker:deploy -- ff22@192.168.0.100 v1.3.0-osf.2 central
 # Enter password when prompted: ff22+
 ```
 
@@ -39,8 +54,8 @@ Available services: `central`, `frontend`, `nodered`
 
 **Full Deployment (alle drei Images):** Nur bei Änderungen an mehreren Services:
 ```bash
-npm run docker:build v1.3.0-osf.1
-npm run docker:deploy -- ff22@192.168.0.100 v1.3.0-osf.1
+npm run docker:build v1.3.0-osf.2
+npm run docker:deploy -- ff22@192.168.0.100 v1.3.0-osf.2
 ```
 
 ### Option 2: Manual Step-by-Step

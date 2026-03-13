@@ -82,16 +82,23 @@ export const sendResponse = async (
     state: OrderState.ENQUEUED,
     workpieceId: orderRequest.workpieceId ? orderRequest.workpieceId : undefined,
     simulationId: orderRequest.simulationId,
-    requestId: orderRequest.requestId,
   };
+  if (orderRequest.requestId) {
+    response.requestId = orderRequest.requestId;
+  }
 
   await OrderManagement.getInstance().cacheOrder(response);
   console.debug('Confirm order: ', orderId);
   // TODO: What happens if this is null?
   await addOrderLogEntry(response);
 
+  // OSF Mod 1: Payload explizit mit requestId bauen – verhindert Verlust durch Referenz-Mutation in cacheOrder
+  const payload: OrderResponse = { ...response };
+  if (orderRequest.requestId) {
+    payload.requestId = orderRequest.requestId;
+  }
   const mqtt = getMqttClient();
-  return mqtt.publish(CcuTopic.ORDER_RESPONSE, JSON.stringify(response));
+  return mqtt.publish(CcuTopic.ORDER_RESPONSE, JSON.stringify(payload));
 };
 
 export const TOPICS: string[] = [CcuTopic.ORDER_REQUEST];
@@ -145,9 +152,18 @@ export const validateStorageOrderRequestAndReserveBay = async (
  * Handles all incoming order messages and responds on the respective response topic
  * @param message
  */
+/** Extracts requestId from order request, supporting both camelCase and snake_case (e.g. from DSP/ERP) */
+function getRequestId(orderRequest: OrderRequest & { request_id?: string }): string | undefined {
+  return orderRequest.requestId ?? orderRequest.request_id;
+}
+
 export const handleMessage = async (message: string): Promise<void> => {
   const orderId = uuid();
-  const orderRequest: OrderRequest = JSON.parse(message, jsonIsoDateReviver);
+  const rawRequest = JSON.parse(message, jsonIsoDateReviver) as OrderRequest & { request_id?: string };
+  const orderRequest: OrderRequest = {
+    ...rawRequest,
+    requestId: getRequestId(rawRequest),
+  };
 
   // load the production definition to trigger following actions
   const isProductionOrder = orderRequest.orderType === 'PRODUCTION';

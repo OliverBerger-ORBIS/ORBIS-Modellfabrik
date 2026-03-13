@@ -24,6 +24,7 @@
     "docker:osf-ui:arm": "node scripts/build-osf-ui-docker.js arm",
     "docker:osf-ui:armv7": "node scripts/build-osf-ui-docker.js armv7",
     "docker:osf-ui:local": "node scripts/build-osf-ui-docker.js amd64",
+    "docker:osf-ui:deploy": "node scripts/deploy-osf-ui-to-rpi.js",
     "version": "npm run build && git add -A",
     "postversion": "git push && git push --tags",
     "version:patch": "npm version patch -m 'chore(release): %s'",

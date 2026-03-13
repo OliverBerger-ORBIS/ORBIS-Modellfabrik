@@ -34,28 +34,13 @@ Auf dem RPi parallel zu Fischertechnik-Dashboard (Port 80):
 - Fischertechnik: `http://192.168.0.100`
 - OSF-UI: `http://192.168.0.100:8080`
 
-**RPi Deployment (Image + Compose gemeinsam übertragen):**
+**Empfohlen:** OSF-UI ist in `integrations/APS-CCU/docker-compose-prod.yml` integriert. Deploy wie CCU (Version aus package.json, Build + Transfer + Load + Compose-Update):
 
 ```bash
-# 1. Image bauen – ARM64 ODER ARM32 je nach RPi-OS
-#    RPi 64-bit: npm run docker:osf-ui:arm
-#    RPi 32-bit (armv7): npm run docker:osf-ui:armv7
-mkdir -p deploy/osf-ui/docker-images
-# Für ARM64:
-docker save orbis-osf-ui:latest -o deploy/osf-ui/docker-images/osf-ui-arm64.tar
-# Für ARM32:
-docker save orbis-osf-ui:latest -o deploy/osf-ui/docker-images/osf-ui-arm32.tar
-
-# 2. Auf RPi kopieren (Dateiname anpassen: arm64 oder arm32)
-scp deploy/osf-ui/docker-images/osf-ui-arm32.tar deploy/docker-compose.osf-ui.yml ff22@192.168.0.100:~/
-
-# 3. Auf RPi: Image laden und starten
-ssh ff22@192.168.0.100
-docker compose -f ~/docker-compose.osf-ui.yml down
-docker load -i ~/osf-ui-arm32.tar
-docker compose -f ~/docker-compose.osf-ui.yml up -d
-# → http://192.168.0.100:8080
+npm run docker:osf-ui:deploy -- ff22@192.168.0.100
 ```
+
+Details und Fehlerbehebung: [rpi-deployment.md](../docs/04-howto/deployment/rpi-deployment.md).
 
 Dockerfile: `deploy/osf-ui/Dockerfile`
 

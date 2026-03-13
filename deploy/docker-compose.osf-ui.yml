@@ -1,5 +1,5 @@
 # OSF-UI standalone – lokal testen oder auf RPi (Port 8080)
-# Mit RPi: in docker-compose-prod.yml integrieren oder separat starten
+# Mit RPi: in docker-compose-prod.yml integrieren
 
 services:
   osf-ui:

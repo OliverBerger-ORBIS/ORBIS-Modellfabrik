@@ -78,6 +78,10 @@ package.json als Source of Truth, SemVer, Docker-Tags an Version gekoppelt. Sele
 **Status:** Accepted | **Datum:** 2026-03-10  
 Ein Kachel pro Use-Case; Auswahl „Konzept“ oder „Live Demo“; UC-05 Live-Demo mit Gefahrensimulation; Quick Win vor UC-01-Refactoring. OSF-Zweck: Demo von DSP/MES-Funktionalität.
 
+### 23. [RPi OSF-UI: Plattform armv7 (32-bit)](23-rpi-osf-ui-platform-armv7.md)
+**Status:** Accepted | **Datum:** 2026-03-12  
+RPi mit CCU-Stack nutzt 32-bit (armv7). OSF-UI muss armv7 bauen – arm64 führt zu Container-Crash (Exit 159). Deploy-Skript Default = armv7.
+
 ---
 
 ## Template
@@ -86,4 +90,4 @@ Für neue Decision Records: [decision_template.md](decision_template.md)
 
 ---
 
-*Letzte Aktualisierung: 2026-03-10*
+*Letzte Aktualisierung: 2026-03-12*

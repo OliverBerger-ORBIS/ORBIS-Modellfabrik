@@ -47,6 +47,10 @@ class ThreadSafeMessageBuffer:
 # Globale Nachrichten-Sammlung (thread-sicher)
 message_buffer = ThreadSafeMessageBuffer()
 
+# Flags für on_message_received (Callback läuft im MQTT-Thread – kein st.session_state)
+_recording_active = False
+_include_retained = False
+
 
 def show_session_recorder():
     """Session Recorder Tab - KISS Design"""
@@ -74,6 +78,7 @@ def show_session_recorder():
             "session_name": "",
             "start_time": None,
             "mqtt_client": None,
+            "include_retained": False,
         }
 
     # Status anzeigen
@@ -142,8 +147,15 @@ def show_session_recorder():
 
     # Recording-Controls
     st.subheader("🔴 Aufnahme")
+    include_retained = st.checkbox(
+        "Retained Messages am Start miterfassen",
+        value=st.session_state.session_recorder.get("include_retained", False),
+        help="State/Connection/Factsheet beim Subscribe – nur aktivieren, wenn initialer Stand nötig ist.",
+        key="session_recorder_include_retained",
+    )
+    st.session_state.session_recorder["include_retained"] = include_retained
     st.caption(
-        "💡 **Tipp:** Aufnahme vor dem Verbinden starten – dann werden retained Messages (State/Connection/Factsheet) mit erfasst."
+        "**Normal:** Nur Nachrichten während der Aufnahme. **Mit Retained:** Zusätzlich initialer Stand beim Start."
     )
 
     if not st.session_state.session_recorder["session_name"]:
@@ -158,7 +170,8 @@ def show_session_recorder():
                     st.session_state.session_recorder["recording"] = True
                     st.session_state.session_recorder["connected"] = True
                     st.session_state.session_recorder["start_time"] = datetime.now()
-                    st.success("🔴 Aufnahme gestartet! (inkl. retained Messages)")
+                    success_msg = "🔴 Aufnahme gestartet!" + (" (inkl. retained)" if include_retained else "")
+                    st.success(success_msg)
                     rerun_controller.request_rerun()
                 else:
                     st.error("❌ Verbindung/Aufnahme fehlgeschlagen!")
@@ -256,7 +269,9 @@ def connect_to_broker(mqtt_settings: Dict[str, Any]) -> bool:
 
 def disconnect_from_broker():
     """Trennt MQTT Verbindung"""
+    global _recording_active
     try:
+        _recording_active = False
         if st.session_state.session_recorder["mqtt_client"]:
             mqtt_client = st.session_state.session_recorder["mqtt_client"]
             mqtt_client.loop_stop()
@@ -268,10 +283,9 @@ def disconnect_from_broker():
 
 
 def on_connect(client, userdata, flags, rc):
-    """Callback für MQTT Verbindung"""
+    """Callback für MQTT Verbindung – Subscribe muss NACH Verbindung erfolgen"""
     if rc == 0:
         logger.debug("✅ MQTT Broker verbunden")
-        # Automatisch alle Topics abonnieren
         client.subscribe("#")
     else:
         logger.error(f"❌ MQTT Verbindung fehlgeschlagen: {rc}")
@@ -280,36 +294,50 @@ def on_connect(client, userdata, flags, rc):
 def start_recording(mqtt_settings=None, rerun_controller=None) -> bool:
     """
     Startet die Aufnahme. Verbindet bei Bedarf automatisch zum Broker.
-    Wenn vor dem Verbinden gestartet wird, werden retained Messages mit erfasst.
+    Nur Nachrichten während der Aufnahme werden gespeichert.
     """
+    global _recording_active, _include_retained
     try:
         logger.info("🔴 Session-Aufnahme wird gestartet...")
 
-        # Falls nicht verbunden: zuerst verbinden (damit retained Messages erfasst werden)
+        # Buffer immer leeren – nur neue Messages ab jetzt
+        message_buffer.clear()
+
+        # Flags für Callback setzen (läuft im MQTT-Thread)
+        _recording_active = True
+        _include_retained = st.session_state.session_recorder.get("include_retained", False)
+
+        # Falls nicht verbunden: zuerst verbinden (Subscribe erfolgt in on_connect)
+        just_connected = False
         if not st.session_state.session_recorder["mqtt_client"]:
             if not mqtt_settings:
                 from .settings_manager import SettingsManager
 
                 settings_manager = SettingsManager()
                 mqtt_settings = settings_manager.get_session_recorder_mqtt_settings()
-            message_buffer.clear()  # Frische Session – retained Messages kommen nach Connect in leeren Buffer
             if not connect_to_broker(mqtt_settings):
+                _recording_active = False
                 return False
+            just_connected = True
             if rerun_controller:
                 rerun_controller.request_rerun()
 
         mqtt_client = st.session_state.session_recorder["mqtt_client"]
         if mqtt_client:
-            # Topics abonnieren – retained Messages kommen sofort nach Subscribe
-            mqtt_client.subscribe("#")
-            # Buffer nur leeren, wenn wir gerade frisch verbunden haben (bereits oben)
-            # Sonst: bereits verbunden → retained schon da → nicht leeren
-            logger.info("✅ Session-Aufnahme gestartet - alle Topics abonniert (inkl. retained)")
+            # Subscribe: bei frischem Connect in on_connect; bei erneutem Start (nach Stop) hier
+            if not just_connected:
+                mqtt_client.subscribe("#")
+            logger.info(
+                "✅ Session-Aufnahme gestartet - nur Nachrichten während der Aufnahme"
+                + (" (inkl. retained)" if _include_retained else "")
+            )
             return True
+        _recording_active = False
         return False
 
     except Exception as e:
         logger.error(f"❌ Fehler beim Starten der Aufnahme: {e}")
+        _recording_active = False
         return False
 
 
@@ -334,10 +362,13 @@ def pause_recording():
 
 def stop_recording():
     """Beendet die Aufnahme und speichert"""
+    global _recording_active
     try:
         logger.info("⏹️ Session-Aufnahme wird gestoppt...")
 
-        # Aufnahme stoppen
+        _recording_active = False
+
+        # Aufnahme stoppen – unsubscribe, damit keine weiteren Messages ankommen
         if st.session_state.session_recorder["mqtt_client"]:
             mqtt_client = st.session_state.session_recorder["mqtt_client"]
             mqtt_client.unsubscribe("#")
@@ -364,17 +395,22 @@ def stop_recording():
 
 
 def on_message_received(client, userdata, msg):
-    """Callback für empfangene MQTT-Nachrichten (thread-sicher)"""
+    """Callback für empfangene MQTT-Nachrichten – nur während Aufnahme, optional ohne retained"""
+    global _recording_active, _include_retained
     try:
+        if not _recording_active:
+            return
+        is_retain = getattr(msg, "retain", False)
+        if is_retain and not _include_retained:
+            return
+
         message = {
             "topic": msg.topic,
             "payload": msg.payload.decode("utf-8"),
             "timestamp": datetime.now().isoformat(),
             "qos": getattr(msg, "qos", 0),
-            "retain": getattr(msg, "retain", False),
+            "retain": is_retain,
         }
-
-        # Thread-sichere Nachrichten-Sammlung
         message_buffer.add_message(message)
         logger.debug(f"📨 Nachricht empfangen: {msg.topic} ({len(msg.payload)} bytes)")
 

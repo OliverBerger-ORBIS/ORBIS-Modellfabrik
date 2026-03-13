@@ -85,7 +85,15 @@ sequenceDiagram
 - **Protokoll:** paho-mqtt Python Client
 - **Topics:** Alle verfügbaren Topics abonnieren
 - **QoS:** Level 1 für zuverlässige Übertragung
-- **Retain:** False (nur Live-Messages)
+- **Retain:** Optional (Checkbox „Retained Messages am Start miterfassen“)
+
+### **⚠️ Kritische Paho-MQTT-Patterns (nicht ändern)**
+
+| Pattern | Grund |
+|---------|-------|
+| **`subscribe("#")` in `on_connect`** | Paho erfordert Subscribe *nach* Verbindung. Subscribe vor/nach `connect()` bricht die Aufnahme (keine Nachrichten). |
+| **Erneuter Start nach Stop:** `subscribe("#")` in `start_recording` | Nach `unsubscribe` bei Stop muss bei erneutem Start erneut subscribt werden (on_connect feuert nicht). |
+| **`_recording_active`-Filter in `on_message_received`** | Nur während Aufnahme speichern; verhindert Akkumulation alter Messages. |
 
 ### **Daten-Speicherung**
 - **SQLite:** Strukturierte Nachrichten-Daten

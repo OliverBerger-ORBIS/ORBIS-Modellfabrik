@@ -29,6 +29,8 @@ export interface GatewayOrder {
    * Timestamp to ISO8601
    */
   ts?: Date;
+  /** Optional: Korrelation (OSF Mod 1) – wird in ccu/order/request durchgereicht (auch request_id) */
+  requestId?: string;
 }
 
 export interface GatewayHBWInfo {

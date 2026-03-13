@@ -15,10 +15,13 @@ export const handleMessage = async (message: string): Promise<void> => {
     console.debug('handleMessage for gateway: received invalid order: ', gatewayOrder);
     return;
   }
+  const raw = gatewayOrder as GatewayOrder & { request_id?: string };
+  const requestId = raw.requestId ?? raw.request_id;
   const order: OrderRequest = {
     type: gatewayOrder.type,
     timestamp: gatewayOrder.ts,
     orderType: 'PRODUCTION',
+    ...(requestId && { requestId }),
   };
   return getMqttClient().publish(CcuTopic.ORDER_REQUEST, JSON.stringify(order), { qos: 2 });
 };

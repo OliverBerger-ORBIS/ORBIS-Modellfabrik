@@ -68,4 +68,16 @@ describe('Test Gateway handler', () => {
     await handleMessage(givenGatewayOrder);
     expect(mqttPublishSpy).not.toHaveBeenCalled();
   });
+
+  it('should forward requestId from gateway order to ccu/order/request (OSF Mod 1)', async () => {
+    const requestId = 'cloud-co-4711';
+    const givenGatewayOrder = `{"type": "BLUE", "ts": "2022-02-03T12:13:14.1234Z", "requestId": "${requestId}"}`;
+
+    await handleMessage(givenGatewayOrder);
+
+    const published = JSON.parse(mqttPublishSpy.mock.calls[0][1]);
+    expect(published.requestId).toBe(requestId);
+    expect(published.type).toBe('BLUE');
+    expect(published.orderType).toBe('PRODUCTION');
+  });
 });

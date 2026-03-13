@@ -221,6 +221,43 @@ describe('Test order request handling', () => {
     expect(publishedPayload.orderId).toBe(orderId);
   });
 
+  it('should pass through requestId when request uses snake_case request_id (e.g. from DSP/ERP)', async () => {
+    const requestId = 'dsp-co-4711';
+    const type = 'BLUE';
+    const productionOrderJson = `{
+      "orderType": "PRODUCTION",
+      "timestamp": "2023-05-10T07:33:16.154840Z",
+      "type": "${type}",
+      "request_id": "${requestId}"
+    }`;
+    const rawRequest = JSON.parse(productionOrderJson);
+    const orderRequest: OrderRequest = {
+      ...rawRequest,
+      requestId: rawRequest.requestId ?? rawRequest.request_id,
+    };
+    const orderId = 'order-id-snake';
+    const productionDefinition: ProductionDefinition = {
+      navigationSteps: [],
+      productionSteps: [],
+    };
+
+    const mqtt = {
+      publish: () => Promise.resolve(),
+    } as unknown as AsyncMqttClient;
+    jest.spyOn(mqtt, 'publish');
+    jest.spyOn(localMqtt, 'getMqttClient').mockReturnValue(mqtt);
+
+    jest.spyOn(OrderManagement, 'getInstance').mockReturnValue({
+      cacheOrder: jest.fn().mockResolvedValue(undefined),
+    } as unknown as OrderManagement);
+
+    await sendResponse(orderRequest, orderId, productionDefinition);
+
+    const publishedPayload = JSON.parse((mqtt.publish as jest.Mock).mock.calls[0][1]);
+    expect(publishedPayload.requestId).toBe(requestId);
+    expect(publishedPayload.orderId).toBe(orderId);
+  });
+
   it('should send response without requestId when OrderRequest has no requestId', async () => {
     const type = 'RED';
     const orderRequest: OrderRequest = {

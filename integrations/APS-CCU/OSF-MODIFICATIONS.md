@@ -17,6 +17,7 @@ Phase-5-Kontext: MES und DSP (ORBIS) übernehmen zunehmend die Steuerung; die CC
 |-----|------------------|--------|----------------------|--------|
 | 1   | ccu/order/request: Optionale Erweiterung um requestId | ✅ Umgesetzt | `common/protocol/ccu.ts`, `central-control/.../order/index.ts` | Sprint 16, Commit d2052f95 |
 | 2   | Quality-Fail: Kein automatischer Ersatzauftrag | ✅ Umgesetzt (seit v1.3.0-osf.1) | `central-control/src/modules/order/management/order-management.ts` | Sprint 17, [Analyse](../../docs/07-analysis/ccu-quality-fail-behaviour-2026-03.md), [DR-21](../../docs/03-decision-records/21-ccu-osf-versioning.md) |
+| 3   | ccu/order/active, completed: Optional serialNumber in NAVIGATION steps | ❌ Zurückgenommen (2026-03) | – | Ursprünglich für AGV-1/AGV-2 Anzeige; entfernt, da potenzielle Ursache für Stillstand |
 
 ---
 
@@ -36,10 +37,12 @@ Korrelation zwischen CCU-Produktionsaufträgen und übergeordneten Business-Proz
 
 - **OrderRequest** (`ccu/order/request`): Optionales Attribut `requestId?: string`. Beliebiger String, Eindeutigkeit liegt beim Requestor (OSF-UI, DSP, ERP).
 - **OrderResponse** (`ccu/order/response`): CCU übernimmt `requestId` aus dem Request und gibt es unverändert zurück.
+- **Snake-Case-Fallback:** Für Kompatibilität mit DSP/ERP wird auch `request_id` (snake_case) akzeptiert und als `requestId` in der Response ausgegeben.
 - **Betroffene Dateien:**
   - `common/protocol/ccu.ts`: `OrderRequest`, `OrderResponse` – optionales `requestId?: string`
-  - `central-control/src/modules/order/index.ts`: `sendResponse()` – `requestId: orderRequest.requestId` in Response
-- **Rückwärtskompatibel:** Fehlt `requestId`, Verhalten unverändert.
+  - `central-control/src/modules/order/index.ts`: `handleMessage()` – Normalisierung von `request_id` → `requestId`; `sendResponse()` – `requestId` in Response; Payload für Publish wird explizit mit `requestId` aus `orderRequest` gebaut (verhindert Verlust durch Referenz-Mutation in cacheOrder).
+  - **`central-control/src/modules/gateway/order/index.ts`:** Gateway-Orders von `/j1/txt/1/f/o/order` haben bisher `requestId` verworfen – jetzt wird es durchgereicht (entscheidend für Cloud-Orders).
+- **Rückwärtskompatibel:** Fehlt `requestId`/`request_id`, Verhalten unverändert.
 
 **Referenz:** [order-requestid-extension.md](../../docs/07-analysis/order-requestid-extension.md), Commit d2052f95 (Sprint 16)
 
@@ -63,4 +66,12 @@ Vorbereitung für MES/DSP-Übernahme der QM-Entscheidung. Die CCU soll bei `CHEC
 
 ---
 
-*Letzte Aktualisierung: 2026-03-04*
+### 3. ccu/order/active, completed: Optional serialNumber in NAVIGATION steps (zurückgenommen)
+
+**Status:** ❌ Zurückgenommen (2026-03)
+
+Ursprünglich für AGV-1/AGV-2 Anzeige in osf-ui. Entfernt, da potenzielle Ursache für Stillstände (z.B. agv-2-mixed) diskutiert wurde. Die osf-ui behandelt fehlendes `serialNumber` bereits als optional.
+
+---
+
+*Letzte Aktualisierung: 2026-03-12*

@@ -1,0 +1,22 @@
+---
+description: Git commit mit .venv für Pre-commit (black, ruff)
+alwaysApply: true
+---
+
+# Git Commit mit .venv
+
+Bei `git commit` laufen Pre-commit-Hooks (u.a. black, ruff für Python). Diese sind im Projekt-`.venv` installiert.
+
+**Regel:** Vor jedem `git commit` immer `.venv` aktivieren:
+
+```bash
+source .venv/bin/activate && git commit -m "..."
+```
+
+Oder mit explizitem Pfad (wenn Shell nicht im Projekt-Root):
+
+```bash
+source /path/to/project/.venv/bin/activate && git commit -m "..."
+```
+
+**Warum:** Ohne aktiviertes `.venv` findet Pre-commit black/ruff nicht → Hook schlägt fehl → Commit bricht ab.
