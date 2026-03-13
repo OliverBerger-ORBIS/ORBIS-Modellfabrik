@@ -1,5 +1,5 @@
 name: CI
-
+# CI is not a good name becaus Capital i and non-capital l look the same
 on:
   push:
     branches: [ main, develop ]
