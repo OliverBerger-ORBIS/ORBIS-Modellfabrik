@@ -375,11 +375,32 @@
             <button type="button" class="command-button" *ngIf="showDockInitial" (click)="sendDockInitial()">
               {{ labelDockInitial }}
             </button>
-            <button type="button" class="command-button" (click)="sendDriveToIntersection2Instant()">
-              {{ labelDriveInstant }}
+            <button
+              type="button"
+              class="command-button"
+              [disabled]="!canDriveDpsToHbw(ftsState)"
+              [attr.title]="!canDriveDpsToHbw(ftsState) ? labelDpsToHbwDisabledHint : null"
+              (click)="sendDpsToHbw()"
+            >
+              {{ labelDpsToHbw }}
             </button>
-            <button type="button" class="command-button" (click)="sendDriveToIntersection2Order()">
-              {{ labelDriveOrder }}
+            <button
+              type="button"
+              class="command-button"
+              [disabled]="!canDriveAiqsToHbw(ftsState)"
+              [attr.title]="!canDriveAiqsToHbw(ftsState) ? labelAiqsToHbwDisabledHint : null"
+              (click)="sendAiqsToHbw()"
+            >
+              {{ labelAiqsToHbw }}
+            </button>
+            <button
+              type="button"
+              class="command-button"
+              [disabled]="!canDriveToIntersection2(ftsState)"
+              [attr.title]="!canDriveToIntersection2(ftsState) ? labelToIntersection2DisabledHint : null"
+              (click)="sendToIntersection2()"
+            >
+              {{ labelToIntersection2 }}
             </button>
           </div>
 
@@ -397,14 +418,19 @@
                 <pre class="mono">{{ dockExamplePayload | json }}</pre>
               </div>
               <div class="commands-dev__item">
-                <div class="detail-label">{{ devDriveOrderTitle }}</div>
+                <div class="detail-label">{{ devDpsToHbwTitle }}</div>
                 <div class="mono">{{ ftsOrderTopic }}</div>
-                <pre class="mono">{{ driveExamplePayload | json }}</pre>
+                <pre class="mono">{{ driveDpsToHbwExamplePayload | json }}</pre>
               </div>
               <div class="commands-dev__item">
-                <div class="detail-label">{{ devDriveInstantTitle }}</div>
-                <div class="mono">{{ ftsInstantActionTopic }}</div>
-                <pre class="mono">{{ driveInstantExamplePayload | json }}</pre>
+                <div class="detail-label">{{ devAiqsToHbwTitle }}</div>
+                <div class="mono">{{ ftsOrderTopic }}</div>
+                <pre class="mono">{{ driveAiqsToHbwExamplePayload | json }}</pre>
+              </div>
+              <div class="commands-dev__item">
+                <div class="detail-label">{{ devToIntersection2Title }}</div>
+                <div class="mono">{{ ftsOrderTopic }}</div>
+                <pre class="mono">{{ driveToIntersection2ExamplePayload | json }}</pre>
               </div>
             </div>
           </details>

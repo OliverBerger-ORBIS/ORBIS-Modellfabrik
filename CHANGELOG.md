@@ -6,6 +6,20 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.8.12] - 2026-03-13
+
+**AGV-Tab NAV-Buttons, Analyse-Doku**
+
+### Added
+- **AGV-Tab Commands:** Drei NAV-Buttons – DPS → HBW, AIQS → HBW, → Intersection 2 (ersetzen alte „Drive to Intersection 2“-Buttons)
+- **Konditionale Buttons:** DPS → HBW nur aktiv wenn AGV am DPS; AIQS → HBW nur bei AIQS; → Intersection 2 nur bei bekannter Position + vorhandenem Pfad
+- **Analyse-Doku:** [fts-navigation-how-it-works-2026-03.md](docs/07-analysis/fts-navigation-how-it-works-2026-03.md) – Wie funktioniert FTS-Navigation, Topics, Payloads
+- **Analyse-Skript:** `scripts/analyze_session_fts_positions.py` – Single-Order-Filter (`--single-only`), HBW-Position, `at_hbw`/`single_order` im Report
+- **E2E-Task Sprint 17:** NAV-Buttons AGV-Tab (Live-Modus) testen
+
+### Changed
+- **AGV-Tab:** Verwendet `selectedAgvSerial` für alle Commands (AGV-2-Auswahl nutzt korrekte Serial, kein festes 5iO4)
+
 ## [0.8.11] - 2026-03-10
 
 **UC-05 Live Demo, Park-Button, I18n**

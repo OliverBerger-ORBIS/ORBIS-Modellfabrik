@@ -51,6 +51,7 @@ interface FtsState {
   orderId: string;
   orderUpdateId: number;
   lastNodeId: string;
+  lastModuleSerialNumber?: string; // When docked at module
   lastNodeSequenceId: number;
   lastCode: string;
   driving: boolean;
@@ -72,12 +73,16 @@ const ftsStateTopic = (serial: string) => `fts/v1/ff/${serial}/state`;
 const ftsOrderTopic = (serial: string) => `fts/v1/ff/${serial}/order`;
 const ftsInstantActionTopic = (serial: string) => `fts/v1/ff/${serial}/instantAction`;
 const DOCK_NODE_DPS = 'SVR4H73275'; // DPS serial (from fixtures/tests)
+const HBW_SERIAL = 'SVR3QA0022';
+const DPS_SERIAL = 'SVR4H73275';
+const AIQS_SERIAL = 'SVR4H76530';
+const INTERSECTION_2 = '2';
 const START_NODE_MAP: Record<string, string> = {
   MILL: 'SVR3QA2098',
   DRILL: 'SVR4H76449',
-  HBW: 'SVR3QA0022',
-  DPS: 'SVR4H73275',
-  AIQS: 'SVR4H76530',
+  HBW: HBW_SERIAL,
+  DPS: DPS_SERIAL,
+  AIQS: AIQS_SERIAL,
   CHRG: 'CHRG0',
 };
 
@@ -136,16 +141,21 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   readonly labelChargeOn = $localize`:@@ftsCommandChargeOn:Charge`;
   readonly labelChargeOff = $localize`:@@ftsCommandChargeOff:Stop Charging`;
   readonly labelDockInitial = $localize`:@@ftsCommandDockInitial:Dock`;
-  readonly labelDriveInstant = $localize`:@@ftsCommandDriveInstant:Drive to Intersection 2 (instant)`;
-  readonly labelDriveOrder = $localize`:@@ftsCommandDriveOrder:Drive to Intersection 2 (order)`;
+  readonly labelDpsToHbw = $localize`:@@ftsCommandDpsToHbw:DPS → HBW`;
+  readonly labelAiqsToHbw = $localize`:@@ftsCommandAiqsToHbw:AIQS → HBW`;
+  readonly labelToIntersection2 = $localize`:@@ftsCommandToIntersection2:→ Intersection 2`;
+  readonly labelDpsToHbwDisabledHint = $localize`:@@ftsCommandDpsToHbwDisabledHint:AGV must be at DPS`;
+  readonly labelAiqsToHbwDisabledHint = $localize`:@@ftsCommandAiqsToHbwDisabledHint:AGV must be at AIQS`;
+  readonly labelToIntersection2DisabledHint = $localize`:@@ftsCommandToIntersection2DisabledHint:AGV position unknown or no path to Intersection 2`;
   readonly labelStartSelect = $localize`:@@ftsCommandStartSelect:Start`;
   readonly labelStartAuto = $localize`:@@ftsCommandStartAuto:Auto (current position)`;
   readonly badgeTextFtsPosition = $localize`:@@ftsBadgePosition:Position`;
   readonly devModeTitle = $localize`:@@ftsDevModeTitle:Developer Mode (Topics & Payload)`;
   readonly devChargeTitle = $localize`:@@ftsDevChargeTitle:Charge ON/OFF`;
   readonly devDockTitle = $localize`:@@ftsDevDockTitle:Dock to Initial`;
-  readonly devDriveOrderTitle = $localize`:@@ftsDevDriveOrderTitle:Drive to Intersection 2`;
-  readonly devDriveInstantTitle = $localize`:@@ftsDevDriveInstantTitle:Drive to Intersection 2 (instant)`;
+  readonly devDpsToHbwTitle = $localize`:@@ftsDevDpsToHbwTitle:DPS → HBW`;
+  readonly devAiqsToHbwTitle = $localize`:@@ftsDevAiqsToHbwTitle:AIQS → HBW`;
+  readonly devToIntersection2Title = $localize`:@@ftsDevToIntersection2Title:→ Intersection 2`;
   readonly vehicleLabelEn = 'AGV';
   readonly vehicleLabelFr = 'AGV';
   readonly vehicleLabelDe = 'FTS';
@@ -1040,56 +1050,20 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     };
   }
 
-  get driveExamplePayload() {
-    return {
-      topic: this.ftsOrderTopic,
-      payload: {
-        timestamp: '2025-01-01T12:00:00.000Z',
-        orderId: 'example-order-id',
-        orderUpdateId: 0,
-        nodes: [
-          {
-            id: '2',
-            linkedEdges: ['1-2'],
-            action: {
-              type: 'STOP',
-              id: 'example-stop-id',
-              metadata: {},
-            },
-          },
-        ],
-        edges: [
-          {
-            id: '1-2',
-            length: 360,
-            linkedNodes: ['1', '2'],
-          },
-        ],
-        serialNumber: this.selectedAgvSerial,
-        metadata: {
-          requestedFrom: '1',
-        },
-      },
-      options: { qos: 1, retain: false },
-    };
+  get driveDpsToHbwExamplePayload() {
+    const { payload } = this.buildOrderFromTo(DPS_SERIAL, HBW_SERIAL);
+    return { topic: this.ftsOrderTopic, payload, options: { qos: 1, retain: false } };
   }
 
-  get driveInstantExamplePayload() {
-    return {
-      topic: this.ftsInstantActionTopic,
-      payload: {
-        serialNumber: this.selectedAgvSerial,
-        timestamp: '2025-01-01T12:00:00.000Z',
-        actions: [
-          {
-            actionId: 'drive-xxxx',
-            actionType: 'findPosition',
-            metadata: { nodeId: '2' },
-          },
-        ],
-      },
-      options: { qos: 1, retain: false },
-    };
+  get driveAiqsToHbwExamplePayload() {
+    const { payload } = this.buildOrderFromTo(AIQS_SERIAL, HBW_SERIAL);
+    return { topic: this.ftsOrderTopic, payload, options: { qos: 1, retain: false } };
+  }
+
+  get driveToIntersection2ExamplePayload() {
+    const start = this.lastFtsState?.lastNodeId ?? DPS_SERIAL;
+    const { payload } = this.buildOrderFromTo(start, INTERSECTION_2);
+    return { topic: this.ftsOrderTopic, payload, options: { qos: 1, retain: false } };
   }
 
   getStateClass(state: string): string {
@@ -1130,39 +1104,66 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     await this.dashboard.commands.dockFts(this.selectedAgvSerial, DOCK_NODE_DPS);
   }
 
-  async sendDriveToIntersection2Instant(): Promise<void> {
-    const actionId = `drive-${this.uuid()}`;
-    const payload = {
-      serialNumber: this.selectedAgvSerial,
-      timestamp: new Date().toISOString(),
-      actions: [
-        {
-          actionId,
-          actionType: 'findPosition',
-          metadata: { nodeId: '2' },
-        },
-      ],
-    };
-    await this.connectionService.publish(this.ftsInstantActionTopic, payload, { qos: 1 });
+  /** True if AGV is at the given module (by serial or resolved node). */
+  isAgvAtModule(state: FtsState | null, moduleSerial: string): boolean {
+    if (!state) return false;
+    if (state.lastModuleSerialNumber === moduleSerial) return true;
+    if (state.lastNodeId === moduleSerial) return true;
+    const resolved = this.resolveNodeRef(state.lastNodeId);
+    const canonical = `serial:${moduleSerial}`;
+    return resolved === canonical || resolved === moduleSerial;
   }
 
-  private buildOrderToIntersection2(): {
-    payload: any;
-    pathUsed: string[] | null;
-  } {
-    const target = '2';
+  canDriveDpsToHbw(ftsState: FtsState | null): boolean {
+    return this.isAgvAtModule(ftsState, DPS_SERIAL);
+  }
+
+  canDriveAiqsToHbw(ftsState: FtsState | null): boolean {
+    return this.isAgvAtModule(ftsState, AIQS_SERIAL);
+  }
+
+  canDriveToIntersection2(ftsState: FtsState | null): boolean {
+    const start =
+      this.selectedStartNode === 'auto'
+        ? ftsState?.lastNodeId ?? null
+        : START_NODE_MAP[this.selectedStartNode] ?? null;
+    if (!start) return false;
+    const path = this.findRoutePath(start, INTERSECTION_2);
+    return path !== null && path.length >= 1;
+  }
+
+  async sendDpsToHbw(): Promise<void> {
+    const { payload } = this.buildOrderFromTo(DPS_SERIAL, HBW_SERIAL);
+    await this.connectionService.publish(this.ftsOrderTopic, payload, { qos: 1 });
+  }
+
+  async sendAiqsToHbw(): Promise<void> {
+    const { payload } = this.buildOrderFromTo(AIQS_SERIAL, HBW_SERIAL);
+    await this.connectionService.publish(this.ftsOrderTopic, payload, { qos: 1 });
+  }
+
+  async sendToIntersection2(): Promise<void> {
     const start =
       this.selectedStartNode === 'auto'
         ? this.lastFtsState?.lastNodeId ?? null
         : START_NODE_MAP[this.selectedStartNode] ?? null;
-    const path = start ? this.findRoutePath(start, target) : null;
+    if (!start) {
+      console.warn('[AGV] Cannot drive to Intersection 2: no start position known');
+      return;
+    }
+    const { payload } = this.buildOrderFromTo(start, INTERSECTION_2);
+    await this.connectionService.publish(this.ftsOrderTopic, payload, { qos: 1 });
+  }
 
-    // Build nodes and edges from path if available
-    const nodes: any[] = [];
-    const edges: any[] = [];
+  private buildOrderFromTo(startNodeId: string, targetNodeId: string): {
+    payload: Record<string, unknown>;
+    pathUsed: string[] | null;
+  } {
+    const path = this.findRoutePath(startNodeId, targetNodeId);
+    const nodes: Array<Record<string, unknown>> = [];
+    const edges: Array<{ id: string; length: number; linkedNodes: string[] }> = [];
 
     if (path && path.length >= 1) {
-      // Build edge list from consecutive nodes
       for (let i = 0; i < path.length - 1; i++) {
         const a = path[i];
         const b = path[i + 1];
@@ -1176,18 +1177,17 @@ export class AgvTabComponent implements OnInit, OnDestroy {
         }
       }
 
-      // Build nodes with linkedEdges
       const linkedEdgesMap = new Map<string, Set<string>>();
-      edges.forEach((e) => {
-        const from = e.linkedNodes[0];
-        const to = e.linkedNodes[1];
+      for (const e of edges) {
+        const [from, to] = e.linkedNodes;
         if (!linkedEdgesMap.has(from)) linkedEdgesMap.set(from, new Set());
         if (!linkedEdgesMap.has(to)) linkedEdgesMap.set(to, new Set());
         linkedEdgesMap.get(from)!.add(e.id);
         linkedEdgesMap.get(to)!.add(e.id);
-      });
+      }
 
-      path.forEach((nodeId, idx) => {
+      for (let idx = 0; idx < path.length; idx++) {
+        const nodeId = path[idx];
         const edgeSet = linkedEdgesMap.get(nodeId) ?? new Set<string>();
         const isTarget = idx === path.length - 1;
         nodes.push({
@@ -1203,11 +1203,10 @@ export class AgvTabComponent implements OnInit, OnDestroy {
               }
             : {}),
         });
-      });
+      }
     } else {
-      // Fallback minimal order: target node only
       nodes.push({
-        id: target,
+        id: targetNodeId,
         linkedEdges: [],
         action: {
           id: `stop-${this.uuid()}`,
@@ -1224,17 +1223,10 @@ export class AgvTabComponent implements OnInit, OnDestroy {
       nodes,
       edges,
       serialNumber: this.selectedAgvSerial,
-      metadata: {
-        requestedFrom: start ?? undefined,
-      },
+      metadata: { requestedFrom: startNodeId },
     };
 
     return { payload, pathUsed: path };
-  }
-
-  async sendDriveToIntersection2Order(): Promise<void> {
-    const { payload } = this.buildOrderToIntersection2();
-    await this.connectionService.publish(this.ftsOrderTopic, payload, { qos: 1 });
   }
 
   trackByActionId(_index: number, action: FtsActionState): string {

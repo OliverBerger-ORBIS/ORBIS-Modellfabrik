@@ -70,6 +70,7 @@
 - [ ] **Vibrationssensor:** Arduino (SW-420 oder MPU-6050) per LAN → MQTT → osf-ui Replay/Live → Sensor-Tab Ampel + Impulse *(osf v0.8.10)*
 - [ ] **ccu/order/request von MES/DSP:** Simulierter Ersatzauftrag nach Quality-Fail; osf-ui zeigt neue Order *(osf vorbereitet)*
 - [ ] **UC-05 Live-Demo testen:** Toggle aktivieren → Order im Process-Tab auslösen → Vibration erzeugen (Stoß/Stimmgabel) → Reaktion im Orders-Tab prüfen. Abhängigkeit: Arduino-Vibrationssensor (SW-420 oder MPU-6050) fertiggestellt. *(osf v0.8.11)*
+- [ ] **NAV-Buttons AGV-Tab (Live-Modus):** DPS → HBW, AIQS → HBW, → Intersection 2 im AGV-Tab testen; Buttons nur aktiv wenn AGV an entsprechendem Modul; AGV-2-Auswahl nutzt korrekte Serial. *(osf v0.8.12)*
 
 ### Blog-Serie & Marketing
 - [ ] **A1 Review mit Marketing:**  (Carola Stammen) durchführen

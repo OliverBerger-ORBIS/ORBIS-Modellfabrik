@@ -34,6 +34,8 @@ Sprint-bezogene und projektweite Analysen für OSF.
 
 ## Hardware / FTS / AGV
 
+- [agv-position-after-order-completion-2026-03.md](agv-position-after-order-completion-2026-03.md) – AGV-Position nach Production-/Storage-Abschluss und Quality-Fail (analytisch + empirisch)
+- [fts-navigation-how-it-works-2026-03.md](fts-navigation-how-it-works-2026-03.md) – FTS-Navigation: Wer erstellt NAV, Topics, Payloads, osf-ui manuelle NAV
 - [second-agv-2026-03.md](second-agv-2026-03.md) – Zweites AGV (jp93) – Implementierung & Referenz (Sprint 17)
 - [agv-overlay-rendering-differences-2026-03.md](agv-overlay-rendering-differences-2026-03.md) – AGV-Overlay: Rendering-Unterschiede Mac vs. RPi (z-index, filter, Cache)
 - [agv-order-tab-color-analysis-2026-03.md](agv-order-tab-color-analysis-2026-03.md) – AGV-Darstellung ORDER-Tab vs. AGV-Tab (→ DR-24)
