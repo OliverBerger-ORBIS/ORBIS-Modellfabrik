@@ -6,6 +6,19 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.8.13] - 2026-03-16
+
+**Sensor-Tab Erweiterung, Arduino MultiSensor R4, Gas MQ-2**
+
+### Added
+- **Sensor-Tab:** Flame (Gefahr in % mit Farbverlauf grün→gelb→rot), SW-420 (grün/rot Rechtecke), MPU-6050 (Gauge Magnitude 0–35k), Gas MQ-2 (neue Kachel, Gefahrenbalken)
+- **Arduino MultiSensor R4 WiFi:** Sketch `OSF_MultiSensor_R4WiFi` – MPU-6050, SW-420, Flammensensor, MQ-2 Gas (Topics `osf/arduino/...`)
+- **Fixtures:** sensor-startup mit Arduino-Idle, Gas in Arduino-Presets (idle/warning/alarm)
+- **Doku:** [arduino-r4-multisensor-verdrahtung.md](docs/05-hardware/arduino-r4-multisensor-verdrahtung.md) – Breadboard-Verdrahtung R4 + alle Sensoren
+
+### Fixed
+- **Mock-Dashboard:** MessageMonitor/Arduino-Controller bei Wechsel zu Mock korrekt neu initialisieren (Fixtures erscheinen in Sensor-Kacheln)
+
 ## [0.8.12] - 2026-03-13
 
 **AGV-Tab NAV-Buttons, Analyse-Doku**

@@ -609,6 +609,16 @@ export const getDashboardController = (
     }
   }
 
+  // Switch to mock mode (mqttClient undefined): recreate controller so fixture→MessageMonitor forwarding is active
+  if (mqttClient === undefined && mqttClientRef !== undefined) {
+    mqttClientRef = undefined;
+    sharedController = createMockDashboardController({
+      mqttClient: undefined,
+      messageMonitor: messageMonitorRef ?? messageMonitor,
+    });
+    return sharedController;
+  }
+
   // MessageMonitor is only relevant in mock mode; if it changes recreate controller
   if (messageMonitor && messageMonitor !== messageMonitorRef) {
     messageMonitorRef = messageMonitor;

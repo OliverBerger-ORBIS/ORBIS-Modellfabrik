@@ -138,6 +138,57 @@ function createOsfVibrationFixture(): Observable<RawMqttMessage> {
   ]);
 }
 
+/** Arduino Multi-Sensor fixture – Idle: all green, normal temp/humidity, no flame, low gas */
+function createOsfArduinoIdleFixture(): Observable<RawMqttMessage> {
+  const ts = new Date().toISOString();
+  return from([
+    { topic: 'osf/arduino/vibration/mpu6050-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'mpu6050-1' }, timestamp: ts },
+    { topic: 'osf/arduino/vibration/mpu6050-1/state', payload: { vibrationLevel: 'green', vibrationDetected: false, impulseCount: 0, magnitude: 16500, timestamp: ts }, timestamp: ts },
+    { topic: 'osf/arduino/vibration/sw420-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'sw420-1' }, timestamp: ts },
+    { topic: 'osf/arduino/vibration/sw420-1/state', payload: { vibrationDetected: false, impulseCount: 0, timestamp: '' }, timestamp: ts },
+    { topic: 'osf/arduino/temperature/dht11-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'dht11-1' }, timestamp: ts },
+    { topic: 'osf/arduino/temperature/dht11-1/state', payload: { temperature: 22.5, humidity: 45, temperatureUnit: 'C', humidityUnit: '%' }, timestamp: ts },
+    { topic: 'osf/arduino/flame/flame-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'flame-1' }, timestamp: ts },
+    { topic: 'osf/arduino/flame/flame-1/state', payload: { flameDetected: false, rawValue: 800, timestamp: '' }, timestamp: ts },
+    { topic: 'osf/arduino/gas/mq2-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'mq2-1' }, timestamp: ts },
+    { topic: 'osf/arduino/gas/mq2-1/state', payload: { gasDetected: false, rawValue: 120, timestamp: ts }, timestamp: ts },
+  ]);
+}
+
+/** Arduino Multi-Sensor fixture – Warning: yellow vibration, elevated temp/humidity, gas rising */
+function createOsfArduinoWarningFixture(): Observable<RawMqttMessage> {
+  const ts = new Date().toISOString();
+  return from([
+    { topic: 'osf/arduino/vibration/mpu6050-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'mpu6050-1' }, timestamp: ts },
+    { topic: 'osf/arduino/vibration/mpu6050-1/state', payload: { vibrationLevel: 'yellow', vibrationDetected: true, impulseCount: 3, magnitude: 20000, timestamp: ts }, timestamp: ts },
+    { topic: 'osf/arduino/vibration/sw420-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'sw420-1' }, timestamp: ts },
+    { topic: 'osf/arduino/vibration/sw420-1/state', payload: { vibrationDetected: true, impulseCount: 5, timestamp: '' }, timestamp: ts },
+    { topic: 'osf/arduino/temperature/dht11-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'dht11-1' }, timestamp: ts },
+    { topic: 'osf/arduino/temperature/dht11-1/state', payload: { temperature: 32, humidity: 82, temperatureUnit: 'C', humidityUnit: '%' }, timestamp: ts },
+    { topic: 'osf/arduino/flame/flame-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'flame-1' }, timestamp: ts },
+    { topic: 'osf/arduino/flame/flame-1/state', payload: { flameDetected: false, rawValue: 150, timestamp: '' }, timestamp: ts },
+    { topic: 'osf/arduino/gas/mq2-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'mq2-1' }, timestamp: ts },
+    { topic: 'osf/arduino/gas/mq2-1/state', payload: { gasDetected: false, rawValue: 520, timestamp: ts }, timestamp: ts },
+  ]);
+}
+
+/** Arduino Multi-Sensor fixture – Alarm: red vibration, critical temp/humidity, flame + gas detected */
+function createOsfArduinoAlarmFixture(): Observable<RawMqttMessage> {
+  const ts = new Date().toISOString();
+  return from([
+    { topic: 'osf/arduino/vibration/mpu6050-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'mpu6050-1' }, timestamp: ts },
+    { topic: 'osf/arduino/vibration/mpu6050-1/state', payload: { vibrationLevel: 'red', vibrationDetected: true, impulseCount: 15, magnitude: 28000, timestamp: ts }, timestamp: ts },
+    { topic: 'osf/arduino/vibration/sw420-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'sw420-1' }, timestamp: ts },
+    { topic: 'osf/arduino/vibration/sw420-1/state', payload: { vibrationDetected: true, impulseCount: 42, timestamp: '' }, timestamp: ts },
+    { topic: 'osf/arduino/temperature/dht11-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'dht11-1' }, timestamp: ts },
+    { topic: 'osf/arduino/temperature/dht11-1/state', payload: { temperature: 38, humidity: 92, temperatureUnit: 'C', humidityUnit: '%' }, timestamp: ts },
+    { topic: 'osf/arduino/flame/flame-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'flame-1' }, timestamp: ts },
+    { topic: 'osf/arduino/flame/flame-1/state', payload: { flameDetected: true, rawValue: 12, timestamp: '' }, timestamp: ts },
+    { topic: 'osf/arduino/gas/mq2-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'mq2-1' }, timestamp: ts },
+    { topic: 'osf/arduino/gas/mq2-1/state', payload: { gasDetected: true, rawValue: 890, timestamp: ts }, timestamp: ts },
+  ]);
+}
+
 /**
  * Preset fixture configurations for common tab scenarios
  */
@@ -262,7 +313,7 @@ export const TAB_FIXTURE_PRESETS: Record<string, TabFixtureConfig> = {
     sensors: 'startup',
   },
   
-  // Sensor tab presets (Environmental Data)
+  // Sensor tab presets (Environmental Data) – includes Arduino idle so tiles show data
   'sensor-startup': {
     orders: 'startup',
     modules: 'startup',
@@ -270,7 +321,7 @@ export const TAB_FIXTURE_PRESETS: Record<string, TabFixtureConfig> = {
     flows: 'startup',
     config: 'startup',
     sensors: 'startup',
-    customFixtures: [createOsfVibrationFixture],
+    customFixtures: [createOsfArduinoIdleFixture],
   },
 
   // OSF extensions (Arduino, vibration sensor) – für Message-Monitor OSF-Topics-Test
@@ -282,6 +333,35 @@ export const TAB_FIXTURE_PRESETS: Record<string, TabFixtureConfig> = {
     config: 'startup',
     sensors: 'startup',
     customFixtures: [createOsfVibrationFixture],
+  },
+
+  // Arduino Multi-Sensor fixtures – für Sensor-Tab Mock
+  'sensor-arduino-idle': {
+    orders: 'startup',
+    modules: 'startup',
+    stock: 'startup',
+    flows: 'startup',
+    config: 'startup',
+    sensors: 'startup',
+    customFixtures: [createOsfArduinoIdleFixture],
+  },
+  'sensor-arduino-warning': {
+    orders: 'startup',
+    modules: 'startup',
+    stock: 'startup',
+    flows: 'startup',
+    config: 'startup',
+    sensors: 'startup',
+    customFixtures: [createOsfArduinoWarningFixture],
+  },
+  'sensor-arduino-alarm': {
+    orders: 'startup',
+    modules: 'startup',
+    stock: 'startup',
+    flows: 'startup',
+    config: 'startup',
+    sensors: 'startup',
+    customFixtures: [createOsfArduinoAlarmFixture],
   },
   
   // Configuration tab presets

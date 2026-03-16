@@ -15,7 +15,7 @@
 - [ ] **DSP_Edge:** Implementierung `dsp/correlation/info` (als Response auf Request oder Unsolicited nach Order-Response) – *osf-ui vorbereitet (CorrelationInfoService, dsp/#). DSP_Edge wird in anderem Projekt entwickelt. Offen: E2E-Test mit simuliertem dsp/correlation/info.*
 
 ### MES / Integration (Fokus)
-- [ ] **Einfache MES/ERP Integration:** Fokus auf Zusammenspiel mit DSP.
+- [x] **Einfache MES/ERP Integration:** Fokus auf Zusammenspiel mit DSP.
 - [x] **QM-Check Verlagerung (CCU Ausbau):** Erledigt durch Quality-Fail (Option B). CCU erstellt bei FAILED keinen Ersatzauftrag; MES/DSP senden zukünftig `ccu/order/request` bei Bedarf (anderes Projekt). osf-ui ist senderneutral.
 - [x] **CCU: Quality-Fail (Option B):** Bei `CHECK_QUALITY result=FAILED` kein Ersatzauftrag, Order bleibt ERROR. OSF-MODIFICATIONS.md Mod², Unit-Test. E2E ✓. Deploy ✓.
 - [ ] **E2E-Test ccu/order/request von MES/DSP:** Simulieren, dass MES/DSP nach Quality-Fail einen Ersatzauftrag per `ccu/order/request` stellt. osf-ui vorbereitet (egal wer sendet). *(Verifikation → siehe E2E-Tests (manuell))*
@@ -31,9 +31,14 @@
 - [x] **Fixture mixed-pr-prnok:** Session `mixed-sr-pr-prnok_20260305_121602.log` als Mock-Fixture. `scripts/build_order_fixtures.py --only mixed_pr_prnok`. Order-Tab und Track & Trace: Fixture-Option "Mixed PR Quality-Fail".
 
 ### Arduino-Hardware & LogiMAT
-- [x] **Arduino MPU-6050:** Vibrationssensor-Upgrade (I2C, 3-Stufen-Ampel, NTP/timestamp) – Sketch, Doku §5. **Done wenn:** a) MQTT per LAN funktioniert, b) Sensor-Info im Tab Sensor angezeigt wird (OSF-UI bereits ausgelegt).
+- [x] **Arduino MPU-6050 (R4 WiFi – minimale Lösung):** R4 mit eingebautem WiFi statt R3+Ethernet Shield. MPU-6050 sendet Topics `osf/arduino/vibration/mpu6050-1/state` und `.../connection` über WiFi an MQTT-Broker. **Done wenn:** a) MQTT per WiFi funktioniert, b) Sensor-Info im Tab Sensor angezeigt wird (OSF-UI bereits ausgelegt). *Doku:* [arduino-vibrationssensor.md](../05-hardware/arduino-vibrationssensor.md) §5, §4.1 (R4-Alternative). **Implementierung v0.8.13:** Sketch OSF_MultiSensor_R4WiFi (MPU-6050, SW-420, Flame, MQ-2), UI-Kacheln, Fixtures. *(E2E-Verifikation offen)*
 - [x] **Hardware-Erweiterung (Ampel-System):** SW-420 + MPU-6050 einheitlich (Relais aktiv-niedrig), Doku §1.1 Schritt-für-Schritt analog §5.3.1.
-- [ ] **E2E-Test Vibrationssensor:** Arduino (SW-420 oder MPU-6050) per LAN → MQTT-Broker → osf-ui Replay/Live → Sensor-Tab zeigt Ampel + Impulse. *(Verifikation → siehe E2E-Tests (manuell))*
+- [ ] **E2E Vibrationssensor:** *(siehe E2E-Tests unten – einmalig)*
+- [ ] **Vibrationssensor-Station: Messetaugliche Platte und Transport** *(parallel zur Implementierung)*
+  - **Ziel:** Physikalischer Aufbau der Station auf einer messetauglichen Platte mit stabilem Transport.
+  - **Umfang:** Arduino R4 + MPU-6050 + Ampel + Relais auf fester Montage; Kabelbündelung; 12V-Versorgung (Netzteil oder 24V-Kaskade); transportable Platte (z.B. Trägermaterial, Kanten-Schutz); ggf. Gehäuse/Abdeckung.
+  - **Done wenn:** Station steht stabil, ist transportfähig und bereit für LogiMAT-Demo.
+  - **Referenz:** [Verdrahtung R4 Multisensor](../05-hardware/arduino-r4-multisensor-verdrahtung.md)
 - [ ] **UC-05 Live-Demo: Gefahrensimulation** *(Reihenfolge: 1 – vor UC-01)*
   - **Kontext:** Gemäß [DR-22](../03-decision-records/22-dsp-use-case-konzept-live-demo.md), [Analyse alarm-fabrik-stop](../07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md).
   - **Umsetzung:** „Gefahr simulieren“ in UC-05 Live-Demo (Tabs „Konzept" | „Live Demo"). Button aus Sensor-Tab entfernen. Sendet `ccu/set/park` + `ccu/order/cancel` (ENQUEUED-IDs aus `ccu/order/active`). Business-Layer `simulateDanger` bleibt (wird in UC-05 eingebunden).
@@ -58,19 +63,21 @@
   - **Erreicht:** Zweites AGV in allen Tabs; AGV-Tab und Presentation-Tab mit Dropdown pro AGV; Darstellung beider AGVs im Shopfloor; AGV-1/AGV-2 farblich unterscheidbar (orange/gelb inkl. Hervorhebung); Fixtures storage_blue_agv2, storage_blue_parallel; DR-24 Shopfloor-Highlight-Farben
   - *(E2E-Verifikation → siehe E2E-Tests (manuell): Zwei AGVs)*
 - [ ] **Analyse/Klärung Stillstand bei zwei AGVs im mixed-Modus:** Zur Info. Nicht unbedingt messerelevant – entweder keine mixed-Szenarien oder nur ein AGV aktiv.
-- [ ] **Deployment v0.8.10 auf RPi:** osf-ui v0.8.10 auf RPi (192.168.0.100) ausrollen
+- [ ] **Deployment v0.8.13 auf RPi:** osf-ui v0.8.13 auf RPi (192.168.0.100) ausrollen
 - [x] **GitHub Pages Auto-Deploy:** Bei Version-Bump und Push auf main läuft CI → Deploy automatisch (v0.8.10 13.03.2026)
 
 ### E2E-Tests (manuell, mit osf-Version)
 
 *Diese Tests werden manuell verifiziert. Nach Durchführung abhaken inkl. Version.*
 
-- [ ] **Track & Trace FAILED/ERROR:** Fixture mixed_pr_prnok → Order Context zeigt „Fehlgeschlagen“ bei Quality-Fail *(osf v0.8.10)*
-- [ ] **Zwei AGVs:** Beide AGVs (jp93 + zweites) im Shopfloor/Replay sichtbar, Farben orange/gelb, Fixtures storage_blue_agv2, storage_blue_parallel *(osf v0.8.10)*
-- [ ] **Vibrationssensor:** Arduino (SW-420 oder MPU-6050) per LAN → MQTT → osf-ui Replay/Live → Sensor-Tab Ampel + Impulse *(osf v0.8.10)*
-- [ ] **ccu/order/request von MES/DSP:** Simulierter Ersatzauftrag nach Quality-Fail; osf-ui zeigt neue Order *(osf vorbereitet)*
-- [ ] **UC-05 Live-Demo testen:** Toggle aktivieren → Order im Process-Tab auslösen → Vibration erzeugen (Stoß/Stimmgabel) → Reaktion im Orders-Tab prüfen. Abhängigkeit: Arduino-Vibrationssensor (SW-420 oder MPU-6050) fertiggestellt. *(osf v0.8.11)*
-- [ ] **NAV-Buttons AGV-Tab (Live-Modus):** DPS → HBW, AIQS → HBW, → Intersection 2 im AGV-Tab testen; Buttons nur aktiv wenn AGV an entsprechendem Modul; AGV-2-Auswahl nutzt korrekte Serial. *(osf v0.8.12)*
+**Vorgehen:** Zuerst **v0.8.13 auf RPi deployen**, dann alle Tests nacheinander durchführen.
+
+- [ ] **Track & Trace FAILED/ERROR:** Fixture mixed_pr_prnok → Order Context zeigt „Fehlgeschlagen“ bei Quality-Fail
+- [ ] **Zwei AGVs:** Beide AGVs (jp93 + zweites) im Shopfloor/Replay sichtbar, Farben orange/gelb, Fixtures storage_blue_agv2, storage_blue_parallel
+- [ ] **Vibrationssensor:** Arduino R4+MPU-6050 per WiFi → MQTT → osf-ui Live → Sensor-Tab Ampel + Impulse
+- [ ] **ccu/order/request von MES/DSP:** Simulierter Ersatzauftrag nach Quality-Fail; osf-ui zeigt neue Order
+- [ ] **UC-05 Live-Demo:** Toggle aktivieren → Order im Process-Tab auslösen → Vibration erzeugen → Reaktion prüfen
+- [ ] **NAV-Buttons AGV-Tab (Live-Modus):** DPS → HBW, AIQS → HBW, → Intersection 2; Buttons nur aktiv wenn AGV am Modul; AGV-2-Auswahl korrekt
 
 ### Blog-Serie & Marketing
 - [ ] **A1 Review mit Marketing:**  (Carola Stammen) durchführen
@@ -99,9 +106,11 @@
 
 - **Customer Architecture Netzsch:** Neue DSP-Customer-Config `NETZSCH_CONFIG` anlegen – Vorlage: `osf/apps/osf-ui/.../customer/ecme/` und `customer-selector-page.component.ts`.
 
-### Sensor-Erweiterung Arduino R3 (Backlog)
+### Sensor-Erweiterung Arduino (Backlog)
 
-*Siehe [Arduino Vibrationssensor](../05-hardware/arduino-vibrationssensor.md) §6.* R3 weitere Sensoren anbinden, Werte im Sensor-Tab; Flammensensor (Prio 1); R4 zweite Priorität.
+*Siehe [Arduino Vibrationssensor](../05-hardware/arduino-vibrationssensor.md) §6.* **Aktuell v0.8.13:** R4+MPU-6050+SW-420+Flame+MQ-2 über WiFi (Sketch OSF_MultiSensor_R4WiFi). Backlog: R3 weitere Sensoren (DHT11, etc.) oder R4-Zweitsystem; TM1637/MAX7219 Display.
+
+- **Optionale Erweiterung um Aktor:** TM1637- oder MAX7219-Modul für 4-stelliges 7-Segment-Display. Bestehendes F23106605 (12 Pins) benötigt mehr Pins als verfügbar; TM1637 (2 Pins) oder MAX7219 (3 Pins) würden Beschaffung erfordern.
 
 ### EPIC: Aufbau eines Test-Frameworks für osf-ui (Backlog)
 
@@ -129,4 +138,4 @@
 
 ---
 
-*Letzte Aktualisierung: 13.03.2026*
+*Letzte Aktualisierung: 16.03.2026*

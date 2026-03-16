@@ -20,6 +20,28 @@ export interface VibrationStatePayload {
   /** @deprecated Legacy: ampel (GRUEN/GELB/ROT) */
   ampel?: string;
 }
+
+/** osf/arduino/temperature/dht11-1/state – DHT11 Temp + Humidity */
+export interface Dht11StatePayload {
+  temperature?: number;
+  humidity?: number;
+  temperatureUnit?: string;
+  humidityUnit?: string;
+}
+
+/** osf/arduino/flame/flame-1/state – KY-026 Flame sensor. rawValue 0–1023; low = flame. Inverted bar: left=high (safe), right=low (danger) */
+export interface FlameStatePayload {
+  flameDetected?: boolean;
+  rawValue?: number;
+  timestamp?: string;
+}
+
+/** osf/arduino/gas/mq2-1/state – MQ-2 Gas sensor (Rauch/CO). rawValue 0–1023; high = danger */
+export interface GasStatePayload {
+  gasDetected?: boolean;
+  rawValue?: number;
+  timestamp?: string;
+}
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { EnvironmentService } from '../services/environment.service';
 import type { OrderFixtureName } from '@osf/testing-fixtures';
@@ -60,6 +82,15 @@ export class SensorTabComponent implements OnInit, OnDestroy {
   };
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
 
+  /** Arduino fixture presets for Mock – Idle, Warning, Alarm */
+  readonly arduinoFixturePresets = ['sensor-arduino-idle', 'sensor-arduino-warning', 'sensor-arduino-alarm'] as const;
+  readonly arduinoFixtureLabels: Record<(typeof this.arduinoFixturePresets)[number], string> = {
+    'sensor-arduino-idle': $localize`:@@sensorArduinoFixtureIdle:Idle`,
+    'sensor-arduino-warning': $localize`:@@sensorArduinoFixtureWarning:Warning`,
+    'sensor-arduino-alarm': $localize`:@@sensorArduinoFixtureAlarm:Alarm`,
+  };
+  activeArduinoFixture: (typeof this.arduinoFixturePresets)[number] = 'sensor-arduino-idle';
+
   sensorOverview$!: Observable<SensorOverviewState>;
   cameraFrame$: Observable<CameraFrame | null> = this.dashboard.streams.cameraFrames$.pipe(
       shareReplay({ bufferSize: 1, refCount: false })
@@ -67,8 +98,23 @@ export class SensorTabComponent implements OnInit, OnDestroy {
 
   readonly VIBRATION_TOPIC_SW420 = 'osf/arduino/vibration/sw420-1/state';
   readonly VIBRATION_TOPIC_MPU6050 = 'osf/arduino/vibration/mpu6050-1/state';
-  /** MPU-6050 bevorzugt (3 Stufen), sonst SW-420 */
-  vibrationState$!: Observable<VibrationStatePayload | null>;
+  readonly DHT11_TOPIC = 'osf/arduino/temperature/dht11-1/state';
+  readonly FLAME_TOPIC = 'osf/arduino/flame/flame-1/state';
+  readonly GAS_TOPIC = 'osf/arduino/gas/mq2-1/state';
+  readonly ALARM_ENABLED_TOPIC = 'osf/arduino/alarm/enabled';
+
+  /** MPU-6050 vibration – 3 levels (green/yellow/red) */
+  mpuVibrationState$!: Observable<VibrationStatePayload | null>;
+  /** SW-420 vibration – binary (green/red) */
+  sw420VibrationState$!: Observable<VibrationStatePayload | null>;
+  /** DHT11 temperature + humidity. Arduino spec: temp 0–50°C, humidity 0–100% */
+  dht11State$!: Observable<Dht11StatePayload | null>;
+  /** Flame sensor. Arduino spec: rawValue 0–1023, inverted bar (left=high=safe, right=low=danger) */
+  flameState$!: Observable<FlameStatePayload | null>;
+  /** MQ-2 Gas sensor. rawValue 0–1023; high = danger (Rauch/CO) */
+  gasState$!: Observable<GasStatePayload | null>;
+  /** Sirene aktiv – von osf-ui Toggle gesteuert, Arduino schaltet Relais 4 nur bei true */
+  alarmEnabled$!: Observable<boolean>;
 
   /** Für Template: Gefahrensimulation-Button (Connection-State) */
   connectionState$!: Observable<ConnectionState>;
@@ -79,18 +125,41 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     private readonly connectionService: ConnectionService,
     private readonly sensorState: SensorStateService
   ) {
+    this.alarmEnabled$ = this.messageMonitor.getLastMessage<unknown>(this.ALARM_ENABLED_TOPIC).pipe(
+      map((msg) => msg?.payload === true || msg?.payload === 'true'),
+      startWith(false),
+      distinctUntilChanged(),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
     this.connectionState$ = this.connectionService.state$;
     this.currentEnvironmentKey = this.environmentService.current.key;
-    this.vibrationState$ = combineLatest([
-      this.messageMonitor.getLastMessage<VibrationStatePayload>(this.VIBRATION_TOPIC_SW420),
-      this.messageMonitor.getLastMessage<VibrationStatePayload>(this.VIBRATION_TOPIC_MPU6050),
-    ]).pipe(
-      map(([sw, mpu]) => {
-        if (mpu?.valid && mpu?.payload) return mpu.payload as VibrationStatePayload;
-        if (sw?.valid && sw?.payload) return sw.payload as VibrationStatePayload;
-        return null;
-      }),
-      startWith(null as VibrationStatePayload | null),
+    this.mpuVibrationState$ = this.messageMonitor
+      .getLastMessage<VibrationStatePayload>(this.VIBRATION_TOPIC_MPU6050)
+      .pipe(
+        map((msg) => (msg?.valid && msg?.payload ? (msg.payload as VibrationStatePayload) : null)),
+        startWith(null as VibrationStatePayload | null),
+        shareReplay({ bufferSize: 1, refCount: false })
+      );
+    this.sw420VibrationState$ = this.messageMonitor
+      .getLastMessage<VibrationStatePayload>(this.VIBRATION_TOPIC_SW420)
+      .pipe(
+        map((msg) => (msg?.valid && msg?.payload ? (msg.payload as VibrationStatePayload) : null)),
+        startWith(null as VibrationStatePayload | null),
+        shareReplay({ bufferSize: 1, refCount: false })
+      );
+    this.dht11State$ = this.messageMonitor.getLastMessage<Dht11StatePayload>(this.DHT11_TOPIC).pipe(
+      map((msg) => (msg?.valid && msg?.payload ? (msg.payload as Dht11StatePayload) : null)),
+      startWith(null as Dht11StatePayload | null),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+    this.flameState$ = this.messageMonitor.getLastMessage<FlameStatePayload>(this.FLAME_TOPIC).pipe(
+      map((msg) => (msg?.valid && msg?.payload ? (msg.payload as FlameStatePayload) : null)),
+      startWith(null as FlameStatePayload | null),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+    this.gasState$ = this.messageMonitor.getLastMessage<GasStatePayload>(this.GAS_TOPIC).pipe(
+      map((msg) => (msg?.valid && msg?.payload ? (msg.payload as GasStatePayload) : null)),
+      startWith(null as GasStatePayload | null),
       shareReplay({ bufferSize: 1, refCount: false })
     );
     this.bindCacheOutputs();
@@ -277,7 +346,7 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     return `${(100 - ratio * 100).toFixed(1)}%`;
   }
 
-  /** vibrationLevel (MPU-6050) oder vibrationDetected/ampel (SW-420) → Ampel-Darstellung */
+  /** vibrationLevel (MPU-6050) – 3-Stufen. Oder vibrationDetected/ampel (SW-420). */
   vibrationLevel(vibration: VibrationStatePayload | null): 'green' | 'red' | 'yellow' | 'unknown' {
     if (!vibration) return 'unknown';
     if (vibration.vibrationLevel === 'green' || vibration.vibrationLevel === 'yellow' || vibration.vibrationLevel === 'red') {
@@ -293,6 +362,27 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     return 'unknown';
   }
 
+  /** SW-420 (digital): green (idle) or red (alarm). false = idle = green, true = alarm = red. */
+  sw420Level(vibration: VibrationStatePayload | null): 'green' | 'red' | 'unknown' {
+    if (!vibration) return 'unknown';
+    if (typeof vibration.vibrationDetected === 'boolean') {
+      return vibration.vibrationDetected ? 'red' : 'green';
+    }
+    const a = vibration.ampel?.toUpperCase();
+    if (a === 'ROT' || a === 'RED') return 'red';
+    if (a === 'GRUEN' || a === 'GREEN') return 'green';
+    return 'unknown';
+  }
+
+  /** MPU-6050 magnitude range (0–35k typical; ~16k idle, 20k+ warning, 28k+ alarm). */
+  readonly MPU_MAGNITUDE_MIN = 0;
+  readonly MPU_MAGNITUDE_MAX = 35000;
+
+  formatMagnitude(magnitude: number | undefined): string {
+    if (magnitude == null || Number.isNaN(magnitude)) return '—';
+    return `${magnitude.toLocaleString()}`;
+  }
+
   vibrationStatus(vibration: VibrationStatePayload | null): string {
     if (!vibration) return $localize`:@@sensorVibrationNoData:No data`;
     const level = this.vibrationLevel(vibration);
@@ -301,6 +391,85 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     if (isAlarm) return $localize`:@@sensorVibrationStatusRed:Alarm`;
     if (isWarning) return $localize`:@@sensorVibrationStatusYellow:Warning`;
     return $localize`:@@sensorVibrationStatusGreen:Idle`;
+  }
+
+  /** SW-420 status: Idle (green) or Alarm (red). */
+  sw420Status(vibration: VibrationStatePayload | null): string {
+    if (!vibration) return $localize`:@@sensorVibrationNoData:No data`;
+    const level = this.sw420Level(vibration);
+    if (level === 'red') return $localize`:@@sensorVibrationStatusRed:Alarm`;
+    if (level === 'green') return $localize`:@@sensorVibrationStatusGreen:Idle`;
+    return $localize`:@@sensorVibrationNoData:No data`;
+  }
+
+  /** Sirene ein/aus – Arduino Relais 4; Ampel (Grün/Gelb/Rot) bleibt sensor-gesteuert */
+  async setAlarmEnabled(enabled: boolean): Promise<void> {
+    try {
+      await this.connectionService.publish(this.ALARM_ENABLED_TOPIC, enabled, {
+        qos: 1,
+        retain: true,
+      });
+    } catch (error) {
+      console.warn('[sensor-tab] setAlarmEnabled failed:', error);
+    }
+  }
+
+  formatDht11Temp(dht11: Dht11StatePayload | null): string {
+    if (dht11?.temperature == null || Number.isNaN(dht11.temperature)) return '—';
+    return `${dht11.temperature.toFixed(1)}°C`;
+  }
+
+  formatDht11Humidity(dht11: Dht11StatePayload | null): string {
+    if (dht11?.humidity == null || Number.isNaN(dht11.humidity)) return '—';
+    return `${dht11.humidity.toFixed(1)}%`;
+  }
+
+  /** Flame danger %: (1023 - raw) / 1023 * 100. High raw = safe, low raw = danger. Used for gradient mask. */
+  flameDangerPercent(flame: FlameStatePayload | null): number {
+    const raw = flame?.rawValue;
+    if (raw == null || Number.isNaN(raw)) return 0;
+    const clamped = Math.min(1023, Math.max(0, raw));
+    return ((1023 - clamped) / 1023) * 100;
+  }
+
+  /** Flame safe % for mask width (like Air Quality remaining). Mask covers right side = safe zone. */
+  flameSafePercent(flame: FlameStatePayload | null): string {
+    const raw = flame?.rawValue;
+    if (raw == null || Number.isNaN(raw)) return '100%';
+    const clamped = Math.min(1023, Math.max(0, raw));
+    const safe = (clamped / 1023) * 100;
+    return `${safe.toFixed(1)}%`;
+  }
+
+  /** Display danger % for UI. E.g. raw 888 → 13%, raw 12 → 99%. */
+  formatFlameDangerPercent(flame: FlameStatePayload | null): string {
+    const pct = this.flameDangerPercent(flame);
+    if (flame?.rawValue == null || Number.isNaN(flame.rawValue)) return '—';
+    return `${pct.toFixed(0)}%`;
+  }
+
+  /** MQ-2 Gas danger %: raw/1023*100. High raw = danger (Rauch/CO). */
+  gasDangerPercent(gas: GasStatePayload | null): number {
+    const raw = gas?.rawValue;
+    if (raw == null || Number.isNaN(raw)) return 0;
+    const clamped = Math.min(1023, Math.max(0, raw));
+    return (clamped / 1023) * 100;
+  }
+
+  /** Gas safe % for mask (like Air Quality). Mask from right = safe zone. */
+  gasSafePercent(gas: GasStatePayload | null): string {
+    const raw = gas?.rawValue;
+    if (raw == null || Number.isNaN(raw)) return '100%';
+    const clamped = Math.min(1023, Math.max(0, raw));
+    const safe = ((1023 - clamped) / 1023) * 100;
+    return `${safe.toFixed(1)}%`;
+  }
+
+  /** Display gas danger % for UI. */
+  formatGasDangerPercent(gas: GasStatePayload | null): string {
+    const pct = this.gasDangerPercent(gas);
+    if (gas?.rawValue == null || Number.isNaN(gas.rawValue)) return '—';
+    return `${pct.toFixed(0)}%`;
   }
 
   /** Mock only: Vibration-State per injectMessage setzen (zum Testen der Anzeige) */
@@ -420,13 +589,13 @@ export class SensorTabComponent implements OnInit, OnDestroy {
           this.bindCacheOutputs();
           this.initializeStreams();
           if (environment.key === 'mock') {
-            void this.loadFixture(this.activeFixture);
+            void this.loadArduinoFixture(this.activeArduinoFixture);
           }
         })
     );
 
     if (this.isMockMode) {
-      void this.loadFixture(this.activeFixture);
+      void this.loadArduinoFixture('sensor-arduino-idle');  // Load Arduino fixture so all Arduino sensors show data
     }
   }
 
@@ -449,6 +618,20 @@ export class SensorTabComponent implements OnInit, OnDestroy {
       this.bindStreams(streams);
     } catch (error) {
       console.warn('Failed to load sensor fixture', fixture, error);
+    }
+  }
+
+  /** Load Arduino fixture preset (Idle, Warning, Alarm) – Mock only */
+  async loadArduinoFixture(preset: 'sensor-arduino-idle' | 'sensor-arduino-warning' | 'sensor-arduino-alarm'): Promise<void> {
+    if (!this.isMockMode) return;
+    this.activeArduinoFixture = preset;
+    try {
+      await this.dashboard.loadTabFixture(preset);
+      const streams = this.dashboard.streams;
+      this.sensorState.clear(this.currentEnvironmentKey);
+      this.bindStreams(streams);
+    } catch (error) {
+      console.warn('Failed to load Arduino fixture', preset, error);
     }
   }
 

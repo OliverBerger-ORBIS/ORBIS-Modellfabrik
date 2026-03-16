@@ -70,17 +70,29 @@
       When enabled, a vibration alarm (RED) triggers park + cancel of ENQUEUED orders automatically. Use the Park button in the header for manual park.
     </p>
 
-    <div class="predictive-maintenance-use-case__live-demo-toggle">
-      <label class="toggle-label">
-        <input
-          type="checkbox"
-          [checked]="autoParkOnVibrationAlarm"
-          (change)="toggleAutoParkOnVibration($event)"
-          i18n-aria-label="@@uc05LiveDemoToggleAria"
-          aria-label="Enable auto-park on vibration alarm"
-        />
-        <span i18n="@@uc05LiveDemoToggleLabel">Auto-park on vibration alarm (Demo)</span>
-      </label>
+    <div class="predictive-maintenance-use-case__live-demo-toggles">
+      <div class="predictive-maintenance-use-case__live-demo-toggle" *ngIf="canUseAutoPark$ | async">
+        <label class="toggle-label">
+          <input
+            type="checkbox"
+            [checked]="autoParkOnVibrationAlarm"
+            (change)="toggleAutoParkOnVibration($event)"
+            i18n-aria-label="@@uc05LiveDemoToggleAria"
+            aria-label="Enable auto-park on vibration alarm"
+          />
+          <span i18n="@@uc05LiveDemoToggleLabel">Auto-park on vibration alarm (Demo)</span>
+        </label>
+      </div>
+      <div class="predictive-maintenance-use-case__live-demo-toggle" *ngIf="canUseAutoPark$ | async">
+        <label class="toggle-label">
+          <input
+            type="checkbox"
+            [checked]="alarmEnabled$ | async"
+            (change)="setAlarmEnabled(($any($event.target).checked))"
+          />
+          <span i18n="@@uc05LiveDemoSirenToggleLabel">Siren on alarm</span>
+        </label>
+      </div>
     </div>
 
     <div class="predictive-maintenance-use-case__live-demo-steps">

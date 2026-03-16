@@ -52,6 +52,13 @@
     margin: 0;
   }
 
+  &__live-demo-toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
   &__live-demo-toggle {
     display: flex;
     align-items: center;

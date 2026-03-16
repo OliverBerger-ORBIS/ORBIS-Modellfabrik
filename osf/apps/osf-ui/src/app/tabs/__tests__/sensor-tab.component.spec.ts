@@ -197,6 +197,44 @@ describe('SensorTabComponent', () => {
       expect(component.vibrationStatus({ vibrationDetected: false, impulseCount: 0 })).toBeDefined();
       expect(component.vibrationStatus({ vibrationDetected: true, impulseCount: 1 })).toBeDefined();
     });
+    it('should return sw420Level green/red only (digital: false=idle, true=alarm)', () => {
+      expect(component.sw420Level({ vibrationDetected: false, impulseCount: 0 })).toBe('green');
+      expect(component.sw420Level({ vibrationDetected: true, impulseCount: 42 })).toBe('red');
+    });
+    it('should format magnitude for display', () => {
+      expect(component.formatMagnitude(16500)).toBe('16,500');
+      expect(component.formatMagnitude(undefined)).toBe('—');
+    });
+  });
+
+  describe('flame sensor', () => {
+    it('should compute flameDangerPercent (high raw = low danger)', () => {
+      expect(component.flameDangerPercent({ rawValue: 1023 })).toBe(0);
+      expect(component.flameDangerPercent({ rawValue: 888 })).toBeCloseTo(13.2, 1);
+      expect(component.flameDangerPercent({ rawValue: 0 })).toBe(100);
+    });
+    it('should return flameSafePercent as CSS width string', () => {
+      expect(component.flameSafePercent({ rawValue: 1023 })).toBe('100.0%');
+      expect(component.flameSafePercent({ rawValue: 0 })).toBe('0.0%');
+    });
+    it('should format flame danger for display', () => {
+      expect(component.formatFlameDangerPercent({ rawValue: 888 })).toBe('13%');
+      expect(component.formatFlameDangerPercent({ rawValue: 12 })).toBe('99%');
+      expect(component.formatFlameDangerPercent(null)).toBe('—');
+    });
+  });
+
+  describe('gas sensor (MQ-2)', () => {
+    it('should compute gasDangerPercent (high raw = high danger)', () => {
+      expect(component.gasDangerPercent({ rawValue: 120 })).toBeCloseTo(11.7, 1);
+      expect(component.gasDangerPercent({ rawValue: 890 })).toBeCloseTo(87, 0);
+      expect(component.gasDangerPercent({ rawValue: 1023 })).toBe(100);
+    });
+    it('should format gas danger for display', () => {
+      expect(component.formatGasDangerPercent({ rawValue: 120 })).toBe('12%');
+      expect(component.formatGasDangerPercent({ rawValue: 890 })).toBe('87%');
+      expect(component.formatGasDangerPercent(null)).toBe('—');
+    });
   });
 });
 

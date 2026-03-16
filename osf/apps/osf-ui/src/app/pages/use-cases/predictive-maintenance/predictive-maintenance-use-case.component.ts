@@ -14,10 +14,11 @@ import { MessageMonitorService } from '../../../services/message-monitor.service
 import { ConnectionService } from '../../../services/connection.service';
 import { EnvironmentService } from '../../../services/environment.service';
 import { Observable, Subscription, combineLatest } from 'rxjs';
-import { filter, map, startWith, debounceTime } from 'rxjs/operators';
+import { filter, map, startWith, debounceTime, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 
 const VIBRATION_TOPIC_SW420 = 'osf/arduino/vibration/sw420-1/state';
 const VIBRATION_TOPIC_MPU6050 = 'osf/arduino/vibration/mpu6050-1/state';
+const ALARM_ENABLED_TOPIC = 'osf/arduino/alarm/enabled';
 
 interface VibrationPayload {
   vibrationLevel?: 'green' | 'yellow' | 'red';
@@ -62,6 +63,9 @@ export class PredictiveMaintenanceUseCaseComponent extends BaseUseCaseComponent 
   /** Can use auto-park: Mock always, Live/Replay when connected */
   canUseAutoPark$!: Observable<boolean>;
 
+  /** Sirene aktiv – Arduino Relais 4; beide Toggles (Sensor-Tab + UC-05) steuern denselben Topic */
+  alarmEnabled$!: Observable<boolean>;
+
   constructor(
     sanitizer: DomSanitizer,
     cdr: ChangeDetectorRef,
@@ -82,6 +86,12 @@ export class PredictiveMaintenanceUseCaseComponent extends BaseUseCaseComponent 
         if (env.key === 'mock') return true;
         return state === 'connected';
       })
+    );
+    this.alarmEnabled$ = this.messageMonitor.getLastMessage<unknown>(ALARM_ENABLED_TOPIC).pipe(
+      map((msg) => msg?.payload === true || msg?.payload === 'true'),
+      startWith(false),
+      distinctUntilChanged(),
+      shareReplay({ bufferSize: 1, refCount: false })
     );
     this.subscriptions.add(
       this.messageMonitor
@@ -115,6 +125,17 @@ export class PredictiveMaintenanceUseCaseComponent extends BaseUseCaseComponent 
     if (this.feedbackTimeout) clearTimeout(this.feedbackTimeout);
     this.subscriptions.unsubscribe();
     super.ngOnDestroy();
+  }
+
+  async setAlarmEnabled(enabled: boolean): Promise<void> {
+    try {
+      await this.connectionService.publish(ALARM_ENABLED_TOPIC, enabled, {
+        qos: 1,
+        retain: true,
+      });
+    } catch (error) {
+      console.warn('[uc-05] setAlarmEnabled failed:', error);
+    }
   }
 
   toggleAutoParkOnVibration(event: Event): void {

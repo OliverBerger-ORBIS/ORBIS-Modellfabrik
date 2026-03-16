@@ -143,6 +143,37 @@
   @media (max-width: 1199px) and (min-width: 768px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  &__full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+.arduino-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 2px solid var(--orbis-blue-strong);
+  margin-bottom: 0.5rem;
+
+  h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--orbis-nightblue);
+  }
+
+  &__toggle .alarm-toggle__label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--orbis-nightblue);
+  }
 }
 
 .gauge-card {
@@ -160,6 +191,87 @@
     font-weight: 700;
     color: var(--orbis-nightblue);
     text-align: center;
+  }
+
+  &--arduino {
+    border: 2px solid var(--orbis-blue-strong);
+    box-shadow: 0 24px 60px -34px rgba(var(--orbis-blue-strong-rgb), 0.35);
+  }
+
+  &--flame .flame-bar {
+    display: grid;
+    gap: 0.75rem;
+
+    &__bar {
+      position: relative;
+      height: 0.85rem;
+      border-radius: 999px;
+      background: rgba(226, 232, 240, 0.5);
+      overflow: hidden;
+    }
+
+    &__gradient {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #22c55e 0%, #facc15 50%, #ef4444 100%);
+      pointer-events: none;
+    }
+
+    &__mask {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.85);
+      pointer-events: none;
+      transition: width 0.3s ease-out;
+    }
+
+    &__danger {
+      color: var(--status-error-strong);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+  }
+
+  &--gas .gas-bar {
+    display: grid;
+    gap: 0.75rem;
+
+    &__bar {
+      position: relative;
+      height: 0.85rem;
+      border-radius: 999px;
+      background: rgba(226, 232, 240, 0.5);
+      overflow: hidden;
+    }
+
+    &__gradient {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #22c55e 0%, #facc15 50%, #ef4444 100%);
+      pointer-events: none;
+    }
+
+    &__mask {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.85);
+      pointer-events: none;
+      transition: width 0.3s ease-out;
+    }
+
+    &__danger {
+      color: var(--status-error-strong);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
   }
 }
 
@@ -202,6 +314,16 @@
 
 .gauge-svg__value--light {
   stroke: #fbbf24;
+}
+
+.gauge-svg__value--vibration {
+  stroke: var(--orbis-blue-strong);
+}
+
+.gauge-card__meta {
+  font-size: 0.85em;
+  color: var(--orbis-grey-strong);
+  margin-left: 0.5rem;
 }
 
 .gauge-svg__tick {
@@ -276,6 +398,11 @@
     @extend %card-title;
   }
 
+  &--arduino {
+    border: 2px solid var(--orbis-blue-strong);
+    box-shadow: 0 24px 60px -34px rgba(var(--orbis-blue-strong-rgb), 0.35);
+  }
+
   .traffic-light {
     display: inline-flex;
     flex-direction: column;
@@ -284,6 +411,17 @@
     padding: 1rem;
     border-radius: 1.25rem;
     background: rgba(240, 244, 255, 0.65);
+
+    &--sw420 {
+      flex-direction: row;
+      gap: 0.75rem;
+
+      .light {
+        width: 3rem;
+        height: 1.5rem;
+        border-radius: 999px;
+      }
+    }
 
     .light {
       width: 2.25rem;
@@ -317,6 +455,16 @@
     display: flex;
     gap: 0.5rem;
     margin-top: 0.5rem;
+
+    &.alarm-toggle {
+      .alarm-toggle__label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: 0.875rem;
+      }
+    }
 
     button {
       padding: 0.35rem 0.75rem;

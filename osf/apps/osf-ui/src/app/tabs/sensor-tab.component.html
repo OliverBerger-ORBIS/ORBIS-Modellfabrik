@@ -21,6 +21,17 @@
           {{ fixtureLabels[fixture] }}
         </button>
       </div>
+      <span class="badge" i18n="@@sensorArduinoFixtureLabel">Arduino</span>
+      <div class="fixture-switch">
+        <button
+          *ngFor="let preset of arduinoFixturePresets"
+          type="button"
+          [class.active]="preset === activeArduinoFixture"
+          (click)="loadArduinoFixture(preset)"
+        >
+          {{ arduinoFixtureLabels[preset] }}
+        </button>
+      </div>
     </div>
   </header>
 
@@ -261,41 +272,229 @@
       </div>
     </article>
 
-    <article class="traffic-card">
+    <!-- Arduino sensors – ORBIS blue border, section header with Sirene toggle -->
+    <header class="arduino-section-header gauge-grid__full-width">
+      <h3 i18n="@@sensorArduinoSectionHeading">Arduino Sensors</h3>
+      <div class="arduino-section-header__toggle" *ngIf="!isMockMode && (connectionState$ | async) === 'connected'">
+        <label class="alarm-toggle__label">
+          <input
+            type="checkbox"
+            [checked]="alarmEnabled$ | async"
+            (change)="setAlarmEnabled(($any($event.target).checked))"
+          />
+          <span i18n="@@sensorAlarmToggleLabel">Sirene bei Alarm</span>
+        </label>
+      </div>
+    </header>
+
+    <article class="gauge-card gauge-card--arduino">
       <header>
         <div class="title">
           <span class="emoji">📳</span>
           <div>
-            <h3 i18n="@@sensorVibrationHeading">Vibration Sensor</h3>
-            <p>{{ vibrationStatus(vibrationState$ | async) }}</p>
+            <h3 i18n="@@sensorArduinoMpu6050Vibration">Arduino: MPU-6050 Vibration</h3>
+            <p i18n="@@sensorArduinoMpu6050Range">Analog: magnitude 0–35k (~16k idle)</p>
           </div>
         </div>
       </header>
-      <div class="traffic-light" [attr.data-level]="vibrationLevel(vibrationState$ | async)">
-        <span
-          class="light light--red"
-          [class.active]="vibrationLevel(vibrationState$ | async) === 'red'"
-        ></span>
-        <span
-          class="light light--yellow"
-          [class.active]="vibrationLevel(vibrationState$ | async) === 'yellow'"
-        ></span>
+      <div class="gauge-wrapper">
+        <svg class="gauge-svg" viewBox="0 0 220 150" role="presentation">
+          <path class="gauge-svg__track" d="M45 95 A65 65 0 0 1 175 95"></path>
+          <ng-container *ngFor="let tick of gaugeTicks(MPU_MAGNITUDE_MIN, MPU_MAGNITUDE_MAX, 10000)">
+            <line
+              class="gauge-svg__tick"
+              [attr.x1]="tick.x1"
+              [attr.y1]="tick.y1"
+              [attr.x2]="tick.x2"
+              [attr.y2]="tick.y2"
+            ></line>
+            <text class="gauge-svg__tick-label" [attr.x]="tick.labelX" [attr.y]="tick.labelY">
+              {{ formatLarge(tick.value) }}
+            </text>
+          </ng-container>
+          <path
+            class="gauge-svg__value gauge-svg__value--vibration"
+            d="M45 95 A65 65 0 0 1 175 95"
+            [attr.stroke-dasharray]="gaugeCircumference"
+            [attr.stroke-dashoffset]="gaugeDashOffset((mpuVibrationState$ | async)?.magnitude, MPU_MAGNITUDE_MIN, MPU_MAGNITUDE_MAX)"
+          ></path>
+          <line
+            class="gauge-svg__needle"
+            x1="110"
+            y1="95"
+            x2="110"
+            y2="30"
+            [attr.transform]="needleTransform((mpuVibrationState$ | async)?.magnitude, MPU_MAGNITUDE_MIN, MPU_MAGNITUDE_MAX)"
+          ></line>
+          <circle class="gauge-svg__pivot" cx="110" cy="95" r="3"></circle>
+        </svg>
+      </div>
+      <p class="gauge-card__value">
+        {{ formatMagnitude((mpuVibrationState$ | async)?.magnitude) }}
+        <span class="gauge-card__meta">{{ vibrationStatus(mpuVibrationState$ | async) }}</span>
+      </p>
+    </article>
+
+    <article class="traffic-card traffic-card--arduino traffic-card--sw420">
+      <header>
+        <div class="title">
+          <span class="emoji">📳</span>
+          <div>
+            <h3 i18n="@@sensorArduinoSw420Vibration">Arduino: SW-420 Vibration</h3>
+            <p i18n="@@sensorArduinoSw420Digital">Digital: false = Idle (green), true = Alarm (red)</p>
+          </div>
+        </div>
+      </header>
+      <div class="traffic-light traffic-light--sw420" [attr.data-level]="sw420Level(sw420VibrationState$ | async)">
         <span
           class="light light--green"
-          [class.active]="vibrationLevel(vibrationState$ | async) === 'green'"
+          [class.active]="sw420Level(sw420VibrationState$ | async) === 'green'"
+        ></span>
+        <span
+          class="light light--red"
+          [class.active]="sw420Level(sw420VibrationState$ | async) === 'red'"
         ></span>
       </div>
       <p class="gauge-card__value">
-        <span i18n="@@sensorVibrationImpulses">Impulses</span>:
-        {{ (vibrationState$ | async)?.impulseCount ?? '—' }}
+        {{ sw420Status(sw420VibrationState$ | async) }}
       </p>
-      <div class="vibration-controls" *ngIf="isMockMode">
-        <button type="button" class="btn-secondary" (click)="injectVibrationState(false)" i18n="@@sensorVibrationInjectGreen">
-          Send idle
-        </button>
-        <button type="button" class="btn-danger" (click)="injectVibrationState(true)" i18n="@@sensorVibrationInjectRed">
-          Send alarm
-        </button>
+    </article>
+
+    <article class="gauge-card gauge-card--arduino">
+      <header>
+        <div class="title">
+          <span class="emoji">🌡️</span>
+          <div>
+            <h3 i18n="@@sensorArduinoDht11Temperature">Arduino: DHT11 Temperature</h3>
+            <p i18n="@@sensorArduinoDht11TempRange">Range: 0–50°C (Arduino spec)</p>
+          </div>
+        </div>
+      </header>
+      <div class="gauge-wrapper">
+        <svg class="gauge-svg" viewBox="0 0 220 150" role="presentation">
+          <path class="gauge-svg__track" d="M45 95 A65 65 0 0 1 175 95"></path>
+          <ng-container *ngFor="let tick of gaugeTicks(0, 50, 10)">
+            <line
+              class="gauge-svg__tick"
+              [attr.x1]="tick.x1"
+              [attr.y1]="tick.y1"
+              [attr.x2]="tick.x2"
+              [attr.y2]="tick.y2"
+            ></line>
+            <text class="gauge-svg__tick-label" [attr.x]="tick.labelX" [attr.y]="tick.labelY">
+              {{ formatTickLabel(tick.value, 'linear') }}
+            </text>
+          </ng-container>
+          <path
+            class="gauge-svg__value gauge-svg__value--temperature"
+            d="M45 95 A65 65 0 0 1 175 95"
+            [attr.stroke-dasharray]="gaugeCircumference"
+            [attr.stroke-dashoffset]="gaugeDashOffset((dht11State$ | async)?.temperature, 0, 50)"
+          ></path>
+          <line
+            class="gauge-svg__needle"
+            x1="110"
+            y1="95"
+            x2="110"
+            y2="30"
+            [attr.transform]="needleTransform((dht11State$ | async)?.temperature, 0, 50)"
+          ></line>
+          <circle class="gauge-svg__pivot" cx="110" cy="95" r="3"></circle>
+        </svg>
+      </div>
+      <p class="gauge-card__value">
+        {{ formatDht11Temp(dht11State$ | async) }}
+      </p>
+    </article>
+
+    <article class="gauge-card gauge-card--arduino">
+      <header>
+        <div class="title">
+          <span class="emoji">💧</span>
+          <div>
+            <h3 i18n="@@sensorArduinoDht11Humidity">Arduino: DHT11 Humidity</h3>
+            <p i18n="@@sensorArduinoDht11HumRange">Range: 0–100% (Arduino spec)</p>
+          </div>
+        </div>
+      </header>
+      <div class="gauge-wrapper">
+        <svg class="gauge-svg" viewBox="0 0 220 150" role="presentation">
+          <path class="gauge-svg__track" d="M45 95 A65 65 0 0 1 175 95"></path>
+          <ng-container *ngFor="let tick of gaugeTicks(0, 100, 20)">
+            <line
+              class="gauge-svg__tick"
+              [attr.x1]="tick.x1"
+              [attr.y1]="tick.y1"
+              [attr.x2]="tick.x2"
+              [attr.y2]="tick.y2"
+            ></line>
+            <text class="gauge-svg__tick-label" [attr.x]="tick.labelX" [attr.y]="tick.labelY">
+              {{ formatTickLabel(tick.value, 'linear') }}
+            </text>
+          </ng-container>
+          <path
+            class="gauge-svg__value gauge-svg__value--humidity"
+            d="M45 95 A65 65 0 0 1 175 95"
+            [attr.stroke-dasharray]="gaugeCircumference"
+            [attr.stroke-dashoffset]="gaugeDashOffset((dht11State$ | async)?.humidity, 0, 100)"
+          ></path>
+          <line
+            class="gauge-svg__needle"
+            x1="110"
+            y1="95"
+            x2="110"
+            y2="30"
+            [attr.transform]="needleTransform((dht11State$ | async)?.humidity, 0, 100)"
+          ></line>
+          <circle class="gauge-svg__pivot" cx="110" cy="95" r="3"></circle>
+        </svg>
+      </div>
+      <p class="gauge-card__value">
+        {{ formatDht11Humidity(dht11State$ | async) }}
+      </p>
+    </article>
+
+    <article class="gauge-card gauge-card--arduino gauge-card--flame">
+      <header>
+        <div class="title">
+          <span class="emoji">🔥</span>
+          <div>
+            <h3 i18n="@@sensorArduinoFlame">Arduino: Flame</h3>
+            <p i18n="@@sensorArduinoFlameBarDescPercent">Danger %: left=safe (green), right=danger (red). Raw 0–1023.</p>
+          </div>
+        </div>
+      </header>
+      <div class="flame-bar">
+        <div class="flame-bar__bar">
+          <div class="flame-bar__gradient"></div>
+          <div class="flame-bar__mask" [style.width]="flameSafePercent(flameState$ | async)"></div>
+        </div>
+        <p class="gauge-card__value">
+          {{ formatFlameDangerPercent(flameState$ | async) }}
+          <span *ngIf="(flameState$ | async)?.flameDetected" class="flame-bar__danger" i18n="@@sensorArduinoFlameDetected">Flame detected!</span>
+        </p>
+      </div>
+    </article>
+
+    <article class="gauge-card gauge-card--arduino gauge-card--gas">
+      <header>
+        <div class="title">
+          <span class="emoji">💨</span>
+          <div>
+            <h3 i18n="@@sensorArduinoGas">Arduino: Gas (MQ-2)</h3>
+            <p i18n="@@sensorArduinoGasBarDesc">Rauch/CO: left=safe (green), right=danger (red). Raw 0–1023.</p>
+          </div>
+        </div>
+      </header>
+      <div class="gas-bar">
+        <div class="gas-bar__bar">
+          <div class="gas-bar__gradient"></div>
+          <div class="gas-bar__mask" [style.width]="gasSafePercent(gasState$ | async)"></div>
+        </div>
+        <p class="gauge-card__value">
+          {{ formatGasDangerPercent(gasState$ | async) }}
+          <span *ngIf="(gasState$ | async)?.gasDetected" class="gas-bar__danger" i18n="@@sensorArduinoGasDetected">Gas detected!</span>
+        </p>
       </div>
     </article>
   </div>

@@ -1,0 +1,129 @@
+%% OSF Multi-Sensor – Arduino R4 WiFi – Vollständige Breadboard-Verdrahtung
+%% Sketch: OSF_MultiSensor_R4WiFi
+%% Siehe: arduino-r4-multisensor-verdrahtung.md
+%% Stand: 2026-03
+
+%%{init: {'flowchart': {'curve': 'stepBefore'}}}%%
+flowchart TB
+    subgraph ARDUINO["Arduino Uno R4 WiFi"]
+        direction TB
+        A_5V["5V"]
+        A_GND["GND"]
+        A_A4["A4 (SDA)"]
+        A_A5["A5 (SCL)"]
+        A_D2["D2"]
+        A_D3["D3"]
+        A_A0["A0"]
+        A_D7["D7"]
+        A_D8["D8"]
+        A_D9["D9"]
+        A_D10["D10"]
+    end
+
+    subgraph BB["Breadboard"]
+        direction TB
+        BB_P["(+) Bus – 5V"]
+        BB_M["(−) Bus – GND"]
+    end
+
+    subgraph MPU["MPU-6050"]
+        MPU_VCC["VCC"]
+        MPU_GND["GND"]
+        MPU_SDA["SDA"]
+        MPU_SCL["SCL"]
+    end
+
+    subgraph SW420["SW-420"]
+        SW_VCC["VCC"]
+        SW_GND["GND"]
+        SW_DO["DO"]
+    end
+
+    subgraph DHT["DHT11"]
+        DHT_VCC["VCC / Mitte"]
+        DHT_GND["GND / links −"]
+        DHT_DATA["Data / rechts S"]
+    end
+
+    subgraph FLAME["Flammensensor KY-026"]
+        FL_VCC["VCC"]
+        FL_GND["GND"]
+        FL_AO["AOut (analog)"]
+    end
+
+    subgraph RELAIS_5V["4-Kanal Relais – 5V Steuerung"]
+        R_VCC["VCC"]
+        R_GND["GND"]
+        R_IN1["IN1"]
+        R_IN2["IN2"]
+        R_IN3["IN3"]
+        R_IN4["IN4"]
+    end
+
+    subgraph RELAIS_12V["Relais – 12V Schraubklemmen"]
+        R_COM1["COM1"]
+        R_COM2["COM2"]
+        R_COM3["COM3"]
+        R_COM4["COM4"]
+        R_NO1["NO1"]
+        R_NO2["NO2"]
+        R_NO3["NO3"]
+        R_NO4["NO4"]
+    end
+
+    subgraph DC["12V Netzteil"]
+        DC_P["(+)"]
+        DC_M["(−)"]
+    end
+
+    subgraph AMPEL["12V Ampel"]
+        AMP_C["Common (−)"]
+        AMP_G["Grün"]
+        AMP_Y["Gelb"]
+        AMP_R["Rot"]
+        AMP_S["Sirene"]
+    end
+
+    %% === 5V-Verteilung ===
+    A_5V -->|"ROT"| BB_P
+    A_GND -->|"SCHWARZ"| BB_M
+
+    BB_P -->|"ROT"| MPU_VCC
+    BB_M -->|"SCHWARZ"| MPU_GND
+    MPU_SDA -->|"BLAU"| A_A4
+    MPU_SCL -->|"BLAU"| A_A5
+
+    BB_P -->|"ROT"| SW_VCC
+    BB_M -->|"SCHWARZ"| SW_GND
+    SW_DO -->|"BLAU"| A_D2
+
+    BB_P -->|"ROT"| DHT_VCC
+    BB_M -->|"SCHWARZ"| DHT_GND
+    DHT_DATA -->|"BLAU"| A_D3
+
+    BB_P -->|"ROT"| FL_VCC
+    BB_M -->|"SCHWARZ"| FL_GND
+    FL_AO -->|"BLAU"| A_A0
+
+    BB_P -->|"ROT"| R_VCC
+    BB_M -->|"SCHWARZ"| R_GND
+    A_D7 -->|"BLAU"| R_IN1
+    A_D8 -->|"BLAU"| R_IN2
+    A_D9 -->|"BLAU"| R_IN3
+    A_D10 -->|"BLAU"| R_IN4
+
+    %% === 12V-Kette (COM muss durchgängig 12V+ haben!) ===
+    DC_P -->|"ROT"| R_COM1
+    R_COM1 <-->|"Brücke"| R_COM2
+    R_COM2 <-->|"Brücke"| R_COM3
+    R_COM3 <-->|"Brücke"| R_COM4
+
+    DC_M -->|"SCHWARZ"| AMP_C
+
+    R_NO1 -->|"GRÜN"| AMP_G
+    R_NO2 -->|"GELB"| AMP_Y
+    R_NO3 -->|"LILA"| AMP_R
+    R_NO4 -->|"LILA"| AMP_S
+
+    %% === Common Ground (KRITISCH!) ===
+    BB_M <-->|"SCHWARZ M/M"| DC_M
