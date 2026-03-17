@@ -271,6 +271,7 @@ const REPLAY_TOPIC_MATCHERS: RegExp[] = [
   /^ccu\/state\//,
   /^fts\/v1\//,
   /^warehouse\/stock/,
+  /^\/j1\/txt\/1\/f\/i\/stock$/,
 ];
 
 const shouldReplayTopic = (topic: string): boolean => REPLAY_TOPIC_MATCHERS.some((matcher) => matcher.test(topic));
@@ -609,8 +610,8 @@ export const getDashboardController = (
     }
   }
 
-  // Switch to mock mode (mqttClient undefined): recreate controller so fixture→MessageMonitor forwarding is active
-  if (mqttClient === undefined && mqttClientRef !== undefined) {
+  // Switch to mock mode: only when explicitly requested (undefined + messageMonitor), not when getDashboardController() is called with no args
+  if (mqttClient === undefined && mqttClientRef !== undefined && messageMonitor !== undefined) {
     mqttClientRef = undefined;
     sharedController = createMockDashboardController({
       mqttClient: undefined,
@@ -626,5 +627,16 @@ export const getDashboardController = (
   }
 
   return sharedController;
+};
+
+/**
+ * Reset dashboard controller state for testing only.
+ * Prevents getDashboardController() singleton from leaking between tests.
+ * Call in beforeEach/afterEach when testing getDashboardController behavior.
+ */
+export const resetDashboardControllerForTesting = (): void => {
+  sharedController = null;
+  mqttClientRef = undefined;
+  messageMonitorRef = undefined;
 };
 

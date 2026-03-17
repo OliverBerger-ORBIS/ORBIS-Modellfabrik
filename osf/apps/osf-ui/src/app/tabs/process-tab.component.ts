@@ -16,6 +16,7 @@ import { ErpInfoBoxComponent, type PurchaseOrderData, type CustomerOrderData, ty
 import { ErpOrderDataService } from '../services/erp-order-data.service';
 
 const INVENTORY_LOCATIONS = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
+const STOCK_TOPICS = ['ccu/state/stock', '/j1/txt/1/f/i/stock'];
 const WORKPIECE_TYPES = ['BLUE', 'WHITE', 'RED'] as const;
 const PRODUCT_ICON_MAP: Record<(typeof WORKPIECE_TYPES)[number], string> = {
   BLUE: ICONS.shopfloor.workpieces.blue.product,
@@ -71,7 +72,9 @@ interface ProcessProductView {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProcessTabComponent implements OnInit, OnDestroy {
-  private dashboard = getDashboardController();
+  private get dashboard() {
+    return getDashboardController();
+  }
   private readonly subscriptions = new Subscription();
   private inventoryStreamSub?: Subscription;
   private currentEnvironmentKey: string;
@@ -533,7 +536,7 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
 
   private resetInventoryTracking(): void {
     this.inventoryState.clear(this.currentEnvironmentKey);
-    this.messageMonitor.clearTopic('ccu/state/stock');
+    STOCK_TOPICS.forEach((topic) => this.messageMonitor.clearTopic(topic));
     this.inventoryStreamSub?.unsubscribe();
     this.inventoryStreamSub = undefined;
   }
@@ -639,9 +642,14 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
     const cachedState = this.inventoryState.getSnapshot(this.currentEnvironmentKey);
     const initialState = cachedState ?? this.createEmptyInventoryState();
 
-    const lastInventory = this.messageMonitor.getLastMessage<StockSnapshot>('ccu/state/stock').pipe(
-      filter((msg) => msg !== null && msg.valid),
-      map((msg) => this.buildInventoryOverviewFromSnapshot(msg!.payload)),
+    const lastInventoryFromMonitor = STOCK_TOPICS.map((topic) =>
+      this.messageMonitor.getLastMessage<StockSnapshot>(topic).pipe(
+        filter((msg) => msg !== null && msg.valid),
+        map((msg) => this.buildInventoryOverviewFromSnapshot(msg!.payload))
+      )
+    );
+
+    const lastInventory = merge(...lastInventoryFromMonitor).pipe(
       startWith(initialState)
     );
 

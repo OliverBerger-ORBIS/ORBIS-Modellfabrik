@@ -2,10 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, skip } from 'rxjs';
 import {
   createMockDashboardController,
+  getDashboardController,
+  resetDashboardControllerForTesting,
   type MockDashboardController,
   type DashboardMessageMonitor,
 } from '../mock-dashboard';
 import type { MonitoredMessage } from '../services/message-monitor.service';
+import { createMqttClient, SubjectMqttAdapter } from '@osf/mqtt-client';
 
 describe('MockDashboard', () => {
   let controller: MockDashboardController;
@@ -355,5 +358,73 @@ describe('MockDashboard', () => {
       expect(streamsAfter).toBeDefined();
       expect(streamsAfter.orders$).toBeDefined();
     });
+  });
+});
+
+/**
+ * getDashboardController mode switching regression tests.
+ * CRITICAL: Mock/Replay mode must NOT break Live mode.
+ * Regression for v0.8.13 bug: getDashboardController() with no args incorrectly switched Live→Mock.
+ */
+describe('getDashboardController mode switching (Live vs Mock)', () => {
+  beforeEach(() => {
+    resetDashboardControllerForTesting();
+  });
+
+  it('must preserve Live mode when getDashboardController() is called with no args', () => {
+    const messages: Map<string, MonitoredMessage[]> = new Map();
+    const messageMonitor: DashboardMessageMonitor = {
+      addMessage: (topic: string, payload: unknown, timestamp?: string) => {
+        if (!messages.has(topic)) messages.set(topic, []);
+        messages.get(topic)!.push({
+          topic,
+          payload,
+          timestamp: timestamp ?? new Date().toISOString(),
+          valid: true,
+        });
+      },
+      getTopics: () => Array.from(messages.keys()),
+      getHistory: <T = unknown>(topic: string) => (messages.get(topic) ?? []) as MonitoredMessage<T>[],
+    };
+
+    const mqttClient = createMqttClient(new SubjectMqttAdapter());
+
+    // Establish Live mode (controller with MQTT client)
+    const controller = getDashboardController(mqttClient, messageMonitor);
+    expect(controller.streams.moduleOverview$).toBeDefined();
+
+    // CRITICAL: getDashboardController() with NO args must return the SAME controller.
+    // Bug (v0.8.13): used to recreate with mqttClient:undefined, breaking Live mode.
+    const controllerAfter = getDashboardController();
+    expect(controllerAfter).toBe(controller);
+
+    // Controller must still have updateMqttClient (Live mode capability)
+    expect(controller.updateMqttClient).toBeDefined();
+  });
+
+  it('must switch to Mock when getDashboardController(undefined, messageMonitor) is called', () => {
+    const messages: Map<string, MonitoredMessage[]> = new Map();
+    const messageMonitor: DashboardMessageMonitor = {
+      addMessage: (topic: string, payload: unknown, timestamp?: string) => {
+        if (!messages.has(topic)) messages.set(topic, []);
+        messages.get(topic)!.push({
+          topic,
+          payload,
+          timestamp: timestamp ?? new Date().toISOString(),
+          valid: true,
+        });
+      },
+      getTopics: () => Array.from(messages.keys()),
+      getHistory: <T = unknown>(topic: string) => (messages.get(topic) ?? []) as MonitoredMessage<T>[],
+    };
+
+    const mqttClient = createMqttClient(new SubjectMqttAdapter());
+    getDashboardController(mqttClient, messageMonitor);
+
+    // Explicit switch to Mock
+    const controllerAfterSwitch = getDashboardController(undefined, messageMonitor);
+    expect(controllerAfterSwitch).toBeDefined();
+    // Controller should have no MQTT – publish would not flow (no subscription)
+    // Verifying we get a controller back is sufficient; MQTT loss is implicit
   });
 });

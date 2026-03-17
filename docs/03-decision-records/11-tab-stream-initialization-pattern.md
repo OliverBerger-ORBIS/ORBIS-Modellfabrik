@@ -69,13 +69,23 @@ this.stream$ = merge(lastValue, this.dashboard.streams.stream$).pipe(
 **Für `inventoryOverview$`:**
 - MessageMonitorService speichert rohe `StockSnapshot` Payloads
 - Business-Layer transformiert `StockSnapshot` zu `InventoryOverviewState`
-- Wir müssen die Transformation im Tab durchführen:
+- Wir müssen die Transformation im Tab durchführen
+- **Topics:** Beide Stock-Topics mergen (`ccu/state/stock`, `/j1/txt/1/f/i/stock`) für CCU- und Legacy-Setups:
 
 ```typescript
-const lastInventory = this.messageMonitor.getLastMessage<StockSnapshot>('ccu/state/stock').pipe(
-  filter((msg) => msg !== null && msg.valid),        // 1. Filter gültige Nachrichten
-  map((msg) => this.buildInventoryOverviewFromSnapshot(msg!.payload)), // 2. Transform
-  startWith(defaultInventoryOverview)                 // 3. Fallback
+const STOCK_TOPICS = ['ccu/state/stock', '/j1/txt/1/f/i/stock'];
+const lastInventoryFromMonitor = STOCK_TOPICS.map((topic) =>
+  this.messageMonitor.getLastMessage<StockSnapshot>(topic).pipe(
+    filter((msg) => msg !== null && msg.valid),
+    map((msg) => this.buildInventoryOverviewFromSnapshot(msg!.payload))
+  )
+);
+const lastInventory = merge(...lastInventoryFromMonitor).pipe(
+  startWith(defaultInventoryOverview)
+);
+// Merge mit Dashboard-Stream für Echtzeit-Updates (Live-Priorität)
+this.inventoryOverview$ = merge(lastInventory, this.dashboard.streams.inventoryOverview$).pipe(
+  shareReplay({ bufferSize: 1, refCount: false })
 );
 ```
 
@@ -109,6 +119,32 @@ const lastSensorOverview = combineLatest([
 );
 ```
 
+## Environment-Priorität: Live vor Replay
+
+**Wichtig:** Die Aktualisierungs-Logik darf nicht ausschließlich vom Replay-Environment geprägt sein. **Live hat Priorität.**
+
+| Environment | Primäre Datenquelle | MessageMonitor-Rolle |
+|-------------|---------------------|----------------------|
+| **Live** | Dashboard-Streams (direkt aus MQTT) | Fallback für Timing (Tab öffnet spät) |
+| **Replay** | MessageMonitor (persistierte Session) | Primäre Quelle |
+| **Mock** | Fixture-Streams | – |
+
+**Implikationen:**
+- Dashboard muss in Live-Modus zuverlässig MQTT empfangen (nicht nur MessageMonitor)
+- Bei `inventoryOverview$`: Gateway muss beide Stock-Topics unterstützen (siehe Topics)
+- Merge `(lastValue, dashboard.streams.x$)` liefert Updates von beiden; Live-Daten kommen primär über dashboard.streams
+
+## Topics: Stock (Fischertechnik vs. CCU)
+
+Die Fischertechnik-Original-UI und die CCU nutzen unterschiedliche Topic-Strukturen:
+
+| Topic | Quelle | Verwendung |
+|-------|--------|------------|
+| `ccu/state/stock` | CCU-Protokoll (APS-CCU), [03-ui-integration.md](../../../integrations/APS-CCU/docs/03-ui-integration.md) | Primär – offizielle UI subscribes hier |
+| `/j1/txt/1/f/i/stock` | Fischertechnik-Gateway (publishGatewayStock), [mqtt-topic-conventions](../../06-integrations/00-REFERENCE/mqtt-topic-conventions.md) | Legacy – TXT/NodeRed-Setup |
+
+**OSF-Implementierung:** Beide Topics werden abonniert und im Gateway akzeptiert, um alle Setups (reines CCU, Legacy-Gateway, NodeRed) abzudecken.
+
 ## Regeln
 
 1. **Immer `refCount: false` verwenden** in Tab-Komponenten, um Streams aktiv zu halten
@@ -118,6 +154,7 @@ const lastSensorOverview = combineLatest([
 5. **Operator-Reihenfolge ist kritisch**: `filter` → `map` → `startWith` (niemals `map` → `filter`)
 6. **Bei `combineLatest`**: `startWith` AUSSERHALB des Arrays für Test-Kompatibilität
 7. **Timing-Unabhängigkeit**: Pattern funktioniert egal ob Tab oder Nachricht zuerst da ist
+8. **Dashboard-Referenz**: Bei Pattern 2 einen Getter `get dashboard()` verwenden statt gecachter Referenz `dashboard = getDashboardController()`, damit nach Verbindung (Live) stets der aktuelle Controller mit MQTT-Streams genutzt wird
 
 ## Betroffene Tabs
 

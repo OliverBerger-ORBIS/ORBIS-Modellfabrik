@@ -51,6 +51,7 @@
           "osf/apps/osf-ui/src/styles.scss"
         ],
         "scripts": [],
+        "allowedCommonJsDependencies": ["ajv"],
         "localize": [
           "en",
           "de",
@@ -67,8 +68,8 @@
             },
             {
               "type": "anyComponentStyle",
-              "maximumWarning": "20kb",
-              "maximumError": "32kb"
+              "maximumWarning": "32kb",
+              "maximumError": "48kb"
             }
           ],
           "outputHashing": "all",

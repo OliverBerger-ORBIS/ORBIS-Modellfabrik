@@ -63,8 +63,8 @@
   - **Erreicht:** Zweites AGV in allen Tabs; AGV-Tab und Presentation-Tab mit Dropdown pro AGV; Darstellung beider AGVs im Shopfloor; AGV-1/AGV-2 farblich unterscheidbar (orange/gelb inkl. Hervorhebung); Fixtures storage_blue_agv2, storage_blue_parallel; DR-24 Shopfloor-Highlight-Farben
   - *(E2E-Verifikation → siehe E2E-Tests (manuell): Zwei AGVs)*
 - [ ] **Analyse/Klärung Stillstand bei zwei AGVs im mixed-Modus:** Zur Info. Nicht unbedingt messerelevant – entweder keine mixed-Szenarien oder nur ein AGV aktiv.
-- [ ] **Deployment v0.8.13 auf RPi:** osf-ui v0.8.13 auf RPi (192.168.0.100) ausrollen
-- [x] **GitHub Pages Auto-Deploy:** Bei Version-Bump und Push auf main läuft CI → Deploy automatisch (v0.8.10 13.03.2026)
+- [x] **Deployment v0.9.0 auf RPi:** osf-ui v0.9.0 auf RPi (192.168.0.100) ausrollen
+- [x] **GitHub Pages Auto-Deploy:** Bei Version-Bump und Push auf main läuft CI → Deploy automatisch ab (v0.8.10 13.03.2026)
 
 ### E2E-Tests (manuell, mit osf-Version)
 

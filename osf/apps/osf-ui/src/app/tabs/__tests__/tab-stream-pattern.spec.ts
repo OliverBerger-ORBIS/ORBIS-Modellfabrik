@@ -52,23 +52,24 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
       expect(content).toMatch(/shareReplay\(\s*\{\s*bufferSize:\s*1,\s*refCount:\s*false\s*\}\s*\)/);
       
       // CRITICAL: Check that startWith comes AFTER filter and map (Pattern 2 requirement)
-      const getLastMessageStart = content.indexOf('getLastMessage');
+      // ProcessTab has multiple getLastMessage calls (inventory + flows); use flows specifically
+      const getLastMessageStart = content.indexOf("getLastMessage<ProductionFlowMap>('ccu/state/flows')");
       expect(getLastMessageStart).toBeGreaterThan(-1);
       if (getLastMessageStart > -1) {
         const section = content.substring(getLastMessageStart);
         const pipeStart = section.indexOf('.pipe(');
         expect(pipeStart).toBeGreaterThan(-1);
         if (pipeStart > -1) {
-          let depth = 0;
+          let depth = 1; // Already inside .pipe(
           let pipeEnd = pipeStart + 6;
           for (let i = pipeEnd; i < section.length; i++) {
             if (section[i] === '(') depth++;
             if (section[i] === ')') {
+              depth--;
               if (depth === 0) {
                 pipeEnd = i + 1;
                 break;
               }
-              depth--;
             }
           }
           const pipeChain = section.substring(pipeStart, pipeEnd);
@@ -103,16 +104,16 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
         const pipeStart = section.indexOf('.pipe(');
         expect(pipeStart).toBeGreaterThan(-1);
         if (pipeStart > -1) {
-          let depth = 0;
+          let depth = 1; // Already inside .pipe(
           let pipeEnd = pipeStart + 6;
           for (let i = pipeEnd; i < section.length; i++) {
             if (section[i] === '(') depth++;
             if (section[i] === ')') {
+              depth--;
               if (depth === 0) {
                 pipeEnd = i + 1;
                 break;
               }
-              depth--;
             }
           }
           const pipeChain = section.substring(pipeStart, pipeEnd);
@@ -205,38 +206,30 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
     });
 
     it('Pattern 2: startWith must come AFTER filter and map (critical pattern requirement)', () => {
-      const pattern2Files = [
-        'process-tab.component.ts',
-        'configuration-tab.component.ts',
+      const pattern2Files: { file: string; searchPattern: string }[] = [
+        { file: 'process-tab.component.ts', searchPattern: "getLastMessage<ProductionFlowMap>('ccu/state/flows')" },
+        { file: 'configuration-tab.component.ts', searchPattern: "getLastMessage<CcuConfigSnapshot>('ccu/state/config')" },
       ];
 
-      pattern2Files.forEach((file) => {
+      pattern2Files.forEach(({ file, searchPattern }) => {
         const content = readFileContent(path.join(tabsDir, file));
-        
-        // Extract the getLastMessage pipe chain (may span multiple lines)
-        // For configuration-tab, find the specific 'ccu/state/config' call
-        let getLastMessageStart = -1;
-        if (file === 'configuration-tab.component.ts') {
-          getLastMessageStart = content.indexOf("getLastMessage<CcuConfigSnapshot>('ccu/state/config')");
-        } else {
-          getLastMessageStart = content.indexOf('getLastMessage');
-        }
+        const getLastMessageStart = content.indexOf(searchPattern);
         expect(getLastMessageStart).toBeGreaterThan(-1);
         if (getLastMessageStart > -1) {
           const section = content.substring(getLastMessageStart);
           const pipeStart = section.indexOf('.pipe(');
           expect(pipeStart).toBeGreaterThan(-1);
           if (pipeStart > -1) {
-            let depth = 0;
+            let depth = 1; // Already inside .pipe(
             let pipeEnd = pipeStart + 6;
             for (let i = pipeEnd; i < section.length; i++) {
               if (section[i] === '(') depth++;
               if (section[i] === ')') {
+                depth--;
                 if (depth === 0) {
                   pipeEnd = i + 1;
                   break;
                 }
-                depth--;
               }
             }
             const pipeChain = section.substring(pipeStart, pipeEnd);

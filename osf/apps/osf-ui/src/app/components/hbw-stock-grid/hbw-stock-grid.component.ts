@@ -10,6 +10,7 @@ import { getDashboardController } from '../../mock-dashboard';
 import { ICONS } from '../../shared/icons/icon.registry';
 
 const INVENTORY_LOCATIONS = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
+const STOCK_TOPICS = ['ccu/state/stock', '/j1/txt/1/f/i/stock'];
 const WORKPIECE_TYPES = ['BLUE', 'WHITE', 'RED'] as const;
 
 const PRODUCT_ICON_MAP: Record<(typeof WORKPIECE_TYPES)[number], string> = {
@@ -59,7 +60,6 @@ export class HbwStockGridComponent implements OnInit, OnDestroy {
   private readonly messageMonitor = inject(MessageMonitorService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly subscriptions = new Subscription();
-  private readonly dashboard = getDashboardController();
 
   inventorySlots$!: Observable<InventorySlotState[]>;
   private currentEnvironmentKey: string;
@@ -117,14 +117,23 @@ export class HbwStockGridComponent implements OnInit, OnDestroy {
     );
   }
 
+  private get dashboard() {
+    return getDashboardController();
+  }
+
   private createInventorySourceStream(): Observable<InventoryOverviewState> {
     const cachedState = this.inventoryState.getSnapshot(this.currentEnvironmentKey);
     const initialState = cachedState ?? this.createEmptyInventoryState();
 
-    // Load from MessageMonitor (for replay mode) - this gets persisted messages
-    const lastInventory = this.messageMonitor.getLastMessage<StockSnapshot>('ccu/state/stock').pipe(
-      filter((msg) => msg !== null && msg.valid),
-      map((msg) => this.buildInventoryOverviewFromSnapshot(msg!.payload)),
+    // Load from MessageMonitor (for replay mode) - supports both CCU and legacy topics
+    const lastInventoryFromMonitor = STOCK_TOPICS.map((topic) =>
+      this.messageMonitor.getLastMessage<StockSnapshot>(topic).pipe(
+        filter((msg) => msg !== null && msg.valid),
+        map((msg) => this.buildInventoryOverviewFromSnapshot(msg!.payload))
+      )
+    );
+
+    const lastInventory = merge(...lastInventoryFromMonitor).pipe(
       startWith(initialState)
     );
 

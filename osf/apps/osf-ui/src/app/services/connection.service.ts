@@ -174,7 +174,8 @@ export class ConnectionService {
     // MQTT wildcards: + = single level, # = multi-level
     const topics = [
       'ccu/order/#',           // Capture all order-related topics (active, completed, future)
-      'ccu/state/stock',       // Stock snapshots
+      'ccu/state/stock',       // Stock snapshots (CCU protocol)
+      '/j1/txt/1/f/i/stock',   // Stock snapshots (Fischertechnik legacy gateway)
       'ccu/state/flows',       // Process flows
       'ccu/state/config',      // Configuration
       'ccu/pairing/state',     // Module pairing state

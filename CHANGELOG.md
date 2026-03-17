@@ -6,6 +6,23 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-03-17
+
+**Minor: Shopfloor Live-Modus Fix, Lager-Anzeige, Tab Stream Pattern, Build-Warnings**
+
+### Fixed
+- **Shopfloor Tab (Live-Modus):** Module zeigten alle „Disconnected“, obwohl CCU/APS lief – Root Cause: `getDashboardController()` ohne Argumente löste fälschlich „Switch to Mock“ aus und zerstörte MQTT-Controller. Fix: Bedingung auf expliziten Mock-Switch eingeschränkt (`messageMonitor !== undefined`).
+- **Lager-/Inventory-Anzeige (Live-Modus):** Lager erschien leer trotz eingehender `ccu/state/stock`-Nachrichten. Fix: Gateway und ConnectionService unterstützen beide Stock-Topics (`ccu/state/stock`, `/j1/txt/1/f/i/stock`); Process-Tab und HbwStockGrid nutzen Dashboard-Getter statt gecachter Referenz.
+- **Build-Warnungen:** track-trace SCSS-Budget, ajv CommonJS, fehlende i18n-Übersetzungen (agvTabSelectLabel, uc05LiveDemoSirenToggleLabel, moduleNameAGV, fixtureLabelStorageBlueAgv2/Parallel) behoben.
+
+### Added
+- **Regressions-Tests:** `getDashboardController` mode-switching – Mock/Replay darf Live-Modus nicht mehr brechen. Tests in `mock-dashboard.spec.ts`.
+- **resetDashboardControllerForTesting()** – für Test-Isolation bei getDashboardController-Tests.
+
+### Changed
+- **Tab Stream Pattern (DR 11):** Live-Priorität dokumentiert; Stock-Topics (CCU vs. Fischertechnik Legacy); Dashboard-Getter-Regel für Pattern-2-Komponenten; Beide Stock-Topics in Process-Tab und HbwStockGrid.
+- **Shopfloor-Tab:** Nutzt `this.dashboard.streams` (Tab-Stream-Pattern).
+
 ## [0.8.13] - 2026-03-16
 
 **Sensor-Tab Erweiterung, Arduino MultiSensor R4, Gas MQ-2**

@@ -198,8 +198,9 @@ export const createGateway = (
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
+  const STOCK_TOPICS = ['ccu/state/stock', '/j1/txt/1/f/i/stock'];
   const stockSnapshots$ = shared.pipe(
-    filter((msg) => msg.topic === 'ccu/state/stock'),
+    filter((msg) => STOCK_TOPICS.some((t) => msg.topic === t)),
     map((msg) => {
       const parsed = parsePayload<StockSnapshot>(msg.payload);
       if (!parsed) {

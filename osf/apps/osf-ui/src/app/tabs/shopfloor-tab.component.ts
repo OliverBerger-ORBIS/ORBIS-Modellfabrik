@@ -215,7 +215,10 @@ const STATUS_ICONS = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShopfloorTabComponent implements OnInit, OnDestroy {
-  private dashboard = getDashboardController();
+  /** Use getter to always get current controller (avoids stale reference after MQTT connect). */
+  private get dashboard() {
+    return getDashboardController();
+  }
   private readonly subscriptions = new Subscription();
   private fixtureSubscriptions = new Subscription();
   private moduleOverviewSub?: Subscription;
@@ -682,9 +685,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   }
 
   private initializeStreams(): void {
-    const controller = getDashboardController();
-    this.dashboard = controller;
-    this.activeFixture = controller.getCurrentFixture();
+    this.activeFixture = this.dashboard.getCurrentFixture();
 
     this.moduleOverview$ = this.dashboard.streams.moduleOverview$.pipe(
       shareReplay({ bufferSize: 1, refCount: false })
