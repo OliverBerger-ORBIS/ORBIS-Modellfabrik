@@ -402,6 +402,34 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     return $localize`:@@sensorVibrationNoData:No data`;
   }
 
+  /** Alarm state for highlighting: sensor would trigger UC-05 danger simulation. */
+  isMpuAlarm(vibration: VibrationStatePayload | null): boolean {
+    return this.vibrationLevel(vibration) === 'red';
+  }
+
+  /** Alarm state for highlighting. */
+  isSw420Alarm(vibration: VibrationStatePayload | null): boolean {
+    return this.sw420Level(vibration) === 'red';
+  }
+
+  /** Alarm state for highlighting (temp >= 35°C or humidity >= 90%). */
+  isDhtAlarm(dht: Dht11StatePayload | null): boolean {
+    if (!dht) return false;
+    const t = dht.temperature ?? 0;
+    const h = dht.humidity ?? 0;
+    return t >= 35 || h >= 90;
+  }
+
+  /** Alarm state for highlighting. */
+  isFlameAlarm(flame: FlameStatePayload | null): boolean {
+    return flame?.flameDetected === true;
+  }
+
+  /** Alarm state for highlighting. */
+  isGasAlarm(gas: GasStatePayload | null): boolean {
+    return gas?.gasDetected === true;
+  }
+
   /** Sirene ein/aus – Arduino Relais 4; Ampel (Grün/Gelb/Rot) bleibt sensor-gesteuert */
   async setAlarmEnabled(enabled: boolean): Promise<void> {
     try {
@@ -424,21 +452,22 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     return `${dht11.humidity.toFixed(1)}%`;
   }
 
-  /** Flame danger %: (1023 - raw) / 1023 * 100. High raw = safe, low raw = danger. Used for gradient mask. */
+  /** Flame danger %: logarithmic scale. High raw = safe, low raw = danger. log10(raw+1)/log10(1024) = safe ratio. */
   flameDangerPercent(flame: FlameStatePayload | null): number {
     const raw = flame?.rawValue;
     if (raw == null || Number.isNaN(raw)) return 0;
     const clamped = Math.min(1023, Math.max(0, raw));
-    return ((1023 - clamped) / 1023) * 100;
+    const logSafe = Math.log10(clamped + 1) / Math.log10(1024);
+    return (1 - logSafe) * 100;
   }
 
-  /** Flame safe % for mask width (like Air Quality remaining). Mask covers right side = safe zone. */
+  /** Flame safe % for mask width (logarithmic scale). Mask covers right side = safe zone. */
   flameSafePercent(flame: FlameStatePayload | null): string {
     const raw = flame?.rawValue;
     if (raw == null || Number.isNaN(raw)) return '100%';
     const clamped = Math.min(1023, Math.max(0, raw));
-    const safe = (clamped / 1023) * 100;
-    return `${safe.toFixed(1)}%`;
+    const logSafe = Math.log10(clamped + 1) / Math.log10(1024);
+    return `${(logSafe * 100).toFixed(1)}%`;
   }
 
   /** Display danger % for UI. E.g. raw 888 → 13%, raw 12 → 99%. */

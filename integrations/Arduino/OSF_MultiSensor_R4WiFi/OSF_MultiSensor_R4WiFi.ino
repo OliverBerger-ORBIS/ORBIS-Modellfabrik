@@ -29,17 +29,16 @@
 #include <NTPClient.h>
 #include <PubSubClient.h>
 
-// WLAN – anpassen für dein Netzwerk (APS: ORBIS-4711, Passwort siehe credentials.md)
-const char* WIFI_SSID = "daheim";
-const char* WIFI_PASS = "LillaVilla1";
+// WLAN – ORBIS-4711 für RPi/APS-Betrieb (Passwort siehe docs/credentials.md)
+const char* WIFI_SSID = "ORBIS-4711";
+const char* WIFI_PASS = "49117837";
 
-// Statische IP für Arduino (immer .95 – einheitlich daheim + ORBIS)
-// Daheim: 192.168.178.x | ORBIS: 192.168.0.x
-IPAddress arduinoIP(192, 168, 178, 95);
-IPAddress gatewayIP(192, 168, 178, 1);
+// Statische IP für Arduino (.95 – ORBIS-Bereich 192.168.0.91–99)
+IPAddress arduinoIP(192, 168, 0, 95);
+IPAddress gatewayIP(192, 168, 0, 1);
 IPAddress subnetIP(255, 255, 255, 0);
 
-const char* MQTT_BROKER = "192.168.178.65";  // RPi – oder Mac-IP für lokalen Test
+const char* MQTT_BROKER = "192.168.0.100";  // RPi mit MQTT-Broker
 const int MQTT_PORT = 1883;
 const char* MQTT_USER = "default";
 const char* MQTT_PASS = "default";
@@ -56,6 +55,7 @@ const char* TOPIC_GAS_STATE = "osf/arduino/gas/mq2-1/state";
 const char* TOPIC_GAS_CONNECTION = "osf/arduino/gas/mq2-1/connection";
 const char* TOPIC_ALARM_ENABLED = "osf/arduino/alarm/enabled";  // true/false – Sirene nur bei aktivem Toggle
 
+/** MQTT Publish-Interval: Jedes Topic wird bei Zustandsänderung sofort gesendet; bei Idle alle 15s als Heartbeat. */
 const unsigned long MQTT_HEARTBEAT_INTERVAL = 15000;
 const float DHT_TEMP_WARN = 30.0;   // °C – Gelb
 const float DHT_TEMP_DANGER = 35.0; // °C – Rot
@@ -95,7 +95,8 @@ const int RELAY_SIRENE = 10;  // Relais 4 – Sirene nur wenn Alarm-Toggle in os
 
 const int sampleInterval = 10;
 const unsigned long DEBUG_INTERVAL = 500;
-const unsigned long ROT_MIN_DURATION = 2000;
+/** Minimum time (ms) red light stays on after any alarm (flame, gas, vibration). Ensures visibility even for brief sensor pulses. */
+const unsigned long ROT_MIN_DURATION = 2500;
 const unsigned long GELB_MIN_DURATION = 2000;
 
 const long MAG_THRESHOLD_GELB = 18500;
@@ -128,8 +129,6 @@ bool alarmEnabled = false;  // Sirene nur wenn true – von osf/arduino/alarm/en
 unsigned long lastDebugPrint = 0;
 unsigned long redStartedAt = 0;
 unsigned long yellowStartedAt = 0;
-int lastLoggedLevel = -1;
-unsigned long lastLogTime = 0;
 
 #if USE_MQTT
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
@@ -467,11 +466,7 @@ void loop() {
     Serial.print(flameRaw);
     Serial.print(" gas=");
     Serial.print(gasRaw);
-    Serial.print(" (Gelb>");
-    Serial.print(MAG_THRESHOLD_GELB);
-    Serial.print(", Rot>");
-    Serial.print(MAG_THRESHOLD_ROT);
-    Serial.println(")");
+    Serial.println();
     Serial.flush();
     digitalWrite(LED_BUILTIN, LOW);
   }
@@ -525,17 +520,6 @@ void loop() {
     digitalWrite(RELAY_SIRENE, RELAY_OFF);
     currentLevel = 0;
     levelStr = "green";
-  }
-
-  bool wouldPublish = (currentLevel != lastLoggedLevel) ||
-      (currentLevel == 0 && (now - lastLogTime) >= 15000);
-  if (wouldPublish) {
-    Serial.print("MQTT wuerde: osf/arduino/vibration/mpu6050-1/state ");
-    Serial.print(levelStr);
-    Serial.print(" mag=");
-    Serial.println(mag);
-    lastLoggedLevel = currentLevel;
-    lastLogTime = now;
   }
 
 #if USE_MQTT

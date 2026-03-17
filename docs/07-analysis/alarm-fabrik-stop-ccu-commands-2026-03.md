@@ -121,7 +121,19 @@ Bei Empfang von `ccu/set/park` führt die CCU ausschließlich aus:
 
 ---
 
-## 6. Offene Punkte
+## 6. Option C: FTS-Reset durch OSF (2026-03)
+
+**Implementiert:** UC-05 Live-Demo sendet bei Alarm zusätzlich zu Park + Cancel einen RESET-InstantAction an alle bekannten FTS/AGVs:
+
+- Topic: `fts/v1/ff/<serial>/instantAction`
+- Payload: `{ serialNumber, timestamp, actions: [{ actionId, actionType: "reset" }] }`
+- FTS-Serials: aus `ftsStates$` (active) + Fallback `shopfloor_layout.json` → `fts[].serial`
+
+Damit bleiben AGVs nicht in Bewegung; sie werden physisch angehalten. Recovery: Nach Alarm oft manueller Factory-Reset nötig.
+
+---
+
+## 7. Offene Punkte
 
 - Wirkung von `ccu/set/park` auf Module mit laufender Aktion (z.B. AIQS während CHECK_QUALITY): Wird die Aktion abgebrochen oder erst nach Abschluss geparkt?
 - Unterstützung von `orderId: "*"` oder „cancel all“ in der CCU: derzeit nicht vorhanden.

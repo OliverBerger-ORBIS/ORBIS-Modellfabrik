@@ -68,8 +68,8 @@ export interface BusinessCommands {
   resetFactory: (withStorage?: boolean) => Promise<void>;
   /** Park factory modules (DPS, HBW). Like Fischertechnik header button. Only ccu/set/park, no cancel. */
   parkFactory: () => Promise<void>;
-  /** Gefahrensimulation: Park + Cancel ENQUEUED orders. Siehe docs/07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md */
-  simulateDanger: (enqueuedOrderIds: string[]) => Promise<void>;
+  /** Gefahrensimulation: Park + Cancel ENQUEUED + FTS-Reset (Option C). Siehe docs/07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md. Returns sent topics for UI display. */
+  simulateDanger: (enqueuedOrderIds: string[], options?: { ftsSerials?: string[] }) => Promise<{ sentTopics: Array<{ topic: string; timestamp: string }> }>;
 }
 
 export type BusinessFacade = BusinessStreams & BusinessCommands;
@@ -612,16 +612,40 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     await publish('ccu/set/park', payload, { qos: 2, retain: false });
   };
 
-  const simulateDanger: BusinessCommands['simulateDanger'] = async (enqueuedOrderIds) => {
-    // Gefahrensimulation: ccu/set/park + ccu/order/cancel (nur ENQUEUED-IDs)
+  const simulateDanger: BusinessCommands['simulateDanger'] = async (enqueuedOrderIds, options) => {
+    // Gefahrensimulation: ccu/set/park + ccu/order/cancel (ENQUEUED) + FTS-Reset (Option C)
     // docs/07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md
+    const sentTopics: Array<{ topic: string; timestamp: string }> = [];
+    const addSent = (topic: string) => sentTopics.push({ topic, timestamp: new Date().toISOString() });
+
     const payloadPark = { timestamp: new Date().toISOString() };
     await publish('ccu/set/park', payloadPark, { qos: 2, retain: false });
+    addSent('ccu/set/park');
 
     const orderIds = Array.isArray(enqueuedOrderIds) ? enqueuedOrderIds : [];
     if (orderIds.length > 0) {
       await publish('ccu/order/cancel', orderIds, { qos: 2, retain: false });
+      addSent('ccu/order/cancel');
     }
+
+    const ftsSerials = options?.ftsSerials ?? [];
+    for (const serial of ftsSerials) {
+      if (!serial || typeof serial !== 'string') continue;
+      const topic = `fts/v1/ff/${serial}/instantAction`;
+      const actionId = crypto.randomUUID?.() ?? `osf-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const payload = {
+        serialNumber: serial,
+        timestamp: new Date().toISOString(),
+        actions: [{ actionId, actionType: 'reset' }],
+      };
+      try {
+        await publish(topic, payload, { qos: 2, retain: false });
+        addSent(topic);
+      } catch (err) {
+        console.warn(`[simulateDanger] FTS reset failed for ${serial}:`, err);
+      }
+    }
+    return { sentTopics };
   };
 
   return {

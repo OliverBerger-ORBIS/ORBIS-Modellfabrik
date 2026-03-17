@@ -287,7 +287,7 @@
       </div>
     </header>
 
-    <article class="gauge-card gauge-card--arduino">
+    <article class="gauge-card gauge-card--arduino" [class.gauge-card--alarm]="isMpuAlarm(mpuVibrationState$ | async)">
       <header>
         <div class="title">
           <span class="emoji">📳</span>
@@ -335,7 +335,7 @@
       </p>
     </article>
 
-    <article class="traffic-card traffic-card--arduino traffic-card--sw420">
+    <article class="traffic-card traffic-card--arduino traffic-card--sw420" [class.traffic-card--alarm]="isSw420Alarm(sw420VibrationState$ | async)">
       <header>
         <div class="title">
           <span class="emoji">📳</span>
@@ -360,7 +360,7 @@
       </p>
     </article>
 
-    <article class="gauge-card gauge-card--arduino">
+    <article class="gauge-card gauge-card--arduino" [class.gauge-card--alarm]="isDhtAlarm(dht11State$ | async)">
       <header>
         <div class="title">
           <span class="emoji">🌡️</span>
@@ -407,7 +407,7 @@
       </p>
     </article>
 
-    <article class="gauge-card gauge-card--arduino">
+    <article class="gauge-card gauge-card--arduino" [class.gauge-card--alarm]="isDhtAlarm(dht11State$ | async)">
       <header>
         <div class="title">
           <span class="emoji">💧</span>
@@ -454,13 +454,13 @@
       </p>
     </article>
 
-    <article class="gauge-card gauge-card--arduino gauge-card--flame">
+    <article class="gauge-card gauge-card--arduino gauge-card--flame" [class.gauge-card--alarm]="isFlameAlarm(flameState$ | async)">
       <header>
         <div class="title">
           <span class="emoji">🔥</span>
           <div>
             <h3 i18n="@@sensorArduinoFlame">Arduino: Flame</h3>
-            <p i18n="@@sensorArduinoFlameBarDescPercent">Danger %: left=safe (green), right=danger (red). Raw 0–1023.</p>
+            <p i18n="@@sensorArduinoFlameBarDescLog">Danger %: left=safe (green), right=danger (red). Logarithmic scale, Raw 0–1023.</p>
           </div>
         </div>
       </header>
@@ -476,7 +476,7 @@
       </div>
     </article>
 
-    <article class="gauge-card gauge-card--arduino gauge-card--gas">
+    <article class="gauge-card gauge-card--arduino gauge-card--gas" [class.gauge-card--alarm]="isGasAlarm(gasState$ | async)">
       <header>
         <div class="title">
           <span class="emoji">💨</span>

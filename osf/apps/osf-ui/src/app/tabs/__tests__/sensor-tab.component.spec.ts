@@ -207,19 +207,21 @@ describe('SensorTabComponent', () => {
     });
   });
 
-  describe('flame sensor', () => {
+  describe('flame sensor (logarithmic scale)', () => {
     it('should compute flameDangerPercent (high raw = low danger)', () => {
       expect(component.flameDangerPercent({ rawValue: 1023 })).toBe(0);
-      expect(component.flameDangerPercent({ rawValue: 888 })).toBeCloseTo(13.2, 1);
       expect(component.flameDangerPercent({ rawValue: 0 })).toBe(100);
+      // Logarithmic: raw 888 -> ~2% danger, raw 12 -> ~63% danger
+      expect(component.flameDangerPercent({ rawValue: 888 })).toBeCloseTo(2.0, 0);
+      expect(component.flameDangerPercent({ rawValue: 12 })).toBeCloseTo(63, 0);
     });
     it('should return flameSafePercent as CSS width string', () => {
       expect(component.flameSafePercent({ rawValue: 1023 })).toBe('100.0%');
       expect(component.flameSafePercent({ rawValue: 0 })).toBe('0.0%');
     });
     it('should format flame danger for display', () => {
-      expect(component.formatFlameDangerPercent({ rawValue: 888 })).toBe('13%');
-      expect(component.formatFlameDangerPercent({ rawValue: 12 })).toBe('99%');
+      expect(component.formatFlameDangerPercent({ rawValue: 888 })).toBe('2%');
+      expect(component.formatFlameDangerPercent({ rawValue: 12 })).toBe('63%');
       expect(component.formatFlameDangerPercent(null)).toBe('—');
     });
   });

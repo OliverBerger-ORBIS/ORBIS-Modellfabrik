@@ -66,8 +66,11 @@
 
   <div class="predictive-maintenance-use-case__live-demo" *ngIf="activeTab === 'live-demo'">
     <h3 class="predictive-maintenance-use-case__live-demo-title" i18n="@@uc05LiveDemoTitle">Danger Simulation</h3>
-    <p class="predictive-maintenance-use-case__live-demo-desc" i18n="@@uc05LiveDemoDesc">
-      When enabled, a vibration alarm (RED) triggers park + cancel of ENQUEUED orders automatically. Use the Park button in the header for manual park.
+    <p class="predictive-maintenance-use-case__live-demo-desc" i18n="@@uc05LiveDemoDescAnySensor">
+      When enabled, any Arduino sensor alarm (vibration, flame, gas, temperature/humidity) triggers park + cancel of ENQUEUED orders automatically. Use the Park button in the header for manual park.
+    </p>
+    <p class="predictive-maintenance-use-case__live-demo-limitation" i18n="@@uc05LiveDemoLimitationInProgress">
+      <strong>CCU limitation:</strong> Only ENQUEUED orders are cancelled. Orders already IN_PROGRESS (e.g. at DRILL or AIQS) continue until completion. Manual factory reset may be required after alarm.
     </p>
 
     <div class="predictive-maintenance-use-case__live-demo-toggles">
@@ -75,12 +78,12 @@
         <label class="toggle-label">
           <input
             type="checkbox"
-            [checked]="autoParkOnVibrationAlarm"
-            (change)="toggleAutoParkOnVibration($event)"
+            [checked]="autoParkOnSensorAlarm"
+            (change)="toggleAutoParkOnSensorAlarm($event)"
             i18n-aria-label="@@uc05LiveDemoToggleAria"
-            aria-label="Enable auto-park on vibration alarm"
+            aria-label="Enable auto-park on sensor alarm"
           />
-          <span i18n="@@uc05LiveDemoToggleLabel">Auto-park on vibration alarm (Demo)</span>
+          <span i18n="@@uc05LiveDemoToggleLabel">Auto-park on sensor alarm (Demo)</span>
         </label>
       </div>
       <div class="predictive-maintenance-use-case__live-demo-toggle" *ngIf="canUseAutoPark$ | async">
@@ -100,9 +103,19 @@
       <ol class="predictive-maintenance-use-case__steps-list">
         <li i18n="@@uc05LiveDemoStep1">Activate the toggle above</li>
         <li i18n="@@uc05LiveDemoStep2">Trigger order in Process tab</li>
-        <li i18n="@@uc05LiveDemoStep3">During order process, generate vibration (impact or tuning fork on sensor)</li>
+        <li i18n="@@uc05LiveDemoStep3">During order process, trigger any sensor alarm (vibration, flame, gas, or temp/hum)</li>
         <li i18n="@@uc05LiveDemoStep4">Observe order flow in Orders tab</li>
       </ol>
+    </div>
+
+    <div class="predictive-maintenance-use-case__live-demo-mqtt" *ngIf="lastSentTopics.length > 0">
+      <h4 i18n="@@uc05LiveDemoMqttTitle">MQTT topics sent on alarm</h4>
+      <ul class="predictive-maintenance-use-case__mqtt-list">
+        <li *ngFor="let ev of lastSentTopics">
+          <code>{{ ev.topic }}</code>
+          <span class="predictive-maintenance-use-case__mqtt-ts">{{ ev.timestamp | date:'HH:mm:ss.SSS' }}</span>
+        </li>
+      </ul>
     </div>
 
     <span

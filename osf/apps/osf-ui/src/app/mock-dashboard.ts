@@ -57,7 +57,7 @@ export interface DashboardCommandSet {
   moveCamera: (command: 'relmove_up' | 'relmove_down' | 'relmove_left' | 'relmove_right' | 'home' | 'stop', degree: number) => Promise<void>;
   resetFactory: (withStorage?: boolean) => Promise<void>;
   parkFactory: () => Promise<void>;
-  simulateDanger: (enqueuedOrderIds: string[]) => Promise<void>;
+  simulateDanger: (enqueuedOrderIds: string[], options?: { ftsSerials?: string[] }) => Promise<{ sentTopics: Array<{ topic: string; timestamp: string }> }>;
 }
 
 export interface DashboardMessageMonitor {

@@ -198,6 +198,17 @@
     box-shadow: 0 24px 60px -34px rgba(var(--orbis-blue-strong-rgb), 0.35);
   }
 
+  &--alarm {
+    border: 3px solid var(--status-error-strong);
+    box-shadow:
+      0 0 0 2px rgba(var(--status-error-strong-rgb), 0.4),
+      0 0 0 6px rgba(var(--status-error-strong-rgb), 0.25),
+      0 0 24px 8px rgba(var(--status-error-strong-rgb), 0.35),
+      0 0 48px 16px rgba(var(--status-error-strong-rgb), 0.2),
+      0 24px 60px -34px rgba(var(--status-error-strong-rgb), 0.5);
+    animation: gauge-card-alarm-pulse 1.5s ease-in-out infinite;
+  }
+
   &--flame .flame-bar {
     display: grid;
     gap: 0.75rem;
@@ -401,6 +412,17 @@
   &--arduino {
     border: 2px solid var(--orbis-blue-strong);
     box-shadow: 0 24px 60px -34px rgba(var(--orbis-blue-strong-rgb), 0.35);
+  }
+
+  &--alarm {
+    border: 3px solid var(--status-error-strong);
+    box-shadow:
+      0 0 0 2px rgba(var(--status-error-strong-rgb), 0.4),
+      0 0 0 6px rgba(var(--status-error-strong-rgb), 0.25),
+      0 0 24px 8px rgba(var(--status-error-strong-rgb), 0.35),
+      0 0 48px 16px rgba(var(--status-error-strong-rgb), 0.2),
+      0 24px 60px -34px rgba(var(--status-error-strong-rgb), 0.5);
+    animation: gauge-card-alarm-pulse 1.5s ease-in-out infinite;
   }
 
   .traffic-light {
@@ -725,6 +747,26 @@
   background: rgba(240, 244, 255, 0.7);
   text-align: center;
   color: var(--orbis-grey-strong);
+}
+
+@keyframes gauge-card-alarm-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px rgba(var(--status-error-strong-rgb), 0.4),
+      0 0 0 6px rgba(var(--status-error-strong-rgb), 0.25),
+      0 0 24px 8px rgba(var(--status-error-strong-rgb), 0.35),
+      0 0 48px 16px rgba(var(--status-error-strong-rgb), 0.2),
+      0 24px 60px -34px rgba(var(--status-error-strong-rgb), 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px rgba(var(--status-error-strong-rgb), 0.5),
+      0 0 0 10px rgba(var(--status-error-strong-rgb), 0.2),
+      0 0 36px 12px rgba(var(--status-error-strong-rgb), 0.45),
+      0 0 64px 24px rgba(var(--status-error-strong-rgb), 0.25),
+      0 24px 60px -34px rgba(var(--status-error-strong-rgb), 0.6);
+  }
 }
 
 @media (max-width: 640px) {

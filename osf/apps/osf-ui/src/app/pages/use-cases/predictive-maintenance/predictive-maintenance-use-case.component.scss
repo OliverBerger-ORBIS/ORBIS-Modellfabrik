@@ -52,6 +52,12 @@
     margin: 0;
   }
 
+  &__live-demo-limitation {
+    font-size: 0.85rem;
+    color: var(--orbis-grey-medium, #666);
+    margin: 0.25rem 0 0;
+  }
+
   &__live-demo-toggles {
     display: flex;
     flex-wrap: wrap;
@@ -128,6 +134,42 @@
     font-size: 0.875rem;
     color: var(--orbis-nightblue);
     font-weight: 500;
+  }
+
+  &__live-demo-mqtt {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(var(--orbis-blue-light-rgb), 0.08);
+    border-radius: 0.5rem;
+
+    h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--orbis-nightblue);
+      margin: 0 0 0.5rem;
+    }
+  }
+
+  &__mqtt-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    font-size: 0.875rem;
+    color: var(--orbis-grey-strong, #555);
+    line-height: 1.6;
+
+    code {
+      font-family: ui-monospace, monospace;
+      font-size: 0.85em;
+      background: rgba(0, 0, 0, 0.06);
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+  }
+
+  &__mqtt-ts {
+    margin-left: 0.5rem;
+    font-size: 0.8em;
+    color: var(--orbis-grey-medium, #888);
   }
 
   &__header {

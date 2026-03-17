@@ -485,11 +485,16 @@ test('simulateDanger publishes ccu/set/park and ccu/order/cancel with enqueued I
   const { streams, publishLog } = createGateway();
   const business = createBusiness(streams);
 
-  await business.simulateDanger(['order-1', 'order-2']);
+  const result = await business.simulateDanger(['order-1', 'order-2']);
 
   assert.equal(publishLog.length, 2);
   assert.equal(publishLog[0]?.topic, 'ccu/set/park');
   assert.equal(publishLog[1]?.topic, 'ccu/order/cancel');
+
+  assert.equal(result.sentTopics.length, 2);
+  assert.equal(result.sentTopics[0]?.topic, 'ccu/set/park');
+  assert.equal(result.sentTopics[1]?.topic, 'ccu/order/cancel');
+  assert.ok(result.sentTopics[0]?.timestamp?.match(/^\d{4}-\d{2}-\d{2}T/), 'timestamp ISO');
 
   const parkPayload = publishLog[0]?.payload as { timestamp: string };
   assert.equal(typeof parkPayload?.timestamp, 'string');
@@ -506,9 +511,31 @@ test('simulateDanger with empty array publishes only park', async () => {
   const { streams, publishLog } = createGateway();
   const business = createBusiness(streams);
 
-  await business.simulateDanger([]);
+  const result = await business.simulateDanger([]);
 
   assert.equal(publishLog.length, 1);
   assert.equal(publishLog[0]?.topic, 'ccu/set/park');
+  assert.equal(result.sentTopics.length, 1);
+  assert.equal(result.sentTopics[0]?.topic, 'ccu/set/park');
+});
+
+test('simulateDanger with ftsSerials publishes FTS reset to each', async () => {
+  const { streams, publishLog } = createGateway();
+  const business = createBusiness(streams);
+
+  const result = await business.simulateDanger([], { ftsSerials: ['5iO4', 'jp93'] });
+
+  assert.equal(publishLog.length, 3); // park + 2× fts reset (no cancel when empty)
+  assert.equal(publishLog[0]?.topic, 'ccu/set/park');
+  assert.equal(publishLog[1]?.topic, 'fts/v1/ff/5iO4/instantAction');
+  assert.equal(publishLog[2]?.topic, 'fts/v1/ff/jp93/instantAction');
+
+  assert.equal(result.sentTopics.length, 3);
+  assert.equal(result.sentTopics[1]?.topic, 'fts/v1/ff/5iO4/instantAction');
+  assert.equal(result.sentTopics[2]?.topic, 'fts/v1/ff/jp93/instantAction');
+
+  const ftsPayload = publishLog[1]?.payload as { serialNumber: string; actions: { actionType: string }[] };
+  assert.equal(ftsPayload?.serialNumber, '5iO4');
+  assert.equal(ftsPayload?.actions?.[0]?.actionType, 'reset');
 });
 

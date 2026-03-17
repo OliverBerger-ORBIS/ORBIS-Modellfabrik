@@ -19,6 +19,7 @@
 - [x] **QM-Check Verlagerung (CCU Ausbau):** Erledigt durch Quality-Fail (Option B). CCU erstellt bei FAILED keinen Ersatzauftrag; MES/DSP senden zukünftig `ccu/order/request` bei Bedarf (anderes Projekt). osf-ui ist senderneutral.
 - [x] **CCU: Quality-Fail (Option B):** Bei `CHECK_QUALITY result=FAILED` kein Ersatzauftrag, Order bleibt ERROR. OSF-MODIFICATIONS.md Mod², Unit-Test. E2E ✓. Deploy ✓.
 - [ ] **E2E-Test ccu/order/request von MES/DSP:** Simulieren, dass MES/DSP nach Quality-Fail einen Ersatzauftrag per `ccu/order/request` stellt. osf-ui vorbereitet (egal wer sendet). *(Verifikation → siehe E2E-Tests (manuell))*
+- [ ] **E2E-Test dsp/correlation/info + request:** `dsp/correlation/info` (Response auf Request oder Unsolicited) und `ccu/order/request` End-to-End verifizieren – osf-ui CorrelationInfoService, dsp/# Topics.
 - [x] **Positiver Test requestId (Mod 1):** `requestId` aus `ccu/order/request` wird in `ccu/order/response` und `ccu/order/active` mitgegeben. Verifiziert 12.03.2026 (OSF-UI → CCU auf RPi 192.168.0.100).
 - [x] **TXT-AIQS: QoS 1 für quality_check:** `sorting_line.py`/`.blockly` QoS 2→1, beide Varianten (`_cam`, `_cam_clfn`), Doku, .ft-Archive. E2E ✓. Deploy ✓.
 - [x] **Track & Trace: Order-Status FAILED/ERROR anzeigen:**
@@ -34,6 +35,8 @@
 - [x] **Arduino MPU-6050 (R4 WiFi – minimale Lösung):** R4 mit eingebautem WiFi statt R3+Ethernet Shield. MPU-6050 sendet Topics `osf/arduino/vibration/mpu6050-1/state` und `.../connection` über WiFi an MQTT-Broker. **Done wenn:** a) MQTT per WiFi funktioniert, b) Sensor-Info im Tab Sensor angezeigt wird (OSF-UI bereits ausgelegt). *Doku:* [arduino-vibrationssensor.md](../05-hardware/arduino-vibrationssensor.md) §5, §4.1 (R4-Alternative). **Implementierung v0.8.13:** Sketch OSF_MultiSensor_R4WiFi (MPU-6050, SW-420, Flame, MQ-2), UI-Kacheln, Fixtures. *(E2E-Verifikation offen)*
 - [x] **Hardware-Erweiterung (Ampel-System):** SW-420 + MPU-6050 einheitlich (Relais aktiv-niedrig), Doku §1.1 Schritt-für-Schritt analog §5.3.1.
 - [ ] **E2E Vibrationssensor:** *(siehe E2E-Tests unten – einmalig)*
+- [ ] **Flammensensor-Anzeige (Sensor-Tab):** Darstellung von linearer auf logarithmische Skala umstellen. Aktuell: linearer Balken (rawValue 0–1023). Problem: Linear ist bei weitem Wertebereich irreführend; Flammensensor reagiert typisch logarithmisch. Fix: Logarithmische Skala für die Anzeige im Flammen-Sensor-Block verwenden – bessere Ablesbarkeit, weniger „falsche“ Alarm-Anmutung bei kleinem Raw-Wert-Sprung. Ggf. Empfindlichkeit/Schwellwert prüfen.
+- [ ] **Flammensensor bei Alarm (Sensor-Tab):** Bei Feuer-Alarm soll Sensor-Tab die aktuellen Werte (rawValue bei Auslösung) anzeigen. Bericht: „Feuer-Signal bleibt konstant bei seinem Wert" – Verifikation MQTT→MessageMonitor→Sensor-Tab; ggf. Live vs Mock.
 - [ ] **Vibrationssensor-Station: Messetaugliche Platte und Transport** *(parallel zur Implementierung)*
   - **Ziel:** Physikalischer Aufbau der Station auf einer messetauglichen Platte mit stabilem Transport.
   - **Umfang:** Arduino R4 + MPU-6050 + Ampel + Relais auf fester Montage; Kabelbündelung; 12V-Versorgung (Netzteil oder 24V-Kaskade); transportable Platte (z.B. Trägermaterial, Kanten-Schutz); ggf. Gehäuse/Abdeckung.
@@ -72,12 +75,24 @@
 
 **Vorgehen:** Zuerst **v0.9.1 auf RPi deployen**, dann alle Tests nacheinander durchführen.
 
-- [ ] **Track & Trace FAILED/ERROR:** Fixture mixed_pr_prnok → Order Context zeigt „Fehlgeschlagen“ bei Quality-Fail
-- [ ] **Zwei AGVs:** Beide AGVs (jp93 + zweites) im Shopfloor/Replay sichtbar, Farben orange/gelb, Fixtures storage_blue_agv2, storage_blue_parallel
-- [ ] **Vibrationssensor:** Arduino R4+MPU-6050 per WiFi → MQTT → osf-ui Live → Sensor-Tab Ampel + Impulse
+**Voraussetzung E2E (Vibrationssensor, UC-05):** Arduino R4 mit Sketch `OSF_MultiSensor_R4WiFi` – ist für RPi-Betrieb (ORBIS-4711, MQTT 192.168.0.100) vorkonfiguriert. Sketch flashen, Arduino an ORBIS-4711 WLAN anschließen.
+
+#### E2E-Ergebnisse (17.03.2026, v0.9.1) – Tests nur teilweise erfolgreich
+
+- [ ] **Track & Trace FAILED/ERROR:** ❌ Fixture mixed_pr_prnok wird nicht geladen/abgespielt – **kein einziges Fixture zeigt Daten in Track & Trace**. Regression: Fixtures spielen im Mock generell nicht mehr ab.
+- [ ] **Zwei AGVs:** ❌ **Fixtures im MOCK werden nicht abgespielt** (AGV-Tab, Track & Trace) – gleiche Ursache.
+- [x] **Alle Sensoren (Arduino R4):** ✓ MPU-6050, SW-420, Flame, MQ-2, DHT11 – Toggle Alarm aktiv, alle Sensoren können Alarm auslösen
+- [x] **Vibrationssensor:** ✓ Arduino R4+MPU-6050 per WiFi → MQTT → osf-ui Live → Sensor-Tab Ampel + Impulse
 - [ ] **ccu/order/request von MES/DSP:** Simulierter Ersatzauftrag nach Quality-Fail; osf-ui zeigt neue Order
-- [ ] **UC-05 Live-Demo:** Toggle aktivieren → Order im Process-Tab auslösen → Vibration erzeugen → Reaktion prüfen
-- [ ] **NAV-Buttons AGV-Tab (Live-Modus):** DPS → HBW, AIQS → HBW, → Intersection 2; Buttons nur aktiv wenn AGV am Modul; AGV-2-Auswahl korrekt
+- [ ] **UC-05 Live-Demo:** ⚠️ Toggle „Auto-Park bei Alarm“ wird persistiert. Bei Alarm während Produktion **kein Abbruch** (CCU-Limitation: IN_PROGRESS läuft weiter). Sent Events mit Timestamp angezeigt. E2E nicht vollständig verifiziert.
+- [ ] **NAV-Buttons AGV-Tab (Live-Modus):** ❌ DPS→HBW, HBW→Intersection-2, AIQS→HBW – **funktionieren nicht** (keine Reaktion).
+- [ ] **dsp/correlation/info + request:** E2E-Test fehlt noch – `dsp/correlation/info` (Response) und `ccu/order/request` (MES/DSP) End-to-End verifizieren.
+
+#### Offene Fixes (aus E2E)
+
+1. **Fixtures im Mock:** Keine Fixtures werden abgespielt (Track & Trace, AGV-Tab, vermutlich alle Tabs). **Constraint:** Fix darf nicht mit Live-Modus kollidieren (v0.9.1-Änderungen: RPi-Kiosk, Lager via MessageMonitor). Besser: Fixtures tun nicht, als dass Live keine Infos anzeigt. Änderungen am Fixture-/Mock-Flow nur, wenn Live sicher unberührt bleibt.
+2. **UC-05 Toggle:** ~~Persistenz~~ – Toggle „Auto-Park bei Alarm“ wird nun in der UI persistiert (localStorage). **Noch offen:** E2E-Verifikation, ob bei Alarm während Produktion der Abbruch erfolgt (CCU-Limitation bei IN_PROGRESS bleibt).
+3. **NAV-Buttons AGV-Tab:** DPS→HBW, AIQS→HBW, →Intersection-2 ohne Wirkung. **Hinweis:** Im Message-Monitor waren keine FTS-Topics zu den NAV-Kommandos sichtbar – Prüfen, ob überhaupt publiziert wird und an welche Topics.
 
 ### Blog-Serie & Marketing
 - [ ] **A1 Review mit Marketing:**  (Carola Stammen) durchführen
@@ -138,4 +153,4 @@
 
 ---
 
-*Letzte Aktualisierung: 16.03.2026*
+*Letzte Aktualisierung: 17.03.2026*

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UseCaseControlsComponent } from '../shared/use-case-controls/use-case-controls.component';
 import { Uc05SvgGeneratorService } from './uc-05-svg-generator.service';
@@ -13,17 +13,35 @@ import { getDashboardController } from '../../../mock-dashboard';
 import { MessageMonitorService } from '../../../services/message-monitor.service';
 import { ConnectionService } from '../../../services/connection.service';
 import { EnvironmentService } from '../../../services/environment.service';
-import { Observable, Subscription, combineLatest } from 'rxjs';
+import { Observable, Subscription, combineLatest, firstValueFrom } from 'rxjs';
 import { filter, map, startWith, debounceTime, distinctUntilChanged, shareReplay } from 'rxjs/operators';
+import { ShopfloorMappingService } from '../../../services/shopfloor-mapping.service';
 
 const VIBRATION_TOPIC_SW420 = 'osf/arduino/vibration/sw420-1/state';
 const VIBRATION_TOPIC_MPU6050 = 'osf/arduino/vibration/mpu6050-1/state';
+const FLAME_TOPIC = 'osf/arduino/flame/flame-1/state';
+const GAS_TOPIC = 'osf/arduino/gas/mq2-1/state';
+const DHT_TOPIC = 'osf/arduino/temperature/dht11-1/state';
 const ALARM_ENABLED_TOPIC = 'osf/arduino/alarm/enabled';
+const STORAGE_KEY_UC05_AUTO_PARK = 'OSF.uc05.autoParkOnVibrationAlarm';
 
 interface VibrationPayload {
   vibrationLevel?: 'green' | 'yellow' | 'red';
   vibrationDetected?: boolean;
   ampel?: string;
+}
+
+interface FlamePayload {
+  flameDetected?: boolean;
+}
+
+interface GasPayload {
+  gasDetected?: boolean;
+}
+
+interface DhtPayload {
+  temperature?: number;
+  humidity?: number;
 }
 
 function isVibrationRed(payload: VibrationPayload | null): boolean {
@@ -32,6 +50,21 @@ function isVibrationRed(payload: VibrationPayload | null): boolean {
   if (payload.vibrationDetected === true) return true;
   const a = payload.ampel?.toUpperCase();
   return a === 'ROT' || a === 'RED';
+}
+
+function isFlameAlarm(payload: FlamePayload | null): boolean {
+  return payload?.flameDetected === true;
+}
+
+function isGasAlarm(payload: GasPayload | null): boolean {
+  return payload?.gasDetected === true;
+}
+
+function isDhtAlarm(payload: DhtPayload | null): boolean {
+  if (!payload) return false;
+  const t = payload.temperature ?? 0;
+  const h = payload.humidity ?? 0;
+  return t >= 35 || h >= 90;
 }
 
 /**
@@ -46,19 +79,21 @@ function isVibrationRed(payload: VibrationPayload | null): boolean {
   styleUrls: ['./predictive-maintenance-use-case.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PredictiveMaintenanceUseCaseComponent extends BaseUseCaseComponent implements OnDestroy {
+export class PredictiveMaintenanceUseCaseComponent extends BaseUseCaseComponent implements OnInit, OnDestroy {
   readonly useCaseTitle = $localize`:@@predictiveMaintenanceUseCaseHeadline:Predictive Maintenance`;
   activeTab: 'concept' | 'live-demo' = 'concept';
 
   private readonly dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
-  private vibrationAlarmSub?: Subscription;
+  private sensorAlarmSub?: Subscription;
   private feedbackTimeout: ReturnType<typeof setTimeout> | null = null;
   enqueuedOrderIds: string[] = [];
   simulateFeedback = false;
+  /** Last sent topics on alarm (for display in Live Demo). Persists until next alarm. */
+  lastSentTopics: Array<{ topic: string; timestamp: string }> = [];
 
-  /** When true: vibration RED → auto publish park + cancel (demo mode) */
-  autoParkOnVibrationAlarm = false;
+  /** When true: any Arduino sensor alarm (vibration, flame, gas, DHT) → auto publish park + cancel (demo mode). Persisted to localStorage. */
+  autoParkOnSensorAlarm = this.loadAutoParkPersisted();
 
   /** Can use auto-park: Mock always, Live/Replay when connected */
   canUseAutoPark$!: Observable<boolean>;
@@ -75,7 +110,8 @@ export class PredictiveMaintenanceUseCaseComponent extends BaseUseCaseComponent 
     private readonly i18nService: Uc05I18nService,
     private readonly messageMonitor: MessageMonitorService,
     private readonly connectionService: ConnectionService,
-    private readonly environmentService: EnvironmentService
+    private readonly environmentService: EnvironmentService,
+    private readonly mappingService: ShopfloorMappingService
   ) {
     super(sanitizer, cdr, http, languageService);
     this.canUseAutoPark$ = combineLatest([
@@ -120,8 +156,15 @@ export class PredictiveMaintenanceUseCaseComponent extends BaseUseCaseComponent 
     return this.environmentService.current.key === 'mock';
   }
 
+  override async ngOnInit(): Promise<void> {
+    await super.ngOnInit();
+    if (this.autoParkOnSensorAlarm) {
+      this.setupSensorAlarmSubscription();
+    }
+  }
+
   override ngOnDestroy(): void {
-    this.vibrationAlarmSub?.unsubscribe();
+    this.sensorAlarmSub?.unsubscribe();
     if (this.feedbackTimeout) clearTimeout(this.feedbackTimeout);
     this.subscriptions.unsubscribe();
     super.ngOnDestroy();
@@ -138,35 +181,83 @@ export class PredictiveMaintenanceUseCaseComponent extends BaseUseCaseComponent 
     }
   }
 
-  toggleAutoParkOnVibration(event: Event): void {
+  private loadAutoParkPersisted(): boolean {
+    try {
+      const stored = localStorage?.getItem(STORAGE_KEY_UC05_AUTO_PARK);
+      return stored === 'true';
+    } catch {
+      return false;
+    }
+  }
+
+  private setupSensorAlarmSubscription(): void {
+    this.sensorAlarmSub?.unsubscribe();
+    this.sensorAlarmSub = undefined;
+    const alarmState$ = combineLatest([
+      this.messageMonitor.getLastMessage<VibrationPayload>(VIBRATION_TOPIC_SW420),
+      this.messageMonitor.getLastMessage<VibrationPayload>(VIBRATION_TOPIC_MPU6050),
+      this.messageMonitor.getLastMessage<FlamePayload>(FLAME_TOPIC),
+      this.messageMonitor.getLastMessage<GasPayload>(GAS_TOPIC),
+      this.messageMonitor.getLastMessage<DhtPayload>(DHT_TOPIC),
+    ]).pipe(
+      map(([sw, mpu, flame, gas, dht]) => {
+        const v = isVibrationRed(mpu?.valid && mpu?.payload ? (mpu.payload as VibrationPayload) : null) ||
+          isVibrationRed(sw?.valid && sw?.payload ? (sw.payload as VibrationPayload) : null);
+        const f = isFlameAlarm(flame?.valid && flame?.payload ? (flame.payload as FlamePayload) : null);
+        const g = isGasAlarm(gas?.valid && gas?.payload ? (gas.payload as GasPayload) : null);
+        const d = isDhtAlarm(dht?.valid && dht?.payload ? (dht.payload as DhtPayload) : null);
+        return v || f || g || d;
+      }),
+      startWith(false),
+      filter((alarm) => alarm),
+      debounceTime(2000)
+    );
+    this.sensorAlarmSub = alarmState$.subscribe(() => {
+      void this.simulateDanger();
+    });
+  }
+
+  /** FTS serials for alarm: from ftsStates$ (active) + layout fallback. Deduplicated. */
+  private async getFtsSerialsForAlarm(): Promise<string[]> {
+    const fromStates = await firstValueFrom(
+      this.dashboard.streams.ftsStates$.pipe(
+        map((s) => Object.keys(s).filter((k) => k && k !== 'unknown'))
+      )
+    );
+    const fromLayout = this.mappingService.getAgvOptions().map((o) => o.serial);
+    const seen = new Set<string>();
+    const result: string[] = [];
+    for (const s of [...fromStates, ...fromLayout]) {
+      if (s && !seen.has(s)) {
+        seen.add(s);
+        result.push(s);
+      }
+    }
+    return result;
+  }
+
+  toggleAutoParkOnSensorAlarm(event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
-    this.autoParkOnVibrationAlarm = checked;
-    this.vibrationAlarmSub?.unsubscribe();
-    this.vibrationAlarmSub = undefined;
+    this.autoParkOnSensorAlarm = checked;
+    try {
+      localStorage?.setItem(STORAGE_KEY_UC05_AUTO_PARK, String(checked));
+    } catch {
+      // Ignore storage errors
+    }
     if (checked) {
-      const vibrationState$ = combineLatest([
-        this.messageMonitor.getLastMessage<VibrationPayload>(VIBRATION_TOPIC_SW420),
-        this.messageMonitor.getLastMessage<VibrationPayload>(VIBRATION_TOPIC_MPU6050),
-      ]).pipe(
-        map(([sw, mpu]) => {
-          if (mpu?.valid && mpu?.payload) return mpu.payload as VibrationPayload;
-          if (sw?.valid && sw?.payload) return sw.payload as VibrationPayload;
-          return null;
-        }),
-        startWith(null),
-        filter((p): p is VibrationPayload => isVibrationRed(p)),
-        debounceTime(2000)
-      );
-      this.vibrationAlarmSub = vibrationState$.subscribe(() => {
-        void this.simulateDanger();
-      });
+      this.setupSensorAlarmSubscription();
+    } else {
+      this.sensorAlarmSub?.unsubscribe();
+      this.sensorAlarmSub = undefined;
     }
     this.cdr.markForCheck();
   }
 
   private async simulateDanger(): Promise<void> {
     try {
-      await this.dashboard.commands.simulateDanger(this.enqueuedOrderIds);
+      const ftsSerials = await this.getFtsSerialsForAlarm();
+      const { sentTopics } = await this.dashboard.commands.simulateDanger(this.enqueuedOrderIds, { ftsSerials });
+      this.lastSentTopics = sentTopics;
       this.simulateFeedback = true;
       this.cdr.markForCheck();
       if (this.feedbackTimeout) clearTimeout(this.feedbackTimeout);
