@@ -6,6 +6,17 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-03-17
+
+**RPi Kiosk-Modus, Lager-Anzeige bei geleertem Storage**
+
+### Added
+- **RPi Kiosk-Modus:** OSF startet direkt im Live-Modus, wenn von der Live-Broker-Adresse (192.168.0.100) ausgeliefert – kein manueller Environment-Wechsel mehr nötig.
+- **Lager-Anzeige ohne Persistence:** Sync aus MessageMonitor-History beim Init; Polling für spät eintreffende Stock-Nachrichten (z. B. retained nach Storage-Leerung). HbwStockGrid und Process-Tab zeigen Lager auch bei leerem Local Storage.
+
+### Changed
+- **EnvironmentService:** `loadInitialEnvironment()` prüft `window.location.hostname === live.mqttHost` → Default `live` statt `mock`.
+
 ## [0.9.0] - 2026-03-17
 
 **Minor: Shopfloor Live-Modus Fix, Lager-Anzeige, Tab Stream Pattern, Build-Warnings**

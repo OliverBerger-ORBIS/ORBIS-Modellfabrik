@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable, Subscription, merge } from 'rxjs';
-import { distinctUntilChanged, filter, map, shareReplay, startWith } from 'rxjs/operators';
+import { Observable, Subscription, merge, timer } from 'rxjs';
+import { distinctUntilChanged, filter, map, shareReplay, startWith, take } from 'rxjs/operators';
 import type { InventoryOverviewState, InventorySlotState, StockSnapshot } from '@osf/entities';
 import { InventoryStateService } from '../../services/inventory-state.service';
 import { EnvironmentService } from '../../services/environment.service';
@@ -123,9 +123,19 @@ export class HbwStockGridComponent implements OnInit, OnDestroy {
 
   private createInventorySourceStream(): Observable<InventoryOverviewState> {
     const cachedState = this.inventoryState.getSnapshot(this.currentEnvironmentKey);
-    const initialState = cachedState ?? this.createEmptyInventoryState();
+    let initialState = cachedState ?? this.createEmptyInventoryState();
 
-    // Load from MessageMonitor (for replay mode) - supports both CCU and legacy topics
+    // Sync from MessageMonitor history if available (handles data arrived before component init)
+    for (const topic of STOCK_TOPICS) {
+      const history = this.messageMonitor.getHistory<StockSnapshot>(topic);
+      const last = history?.length ? history[history.length - 1] : null;
+      if (last?.valid && last?.payload) {
+        initialState = this.buildInventoryOverviewFromSnapshot(last.payload);
+        break; // use first topic that has data
+      }
+    }
+
+    // Load from MessageMonitor (for replay/live) - supports both CCU and legacy topics
     const lastInventoryFromMonitor = STOCK_TOPICS.map((topic) =>
       this.messageMonitor.getLastMessage<StockSnapshot>(topic).pipe(
         filter((msg) => msg !== null && msg.valid),
@@ -137,8 +147,25 @@ export class HbwStockGridComponent implements OnInit, OnDestroy {
       startWith(initialState)
     );
 
+    // Poll getHistory briefly to catch messages that arrived after init (e.g. retained messages)
+    const lateArrivingStock$ = timer(100, 400).pipe(
+      take(8),
+      map(() => {
+        for (const topic of STOCK_TOPICS) {
+          const history = this.messageMonitor.getHistory<StockSnapshot>(topic);
+          const last = history?.length ? history[history.length - 1] : null;
+          if (last?.valid && last?.payload) {
+            return this.buildInventoryOverviewFromSnapshot(last.payload);
+          }
+        }
+        return null;
+      }),
+      filter((state): state is InventoryOverviewState => state !== null),
+      take(1) // Stop after first successful poll
+    );
+
     // Merge with dashboard streams (for live/mock mode)
-    return merge(lastInventory, this.dashboard.streams.inventoryOverview$).pipe(
+    return merge(lastInventory, lateArrivingStock$, this.dashboard.streams.inventoryOverview$).pipe(
       shareReplay({ bufferSize: 1, refCount: false })
     );
   }

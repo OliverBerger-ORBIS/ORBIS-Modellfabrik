@@ -44,6 +44,7 @@ describe('ProcessTabComponent', () => {
 
     const messageMonitorMock = {
       getLastMessage: jest.fn(() => of({ valid: false, payload: null })),
+      getHistory: jest.fn(() => []),
     };
 
     const moduleNameServiceMock = {

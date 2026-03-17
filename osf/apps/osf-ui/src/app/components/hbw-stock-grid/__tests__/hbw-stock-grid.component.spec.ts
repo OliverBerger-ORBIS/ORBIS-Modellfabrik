@@ -61,6 +61,7 @@ describe('HbwStockGridComponent', () => {
 
     const messageMonitorMock = {
       getLastMessage: jest.fn(() => of({ valid: false, payload: null })),
+      getHistory: jest.fn(() => []),
     } as unknown as MessageMonitorService;
 
     await TestBed.configureTestingModule({

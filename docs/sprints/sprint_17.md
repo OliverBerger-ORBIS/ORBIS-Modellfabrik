@@ -63,14 +63,14 @@
   - **Erreicht:** Zweites AGV in allen Tabs; AGV-Tab und Presentation-Tab mit Dropdown pro AGV; Darstellung beider AGVs im Shopfloor; AGV-1/AGV-2 farblich unterscheidbar (orange/gelb inkl. Hervorhebung); Fixtures storage_blue_agv2, storage_blue_parallel; DR-24 Shopfloor-Highlight-Farben
   - *(E2E-Verifikation → siehe E2E-Tests (manuell): Zwei AGVs)*
 - [ ] **Analyse/Klärung Stillstand bei zwei AGVs im mixed-Modus:** Zur Info. Nicht unbedingt messerelevant – entweder keine mixed-Szenarien oder nur ein AGV aktiv.
-- [x] **Deployment v0.9.0 auf RPi:** osf-ui v0.9.0 auf RPi (192.168.0.100) ausrollen
+- [x] **Deployment v0.9.1 auf RPi:** osf-ui v0.9.1 auf RPi (192.168.0.100) ausrollen
 - [x] **GitHub Pages Auto-Deploy:** Bei Version-Bump und Push auf main läuft CI → Deploy automatisch ab (v0.8.10 13.03.2026)
 
 ### E2E-Tests (manuell, mit osf-Version)
 
 *Diese Tests werden manuell verifiziert. Nach Durchführung abhaken inkl. Version.*
 
-**Vorgehen:** Zuerst **v0.8.13 auf RPi deployen**, dann alle Tests nacheinander durchführen.
+**Vorgehen:** Zuerst **v0.9.1 auf RPi deployen**, dann alle Tests nacheinander durchführen.
 
 - [ ] **Track & Trace FAILED/ERROR:** Fixture mixed_pr_prnok → Order Context zeigt „Fehlgeschlagen“ bei Quality-Fail
 - [ ] **Zwei AGVs:** Beide AGVs (jp93 + zweites) im Shopfloor/Replay sichtbar, Farben orange/gelb, Fixtures storage_blue_agv2, storage_blue_parallel

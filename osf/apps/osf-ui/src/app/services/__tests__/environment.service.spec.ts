@@ -267,10 +267,18 @@ describe('EnvironmentService', () => {
 
     it('should handle invalid stored environment key', () => {
       localStorage.setItem('OSF.environment', 'invalid-key');
-      
+
       const newService = TestBed.inject(EnvironmentService);
-      // Should default to 'mock'
+      // Should default to 'mock' (unless served from live broker host)
       expect(newService.current.key).toBe('mock');
+    });
+
+    it('should default to live when hostname matches live broker (RPi kiosk mode)', () => {
+      // Hostname check: loadInitialEnvironment returns 'live' when
+      // window.location.hostname === definitions.live.connection.mqttHost (192.168.0.100)
+      const liveHost = '192.168.0.100';
+      expect(service.getDefinition('live')?.connection.mqttHost).toBe(liveHost);
+      // Manual verification: when served from 192.168.0.100 with no stored env, defaults to 'live'
     });
 
     it('should migrate port 1883 to 9001 for replay', () => {

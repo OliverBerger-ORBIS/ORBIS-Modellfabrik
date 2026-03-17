@@ -9,8 +9,8 @@ import { InventoryStateService } from '../services/inventory-state.service';
 import type { OrderFixtureName } from '@osf/testing-fixtures';
 import { SHOPFLOOR_ASSET_MAP } from '@osf/testing-fixtures';
 import type { Observable } from 'rxjs';
-import { map, shareReplay, filter, startWith, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { merge, Subscription, combineLatest } from 'rxjs';
+import { map, shareReplay, filter, startWith, distinctUntilChanged, switchMap, take } from 'rxjs/operators';
+import { merge, Subscription, combineLatest, timer } from 'rxjs';
 import { ICONS } from '../shared/icons/icon.registry';
 import { ErpInfoBoxComponent, type PurchaseOrderData, type CustomerOrderData, type ErpOrderType } from '../components/erp-info-box/erp-info-box.component';
 import { ErpOrderDataService } from '../services/erp-order-data.service';
@@ -640,7 +640,17 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
 
   private createInventorySourceStream(): Observable<InventoryOverviewState> {
     const cachedState = this.inventoryState.getSnapshot(this.currentEnvironmentKey);
-    const initialState = cachedState ?? this.createEmptyInventoryState();
+    let initialState = cachedState ?? this.createEmptyInventoryState();
+
+    // Sync from MessageMonitor history if available (handles data arrived before component init)
+    for (const topic of STOCK_TOPICS) {
+      const history = this.messageMonitor.getHistory<StockSnapshot>(topic);
+      const last = history?.length ? history[history.length - 1] : null;
+      if (last?.valid && last?.payload) {
+        initialState = this.buildInventoryOverviewFromSnapshot(last.payload);
+        break;
+      }
+    }
 
     const lastInventoryFromMonitor = STOCK_TOPICS.map((topic) =>
       this.messageMonitor.getLastMessage<StockSnapshot>(topic).pipe(
@@ -653,7 +663,24 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
       startWith(initialState)
     );
 
-    return merge(lastInventory, this.dashboard.streams.inventoryOverview$).pipe(
+    // Poll getHistory briefly to catch messages that arrived after init (e.g. retained messages)
+    const lateArrivingStock$ = timer(100, 400).pipe(
+      take(8),
+      map(() => {
+        for (const topic of STOCK_TOPICS) {
+          const history = this.messageMonitor.getHistory<StockSnapshot>(topic);
+          const last = history?.length ? history[history.length - 1] : null;
+          if (last?.valid && last?.payload) {
+            return this.buildInventoryOverviewFromSnapshot(last.payload);
+          }
+        }
+        return null;
+      }),
+      filter((state): state is InventoryOverviewState => state !== null),
+      take(1)
+    );
+
+    return merge(lastInventory, lateArrivingStock$, this.dashboard.streams.inventoryOverview$).pipe(
       shareReplay({ bufferSize: 1, refCount: false })
     );
   }

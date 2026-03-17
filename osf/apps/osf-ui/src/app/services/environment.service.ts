@@ -122,6 +122,11 @@ export class EnvironmentService {
     if (stored && this.definitions?.[stored]) {
       return stored;
     }
+    // Kiosk mode: when served from Live broker host (e.g. RPi), default to Live
+    const liveHost = this.definitions?.live?.connection?.mqttHost;
+    if (liveHost && typeof window !== 'undefined' && window.location?.hostname === liveHost) {
+      return 'live';
+    }
     return 'mock';
   }
 
