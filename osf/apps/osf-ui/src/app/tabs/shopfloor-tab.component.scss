@@ -323,7 +323,7 @@
   display: grid;
   grid-template-columns: 3fr 2fr;
   gap: 1.5rem;
-  align-items: start;
+  align-items: stretch;
 
   @media (max-width: 1200px) {
     grid-template-columns: 1fr;
@@ -395,12 +395,11 @@
   background: #fff;
   display: grid;
   gap: 0.75rem;
-  max-height: calc(100vh - 300px);
+  min-height: 0; /* Allow grid stretch + overflow scroll */
   overflow-y: auto;
 
   @media (max-width: 1200px) {
     margin-top: 1rem;
-    max-height: none;
   }
 }
 

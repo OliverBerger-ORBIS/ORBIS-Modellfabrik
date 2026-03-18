@@ -60,6 +60,15 @@
   inset: 0;
   pointer-events: none;
   z-index: 6;
+}
+
+// FTS overlay layer: above modules (z-index: 2), intersections (2), route (6)
+// Fixes regression where AGV icon was rendered behind module SVGs (HBW etc.) since 2-AGV support
+.preview__fts-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
 
   line {
     stroke-linecap: round;

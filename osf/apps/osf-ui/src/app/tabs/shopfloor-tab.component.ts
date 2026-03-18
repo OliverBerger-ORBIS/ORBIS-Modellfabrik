@@ -264,7 +264,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     return this.environmentService.current.key === 'mock';
   }
 
-  readonly fixtureOptions: (OrderFixtureName | 'shopfloor-status' | 'drill-action' | 'module-action-history')[] = [
+  readonly fixtureOptions: (OrderFixtureName | 'shopfloor-status' | 'drill-action' | 'aiqs-action' | 'module-action-history')[] = [
     'startup',
     'white',
     'white_step3',
@@ -274,9 +274,10 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     'storage',
     'shopfloor-status',
     'drill-action',
+    'aiqs-action',
     'module-action-history',
   ];
-  readonly fixtureLabels: Partial<Record<OrderFixtureName | 'shopfloor-status' | 'drill-action' | 'module-action-history', string>> = {
+  readonly fixtureLabels: Partial<Record<OrderFixtureName | 'shopfloor-status' | 'drill-action' | 'aiqs-action' | 'module-action-history', string>> = {
     startup: $localize`:@@fixtureLabelStartup:Startup`,
     white: $localize`:@@fixtureLabelWhite:White`,
     white_step3: $localize`:@@fixtureLabelWhiteStep3:White • Step 3`,
@@ -287,10 +288,11 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     'track-trace': $localize`:@@fixtureLabelTrackTrace:Track & Trace`,
     'shopfloor-status': $localize`:@@fixtureLabelShopfloorStatus:Shopfloor Status`,
     'drill-action': $localize`:@@dspActionFixtureLabel:Drill Action`,
+    'aiqs-action': $localize`:@@aiqsActionFixtureLabel:AIQS Action`,
     'module-action-history': $localize`:@@moduleActionHistoryFixtureLabel:Module Test Data`,
   };
 
-  activeFixture: OrderFixtureName | 'shopfloor-status' | 'drill-action' | 'module-action-history' = 'startup';
+  activeFixture: OrderFixtureName | 'shopfloor-status' | 'drill-action' | 'aiqs-action' | 'module-action-history' = 'startup';
   moduleOverview$!: Observable<ModuleOverviewState>;
   rows$!: Observable<ModuleRow[]>;
   moduleStatusMap$!: Observable<Map<string, { connected: boolean; availability: ModuleAvailabilityStatus }>>;
@@ -320,6 +322,11 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     ipAddress?: string;
     moduleType?: string;
     drillAction?: {
+      currentLight: string | null;
+      previousLight: string | null;
+      messages: MonitoredMessage[];
+    };
+    aiqsAction?: {
       currentLight: string | null;
       previousLight: string | null;
       messages: MonitoredMessage[];
@@ -484,7 +491,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     }
   }
 
-  async loadFixture(fixture: OrderFixtureName | 'shopfloor-status' | 'drill-action' | 'module-action-history'): Promise<void> {
+  async loadFixture(fixture: OrderFixtureName | 'shopfloor-status' | 'drill-action' | 'aiqs-action' | 'module-action-history'): Promise<void> {
     if (!this.isMockMode) {
       return; // Don't load fixtures in live/replay mode
     }
@@ -510,6 +517,13 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         this.moduleOverviewState.clear(this.currentEnvironmentKey);
         await this.loadModuleStatusFixture();
         await this.loadDrillActionFixture();
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        this.cdr.markForCheck();
+      } else if (fixture === 'aiqs-action') {
+        // Clear previous and load status + AIQS action fixture
+        this.moduleOverviewState.clear(this.currentEnvironmentKey);
+        await this.loadModuleStatusFixture();
+        await this.loadAiqsActionFixture();
         await new Promise((resolve) => setTimeout(resolve, 300));
         this.cdr.markForCheck();
       } else if (fixture === 'module-action-history') {
@@ -632,6 +646,27 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       this.fixtureSubscriptions.add(sub);
     } catch (error) {
       console.error('[module-tab] Failed to load drill action fixture:', error);
+    }
+  }
+
+  private async loadAiqsActionFixture(): Promise<void> {
+    try {
+      const { createAiqsActionFixtureStream } = await import('@osf/testing-fixtures');
+      const stream$ = createAiqsActionFixtureStream({
+        intervalMs: 1000,
+        loop: true,
+      });
+      const sub = stream$.subscribe((message) => {
+        try {
+          const payload = typeof message.payload === 'string' ? JSON.parse(message.payload) : message.payload;
+          this.messageMonitor.addMessage(message.topic, payload, message.timestamp);
+        } catch (error) {
+          console.error('[module-tab] Failed to parse AIQS action payload:', error);
+        }
+      });
+      this.fixtureSubscriptions.add(sub);
+    } catch (error) {
+      console.error('[module-tab] Failed to load AIQS action fixture:', error);
     }
   }
 
@@ -1226,6 +1261,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       ipAddress: (moduleDetails as any)?.ipAddress ?? undefined,
       moduleType,
       drillAction: moduleType === 'DRILL' ? this.getDrillActionData() : undefined,
+      aiqsAction: moduleType === 'AIQS' ? this.getAiqsActionData() : undefined,
       hbwData: hbwData ?? undefined,
       drillData: drillData ?? undefined,
       millData: millData ?? undefined,
@@ -2118,6 +2154,42 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       return JSON.parse(String(msg.payload)) as { command?: string; value?: string };
     } catch {
       return null;
+    }
+  }
+
+  private getAiqsActionData(): {
+    currentLight: string | null;
+    previousLight: string | null;
+    messages: MonitoredMessage[];
+  } {
+    try {
+      const history = this.messageMonitor.getHistory('dsp/aiqs/action');
+      const lastTwo = history.slice(-2).reverse();
+
+      let currentLight: string | null = null;
+      let previousLight: string | null = null;
+      for (let i = history.length - 1; i >= 0; i -= 1) {
+        const msg = history[i];
+        const payload = this.parseDspActionPayload(msg);
+        const colorCmd = payload?.command === 'changeLight' || payload?.command === 'changeColor';
+        if (colorCmd && payload.value) {
+          if (!currentLight) {
+            currentLight = payload.value;
+          } else if (!previousLight) {
+            previousLight = payload.value;
+            break;
+          }
+        }
+      }
+
+      return {
+        currentLight,
+        previousLight,
+        messages: lastTwo,
+      };
+    } catch (error) {
+      console.warn('[ModuleTab] Failed to read dsp/aiqs/action history', error);
+      return { currentLight: null, previousLight: null, messages: [] };
     }
   }
 

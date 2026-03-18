@@ -938,5 +938,55 @@ Payload:
       });
     });
   });
+
+  describe('AIQS DSP Action (getAiqsActionData)', () => {
+    const AIQS_ACTION_TOPIC = 'dsp/aiqs/action';
+
+    it('should extract current and previous light from dsp/aiqs/action history', () => {
+      const component = createComponent();
+      const messageMonitorStub = (component as any).messageMonitor as MessageMonitorService;
+
+      const mockHistory = [
+        { topic: AIQS_ACTION_TOPIC, payload: { command: 'changeLight', value: '#FF0000' }, timestamp: '2025-11-10T18:00:00Z' },
+        { topic: AIQS_ACTION_TOPIC, payload: { command: 'changeLight', value: '#00FF00' }, timestamp: '2025-11-10T18:01:00Z' },
+        { topic: AIQS_ACTION_TOPIC, payload: { command: 'changeColor', value: '#0000FF' }, timestamp: '2025-11-10T18:02:00Z' },
+      ];
+      jest.spyOn(messageMonitorStub, 'getHistory').mockReturnValue(mockHistory as any);
+
+      const result = (component as any).getAiqsActionData();
+
+      expect(result.currentLight).toBe('#0000FF');
+      expect(result.previousLight).toBe('#00FF00');
+      expect(result.messages).toHaveLength(2); // last 2, reversed
+    });
+
+    it('should support changeColor command in addition to changeLight', () => {
+      const component = createComponent();
+      const messageMonitorStub = (component as any).messageMonitor as MessageMonitorService;
+
+      const mockHistory = [
+        { topic: AIQS_ACTION_TOPIC, payload: { command: 'changeColor', value: '#FFFF00' }, timestamp: '2025-11-10T18:00:00Z' },
+      ];
+      jest.spyOn(messageMonitorStub, 'getHistory').mockReturnValue(mockHistory as any);
+
+      const result = (component as any).getAiqsActionData();
+
+      expect(result.currentLight).toBe('#FFFF00');
+      expect(result.previousLight).toBeNull();
+    });
+
+    it('should return empty result when no dsp/aiqs/action messages', () => {
+      const component = createComponent();
+      const messageMonitorStub = (component as any).messageMonitor as MessageMonitorService;
+
+      jest.spyOn(messageMonitorStub, 'getHistory').mockReturnValue([]);
+
+      const result = (component as any).getAiqsActionData();
+
+      expect(result.currentLight).toBeNull();
+      expect(result.previousLight).toBeNull();
+      expect(result.messages).toEqual([]);
+    });
+  });
 });
 

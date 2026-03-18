@@ -129,7 +129,7 @@
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 1.5rem;
-  align-items: start;
+  align-items: stretch;
 
   @media (max-width: 1200px) {
     grid-template-columns: 1fr;
@@ -333,12 +333,11 @@
   border-radius: 1.25rem;
   background: rgba(255, 255, 255, 0.95);
   box-shadow: inset 0 0 0 1px rgba(15, 52, 95, 0.08);
-  max-height: calc(100vh - 300px);
+  min-height: 0; /* Allow grid stretch + overflow scroll */
   overflow-y: auto;
 
   @media (max-width: 1200px) {
     margin-top: 1.5rem;
-    max-height: none;
   }
 
   .selection-panel {

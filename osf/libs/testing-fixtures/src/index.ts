@@ -442,7 +442,12 @@ export const createConfigFixtureStream = (
 };
 
 // Re-export DSP action fixtures
-export { loadDspActionFixtures, createDspActionFixtureStream } from './dsp-action-fixtures';
+export {
+  loadDspActionFixtures,
+  createDspActionFixtureStream,
+  loadAiqsActionFixtures,
+  createAiqsActionFixtureStream,
+} from './dsp-action-fixtures';
 export { loadModuleStatusFixtures, createModuleStatusFixtureStream } from './module-status-fixtures';
 export { loadModuleShopfloorStatusFixtures, createModuleShopfloorStatusFixtureStream } from './module-shopfloor-status-fixtures';
 export { createModuleActionHistoryFixtureStream } from './module-action-history-fixtures';

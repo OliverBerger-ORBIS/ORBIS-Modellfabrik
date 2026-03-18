@@ -808,6 +808,63 @@
               </table>
             </div>
           </details>
+
+          <!-- DSP Action (dsp/aiqs/action) - changeLight/changeColor -->
+          <div class="drill-section" *ngIf="selectedModuleMeta?.moduleType === 'AIQS' && selectedModuleMeta?.aiqsAction">
+            <div class="drill-section__header">
+              <h4 i18n="@@moduleTabAiqsDspAction">DSP Action – changeLight / changeColor</h4>
+            </div>
+            <div class="drill-section__lights">
+              <div class="drill-light">
+                <span class="detail-label" i18n="@@moduleTabDrillCurrentLight">Current</span>
+                <div
+                  class="drill-light__block drill-light__block--current"
+                  [style.background-color]="selectedModuleMeta?.aiqsAction?.currentLight || '#cccccc'"
+                  [attr.aria-label]="'Current color: ' + (selectedModuleMeta?.aiqsAction?.currentLight || 'none')"
+                >
+                  <span *ngIf="!selectedModuleMeta?.aiqsAction?.currentLight" class="drill-light__no-value">—</span>
+                </div>
+                <div *ngIf="selectedModuleMeta?.aiqsAction?.currentLight" class="drill-light__value">
+                  {{ selectedModuleMeta?.aiqsAction?.currentLight }}
+                </div>
+              </div>
+              <div class="drill-light">
+                <span class="detail-label" i18n="@@moduleTabDrillPreviousLight">Previous</span>
+                <div
+                  class="drill-light__block drill-light__block--previous"
+                  [style.background-color]="selectedModuleMeta?.aiqsAction?.previousLight || '#cccccc'"
+                  [attr.aria-label]="'Previous color: ' + (selectedModuleMeta?.aiqsAction?.previousLight || 'none')"
+                >
+                  <span *ngIf="!selectedModuleMeta?.aiqsAction?.previousLight" class="drill-light__no-value">—</span>
+                </div>
+                <div *ngIf="selectedModuleMeta?.aiqsAction?.previousLight" class="drill-light__value">
+                  {{ selectedModuleMeta?.aiqsAction?.previousLight }}
+                </div>
+              </div>
+            </div>
+            <details class="drill-section__dev">
+              <summary class="drill-section__dev-toggle" i18n="@@moduleTabAiqsShowDeveloper">Developer (last 2 dsp/aiqs/action)</summary>
+              <ng-container *ngIf="selectedModuleMeta?.aiqsAction?.messages?.length; else noAiqsMessages">
+                <div class="drill-msg" *ngFor="let msg of selectedModuleMeta?.aiqsAction?.messages">
+                  <div class="drill-msg__row">
+                    <span class="detail-label">Topic</span>
+                    <span class="detail-value mono">{{ msg.topic }}</span>
+                  </div>
+                  <div class="drill-msg__row">
+                    <span class="detail-label">Timestamp</span>
+                    <span class="detail-value mono">{{ msg.timestamp }}</span>
+                  </div>
+                  <div class="drill-msg__row">
+                    <span class="detail-label">Payload</span>
+                    <span class="detail-value mono">{{ msg.payload | json }}</span>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #noAiqsMessages>
+                <p class="detail-value" i18n="@@moduleTabAiqsNoMessages">No dsp/aiqs/action messages yet.</p>
+              </ng-template>
+            </details>
+          </div>
         </div>
         
         <!-- Sequence Commands (collapsed, at the bottom for DRILL/MILL/AIQS) -->

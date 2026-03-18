@@ -182,51 +182,53 @@
         />
       </svg>
 
-      <!-- FTS Icon: Use inline SVG with orange fill if available, otherwise fallback to img -->
-      <!-- FTS from active route -->
-      <div
-        *ngIf="vm.routeOverlay && vm.routeOverlay.svgContent"
-        class="preview__fts preview__fts--inline"
-        [style.left.px]="vm.routeOverlay.x"
-        [style.top.px]="vm.routeOverlay.y"
-        [style.width.px]="vm.routeOverlay.width ?? 48"
-        [style.height.px]="vm.routeOverlay.height ?? 48"
-        [innerHTML]="vm.routeOverlay.svgContent"
-      ></div>
-      <img
-        *ngIf="vm.routeOverlay && !vm.routeOverlay.svgContent"
-        class="preview__fts"
-        [src]="vm.routeOverlay.icon"
-        alt=""
-        [style.left.px]="vm.routeOverlay.x"
-        [style.top.px]="vm.routeOverlay.y"
-        [style.width.px]="vm.routeOverlay.width ?? 48"
-        [style.height.px]="vm.routeOverlay.height ?? 48"
-      />
-      <!-- FTS from position (one or multiple AGVs) -->
-      <ng-container *ngFor="let overlay of vm.ftsOverlays">
+      <!-- FTS overlay layer: guaranteed above modules/intersections (z-index regression fix) -->
+      <div class="preview__fts-layer">
+        <!-- FTS from active route -->
         <div
-          *ngIf="overlay.svgContent"
+          *ngIf="vm.routeOverlay && vm.routeOverlay.svgContent"
           class="preview__fts preview__fts--inline"
-          [style.left.px]="overlay.x"
-          [style.top.px]="overlay.y"
-          [style.width.px]="overlay.width ?? 48"
-          [style.height.px]="overlay.height ?? 48"
-          [style.--fts-accent-rgb]="overlay.colorRgb ?? '249, 115, 22'"
-          [innerHTML]="overlay.svgContent"
+          [style.left.px]="vm.routeOverlay.x"
+          [style.top.px]="vm.routeOverlay.y"
+          [style.width.px]="vm.routeOverlay.width ?? 48"
+          [style.height.px]="vm.routeOverlay.height ?? 48"
+          [innerHTML]="vm.routeOverlay.svgContent"
         ></div>
         <img
-          *ngIf="!overlay.svgContent"
+          *ngIf="vm.routeOverlay && !vm.routeOverlay.svgContent"
           class="preview__fts"
-          [style.--fts-accent-rgb]="overlay.colorRgb ?? '249, 115, 22'"
-          [src]="overlay.icon"
+          [src]="vm.routeOverlay.icon"
           alt=""
-          [style.left.px]="overlay.x"
-          [style.top.px]="overlay.y"
-          [style.width.px]="overlay.width ?? 48"
-          [style.height.px]="overlay.height ?? 48"
+          [style.left.px]="vm.routeOverlay.x"
+          [style.top.px]="vm.routeOverlay.y"
+          [style.width.px]="vm.routeOverlay.width ?? 48"
+          [style.height.px]="vm.routeOverlay.height ?? 48"
         />
-      </ng-container>
+        <!-- FTS from position (one or multiple AGVs) -->
+        <ng-container *ngFor="let overlay of vm.ftsOverlays">
+          <div
+            *ngIf="overlay.svgContent"
+            class="preview__fts preview__fts--inline"
+            [style.left.px]="overlay.x"
+            [style.top.px]="overlay.y"
+            [style.width.px]="overlay.width ?? 48"
+            [style.height.px]="overlay.height ?? 48"
+            [style.--fts-accent-rgb]="overlay.colorRgb ?? '249, 115, 22'"
+            [innerHTML]="overlay.svgContent"
+          ></div>
+          <img
+            *ngIf="!overlay.svgContent"
+            class="preview__fts"
+            [style.--fts-accent-rgb]="overlay.colorRgb ?? '249, 115, 22'"
+            [src]="overlay.icon"
+            alt=""
+            [style.left.px]="overlay.x"
+            [style.top.px]="overlay.y"
+            [style.width.px]="overlay.width ?? 48"
+            [style.height.px]="overlay.height ?? 48"
+          />
+        </ng-container>
+      </div>
     </div>
   </div>
 </div>

@@ -6,6 +6,19 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.9.3] - 2026-03-18
+
+**AGV-Overlay Z-Index, Shopfloor Layout Höhennutzung, AIQS DSP Action**
+
+### Fixed
+- **AGV-Tab:** AGV-Icon überdeckt wieder Modul- und Intersection-SVGs (z.B. HBW). Regression seit 2-AGV-Unterstützung behoben durch dedizierten `.preview__fts-layer` (z-index: 100).
+- **Shopfloor Layout / Module-Tab:** Rechte Modul-Info-Spalte nutzt verfügbare Höhe; keine unnötige Scrollbar mehr, wenn unterhalb noch Platz ist. Grid `align-items: stretch`, `max-height` entfernt.
+
+### Added
+- **AIQS DSP Action:** Topic `dsp/aiqs/action` (changeLight/changeColor) in AIQS-Detail-Section – Current/Previous Farbanzeige und Developer-Bereich (letzte 2 Nachrichten). Analog zu DRILL.
+- **Fixtures:** `aiqs-action` Fixture und `createAiqsActionFixtureStream()` für Mock-Tests.
+- **Tests:** `getAiqsActionData()` Unit-Tests.
+
 ## [0.9.1] - 2026-03-17
 
 **RPi Kiosk-Modus, Lager-Anzeige bei geleertem Storage**
