@@ -6,6 +6,31 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [0.9.8] - 2026-03-19
+
+### Fixed
+- **Revert v0.9.7:** FTS-Layer wieder im Canvas – v0.9.7 (Layer außerhalb) führte zu komplett weißem Shopfloor auf localhost. Zurück zum funktionierenden Stand (Layer in Canvas, z-index 100, filter).
+
+## [0.9.7] - 2026-03-19 (REVERTED)
+
+### Fixed (reverted – brach localhost)
+- FTS-Layer außerhalb Canvas – führte zu weißem Shopfloor.
+
+## [0.9.6] - 2026-03-19
+
+### Fixed
+- **AGV-Tab / RPi-Rendering:** `box-shadow` statt `filter: drop-shadow` auf `.preview__fts` – filter erzeugt Stacking Context, verursacht RPi/localhost-Unterschiede. Box-shadow nicht.
+
+## [0.9.5] - 2026-03-19
+
+### Fixed
+- **AGV-Tab / RPi-Rendering:** `transform: translateZ(0)` auf `.preview__fts-layer` – erzwingt eigene Compositor-Layer; Adresse für localhost-ok/RPi-nok bei gleichem Safari/Mac.
+
+## [0.9.4] - 2026-03-19
+
+### Fixed
+- **AGV-Tab / RPi-Rendering:** `isolation: isolate` auf `.preview__fts-layer` – stabilisiert das AGV-Overlay über verschiedene Browser/Plattformen (localhost vs. RPi 192.168.0.100).
+
 ## [0.9.3] - 2026-03-18
 
 **AGV-Overlay Z-Index, Shopfloor Layout Höhennutzung, AIQS DSP Action**
