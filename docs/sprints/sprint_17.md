@@ -1,9 +1,11 @@
 # Sprint 17 – MES/Integration & LogiMAT Vorbereitung
 
 **Zeitraum:** 05.03.2026 - 18.03.2026 (2 Wochen)  
-**Status:** Laufend
+**Status:** Abgeschlossen
 
-**Stakeholder-Update:** Fokus liegt auf MES-Integration (Prozessanpassungen) und der Vorbereitung des Showcases für die LogiMAT.
+**Nachfolger:** [Sprint 18](./sprint_18.md)
+
+**Stakeholder-Update:**okus liegt auf MES-Integration (Prozessanpassungen) und der Vorbereitung des Showcases für die LogiMAT.
 
 ---
 
@@ -11,15 +13,15 @@
 
 ### Übernommen aus Sprint 16 (Open Tasks)
 - [ ] **Azure DevOps Migration:** Von Github zu Azure Devops (Repo + Boards)
-- [ ] **Projektantrag:** ORBIS-Smartfactory Q1/Q2 2026 finalisieren
-- [ ] **DSP_Edge:** Implementierung `dsp/correlation/info` (als Response auf Request oder Unsolicited nach Order-Response) – *osf-ui vorbereitet (CorrelationInfoService, dsp/#). DSP_Edge wird in anderem Projekt entwickelt. Offen: E2E-Test mit simuliertem dsp/correlation/info.*
+- [x] **Projektantrag:** ORBIS-Smartfactory Q1/Q2 2026 finalisieren: Projektnummer: X-10030-140-002
+- [x ] **DSP_Edge:** Implementierung `dsp/correlation/info` ( Unsolicited nach Order-Response) – *osf-ui vorbereitet (CorrelationInfoService, dsp/#). DSP_Edge wird in anderem Projekt entwickelt. Offen: E2E-Test mit simuliertem dsp/correlation/info.*
 
 ### MES / Integration (Fokus)
 - [x] **Einfache MES/ERP Integration:** Fokus auf Zusammenspiel mit DSP.
 - [x] **QM-Check Verlagerung (CCU Ausbau):** Erledigt durch Quality-Fail (Option B). CCU erstellt bei FAILED keinen Ersatzauftrag; MES/DSP senden zukünftig `ccu/order/request` bei Bedarf (anderes Projekt). osf-ui ist senderneutral.
 - [x] **CCU: Quality-Fail (Option B):** Bei `CHECK_QUALITY result=FAILED` kein Ersatzauftrag, Order bleibt ERROR. OSF-MODIFICATIONS.md Mod², Unit-Test. E2E ✓. Deploy ✓.
-- [ ] **E2E-Test ccu/order/request von MES/DSP:** Simulieren, dass MES/DSP nach Quality-Fail einen Ersatzauftrag per `ccu/order/request` stellt. osf-ui vorbereitet (egal wer sendet). *(Verifikation → siehe E2E-Tests (manuell))*
-- [ ] **E2E-Test dsp/correlation/info + request:** `dsp/correlation/info` (Response auf Request oder Unsolicited) und `ccu/order/request` End-to-End verifizieren – osf-ui CorrelationInfoService, dsp/# Topics.
+- [x] **E2E-Test ccu/order/request von MES/DSP:** Simulieren, dass MES/DSP nach Quality-Fail einen Ersatzauftrag per `ccu/order/request` stellt. osf-ui vorbereitet (egal wer sendet). *(Verifikation → siehe E2E-Tests (manuell))*
+- [x] **E2E-Test dsp/correlation/info + request:** `dsp/correlation/info` (Response auf Request oder Unsolicited) und `ccu/order/request` End-to-End verifizieren – osf-ui CorrelationInfoService, dsp/# Topics.Getestet wurde die unsolicited Variante. Diese Funktioniert und ist technisch die bessere Variante.
 - [x] **Positiver Test requestId (Mod 1):** `requestId` aus `ccu/order/request` wird in `ccu/order/response` und `ccu/order/active` mitgegeben. Verifiziert 12.03.2026 (OSF-UI → CCU auf RPi 192.168.0.100).
 - [x] **TXT-AIQS: QoS 1 für quality_check:** `sorting_line.py`/`.blockly` QoS 2→1, beide Varianten (`_cam`, `_cam_clfn`), Doku, .ft-Archive. E2E ✓. Deploy ✓.
 - [x] **Track & Trace: Order-Status FAILED/ERROR anzeigen:**
