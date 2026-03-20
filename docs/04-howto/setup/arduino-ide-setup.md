@@ -7,7 +7,7 @@
 
 ## 🎯 Übersicht
 
-Dieses How-To beschreibt die Einrichtung der **Arduino IDE** als Entwicklungsumgebung für Arduino-basierte Hardware-Projekte im ORBIS-Modellfabrik-Kontext. Es ist eine **Voraussetzung** für die Umsetzung von Projekten wie der [Vibrationsüberwachung](../../05-hardware/arduino-vibrationssensor.md).
+Dieses How-To beschreibt die Einrichtung der **Arduino IDE** als Entwicklungsumgebung für Arduino-basierte Hardware-Projekte im ORBIS-Modellfabrik-Kontext. Es ist eine **Voraussetzung** für die Umsetzung von Projekten wie der [Arduino R4 Multi-Sensor](../../05-hardware/arduino-r4-multisensor.md).
 
 **Separation:** Setup (dieses Dokument) vs. Projekt-Inhalte (Hardware-Dokumentation, Code):  
 Das Setup enthält nur die Installation und Konfiguration der IDE. Was konkret gebaut und programmiert wird, steht in den jeweiligen Projekt-Dokumenten.
@@ -133,8 +133,8 @@ Damit ist nachgewiesen, dass die Entwicklungsumgebung einsatzbereit ist.
 
 ## 6. Nächste Schritte
 
-- **Vibrationsüberwachung:** [Projektplan Vibrationssensor](../../05-hardware/arduino-vibrationssensor.md)
-- **Sketch öffnen:** Datei → Sketchbook → Vibrationssensor_SW420
+- **Arduino R4 Multi-Sensor:** [Verdrahtung & Konfiguration](../../05-hardware/arduino-r4-multisensor.md)
+- **Sketch öffnen:** Datei → Sketchbook → OSF_MultiSensor_R4WiFi
 - **integrations/Arduino:** [README](../../../integrations/Arduino/README.md)
 
 ---
@@ -164,6 +164,6 @@ Damit ist nachgewiesen, dass die Entwicklungsumgebung einsatzbereit ist.
 
 ## 🔗 Verwandte Dokumentation
 
-- [Projektplan Vibrationsüberwachung](../../05-hardware/arduino-vibrationssensor.md) – Hardware, Verdrahtung, Code
+- [Arduino R4 Multi-Sensor](../../05-hardware/arduino-r4-multisensor.md) – Hardware, Verdrahtung, MQTT
 - [Project Setup](project-setup.md) – Allgemeine Projekt-Entwicklungsumgebung (Python, MQTT, …)
 - [TXT-Controller Deployment mit ROBO Pro](../txt-controller-deployment.md) – Vergleichbare Trennung: Setup (RoboPro installiert) vs. Deployment-Workflow

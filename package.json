@@ -31,8 +31,7 @@
     "version:minor": "npm version minor -m 'feat(release): %s'",
     "version:major": "npm version major -m 'feat(release): %s [BREAKING]'",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
-    "open:verdrahtung-sw420": "open -a Safari docs/05-hardware/arduino-vibrationssensor-verdrahtung.html",
-    "open:verdrahtung-mpu6050": "open -a Safari docs/05-hardware/arduino-vibrationssensor-mpu6050-verdrahtung.html"
+    "open:verdrahtung-multisensor": "open docs/05-hardware/arduino-r4-multisensor.md"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~18.2.0",

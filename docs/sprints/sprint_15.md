@@ -37,7 +37,7 @@
 - [ ] Azure DevOps Migration & Docker-Setup
 - [ ] Projekt-Phasenabschlussbericht
 - [ ] Projektantrag Q1/Q2 2026
-- [ ] Vibrationsüberwachung: Aufbau & Test ([Projektplan](../05-hardware/arduino-vibrationssensor.md))
+- [ ] Vibrationsüberwachung: Aufbau & Test ([Arduino R4 Multi-Sensor](../05-hardware/arduino-r4-multisensor.md))
 
 ---
 

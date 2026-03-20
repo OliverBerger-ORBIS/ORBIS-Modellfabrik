@@ -1,7 +1,7 @@
 /*
  * Projekt: Vibrationsüberwachung der FMF (Fischertechnik-Modellfabrik der APS) für das OSF-Projekt (ORBIS SmartFactory)
  * Hardware: Arduino Uno, Ethernet Shield 2, SW-420, 4-Ch Relais, 12V Ampel
- * Quelle: integrations/Arduino – siehe docs/05-hardware/arduino-vibrationssensor.md
+ * Quelle: integrations/Arduino – siehe docs/05-hardware/arduino-r4-multisensor.md
  *
  * LAN/MQTT: 0 = nur Serial (ohne Ethernet Shield). 1 = MQTT aktiv (Shield + LAN verbunden).
  */

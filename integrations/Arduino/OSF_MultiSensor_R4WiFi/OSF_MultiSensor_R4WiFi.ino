@@ -1,8 +1,8 @@
 /*
  * Projekt: OSF Multi-Sensor – Arduino R4 WiFi
  * Sketch: OSF_MultiSensor_R4WiFi
- * Hardware: Arduino Uno R4 WiFi, MPU-6050 (I2C), SW-420 (D2), DHT11 (D3), Flamme (A0), MQ-2 Gas (A1), 4-Ch Relais, 12V Ampel
- * Quelle: docs/05-hardware/arduino-vibrationssensor.md §5, §4.1, Implementierungsplan
+ * Hardware: Arduino Uno R4 WiFi, MPU-6050 (I2C), SW-420 (D11), DHT11 (D12), Flamme (A1), MQ-2 Gas (A0), 4-Ch Relais, 12V Ampel
+ * Quelle: docs/05-hardware/arduino-r4-multisensor.md
  *
  * Sensoren: MPU-6050 + SW-420 + DHT11 + Flammensensor + MQ-2 Gas. Gemeinsame Ampel (OR-Logik).
  * USE_MQTT: 0 = nur Serial, 1 = MQTT über WiFi
@@ -29,16 +29,28 @@
 #include <NTPClient.h>
 #include <PubSubClient.h>
 
-// WLAN – ORBIS-4711 für RPi/APS-Betrieb (Passwort siehe docs/credentials.md)
-const char* WIFI_SSID = "ORBIS-4711";
-const char* WIFI_PASS = "49117837";
+// === WLAN-Konfiguration – Umschaltung daheim / ORBIS ===
+#define WIFI_MODE_DAHEIM 0
+#define WIFI_MODE_ORBIS  1
+#define WIFI_MODE WIFI_MODE_DAHEIM  // <-- Nur diese Zeile ändern: DAHEIM oder ORBIS
 
-// Statische IP für Arduino (.95 – ORBIS-Bereich 192.168.0.91–99)
-IPAddress arduinoIP(192, 168, 0, 95);
-IPAddress gatewayIP(192, 168, 0, 1);
-IPAddress subnetIP(255, 255, 255, 0);
-
-const char* MQTT_BROKER = "192.168.0.100";  // RPi mit MQTT-Broker
+#if WIFI_MODE == WIFI_MODE_DAHEIM
+  // WLAN Daheim – Fritz!Box 192.168.178.x, Arduino .95 reserviert
+  const char* WIFI_SSID = "daheim";
+  const char* WIFI_PASS = "LillaVilla1";
+  IPAddress arduinoIP(192, 168, 178, 95);         // Fritz!Box-Reservierung
+  IPAddress gatewayIP(192, 168, 178, 1);
+  IPAddress subnetIP(255, 255, 255, 0);
+  const char* MQTT_BROKER = "192.168.178.65";     // Mac mit Mosquitto
+#else
+  // WLAN ORBIS – RPi/APS-Betrieb (credentials.md)
+  const char* WIFI_SSID = "ORBIS-4711";
+  const char* WIFI_PASS = "49117837";
+  IPAddress arduinoIP(192, 168, 0, 95);
+  IPAddress gatewayIP(192, 168, 0, 1);
+  IPAddress subnetIP(255, 255, 255, 0);
+  const char* MQTT_BROKER = "192.168.0.100";
+#endif
 const int MQTT_PORT = 1883;
 const char* MQTT_USER = "default";
 const char* MQTT_PASS = "default";
@@ -76,11 +88,11 @@ WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
 #endif
 
-const int SW420_PIN = 2;
-const int DHT_PIN = 3;  // DHT11 Data. Sensor links→rechts: − GND, Mitte VCC, S Data
-const int FLAME_PIN = A0;  // Flammensensor AO (analog)
+const int SW420_PIN = 11;
+const int DHT_PIN = 12;  // DHT11 Data. Sensor links→rechts: − GND, Mitte VCC, S Data
+const int FLAME_PIN = A1;  // Flammensensor AO (analog)
 const int FLAME_THRESHOLD = 25;  // raw < 25 → Flamme. Ruhe ~38, Feuerzeug nah ~10–15. Poti beeinflusst nur DO, nicht A0!
-const int GAS_PIN = A1;  // MQ-2 Gas-Sensor AO (analog). Hoch = Gefahr (Rauch/CO)
+const int GAS_PIN = A0;  // MQ-2 Gas-Sensor AO (analog). Hoch = Gefahr (Rauch/CO)
 const int GAS_THRESHOLD_WARN = 500;   // Gelb: raw > 500 (erhöhte Konzentration)
 const int GAS_THRESHOLD_DANGER = 750; // Rot: raw > 750 (Alarm, starke Rauch/Gas-Belastung)
 const int FLAME_CONFIRM_SAMPLES = 20;  // N Messungen unter Schwellenwert nötig (20×10ms = 200ms) – filtert Licht-Spitzen
@@ -300,6 +312,8 @@ void setup() {
 #endif
 
 #if USE_MQTT
+  Serial.print("WLAN-Modus: ");
+  Serial.println(WIFI_MODE == WIFI_MODE_DAHEIM ? "DAHEIM" : "ORBIS");
   Serial.print("WiFi verbinde ");
   Serial.println(WIFI_SSID);
   WiFi.config(arduinoIP, gatewayIP, subnetIP);

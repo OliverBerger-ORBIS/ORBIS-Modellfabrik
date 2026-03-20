@@ -1,6 +1,6 @@
 %% OSF Multi-Sensor – Arduino R4 WiFi – Vollständige Breadboard-Verdrahtung
 %% Sketch: OSF_MultiSensor_R4WiFi
-%% Siehe: arduino-r4-multisensor-verdrahtung.md
+%% Siehe: arduino-r4-multisensor.md
 %% Stand: 2026-03
 
 %%{init: {'flowchart': {'curve': 'stepBefore'}}}%%
@@ -11,9 +11,10 @@ flowchart TB
         A_GND["GND"]
         A_A4["A4 (SDA)"]
         A_A5["A5 (SCL)"]
-        A_D2["D2"]
-        A_D3["D3"]
+        A_D11["D11"]
+        A_D12["D12"]
         A_A0["A0"]
+        A_A1["A1"]
         A_D7["D7"]
         A_D8["D8"]
         A_D9["D9"]
@@ -49,6 +50,12 @@ flowchart TB
         FL_VCC["VCC"]
         FL_GND["GND"]
         FL_AO["AOut (analog)"]
+    end
+
+    subgraph MQ2["MQ-2 Gas-Sensor"]
+        MQ2_VCC["VCC"]
+        MQ2_GND["GND"]
+        MQ2_AO["AOut (analog)"]
     end
 
     subgraph RELAIS_5V["4-Kanal Relais – 5V Steuerung"]
@@ -95,15 +102,19 @@ flowchart TB
 
     BB_P -->|"ROT"| SW_VCC
     BB_M -->|"SCHWARZ"| SW_GND
-    SW_DO -->|"BLAU"| A_D2
+    SW_DO -->|"BLAU"| A_D11
 
     BB_P -->|"ROT"| DHT_VCC
     BB_M -->|"SCHWARZ"| DHT_GND
-    DHT_DATA -->|"BLAU"| A_D3
+    DHT_DATA -->|"BLAU"| A_D12
 
     BB_P -->|"ROT"| FL_VCC
     BB_M -->|"SCHWARZ"| FL_GND
-    FL_AO -->|"BLAU"| A_A0
+    FL_AO -->|"BLAU"| A_A1
+
+    BB_P -->|"ROT"| MQ2_VCC
+    BB_M -->|"SCHWARZ"| MQ2_GND
+    MQ2_AO -->|"BLAU"| A_A0
 
     BB_P -->|"ROT"| R_VCC
     BB_M -->|"SCHWARZ"| R_GND

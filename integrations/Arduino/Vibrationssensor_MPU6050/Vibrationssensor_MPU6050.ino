@@ -1,7 +1,7 @@
 /*
  * Projekt: Vibrationsüberwachung APS-Modellfabrik (MPU-6050) – OSF
  * Hardware: Arduino Uno, Ethernet Shield 2, MPU-6050 (I2C), 4-Ch Relais, 12V Ampel
- * Quelle: docs/05-hardware/arduino-vibrationssensor.md §5
+ * Quelle: docs/05-hardware/arduino-r4-multisensor.md
  *
  * Bibliothek: MPU6050 (Library Manager: "MPU6050" by ElectronicCats)
  * I2C: SDA=A4, SCL=A5

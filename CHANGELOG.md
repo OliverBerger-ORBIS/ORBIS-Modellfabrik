@@ -80,7 +80,7 @@ All notable changes to OSF Dashboard will be documented here.
 - **Sensor-Tab:** Flame (Gefahr in % mit Farbverlauf grün→gelb→rot), SW-420 (grün/rot Rechtecke), MPU-6050 (Gauge Magnitude 0–35k), Gas MQ-2 (neue Kachel, Gefahrenbalken)
 - **Arduino MultiSensor R4 WiFi:** Sketch `OSF_MultiSensor_R4WiFi` – MPU-6050, SW-420, Flammensensor, MQ-2 Gas (Topics `osf/arduino/...`)
 - **Fixtures:** sensor-startup mit Arduino-Idle, Gas in Arduino-Presets (idle/warning/alarm)
-- **Doku:** [arduino-r4-multisensor-verdrahtung.md](docs/05-hardware/arduino-r4-multisensor-verdrahtung.md) – Breadboard-Verdrahtung R4 + alle Sensoren
+- **Doku:** [arduino-r4-multisensor.md](docs/05-hardware/arduino-r4-multisensor.md) – Breadboard-Verdrahtung R4 + alle Sensoren
 
 ### Fixed
 - **Mock-Dashboard:** MessageMonitor/Arduino-Controller bei Wechsel zu Mock korrekt neu initialisieren (Fixtures erscheinen in Sensor-Kacheln)
@@ -189,7 +189,7 @@ All notable changes to OSF Dashboard will be documented here.
 - **MQTT-Auth:** Arduino-Sketch nutzt Credentials (default/default) für APS-Broker
 - **Will-Message:** connectionState OFFLINE bei ungraceful disconnect – wie Fischertechnik-Module
 - **Connection-Payload:** connectionState ONLINE/OFFLINE, ip, serialNumber (Fischertechnik-konform)
-- **Troubleshooting:** [arduino-vibrationssensor.md](docs/05-hardware/arduino-vibrationssensor.md) §4.1 – Schicht-für-Schicht Debug (LAN → Broker → mosquitto_sub mit Auth → Arduino-Connect)
+- **Troubleshooting:** [arduino-r4-multisensor.md](docs/05-hardware/arduino-r4-multisensor.md) §6 – Fehlersuche
 
 ### Changed
 - **State-Payload:** `ampel` → `vibrationDetected` (boolean) – SW-420-Sensorsignal direkt, OSF-UI mappt auf Ampel-Darstellung
@@ -245,7 +245,7 @@ All notable changes to OSF Dashboard will be documented here.
 
 ### Changed
 - **Arduino Sketch:** USE_MQTT=1, nicht blockierender MQTT-Reconnect (5s Intervall), High-Level-Relais (Pin 5→Grün, Pin 6→Rot+Sirene)
-- **arduino-vibrationssensor.md:** Gekürzt, Verdrahtungs-Tabellen verdichtet, OSF-Topics-Test (Mock/Replay) dokumentiert, Status Mock/Replay positiv getestet
+- **arduino-r4-multisensor.md:** Verdrahtung, MQTT-Topics, Fehlersuche konsolidiert (ersetzt arduino-vibrationssensor.md)
 
 ## [0.8.1] - 2026-02-25
 
@@ -277,7 +277,7 @@ All notable changes to OSF Dashboard will be documented here.
 - **Sketch Vibrationssensor_SW420:** Basis-Programm für SW-420, Relais, 12V-Signalampel
 - **Arduino IDE Setup How-To:** [arduino-ide-setup.md](docs/04-howto/setup/arduino-ide-setup.md) – Installation, Sketchbook-Speicherort, Systemtest (Blink)
 - **ROBO Pro Setup How-To:** [robo-pro-setup.md](docs/04-howto/setup/robo-pro-setup.md) – Installation für TXT-Controller
-- **Hardware-Doku:** [arduino-vibrationssensor.md](docs/05-hardware/arduino-vibrationssensor.md) – Verdrahtung, Aufbau, MPU-6050-Ausblick
+- **Hardware-Doku:** [arduino-r4-multisensor.md](docs/05-hardware/arduino-r4-multisensor.md) – Verdrahtung, Konfiguration, MQTT
 
 ### Changed
 - **integrations/README.md:** Arduino-Abschnitt ergänzt

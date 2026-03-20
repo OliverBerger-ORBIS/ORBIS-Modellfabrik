@@ -28,7 +28,7 @@
 
 ### 05-Hardware
 - [Messetisch-Spezifikation](05-hardware/messetisch-spezifikation.md) – für Messebauer (Beschaffung/Bau)
-- [Vibrationssensor (Arduino)](05-hardware/arduino-vibrationssensor.md) – Projektplan
+- [Arduino R4 Multi-Sensor](05-hardware/arduino-r4-multisensor.md) – Verdrahtung, Konfiguration, MQTT
 
 ### 06-Integrations
 Einstieg: [00-REFERENCE](06-integrations/00-REFERENCE/README.md) – ORBIS-spezifische APS-Referenz  

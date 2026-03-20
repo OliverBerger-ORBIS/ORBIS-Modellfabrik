@@ -65,4 +65,4 @@
 
 - **Positiv:** Klare Trennung Fischertechnik (v1/ff) vs. ORBIS (osf); erweiterbar für weitere Sensoren (MPU-6050, Temperatur etc.)
 - **Negativ:** Neuer Root-Namespace; Router/DHCP darf 91–99 nicht vergeben
-- **Referenzen:** [mqtt-topic-conventions](../../06-integrations/00-REFERENCE/mqtt-topic-conventions.md), [arduino-mqtt-ethernet-setup](../../05-hardware/arduino-mqtt-ethernet-setup.md)
+- **Referenzen:** [mqtt-topic-conventions](../../06-integrations/00-REFERENCE/mqtt-topic-conventions.md), [arduino-r4-multisensor](../../05-hardware/arduino-r4-multisensor.md)

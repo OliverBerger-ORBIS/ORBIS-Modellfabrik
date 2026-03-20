@@ -24,7 +24,7 @@ Dieses Verzeichnis enthält Hardware- und Software-Integrationen für das OSF (O
 
 **Setup:** Arduino IDE → Einstellungen → Sketchbook-Speicherort = `integrations/Arduino` (absoluter Pfad).
 
-**Doku:** [Arduino Vibrationssensor](../docs/05-hardware/arduino-vibrationssensor.md) | [Arduino IDE Setup](../docs/04-howto/setup/arduino-ide-setup.md)
+**Doku:** [Arduino R4 Multi-Sensor](../docs/05-hardware/arduino-r4-multisensor.md) | [Arduino IDE Setup](../docs/04-howto/setup/arduino-ide-setup.md)
 
 ---
 

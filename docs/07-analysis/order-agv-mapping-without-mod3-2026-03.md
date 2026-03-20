@@ -173,7 +173,7 @@ if (step.type === 'NAVIGATION') {
 
 3. **MessageMonitor / Topic-Subscription:**
    - `getLastMessage(topic)` arbeitet mit exaktem Topic-Match (kein Wildcard). Pro FTS-Serial muss separat subscribet werden: `fts/v1/ff/5iO4/order`, `fts/v1/ff/jp93/order`.
-   - FTS-Seriennummern können aus Konfiguration stammen (z. B. AGV-Mapping, `docs/05-hardware/arduino-vibrationssensor.md` oder second-agv-Referenz) oder dynamisch aus `getTopics()` gefiltert werden (Topics mit Pattern `fts/v1/ff/*/order`), sobald mindestens eine Message angekommen ist.
+   - FTS-Seriennummern können aus Konfiguration stammen (z. B. AGV-Mapping, `docs/05-hardware/arduino-r4-multisensor.md` oder second-agv-Referenz) oder dynamisch aus `getTopics()` gefiltert werden (Topics mit Pattern `fts/v1/ff/*/order`), sobald mindestens eine Message angekommen ist.
 
 ### FTS-Order-Payload (Referenz)
 

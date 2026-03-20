@@ -34,7 +34,7 @@
 - [x] **Fixture mixed-pr-prnok:** Session `mixed-sr-pr-prnok_20260305_121602.log` als Mock-Fixture. `scripts/build_order_fixtures.py --only mixed_pr_prnok`. Order-Tab und Track & Trace: Fixture-Option "Mixed PR Quality-Fail".
 
 ### Arduino-Hardware & LogiMAT
-- [x] **Arduino MPU-6050 (R4 WiFi – minimale Lösung):** R4 mit eingebautem WiFi statt R3+Ethernet Shield. MPU-6050 sendet Topics `osf/arduino/vibration/mpu6050-1/state` und `.../connection` über WiFi an MQTT-Broker. **Done wenn:** a) MQTT per WiFi funktioniert, b) Sensor-Info im Tab Sensor angezeigt wird (OSF-UI bereits ausgelegt). *Doku:* [arduino-vibrationssensor.md](../05-hardware/arduino-vibrationssensor.md) §5, §4.1 (R4-Alternative). **Implementierung v0.8.13:** Sketch OSF_MultiSensor_R4WiFi (MPU-6050, SW-420, Flame, MQ-2), UI-Kacheln, Fixtures. *(E2E-Verifikation offen)*
+- [x] **Arduino MPU-6050 (R4 WiFi – minimale Lösung):** R4 mit eingebautem WiFi statt R3+Ethernet Shield. MPU-6050 sendet Topics `osf/arduino/vibration/mpu6050-1/state` und `.../connection` über WiFi an MQTT-Broker. **Done wenn:** a) MQTT per WiFi funktioniert, b) Sensor-Info im Tab Sensor angezeigt wird (OSF-UI bereits ausgelegt). *Doku:* [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md). **Implementierung v0.8.13:** Sketch OSF_MultiSensor_R4WiFi (MPU-6050, SW-420, Flame, MQ-2), UI-Kacheln, Fixtures. *(E2E-Verifikation offen)*
 - [x] **Hardware-Erweiterung (Ampel-System):** SW-420 + MPU-6050 einheitlich (Relais aktiv-niedrig), Doku §1.1 Schritt-für-Schritt analog §5.3.1.
 - [ ] **E2E Vibrationssensor:** *(siehe E2E-Tests unten – einmalig)*
 - [ ] **Flammensensor-Anzeige (Sensor-Tab):** Darstellung von linearer auf logarithmische Skala umstellen. Aktuell: linearer Balken (rawValue 0–1023). Problem: Linear ist bei weitem Wertebereich irreführend; Flammensensor reagiert typisch logarithmisch. Fix: Logarithmische Skala für die Anzeige im Flammen-Sensor-Block verwenden – bessere Ablesbarkeit, weniger „falsche“ Alarm-Anmutung bei kleinem Raw-Wert-Sprung. Ggf. Empfindlichkeit/Schwellwert prüfen.
@@ -43,7 +43,7 @@
   - **Ziel:** Physikalischer Aufbau der Station auf einer messetauglichen Platte mit stabilem Transport.
   - **Umfang:** Arduino R4 + MPU-6050 + Ampel + Relais auf fester Montage; Kabelbündelung; 12V-Versorgung (Netzteil oder 24V-Kaskade); transportable Platte (z.B. Trägermaterial, Kanten-Schutz); ggf. Gehäuse/Abdeckung.
   - **Done wenn:** Station steht stabil, ist transportfähig und bereit für LogiMAT-Demo.
-  - **Referenz:** [Verdrahtung R4 Multisensor](../05-hardware/arduino-r4-multisensor-verdrahtung.md)
+  - **Referenz:** [Arduino R4 Multi-Sensor](../05-hardware/arduino-r4-multisensor.md)
 - [ ] **UC-05 Live-Demo: Gefahrensimulation** *(Reihenfolge: 1 – vor UC-01)*
   - **Kontext:** Gemäß [DR-22](../03-decision-records/22-dsp-use-case-konzept-live-demo.md), [Analyse alarm-fabrik-stop](../07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md).
   - **Umsetzung:** „Gefahr simulieren“ in UC-05 Live-Demo (Tabs „Konzept" | „Live Demo"). Button aus Sensor-Tab entfernen. Sendet `ccu/set/park` + `ccu/order/cancel` (ENQUEUED-IDs aus `ccu/order/active`). Business-Layer `simulateDanger` bleibt (wird in UC-05 eingebunden).
@@ -125,7 +125,7 @@
 
 ### Sensor-Erweiterung Arduino (Backlog)
 
-*Siehe [Arduino Vibrationssensor](../05-hardware/arduino-vibrationssensor.md) §6.* **Aktuell v0.8.13:** R4+MPU-6050+SW-420+Flame+MQ-2 über WiFi (Sketch OSF_MultiSensor_R4WiFi). Backlog: R3 weitere Sensoren (DHT11, etc.) oder R4-Zweitsystem; TM1637/MAX7219 Display.
+*Siehe [Arduino R4 Multi-Sensor](../05-hardware/arduino-r4-multisensor.md).* **Aktuell v0.8.13:** R4+MPU-6050+SW-420+Flame+MQ-2 über WiFi (Sketch OSF_MultiSensor_R4WiFi). Backlog: R3 weitere Sensoren (DHT11, etc.) oder R4-Zweitsystem; TM1637/MAX7219 Display.
 
 - **Optionale Erweiterung um Aktor:** TM1637- oder MAX7219-Modul für 4-stelliges 7-Segment-Display. Bestehendes F23106605 (12 Pins) benötigt mehr Pins als verfügbar; TM1637 (2 Pins) oder MAX7219 (3 Pins) würden Beschaffung erfordern.
 
@@ -148,7 +148,7 @@
 ## 📎 Referenzen
 - [Zweites AGV (jp93)](../07-analysis/second-agv-2026-03.md)
 - [Use-Case Bibliothek](../02-architecture/use-case-library.md)
-- [Arduino Vibrationssensor](../05-hardware/arduino-vibrationssensor.md)
+- [Arduino R4 Multi-Sensor](../05-hardware/arduino-r4-multisensor.md)
 - [Alarm → Fabrik-Stop (CCU-Commands)](../07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md)
 - Session (Quality-Fail E2E erfolgreich): `data/osf-data/sessions/mixed-sr-pr-prnok_20260305_121602.log`
 - Session (Quality-Fail Ablauf historisch): `data/osf-data/sessions/mixed-sw-pw-sw-pwnok-pw_20260303_093559.log`

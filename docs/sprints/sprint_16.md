@@ -20,7 +20,7 @@
 - [x] Wiring der Arduino-Komponenten und Test von sketch Vibrationsensor_SW420
 - [x] **Integrieren in OSF-UI:** Replay und Mock – Topics `osf/arduino/vibration/sw420-1/state` und `osf/arduino/vibration/sw420-1/connection` werden angezeigt und ausgewertet (Integration erstmals abgeschlossen)
 - [x] **Live-Hardware:** Arduino + Ethernet-Shield mit Broker verbunden, Topics werden angezeigt. **Fix:** MQTT-Credentials (default/default), Payload `vibrationDetected` statt `ampel`
-- Projektplan: [arduino-vibrationssensor.md](../05-hardware/arduino-vibrationssensor.md)
+- Projektplan: [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md)
 
 ### Dokumentation
 - [x] Fischertechnik: Lokale Kopie der MQTT-Doku ([fischertechnik-official/](../06-integrations/fischertechnik-official/)) + Verweis auf Upstream ([FISCHERTECHNIK-OFFICIAL](../06-integrations/FISCHERTECHNIK-OFFICIAL.md))
@@ -71,7 +71,7 @@
 
 *Tasks bei Gelegenheit angehen. Offene `[ ]` beim nächsten Sprint übernehmen.*
 
-- **Arduino MPU-6050:** Vibrationssensor-Upgrade (I2C, Beschleunigung/Gyro) – Vorgehen: [arduino-vibrationssensor.md](../05-hardware/arduino-vibrationssensor.md) §5; Sketch analog SW-420 (Ethernet+MQTT), Topic `osf/arduino/vibration/mpu6050-1/state` mit amplitude/frequency statt vibrationDetected; OSF-UI Sensor-Tab erweitern (Gelb für Schwellenwert)
+- **Arduino MPU-6050:** Vibrationssensor-Upgrade (I2C, Beschleunigung/Gyro) – Vorgehen: [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md); Sketch analog SW-420 (Ethernet+MQTT), Topic `osf/arduino/vibration/mpu6050-1/state` mit amplitude/frequency statt vibrationDetected; OSF-UI Sensor-Tab erweitern (Gelb für Schwellenwert)
 - **Customer Architecture Netzsch:** Neue DSP-Customer-Config `NETZSCH_CONFIG` anlegen – Vorlage: `osf/apps/osf-ui/.../customer/ecme/` und `customer-selector-page.component.ts` (FMF_CONFIG, ECME_CONFIG); Netzsch-Page-Komponente, Route `/dsp/customer/netzsch`, in `availableCustomers` registrieren; Doku in `docs/` oder `osf/apps/osf-ui/.../components/dsp-animation/configs/`
 - **CCU: Quality-Fail ersetzt Order:** Bei CHECK_QUALITY result=FAILED erstellt CCU automatisch neuen Production-Order (FITEFF22-657). Soll deaktivierbar sein – Änderung: `integrations/APS-CCU/central-control/src/modules/order/management/order-management.ts` in `handleActionUpdateQualityCheckFailure` (Zeile 614–633); Config/Env `SKIP_REPLACE_ORDER_ON_QUALITY_FAILURE=true` einführen; bei true nur Order auf ERROR setzen, kein `createOrder`; Deploy: CCU Docker-Image neu bauen, auf RPi deployen ([DEPLOYMENT.md](../../integrations/APS-CCU/DEPLOYMENT.md))
 - **Anpassung Produktions-Auftrag "2-mal Bohren" (Product WHITE):** Szenario-Analyse für Prozessanpassung über gesamte Kette (ERP -> CCU -> Shopfloor -> UI).
@@ -88,7 +88,7 @@
 
 ## 📎 Referenzen
 - [Use-Case Bibliothek](../02-architecture/use-case-library.md) | [Inventar](../02-architecture/use-case-inventory.md)
-- [Vibration-Sensor Projektplan](../05-hardware/arduino-vibrationssensor.md)
+- [Arduino R4 Multi-Sensor](../05-hardware/arduino-r4-multisensor.md)
 
 ---
 
