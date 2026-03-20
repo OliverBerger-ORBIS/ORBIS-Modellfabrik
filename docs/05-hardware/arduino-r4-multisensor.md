@@ -2,10 +2,24 @@
 
 **Hardware:** Arduino Uno R4 WiFi, MPU-6050, SW-420, DHT11, Flammensensor KY-026, MQ-2, 4-Kanal-Relais, 12V-Signalampel (Grün/Gelb/Rot/Sirene)
 
-**Sketch:** `OSF_MultiSensor_R4WiFi`  
+**Sketch:** `OSF_MultiSensor_R4WiFi` (Version im Sketch-Header: `SKETCH_VERSION`)  
 **Diagramm:** [arduino-r4-multisensor-verdrahtung.mermaid](arduino-r4-multisensor-verdrahtung.mermaid)
 
 **Voraussetzung:** [Arduino IDE Setup](../04-howto/setup/arduino-ide-setup.md) – zuerst Blink-Test durchführen.
+
+---
+
+## 0. Architektur-Prinzip: Wahrheit liegt beim Arduino
+
+**Single Source of Truth:** Schwellen und Klassifikation (normal/warning/alarm) werden ausschließlich im Arduino-Sketch definiert. Die osf-ui interpretiert keine Rohwerte – sie zeigt nur an, was der Sensor publiziert.
+
+| Aspekt | Arduino | osf-ui |
+|--------|---------|--------|
+| Schwellen (Flame, Gas, DHT) | ✓ definiert | — |
+| Klassifikation (gasLevel 0/1/2) | ✓ berechnet | nur Darstellung |
+| Raw-Wert | ✓ gemessen, gesendet | nur Anzeige |
+
+**Folge:** Änderungen an Schwellen nur im Sketch; UI bleibt schwellenfrei. Deployment: Sketch-Version im Header prüfen (Serial Monitor: „Sketch v1.1.0“).
 
 ---
 
@@ -123,7 +137,21 @@ Ohne Common Ground kann die Relais-Logik fehlschlagen.
 
 ---
 
-## 4. MQTT-Topics
+## 4. MQTT & Publish-Verhalten
+
+**Publish-Logik:** Bei Zustandsänderung sofort; bei Idle alle **5 s** als Heartbeat (MQTT_HEARTBEAT_INTERVAL). Schnellere UI-Aktualisierung als bei 15 s, Overhead vernachlässigbar.
+
+**Sketch-Versionierung:** SemVer im Header (`#define SKETCH_VERSION "1.1.0"`). Bei jedem Deployment Version anpassen. Serial Monitor zeigt „Sketch v1.1.0“ beim Start. Gängige Praxis: Version im Code, ggf. Git-Tag für Releases.
+
+**Deployment-Checkliste:**
+1. `SKETCH_VERSION` im Sketch-Header anpassen (z.B. 1.1.0 → 1.2.0)
+2. Arduino IDE: Sketch öffnen, Board „Arduino Uno R4 WiFi“, Port wählen
+3. Upload, Serial Monitor (9600): „Sketch v1.1.0“ prüfen
+4. MQTT: `mosquitto_sub -h <broker> -t "osf/arduino/#" -v` – alle Sensoren melden?
+
+---
+
+## 5. MQTT-Topics
 
 | Topic | Inhalt |
 |------|--------|
@@ -135,7 +163,7 @@ Ohne Common Ground kann die Relais-Logik fehlschlagen.
 | `osf/arduino/temperature/dht11-1/connection` | LWT |
 | `osf/arduino/flame/flame-1/state` | `{"flameDetected":bool,"rawValue":n}` |
 | `osf/arduino/flame/flame-1/connection` | LWT |
-| `osf/arduino/gas/mq2-1/state` | `{"gasDetected":bool,"rawValue":n}` |
+| `osf/arduino/gas/mq2-1/state` | `{"gasDetected":bool,"gasLevel":0\|1\|2,"rawValue":n}` – gasLevel: 0=normal, 1=warning, 2=alarm |
 | `osf/arduino/gas/mq2-1/connection` | LWT |
 | `osf/arduino/alarm/enabled` | **Subscribe:** `true`/`false` – Sirene nur bei Alarm, wenn Toggle aktiv |
 
@@ -151,7 +179,7 @@ mosquitto_sub -h 192.168.178.65 -t "osf/arduino/#" -v
 
 ---
 
-## 5. Checkliste Verdrahtung
+## 6. Checkliste Verdrahtung
 
 ### 5V-Seite
 - [ ] 5V vom Arduino an Breadboard (+)
@@ -174,7 +202,7 @@ mosquitto_sub -h 192.168.178.65 -t "osf/arduino/#" -v
 
 ---
 
-## 6. Fehlersuche
+## 7. Fehlersuche
 
 **Ampel leuchtet nicht:**
 1. **COM-Kette:** Mit Multimeter prüfen – zwischen COM1 und COM4 darf kein Widerstand sein.
@@ -191,7 +219,7 @@ mosquitto_sub -h 192.168.178.65 -t "osf/arduino/#" -v
 
 ---
 
-## 7. Referenzen
+## 8. Referenzen
 
 - **IP- und Topic-Schema:** [DR-18 OSF-Erweiterungen](../03-decision-records/18-osf-extensions-ip-and-mqtt-topics.md)
 - **Credentials:** [credentials.md](../credentials.md) (ORBIS-Netz)

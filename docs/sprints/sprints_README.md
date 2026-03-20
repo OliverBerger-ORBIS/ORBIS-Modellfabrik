@@ -68,7 +68,9 @@ Diese Aufgaben sind **Teil des laufenden Sprints** und müssen erledigt sein, **
 - [Sprint 13](sprint_13.md) – Projektabschluss & Ausblick Q1/Q2 2026 (08.01 - 21.01.2026)
 - [Sprint 14](sprint_14.md) – Use-Case-Bibliothek & Blog-Serie Umsetzung (22.01 - 04.02.2026)
 - [Sprint 15](sprint_15.md) – Use-Case-Bibliothek & Blog-Serie Fortsetzung (05.02 - 18.02.2026) ✅
-- [Sprint 16](sprint_16.md) – Vibration-Sensor, Doku-Check, Marketing-Konsistenz (19.02 - 04.03.2026) ⏳ **AKTUELL**
+- [Sprint 16](sprint_16.md) – Vibration-Sensor, Doku-Check, Marketing-Konsistenz (19.02 - 04.03.2026) ✅
+- [Sprint 17](sprint_17.md) – MES/Integration & LogiMAT Vorbereitung (05.03 - 18.03.2026) ✅
+- [Sprint 18](sprint_18.md) – LogiMAT-Messe Durchführung (19.03 - 01.04.2026) ⏳ **AKTUELL**
 
 ## 📊 Berichte
 - [ORBIS-Projekt-Abschlussbericht Sprints 1-12](ORBIS-Projekt-Abschlussbericht_sprints_01-12.md) – Erstes ORBIS-Projekt (ORBIS-Modellfabrik)

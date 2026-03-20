@@ -1,6 +1,6 @@
 # ORBIS SmartFactory – Projektstatus
 
-**Letzte Aktualisierung:** 2026-03-04
+**Letzte Aktualisierung:** 2026-03-19
 
 > **Workflow:** Die Sprint-Tabelle wird bei jedem Sprint-Abschluss aktualisiert (neue Zeile, Events).  
 > Details: [sprints_README.md – Dokumenten-Workflow](sprints/sprints_README.md#-dokumenten-workflow-aktualität-sicherstellen)
@@ -16,14 +16,15 @@
 - **Phase 5 – MES/DSP-Integration:** ORBIS MES und DSP übernehmen zunehmend die Steuerung (QM-Check, Order-Entscheidungen). APS-CCU als Interim-Layer; Modifikationen: [integrations/APS-CCU/OSF-MODIFICATIONS.md](../integrations/APS-CCU/OSF-MODIFICATIONS.md).
 - MES-Integration: Prozessanpassungen (z.B. "2-mal Bohren").
 - Azure DevOps Migration.
-- Arduino: Vibrationssensor (Basis) fertig, Erweiterung Ampel-System in Arbeit.
+- Arduino: R4 Multi-Sensor-Station fertig (MPU-6050, SW-420, DHT11, Flamme, MQ-2, Ampel, Sirene). Doku konsolidiert.
 - Storytelling-Blog-Serie.
 
 ## 📅 Roadmap & Meilensteine
 
 | Sprint | Zeitraum | Ereignis / Fokus | Status |
 |--------|----------|------------------|--------|
-| **17** | **05.03.26 - 18.03.26** | **MES/Integration & LogiMAT Vorbereitung** | **Laufend** |
+| **18** | **19.03.26 - 01.04.26** | **LogiMAT-Messe Durchführung** | **Laufend** |
+| 17 | 05.03.26 - 18.03.26 | MES/Integration & LogiMAT Vorbereitung | Abgeschlossen |
 | 16 | 19.02.26 - 04.03.26 | Vibration-Sensor, Doku-Check, Marketing-Konsistenz | Abgeschlossen |
 | 15 | 05.02.26 - 18.02.26 | OSF-UI Docker, RPi-Deploy, Abschlussbericht | Abgeschlossen |
 
@@ -48,6 +49,7 @@
 | 15 | 05.02 - 18.02.2026 | ORBIS-SmartFactory | Phase 4 (v0.7.10) | OSF-Präsentation Glaston (10.02.) |
 | 16 | 19.02 - 04.03.2026 | ORBIS-SmartFactory | Phase 5 | — |
 | 17 | 05.03 - 18.03.2026 | ORBIS-SmartFactory | Phase 5 | LogiMAT Vorbereitung |
+| 18 | 19.03 - 01.04.2026 | ORBIS-SmartFactory | Phase 5 | LogiMAT Durchführung |
 
 > **Spalten-Erläuterung:**  
 > - **ORBIS-Projekt:** Interne Projektzuordnung für Abrechnung (ORBIS-Modellfabrik bzw. ORBIS-SmartFactory).  
@@ -64,7 +66,7 @@
 
 ## 📚 Weitere Dokumentation
 - [Roadmap & Entwicklungsphasen](01-strategy/roadmap.md)
-- [Sprint-Dokumentation](sprints/) – [sprint_16.md](sprints/sprint_16.md) (aktuell)
+- [Sprint-Dokumentation](sprints/) – [sprint_18.md](sprints/sprint_18.md) (aktuell)
 - [Decision Records](03-decision-records/)
 - [Architektur](02-architecture/)
 - [HowTos & Guides](04-howto/)

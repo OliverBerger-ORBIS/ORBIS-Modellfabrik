@@ -1,12 +1,14 @@
 /*
  * Projekt: OSF Multi-Sensor – Arduino R4 WiFi
  * Sketch: OSF_MultiSensor_R4WiFi
+ * Version: 1.1.0  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
  * Hardware: Arduino Uno R4 WiFi, MPU-6050 (I2C), SW-420 (D11), DHT11 (D12), Flamme (A1), MQ-2 Gas (A0), 4-Ch Relais, 12V Ampel
  * Quelle: docs/05-hardware/arduino-r4-multisensor.md
  *
  * Sensoren: MPU-6050 + SW-420 + DHT11 + Flammensensor + MQ-2 Gas. Gemeinsame Ampel (OR-Logik).
  * USE_MQTT: 0 = nur Serial, 1 = MQTT über WiFi
  */
+#define SKETCH_VERSION "1.1.0"
 #define USE_MQTT 1
 
 /** Relais-Logik: 1 = aktiv-niedrig (LOW=ein, typisch). 0 = aktiv-hoch (HIGH=ein, manche Module). */
@@ -67,8 +69,8 @@ const char* TOPIC_GAS_STATE = "osf/arduino/gas/mq2-1/state";
 const char* TOPIC_GAS_CONNECTION = "osf/arduino/gas/mq2-1/connection";
 const char* TOPIC_ALARM_ENABLED = "osf/arduino/alarm/enabled";  // true/false – Sirene nur bei aktivem Toggle
 
-/** MQTT Publish-Interval: Jedes Topic wird bei Zustandsänderung sofort gesendet; bei Idle alle 15s als Heartbeat. */
-const unsigned long MQTT_HEARTBEAT_INTERVAL = 15000;
+/** MQTT Publish-Interval: Jedes Topic wird bei Zustandsänderung sofort gesendet; bei Idle alle 5s als Heartbeat. */
+const unsigned long MQTT_HEARTBEAT_INTERVAL = 5000;
 const float DHT_TEMP_WARN = 30.0;   // °C – Gelb
 const float DHT_TEMP_DANGER = 35.0; // °C – Rot
 const float DHT_HUM_WARN = 80.0;    // % – Gelb
@@ -248,13 +250,13 @@ void publishFlameState(int rawValue, bool flameDetected) {
   mqttClient.publish(TOPIC_FLAME_STATE, payload, true);
 }
 
-void publishGasState(int rawValue, bool gasDetected) {
+void publishGasState(int rawValue, bool gasDetected, int gasLevel) {
   if (!mqttClient.connected()) return;
   char payload[96];
   char tsBuf[32];
   getTimestamp(tsBuf, sizeof(tsBuf));
-  snprintf(payload, sizeof(payload), "{\"gasDetected\":%s,\"rawValue\":%d,\"timestamp\":%s}",
-           gasDetected ? "true" : "false", rawValue, tsBuf);
+  snprintf(payload, sizeof(payload), "{\"gasDetected\":%s,\"gasLevel\":%d,\"rawValue\":%d,\"timestamp\":%s}",
+           gasDetected ? "true" : "false", gasLevel, rawValue, tsBuf);
   mqttClient.publish(TOPIC_GAS_STATE, payload, true);
 }
 #endif
@@ -262,6 +264,8 @@ void publishGasState(int rawValue, bool gasDetected) {
 void setup() {
   Serial.begin(9600);
   Serial.println("Setup start...");
+  Serial.print("Sketch v");
+  Serial.println(SKETCH_VERSION);
   Serial.flush();
 
   Wire.begin();
@@ -353,7 +357,7 @@ void setup() {
     publishSw420State(false);
     publishDht11State(0, 0);
     publishFlameState(1023, false);
-    publishGasState(0, false);
+    publishGasState(0, false, 0);
     lastPublishedLevel = 0;
     lastPublishTime = millis();
     lastSw420Level = 0;
@@ -569,7 +573,7 @@ void loop() {
     bool shouldPublishGas = (gasDetected != lastGasDetected) ||
         (!gasDetected && (now - lastGasPublish) >= MQTT_HEARTBEAT_INTERVAL);
     if (shouldPublishGas) {
-      publishGasState(gasRaw, gasDetected);
+      publishGasState(gasRaw, gasDetected, gasLevel);
       lastGasDetected = gasDetected;
       lastGasPublish = now;
     }

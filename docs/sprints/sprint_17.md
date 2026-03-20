@@ -103,8 +103,8 @@
 - [ ] **A4 Review (UC-03 AI Lifecycle, UC-04 Closed Loop Quality, UC-05 Predictive Maintenance):** Review-Prozess.
 
 ### Sprint-Abschluss (Pflicht vor Neuanlage Sprint 18)
-- [ ] Sprint-Dokument: Status → "Abgeschlossen", Abschlussdatum setzen
-- [ ] Neuer Sprint: Aus Template anlegen (`sprint_18.md`), offene `[ ]` übernehmen (inklusive Backlog)
+- [x] Sprint-Dokument: Status → "Abgeschlossen", Abschlussdatum setzen
+- [x] Neuer Sprint: Aus Template anlegen (`sprint_18.md`), offene `[ ]` übernehmen (inklusive Backlog)
 - [ ] PROJECT_STATUS: Neue Tabellenzeile (Sprint 18, Zeitraum, ORBIS-Projekt, OSF-Phase, Externe Events)
 - [ ] Roadmap prüfen: Phasen/Daten noch stimmig? (bei Bedarf anpassen)
 
@@ -155,4 +155,4 @@
 
 ---
 
-*Letzte Aktualisierung: 17.03.2026*
+*Letzte Aktualisierung: 19.03.2026 | Abschluss: 18.03.2026*

@@ -36,9 +36,10 @@ export interface FlameStatePayload {
   timestamp?: string;
 }
 
-/** osf/arduino/gas/mq2-1/state – MQ-2 Gas sensor (Rauch/CO). rawValue 0–1023; high = danger */
+/** osf/arduino/gas/mq2-1/state – MQ-2 Gas sensor (Rauch/CO). rawValue 0–1023; high = danger. gasLevel from sensor: 0=normal, 1=warning, 2=alarm */
 export interface GasStatePayload {
   gasDetected?: boolean;
+  gasLevel?: number;  // 0=normal, 1=warning, 2=alarm – from Arduino, no UI interpretation
   rawValue?: number;
   timestamp?: string;
 }
@@ -407,6 +408,11 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     return this.vibrationLevel(vibration) === 'red';
   }
 
+  /** Warning state (yellow) – orange border, consistent with Gas. */
+  isMpuWarning(vibration: VibrationStatePayload | null): boolean {
+    return this.vibrationLevel(vibration) === 'yellow';
+  }
+
   /** Alarm state for highlighting. */
   isSw420Alarm(vibration: VibrationStatePayload | null): boolean {
     return this.sw420Level(vibration) === 'red';
@@ -420,14 +426,33 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     return t >= 35 || h >= 90;
   }
 
-  /** Alarm state for highlighting. */
+  /** Warning state (temp 30–35°C or humidity 80–90%) – orange border, consistent with MPU/Gas. */
+  isDhtWarning(dht: Dht11StatePayload | null): boolean {
+    if (!dht) return false;
+    const t = dht.temperature ?? 0;
+    const h = dht.humidity ?? 0;
+    return (t >= 30 && t < 35) || (h >= 80 && h < 90);
+  }
+
+  /** Flame: alarm only (binary from sensor). No warning level. */
   isFlameAlarm(flame: FlameStatePayload | null): boolean {
     return flame?.flameDetected === true;
   }
 
-  /** Alarm state for highlighting. */
+  /** Flame has no warning level (digital sensor). */
+  isFlameWarning(_flame: FlameStatePayload | null): boolean {
+    return false;
+  }
+
+  /** Gas: alarm = level 2 from sensor. Backward compat: gasLevel undefined → use gasDetected. */
   isGasAlarm(gas: GasStatePayload | null): boolean {
+    if (gas?.gasLevel != null) return gas.gasLevel >= 2;
     return gas?.gasDetected === true;
+  }
+
+  /** Gas: warning = level 1 from sensor. */
+  isGasWarning(gas: GasStatePayload | null): boolean {
+    return gas?.gasLevel === 1;
   }
 
   /** Sirene ein/aus – Arduino Relais 4; Ampel (Grün/Gelb/Rot) bleibt sensor-gesteuert */
@@ -477,6 +502,12 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     return `${pct.toFixed(0)}%`;
   }
 
+  formatFlameRaw(flame: FlameStatePayload | null): string {
+    const raw = flame?.rawValue;
+    if (raw == null || Number.isNaN(raw)) return '—';
+    return String(raw);
+  }
+
   /** MQ-2 Gas danger %: raw/1023*100. High raw = danger (Rauch/CO). */
   gasDangerPercent(gas: GasStatePayload | null): number {
     const raw = gas?.rawValue;
@@ -499,6 +530,12 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     const pct = this.gasDangerPercent(gas);
     if (gas?.rawValue == null || Number.isNaN(gas.rawValue)) return '—';
     return `${pct.toFixed(0)}%`;
+  }
+
+  formatGasRaw(gas: GasStatePayload | null): string {
+    const raw = gas?.rawValue;
+    if (raw == null || Number.isNaN(raw)) return '—';
+    return String(raw);
   }
 
   /** Mock only: Vibration-State per injectMessage setzen (zum Testen der Anzeige) */

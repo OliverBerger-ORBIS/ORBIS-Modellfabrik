@@ -151,11 +151,11 @@ function createOsfArduinoIdleFixture(): Observable<RawMqttMessage> {
     { topic: 'osf/arduino/flame/flame-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'flame-1' }, timestamp: ts },
     { topic: 'osf/arduino/flame/flame-1/state', payload: { flameDetected: false, rawValue: 800, timestamp: '' }, timestamp: ts },
     { topic: 'osf/arduino/gas/mq2-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'mq2-1' }, timestamp: ts },
-    { topic: 'osf/arduino/gas/mq2-1/state', payload: { gasDetected: false, rawValue: 120, timestamp: ts }, timestamp: ts },
+    { topic: 'osf/arduino/gas/mq2-1/state', payload: { gasDetected: false, gasLevel: 0, rawValue: 120, timestamp: ts }, timestamp: ts },
   ]);
 }
 
-/** Arduino Multi-Sensor fixture – Warning: yellow vibration, elevated temp/humidity, gas rising */
+/** Arduino Multi-Sensor fixture – Warning: yellow vibration, elevated temp/humidity, gas level 1 (orange border) */
 function createOsfArduinoWarningFixture(): Observable<RawMqttMessage> {
   const ts = new Date().toISOString();
   return from([
@@ -168,11 +168,11 @@ function createOsfArduinoWarningFixture(): Observable<RawMqttMessage> {
     { topic: 'osf/arduino/flame/flame-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'flame-1' }, timestamp: ts },
     { topic: 'osf/arduino/flame/flame-1/state', payload: { flameDetected: false, rawValue: 150, timestamp: '' }, timestamp: ts },
     { topic: 'osf/arduino/gas/mq2-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'mq2-1' }, timestamp: ts },
-    { topic: 'osf/arduino/gas/mq2-1/state', payload: { gasDetected: false, rawValue: 520, timestamp: ts }, timestamp: ts },
+    { topic: 'osf/arduino/gas/mq2-1/state', payload: { gasDetected: true, gasLevel: 1, rawValue: 520, timestamp: ts }, timestamp: ts },
   ]);
 }
 
-/** Arduino Multi-Sensor fixture – Alarm: red vibration, critical temp/humidity, flame + gas detected */
+/** Arduino Multi-Sensor fixture – Alarm: red vibration, critical temp/humidity, flame + gas level 2 */
 function createOsfArduinoAlarmFixture(): Observable<RawMqttMessage> {
   const ts = new Date().toISOString();
   return from([
@@ -185,7 +185,7 @@ function createOsfArduinoAlarmFixture(): Observable<RawMqttMessage> {
     { topic: 'osf/arduino/flame/flame-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'flame-1' }, timestamp: ts },
     { topic: 'osf/arduino/flame/flame-1/state', payload: { flameDetected: true, rawValue: 12, timestamp: '' }, timestamp: ts },
     { topic: 'osf/arduino/gas/mq2-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'mq2-1' }, timestamp: ts },
-    { topic: 'osf/arduino/gas/mq2-1/state', payload: { gasDetected: true, rawValue: 890, timestamp: ts }, timestamp: ts },
+    { topic: 'osf/arduino/gas/mq2-1/state', payload: { gasDetected: true, gasLevel: 2, rawValue: 890, timestamp: ts }, timestamp: ts },
   ]);
 }
 

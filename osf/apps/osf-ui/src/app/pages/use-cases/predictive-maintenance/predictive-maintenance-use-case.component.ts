@@ -37,6 +37,7 @@ interface FlamePayload {
 
 interface GasPayload {
   gasDetected?: boolean;
+  gasLevel?: number;  // 0=normal, 1=warning, 2=alarm – from Arduino
 }
 
 interface DhtPayload {
@@ -57,6 +58,7 @@ function isFlameAlarm(payload: FlamePayload | null): boolean {
 }
 
 function isGasAlarm(payload: GasPayload | null): boolean {
+  if (payload?.gasLevel != null) return payload.gasLevel >= 2;
   return payload?.gasDetected === true;
 }
 

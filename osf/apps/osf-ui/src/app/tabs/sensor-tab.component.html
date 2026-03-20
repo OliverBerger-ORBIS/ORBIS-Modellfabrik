@@ -287,7 +287,7 @@
       </div>
     </header>
 
-    <article class="gauge-card gauge-card--arduino" [class.gauge-card--alarm]="isMpuAlarm(mpuVibrationState$ | async)">
+    <article class="gauge-card gauge-card--arduino" [class.gauge-card--alarm]="isMpuAlarm(mpuVibrationState$ | async)" [class.gauge-card--warning]="isMpuWarning(mpuVibrationState$ | async)">
       <header>
         <div class="title">
           <span class="emoji">📳</span>
@@ -360,7 +360,7 @@
       </p>
     </article>
 
-    <article class="gauge-card gauge-card--arduino" [class.gauge-card--alarm]="isDhtAlarm(dht11State$ | async)">
+    <article class="gauge-card gauge-card--arduino" [class.gauge-card--alarm]="isDhtAlarm(dht11State$ | async)" [class.gauge-card--warning]="isDhtWarning(dht11State$ | async)">
       <header>
         <div class="title">
           <span class="emoji">🌡️</span>
@@ -407,7 +407,7 @@
       </p>
     </article>
 
-    <article class="gauge-card gauge-card--arduino" [class.gauge-card--alarm]="isDhtAlarm(dht11State$ | async)">
+    <article class="gauge-card gauge-card--arduino" [class.gauge-card--alarm]="isDhtAlarm(dht11State$ | async)" [class.gauge-card--warning]="isDhtWarning(dht11State$ | async)">
       <header>
         <div class="title">
           <span class="emoji">💧</span>
@@ -460,7 +460,7 @@
           <span class="emoji">🔥</span>
           <div>
             <h3 i18n="@@sensorArduinoFlame">Arduino: Flame</h3>
-            <p i18n="@@sensorArduinoFlameBarDescLog">Danger %: left=safe (green), right=danger (red). Logarithmic scale, Raw 0–1023.</p>
+            <p i18n="@@sensorArduinoFlameBarDescLog">Raw 0–1023 (low=flame). Danger % (log). Left=safe, right=danger.</p>
           </div>
         </div>
       </header>
@@ -470,19 +470,18 @@
           <div class="flame-bar__mask" [style.width]="flameSafePercent(flameState$ | async)"></div>
         </div>
         <p class="gauge-card__value">
-          {{ formatFlameDangerPercent(flameState$ | async) }}
-          <span *ngIf="(flameState$ | async)?.flameDetected" class="flame-bar__danger" i18n="@@sensorArduinoFlameDetected">Flame detected!</span>
+          <span i18n="@@sensorArduinoRawLabel">Raw</span>: {{ formatFlameRaw(flameState$ | async) }} · <span i18n="@@sensorArduinoDangerLabel">Danger</span>: {{ formatFlameDangerPercent(flameState$ | async) }}
         </p>
       </div>
     </article>
 
-    <article class="gauge-card gauge-card--arduino gauge-card--gas" [class.gauge-card--alarm]="isGasAlarm(gasState$ | async)">
+    <article class="gauge-card gauge-card--arduino gauge-card--gas" [class.gauge-card--alarm]="isGasAlarm(gasState$ | async)" [class.gauge-card--warning]="isGasWarning(gasState$ | async)">
       <header>
         <div class="title">
           <span class="emoji">💨</span>
           <div>
             <h3 i18n="@@sensorArduinoGas">Arduino: Gas (MQ-2)</h3>
-            <p i18n="@@sensorArduinoGasBarDesc">Rauch/CO: left=safe (green), right=danger (red). Raw 0–1023.</p>
+            <p i18n="@@sensorArduinoGasBarDesc">Rauch/CO: Raw 0–1023 (high=danger). Left=safe, right=danger.</p>
           </div>
         </div>
       </header>
@@ -492,8 +491,7 @@
           <div class="gas-bar__mask" [style.width]="gasSafePercent(gasState$ | async)"></div>
         </div>
         <p class="gauge-card__value">
-          {{ formatGasDangerPercent(gasState$ | async) }}
-          <span *ngIf="(gasState$ | async)?.gasDetected" class="gas-bar__danger" i18n="@@sensorArduinoGasDetected">Gas detected!</span>
+          <span i18n="@@sensorArduinoRawLabel">Raw</span>: {{ formatGasRaw(gasState$ | async) }} · <span i18n="@@sensorArduinoDangerLabel">Danger</span>: {{ formatGasDangerPercent(gasState$ | async) }}
         </p>
       </div>
     </article>

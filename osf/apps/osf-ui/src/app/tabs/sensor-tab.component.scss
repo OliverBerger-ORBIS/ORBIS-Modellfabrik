@@ -198,6 +198,11 @@
     box-shadow: 0 24px 60px -34px rgba(var(--orbis-blue-strong-rgb), 0.35);
   }
 
+  &--warning {
+    border: 3px solid var(--status-warning-strong);
+    box-shadow: 0 0 0 2px rgba(var(--status-warning-strong-rgb), 0.3);
+  }
+
   &--alarm {
     border: 3px solid var(--status-error-strong);
     box-shadow:

@@ -205,6 +205,12 @@ describe('SensorTabComponent', () => {
       expect(component.formatMagnitude(16500)).toBe('16,500');
       expect(component.formatMagnitude(undefined)).toBe('—');
     });
+    it('should detect MPU warning (yellow) and alarm (red)', () => {
+      expect(component.isMpuWarning({ vibrationLevel: 'yellow', impulseCount: 1 } as any)).toBe(true);
+      expect(component.isMpuWarning({ vibrationLevel: 'green', impulseCount: 0 } as any)).toBe(false);
+      expect(component.isMpuWarning({ vibrationLevel: 'red', impulseCount: 42 } as any)).toBe(false);
+      expect(component.isMpuAlarm({ vibrationLevel: 'red', impulseCount: 42 } as any)).toBe(true);
+    });
   });
 
   describe('flame sensor (logarithmic scale)', () => {
@@ -224,6 +230,14 @@ describe('SensorTabComponent', () => {
       expect(component.formatFlameDangerPercent({ rawValue: 12 })).toBe('63%');
       expect(component.formatFlameDangerPercent(null)).toBe('—');
     });
+    it('should format flame raw value', () => {
+      expect(component.formatFlameRaw({ rawValue: 312 })).toBe('312');
+      expect(component.formatFlameRaw(null)).toBe('—');
+    });
+    it('should detect flame alarm from flameDetected', () => {
+      expect(component.isFlameAlarm({ flameDetected: true })).toBe(true);
+      expect(component.isFlameAlarm({ flameDetected: false })).toBe(false);
+    });
   });
 
   describe('gas sensor (MQ-2)', () => {
@@ -236,6 +250,37 @@ describe('SensorTabComponent', () => {
       expect(component.formatGasDangerPercent({ rawValue: 120 })).toBe('12%');
       expect(component.formatGasDangerPercent({ rawValue: 890 })).toBe('87%');
       expect(component.formatGasDangerPercent(null)).toBe('—');
+    });
+    it('should format gas raw value', () => {
+      expect(component.formatGasRaw({ rawValue: 520 })).toBe('520');
+      expect(component.formatGasRaw(null)).toBe('—');
+    });
+    it('should detect gas alarm from gasLevel (level 2)', () => {
+      expect(component.isGasAlarm({ gasLevel: 2 })).toBe(true);
+      expect(component.isGasAlarm({ gasLevel: 1 })).toBe(false);
+      expect(component.isGasAlarm({ gasLevel: 0 })).toBe(false);
+      expect(component.isGasAlarm({ gasDetected: true })).toBe(true);  // backward compat
+    });
+    it('should detect gas warning from gasLevel (level 1)', () => {
+      expect(component.isGasWarning({ gasLevel: 1 })).toBe(true);
+      expect(component.isGasWarning({ gasLevel: 1, gasDetected: true })).toBe(true);
+      expect(component.isGasWarning({ gasLevel: 2 })).toBe(false);
+      expect(component.isGasWarning({ gasLevel: 0 })).toBe(false);
+    });
+  });
+
+  describe('DHT11 (temp/humidity)', () => {
+    it('should detect DHT alarm (temp >= 35 or humidity >= 90)', () => {
+      expect(component.isDhtAlarm({ temperature: 35, humidity: 50 })).toBe(true);
+      expect(component.isDhtAlarm({ temperature: 30, humidity: 90 })).toBe(true);
+      expect(component.isDhtAlarm({ temperature: 32, humidity: 82 })).toBe(false);
+    });
+    it('should detect DHT warning (temp 30–35 or humidity 80–90)', () => {
+      expect(component.isDhtWarning({ temperature: 32, humidity: 82 })).toBe(true);
+      expect(component.isDhtWarning({ temperature: 30, humidity: 50 })).toBe(true);
+      expect(component.isDhtWarning({ temperature: 25, humidity: 85 })).toBe(true);
+      expect(component.isDhtWarning({ temperature: 22, humidity: 45 })).toBe(false);
+      expect(component.isDhtWarning({ temperature: 35, humidity: 90 })).toBe(false);  // alarm, not warning
     });
   });
 });
