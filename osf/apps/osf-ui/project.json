@@ -87,6 +87,41 @@
               "glob": "**/*",
               "input": "osf/apps/osf-ui/src/assets",
               "output": "assets"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "osf/testing/fixtures/orders",
+              "output": "fixtures/orders"
+            },
+            {
+              "glob": "**/*.json",
+              "input": "osf/testing/fixtures/orders",
+              "output": "fixtures/orders"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "osf/testing/fixtures/modules",
+              "output": "fixtures/modules"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "osf/testing/fixtures/stock",
+              "output": "fixtures/stock"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "osf/testing/fixtures/flows",
+              "output": "fixtures/flows"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "osf/testing/fixtures/config",
+              "output": "fixtures/config"
+            },
+            {
+              "glob": "**/*.log",
+              "input": "osf/testing/fixtures/sensors",
+              "output": "fixtures/sensors"
             }
           ]
         },

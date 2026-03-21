@@ -365,6 +365,14 @@ describe('MessagePersistenceService', () => {
     it('should return false for camera topic', () => {
       expect(service.shouldPersist('/j1/txt/1/i/cam')).toBe(false);
     });
+
+    it('should return true for quality_check topic (last image after reload)', () => {
+      expect(service.shouldPersist('/j1/txt/1/i/quality_check')).toBe(true);
+    });
+
+    it('should return true for module factsheet topics (persistence + retention capped in MessageMonitor)', () => {
+      expect(service.shouldPersist('module/v1/ff/SVR4H73275/factsheet')).toBe(true);
+    });
   });
 });
 

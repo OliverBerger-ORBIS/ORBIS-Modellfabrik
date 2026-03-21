@@ -13,6 +13,9 @@
   - [GitHub Pages Deployment](deployment/github-pages-deployment.md)
 - MQTT
   - [MQTT WebSocket Debug Guide](mqtt-websocket-debug-guide.md)
+- OSF-UI
+  - [Browser console debug (`osf.debug`)](osf-ui-console-debug.md)
+  - [LogiMAT: kurze Smoke-Checkliste (vor Messe)](osf-ui-logimat-smoke-checklist.md)
 - Shopfloor
   - [Shopfloor Layout Guide](SHOPFLOOR_LAYOUT_GUIDE.md)
 - Testing

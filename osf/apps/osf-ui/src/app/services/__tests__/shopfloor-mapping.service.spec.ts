@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { ORBIS_COLORS } from '../../assets/color-palette';
 import { ShopfloorMappingService } from '../shopfloor-mapping.service';
 import type {
   ShopfloorCellConfig,
@@ -279,6 +280,37 @@ describe('ShopfloorMappingService', () => {
 
     it('should return null for unknown module type icon', () => {
       expect(service.getModuleIconByType('UNKNOWN')).toBeNull();
+    });
+  });
+
+  describe('getAgvColor', () => {
+    it('should return unified orange for all configured FTS serials', () => {
+      const config = mockConfig({
+        cells: [],
+        intersection_map: {},
+        modules_by_serial: {},
+        fts: [
+          { id: 'fts-1', label: 'AGV-1', serial: '5iO4' },
+          { id: 'fts-2', label: 'AGV-2', serial: 'jp93' },
+        ],
+      });
+      service.initializeLayout(config);
+
+      expect(service.getAgvColor('5iO4')).toBe(ORBIS_COLORS.agv.agv1);
+      expect(service.getAgvColor('jp93')).toBe(ORBIS_COLORS.agv.agv1);
+      expect(service.getAgvColor('5iO4')).toBe(service.getAgvColor('jp93'));
+    });
+
+    it('should return grey for unknown serial', () => {
+      const config = mockConfig({
+        cells: [],
+        intersection_map: {},
+        modules_by_serial: {},
+        fts: [{ id: 'fts-1', label: 'AGV-1', serial: '5iO4' }],
+      });
+      service.initializeLayout(config);
+
+      expect(service.getAgvColor('unknown-serial')).toBe(ORBIS_COLORS.orbisGrey.medium);
     });
   });
 });

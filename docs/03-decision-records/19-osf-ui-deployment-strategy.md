@@ -36,6 +36,7 @@
   - Einfacherer Build-Prozess, keine zusätzlichen Konfigurationen
   - Environment-Auswahl ist Laufzeit-Feature (localStorage, UI)
   - Reduktion des Bundle für GitHub Pages (nur Mock) wäre möglich, aber derzeit nicht umgesetzt
+- **Fixtures im Production-Build (seit 2026-03):** Die Fixture-Assets (orders, modules, stock, flows, config, sensors) sind im Production-Build enthalten. Ermöglicht Mock-Fixture-Playback auf RPi – Demo ohne Hardware, vorbereitete Sessions für den digitalen Ablauf. Live-Modus unverändert.
 
 ---
 
@@ -68,6 +69,7 @@
 - [x] Deployment-Ziele dokumentiert
 - [x] Build-Strategie festgelegt
 - [x] `deployment-alternatives.md` durch diesen DR ersetzt
+- [x] Fixtures in Production-Build (project.json) – Mock-Playback auf RPi (2026-03)
 - [ ] Bei Bedarf: GitHub Pages Workflow um Build-Varianten erweitern (derzeit nicht geplant)
 
 ---

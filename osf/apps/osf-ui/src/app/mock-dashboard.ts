@@ -31,6 +31,7 @@ import { map, scan, shareReplay, startWith, filter } from 'rxjs/operators';
 import type { OrderActive } from '@osf/entities';
 import type { MqttClientWrapper, MqttMessage } from '@osf/mqtt-client';
 import type { MonitoredMessage } from './services/message-monitor.service';
+import { isOsfConsoleDebugEnabled } from './utils/osf-console-debug';
 
 export interface DashboardStreamSet {
   orders$: Observable<OrderActive[]>;
@@ -297,7 +298,9 @@ export const createMockDashboardController = (options?: {
     
     // In mock mode (no MQTT client), forward fixture messages to MessageMonitor
     if (!mqttClient && messageMonitor) {
-      console.log('[mock-dashboard] Setting up MessageMonitor forwarding for fixture messages');
+      if (isOsfConsoleDebugEnabled()) {
+        console.log('[mock-dashboard] Setting up MessageMonitor forwarding for fixture messages');
+      }
       messageMonitorSubscription = messageSubject.subscribe((message: RawMqttMessage) => {
         try {
           let payload: unknown = message.payload;
@@ -313,6 +316,12 @@ export const createMockDashboardController = (options?: {
           console.error('[mock-dashboard] Failed to forward message to MessageMonitor:', error);
         }
       });
+    } else if (messageMonitor && mqttClient) {
+      if (isOsfConsoleDebugEnabled()) {
+        console.log('[mock-dashboard] MessageMonitor forwarding skipped (mqttClient present, using ConnectionService)');
+      }
+    } else if (!messageMonitor) {
+      console.warn('[mock-dashboard] MessageMonitor forwarding skipped (no messageMonitor passed to controller)');
     }
   };
   
@@ -490,7 +499,9 @@ export const createMockDashboardController = (options?: {
     unsubscribeReplays();
     resetStreams();
 
-    console.log(`[mock-dashboard] Loading tab fixture preset: ${presetName}`);
+    if (isOsfConsoleDebugEnabled()) {
+      console.log(`[mock-dashboard] Loading tab fixture preset: ${presetName}`);
+    }
 
     // Use the tab-specific fixture preset stream
     const tabFixtureStream$ = createTabFixturePreset(presetName, {
@@ -546,8 +557,11 @@ export const createMockDashboardController = (options?: {
       if (mqttSubscription) {
         mqttSubscription.unsubscribe();
       }
-      if (mqttClient) {
-        mqttSubscription = mqttClient.messages$.subscribe((mqttMsg: MqttMessage) => {
+  if (mqttClient) {
+    if (isOsfConsoleDebugEnabled()) {
+      console.log('[mock-dashboard] Using real MQTT client for live/replay mode');
+    }
+    mqttSubscription = mqttClient.messages$.subscribe((mqttMsg: MqttMessage) => {
           const rawMessage: RawMqttMessage = {
             topic: mqttMsg.topic,
             payload: mqttMsg.payload,

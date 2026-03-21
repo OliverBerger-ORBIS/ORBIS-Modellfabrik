@@ -1,6 +1,6 @@
 {
   "name": "osf-workspace",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -19,7 +19,7 @@
     "build": "npm run update-version && nx build mqtt-client",
     "build:fixtures": "python scripts/build_order_fixtures.py",
     "build:github-pages": "npm run update-version && nx build osf-ui --configuration=github-pages",
-    "serve:local": "npm run build:github-pages && npx serve dist/apps/osf-ui/browser -p 4200",
+    "serve:local": "node scripts/serve-local.js",
     "docker:osf-ui": "node scripts/build-osf-ui-docker.js",
     "docker:osf-ui:arm": "node scripts/build-osf-ui-docker.js arm",
     "docker:osf-ui:armv7": "node scripts/build-osf-ui-docker.js armv7",

@@ -194,7 +194,12 @@ export class AppComponent implements OnDestroy {
       getHistory: <T>(topic: string) => this.messageMonitor.getHistory<T>(topic),
     };
 
-    // Initialize dashboard controller for mock mode with MessageMonitor
+    // Always initialize dashboard controller with MessageMonitor (required for fixture→MessageMonitor forwarding)
+    // Prevents tabs from calling getDashboardController() without args and creating a controller without messageMonitor
+    const initialMqttClient = this.connectionService.mqttClient ?? undefined;
+    getDashboardController(initialMqttClient, this.dashboardMessageMonitor);
+
+    // Also ensure mock mode controller when env is mock (in case initialMqttClient was set)
     if (this.environmentService.current.key === 'mock') {
       getDashboardController(undefined, this.dashboardMessageMonitor);
     }

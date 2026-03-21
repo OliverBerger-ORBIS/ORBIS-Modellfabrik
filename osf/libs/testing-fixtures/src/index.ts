@@ -3,6 +3,15 @@ import { concatMap, delay, repeat, switchMap } from 'rxjs/operators';
 
 import type { RawMqttMessage } from '@osf/gateway';
 
+/** Same contract as `isOsfConsoleDebugEnabled` in osf-ui (localStorage `osf.debug` === `1`). */
+function isOsfConsoleDebugEnabled(): boolean {
+  try {
+    return typeof localStorage !== 'undefined' && localStorage.getItem('osf.debug') === '1';
+  } catch {
+    return false;
+  }
+}
+
 export type OrderFixtureName =
   | 'white'
   | 'white_step3'
@@ -192,11 +201,6 @@ const parseLines = (contents: string): RawMqttMessage[] => {
 };
 
 const resolvePath = (name: OrderFixtureName, baseUrl: string | undefined): string => {
-  // Make it VERY visible that this function is called
-  console.error('🔍 [testing-fixtures] resolvePath() CALLED for:', name);
-  console.log('[testing-fixtures] resolvePath() called for:', name);
-  console.warn('[testing-fixtures] resolvePath() called for:', name);
-  
   const baseHref = getBaseHref();
   const relativePath = baseUrl ?? DEFAULT_BASE_URL;
   // Remove leading slash from relativePath to combine with baseHref
@@ -204,20 +208,16 @@ const resolvePath = (name: OrderFixtureName, baseUrl: string | undefined): strin
   const fullBase = `${baseHref}${cleanPath}`;
   const suffix = FIXTURE_PATHS[name];
   const resolvedPath = fullBase.endsWith('/') ? `${fullBase}${suffix}` : `${fullBase}/${suffix}`;
-  
-  // Always log resolved path for debugging (use console.error so it's visible in Safari)
-  const debugInfo = {
-    baseHref,
-    relativePath,
-    cleanPath,
-    fullBase,
-    suffix,
-    resolvedPath
-  };
-  console.error('🔍 [testing-fixtures] resolvePath() RESULT for', name, ':', debugInfo);
-  console.log('[testing-fixtures] resolvePath() result for', name, ':', debugInfo);
-  console.warn('[testing-fixtures] resolvePath() result for', name, ':', debugInfo);
-  
+  if (isOsfConsoleDebugEnabled()) {
+    console.log('[testing-fixtures] resolvePath', name, {
+      baseHref,
+      relativePath,
+      cleanPath,
+      fullBase,
+      suffix,
+      resolvedPath,
+    });
+  }
   return resolvedPath;
 };
 

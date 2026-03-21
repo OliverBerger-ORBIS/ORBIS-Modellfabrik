@@ -53,14 +53,18 @@ npx nx build osf-ui --configuration=production --localize --baseHref=/ORBIS-Mode
 
 ### Lokaler Build (für Tests)
 
-Für lokale Tests kann der Build manuell erstellt werden:
+Für lokale Tests mit GitHub-Pages-Layout (baseHref `/ORBIS-Modellfabrik/`):
 
 ```bash
-# Production Build mit allen Locales
-nx build osf-ui --configuration=production --localize --baseHref=/ORBIS-Modellfabrik/
+npm run serve:local
+```
 
-# Build-Output lokal testen
-npx serve dist/apps/osf-ui/browser -p 4200
+Öffne **http://localhost:4200/ORBIS-Modellfabrik/** – das Skript kopiert den Build in die Unterordnerstruktur, damit Chunks, Assets und Fixtures korrekt geladen werden.
+
+Für normale Entwicklung (baseHref `/`) ohne 404s:
+
+```bash
+npm run serve:osf-ui
 ```
 
 ---

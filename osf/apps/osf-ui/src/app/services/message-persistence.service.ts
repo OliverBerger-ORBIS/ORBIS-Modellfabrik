@@ -4,8 +4,20 @@ import type { MonitoredMessage } from './message-monitor.service';
 const STORAGE_KEY_PREFIX = 'OSF.message-monitor';
 const STORAGE_SIZE_LIMIT = 5 * 1024 * 1024; // 5MB
 
-// Topics that should NOT be persisted
+// Topics that should NOT be persisted (only high-frequency live streams — e.g. DPS cam ~1/s)
 const NO_PERSIST_TOPICS = ['/j1/txt/1/i/cam'];
+
+/** True if topic should never be written to localStorage (explicit list only — topic names differ per station). */
+function isExcludedFromPersistence(topic: string): boolean {
+  return NO_PERSIST_TOPICS.includes(topic);
+}
+
+function isQuotaExceededError(error: unknown): boolean {
+  return (
+    (error instanceof DOMException && error.name === 'QuotaExceededError') ||
+    (error instanceof Error && error.name === 'QuotaExceededError')
+  );
+}
 
 /**
  * Service responsible for persisting and loading messages from localStorage
@@ -13,13 +25,45 @@ const NO_PERSIST_TOPICS = ['/j1/txt/1/i/cam'];
  */
 @Injectable({ providedIn: 'root' })
 export class MessagePersistenceService {
+  constructor() {
+    this.removeObsoletePersistedKeys();
+  }
+
+  /**
+   * Drop keys for topics that are explicitly non-persisted (e.g. high-frequency cam)
+   * so old sessions do not keep localStorage full after rule changes.
+   */
+  private removeObsoletePersistedKeys(): void {
+    try {
+      const prefix = STORAGE_KEY_PREFIX + '.';
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key || !key.startsWith(prefix)) {
+          continue;
+        }
+        const topic = key.substring(prefix.length);
+        if (isExcludedFromPersistence(topic)) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach((k) => localStorage.removeItem(k));
+      if (keysToRemove.length > 0) {
+        console.warn(
+          `[MessagePersistence] Removed ${keysToRemove.length} obsolete topic key(s) from localStorage (no longer persisted).`
+        );
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   /**
    * Persist messages for a topic to localStorage
    * Returns true if successful, false if skipped or failed
    */
   persist(topic: string, messages: MonitoredMessage[]): boolean {
-    // Don't persist camera data or other excluded topics
-    if (NO_PERSIST_TOPICS.includes(topic)) {
+    if (isExcludedFromPersistence(topic)) {
       return false;
     }
 
@@ -35,8 +79,16 @@ export class MessagePersistenceService {
 
       localStorage.setItem(key, data);
       return true;
-    } catch (error) {
-      console.error('[MessagePersistence] Failed to persist messages:', error);
+    } catch (error: unknown) {
+      if (isQuotaExceededError(error)) {
+        console.warn(
+          '[MessagePersistence] localStorage quota exceeded; skipping persistence for',
+          topic,
+          '(Clear Message Monitor data or site storage if this persists.)'
+        );
+      } else {
+        console.error('[MessagePersistence] Failed to persist messages:', error);
+      }
       return false;
     }
   }
@@ -155,7 +207,7 @@ export class MessagePersistenceService {
    * Check if a topic should be persisted
    */
   shouldPersist(topic: string): boolean {
-    return !NO_PERSIST_TOPICS.includes(topic);
+    return !isExcludedFromPersistence(topic);
   }
 }
 

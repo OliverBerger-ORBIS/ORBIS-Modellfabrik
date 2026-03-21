@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+
+import { isOsfConsoleDebugEnabled } from '../utils/osf-console-debug';
 import Ajv from 'ajv';
 import type { ValidateFunction } from 'ajv';
 
@@ -89,8 +91,10 @@ export class MessageValidationService {
     // - Adding schemas to project.json assets configuration
     // - Using HttpClient to load schemas on service init
     // - Registering schemas with this.registerSchema(topic, schema)
-    
-    console.log('[MessageValidation] Schema validation in fallback mode - all messages accepted');
+
+    if (isOsfConsoleDebugEnabled()) {
+      console.log('[MessageValidation] Schema validation in fallback mode - all messages accepted');
+    }
   }
 }
 

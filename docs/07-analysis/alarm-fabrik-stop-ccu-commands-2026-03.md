@@ -140,6 +140,16 @@ Damit bleiben AGVs nicht in Bewegung; sie werden physisch angehalten. Recovery: 
 
 ---
 
+## 8. Fazit: Live-Demo-Szenario (Sprint 17/18)
+
+**Feststellung:** Das ursprünglich vorgestellte Szenario „Bei akuter Gefahr stoppt alles sofort“ ist mit der CCU **nicht umsetzbar**. `ccu/set/park` + `ccu/order/cancel` erreichen keinen vollständigen Sofort-Stop – IN_PROGRESS-Orders laufen weiter.
+
+**Nach Stopp zwingend erforderlich:** Factory-Reset (`ccu/set/reset`) und AGV-dock (FTS `findInitialDockPosition`). Siehe [08-manual-intervention](../06-integrations/fischertechnik-official/08-manual-intervention.md).
+
+**UC-05 Live-Demo:** Button „Gefahr simulieren“ sendet Park + Cancel + FTS-Reset. Demo zeigt Sent Events; echter Prozess-Anhalt nur bei ENQUEUED-Orders. Laufende Aktionen (AIQS, DRILL, etc.) werden nicht abgebrochen.
+
+---
+
 ## Referenzen
 
 - [APS-CCU protocol](../../integrations/APS-CCU/common/protocol/index.ts) – Topics

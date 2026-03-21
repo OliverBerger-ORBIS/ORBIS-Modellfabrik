@@ -180,14 +180,17 @@ export class ShopfloorMappingService {
     return fts?.label ?? null;
   }
 
-  /** Color for AGV by serial – feste Zuordnung aus color-palette (AGV-1 orange, AGV-2 gelb) */
+  /**
+   * Color for AGV by serial – unified shopfloor orange for all configured FTS (AGV-1/AGV-2).
+   * Matches single-AGV display; see DR-24 amendment. Unknown serial → neutral grey.
+   */
   getAgvColor(serial: string): string {
     const opts = this.getAgvOptions();
     const idx = opts.findIndex((o) => o.serial === serial);
-    if (idx === 0) return ORBIS_COLORS.agv.agv1;
-    if (idx === 1) return ORBIS_COLORS.agv.agv2;
-    const fallbacks = [ORBIS_COLORS.agv.agv1, ORBIS_COLORS.agv.agv2, ORBIS_COLORS.highlightGreen.strong, ORBIS_COLORS.sapBlue.medium] as const;
-    return fallbacks[idx % fallbacks.length] ?? ORBIS_COLORS.orbisGrey.medium;
+    if (idx >= 0) {
+      return ORBIS_COLORS.agv.agv1;
+    }
+    return ORBIS_COLORS.orbisGrey.medium;
   }
 }
 

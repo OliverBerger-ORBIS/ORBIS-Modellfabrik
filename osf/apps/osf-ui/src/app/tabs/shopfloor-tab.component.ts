@@ -10,8 +10,17 @@ import type {
 import { SHOPFLOOR_ASSET_MAP, type OrderFixtureName } from '@osf/testing-fixtures';
 import { getDashboardController } from '../mock-dashboard';
 import type { Observable } from 'rxjs';
-import { distinctUntilChanged, filter, map, shareReplay, startWith, take } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { of, Subscription } from 'rxjs';
+import {
+  distinctUntilChanged,
+  filter,
+  finalize,
+  map,
+  shareReplay,
+  startWith,
+  switchMap,
+  take,
+} from 'rxjs/operators';
 import { EnvironmentService } from '../services/environment.service';
 import { ModuleNameService } from '../services/module-name.service';
 import { ConnectionService, type ConnectionState } from '../services/connection.service';
@@ -26,6 +35,7 @@ import type { ShopfloorLayoutConfig, ShopfloorCellConfig } from '../components/s
 import { ShopfloorMappingService, type ModuleInfo } from '../services/shopfloor-mapping.service';
 import { AgvRouteService } from '../services/agv-route.service';
 import { ICONS } from '../shared/icons/icon.registry';
+import { isOsfConsoleDebugEnabled } from '../utils/osf-console-debug';
 
 // DPS/AIQS Serial Numbers
 const DPS_SERIAL = 'SVR4H73275';
@@ -33,6 +43,30 @@ const AIQS_SERIAL = 'SVR4H76530';
 
 // DPS/AIQS Topic Constants
 const DPS_STATE_TOPIC = `module/v1/ff/${DPS_SERIAL}/state`;
+
+/** Chrome may reject very long data: URLs for img src; blob URLs are safe. */
+const MAX_DATA_URL_LENGTH_FOR_IMG = 1_800_000;
+
+function toDisplayImageUrl(dataUrl: string): { url: string; revoke: boolean } {
+  if (dataUrl.length <= MAX_DATA_URL_LENGTH_FOR_IMG) {
+    return { url: dataUrl, revoke: false };
+  }
+  const m = /^data:([^;]+);base64,([\s\S]+)$/.exec(dataUrl);
+  if (!m) {
+    return { url: dataUrl, revoke: false };
+  }
+  try {
+    const binary = atob(m[2]);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    const blob = new Blob([bytes], { type: m[1] });
+    return { url: URL.createObjectURL(blob), revoke: true };
+  } catch {
+    return { url: dataUrl, revoke: false };
+  }
+}
 const DPS_CONNECTION_TOPIC = `module/v1/ff/${DPS_SERIAL}/connection`;
 const AIQS_STATE_TOPIC = `module/v1/ff/${AIQS_SERIAL}/state`;
 const AIQS_CONNECTION_TOPIC = `module/v1/ff/${AIQS_SERIAL}/connection`;
@@ -376,6 +410,11 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   // Track sent commands for developer mode
   sentSequenceCommands: Array<{ command: SequenceCommand; topic: string; timestamp: string }> = [];
 
+  /** Coalesce parallel loadSequenceCommands calls (fixtures trigger many updateSelectedMeta runs). */
+  private sequenceCommandsLoadedKey: string | null = null;
+  private sequenceLoadGeneration = 0;
+  private readonly sequenceLoadPromises = new Map<string, Promise<void>>();
+
   readonly headingIcon = 'assets/svg/ui/heading-modules.svg';
 
   // I18n labels for shopfloor preview
@@ -464,11 +503,8 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         })
     );
 
-    // Only load fixture in mock mode; in live/replay mode, streams are already connected
-    // Don't auto-load shopfloor-status fixture - user must click it explicitly
-    if (this.isMockMode && this.activeFixture !== 'shopfloor-status') {
-      void this.loadFixture(this.activeFixture);
-    }
+    // Initial fixture load is handled by environment$ (BehaviorSubject replays current env on subscribe).
+    // Do not call loadFixture() here — that would duplicate the subscription handler above.
   }
 
   ngOnDestroy(): void {
@@ -595,27 +631,11 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         if (this.dashboard.injectMessage) {
           this.dashboard.injectMessage(message);
         }
-        try {
-          const payload = typeof message.payload === 'string' 
-            ? JSON.parse(message.payload) 
-            : message.payload;
-          this.messageMonitor.addMessage(message.topic, payload, message.timestamp);
-        } catch (error) {
-          console.error('[module-tab] Failed to parse shopfloor status payload:', error);
-        }
       });
       
       const moduleSub = moduleStream$.subscribe((message) => {
         if (this.dashboard.injectMessage) {
           this.dashboard.injectMessage(message);
-        }
-        try {
-          const payload = typeof message.payload === 'string' 
-            ? JSON.parse(message.payload) 
-            : message.payload;
-          this.messageMonitor.addMessage(message.topic, payload, message.timestamp);
-        } catch (error) {
-          console.error('[module-tab] Failed to parse module status payload:', error);
         }
       });
       
@@ -636,11 +656,8 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         loop: true,
       });
       const sub = stream$.subscribe((message) => {
-        try {
-          const payload = typeof message.payload === 'string' ? JSON.parse(message.payload) : message.payload;
-          this.messageMonitor.addMessage(message.topic, payload, message.timestamp);
-        } catch (error) {
-          console.error('[module-tab] Failed to parse drill action payload:', error);
+        if (this.dashboard.injectMessage) {
+          this.dashboard.injectMessage(message);
         }
       });
       this.fixtureSubscriptions.add(sub);
@@ -657,11 +674,8 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         loop: true,
       });
       const sub = stream$.subscribe((message) => {
-        try {
-          const payload = typeof message.payload === 'string' ? JSON.parse(message.payload) : message.payload;
-          this.messageMonitor.addMessage(message.topic, payload, message.timestamp);
-        } catch (error) {
-          console.error('[module-tab] Failed to parse AIQS action payload:', error);
+        if (this.dashboard.injectMessage) {
+          this.dashboard.injectMessage(message);
         }
       });
       this.fixtureSubscriptions.add(sub);
@@ -677,11 +691,8 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         intervalMs: 0,
       });
       const sub = stream$.subscribe((message) => {
-        try {
-          const payload = typeof message.payload === 'string' ? JSON.parse(message.payload) : message.payload;
-          this.messageMonitor.addMessage(message.topic, payload, message.timestamp);
-        } catch (error) {
-          console.error('[module-tab] Failed to parse module action history payload:', error);
+        if (this.dashboard.injectMessage) {
+          this.dashboard.injectMessage(message);
         }
       });
       this.fixtureSubscriptions.add(sub);
@@ -701,14 +712,6 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       const sub = stream$.subscribe((message) => {
         if (this.dashboard.injectMessage) {
           this.dashboard.injectMessage(message);
-        }
-        try {
-          const payload = typeof message.payload === 'string' 
-            ? JSON.parse(message.payload) 
-            : message.payload;
-          this.messageMonitor.addMessage(message.topic, payload, message.timestamp);
-        } catch (error) {
-          console.error('[module-tab] Failed to parse quality check payload:', error);
         }
       });
       
@@ -801,6 +804,19 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
           classification: payload.classification,
           classificationDesc: payload.classificationDesc,
         };
+      }),
+      switchMap((img) => {
+        if (!img) {
+          return of(null);
+        }
+        const { url, revoke } = toDisplayImageUrl(img.dataUrl);
+        return of({ ...img, dataUrl: url }).pipe(
+          finalize(() => {
+            if (revoke) {
+              URL.revokeObjectURL(url);
+            }
+          })
+        );
       }),
       startWith(null),
       shareReplay({ bufferSize: 1, refCount: false })
@@ -1271,18 +1287,24 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     
     // Subscribe to DPS/AIQS streams when module is selected
     if (this.selectedModuleSerialNumber === DPS_SERIAL) {
-      console.log('[module-tab] DPS selected, subscribing to stream:', DPS_STATE_TOPIC, 'Serial:', this.selectedModuleSerialNumber);
+      if (isOsfConsoleDebugEnabled()) {
+        console.log('[module-tab] DPS selected, subscribing to stream:', DPS_STATE_TOPIC, 'Serial:', this.selectedModuleSerialNumber);
+      }
       // Subscribe to get current value and updates
       this.dpsStateSub = this.dpsState$.pipe(
         distinctUntilChanged((prev, curr) => prev?.timestamp === curr?.timestamp)
       ).subscribe((state) => {
-        console.log('[module-tab] DPS state update:', state);
-        console.log('[module-tab] DPS actionState:', state?.actionState);
-        console.log('[module-tab] DPS actionState.metadata:', state?.actionState?.metadata);
-        console.log('[module-tab] DPS actionState.metadata.workpiece:', state?.actionState?.metadata?.workpiece);
-        console.log('[module-tab] DPS actionStates:', state?.actionStates);
-        console.log('[module-tab] DPS orderId:', state?.orderId);
-        console.log('[module-tab] DPS workpiece color:', this.getDpsWorkpieceColor(state));
+        if (isOsfConsoleDebugEnabled()) {
+          // Do not log full state — metadata may contain huge base64 camera frames; DevTools then reports data: URL errors.
+          console.log('[module-tab] DPS state (summary):', {
+            orderId: state?.orderId,
+            timestamp: state?.timestamp,
+            available: state?.available,
+            actionState: state?.actionState?.state,
+            hasWorkpiece: !!state?.actionState?.metadata?.workpiece,
+          });
+          console.log('[module-tab] DPS workpiece color:', this.getDpsWorkpieceColor(state));
+        }
         if (this.selectedModuleMeta && this.selectedModuleSerialNumber === DPS_SERIAL) {
           this.selectedModuleMeta.dpsData = state;
           this.cdr.markForCheck();
@@ -1292,12 +1314,21 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     }
     
     if (this.selectedModuleSerialNumber === AIQS_SERIAL) {
-      console.log('[module-tab] AIQS selected, subscribing to stream:', AIQS_STATE_TOPIC, 'Serial:', this.selectedModuleSerialNumber);
+      if (isOsfConsoleDebugEnabled()) {
+        console.log('[module-tab] AIQS selected, subscribing to stream:', AIQS_STATE_TOPIC, 'Serial:', this.selectedModuleSerialNumber);
+      }
       // Subscribe to get current value and updates
       this.aiqsStateSub = this.aiqsState$.pipe(
         distinctUntilChanged((prev, curr) => prev?.timestamp === curr?.timestamp)
       ).subscribe((state) => {
-        console.log('[module-tab] AIQS state update:', state);
+        if (isOsfConsoleDebugEnabled()) {
+          console.log('[module-tab] AIQS state (summary):', {
+            orderId: state?.orderId,
+            timestamp: state?.timestamp,
+            available: state?.available,
+            actionState: state?.actionState?.state,
+          });
+        }
         if (this.selectedModuleMeta && this.selectedModuleSerialNumber === AIQS_SERIAL) {
           this.selectedModuleMeta.aiqsData = state;
           this.cdr.markForCheck();
@@ -1391,7 +1422,6 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         this.saveModuleSelection(this.selectedModuleSerialNumber);
         
         this.updateSelectedMeta(null);
-        this.loadSequenceCommands(moduleEntry.subType ?? moduleType);
         this.cdr.markForCheck();
       }
     }
@@ -1418,19 +1448,19 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     // Save selection to localStorage
     this.saveModuleSelection(this.selectedModuleSerialNumber);
 
-    // Debug: Log selected module info
-    console.log('[module-tab] Selected module:', {
-      eventId: event.id,
-      cellSerialNumber: cell?.serial,
-      moduleDetailsId: moduleDetails?.id,
-      selectedModuleSerialNumber: this.selectedModuleSerialNumber,
-      moduleType,
-      isDPS: this.selectedModuleSerialNumber === DPS_SERIAL,
-      isAIQS: this.selectedModuleSerialNumber === AIQS_SERIAL,
-    });
+    if (isOsfConsoleDebugEnabled()) {
+      console.log('[module-tab] Selected module:', {
+        eventId: event.id,
+        cellSerialNumber: cell?.serial,
+        moduleDetailsId: moduleDetails?.id,
+        selectedModuleSerialNumber: this.selectedModuleSerialNumber,
+        moduleType,
+        isDPS: this.selectedModuleSerialNumber === DPS_SERIAL,
+        isAIQS: this.selectedModuleSerialNumber === AIQS_SERIAL,
+      });
+    }
 
     this.updateSelectedMeta(cell);
-    this.loadSequenceCommands(moduleType);
     this.cdr.markForCheck();
   }
 
@@ -1451,95 +1481,137 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       'AIQS': 'AIQS-Sequence.json',
     };
 
-    const sequenceFile = sequenceFileMap[moduleType.toUpperCase()];
+    const upper = moduleType.toUpperCase();
+    const sequenceFile = sequenceFileMap[upper];
     if (!sequenceFile) {
+      this.sequenceLoadGeneration++;
+      this.sequenceCommandsLoadedKey = null;
       this.sequenceCommands = null;
       this.sentSequenceCommands = [];
+      this.cdr.markForCheck();
       return;
     }
 
-    try {
-      const response = await this.http.get(`data/osf-data/${sequenceFile}`, { responseType: 'text' }).toPromise();
-      if (!response) {
-        this.sequenceCommands = null;
-        this.sentSequenceCommands = [];
-        return;
-      }
-
-      // Parse the sequence file (format: Topic line, then JSON payloads separated by blank lines)
-      const lines = response.split('\n');
-      let topic = '';
-      const commands: SequenceCommand[] = [];
-      let currentJson = '';
-      let inPayload = false;
-
-      for (const line of lines) {
-        const trimmed = line.trim();
-        
-        // Skip comments and empty lines at start
-        if (trimmed === '' || trimmed.startsWith('#')) {
-          if (inPayload && currentJson.trim() !== '') {
-            // End of JSON payload
-            try {
-              const payload = JSON.parse(currentJson.trim());
-              commands.push(payload);
-              currentJson = '';
-              inPayload = false;
-            } catch (error) {
-              console.warn(`[module-tab] Failed to parse sequence command:`, error);
-              currentJson = '';
-              inPayload = false;
-            }
-          }
-          continue;
-        }
-        
-        if (trimmed.startsWith('Topic:')) {
-          topic = trimmed.replace('Topic:', '').trim();
-          continue;
-        }
-        
-        if (trimmed.startsWith('Payload:')) {
-          // Start of payload section
-          continue;
-        }
-        
-        if (trimmed.startsWith('{')) {
-          // Start of JSON object
-          inPayload = true;
-          currentJson = trimmed;
-          continue;
-        }
-        
-        if (inPayload) {
-          currentJson += '\n' + line;
-        }
-      }
-
-      // Parse last JSON if exists
-      if (currentJson.trim() !== '') {
-        try {
-          const payload = JSON.parse(currentJson.trim());
-          commands.push(payload);
-        } catch (error) {
-          console.warn(`[module-tab] Failed to parse last sequence command:`, error);
-        }
-      }
-
-      if (commands.length > 0 && topic) {
-        this.sequenceCommands = { commands, topic };
-        this.sentSequenceCommands = []; // Reset sent commands when loading new sequence
-        console.log(`[module-tab] Loaded ${commands.length} sequence commands for ${moduleType}`, { topic, commands });
-      } else {
-        console.warn(`[module-tab] No commands or topic found for ${moduleType}`, { commands: commands.length, topic });
-        this.sequenceCommands = null;
-        this.sentSequenceCommands = [];
-      }
-    } catch (error) {
-      console.warn(`[module-tab] Failed to load sequence commands for ${moduleType}:`, error);
-      this.sequenceCommands = null;
-      this.sentSequenceCommands = [];
+    if (this.sequenceCommandsLoadedKey === upper && this.sequenceCommands) {
+      return;
     }
+
+    const existing = this.sequenceLoadPromises.get(upper);
+    if (existing) {
+      await existing;
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const gen = ++this.sequenceLoadGeneration;
+
+    const run = (async (): Promise<void> => {
+      try {
+        const response = await this.http
+          .get(`data/osf-data/${sequenceFile}`, { responseType: 'text' })
+          .toPromise();
+
+        if (gen !== this.sequenceLoadGeneration) {
+          return;
+        }
+
+        if (!response) {
+          this.sequenceCommands = null;
+          this.sentSequenceCommands = [];
+          return;
+        }
+
+        // Parse the sequence file (format: Topic line, then JSON payloads separated by blank lines)
+        const lines = response.split('\n');
+        let topic = '';
+        const commands: SequenceCommand[] = [];
+        let currentJson = '';
+        let inPayload = false;
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+
+          if (trimmed === '' || trimmed.startsWith('#')) {
+            if (inPayload && currentJson.trim() !== '') {
+              try {
+                const payload = JSON.parse(currentJson.trim());
+                commands.push(payload);
+                currentJson = '';
+                inPayload = false;
+              } catch (error) {
+                console.warn(`[module-tab] Failed to parse sequence command:`, error);
+                currentJson = '';
+                inPayload = false;
+              }
+            }
+            continue;
+          }
+
+          if (trimmed.startsWith('Topic:')) {
+            topic = trimmed.replace('Topic:', '').trim();
+            continue;
+          }
+
+          if (trimmed.startsWith('Payload:')) {
+            continue;
+          }
+
+          if (trimmed.startsWith('{')) {
+            inPayload = true;
+            currentJson = trimmed;
+            continue;
+          }
+
+          if (inPayload) {
+            currentJson += '\n' + line;
+          }
+        }
+
+        if (currentJson.trim() !== '') {
+          try {
+            const payload = JSON.parse(currentJson.trim());
+            commands.push(payload);
+          } catch (error) {
+            console.warn(`[module-tab] Failed to parse last sequence command:`, error);
+          }
+        }
+
+        if (gen !== this.sequenceLoadGeneration) {
+          return;
+        }
+
+        if (commands.length > 0 && topic) {
+          this.sequenceCommands = { commands, topic };
+          this.sentSequenceCommands = [];
+          this.sequenceCommandsLoadedKey = upper;
+        } else {
+          console.warn(`[module-tab] No commands or topic found for ${moduleType}`, {
+            commands: commands.length,
+            topic,
+          });
+          this.sequenceCommands = null;
+          this.sentSequenceCommands = [];
+          this.sequenceCommandsLoadedKey = null;
+        }
+      } catch (error) {
+        if (gen === this.sequenceLoadGeneration) {
+          console.warn(`[module-tab] Failed to load sequence commands for ${moduleType}:`, error);
+          this.sequenceCommands = null;
+          this.sentSequenceCommands = [];
+          this.sequenceCommandsLoadedKey = null;
+        }
+      }
+    })();
+
+    this.sequenceLoadPromises.set(upper, run);
+    try {
+      await run;
+    } finally {
+      if (this.sequenceLoadPromises.get(upper) === run) {
+        this.sequenceLoadPromises.delete(upper);
+      }
+    }
+
     this.cdr.markForCheck();
   }
 
@@ -2540,7 +2612,6 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       
       const cell = this.layoutConfig?.cells.find((c: ShopfloorCellConfig) => c.serial === hbwModule.id) ?? null;
       this.updateSelectedMeta(cell);
-      this.loadSequenceCommands('HBW');
       this.saveModuleSelection(hbwModule.id);
       this.cdr.markForCheck();
     }

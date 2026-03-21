@@ -7,25 +7,34 @@
 
 **Stakeholder-Update:** Fokus auf LogiMAT-Durchführung, kritische Bugfixes und Hardware-Demo-Stabilität.
 
+**Kurz vor Messe (wenig Zeit, kein Fix-Roulette):** [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md)
+
+**Release:** Build + Messe-Version **`v1.0.0` / `v1.0.x`** erst **nach** allen Fixes ([Checkliste](../04-howto/osf-ui-logimat-smoke-checklist.md#release-und-messe-version-nach-allen-fixes)).
+
 ---
 
 ## 🎯 Ziele
 
 ### Priorität 1: Kritische Bugs (LogiMAT)
 
-- [ ] **Message Monitor:** Anzeige aller Topics doppelt (Regression, blockiert Debugging auf Messe).
-- [ ] **Camera Image (Sensor-Tab):** Bild wird nicht angezeigt ("Camera Image Loading…" bleibt). Live-Modus betroffen.
+- [x] **Message Monitor (Messe):** Doppelte Topic-Anzeige – **Ursache analysiert**, **Konsole-Debug dokumentiert** (`osf.debug`), damit Messe-Debugging möglich ist. **Analyse:** [message-monitor-duplicate-topics-2026-03.md](../07-analysis/message-monitor-duplicate-topics-2026-03.md). **How-to:** [osf-ui-console-debug.md](../04-howto/osf-ui-console-debug.md). *Technischer Fix (kein Doppel-Ingest mehr) → Abschnitt „Nach LogiMAT (Refactoring)“ unten.*
+- [ ] **Camera Image (Sensor-Tab):** Bild wird nicht angezeigt ("Camera Image Loading…" bleibt). **Nur Live-Modus** (aktuell schwer testbar). **Analyse (Ursachen / keine automatische „Fix“ durch Message-Monitor-Änderungen):** [sensor-tab-camera-live-loading-2026-03.md](../07-analysis/sensor-tab-camera-live-loading-2026-03.md).
 - [ ] **AGV-Tab NAV-Buttons:** Manuelle Navigationsbefehle (DPS→HBW, HBW→Intersection-2, AIQS→HBW) werden nicht ausgeführt. Vermutung: `orderId` oder Payload inkompatibel. Analyse: TXT-Sourcen SVR4H73275.
 - [ ] **FTS Route-Overlay:** Darstellung auf RPi abweichend von localhost; orange Linie nicht auf allen Tabs korrekt.
+- [ ] **Customer LogiMAT:** Darstellung DSP-Architecture mit LogiMAT Business Apps (ORBIS-MES EWM (SAP)...)
+
+### Nach LogiMAT (Refactoring, noch Sprint 18)
+
+- [ ] **Message Monitor:** Code-Fix – doppelte Topic-/Nachrichten-Anzeige **beheben** (Root Cause: doppelte `addMessage`-Pfade im Mock; siehe Analyse §2). **Analyse:** [message-monitor-duplicate-topics-2026-03.md](../07-analysis/message-monitor-duplicate-topics-2026-03.md). *Nach Messe, Umsetzung noch Sprint 18. Ergänzt den abgehakten Messe-Task „Message Monitor (Messe)“ oben.*
 
 ### Priorität 2: Übernommen aus Sprint 17
 
 - [x] **Vibrationssensor-Station:** Fertigstellung messetaugliche Platte und Transportsicherung (Arduino R4 + MPU-6050 + SW-420 + DHT11 + Flamme + MQ-2 + Ampel + Sirene). Verdrahtung, Konfiguration, Doku konsolidiert ([arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md)), alle Sensoren getestet.
-- [ ] **Fixture-Playback im Mock:** Mock-Fixtures (Track & Trace, AGV-Tab) werden nicht abgespielt. Wichtig für Demo ohne Hardware. *(Constraint: Fix darf Live-Modus nicht beeinträchtigen.)*
+- [x] **Fixture-Playback im Mock:** Fixtures in Production-Build aufgenommen (project.json). Mock-Fixture-Playback funktioniert auf RPi – Demo ohne Hardware, vorbereitete Sessions. Live-Modus unverändert. DR-19 ergänzt.
 - [x] **Flammensensor-Anzeige (Sensor-Tab):** Darstellung von linearer auf logarithmische Skala umstellen.
 - [ ] **Flammensensor Alarm-Werte:** Verifikation der angezeigten Werte im Alarm-Fall (Live-Test).
 - [ ] **Arduino Sketch Deployment:** OSF_MultiSensor_R4WiFi v1.1.0 auf Arduino R4 flashen. SKETCH_VERSION im Header prüfen, Serial Monitor „Sketch v1.1.0“, MQTT-Heartbeat 5 s. Doku: [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md) §4.
-- [ ] **UC-05 Live-Demo (Gefahrensimulation):** Button „Gefahr simulieren“ in UC-05; `ccu/set/park` + `ccu/order/cancel`. Verifikation: Stoppt der Prozess wirklich? *(CCU-Limitation bei IN_PROGRESS prüfen.)*
+- [x] **UC-05 Live-Demo (Gefahrensimulation):** ~~Umsetzbar wie vorgestellt~~ – **CCU-Limitation:** `ccu/set/park` + `ccu/order/cancel` erreichen *keinen* vollständigen Sofort-Stop. IN_PROGRESS-Orders laufen weiter, laufende Stationen (z.B. AIQS) werden nicht abgebrochen. **Nach Stopp zwingend:** Reset + AGV-dock (manual-intervention). Button „Gefahr simulieren“ sendet Park+Cancel+FTS-Reset – Demo zeigt Sent Events; echter Prozess-Anhalt nur bei ENQUEUED. Siehe [alarm-fabrik-stop](../07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md).
 - [ ] **UC-01 Anpassung:** Zusammenführung der Track-&-Trace-Kacheln (Konzept/Live) gemäß DR-22.
 
 ### Organisatorisches
@@ -88,4 +97,4 @@
 
 ---
 
-*Letzte Aktualisierung: 19.03.2026*
+*Letzte Aktualisierung: 21.03.2026 (Smoke-Checkliste + Kamera-Doku ergänzt)*

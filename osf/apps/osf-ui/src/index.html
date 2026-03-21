@@ -13,5 +13,11 @@
   </head>
   <body>
     <app-root></app-root>
+    <script>
+      if (location.search.includes('debug=basehref')) {
+        var b = document.querySelector('base');
+        alert('baseHref-Diagnose:\n\nhostname: ' + location.hostname + '\nbase href: ' + (b ? b.getAttribute('href') : '-') + '\npathname: ' + location.pathname);
+      }
+    </script>
   </body>
 </html>

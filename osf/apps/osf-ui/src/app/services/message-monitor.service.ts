@@ -1,5 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { isOsfConsoleDebugEnabled } from '../utils/osf-console-debug';
 import { MessageValidationService } from './message-validation.service';
 import { MessagePersistenceService } from './message-persistence.service';
 
@@ -28,7 +29,8 @@ const RETENTION_CONFIG: Record<string, number> = {
   '/j1/txt/1/i/cam': 0,       // Camera frames: bypass mode (no buffer)
   '/j1/txt/1/i/bme680': 100,  // BME680 sensor: high retention
   '/j1/txt/1/i/ldr': 100,     // LDR sensor: high retention
-  '/j1/txt/1/i/quality_check': 50, // Quality check images: moderate retention
+  // AIQS: last quality image — persisted so UI can show it after reload (retention capped: image payload)
+  '/j1/txt/1/i/quality_check': 5,
 };
 
 @Injectable({ providedIn: 'root' })
@@ -183,6 +185,11 @@ export class MessageMonitorService implements OnDestroy {
    * Get retention limit for a topic
    */
   getRetention(topic: string): number {
+    // Module `…/factsheet`: large JSON per module. Same persistence idea as other topics (UI can
+    // restore last state after reload / late start). Cap history to limit localStorage size.
+    if (topic.endsWith('/factsheet')) {
+      return 5;
+    }
     return this.retentionConfig.get(topic) ?? DEFAULT_RETENTION;
   }
 
@@ -238,7 +245,7 @@ export class MessageMonitorService implements OnDestroy {
       const persistedData = this.persistenceService.loadAll();
       let loadedTopics = 0;
       let trimmedTopics = 0;
-      
+
       for (const [topic, messages] of persistedData.entries()) {
         // Get retention limit for this topic
         const retention = this.getRetention(topic);
@@ -246,7 +253,6 @@ export class MessageMonitorService implements OnDestroy {
         // Trim messages that exceed retention before storing
         const trimmedMessages = messages.slice(-retention);
         
-        // Track if trimming occurred
         if (messages.length > trimmedMessages.length) {
           trimmedTopics++;
           console.log(`[MessageMonitor] Trimmed ${messages.length - trimmedMessages.length} old messages from topic: ${topic}`);
@@ -280,7 +286,11 @@ export class MessageMonitorService implements OnDestroy {
         }
       }
 
-      console.log(`[MessageMonitor] Loaded persisted data for ${loadedTopics} topics${trimmedTopics > 0 ? ` (trimmed ${trimmedTopics} topics)` : ''}`);
+      if (isOsfConsoleDebugEnabled()) {
+        console.log(
+          `[MessageMonitor] Loaded persisted data for ${loadedTopics} topics${trimmedTopics > 0 ? ` (trimmed ${trimmedTopics} topics)` : ''}`
+        );
+      }
     } catch (error) {
       console.error('[MessageMonitor] Failed to load persisted data:', error);
     }
