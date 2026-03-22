@@ -18,6 +18,7 @@
   - [LogiMAT: kurze Smoke-Checkliste (vor Messe)](osf-ui-logimat-smoke-checklist.md)
 - Shopfloor
   - [Shopfloor Layout Guide](SHOPFLOOR_LAYOUT_GUIDE.md)
+  - [Route & AGV overlay – visual gate before merge](osf-ui-shopfloor-route-agv-visual-gate.md) (mandatory for route/z-index/AGV UI changes)
 - Testing
   - [Testing How-To](testing/README.md)
   - [Coverage Monitoring](testing/coverage-monitoring.md) ⭐
