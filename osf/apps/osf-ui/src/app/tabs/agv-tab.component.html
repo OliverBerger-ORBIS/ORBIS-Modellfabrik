@@ -378,20 +378,11 @@
             <button
               type="button"
               class="command-button"
-              [disabled]="!canDriveDpsToHbw(ftsState)"
-              [attr.title]="!canDriveDpsToHbw(ftsState) ? labelDpsToHbwDisabledHint : null"
-              (click)="sendDpsToHbw()"
+              [disabled]="!canDriveToHbw(ftsState)"
+              [attr.title]="!canDriveToHbw(ftsState) ? labelNavigateToHbwDisabledHint : null"
+              (click)="sendNavigateToHbw()"
             >
-              {{ labelDpsToHbw }}
-            </button>
-            <button
-              type="button"
-              class="command-button"
-              [disabled]="!canDriveAiqsToHbw(ftsState)"
-              [attr.title]="!canDriveAiqsToHbw(ftsState) ? labelAiqsToHbwDisabledHint : null"
-              (click)="sendAiqsToHbw()"
-            >
-              {{ labelAiqsToHbw }}
+              {{ labelNavigateToHbw }}
             </button>
             <button
               type="button"
@@ -418,14 +409,9 @@
                 <pre class="mono">{{ dockExamplePayload | json }}</pre>
               </div>
               <div class="commands-dev__item">
-                <div class="detail-label">{{ devDpsToHbwTitle }}</div>
+                <div class="detail-label">{{ devNavigateToHbwTitle }}</div>
                 <div class="mono">{{ ftsOrderTopic }}</div>
-                <pre class="mono">{{ driveDpsToHbwExamplePayload | json }}</pre>
-              </div>
-              <div class="commands-dev__item">
-                <div class="detail-label">{{ devAiqsToHbwTitle }}</div>
-                <div class="mono">{{ ftsOrderTopic }}</div>
-                <pre class="mono">{{ driveAiqsToHbwExamplePayload | json }}</pre>
+                <pre class="mono">{{ driveNavigateToHbwExamplePayload | json }}</pre>
               </div>
               <div class="commands-dev__item">
                 <div class="detail-label">{{ devToIntersection2Title }}</div>

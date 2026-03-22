@@ -100,6 +100,8 @@ describe('AgvTabComponent', () => {
       initializeLayout: jest.fn(),
       getNodePosition: jest.fn(() => ({ x: 100, y: 100 })),
       findRoute: jest.fn(() => []),
+      findRoutePath: jest.fn(() => null),
+      findRoadBetween: jest.fn(() => null),
       resolveNodeRef: jest.fn((nodeId: string) => nodeId),
     };
 
@@ -163,6 +165,11 @@ describe('AgvTabComponent', () => {
     // Note: ngOnInit is called automatically by Angular, but we can also call it explicitly
     // The constructor already calls initializeStreams, so ngOnInit mainly sets up connection subscription
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    (ftsRouteService.findRoutePath as jest.Mock).mockReset();
+    (ftsRouteService.findRoutePath as jest.Mock).mockReturnValue(null);
   });
 
   it('should create', () => {
@@ -430,6 +437,25 @@ describe('AgvTabComponent', () => {
     expect(component.labelChargeOn).toBeDefined();
     expect(component.labelChargeOff).toBeDefined();
     expect(component.labelDockInitial).toBeDefined();
+    expect(component.labelNavigateToHbw).toBeDefined();
+  });
+
+  it('should enable navigate to HBW when route exists from current node', () => {
+    (ftsRouteService.findRoutePath as jest.Mock).mockImplementation(
+      (start: string, target: string) => {
+        if (start === 'SVR4H73275' && target === 'SVR3QA0022') {
+          return ['SVR4H73275', '2', '1', 'SVR3QA0022'];
+        }
+        return null;
+      }
+    );
+    expect(component.canDriveToHbw(mockFtsState as never)).toBe(true);
+  });
+
+  it('should disable navigate to HBW when already at HBW', () => {
+    (ftsRouteService.findRoutePath as jest.Mock).mockReturnValue(['SVR3QA0022']);
+    const atHbw = { ...mockFtsState, lastNodeId: 'SVR3QA0022' };
+    expect(component.canDriveToHbw(atHbw as never)).toBe(false);
   });
 });
 

@@ -141,11 +141,10 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   readonly labelChargeOn = $localize`:@@ftsCommandChargeOn:Charge`;
   readonly labelChargeOff = $localize`:@@ftsCommandChargeOff:Stop Charging`;
   readonly labelDockInitial = $localize`:@@ftsCommandDockInitial:Dock`;
-  readonly labelDpsToHbw = $localize`:@@ftsCommandDpsToHbw:DPS → HBW`;
-  readonly labelAiqsToHbw = $localize`:@@ftsCommandAiqsToHbw:AIQS → HBW`;
+  /** Navigate to HBW from current route start (see Start selector: Auto = last reported node). */
+  readonly labelNavigateToHbw = $localize`:@@ftsCommandNavigateToHbw:→ HBW`;
   readonly labelToIntersection2 = $localize`:@@ftsCommandToIntersection2:→ Intersection 2`;
-  readonly labelDpsToHbwDisabledHint = $localize`:@@ftsCommandDpsToHbwDisabledHint:AGV must be at DPS`;
-  readonly labelAiqsToHbwDisabledHint = $localize`:@@ftsCommandAiqsToHbwDisabledHint:AGV must be at AIQS`;
+  readonly labelNavigateToHbwDisabledHint = $localize`:@@ftsCommandNavigateToHbwDisabledHint:No start position, already at HBW, or no route to HBW`;
   readonly labelToIntersection2DisabledHint = $localize`:@@ftsCommandToIntersection2DisabledHint:AGV position unknown or no path to Intersection 2`;
   readonly labelStartSelect = $localize`:@@ftsCommandStartSelect:Start`;
   readonly labelStartAuto = $localize`:@@ftsCommandStartAuto:Auto (current position)`;
@@ -153,8 +152,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   readonly devModeTitle = $localize`:@@ftsDevModeTitle:Developer Mode (Topics & Payload)`;
   readonly devChargeTitle = $localize`:@@ftsDevChargeTitle:Charge ON/OFF`;
   readonly devDockTitle = $localize`:@@ftsDevDockTitle:Dock to Initial`;
-  readonly devDpsToHbwTitle = $localize`:@@ftsDevDpsToHbwTitle:DPS → HBW`;
-  readonly devAiqsToHbwTitle = $localize`:@@ftsDevAiqsToHbwTitle:AIQS → HBW`;
+  readonly devNavigateToHbwTitle = $localize`:@@ftsDevNavigateToHbwTitle:→ HBW (from route start)`;
   readonly devToIntersection2Title = $localize`:@@ftsDevToIntersection2Title:→ Intersection 2`;
   readonly vehicleLabelEn = 'AGV';
   readonly vehicleLabelFr = 'AGV';
@@ -1050,13 +1048,9 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     };
   }
 
-  get driveDpsToHbwExamplePayload() {
-    const { payload } = this.buildOrderFromTo(DPS_SERIAL, HBW_SERIAL);
-    return { topic: this.ftsOrderTopic, payload, options: { qos: 1, retain: false } };
-  }
-
-  get driveAiqsToHbwExamplePayload() {
-    const { payload } = this.buildOrderFromTo(AIQS_SERIAL, HBW_SERIAL);
+  get driveNavigateToHbwExamplePayload() {
+    const start = this.lastFtsState?.lastNodeId ?? DPS_SERIAL;
+    const { payload } = this.buildOrderFromTo(start, HBW_SERIAL);
     return { topic: this.ftsOrderTopic, payload, options: { qos: 1, retain: false } };
   }
 
@@ -1114,45 +1108,72 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     return resolved === canonical || resolved === moduleSerial;
   }
 
-  canDriveDpsToHbw(ftsState: FtsState | null): boolean {
-    return this.isAgvAtModule(ftsState, DPS_SERIAL);
-  }
-
-  canDriveAiqsToHbw(ftsState: FtsState | null): boolean {
-    return this.isAgvAtModule(ftsState, AIQS_SERIAL);
-  }
-
   canDriveToIntersection2(ftsState: FtsState | null): boolean {
-    const start =
-      this.selectedStartNode === 'auto'
-        ? ftsState?.lastNodeId ?? null
-        : START_NODE_MAP[this.selectedStartNode] ?? null;
+    const start = this.resolveRouteStartNode(ftsState);
     if (!start) return false;
     const path = this.findRoutePath(start, INTERSECTION_2);
     return path !== null && path.length >= 1;
   }
 
-  async sendDpsToHbw(): Promise<void> {
-    const { payload } = this.buildOrderFromTo(DPS_SERIAL, HBW_SERIAL);
-    await this.connectionService.publish(this.ftsOrderTopic, payload, { qos: 1 });
+  /**
+   * True when a graph path exists from the selected route start to HBW and the AGV is not already at HBW.
+   * Route start = "Auto" → FTS lastNodeId; otherwise the module chosen in the Start dropdown.
+   */
+  canDriveToHbw(ftsState: FtsState | null): boolean {
+    const start = this.resolveRouteStartNode(ftsState);
+    if (!start) return false;
+    const startRef = this.resolveNodeRef(start) ?? start;
+    const hbwRef = this.resolveNodeRef(HBW_SERIAL) ?? HBW_SERIAL;
+    if (startRef === hbwRef) return false;
+    const path = this.findRoutePath(start, HBW_SERIAL);
+    return path !== null && path.length >= 1;
   }
 
-  async sendAiqsToHbw(): Promise<void> {
-    const { payload } = this.buildOrderFromTo(AIQS_SERIAL, HBW_SERIAL);
+  async sendNavigateToHbw(): Promise<void> {
+    const start = this.resolveRouteStartNode(this.lastFtsState);
+    if (!start) {
+      console.warn('[AGV] Cannot navigate to HBW: no start position (set Start or wait for FTS state)');
+      return;
+    }
+    const { payload } = this.buildOrderFromTo(start, HBW_SERIAL);
     await this.connectionService.publish(this.ftsOrderTopic, payload, { qos: 1 });
   }
 
   async sendToIntersection2(): Promise<void> {
-    const start =
-      this.selectedStartNode === 'auto'
-        ? this.lastFtsState?.lastNodeId ?? null
-        : START_NODE_MAP[this.selectedStartNode] ?? null;
+    const start = this.resolveRouteStartNode(this.lastFtsState);
     if (!start) {
       console.warn('[AGV] Cannot drive to Intersection 2: no start position known');
       return;
     }
     const { payload } = this.buildOrderFromTo(start, INTERSECTION_2);
     await this.connectionService.publish(this.ftsOrderTopic, payload, { qos: 1 });
+  }
+
+  /** Route start for manual navigation: matches Intersection-2 behaviour. */
+  private resolveRouteStartNode(ftsState: FtsState | null): string | null {
+    if (this.selectedStartNode === 'auto') {
+      return ftsState?.lastNodeId ?? null;
+    }
+    return START_NODE_MAP[this.selectedStartNode] ?? null;
+  }
+
+  /** Metadata for HBW DOCK actions (matches CCU/storage-order FTS order payloads). */
+  private getHbwDockMetadata(): Record<string, unknown> {
+    const loads = this.lastFtsState?.load ?? [];
+    for (const slot of loads) {
+      if (slot.loadType && slot.loadId) {
+        return {
+          loadId: slot.loadId,
+          loadType: slot.loadType,
+          loadPosition: slot.loadPosition || '1',
+        };
+      }
+    }
+    return {
+      loadId: null,
+      loadType: null,
+      loadPosition: '1',
+    };
   }
 
   private buildOrderFromTo(startNodeId: string, targetNodeId: string): {
@@ -1162,6 +1183,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     const path = this.findRoutePath(startNodeId, targetNodeId);
     const nodes: Array<Record<string, unknown>> = [];
     const edges: Array<{ id: string; length: number; linkedNodes: string[] }> = [];
+    const targetIsHbw = targetNodeId === HBW_SERIAL;
 
     if (path && path.length >= 1) {
       for (let i = 0; i < path.length - 1; i++) {
@@ -1189,30 +1211,64 @@ export class AgvTabComponent implements OnInit, OnDestroy {
       for (let idx = 0; idx < path.length; idx++) {
         const nodeId = path[idx];
         const edgeSet = linkedEdgesMap.get(nodeId) ?? new Set<string>();
-        const isTarget = idx === path.length - 1;
+        const linkedEdges = Array.from(edgeSet);
+        if (idx === 0) {
+          nodes.push({
+            id: nodeId,
+            linkedEdges,
+          });
+          continue;
+        }
+        const isLast = idx === path.length - 1;
+        if (isLast) {
+          if (targetIsHbw) {
+            nodes.push({
+              id: nodeId,
+              linkedEdges,
+              action: {
+                id: this.uuid(),
+                type: 'DOCK',
+                metadata: this.getHbwDockMetadata(),
+              },
+            });
+          } else {
+            nodes.push({
+              id: nodeId,
+              linkedEdges,
+              action: {
+                id: `stop-${this.uuid()}`,
+                type: 'STOP',
+                metadata: {},
+              },
+            });
+          }
+          continue;
+        }
         nodes.push({
           id: nodeId,
-          linkedEdges: Array.from(edgeSet),
-          ...(isTarget
-            ? {
-                action: {
-                  id: `stop-${this.uuid()}`,
-                  type: 'STOP',
-                  metadata: {},
-                },
-              }
-            : {}),
+          linkedEdges,
+          action: {
+            id: this.uuid(),
+            type: 'PASS',
+            metadata: {},
+          },
         });
       }
     } else {
       nodes.push({
         id: targetNodeId,
         linkedEdges: [],
-        action: {
-          id: `stop-${this.uuid()}`,
-          type: 'STOP',
-          metadata: {},
-        },
+        action: targetIsHbw
+          ? {
+              id: this.uuid(),
+              type: 'DOCK',
+              metadata: this.getHbwDockMetadata(),
+            }
+          : {
+              id: `stop-${this.uuid()}`,
+              type: 'STOP',
+              metadata: {},
+            },
       });
     }
 
@@ -1223,7 +1279,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
       nodes,
       edges,
       serialNumber: this.selectedAgvSerial,
-      metadata: { requestedFrom: startNodeId },
+      metadata: { requestedFrom: startNodeId, target: targetNodeId },
     };
 
     return { payload, pathUsed: path };
