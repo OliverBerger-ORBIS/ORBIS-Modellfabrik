@@ -15,7 +15,7 @@ Die **Use-Case Bibliothek** im OSF Dashboard präsentiert die DSP (Digital Shopf
 
 | Komponente | Beschreibung |
 |------------|--------------|
-| **DspUseCasesComponent** | Übersicht aller Use-Cases im DSP-Tab (Einzelklick: Details, Doppelklick: Detailseite) |
+| **DspUseCasesComponent** | Übersicht aller Use-Cases im DSP-Tab (Einzelklick: Details; **Concept** / **Live Demo** je nach UC, DR-22) |
 | **UseCaseSelectorPageComponent** | Vollständige Use-Case-Übersicht unter `/:locale/dsp/use-case` |
 | **Detail-Komponenten** | Einzelne Use-Case-Seiten unter `/:locale/dsp/use-case/:uc-name` |
 
@@ -24,9 +24,8 @@ Die **Use-Case Bibliothek** im OSF Dashboard präsentiert die DSP (Digital Shopf
 | Route-Pfad | Komponente | UC-Nr. |
 |------------|------------|--------|
 | `dsp/use-case` | UseCaseSelectorPageComponent | – |
-| `dsp/use-case/track-trace` | **TrackTraceTabComponent** (Live Demo) | – |
+| `dsp/use-case/track-trace` | **TrackTraceUseCaseComponent** (Tabs: Concept = Genealogie-SVG, Live Demo = TrackTraceTab); Query `?tab=concept` \| `?tab=live` | UC-01 |
 | `dsp/use-case/interoperability` | InteroperabilityUseCaseComponent | UC-00 |
-| `dsp/use-case/track-trace-genealogy` | TrackTraceGenealogyUseCaseComponent | UC-01 |
 | `dsp/use-case/three-data-pools` | ThreeDataPoolsUseCaseComponent | UC-02 |
 | `dsp/use-case/ai-lifecycle` | AiLifecycleUseCaseComponent | UC-03 |
 | `dsp/use-case/closed-loop-quality` | ClosedLoopQualityUseCaseComponent | UC-04 |
@@ -44,12 +43,13 @@ Die **Use-Case Bibliothek** im OSF Dashboard präsentiert die DSP (Digital Shopf
 - **Steps:** `assets/use-cases/uc-00/uc-00-event-to-process-map.steps.json`
 - **Besonderheit:** Keine Connection-IDs (leeres Array)
 
-### UC-01: Track & Trace Genealogie
+### UC-01: Track & Trace (DR-22)
 
-- **Ordner:** `track-trace-genealogy/`
-- **Dateien:** Component, `uc-01-structure.config.ts`, `uc-01-svg-generator.service.ts`, `uc-01-i18n.service.ts`
+- **Shell:** `track-trace/` – **TrackTraceUseCaseComponent** mit Tabs **Concept** / **Live Demo** (eine DSP-Kachel, Route `dsp/use-case/track-trace`, Query `tab=concept` \| `tab=live`).
+- **Concept (eingebettet):** `track-trace-genealogy/` – `TrackTraceGenealogyUseCaseComponent`, `uc-01-structure.config.ts`, `uc-01-svg-generator.service.ts`, `uc-01-i18n.service.ts`
 - **Steps:** `assets/use-cases/uc-01/uc-01-track-trace-genealogy.steps.json`
-- **Inhalt:** Partiture-Diagramm mit Business Context, NFC-Thread, Shopfloor-Stationen, Genealogie
+- **Inhalt (Concept):** Partiture-Diagramm mit Business Context, NFC-Thread, Shopfloor-Stationen, Genealogie
+- **Live Demo:** eingebettet `TrackTraceTabComponent` (bisherige Track-&-Trace-Tab-UI)
 
 ### UC-02: Three Data Pools (Datenaggregation)
 

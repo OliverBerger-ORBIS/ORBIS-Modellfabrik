@@ -121,7 +121,7 @@ User kann Tasks mit Präfix kennzeichnen – Agent muss entsprechend handeln:
 - **Virtual Environment:** Für Python-Tests (Session Manager) immer `.venv` aktivieren
 
 ### OSF-spezifische Regeln
-- **Shopfloor route & AGV overlay (KRITISCH):** Änderungen an Routen-Darstellung, z-index/Stacking oder AGV-Overlay in `shopfloor-preview` (und verknüpften Tabs) **nur nach erfolgreichem visuellen Test** mergen (kein reines Z-Index-Experiment). Checkliste: [osf-ui-shopfloor-route-agv-visual-gate.md](docs/04-howto/osf-ui-shopfloor-route-agv-visual-gate.md)
+- **Shopfloor route & AGV overlay (KRITISCH):** Reihenfolge: **erst visueller Test** (Checkliste), **dann erst Commit/Merge**. Kein Commit zu Routen-/AGV-Darstellung in `shopfloor-preview` (und verknüpften Tabs) vor erfolgreichem visuellen Check; kein reines Z-Index-Experiment ohne visuelle Verifikation. [osf-ui-shopfloor-route-agv-visual-gate.md](docs/04-howto/osf-ui-shopfloor-route-agv-visual-gate.md)
 - **Tab Stream Pattern:** Pattern 1 oder Pattern 2 korrekt anwenden (siehe [Tab Stream Initialization Pattern](docs/03-decision-records/11-tab-stream-initialization-pattern.md))
 - **MessageMonitorService:** Für Timing-unabhängige Datenanzeige verwenden
 - **RxJS Streams:** `shareReplay({ bufferSize: 1, refCount: false })` für persistente Streams

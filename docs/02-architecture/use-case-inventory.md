@@ -76,7 +76,7 @@ npx puppeteer browsers install chrome
 | UC | Name | Route | Steps | Step 1 (erster Detail-Step) | Connection-IDs |
 |----|------|-------|-------|-----------------------------|---------------|
 | 00 | Interoperability | `interoperability` | 9 | Shopfloor events | – |
-| 01 | Track & Trace Genealogie | `track-trace-genealogy` | 9 | Business Context | – |
+| 01 | Track & Trace | `track-trace` (+ `?tab=concept` für Genealogie-SVG) | 9 | Business Context | – |
 | 02 | Three Data Pools | `three-data-pools` | 7 | Business data | – |
 | 03 | AI Lifecycle | `ai-lifecycle` | 6 | Data Capture | uc-03-structure.config |
 | 04 | Closed Loop Quality | `closed-loop-quality` | 7 | Source: Order & AIQS | uc-04-structure.config |
@@ -106,10 +106,10 @@ npx puppeteer browsers install chrome
 
 ---
 
-## UC-01: Track & Trace Genealogie
+## UC-01: Track & Trace
 
-- **Route:** `dsp/use-case/track-trace-genealogy`
-- **Ordner:** `track-trace-genealogy/`
+- **Route:** `dsp/use-case/track-trace` (Concept: `?tab=concept`, Live Demo: `?tab=live`; Shell **TrackTraceUseCaseComponent**)
+- **Ordner (Concept-Komponente):** `track-trace-genealogy/`
 - **Steps:** 9 (Index 0 = Overview)
 
 ### Step 1: Business Context

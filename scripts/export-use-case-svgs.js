@@ -101,7 +101,8 @@ function injectCssFallbacks(html) {
 }
 
 const USE_CASES = [
-  { id: 'uc-01', route: 'track-trace-genealogy', name: 'uc-01-track-trace-genealogy' },
+  /** Concept tab SVG (same route as app; ?tab=concept opens genealogy diagram) */
+  { id: 'uc-01', route: 'track-trace?tab=concept', name: 'uc-01-track-trace-genealogy' },
   { id: 'uc-02', route: 'three-data-pools', name: 'uc-02-three-data-pools' },
   { id: 'uc-03', route: 'ai-lifecycle', name: 'uc-03-ai-lifecycle' },
   { id: 'uc-04', route: 'closed-loop-quality', name: 'uc-04-closed-loop-quality' },

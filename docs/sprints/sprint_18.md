@@ -35,7 +35,7 @@
 - [ ] **Flammensensor Alarm-Werte:** Verifikation der angezeigten Werte im Alarm-Fall (Live-Test).
 - [ ] **Arduino Sketch Deployment:** OSF_MultiSensor_R4WiFi v1.1.0 auf Arduino R4 flashen. SKETCH_VERSION im Header prüfen, Serial Monitor „Sketch v1.1.0“, MQTT-Heartbeat 5 s. Doku: [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md) §4.
 - [x] **UC-05 Live-Demo (Gefahrensimulation):** ~~Umsetzbar wie vorgestellt~~ – **CCU-Limitation:** `ccu/set/park` + `ccu/order/cancel` erreichen *keinen* vollständigen Sofort-Stop. IN_PROGRESS-Orders laufen weiter, laufende Stationen (z.B. AIQS) werden nicht abgebrochen. **Nach Stopp zwingend:** Reset + AGV-dock (manual-intervention). Button „Gefahr simulieren“ sendet Park+Cancel+FTS-Reset – Demo zeigt Sent Events; echter Prozess-Anhalt nur bei ENQUEUED. Siehe [alarm-fabrik-stop](../07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md).
-- [ ] **UC-01 Anpassung:** Zusammenführung der Track-&-Trace-Kacheln (Konzept/Live) gemäß DR-22.
+- [x] **UC-01 Anpassung:** Zusammenführung der Track-&-Trace-Kacheln (Konzept/Live) gemäß DR-22 – `TrackTraceUseCaseComponent`, nur `dsp/use-case/track-trace` mit `?tab=concept` / `?tab=live` (keine `…-genealogy`-Route mehr), DSP-Liste „Concept“ / „Live Demo“.
 
 ### Organisatorisches
 
@@ -75,9 +75,29 @@
 
 *Siehe [Arduino R4 Multi-Sensor](../05-hardware/arduino-r4-multisensor.md).* Backlog: TM1637/MAX7219 Display für 4-stelliges 7-Segment.
 
+### OSF-UI: Gemeinsamer SVG-/Label-Umbruch & Breiten-Heuristik (Backlog)
+
+*Refactoring / Wartbarkeit – nicht LogiMAT-kritisch; nach Messe oder Sprint 19 priorisieren.*
+
+**Ausgang:** UC-01 Partitur (`uc-01-svg-generator.service.ts`) enthält feste Box-Schrift, Wortumbruch, deutsche Komposita-Suffixe und Silbentrennung mit Bindestrich – **nur** für dieses Diagramm.
+
+**Bereits ähnliche Logik (dupliziert / andere Heuristik):**
+
+| Ort | Inhalt (Kurz) |
+|-----|----------------|
+| `dsp-architecture.component.ts` | `getWrappedLabelLines()` – `charWidth ≈ fontSize * 0.6`, `maxCharsPerLine`, nur `device`-Container, **max. 2 Zeilen**, Wort-für-Wort |
+| `dsp-animation.component.ts` | `getWrappedLabelLines()` – u. a. `fontSize * 0.58`, Break-Hints (`" / "`), lange Tokens; Tests: `dsp-animation.component.label-wrapping.spec.ts` |
+| UC-01 SVG-Generator | String→SVG, feste 18px, DE-Suffixe, `Teil - teil` / `Teil-` + Rest |
+
+**Ziel:** Einen **gemeinsamen, injizierbaren Service** (oder `osf`-Lib-Utility) für **Zeilenumbruch in SVG-Boxen** evaluieren und ggf. einführen: einheitliche **Zeichenbreiten-Heuristik**, optionale **Strategien** (Sprache/Locale, Break-Hints, max. Zeilen, Bindestrich-Trennung), **keine** Copy-Paste-Weiterentwicklung pro Diagramm.
+
+**Akzeptanz (Richtung):** UC-01 und DSP-Architecture (mindestens) können den Service nutzen oder dünne Wrapper behalten; bestehende Tests (DSP Animation Label-Wrapping) als Referenz für Regression.
+
 ### EPIC: Aufbau eines Test-Frameworks für osf-ui (Backlog)
 
 *Siehe [Test-Framework vs. Replay – Analyse](../07-analysis/test-framework-replay-comparison-2026-03.md).* Optionale Ergänzung zum Replay-Workflow: Framework-Evaluierung (Playwright/Cypress), Fixture-Anbindung, Pilot-Tests für kritische Szenarien.
+
+### Kurz / Info (Backlog)
 
 - **Analyse Stillstand bei zwei AGVs im mixed-Modus:** Zur Info. Nicht messerelevant für LogiMAT.
 
@@ -97,4 +117,4 @@
 
 ---
 
-*Letzte Aktualisierung: 21.03.2026 (Route-Overlay SCSS-Fix + Visual-Gate How-to)*
+*Letzte Aktualisierung: 22.03.2026 (Backlog: Reihenfolge OSF-UI SVG-Umbruch vor Test-Framework-EPIC; Kurz/Info AGV)*

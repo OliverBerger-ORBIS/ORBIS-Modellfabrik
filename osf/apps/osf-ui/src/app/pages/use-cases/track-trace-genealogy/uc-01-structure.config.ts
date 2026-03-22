@@ -83,7 +83,8 @@ export interface Uc01Box {
 export interface Uc01Thread {
   x1: number; y1: number; x2: number; y2: number;
   color: string; strokeWidth: number;
-  labelKey: string;
+  labelLine1Key: string;
+  labelLine2Key: string;
   labelX: number; labelY: number; labelWidth: number; labelHeight: number;
 }
 
@@ -94,6 +95,10 @@ export interface Uc01Connection {
   color: string;
   strokeWidth: number;
   dashPattern?: string;   // e.g. '5,5' or '8,8'
+  /** Correlation ID (e.g. [PO-ID]) on join; drawn near Business Context */
+  labelKey?: string;
+  labelX?: number;
+  labelY?: number;
 }
 
 export interface Uc01Phase {
@@ -124,7 +129,6 @@ export interface Uc01Structure {
   agvParallelConnections: Uc01Connection[];
   phases: Uc01Phase[];
   legend: { x: number; y: number; width: number; height: number; textKey: string };
-  abbreviations: { x: number; y: number; width: number; height: number; textKey: string };
   footer: { x: number; y: number; key: string };
 }
 
@@ -144,7 +148,7 @@ export function createUc01Structure(): Uc01Structure {
     subtitle: { x: 960, y: 78, key: 'uc01.subtitle' },
     outcome: { x: 960, y: 110, key: 'uc01.outcome' },
     footer: { x: 960, y: 1080 - 24, key: 'uc01.footer' },
-    stepDescription: { x: 960, y: 20, width: 1400, height: 100 },
+    stepDescription: { x: 960, y: 20, width: 1400, height: 160 },
 
     // ───── 3 Horizontal Lanes ─────
     lanes: [
@@ -174,9 +178,14 @@ export function createUc01Structure(): Uc01Structure {
     // ───── NFC Thread (horizontal line through trace lane) ─────
     thread: {
       x1: 144, y1: 504 + o, x2: 1524, y2: 504 + o,
-      color: C.threadCyan, strokeWidth: 6,
-      labelKey: 'uc01.thread.label',
-      labelX: 1540, labelY: 489 + o, labelWidth: 340, labelHeight: 30,
+      color: C.threadCyan, strokeWidth: 12,
+      labelLine1Key: 'uc01.thread.line1',
+      labelLine2Key: 'uc01.thread.line2',
+      // Narrow chip, start after thread line ends (1524) so cyan trace stays visible
+      labelX: 1540,
+      labelY: 486 + o,
+      labelWidth: 280,
+      labelHeight: 68,
     },
 
     // ───── Time Arrow ─────
@@ -184,88 +193,119 @@ export function createUc01Structure(): Uc01Structure {
 
     // ───── 8 Station Nodes (circles on thread, from Draw.io) ─────
     stationNodes: [
-      { id: 'dps_in',   labelKey: 'uc01.node.dps',      cx: 192,  cy: 500 + o, r: 22, fill: C.nodeDefault,  stroke: C.nodeStroke, isParallel: false, iconKey: 'dps' },
-      { id: 'mill_par', labelKey: 'uc01.node.mill_par',  cx: 362,  cy: 500 + o, r: 22, fill: C.nodeParallel, stroke: C.nodeStroke, isParallel: true,  iconKey: 'mill' },
-      { id: 'hbw',      labelKey: 'uc01.node.hbw',       cx: 542,  cy: 500 + o, r: 22, fill: C.nodeDefault,  stroke: C.nodeStroke, isParallel: false, iconKey: 'hbw' },
-      { id: 'aiqs_par', labelKey: 'uc01.node.aiqs_par',  cx: 722,  cy: 500 + o, r: 22, fill: C.nodeParallel, stroke: C.nodeStroke, isParallel: true,  iconKey: 'aiqs' },
-      { id: 'drill',    labelKey: 'uc01.node.drill',     cx: 902,  cy: 500 + o, r: 22, fill: C.nodeDefault,  stroke: C.nodeStroke, isParallel: false, iconKey: 'drill' },
-      { id: 'dps_par',  labelKey: 'uc01.node.dps_par',   cx: 1082, cy: 500 + o, r: 22, fill: C.nodeParallel, stroke: C.nodeStroke, isParallel: true,  iconKey: 'dps' },
-      { id: 'aiqs',     labelKey: 'uc01.node.aiqs',      cx: 1262, cy: 500 + o, r: 22, fill: C.nodeDefault,  stroke: C.nodeStroke, isParallel: false, iconKey: 'aiqs' },
-      { id: 'dps_out',  labelKey: 'uc01.node.dps_out',   cx: 1442, cy: 500 + o, r: 22, fill: C.nodeDefault,  stroke: C.nodeStroke, isParallel: false, iconKey: 'dps' },
+      { id: 'dps_in',   labelKey: 'uc01.node.dps',      cx: 192,  cy: 500 + o, r: 44, fill: C.nodeDefault,  stroke: C.nodeStroke, isParallel: false, iconKey: 'dps' },
+      { id: 'mill_par', labelKey: 'uc01.node.mill_par',  cx: 362,  cy: 500 + o, r: 44, fill: C.nodeParallel, stroke: C.nodeStroke, isParallel: true,  iconKey: 'mill' },
+      { id: 'hbw',      labelKey: 'uc01.node.hbw',       cx: 542,  cy: 500 + o, r: 44, fill: C.nodeDefault,  stroke: C.nodeStroke, isParallel: false, iconKey: 'hbw' },
+      { id: 'aiqs_par', labelKey: 'uc01.node.aiqs_par',  cx: 722,  cy: 500 + o, r: 44, fill: C.nodeParallel, stroke: C.nodeStroke, isParallel: true,  iconKey: 'aiqs' },
+      { id: 'drill',    labelKey: 'uc01.node.drill',     cx: 902,  cy: 500 + o, r: 44, fill: C.nodeDefault,  stroke: C.nodeStroke, isParallel: false, iconKey: 'drill' },
+      { id: 'dps_par',  labelKey: 'uc01.node.dps_par',   cx: 1082, cy: 500 + o, r: 44, fill: C.nodeParallel, stroke: C.nodeStroke, isParallel: true,  iconKey: 'dps' },
+      { id: 'aiqs',     labelKey: 'uc01.node.aiqs',      cx: 1262, cy: 500 + o, r: 44, fill: C.nodeDefault,  stroke: C.nodeStroke, isParallel: false, iconKey: 'aiqs' },
+      { id: 'dps_out',  labelKey: 'uc01.node.dps_out',   cx: 1442, cy: 500 + o, r: 44, fill: C.nodeDefault,  stroke: C.nodeStroke, isParallel: false, iconKey: 'dps' },
     ],
 
     // ───── Badges (parallel job markers ①) ─────
     badges: [
-      { id: 'badge_mill', cx: 382, cy: 478 + o, r: 10, text: '1', nearNodeId: 'mill_par' },
-      { id: 'badge_aiqs', cx: 742, cy: 478 + o, r: 10, text: '1', nearNodeId: 'aiqs_par' },
-      { id: 'badge_dps',  cx: 1102, cy: 478 + o, r: 10, text: '1', nearNodeId: 'dps_par' },
+      { id: 'badge_mill', cx: 382, cy: 434 + o, r: 20, text: '1', nearNodeId: 'mill_par' },
+      { id: 'badge_aiqs', cx: 742, cy: 434 + o, r: 20, text: '1', nearNodeId: 'aiqs_par' },
+      { id: 'badge_dps',  cx: 1102, cy: 434 + o, r: 20, text: '1', nearNodeId: 'dps_par' },
     ],
 
     // ───── Business Boxes (in Business Context lane) ─────
     businessBoxes: [
-      { id: 'po',   x: 125, y: 150 + o, width: 150, height: 34, textKey: 'uc01.biz.po',   fill: C.boxFill, stroke: C.boxStroke, rx: 6 },
-      { id: 'so',   x: 320, y: 150 + o, width: 150, height: 34, textKey: 'uc01.biz.so',   fill: C.boxFill, stroke: C.boxStroke, rx: 6 },
-      { id: 'co',   x: 550, y: 150 + o, width: 150, height: 34, textKey: 'uc01.biz.co',   fill: C.boxFill, stroke: C.boxStroke, rx: 6 },
-      { id: 'prod', x: 754, y: 150 + o, width: 170, height: 34, textKey: 'uc01.biz.prod', fill: C.boxFill, stroke: C.boxStroke, rx: 6 },
+      { id: 'po',   x: 125, y: 150 + o, width: 160, height: 68, textKey: 'uc01.biz.po',   fill: C.boxFill, stroke: C.boxStroke, rx: 12 },
+      { id: 'so',   x: 320, y: 150 + o, width: 160, height: 68, textKey: 'uc01.biz.so',   fill: C.boxFill, stroke: C.boxStroke, rx: 12 },
+      { id: 'co',   x: 550, y: 150 + o, width: 160, height: 68, textKey: 'uc01.biz.co',   fill: C.boxFill, stroke: C.boxStroke, rx: 12 },
+      { id: 'prod', x: 754, y: 150 + o, width: 180, height: 68, textKey: 'uc01.biz.prod', fill: C.boxFill, stroke: C.boxStroke, rx: 12 },
     ],
 
     // ───── Enrichment Boxes (in Shopfloor lane) ─────
     enrichmentBoxes: [
-      { id: 'agv',  x: 260,  y: 790 + o, width: 150, height: 44, textKey: 'uc01.enrich.agv',  fill: C.boxFill, stroke: C.boxStroke, rx: 6 },
-      { id: 'oee',  x: 650,  y: 790 + o, width: 150, height: 44, textKey: 'uc01.enrich.oee',  fill: C.boxFill, stroke: C.boxStroke, rx: 6 },
-      { id: 'cfg',  x: 954,  y: 790 + o, width: 150, height: 44, textKey: 'uc01.enrich.cfg',  fill: C.boxFill, stroke: C.boxStroke, rx: 6 },
-      { id: 'cam',  x: 1180, y: 786 + o, width: 150, height: 44, textKey: 'uc01.enrich.cam',  fill: C.boxFill, stroke: C.boxStroke, rx: 6 },
-      { id: 'temp', x: 1367, y: 770 + o, width: 150, height: 44, textKey: 'uc01.enrich.temp', fill: C.boxFill, stroke: C.boxStroke, rx: 6 },
+      { id: 'agv',  x: 260,  y: 790 + o, width: 160, height: 88, textKey: 'uc01.enrich.agv',  fill: C.boxFill, stroke: C.boxStroke, rx: 12 },
+      { id: 'oee',  x: 650,  y: 790 + o, width: 160, height: 88, textKey: 'uc01.enrich.oee',  fill: C.boxFill, stroke: C.boxStroke, rx: 12 },
+      { id: 'cfg',  x: 954,  y: 790 + o, width: 160, height: 88, textKey: 'uc01.enrich.cfg',  fill: C.boxFill, stroke: C.boxStroke, rx: 12 },
+      { id: 'cam',  x: 1180, y: 786 + o, width: 160, height: 88, textKey: 'uc01.enrich.cam',  fill: C.boxFill, stroke: C.boxStroke, rx: 12 },
+      { id: 'temp', x: 1367, y: 770 + o, width: 160, height: 88, textKey: 'uc01.enrich.temp', fill: C.boxFill, stroke: C.boxStroke, rx: 12 },
     ],
 
     // ───── Join Connections (Business → Stations, dashed) ─────
     joinConnections: [
-      { id: 'join_po_dps',   path: `M 200 ${184 + o} L 200 ${360 + o} L 192 ${360 + o} L 192 ${478 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
-      { id: 'join_so_dps',   path: `M 395 ${184 + o} L 395 ${360 + o} L 214 ${360 + o} L 214 ${478 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
-      { id: 'join_co_hbw',   path: `M 625 ${184 + o} L 625 ${360 + o} L 542 ${360 + o} L 542 ${478 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
-      { id: 'join_prod_hbw', path: `M 839 ${184 + o} L 839 ${360 + o} L 542 ${360 + o} L 542 ${478 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
+      {
+        id: 'join_po_dps',
+        path: `M 205 ${218 + o} L 205 ${360 + o} L 192 ${360 + o} L 192 ${456 + o}`,
+        dashed: true,
+        color: C.joinStroke,
+        strokeWidth: 1,
+        labelKey: 'uc01.join.id.po',
+        labelX: 205,
+        labelY: 289 + o,
+      },
+      {
+        id: 'join_so_dps',
+        path: `M 400 ${218 + o} L 400 ${360 + o} L 214 ${360 + o} L 214 ${456 + o}`,
+        dashed: true,
+        color: C.joinStroke,
+        strokeWidth: 1,
+        labelKey: 'uc01.join.id.so',
+        labelX: 400,
+        labelY: 289 + o,
+      },
+      {
+        id: 'join_co_hbw',
+        path: `M 630 ${218 + o} L 630 ${360 + o} L 542 ${360 + o} L 542 ${456 + o}`,
+        dashed: true,
+        color: C.joinStroke,
+        strokeWidth: 1,
+        labelKey: 'uc01.join.id.co',
+        labelX: 630,
+        labelY: 289 + o,
+      },
+      {
+        id: 'join_prod_hbw',
+        path: `M 844 ${218 + o} L 844 ${360 + o} L 542 ${360 + o} L 542 ${456 + o}`,
+        dashed: true,
+        color: C.joinStroke,
+        strokeWidth: 1,
+        labelKey: 'uc01.join.id.prod',
+        labelX: 844,
+        labelY: 289 + o,
+      },
     ],
 
     // ───── Enrichment Connections (Enrichment → Stations, dashed) ─────
     enrichConnections: [
-      { id: 'enrich_temp_dps',  path: `M 1442 ${770 + o} L 1442 ${522 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
-      { id: 'enrich_cam_aiqs',  path: `M 1255 ${786 + o} L 1255 ${600 + o} L 1262 ${600 + o} L 1262 ${522 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
-      { id: 'enrich_oee_drill', path: `M 725 ${790 + o} L 725 ${600 + o} L 902 ${600 + o} L 902 ${522 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
-      { id: 'enrich_cfg_drill', path: `M 1029 ${790 + o} L 1029 ${600 + o} L 902 ${600 + o} L 902 ${522 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
+      { id: 'enrich_temp_dps',  path: `M 1447 ${770 + o} L 1447 ${544 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
+      { id: 'enrich_cam_aiqs',  path: `M 1260 ${786 + o} L 1260 ${600 + o} L 1262 ${600 + o} L 1262 ${544 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
+      { id: 'enrich_oee_drill', path: `M 730 ${790 + o} L 730 ${600 + o} L 902 ${600 + o} L 902 ${544 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
+      { id: 'enrich_cfg_drill', path: `M 1034 ${790 + o} L 1034 ${600 + o} L 902 ${600 + o} L 902 ${544 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
     ],
 
     // ───── AGV Connections (normal, dashed) ─────
     agvConnections: [
-      { id: 'agv_dps_in',  path: `M 335 ${790 + o} L 335 ${600 + o} L 192 ${600 + o} L 192 ${522 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
-      { id: 'agv_hbw',     path: `M 335 ${790 + o} L 335 ${600 + o} L 542 ${600 + o} L 542 ${522 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
-      { id: 'agv_drill',   path: `M 335 ${790 + o} L 335 ${600 + o} L 902 ${600 + o} L 902 ${522 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
-      { id: 'agv_aiqs',    path: `M 335 ${790 + o} L 335 ${600 + o} L 1262 ${600 + o} L 1262 ${522 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
-      { id: 'agv_dps_out', path: `M 335 ${790 + o} L 335 ${600 + o} L 1442 ${600 + o} L 1442 ${522 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
+      { id: 'agv_dps_in',  path: `M 340 ${790 + o} L 340 ${600 + o} L 192 ${600 + o} L 192 ${544 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
+      { id: 'agv_hbw',     path: `M 340 ${790 + o} L 340 ${600 + o} L 542 ${600 + o} L 542 ${544 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
+      { id: 'agv_drill',   path: `M 340 ${790 + o} L 340 ${600 + o} L 902 ${600 + o} L 902 ${544 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
+      { id: 'agv_aiqs',    path: `M 340 ${790 + o} L 340 ${600 + o} L 1262 ${600 + o} L 1262 ${544 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
+      { id: 'agv_dps_out', path: `M 340 ${790 + o} L 340 ${600 + o} L 1442 ${600 + o} L 1442 ${544 + o}`, dashed: true, color: C.joinStroke, strokeWidth: 1 },
     ],
 
     // ───── AGV Parallel Connections (red, dashed) ─────
     agvParallelConnections: [
-      { id: 'agv_par_mill', path: `M 410 ${812 + o} L 450 ${812 + o} L 450 ${650 + o} L 362 ${650 + o} L 362 ${522 + o}`, dashed: true, color: C.agvParallelStroke, strokeWidth: 1, dashPattern: '8,8' },
-      { id: 'agv_par_aiqs', path: `M 410 ${812 + o} L 620 ${812 + o} L 620 ${650 + o} L 722 ${650 + o} L 722 ${522 + o}`, dashed: true, color: C.agvParallelStroke, strokeWidth: 1, dashPattern: '8,8' },
-      { id: 'agv_par_dps',  path: `M 410 ${812 + o} L 620 ${812 + o} L 620 ${650 + o} L 1082 ${650 + o} L 1082 ${522 + o}`, dashed: true, color: C.agvParallelStroke, strokeWidth: 1, dashPattern: '8,8' },
+      { id: 'agv_par_mill', path: `M 410 ${856 + o} L 450 ${856 + o} L 450 ${650 + o} L 362 ${650 + o} L 362 ${544 + o}`, dashed: true, color: C.agvParallelStroke, strokeWidth: 1, dashPattern: '8,8' },
+      { id: 'agv_par_aiqs', path: `M 410 ${856 + o} L 620 ${856 + o} L 620 ${650 + o} L 722 ${650 + o} L 722 ${544 + o}`, dashed: true, color: C.agvParallelStroke, strokeWidth: 1, dashPattern: '8,8' },
+      { id: 'agv_par_dps',  path: `M 410 ${856 + o} L 620 ${856 + o} L 620 ${650 + o} L 1082 ${650 + o} L 1082 ${544 + o}`, dashed: true, color: C.agvParallelStroke, strokeWidth: 1, dashPattern: '8,8' },
     ],
 
     // ───── Phase Brackets (between business boxes and trace lane) ─────
     phases: [
-      { id: 'phase_procurement', textKey: 'uc01.phase.procurement', bracketX: 89,  bracketWidth: 362, bracketY: 233 + o },
-      { id: 'phase_production',  textKey: 'uc01.phase.production',  bracketX: 528, bracketWidth: 984, bracketY: 233 + o },
+      { id: 'phase_procurement', textKey: 'uc01.phase.procurement', bracketX: 89,  bracketWidth: 362, bracketY: 267 + o },
+      { id: 'phase_production',  textKey: 'uc01.phase.production',  bracketX: 528, bracketWidth: 984, bracketY: 267 + o },
     ],
 
     // ───── Legend ─────
+    // Top-right of business lane; y high enough to clear phase brackets (Phase 2 ends ~1512 x)
     legend: {
-      x: 1540, y: 740 + o, width: 340, height: 210,
+      x: 1480, y: 100 + o, width: 400, height: 158,
       textKey: 'uc01.legend',
-    },
-
-    // ───── Abbreviations ─────
-    abbreviations: {
-      x: 60, y: 970 + o, width: 1480, height: 30,
-      textKey: 'uc01.abbreviations',
     },
   };
 }

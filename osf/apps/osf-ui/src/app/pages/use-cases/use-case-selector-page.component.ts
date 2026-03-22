@@ -11,7 +11,7 @@ import { DspUseCasesComponent } from '../dsp/components/dsp-use-cases/dsp-use-ca
  * Features:
  * - Single click: Highlight and show details
  * - Double click: Navigate to detail page (if implemented)
- * - "View Details" button: Navigate to detail page (if implemented)
+ * - "Concept" / "Live Demo" where applicable (DR-22)
  */
 @Component({
   standalone: true,
@@ -22,8 +22,8 @@ import { DspUseCasesComponent } from '../dsp/components/dsp-use-cases/dsp-use-ca
     <div class="use-case-selector-page">
       <header class="use-case-selector-header">
         <h1 i18n="@@useCaseSelectorTitle">DSP Use Cases</h1>
-        <p class="subtitle" i18n="@@useCaseSelectorSubtitle">
-          Click on a use case to view details. Double-click or use "View Details" to navigate to the detailed implementation.
+        <p class="subtitle" i18n="@@useCaseSelectorSubtitleDr22">
+          Click a use case for its description. Use Concept (and Live Demo when available) to open the page. Double-click opens Concept.
         </p>
       </header>
 

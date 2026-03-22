@@ -300,6 +300,13 @@ describe('SettingsTabComponent', () => {
       expect(useCasePage?.available).toBe(true);
     });
 
+    it('should have UC-01 Track & Trace Concept bookmark with tab=concept', () => {
+      const page = component.directPages.find(p => p.label === 'UC-01 Track & Trace (Concept)');
+      expect(page).toBeDefined();
+      expect(page?.path).toBe('/#/en/dsp/use-case/track-trace?tab=concept');
+      expect(page?.available).toBe(true);
+    });
+
     it('should not have Overview page configured', () => {
       const overviewPage = component.directPages.find(p => p.label === 'Overview');
       expect(overviewPage).toBeUndefined();

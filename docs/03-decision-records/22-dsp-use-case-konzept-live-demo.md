@@ -53,11 +53,11 @@
 
 ## Implementierung
 
-- [ ] UseCase-Interface erweitern: `conceptRoute`, `liveDemoRoute` (statt einzelnem `detailRoute`)
-- [ ] UC-05 Live-Demo: Neue Seite/Route mit Tabs „Konzept“ | „Live Demo“; Live-Demo enthält Gefahrensimulation (Button „Gefahr simulieren“, `simulateDanger`)
+- [x] UseCase-Interface erweitern: `conceptRoute`, `liveDemoRoute` (ersetzt `detailRoute` in `DspUseCasesComponent`)
+- [ ] UC-05 Live-Demo: Neue Seite/Route mit Tabs „Konzept“ | „Live Demo“; Live-Demo enthält Gefahrensimulation (Button „Gefahr simulieren“, `simulateDanger`) *(separat prüfen; UC-05-Seite kann Tabs bereits haben)*
 - [ ] Gefahrensimulation aus Sensor-Tab entfernen
-- [ ] UC-01: Beide Track-&-Trace-Kacheln zu einer zusammenführen; `conceptRoute` = track-trace-genealogy, `liveDemoRoute` = track-trace
-- [ ] DSP Use-Cases Detail-UI: „View Details“ durch „Konzept“ und „Live Demo“ ersetzen („Live Demo“ nur anzeigen, wenn `liveDemoRoute` vorhanden)
+- [x] UC-01: Eine Kachel; nur noch `dsp/use-case/track-trace` (**TrackTraceUseCaseComponent**, Tabs); Query `tab=concept` / `tab=live`; keine separate `track-trace-genealogy`-URL mehr
+- [x] DSP Use-Cases Detail-UI: „Concept“ / „Live Demo“ (Live nur bei gesetztem `liveDemoRoute`, z. B. UC-01)
 
 ---
 

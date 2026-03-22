@@ -46,10 +46,18 @@ export class Uc01I18nService {
         }
       });
 
-      // For EN locale, replace with English translations
+      const enTexts = this.getEnglishTranslations();
+      // EN: prefer explicit English map over DE file
       if (locale === 'en') {
-        const enTexts = this.getEnglishTranslations();
         Object.assign(uc01Texts, enTexts);
+      } else {
+        // DE/FR/etc.: fill gaps (e.g. new uc01.join.* keys) so IDs and labels never disappear
+        for (const k of Object.keys(enTexts)) {
+          const v = uc01Texts[k];
+          if (v === undefined || v === '') {
+            uc01Texts[k] = enTexts[k];
+          }
+        }
       }
 
       // Cache translations
@@ -79,8 +87,14 @@ export class Uc01I18nService {
       'uc01.lane.shopfloor': 'Shopfloor & Enrichment',
       // Time arrow
       'uc01.time_arrow': 'Time →',
-      // NFC Thread
-      'uc01.thread.label': 'NFC-ID: [UID-1234]  (SinglePart Thread)',
+      // NFC Thread (two lines in SVG)
+      'uc01.thread.line1': 'NFC [UID-1234]',
+      'uc01.thread.line2': 'Single-part thread',
+      // Join correlation IDs (on dashed lines, Business → Trace)
+      'uc01.join.id.po': '[PO-ID]',
+      'uc01.join.id.so': '[SO-ID]',
+      'uc01.join.id.co': '[CO-ID]',
+      'uc01.join.id.prod': '[PROD-ID]',
       // Station Nodes
       'uc01.node.dps': 'DPS',
       'uc01.node.mill_par': '(MILL)',
@@ -90,29 +104,26 @@ export class Uc01I18nService {
       'uc01.node.dps_par': '(DPS)',
       'uc01.node.aiqs': 'AIQS',
       'uc01.node.dps_out': 'DPS',
-      // Business Boxes
-      'uc01.biz.po': 'PO [PO-ID]',
-      'uc01.biz.so': 'SO [SO-ID]',
-      'uc01.biz.co': 'CO [CO-ID]',
-      'uc01.biz.prod': 'PROD [PROD-ID]',
+      // Business Boxes (spelled out; IDs on join lines)
+      'uc01.biz.po': 'Purchase order',
+      'uc01.biz.so': 'Sales order',
+      'uc01.biz.co': 'Customer order',
+      'uc01.biz.prod': 'Production order',
       // Enrichment Boxes
-      'uc01.enrich.agv': 'AGV System',
-      'uc01.enrich.oee': 'OEE',
-      'uc01.enrich.cfg': 'CFG',
-      'uc01.enrich.cam': 'CAM',
-      'uc01.enrich.temp': 'TEMP',
+      'uc01.enrich.agv': 'AGV / shuttle',
+      'uc01.enrich.oee': 'OEE\nOverall equipment effectiveness',
+      'uc01.enrich.cfg': 'Machine configuration',
+      'uc01.enrich.cam': 'Camera / vision',
+      'uc01.enrich.temp': 'Temperature',
       // Phases
       'uc01.phase.procurement': 'Phase 1: Procurement',
       'uc01.phase.production': 'Phase 2: Production Fulfillment',
       // Legend
       'uc01.legend.title': 'Legend',
-      'uc01.legend.cyan': 'Physical workpiece (NFC)',
+      'uc01.legend.cyan': 'Physical part (NFC)',
       'uc01.legend.red': 'Parallel stop ①',
-      'uc01.legend.dashed': 'Correlation / Join',
-      'uc01.legend.abbr': 'Abbr.: HBW, DPS, DRILL, MILL, AIQS',
+      'uc01.legend.dashed': 'Correlation / join',
       'uc01.legend.parallel': 'Parallel job FTS',
-      // Abbreviations
-      'uc01.abbreviations': 'HBW=High Bay Warehouse | DPS=Delivery & Pickup | DRILL=Drilling | MILL=Milling | AIQS=AI Quality',
       // Footer
       'uc01.footer': 'OSF is a demonstrator showcasing integration principles; productive implementations depend on the customer\'s target landscape.',
     };

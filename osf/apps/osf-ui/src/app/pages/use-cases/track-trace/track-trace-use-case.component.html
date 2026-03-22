@@ -1,0 +1,34 @@
+<section class="track-trace-use-case">
+  <nav class="track-trace-use-case__tabs" role="tablist" aria-label="Track and Trace views">
+    <button
+      type="button"
+      role="tab"
+      class="track-trace-use-case__tab"
+      [attr.aria-selected]="activeTab === 'concept'"
+      [class.track-trace-use-case__tab--active]="activeTab === 'concept'"
+      (click)="setTab('concept')"
+      i18n="@@uc01TabConcept"
+    >
+      Concept
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="track-trace-use-case__tab"
+      [attr.aria-selected]="activeTab === 'live-demo'"
+      [class.track-trace-use-case__tab--active]="activeTab === 'live-demo'"
+      (click)="setTab('live-demo')"
+      i18n="@@uc01TabLiveDemo"
+    >
+      Live Demo
+    </button>
+  </nav>
+
+  <div *ngIf="activeTab === 'concept'" class="track-trace-use-case__panel">
+    <app-track-trace-genealogy-use-case></app-track-trace-genealogy-use-case>
+  </div>
+
+  <div *ngIf="activeTab === 'live-demo'" class="track-trace-use-case__panel track-trace-use-case__panel--live">
+    <app-track-trace-tab></app-track-trace-tab>
+  </div>
+</section>

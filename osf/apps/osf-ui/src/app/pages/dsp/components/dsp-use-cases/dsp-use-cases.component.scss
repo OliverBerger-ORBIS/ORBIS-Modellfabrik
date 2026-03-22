@@ -214,9 +214,21 @@
     padding-top: 1rem;
     border-top: 1px solid rgba(var(--orbis-blue-light-rgb), 0.3);
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
     gap: 1rem;
+    justify-content: flex-end;
+
+    &--split {
+      justify-content: space-between;
+    }
+  }
+
+  &__actions-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: flex-end;
   }
 
   &__actions-ref {
@@ -248,6 +260,16 @@
     &:focus {
       outline: none;
       box-shadow: 0 0 0 3px rgba(var(--orbis-blue-strong-rgb), 0.3);
+    }
+
+    &--secondary {
+      color: var(--orbis-blue-strong);
+      background: white;
+      border: 2px solid var(--orbis-blue-strong);
+
+      &:hover {
+        background: rgba(var(--orbis-blue-strong-rgb), 0.08);
+      }
     }
   }
 }

@@ -14,7 +14,7 @@
   - ✅ Dynamische SVG-Generierung aus Struktur-Konfiguration
   - ✅ I18n-Unterstützung (DE/EN/FR)
   - ✅ Step-Animation mit Controls (Prev/Next, Auto-Play, Loop, Step-Dots, Zoom)
-- [ ] **UC-01:** Track & Trace Genealogy - Route `dsp/use-case/track-trace-genealogy` implementieren
+- [ ] **UC-01:** Track & Trace Genealogy - Route `dsp/use-case/track-trace` + `?tab=concept` (Stand 2026: siehe DR-22 / Shell)
   - 🔄 In Arbeit: SVG-Generator-Service erstellt, Diagramm-Umarbeitung in Planung
 - [ ] **UC-02:** 3 Datentöpfe - Route `dsp/use-case/three-data-pools` implementieren
 - [ ] **UC-03:** AI Lifecycle - Route `dsp/use-case/ai-lifecycle` implementieren
@@ -65,7 +65,7 @@
 ### Routing-Struktur
 - Basis-Route: `dsp/use-case/`
 - Einzelne Use-Cases:
-  - `dsp/use-case/track-trace-genealogy` (UC-01)
+  - `dsp/use-case/track-trace` (UC-01; Concept/Live über `?tab=`)
   - `dsp/use-case/three-data-pools` (UC-02)
   - `dsp/use-case/ai-lifecycle` (UC-03)
   - `dsp/use-case/closed-loop-quality` (UC-04)

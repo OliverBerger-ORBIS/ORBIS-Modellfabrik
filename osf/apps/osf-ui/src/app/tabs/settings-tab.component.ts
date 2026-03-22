@@ -242,6 +242,18 @@ export class SettingsTabComponent implements OnInit {
       available: true,
     },
     {
+      label: 'UC-01 Track & Trace (Concept)',
+      path: '/#/en/dsp/use-case/track-trace?tab=concept',
+      description: 'UC-01 genealogy diagram (Concept tab). Same page as Live Demo with different tab.',
+      available: true,
+    },
+    {
+      label: 'UC-01 Track & Trace (Live Demo)',
+      path: '/#/en/dsp/use-case/track-trace?tab=live',
+      description: 'UC-01 live Track & Trace dashboard (Live Demo tab).',
+      available: true,
+    },
+    {
       label: 'DSP Customer Architecture',
       path: '/#/en/dsp/customer',
       description: 'Select and view customer-specific DSP architecture demonstrations (FMF, ECME).',
@@ -270,7 +282,7 @@ export class SettingsTabComponent implements OnInit {
    */
   navigateToLanguageForPage(locale: LocaleKey, pagePath: string): void {
     // Extract path without locale and hash
-    // pagePath format: /#/en/dsp-animation or /#/en/dsp/use-case/track-trace
+    // pagePath format: /#/en/dsp-animation or /#/en/dsp/use-case/track-trace?tab=concept
     let cleanPath = pagePath.replace(/^\/#\//, ''); // Remove /#/
     
     // Remove locale prefix if present (en/, de/, fr/)

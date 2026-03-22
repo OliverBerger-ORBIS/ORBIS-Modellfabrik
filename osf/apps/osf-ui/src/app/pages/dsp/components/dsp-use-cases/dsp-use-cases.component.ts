@@ -7,13 +7,16 @@ interface UseCase {
   id: string; // Route id (e.g. 'interoperability')
   useCaseTitle: string; // Display title on tiles and detail header (e.g. "Interoperability (Event-to-Process)")
   useCaseCode?: string; // Optional UC code for label (e.g. "UC-00" → "Use Case UC-00")
-  reference?: string; // Optional full reference for View Details row (e.g. "UC-00: Interoperability")
+  reference?: string; // Optional full reference for action row (e.g. "UC-00: Interoperability")
   description: string;
   actions: string[];
   smartFactory: string[];
   icon: string;
   footer?: string;
-  detailRoute?: string;
+  /** Concept / diagram page (DR-22) */
+  conceptRoute?: string;
+  /** Live demo route; omit if UC has no separate live entry (e.g. UC-05 embeds Live in one page) */
+  liveDemoRoute?: string;
 }
 
 const USE_CASE_LABEL = $localize`:@@dspUseCaseLabel:Use Case`;
@@ -33,7 +36,7 @@ const USE_CASE_LABEL = $localize`:@@dspUseCaseLabel:Use Case`;
  * Supports:
  * - Single click: Highlight and show details
  * - Double click: Navigate to detail page (if implemented)
- * - "View Details" button: Navigate to detail page (if implemented)
+ * - "Concept" / "Live Demo" buttons (DR-22); UCs with only concept show one button
  */
 @Component({
   standalone: true,
@@ -44,24 +47,13 @@ const USE_CASE_LABEL = $localize`:@@dspUseCaseLabel:Use Case`;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DspUseCasesComponent {
-  @Input() enableNavigation = false; // Enable double-click navigation and "View Details" button
+  @Input() enableNavigation = false; // Enable double-click navigation and Concept / Live Demo buttons
 
   readonly sectionTitle = $localize`:@@dspUseCasesTitle:DSP Use Cases`;
   readonly sectionSubtitle = $localize`:@@dspUseCasesSubtitle:Practical applications of DSP in smart manufacturing environments.`;
-  readonly doubleClickHint = $localize`:@@dspUseCaseDoubleClickHint:Double-click to view details`;
+  readonly doubleClickHint = $localize`:@@dspUseCaseDoubleClickHintOpenConcept:Double-click to open Concept`;
 
   activeUseCaseId = 'interoperability';
-
-  // Mapping of use case IDs to their detail routes
-  private readonly useCaseRoutes: Record<string, string> = {
-    'track-trace': '/dsp/use-case/track-trace',
-    'interoperability': '/dsp/use-case/interoperability',
-    'data-aggregation': '/dsp/use-case/three-data-pools',
-    'ai-lifecycle': '/dsp/use-case/ai-lifecycle',
-    'predictive-maintenance': '/dsp/use-case/predictive-maintenance',
-    'closed-loop-quality': '/dsp/use-case/closed-loop-quality',
-    'process-optimization': '/dsp/use-case/process-optimization',
-  };
 
   useCases: UseCase[] = [
     {
@@ -84,45 +76,29 @@ export class DspUseCasesComponent {
       ],
       footer: $localize`:@@dspUseCaseInteroperabilityFooter:OSF is a demonstrator showcasing integration principles; productive implementations depend on the customer's target landscape.`,
       icon: 'assets/svg/dsp/functions/edge-interoperability.svg',
-      detailRoute: '/dsp/use-case/interoperability',
+      conceptRoute: '/dsp/use-case/interoperability',
     },
     {
-      id: 'track-trace-genealogy',
-      useCaseTitle: $localize`:@@dspUseCaseTrackTraceGenealogyTitle:Track & Trace (Schema)`,
-      description: $localize`:@@dspUseCaseTrackTraceGenealogyDesc:Conceptual diagram showing how events are correlated along a unique workpiece ID to create a complete genealogy.`,
+      id: 'track-trace',
+      useCaseTitle: $localize`:@@dspUseCaseTrackTraceUnifiedTitle:Track & Trace`,
+      useCaseCode: 'UC-01',
+      reference: $localize`:@@dspUseCaseTrackTraceUnifiedRef:UC-01: Track & Trace`,
+      description: $localize`:@@dspUseCaseTrackTraceUnifiedDesc:Genealogy concept (correlated events, plan vs. actual) and live workpiece tracking with stations, AGVs, and quality correlation.`,
       actions: [
-        $localize`:@@dspUseCaseTrackTraceGenealogyH1:Business events (Supplier Order, Customer Order) with material/batch information`,
-        $localize`:@@dspUseCaseTrackTraceGenealogyH2:Production plan vs. actual path visualization`,
-        $localize`:@@dspUseCaseTrackTraceGenealogyH3:NFC tag as join key for event correlation`,
-        $localize`:@@dspUseCaseTrackTraceGenealogyH4:Complete correlated timeline with order context`,
+        $localize`:@@dspUseCaseTrackTraceUnifiedH1:Concept diagram: NFC join key, business context, plan vs. actual path`,
+        $localize`:@@dspUseCaseTrackTraceUnifiedH2:Live Digital Twin: workpiece location, AGV positions, station events`,
+        $localize`:@@dspUseCaseTrackTraceUnifiedH3:Correlated timeline and order context for full genealogy`,
+        $localize`:@@dspUseCaseTrackTraceUnifiedH4:ERP/MES and quality linkage for traceability and root-cause analysis`,
       ],
       smartFactory: [
-        $localize`:@@orbisUseCaseTrackTraceGenealogyDescription:Visual explanation of the Track & Trace concept through event correlation and genealogy formation.`,
-        $localize`:@@orbisUseCaseTrackTraceGenealogyHighlight1:Business events (Supplier Order, Storage Order, Customer Order) linked to workpiece via NFC tag.`,
-        $localize`:@@orbisUseCaseTrackTraceGenealogyHighlight2:Production plan (theoretical sequence) compared with actual FTS route (real path).`,
-        $localize`:@@orbisUseCaseTrackTraceGenealogyHighlight3:Correlated timeline showing all events combined into a complete genealogy with order context.`,
+        $localize`:@@orbisUseCaseTrackTraceUnifiedSf1:One integration pattern: from normalized events to object-level traceability.`,
+        $localize`:@@orbisUseCaseTrackTraceUnifiedSf2:Combines conceptual genealogy with real-time shopfloor and quality data.`,
+        $localize`:@@orbisUseCaseTrackTraceUnifiedSf3:Supports demonstrator and customer storytelling without duplicate tiles.`,
+        $localize`:@@orbisUseCaseTrackTraceUnifiedSf4:Scales with additional stations or AGVs via the same event model.`,
       ],
       icon: 'assets/svg/dsp/use-cases/use-case-track-trace.svg',
-      detailRoute: '/dsp/use-case/track-trace-genealogy',
-    },
-    {
-      id: 'track-trace-live',
-      useCaseTitle: $localize`:@@dspUseCaseTrackTraceLiveTitle:Track & Trace (Live Demo)`,
-      description: $localize`:@@dspUseCaseTrackTraceDesc:Workpiece tracking via Digital Twin including AGV positions, stations, and events for complete traceability.`,
-      actions: [
-        $localize`:@@dspUseCaseTrackTraceH1:Real-time workpiece location tracking`,
-        $localize`:@@dspUseCaseTrackTraceH2:AGV position monitoring`,
-        $localize`:@@dspUseCaseTrackTraceH3:Station event correlation`,
-        $localize`:@@dspUseCaseTrackTraceH4:Complete production genealogy`,
-      ],
-      smartFactory: [
-        $localize`:@@orbisUseCaseTrackTraceDescription:Complete object genealogy with real-time traceability and quality correlation.`,
-        $localize`:@@orbisUseCaseTrackTraceHighlight1:Object-level location tracking across conveyors, modules, and high-bay storage (HBW).`,
-        $localize`:@@orbisUseCaseTrackTraceHighlight2:Correlation of process parameters (DRILL, MILL, AIQS) with ERP/MES customer orders.`,
-        $localize`:@@orbisUseCaseTrackTraceHighlight3:Sensor and telemetry data linked to quality outcomes, rework decisions, and root-cause analysis.`,
-      ],
-      icon: 'assets/svg/dsp/use-cases/use-case-track-trace.svg',
-      detailRoute: '/dsp/use-case/track-trace',
+      conceptRoute: '/dsp/use-case/track-trace',
+      liveDemoRoute: '/dsp/use-case/track-trace',
     },
     {
       id: 'data-aggregation',
@@ -142,7 +118,7 @@ export class DspUseCasesComponent {
         $localize`:@@orbisUseCaseAggregationHighlight4:Process optimization via analysis of cycle times, takt variability, energy consumption, and machine utilization.`,
       ],
       icon: 'assets/svg/dsp/use-cases/use-case-data-aggregation.svg',
-      detailRoute: '/dsp/use-case/three-data-pools',
+      conceptRoute: '/dsp/use-case/three-data-pools',
     },
     {
       id: 'ai-lifecycle',
@@ -162,7 +138,7 @@ export class DspUseCasesComponent {
         $localize`:@@orbisUseCaseAiLifecycleHighlight4:Monitoring, telemetry and retrain triggers for continuous improvement.`,
       ],
       icon: 'assets/svg/dsp/methodology/phase4-automation-orchestration.svg',
-      detailRoute: '/dsp/use-case/ai-lifecycle',
+      conceptRoute: '/dsp/use-case/ai-lifecycle',
     },
     {
       id: 'closed-loop-quality',
@@ -182,7 +158,7 @@ export class DspUseCasesComponent {
         $localize`:@@orbisUseCaseClosedLoopQualityHighlight4:Feedback to MES/ERP/Analytics for traceability and maintenance scheduling.`,
       ],
       icon: 'assets/svg/dsp/functions/edge-analytics.svg',
-      detailRoute: '/dsp/use-case/closed-loop-quality',
+      conceptRoute: '/dsp/use-case/closed-loop-quality',
     },
     {
       id: 'predictive-maintenance',
@@ -201,7 +177,7 @@ export class DspUseCasesComponent {
         $localize`:@@orbisUseCasePredictiveHighlight3:Predictive forecasts feeding SAP maintenance plans, spare-part logistics, and operator guidance.`,
       ],
       icon: 'assets/svg/dsp/use-cases/use-case-predictive-maintenance.svg',
-      detailRoute: '/dsp/use-case/predictive-maintenance',
+      conceptRoute: '/dsp/use-case/predictive-maintenance',
     },
     {
       id: 'process-optimization',
@@ -225,7 +201,7 @@ export class DspUseCasesComponent {
         $localize`:@@orbisUseCaseOptimizationHighlight6:Closed-loop improvements via DSP executors and MES/DSP workflows.`,
       ],
       icon: 'assets/svg/dsp/use-cases/use-case-process-optimization.svg',
-      detailRoute: '/dsp/use-case/process-optimization',
+      conceptRoute: '/dsp/use-case/process-optimization',
     },
   ];
 
@@ -239,29 +215,44 @@ export class DspUseCasesComponent {
   }
 
   /**
-   * Handle double-click on use case card to navigate to detail page
+   * Double-click opens Concept (same as DR-22 primary entry)
    */
   onUseCaseDoubleClick(useCase: UseCase): void {
-    if (!this.enableNavigation || !useCase.detailRoute) {
+    if (!this.enableNavigation || !useCase.conceptRoute) {
       return;
     }
-    this.navigateToDetail(useCase.detailRoute);
+    this.navigateToConcept(useCase);
   }
 
-  /**
-   * Navigate to use case detail page
-   */
-  navigateToDetail(route: string): void {
+  navigateToConcept(useCase: UseCase): void {
+    const path = useCase.conceptRoute;
+    if (!path) {
+      return;
+    }
     const locale = this.languageService.current;
-    const routeParts = route.split('/').filter(Boolean);
-    this.router.navigate([locale, ...routeParts]);
+    const routeParts = path.split('/').filter(Boolean);
+    const extras =
+      useCase.id === 'track-trace' && useCase.liveDemoRoute
+        ? { queryParams: { tab: 'concept' } }
+        : {};
+    void this.router.navigate([locale, ...routeParts], extras);
+  }
+
+  navigateToLive(useCase: UseCase): void {
+    const path = useCase.liveDemoRoute;
+    if (!path) {
+      return;
+    }
+    const locale = this.languageService.current;
+    const routeParts = path.split('/').filter(Boolean);
+    void this.router.navigate([locale, ...routeParts], { queryParams: { tab: 'live' } });
   }
 
   /**
-   * Check if a use case has a detail page
+   * Concept and/or Live Demo navigation available
    */
   hasDetailPage(useCase: UseCase): boolean {
-    return !!useCase.detailRoute;
+    return !!(useCase.conceptRoute || useCase.liveDemoRoute);
   }
 
   trackById(_index: number, useCase: UseCase): string {

@@ -20,16 +20,11 @@ export const appRoutes: Routes = [
           import('./pages/dsp/dsp-page.component').then((m) => m.DspPageComponent),
       },
       {
-        path: 'dsp/use-case/track-trace-genealogy',
-        loadComponent: () =>
-          import('./pages/use-cases/track-trace-genealogy/track-trace-genealogy-use-case.component').then(
-            (m) => m.TrackTraceGenealogyUseCaseComponent
-          ),
-      },
-      {
         path: 'dsp/use-case/track-trace',
         loadComponent: () =>
-          import('./tabs/track-trace-tab.component').then((m) => m.TrackTraceTabComponent),
+          import('./pages/use-cases/track-trace/track-trace-use-case.component').then(
+            (m) => m.TrackTraceUseCaseComponent
+          ),
       },
       {
         path: 'dsp/use-case/interoperability',

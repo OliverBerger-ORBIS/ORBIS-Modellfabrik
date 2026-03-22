@@ -4,11 +4,18 @@
 
 ## Rule
 
-**Any change** that affects **route rendering** (orange line segments, trim/inset behaviour), **stacking / z-index** of route vs modules vs FTS icons, or **AGV overlay** appearance **must not be merged** until a **successful manual visual check** has been done on a running UI (localhost or agreed target).
+**Any change** that affects **route rendering** (orange line segments, trim/inset behaviour), **stacking / z-index** of route vs modules vs FTS icons, or **AGV overlay** appearance **must not be committed or merged** until a **successful manual visual check** has been done on a running UI (localhost or agreed target).
 
 Automated unit tests and lint **do not** replace this check: SVG/CSS regressions can leave routes **invisible** while tests still pass.
 
-## Minimum visual checklist (before merge)
+## Workflow order (mandatory)
+
+1. **Visual test first** – Run the checklist below on a running build; only proceed if it passes.  
+2. **Then commit** – No `git commit` for these changes before the visual gate is green.
+
+**Wrong order** (forbidden for this area): commit first, “test later”.
+
+## Minimum visual checklist (before commit / merge)
 
 Run the OSF UI in **mock** mode with fixtures:
 

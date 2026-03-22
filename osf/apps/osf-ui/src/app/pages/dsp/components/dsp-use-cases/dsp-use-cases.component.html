@@ -58,16 +58,32 @@
         {{ useCase.footer }}
       </p>
 
-      <div *ngIf="enableNavigation && hasDetailPage(useCase)" class="dsp-use-case-detail__actions">
+      <div
+        *ngIf="enableNavigation && hasDetailPage(useCase)"
+        class="dsp-use-case-detail__actions"
+        [class.dsp-use-case-detail__actions--split]="!!useCase.reference"
+      >
         <span *ngIf="useCase.reference" class="dsp-use-case-detail__actions-ref">{{ useCase.reference }}</span>
-        <button
-          type="button"
-          class="dsp-use-case-detail__view-details-btn"
-          (click)="navigateToDetail(useCase.detailRoute!)"
-          i18n="@@dspUseCaseViewDetails"
-        >
-          View Details
-        </button>
+        <div class="dsp-use-case-detail__actions-buttons">
+          <button
+            *ngIf="useCase.conceptRoute"
+            type="button"
+            class="dsp-use-case-detail__view-details-btn"
+            (click)="navigateToConcept(useCase)"
+            i18n="@@dspUseCaseConcept"
+          >
+            Concept
+          </button>
+          <button
+            *ngIf="useCase.liveDemoRoute"
+            type="button"
+            class="dsp-use-case-detail__view-details-btn dsp-use-case-detail__view-details-btn--secondary"
+            (click)="navigateToLive(useCase)"
+            i18n="@@dspUseCaseLiveDemo"
+          >
+            Live Demo
+          </button>
+        </div>
       </div>
     </article>
   </ng-container>
