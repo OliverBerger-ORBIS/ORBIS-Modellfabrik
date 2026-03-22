@@ -6,6 +6,24 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-03-22
+
+**Erstes Major-Release (LogiMAT Messe-Referenz).**
+
+### Added
+- **AGV-Tab:** Manueller Befehl **→ HBW** – Routenstart wie „Start“-Dropdown (`Auto` = `lastNodeId`); Navigation zum HBW von jeder Graph-Position mit bekanntem Start. FTS-Order-Payload orientiert an CCU/Storage-Sessions (`PASS` auf Transitknoten, `DOCK` am HBW mit Last-Metadaten statt `STOP`).
+
+### Fixed
+- **FTS Route-Overlay / Order-Tab:** Route-Linien wieder sichtbar (SCSS: Styles unter `.preview__route-overlay` statt nur `.preview__fts-layer`).
+- **AGV-Tab / RPi:** Verschiedene Rendering-Fixes (u. a. Layer/Compositing) aus v0.9.3–v0.9.8 – siehe Einträge unten.
+
+### Changed
+- **Customer / LogiMAT:** DSP-Architecture mit LogiMAT Business Apps (u. a. ORBIS-MES EWM (SAP)).
+
+### Notes
+- **Message Monitor:** Doppelte Topic-Anzeige – Ursache dokumentiert (`osf.debug`); technischer Code-Fix bewusst **nach** v1.0.0 ([Sprint 18 – Nach LogiMAT](docs/sprints/sprint_18.md)).
+- **Sensor-Tab Kamera (Live):** bekanntes Restrisiko – Analyse [sensor-tab-camera-live-loading-2026-03.md](docs/07-analysis/sensor-tab-camera-live-loading-2026-03.md); Verifikation mit Live/RPi bei Bedarf nach Deployment von **v1.0.0**.
+
 ## [0.9.8] - 2026-03-19
 
 ### Fixed

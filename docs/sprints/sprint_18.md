@@ -9,7 +9,7 @@
 
 **Kurz vor Messe (wenig Zeit, kein Fix-Roulette):** [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md)
 
-**Release:** Build + Messe-Version **`v1.0.0` / `v1.0.x`** erst **nach** allen Fixes ([Checkliste](../04-howto/osf-ui-logimat-smoke-checklist.md#release-und-messe-version-nach-allen-fixes)).
+**Release:** **`v1.0.0`** – getaggt als Messe-/Referenz-Stand. **Live-Modus** und **RPi-Deployment**-Tests erfolgen mit diesem Tag (zum Zeitpunkt des Tags waren Remote-RPi/Live-Verifikation eingeschränkt). Nachfolgende Fixes (z. B. **Message Monitor Duplikat**-Code-Fix) können danach umgesetzt werden; **Deployment** kann weiterhin **`v1.0.0`** verwenden. Smoke: [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md).
 
 ---
 
