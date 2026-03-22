@@ -67,6 +67,8 @@ export interface BusinessProcessMapping {
   customIconPath?: string;
   /** Optional: override with custom brand logo path */
   customBrandLogoPath?: string;
+  /** Secondary brand logo position (default in layout: top-right) */
+  secondaryLogoPosition?: 'top-left' | 'top-right';
 }
 
 /**

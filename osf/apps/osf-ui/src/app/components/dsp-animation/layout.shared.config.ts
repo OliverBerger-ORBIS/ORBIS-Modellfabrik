@@ -898,6 +898,28 @@ export function getBusinessContainerIds(customerConfig?: CustomerDspConfig): str
 }
 
 /**
+ * Business process container IDs only (no layer-bp), left-to-right order from customer config or default FMF set.
+ */
+export function getBpProcessContainerIds(customerConfig?: CustomerDspConfig): string[] {
+  if (customerConfig) {
+    return customerConfig.bpProcesses.map(bp => bp.id);
+  }
+  return ['bp-erp', 'bp-mes', 'bp-cloud', 'bp-analytics', 'bp-data-lake'];
+}
+
+/**
+ * When `bp-mes` is present but `bp-ewm` is not, insert `bp-ewm` immediately after `bp-mes`
+ * (LogiMAT / EWM shows together with MES in the same animation beats).
+ */
+export function withMesEwmCluster(containerIds: string[]): string[] {
+  if (!containerIds.includes('bp-mes') || containerIds.includes('bp-ewm')) {
+    return containerIds;
+  }
+  const i = containerIds.indexOf('bp-mes');
+  return [...containerIds.slice(0, i + 1), 'bp-ewm', ...containerIds.slice(i + 1)];
+}
+
+/**
  * Returns all Edge component container IDs (internal components within Edge box).
  * Used in component view.
  */
@@ -1252,7 +1274,7 @@ export function createCustomerContainers(customerConfig?: CustomerDspConfig): Co
       state: 'hidden',
       logoIconKey: iconKey,
       secondaryLogoIconKey: brandLogoKey,
-      secondaryLogoPosition: 'top-right',
+      secondaryLogoPosition: bpProcess.secondaryLogoPosition ?? 'top-right',
       borderColor: 'rgba(22, 65, 148, 0.25)',
       backgroundColor: '#ffffff',
       labelPosition: 'bottom-center',

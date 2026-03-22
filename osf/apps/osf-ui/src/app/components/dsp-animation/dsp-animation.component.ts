@@ -161,6 +161,7 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     'bp-cloud': $localize`:@@dspArchLabelCloudApps:Cloud\nApplications`,
     'bp-analytics': $localize`:@@dspArchLabelAnalytics:Analytical\nApplications`,
     'bp-data-lake': $localize`:@@dspArchLabelDataLake:Data Lake`,
+    'bp-ewm': $localize`:@@dspArchLabelEWMApp:EWM Application`,
     'sf-system-any': $localize`:@@dspArchLabelAnySystem:any System`,
     'sf-system-warehouse': $localize`:@@dspArchLabelWarehouse:Warehouse`,
     'sf-system-factory': $localize`:@@dspArchLabelFactory:Factory`,
@@ -371,6 +372,9 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
             container.secondaryLogoIconKey = mapping.customBrandLogoPath as IconKey;
           } else {
             container.secondaryLogoIconKey = `generic-brand-${mapping.brandLogoKey}` as IconKey;
+          }
+          if (mapping.secondaryLogoPosition) {
+            container.secondaryLogoPosition = mapping.secondaryLogoPosition;
           }
           // Make visible if it was hidden
           if (container.state === 'hidden') {

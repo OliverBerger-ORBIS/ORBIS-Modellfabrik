@@ -38,7 +38,7 @@ Erstellen Sie die Konfigurationsdatei `osf/apps/osf-ui/src/app/components/dsp-an
 **WICHTIG - SVG-Nomenklatur:**
 - **Devices:** Alle Device-SVGs müssen `*-station.svg` heißen (z.B. `drill-station.svg`, `mill-station.svg`)
 - **Systems:** Alle System-SVGs müssen `*-system.svg` heißen (z.B. `warehouse-system.svg`, `agv-system.svg`)
-- **Business:** Alle Business-SVGs müssen `*-application.svg` heißen (z.B. `erp-application.svg`, `mes-application.svg`)
+- **Business:** Alle Business-SVGs müssen `*-application.svg` heißen (z.B. `erp-application.svg`, `mes-application.svg`, `ewm-application.svg`). **Projekt-Konvention:** dieselbe Datei liegt parallel unter `osf/apps/osf-ui/public/assets/svg/business/` und `osf/apps/osf-ui/src/assets/svg/business/` (Angular kopiert beide nach `assets/` im Build) – bei neuen Business-Icons beide Stellen synchron halten.
 
 ```typescript
 /**
@@ -123,7 +123,7 @@ export const ACME_CONFIG: CustomerDspConfig = {
 **WICHTIG - SVG-Nomenklatur:**
 - **Devices:** Alle SVGs in `src/assets/svg/shopfloor/stations/` müssen `*-station.svg` heißen
 - **Systems:** Alle SVGs in `src/assets/svg/shopfloor/systems/` müssen `*-system.svg` heißen
-- **Business:** Alle SVGs in `src/assets/svg/business/` müssen `*-application.svg` heißen
+- **Business:** Alle SVGs in `src/assets/svg/business/` **und** `public/assets/svg/business/` müssen `*-application.svg` heißen (identische Kopie an beiden Pfaden)
 
 **Devices (Shopfloor Stations):**
 - `drill` - Drill Station

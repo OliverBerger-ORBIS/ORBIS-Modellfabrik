@@ -43,10 +43,11 @@ describe('CustomerSelectorPageComponent', () => {
     expect(component.availableCustomers.length).toBeGreaterThan(0);
   });
 
-  it('should include FMF and ECME customers', () => {
+  it('should include FMF, ECME, and LogiMAT customers', () => {
     const customerKeys = component.availableCustomers.map(c => c.config.customerKey);
     expect(customerKeys).toContain('fmf');
     expect(customerKeys).toContain('ecme');
+    expect(customerKeys).toContain('logimat');
   });
 
   it('should have correct routes for customers', () => {
@@ -57,6 +58,10 @@ describe('CustomerSelectorPageComponent', () => {
     const ecmeCustomer = component.availableCustomers.find(c => c.config.customerKey === 'ecme');
     expect(ecmeCustomer).toBeDefined();
     expect(ecmeCustomer!.route).toBe('/dsp/customer/ecme');
+
+    const logimatCustomer = component.availableCustomers.find(c => c.config.customerKey === 'logimat');
+    expect(logimatCustomer).toBeDefined();
+    expect(logimatCustomer!.route).toBe('/dsp/customer/logimat');
   });
 
   it('should initialize with empty selected customer', () => {

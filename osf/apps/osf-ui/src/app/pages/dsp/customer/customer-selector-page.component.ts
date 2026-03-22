@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ECME_CONFIG } from '../../../components/dsp-animation/configs/ecme/ecme-config';
 import { FMF_CONFIG } from '../../../components/dsp-animation/configs/fmf/fmf-config';
+import { LOGIMAT_CONFIG } from '../../../components/dsp-animation/configs/logimat/logimat-config';
 import type { CustomerDspConfig } from '../../../components/dsp-animation/configs/types';
 
 interface CustomerOption {
@@ -200,6 +201,10 @@ export class CustomerSelectorPageComponent {
     {
       config: ECME_CONFIG,
       route: '/dsp/customer/ecme',
+    },
+    {
+      config: LOGIMAT_CONFIG,
+      route: '/dsp/customer/logimat',
     },
   ];
 

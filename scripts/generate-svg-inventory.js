@@ -35,6 +35,7 @@ const DOCUMENTED_SVGS = new Set([
   'assets/svg/business/data-lake-application.svg',
   'assets/svg/business/erp-application.svg',
   'assets/svg/business/mes-application.svg',
+  'assets/svg/business/ewm-application.svg',
   'assets/svg/business/scm-application.svg',
   'assets/svg/dsp/architecture/dsp-edge-box.svg',
   'assets/svg/dsp/edge-components/edge-agent.svg',

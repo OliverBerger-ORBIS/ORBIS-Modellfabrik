@@ -7,6 +7,8 @@ import {
   getShopfloorConnectionIds,
   getDspContainerIds,
   getBusinessContainerIds,
+  getBpProcessContainerIds,
+  withMesEwmCluster,
 } from './layout.shared.config';
 
 export { VIEWBOX_WIDTH, VIEWBOX_HEIGHT, LAYOUT } from './layout.shared.config';
@@ -38,6 +40,17 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
   const baseShopfloorContainers = getShopfloorContainerIds(customerConfig);
   const baseShopfloorConnections = getShopfloorConnectionIds(customerConfig);
   const bpConnections = getBpConnections(customerConfig);
+
+  /** Step 10: highlight analytics + cloud box (FMF) or analytics + EWM (LogiMAT). */
+  const analyticsIntegrationHighlights = (): string[] => {
+    if (customerConfig?.bpProcesses.some((bp) => bp.id === 'bp-cloud')) {
+      return ['bp-analytics', 'bp-cloud'];
+    }
+    if (customerConfig?.bpProcesses.some((bp) => bp.id === 'bp-ewm')) {
+      return ['bp-analytics', 'bp-ewm'];
+    }
+    return ['bp-analytics'];
+  };
 
   return [
     // Step 1: Shopfloor Devices
@@ -253,9 +266,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       description: $localize`:@@dspArchStepBestBreedDesc:DSP integriert heterogene ERP-, MES-, Cloud- und Analytics-Systeme und bleibt dabei unabhängig von Herstellern, Plattformen und Hyperscalern.`,
       visibleContainerIds: [
         'layer-bp',
-        'bp-erp',
-        'bp-mes',
-        'bp-cloud',
+        ...getBpProcessContainerIds(customerConfig),
         'layer-dsp',
         'dsp-edge',
         ...baseShopfloorContainers,
@@ -278,14 +289,11 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
-        'bp-mes',
-        'bp-erp',
-        'bp-cloud',
-        'bp-analytics',
+        ...getBpProcessContainerIds(customerConfig),
         'dsp-edge',
         ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: ['bp-analytics', 'bp-cloud'],
+      highlightedContainerIds: analyticsIntegrationHighlights(),
       visibleConnectionIds: [
         ...bpConnections,
         ...baseShopfloorConnections,
@@ -301,7 +309,6 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       label: $localize`:@@dspArchStepAI:AI- & Analytics-Enablement`,
       description: $localize`:@@dspArchStepAIDesc:DSP stellt strukturierte Echtzeitdaten als Grundlage für Analytics, Machine Learning und prädiktive Optimierung bereit.`,
       visibleContainerIds: [
-        'layer-bp',
         ...getBusinessContainerIds(customerConfig),
         'layer-dsp',
         'dsp-edge',
@@ -325,27 +332,22 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
-        'bp-mes',
-        'bp-erp',
-        'bp-cloud',
-        'bp-analytics',
-        'bp-data-lake',
+        ...getBpProcessContainerIds(customerConfig),
         'dsp-edge',
         ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: [
+      highlightedContainerIds: withMesEwmCluster([
         'layer-bp',
         'layer-dsp',
         'dsp-edge',
         'bp-mes',
         'bp-erp',
-        'bp-cloud',
-        'bp-analytics',
-        'bp-data-lake',
-        'sf-system-any',
-        'sf-system-fts',
-        ...getShopfloorDeviceIds(),
-      ], // Alle bp-xyz, sf-devices, sf-systems highlighten
+        ...(customerConfig
+          ? customerConfig.bpProcesses.map((bp) => bp.id).filter((id) => id !== 'bp-erp' && id !== 'bp-mes')
+          : ['bp-cloud', 'bp-analytics', 'bp-data-lake']),
+        ...(customerConfig ? customerConfig.sfSystems.map((s) => s.id) : ['sf-system-any', 'sf-system-fts']),
+        ...getShopfloorDeviceIds(customerConfig),
+      ]),
       visibleConnectionIds: [
         ...bpConnections,
         ...baseShopfloorConnections,
@@ -384,11 +386,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
-        'bp-mes',
-        'bp-erp',
-        'bp-cloud',
-        'bp-analytics',
-        'bp-data-lake',
+        ...getBpProcessContainerIds(customerConfig),
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
@@ -414,11 +412,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
-        'bp-mes',
-        'bp-erp',
-        'bp-cloud',
-        'bp-analytics',
-        'bp-data-lake',
+        ...getBpProcessContainerIds(customerConfig),
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
@@ -445,11 +439,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
-        'bp-mes',
-        'bp-erp',
-        'bp-cloud',
-        'bp-analytics',
-        'bp-data-lake',
+        ...getBpProcessContainerIds(customerConfig),
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
@@ -476,11 +466,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
-        'bp-mes',
-        'bp-erp',
-        'bp-cloud',
-        'bp-analytics',
-        'bp-data-lake',
+        ...getBpProcessContainerIds(customerConfig),
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
@@ -509,11 +495,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
-        'bp-mes',
-        'bp-erp',
-        'bp-cloud',
-        'bp-analytics',
-        'bp-data-lake',
+        ...getBpProcessContainerIds(customerConfig),
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
@@ -543,11 +525,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
-        'bp-mes',
-        'bp-erp',
-        'bp-cloud',
-        'bp-analytics',
-        'bp-data-lake',
+        ...getBpProcessContainerIds(customerConfig),
         'dsp-edge',
         'dsp-mc',
         ...baseShopfloorContainers,
@@ -574,8 +552,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       label: $localize`:@@dspArchStep11:SmartFactory Dashboard`,
       description: $localize`:@@dspArchStep11Desc:Visualization of the digital twin, real-time processes, and track & trace in the shopfloor.`,
       visibleContainerIds: [
-        'layer-bp',
-        ...getBusinessContainerIds(),
+        ...getBusinessContainerIds(customerConfig),
         'layer-dsp',
         'dsp-ux',
         'dsp-edge',
@@ -600,7 +577,6 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       label: $localize`:@@dspArchStep12:Autonomous & Adaptive Enterprise`,
       description: $localize`:@@dspArchStep12Desc:Data from shopfloor, Edge, ERP, analytics, and data lakes enable autonomous workflows, predictive decisions, and continuous process optimization.`,
       visibleContainerIds: [
-        'layer-bp',
         'layer-dsp',
         'layer-sf',
         ...getBusinessContainerIds(customerConfig),

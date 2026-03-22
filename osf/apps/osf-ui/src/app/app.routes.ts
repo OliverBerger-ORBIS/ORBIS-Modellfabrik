@@ -164,6 +164,11 @@ export const appRoutes: Routes = [
           import('./pages/dsp/customer/ecme/ecme-dsp-page.component').then((m) => m.EcmeDspPageComponent),
       },
       {
+        path: 'dsp/customer/logimat',
+        loadComponent: () =>
+          import('./pages/dsp/customer/logimat/logimat-dsp-page.component').then((m) => m.LogimatDspPageComponent),
+      },
+      {
         path: 'presentation',
         loadComponent: () =>
           import('./pages/presentation/presentation-page.component').then((m) => m.PresentationPageComponent),

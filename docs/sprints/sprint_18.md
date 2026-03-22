@@ -21,7 +21,7 @@
 - [ ] **Camera Image (Sensor-Tab):** Bild wird nicht angezeigt ("Camera Image Loading…" bleibt). **Nur Live-Modus** (aktuell schwer testbar). **Analyse (Ursachen / keine automatische „Fix“ durch Message-Monitor-Änderungen):** [sensor-tab-camera-live-loading-2026-03.md](../07-analysis/sensor-tab-camera-live-loading-2026-03.md).
 - [ ] **AGV-Tab NAV-Buttons:** Manuelle Navigationsbefehle (DPS→HBW, HBW→Intersection-2, AIQS→HBW) werden nicht ausgeführt. Vermutung: `orderId` oder Payload inkompatibel. Analyse: TXT-Sourcen SVR4H73275.
 - [x] **FTS Route-Overlay / Order-Tab Route:** SCSS-Regression (v0.9.3): Route-`<line>`-Styles lagen unter `.preview__fts-layer` statt `.preview__route-overlay` → Linie unsichtbar. **Fix:** Styles wieder unter `.preview__route-overlay`. **Pflicht ab jetzt:** visuelle Checks vor Merge → [osf-ui-shopfloor-route-agv-visual-gate.md](../04-howto/osf-ui-shopfloor-route-agv-visual-gate.md). Optional weiter: RPi vs. localhost.
-- [ ] **Customer LogiMAT:** Darstellung DSP-Architecture mit LogiMAT Business Apps (ORBIS-MES EWM (SAP)...)
+- [x] **Customer LogiMAT:** Darstellung DSP-Architecture mit LogiMAT Business Apps (ORBIS-MES EWM (SAP)...)
 
 ### Nach LogiMAT (Refactoring, noch Sprint 18)
 

@@ -4,6 +4,8 @@ import {
   getShopfloorConnectionIds,
   getDspContainerIds,
   getBusinessContainerIds,
+  getBpProcessContainerIds,
+  withMesEwmCluster,
   getEdgeComponentIds,
 } from './layout.shared.config';
 
@@ -158,6 +160,38 @@ describe('Layout Shared Config Helper Functions', () => {
       expect(ids).not.toContain('layer-dsp');
       expect(ids).not.toContain('layer-sf');
       expect(ids).not.toContain('dsp-edge');
+    });
+  });
+
+  describe('getBpProcessContainerIds', () => {
+    it('should return default business process IDs without customer config', () => {
+      expect(getBpProcessContainerIds()).toEqual([
+        'bp-erp',
+        'bp-mes',
+        'bp-cloud',
+        'bp-analytics',
+        'bp-data-lake',
+      ]);
+    });
+  });
+
+  describe('withMesEwmCluster', () => {
+    it('should insert bp-ewm immediately after bp-mes when missing', () => {
+      expect(withMesEwmCluster(['bp-erp', 'bp-mes', 'bp-analytics'])).toEqual([
+        'bp-erp',
+        'bp-mes',
+        'bp-ewm',
+        'bp-analytics',
+      ]);
+    });
+
+    it('should leave ids unchanged when bp-ewm already present', () => {
+      const ids = ['bp-mes', 'bp-ewm', 'bp-analytics'];
+      expect(withMesEwmCluster(ids)).toEqual(ids);
+    });
+
+    it('should leave ids unchanged when bp-mes is absent', () => {
+      expect(withMesEwmCluster(['bp-erp', 'bp-analytics'])).toEqual(['bp-erp', 'bp-analytics']);
     });
   });
 

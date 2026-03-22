@@ -122,6 +122,8 @@ export const ICONS = {
     analytics: 'assets/svg/business/analytics-application.svg',
     dataLake: 'assets/svg/business/data-lake-application.svg',
     mes: 'assets/svg/business/mes-application.svg',
+    /** SAP EWM / warehouse management – business-layer icon (see ewm-application.svg) */
+    ewm: 'assets/svg/business/ewm-application.svg',
   },
   methodology: {
     // Incremental development phases
