@@ -19,7 +19,7 @@
 | Klassifikation (gasLevel 0/1/2) | ✓ berechnet | nur Darstellung |
 | Raw-Wert | ✓ gemessen, gesendet | nur Anzeige |
 
-**Folge:** Änderungen an Schwellen nur im Sketch; UI bleibt schwellenfrei. Deployment: Sketch-Version im Header prüfen (Serial Monitor: „Sketch v1.1.0“).
+**Folge:** Änderungen an Schwellen nur im Sketch; Sensor-Tab **Rahmenfarben** für DHT nutzen dieselben Grenzwerte wie der Sketch (siehe `sensor-tab.component.ts`, Konstanten neben Arduino). **DHT-Luftfeuchte (Stand Sketch v1.1.1):** Warn (Gelb) ab **60 %**, Alarm (Rot) ab **85 %** (Temp unverändert: 30 °C / 35 °C). Deployment: Serial Monitor „Sketch v1.1.x“ prüfen.
 
 ---
 

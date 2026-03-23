@@ -9,7 +9,7 @@
 
 **Kurz vor Messe (wenig Zeit, kein Fix-Roulette):** [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md)
 
-**Release:** **`v1.0.0`** – getaggt als Messe-/Referenz-Stand. **Live-Modus** und **RPi-Deployment**-Tests erfolgen mit diesem Tag (zum Zeitpunkt des Tags waren Remote-RPi/Live-Verifikation eingeschränkt). Nachfolgende Fixes (z. B. **Message Monitor Duplikat**-Code-Fix) können danach umgesetzt werden; **Deployment** kann weiterhin **`v1.0.0`** verwenden. Smoke: [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md).
+**Release:** **`v1.0.0`** – Messe-/Referenz-Tag. **`v1.0.1`** (2026-03-23) – Sensor-Tab DHT-Schwellen an Arduino **v1.1.1** angeglichen, Sprint-Tasks Messe-Verifikation (Kamera/AGV). **Deployment RPi:** `orbis-osf-ui:1.0.1`. Smoke: [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md).
 
 ---
 
@@ -18,7 +18,8 @@
 ### Priorität 1: Kritische Bugs (LogiMAT)
 
 - [x] **Message Monitor (Messe):** Doppelte Topic-Anzeige – **Ursache analysiert**, **Konsole-Debug dokumentiert** (`osf.debug`), damit Messe-Debugging möglich ist. **Analyse:** [message-monitor-duplicate-topics-2026-03.md](../07-analysis/message-monitor-duplicate-topics-2026-03.md). **How-to:** [osf-ui-console-debug.md](../04-howto/osf-ui-console-debug.md). *Technischer Fix (kein Doppel-Ingest mehr) → Abschnitt „Nach LogiMAT (Refactoring)“ unten.*
-- [ ] **Camera Image (Sensor-Tab):** Bild wird nicht angezeigt ("Camera Image Loading…" bleibt). **Nur Live-Modus** (aktuell schwer testbar). **Analyse (Ursachen / keine automatische „Fix“ durch Message-Monitor-Änderungen):** [sensor-tab-camera-live-loading-2026-03.md](../07-analysis/sensor-tab-camera-live-loading-2026-03.md).
+- [ ] **Camera / DPS-TXT – Live-Daten (Prüfung, 23.03.):** End-to-End-Test zeigt **keine neuen** Kamera-Daten: `mosquitto_sub` auf `/j1/txt/1/i/cam` liefert **nur Retain / gleichen `ts`** (kein Strom neuer Publishes). **AP-UI (TXT)** ebenfalls **ohne** frische Cam-Daten. OSF Sensor-Tab: Bild ggf. **eingefroren** (letzter Frame). **Ursache vermutlich Publisher auf DPS-TXT** (alter Projektstand / Prozess) – **nicht** primär OSF-UI. **Nächste Schritte:** TXT-Version/Deployment des Cam-Publishers abgleichen, nach Re-Deploy MQTT auf **neue `ts`** in `<1 min` prüfen. **Analyse:** [sensor-tab-camera-live-loading-2026-03.md](../07-analysis/sensor-tab-camera-live-loading-2026-03.md).
+- [ ] **AGV FTS – Navigation DPS → HBW (Live, 23.03.):** Manueller Test **→ HBW** bei **aktueller Position DPS** **fehlgeschlagen** (OSF-UI FTS-Tab: **Andocken** / **Vorbeifahren** / letzte Aktionen **Fehlgeschlagen**, ~08:09; Status **Gestoppt**, Standort DPS). **Beleg:** Screenshot FTS-Tab ~08:15 (DPS, Fehlversuche). **Hinweis:** Erledigter Task „NAV-Button-Payload“ ([x] unten) betrifft **Payload-Format** – dieser Punkt ist **Live-Repro/Analyse** (CCU, FTS-Order, Docking, ggf. Reset). **Prüfung:** Session-Logs `fts/v1/ff/.../order`, Vergleich [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md) FTS.
 - [x] **AGV-Tab NAV-Buttons:** Manuell „→ HBW“ / Intersection-2: Payload folgt CCU-Muster (`PASS`/`DOCK`, nicht `STOP`). **→ HBW** nutzt Routenstart wie „Start“-Dropdown (Auto = `lastNodeId`). Session-Analyse: `data/osf-data/sessions/storage-*.log` (`fts/v1/ff/.../order`).
 - [x] **FTS Route-Overlay / Order-Tab Route:** SCSS-Regression (v0.9.3): Route-`<line>`-Styles lagen unter `.preview__fts-layer` statt `.preview__route-overlay` → Linie unsichtbar. **Fix:** Styles wieder unter `.preview__route-overlay`. **Pflicht ab jetzt:** visuelle Checks vor Merge → [osf-ui-shopfloor-route-agv-visual-gate.md](../04-howto/osf-ui-shopfloor-route-agv-visual-gate.md). Optional weiter: RPi vs. localhost.
 - [x] **Customer LogiMAT:** Darstellung DSP-Architecture mit LogiMAT Business Apps (ORBIS-MES EWM (SAP)...)
@@ -32,8 +33,8 @@
 - [x] **Vibrationssensor-Station:** Fertigstellung messetaugliche Platte und Transportsicherung (Arduino R4 + MPU-6050 + SW-420 + DHT11 + Flamme + MQ-2 + Ampel + Sirene). Verdrahtung, Konfiguration, Doku konsolidiert ([arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md)), alle Sensoren getestet.
 - [x] **Fixture-Playback im Mock:** Fixtures in Production-Build aufgenommen (project.json). Mock-Fixture-Playback funktioniert auf RPi – Demo ohne Hardware, vorbereitete Sessions. Live-Modus unverändert. DR-19 ergänzt.
 - [x] **Flammensensor-Anzeige (Sensor-Tab):** Darstellung von linearer auf logarithmische Skala umstellen.
-- [ ] **Flammensensor Alarm-Werte:** Verifikation der angezeigten Werte im Alarm-Fall (Live-Test).
-- [ ] **Arduino Sketch Deployment:** OSF_MultiSensor_R4WiFi v1.1.0 auf Arduino R4 flashen. SKETCH_VERSION im Header prüfen, Serial Monitor „Sketch v1.1.0“, MQTT-Heartbeat 5 s. Doku: [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md) §4.
+- [x] **Flammensensor Alarm-Werte:** Live-Verifikation **ORBIS-WLAN** (OSF-UI Live): Werte aktualisieren sich; Alarmfall plausibel; **Sirene** bei aktivem UC-05-Toggle.
+- [x] **Arduino Sketch Deployment:** **v1.1.0** auf R4; `WIFI_MODE_ORBIS`, Broker `192.168.0.100`. **Daheim** → **ORBIS** durchlaufen; Live-Daten ok. **Offen vor LogiMAT:** Messe-**SSID `ORBIS-…`** im Sketch (`#else`-Block) anpassen, neu flashen. Doku: [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md) §4.
 - [x] **UC-05 Live-Demo (Gefahrensimulation):** ~~Umsetzbar wie vorgestellt~~ – **CCU-Limitation:** `ccu/set/park` + `ccu/order/cancel` erreichen *keinen* vollständigen Sofort-Stop. IN_PROGRESS-Orders laufen weiter, laufende Stationen (z.B. AIQS) werden nicht abgebrochen. **Nach Stopp zwingend:** Reset + AGV-dock (manual-intervention). Button „Gefahr simulieren“ sendet Park+Cancel+FTS-Reset – Demo zeigt Sent Events; echter Prozess-Anhalt nur bei ENQUEUED. Siehe [alarm-fabrik-stop](../07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md).
 - [x] **UC-01 Anpassung:** Zusammenführung der Track-&-Trace-Kacheln (Konzept/Live) gemäß DR-22 – `TrackTraceUseCaseComponent`, nur `dsp/use-case/track-trace` mit `?tab=concept` / `?tab=live` (keine `…-genealogy`-Route mehr), DSP-Liste „Concept“ / „Live Demo“.
 
@@ -117,4 +118,4 @@
 
 ---
 
-*Letzte Aktualisierung: 22.03.2026 (Backlog: Reihenfolge OSF-UI SVG-Umbruch vor Test-Framework-EPIC; Kurz/Info AGV)*
+*Letzte Aktualisierung: 23.03.2026 (Release **v1.0.1**; Tasks Camera/AGV; DHT UI↔Arduino v1.1.1; RPi-Deploy `orbis-osf-ui:1.0.1`)*

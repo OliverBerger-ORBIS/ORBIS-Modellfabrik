@@ -1,14 +1,14 @@
 /*
  * Projekt: OSF Multi-Sensor – Arduino R4 WiFi
  * Sketch: OSF_MultiSensor_R4WiFi
- * Version: 1.1.0  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
+ * Version: 1.1.1  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
  * Hardware: Arduino Uno R4 WiFi, MPU-6050 (I2C), SW-420 (D11), DHT11 (D12), Flamme (A1), MQ-2 Gas (A0), 4-Ch Relais, 12V Ampel
  * Quelle: docs/05-hardware/arduino-r4-multisensor.md
  *
  * Sensoren: MPU-6050 + SW-420 + DHT11 + Flammensensor + MQ-2 Gas. Gemeinsame Ampel (OR-Logik).
  * USE_MQTT: 0 = nur Serial, 1 = MQTT über WiFi
  */
-#define SKETCH_VERSION "1.1.0"
+#define SKETCH_VERSION "1.1.1"
 #define USE_MQTT 1
 
 /** Relais-Logik: 1 = aktiv-niedrig (LOW=ein, typisch). 0 = aktiv-hoch (HIGH=ein, manche Module). */
@@ -34,7 +34,7 @@
 // === WLAN-Konfiguration – Umschaltung daheim / ORBIS ===
 #define WIFI_MODE_DAHEIM 0
 #define WIFI_MODE_ORBIS  1
-#define WIFI_MODE WIFI_MODE_DAHEIM  // <-- Nur diese Zeile ändern: DAHEIM oder ORBIS
+#define WIFI_MODE WIFI_MODE_ORBIS  // <-- DAHEIM oder ORBIS (LogiMAT: später ggf. SSID in #else anpassen)
 
 #if WIFI_MODE == WIFI_MODE_DAHEIM
   // WLAN Daheim – Fritz!Box 192.168.178.x, Arduino .95 reserviert
@@ -73,8 +73,8 @@ const char* TOPIC_ALARM_ENABLED = "osf/arduino/alarm/enabled";  // true/false �
 const unsigned long MQTT_HEARTBEAT_INTERVAL = 5000;
 const float DHT_TEMP_WARN = 30.0;   // °C – Gelb
 const float DHT_TEMP_DANGER = 35.0; // °C – Rot
-const float DHT_HUM_WARN = 80.0;    // % – Gelb
-const float DHT_HUM_DANGER = 90.0;  // % – Rot
+const float DHT_HUM_WARN = 60.0;    // % – Gelb (Orange)
+const float DHT_HUM_DANGER = 85.0;  // % – Rot (Alarm)
 
 WiFiUDP udp;
 NTPClient timeClient(udp, "pool.ntp.org", 0, 60000);
@@ -453,9 +453,11 @@ void loop() {
         Serial.println("DHT11 suspendiert (Fehler), 30s Pause.");
       }
     }
-    if (lastTemp >= DHT_TEMP_DANGER || lastHum >= DHT_HUM_DANGER) dhtLevel = 2;
-    else if (lastTemp >= DHT_TEMP_WARN || lastHum >= DHT_HUM_WARN) dhtLevel = 1;
   }
+  // Warn/Alarm immer aus letzten Messwerten (jedes Loop), nicht nur beim DHT-Poll –
+  // sonst DHT_READ_INTERVAL (2s) → dhtLevel zwischendurch 0 → Ampel kurz Grün trotz hoher Luftfeuchte.
+  if (lastTemp >= DHT_TEMP_DANGER || lastHum >= DHT_HUM_DANGER) dhtLevel = 2;
+  else if (lastTemp >= DHT_TEMP_WARN || lastHum >= DHT_HUM_WARN) dhtLevel = 1;
 
   if (sw420Triggered) {
     if (!lastSw420Triggered) {

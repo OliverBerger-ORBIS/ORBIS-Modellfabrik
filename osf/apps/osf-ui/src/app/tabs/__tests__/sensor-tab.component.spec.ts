@@ -270,17 +270,18 @@ describe('SensorTabComponent', () => {
   });
 
   describe('DHT11 (temp/humidity)', () => {
-    it('should detect DHT alarm (temp >= 35 or humidity >= 90)', () => {
+    it('should detect DHT alarm (temp >= 35 or humidity >= 85)', () => {
       expect(component.isDhtAlarm({ temperature: 35, humidity: 50 })).toBe(true);
-      expect(component.isDhtAlarm({ temperature: 30, humidity: 90 })).toBe(true);
+      expect(component.isDhtAlarm({ temperature: 30, humidity: 85 })).toBe(true);
       expect(component.isDhtAlarm({ temperature: 32, humidity: 82 })).toBe(false);
     });
-    it('should detect DHT warning (temp 30–35 or humidity 80–90)', () => {
-      expect(component.isDhtWarning({ temperature: 32, humidity: 82 })).toBe(true);
+    it('should detect DHT warning (temp 30–35 or humidity 60–84%)', () => {
+      expect(component.isDhtWarning({ temperature: 32, humidity: 70 })).toBe(true);
       expect(component.isDhtWarning({ temperature: 30, humidity: 50 })).toBe(true);
-      expect(component.isDhtWarning({ temperature: 25, humidity: 85 })).toBe(true);
+      expect(component.isDhtWarning({ temperature: 25, humidity: 84 })).toBe(true);
       expect(component.isDhtWarning({ temperature: 22, humidity: 45 })).toBe(false);
-      expect(component.isDhtWarning({ temperature: 35, humidity: 90 })).toBe(false);  // alarm, not warning
+      expect(component.isDhtWarning({ temperature: 25, humidity: 85 })).toBe(false); // alarm
+      expect(component.isDhtWarning({ temperature: 35, humidity: 50 })).toBe(false); // alarm (temp)
     });
   });
 });

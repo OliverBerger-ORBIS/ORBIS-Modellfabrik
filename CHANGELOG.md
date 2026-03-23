@@ -6,6 +6,21 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-03-23
+
+**Patch: Sensor-Tab DHT-Schwellen an Arduino v1.1.1, Doku/Sprint.**
+
+### Fixed
+- **Arduino R4 Multi-Sensor (Sketch v1.1.1):** `dhtLevel` wird jedes Loop aus den letzten DHT-Werten berechnet (verhindert kurzes Grün der Ampel trotz hoher Luftfeuchte zwischen DHT-Polls). **Luftfeuchte-Schwellen:** Warn **60 %**, Alarm **85 %** (vorher 80 % / 90 %).
+
+### Changed
+- **Sensor-Tab (OSF-UI):** DHT-Rahmenfarben (Warnung/Alarm) nutzen dieselben Grenzwerte wie der Sketch (30 °C / 35 °C, 60 % / 85 %); Konstanten kommentiert und mit `.ino` abgeglichen.
+- **Dokumentation:** [arduino-r4-multisensor.md](docs/05-hardware/arduino-r4-multisensor.md) – Verweis auf UI-Sync und v1.1.1-Schwellen.
+- **Sprint 18:** Tasks zur **Messe-Verifikation** ergänzt (Kamera `/j1/txt/1/i/cam` / DPS-TXT, AGV DPS→HBW Live-Fehlversuch 23.03.).
+
+### Notes
+- **Kamera Live:** keine OSF-Änderung zur MQTT-Quelle; Prüfung Publisher DPS-TXT siehe Sprint und [sensor-tab-camera-live-loading-2026-03.md](docs/07-analysis/sensor-tab-camera-live-loading-2026-03.md).
+
 ## [1.0.0] - 2026-03-22
 
 **Erstes Major-Release (LogiMAT Messe-Referenz).**

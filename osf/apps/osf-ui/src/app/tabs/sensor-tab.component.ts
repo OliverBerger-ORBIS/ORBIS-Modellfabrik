@@ -67,6 +67,12 @@ export class SensorTabComponent implements OnInit, OnDestroy {
   readonly gaugeCenterX = 110;
   readonly gaugeCenterY = 95;
 
+  /** DHT11 thresholds – keep in sync with `integrations/Arduino/OSF_MultiSensor_R4WiFi/OSF_MultiSensor_R4WiFi.ino` */
+  private readonly dhtTempWarnC = 30;
+  private readonly dhtTempDangerC = 35;
+  private readonly dhtHumidityWarnPercent = 60;
+  private readonly dhtHumidityDangerPercent = 85;
+
   readonly sensorHeadingIcon = 'assets/svg/ui/heading-sensors.svg';
   readonly cameraHeadingIcon = 'assets/svg/ui/heading-camera.svg';
   stepSize = 10;
@@ -418,20 +424,24 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     return this.sw420Level(vibration) === 'red';
   }
 
-  /** Alarm state for highlighting (temp >= 35°C or humidity >= 90%). */
+  /** Alarm state for highlighting (temp >= danger or humidity >= danger %) – matches Arduino. */
   isDhtAlarm(dht: Dht11StatePayload | null): boolean {
     if (!dht) return false;
     const t = dht.temperature ?? 0;
     const h = dht.humidity ?? 0;
-    return t >= 35 || h >= 90;
+    return t >= this.dhtTempDangerC || h >= this.dhtHumidityDangerPercent;
   }
 
-  /** Warning state (temp 30–35°C or humidity 80–90%) – orange border, consistent with MPU/Gas. */
+  /** Warning state – orange border; humidity warn/danger bands match Arduino. */
   isDhtWarning(dht: Dht11StatePayload | null): boolean {
     if (!dht) return false;
     const t = dht.temperature ?? 0;
     const h = dht.humidity ?? 0;
-    return (t >= 30 && t < 35) || (h >= 80 && h < 90);
+    if (this.isDhtAlarm(dht)) return false;
+    return (
+      (t >= this.dhtTempWarnC && t < this.dhtTempDangerC) ||
+      (h >= this.dhtHumidityWarnPercent && h < this.dhtHumidityDangerPercent)
+    );
   }
 
   /** Flame: alarm only (binary from sensor). No warning level. */
