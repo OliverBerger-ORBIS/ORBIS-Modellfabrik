@@ -10,7 +10,7 @@ interface FtsOrderPayload {
   nodes?: Array<{ id?: string; action?: { id?: string; type?: string }; linkedEdges?: string[] }>;
 }
 
-const FTS_SERIALS_FALLBACK = ['5iO4', 'IeJ4'];
+const FTS_SERIALS_FALLBACK = ['5iO4', 'leJ4'];
 
 /**
  * Derives orderId + stepId → ftsSerial mapping from fts/v1/ff/+/order messages.

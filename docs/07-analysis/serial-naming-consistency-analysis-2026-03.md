@@ -2,7 +2,7 @@
 
 **Datum:** 2026-03  
 **Kontext:** Zweite AGV-Integration, Codebase-Review  
-**Ziel:** Einheitliche Bezeichnung für Geräte-Identifikatoren (5iO4, IeJ4, SVR4H73275, etc.)
+**Ziel:** Einheitliche Bezeichnung für Geräte-Identifikatoren (5iO4, leJ4, SVR4H73275, etc.)
 
 ---
 

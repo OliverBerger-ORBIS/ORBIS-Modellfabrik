@@ -336,7 +336,7 @@
     {
       "id": "AGV-2",
       "label": "AGV-2",
-      "serial": "IeJ4",
+      "serial": "leJ4",
       "icon": "FTS",
       "capacity": 1,
       "current_position": { "x": 100, "y": 150 },

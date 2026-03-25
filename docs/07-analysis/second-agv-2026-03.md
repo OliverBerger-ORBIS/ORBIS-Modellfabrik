@@ -1,7 +1,9 @@
-# Zweites AGV (IeJ4) – Implementierung & Referenz
+# Zweites AGV (leJ4) – Implementierung & Referenz
 
 **Sprint:** 17 | **Stand:** März 2026  
-**Kontext:** LogiMAT-Vorbereitung, zweites FTS mit MQTT-Serial **`IeJ4`** (Ersatzgerät; zuvor jp93).
+**Kontext:** LogiMAT-Vorbereitung, zweites FTS mit MQTT-Serial **`leJ4`** (Ersatzgerät; zuvor jp93).
+
+**Serial-Schreibweise:** Offiziell **`leJ4`** – erstes Zeichen = **kleines L** (`U+006C`), nicht großes **I** (`U+0049`). Fälschlich **`IeJ4`** in Layout/Pairing führt zu keinem Match mit `fts/v1/ff/leJ4/…` und Placeholder-Zeilen in der UI.
 
 ---
 
@@ -12,9 +14,9 @@
 | **AGV-Tab** | Dropdown AGV-1/AGV-2; beide AGVs im Shopfloor sichtbar; Status/Battery/Loads/Commands pro ausgewähltem AGV |
 | **Shopfloor** | Beide AGVs mit Farben (AGV-1 orange, AGV-2 gelb) – im AGV-Tab und Presentation-Tab (DR-24) |
 | **Shopfloor-Tab** | Layout-Section ohne AGV-Overlay (`showFtsOverlay=false`); Transport-Rows pro AGV mit Dock/Charge |
-| **Track & Trace** | WorkpieceHistoryService dynamisch für beide Serials; Fixtures mit IeJ4 |
-| **Fixtures** | `storage_blue_agv2` (nur IeJ4), `storage_blue_parallel` (beide AGVs) |
-| **Layout** | `shopfloor_layout.json` – `fts`-Array mit 5iO4 (AGV-1), IeJ4 (AGV-2) |
+| **Track & Trace** | WorkpieceHistoryService dynamisch für beide Serials; Fixtures mit leJ4 |
+| **Fixtures** | `storage_blue_agv2` (nur leJ4), `storage_blue_parallel` (beide AGVs) |
+| **Layout** | `shopfloor_layout.json` – `fts`-Array mit 5iO4 (AGV-1), leJ4 (AGV-2) |
 
 ---
 

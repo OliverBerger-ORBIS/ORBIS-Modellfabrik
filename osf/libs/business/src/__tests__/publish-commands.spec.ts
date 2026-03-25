@@ -523,16 +523,16 @@ test('simulateDanger with ftsSerials publishes FTS reset to each', async () => {
   const { streams, publishLog } = createGateway();
   const business = createBusiness(streams);
 
-  const result = await business.simulateDanger([], { ftsSerials: ['5iO4', 'IeJ4'] });
+  const result = await business.simulateDanger([], { ftsSerials: ['5iO4', 'leJ4'] });
 
   assert.equal(publishLog.length, 3); // park + 2× fts reset (no cancel when empty)
   assert.equal(publishLog[0]?.topic, 'ccu/set/park');
   assert.equal(publishLog[1]?.topic, 'fts/v1/ff/5iO4/instantAction');
-  assert.equal(publishLog[2]?.topic, 'fts/v1/ff/IeJ4/instantAction');
+  assert.equal(publishLog[2]?.topic, 'fts/v1/ff/leJ4/instantAction');
 
   assert.equal(result.sentTopics.length, 3);
   assert.equal(result.sentTopics[1]?.topic, 'fts/v1/ff/5iO4/instantAction');
-  assert.equal(result.sentTopics[2]?.topic, 'fts/v1/ff/IeJ4/instantAction');
+  assert.equal(result.sentTopics[2]?.topic, 'fts/v1/ff/leJ4/instantAction');
 
   const ftsPayload = publishLog[1]?.payload as { serialNumber: string; actions: { actionType: string }[] };
   assert.equal(ftsPayload?.serialNumber, '5iO4');

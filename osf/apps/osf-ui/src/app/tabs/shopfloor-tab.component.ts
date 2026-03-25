@@ -437,18 +437,6 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       kind: m.moduleType === 'FTS' ? 'transport' : 'module',
     }));
 
-    // Fallback: if no FTS in layout (e.g. old layout), use getAgvOptions or add 5iO4 for backward compatibility
-    if (!this.moduleRegistry.some((e) => e.type === 'FTS')) {
-      const agvOpts = this.mappingService.getAgvOptions();
-      if (agvOpts.length > 0) {
-        agvOpts.forEach((opt) =>
-          this.moduleRegistry.push({ id: opt.serial, type: 'FTS', kind: 'transport' })
-        );
-      } else {
-        this.moduleRegistry.push({ id: '5iO4', type: 'FTS', kind: 'transport' });
-      }
-    }
-
     this.moduleRegistryOrder = this.moduleRegistry.map((entry) => entry.id);
     this.moduleRegistryLookup = new Map<string, ModuleRegistryEntry>(
       this.moduleRegistry.map((entry) => [entry.id, entry])
@@ -936,6 +924,17 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     };
   }
 
+  /**
+   * Only surface live transports whose serial is listed as FTS in `shopfloor_layout.json` `fts[]`.
+   * Excludes stale pairing keys (e.g. hardware swap) while layout lists AGV-1 / AGV-2 only.
+   */
+  private shouldIncludeLiveTransport(transportId: string): boolean {
+    if (!this.mappingService.isInitialized()) {
+      return true;
+    }
+    return this.mappingService.getModuleTypeFromSerial(transportId) === 'FTS';
+  }
+
   private buildRows(state: ModuleOverviewState): ModuleRow[] {
     const rows = new Map<string, ModuleRow>();
 
@@ -948,6 +947,9 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     });
 
     Object.values(state.transports).forEach((transport) => {
+      if (!this.shouldIncludeLiveTransport(transport.id)) {
+        return;
+      }
       rows.set(transport.id, this.createTransportRow(transport));
     });
 
@@ -1163,16 +1165,19 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
           }
         });
         
-        // Add transport (FTS) statuses
+        // Add transport (FTS) statuses (layout-configured FTS only; same filter as module table)
         Object.values(overview.transports).forEach((transport) => {
+          if (!this.shouldIncludeLiveTransport(transport.id)) {
+            return;
+          }
           const status = {
             connected: transport.connected,
             availability: transport.availability,
           };
-          
+
           // Map by serial-Id (primary key)
           statusMap.set(transport.id, status);
-          
+
           // Also map by "FTS" for cell.name matching
           statusMap.set('FTS', status);
           statusMap.set('fts', status);

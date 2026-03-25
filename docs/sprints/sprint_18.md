@@ -9,7 +9,7 @@
 
 **Kurz vor Messe (wenig Zeit, kein Fix-Roulette):** [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md)
 
-**Release:** **`v1.0.0`** – Messe-/Referenz-Tag. **`v1.0.1`** (2026-03-23) – DHT/UI-Sync, Messe-Verifikation-Tasks. **`v1.0.2`** (2026-03-25) – Shopfloor **DSP Action** live (`dsp/drill/action`, `dsp/aiqs/action`), **AGV-2** Serial **IeJ4**, Arduino Messe-WLAN/Doku. **`v1.0.3`** (2026-03-25) – Shopfloor **FTS/AGV-2** Tests neutral (nur Layout-Serien in `fts[]`). **Deployment RPi:** `orbis-osf-ui:1.0.3`. Smoke: [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md).
+**Release:** **`v1.0.0`** – Messe-/Referenz-Tag. **`v1.0.1`** (2026-03-23) – DHT/UI-Sync, Messe-Verifikation-Tasks. **`v1.0.2`** (2026-03-25) – Shopfloor **DSP Action** live (`dsp/drill/action`, `dsp/aiqs/action`), **AGV-2** Serial **leJ4**, Arduino Messe-WLAN/Doku. **`v1.0.3`** (2026-03-25) – Shopfloor **FTS/AGV-2** Tests neutral (nur Layout-Serien in `fts[]`). **`v1.0.4`** (2026-03-25) – **AGV-2** kanonisch **`leJ4`** (L nicht I); Shopfloor zeigt nur Layout-FTS. **Letzter RPi-Deploy:** `orbis-osf-ui:1.0.3`; lokal: **`npm run serve:osf-ui`** → Dashboard **v1.0.4**. Smoke: [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md).
 
 ---
 
@@ -114,8 +114,8 @@
 
 - [Arduino R4 Multi-Sensor](../05-hardware/arduino-r4-multisensor.md)
 - [Use-Case Bibliothek](../02-architecture/use-case-library.md)
-- [Zweites AGV (IeJ4)](../07-analysis/second-agv-2026-03.md)
+- [Zweites AGV (leJ4)](../07-analysis/second-agv-2026-03.md)
 
 ---
 
-*Letzte Aktualisierung: 25.03.2026 (Release **v1.0.2**: DSP-Action live, AGV-2 IeJ4, Changelog; vgl. 23.03. v1.0.1)*
+*Letzte Aktualisierung: 25.03.2026 (Release **v1.0.4**: AGV-2 `leJ4`, Shopfloor nur Layout-FTS; RPi zuletzt 1.0.3)*

@@ -347,12 +347,12 @@ describe('WorkpieceHistoryService', () => {
     });
   });
 
-  describe('multi-AGV (5iO4 and IeJ4)', () => {
+  describe('multi-AGV (5iO4 and leJ4)', () => {
     it('should subscribe to FTS state topics for both AGVs when layout has two FTS', () => {
       const mappingMock = {
         getAgvOptions: jest.fn(() => [
           { serial: '5iO4', label: 'AGV-1' },
-          { serial: 'IeJ4', label: 'AGV-2' },
+          { serial: 'leJ4', label: 'AGV-2' },
         ]),
       };
 
@@ -379,7 +379,7 @@ describe('WorkpieceHistoryService', () => {
       svc.initialize('mock');
 
       expect(mm.getLastMessage).toHaveBeenCalledWith('fts/v1/ff/5iO4/state');
-      expect(mm.getLastMessage).toHaveBeenCalledWith('fts/v1/ff/IeJ4/state');
+      expect(mm.getLastMessage).toHaveBeenCalledWith('fts/v1/ff/leJ4/state');
 
       svc.ngOnDestroy();
     });

@@ -45,6 +45,7 @@ const createComponent = () => {
 
   const moduleNameServiceStub = {
     getModuleDisplayText: jest.fn((type: string) => `${type.toUpperCase()} (Test)`),
+    getModuleFullName: jest.fn((type: string) => `${type.toUpperCase()} Full Name`),
     getModuleDisplayName: jest.fn((type: string) => ({
       fullName: `${type.toUpperCase()} Station`,
       shortName: type.toUpperCase(),
@@ -82,6 +83,8 @@ const createComponent = () => {
     initializeLayout: jest.fn(),
     getAllModules: jest.fn(() => []),
     getAgvLabel: jest.fn((_serial: string) => null),
+    isInitialized: jest.fn(() => false),
+    getModuleTypeFromSerial: jest.fn(() => null),
   } as unknown as ShopfloorMappingService;
 
   const agvRouteServiceStub = {
@@ -148,6 +151,43 @@ describe('ModuleTabComponent registry metadata', () => {
 
     const row = (component as any).createModuleRow(moduleStatus);
     expect(row.registryActive).toBe(false);
+  });
+
+  it('buildRows omits transports not in layout fts when mapping is initialized', () => {
+    const component = createComponent();
+    (component as any).mappingService = {
+      isInitialized: () => true,
+      getModuleTypeFromSerial: (id: string) => (id === 'leJ4' || id === '5iO4' ? 'FTS' : null),
+      getAgvLabel: (id: string) => (id === 'leJ4' ? 'AGV-2' : id === '5iO4' ? 'AGV-1' : null),
+    };
+    (component as any).moduleRegistry = [
+      { id: '5iO4', type: 'FTS', kind: 'transport' },
+      { id: 'leJ4', type: 'FTS', kind: 'transport' },
+    ];
+    (component as any).moduleRegistryLookup = new Map([
+      ['5iO4', { id: '5iO4', type: 'FTS', kind: 'transport' }],
+      ['leJ4', { id: 'leJ4', type: 'FTS', kind: 'transport' }],
+    ]);
+    (component as any).moduleRegistryOrder = ['5iO4', 'leJ4'];
+
+    const baseTransport = {
+      connected: false,
+      availability: 'READY' as const,
+      messageCount: 0,
+      lastUpdate: 'N/A',
+    };
+    const state: ModuleOverviewState = {
+      modules: {},
+      transports: {
+        stray: { id: 'stray', ...baseTransport, connected: true },
+        leJ4: { id: 'leJ4', ...baseTransport, connected: true, messageCount: 3 },
+      },
+    };
+
+    const rows = (component as any).buildRows(state) as Array<{ id: string; kind: string }>;
+    const transportIds = rows.filter((r) => r.kind === 'transport').map((r) => r.id);
+    expect(transportIds).toEqual(['5iO4', 'leJ4']);
+    expect(transportIds).not.toContain('stray');
   });
 });
 

@@ -291,14 +291,14 @@ describe('ShopfloorMappingService', () => {
         modules_by_serial: {},
         fts: [
           { id: 'fts-1', label: 'AGV-1', serial: '5iO4' },
-          { id: 'fts-2', label: 'AGV-2', serial: 'IeJ4' },
+          { id: 'fts-2', label: 'AGV-2', serial: 'leJ4' },
         ],
       });
       service.initializeLayout(config);
 
       expect(service.getAgvColor('5iO4')).toBe(ORBIS_COLORS.agv.agv1);
-      expect(service.getAgvColor('IeJ4')).toBe(ORBIS_COLORS.agv.agv1);
-      expect(service.getAgvColor('5iO4')).toBe(service.getAgvColor('IeJ4'));
+      expect(service.getAgvColor('leJ4')).toBe(ORBIS_COLORS.agv.agv1);
+      expect(service.getAgvColor('5iO4')).toBe(service.getAgvColor('leJ4'));
       // Serial not listed in fts[] → no label / grey (not treated as a configured AGV)
       expect(service.getAgvLabel('unknown-fts-serial')).toBeNull();
       expect(service.getAgvColor('unknown-fts-serial')).toBe(ORBIS_COLORS.orbisGrey.medium);
