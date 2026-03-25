@@ -64,7 +64,7 @@
 *Detail-Tasks werden extern verwaltet. Wesentliche Checkpoints:*
 - [ ] **Animation:** DSP-Architecture und Use-Cases (Check!)
 - [ ] **OBS-Präsentation:** Startklar für Demos (Check!)
-- [x] **Zweites FTS/AGV:** Unterstützung eines zweiten FTS (Serial jp93) – umgesetzt.
+- [x] **Zweites FTS/AGV:** Unterstützung eines zweiten FTS (Serial **IeJ4**, Ersatz für jp93) – umgesetzt.
   - **Erreicht:** Zweites AGV in allen Tabs; AGV-Tab und Presentation-Tab mit Dropdown pro AGV; Darstellung beider AGVs im Shopfloor; AGV-1/AGV-2 farblich unterscheidbar (orange/gelb inkl. Hervorhebung); Fixtures storage_blue_agv2, storage_blue_parallel; DR-24 Shopfloor-Highlight-Farben
   - *(E2E-Verifikation → siehe E2E-Tests (manuell): Zwei AGVs)*
 - [ ] **Analyse/Klärung Stillstand bei zwei AGVs im mixed-Modus:** Zur Info. Nicht unbedingt messerelevant – entweder keine mixed-Szenarien oder nur ein AGV aktiv.
@@ -146,7 +146,7 @@
 ---
 
 ## 📎 Referenzen
-- [Zweites AGV (jp93)](../07-analysis/second-agv-2026-03.md)
+- [Zweites AGV (IeJ4)](../07-analysis/second-agv-2026-03.md)
 - [Use-Case Bibliothek](../02-architecture/use-case-library.md)
 - [Arduino R4 Multi-Sensor](../05-hardware/arduino-r4-multisensor.md)
 - [Alarm → Fabrik-Stop (CCU-Commands)](../07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md)

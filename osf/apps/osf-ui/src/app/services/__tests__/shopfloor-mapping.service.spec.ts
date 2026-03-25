@@ -291,14 +291,14 @@ describe('ShopfloorMappingService', () => {
         modules_by_serial: {},
         fts: [
           { id: 'fts-1', label: 'AGV-1', serial: '5iO4' },
-          { id: 'fts-2', label: 'AGV-2', serial: 'jp93' },
+          { id: 'fts-2', label: 'AGV-2', serial: 'IeJ4' },
         ],
       });
       service.initializeLayout(config);
 
       expect(service.getAgvColor('5iO4')).toBe(ORBIS_COLORS.agv.agv1);
-      expect(service.getAgvColor('jp93')).toBe(ORBIS_COLORS.agv.agv1);
-      expect(service.getAgvColor('5iO4')).toBe(service.getAgvColor('jp93'));
+      expect(service.getAgvColor('IeJ4')).toBe(ORBIS_COLORS.agv.agv1);
+      expect(service.getAgvColor('5iO4')).toBe(service.getAgvColor('IeJ4'));
     });
 
     it('should return grey for unknown serial', () => {

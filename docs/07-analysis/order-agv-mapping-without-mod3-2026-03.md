@@ -48,7 +48,7 @@ if (step.type === 'NAVIGATION') {
 
 - `(orderId, stepId)` → `ftsSerialNumber`
 - `stepId` = `productionSteps[].id` des NAVIGATION-Steps
-- `ftsSerialNumber` = z.B. `5iO4`, `jp93` (für AGV-1, AGV-2)
+- `ftsSerialNumber` = z.B. `5iO4`, `IeJ4` (für AGV-1, AGV-2)
 
 ---
 
@@ -172,7 +172,7 @@ if (step.type === 'NAVIGATION') {
    - Bei NAVIGATION-Steps: nutzt `step.serialNumber ?? service.getFtsSerialForStep(...)` für Anzeige
 
 3. **MessageMonitor / Topic-Subscription:**
-   - `getLastMessage(topic)` arbeitet mit exaktem Topic-Match (kein Wildcard). Pro FTS-Serial muss separat subscribet werden: `fts/v1/ff/5iO4/order`, `fts/v1/ff/jp93/order`.
+   - `getLastMessage(topic)` arbeitet mit exaktem Topic-Match (kein Wildcard). Pro FTS-Serial muss separat subscribet werden: `fts/v1/ff/5iO4/order`, `fts/v1/ff/IeJ4/order`.
    - FTS-Seriennummern können aus Konfiguration stammen (z. B. AGV-Mapping, `docs/05-hardware/arduino-r4-multisensor.md` oder second-agv-Referenz) oder dynamisch aus `getTopics()` gefiltert werden (Topics mit Pattern `fts/v1/ff/*/order`), sobald mindestens eine Message angekommen ist.
 
 ### FTS-Order-Payload (Referenz)
@@ -204,7 +204,7 @@ Die NAVIGATION-Step-Id steht im **letzten** Node (`action.id` des DOCK-Actions).
 
 ### Track & Trace
 
-- **Shopfloor Events (linke Spalte):** Events werden aus FTS-State und Modul-State gebaut. Jedes Event hat eine Quelle (Topic): `fts/v1/ff/5iO4/state` oder `fts/v1/ff/jp93/state` → Serial ist im Topic bzw. im Payload. `WorkpieceHistoryService` setzt `moduleName = getAgvLabel(moduleSerialId)` für FTS-Events. **AGV-1/AGV-2 wird bereits angezeigt** – keine Änderung nötig.
+- **Shopfloor Events (linke Spalte):** Events werden aus FTS-State und Modul-State gebaut. Jedes Event hat eine Quelle (Topic): `fts/v1/ff/5iO4/state` oder `fts/v1/ff/IeJ4/state` → Serial ist im Topic bzw. im Payload. `WorkpieceHistoryService` setzt `moduleName = getAgvLabel(moduleSerialId)` für FTS-Events. **AGV-1/AGV-2 wird bereits angezeigt** – keine Änderung nötig.
 - **Order Context (rechte Spalte):** Zeigt Order-Metadaten (orderId, Status, ERP-Links). Keine Darstellung von Steps mit AGV-Zuordnung – das ist bewusst so (Order-Ebene, nicht Step-Ebene).
 
 **Fazit:** Track & Trace zeigt FTS/AGV pro Event schon korrekt (Quelle = FTS-Topic). Option A ergänzt die fehlende Zuordnung nur dort, wo sie aus **ccu/order/active** kommt: im **Orders Tab** bei den Steps. Zusätzlich kann die **Shopfloor Preview** im OrderCard (Badge bei NAVIGATION) von „FTS“ auf „AGV-1“/„AGV-2“ umgestellt werden, sobald `effectiveSerial` aus dem Assignment-Service verfügbar ist.

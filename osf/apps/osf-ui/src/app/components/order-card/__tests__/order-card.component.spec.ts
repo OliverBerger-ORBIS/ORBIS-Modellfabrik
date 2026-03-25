@@ -63,7 +63,7 @@ describe('OrderCardComponent', () => {
         {
           provide: ShopfloorMappingService,
           useValue: {
-            getAgvLabel: (serial: string) => (serial === '5iO4' ? 'AGV-1' : serial === 'jp93' ? 'AGV-2' : null),
+            getAgvLabel: (serial: string) => (serial === '5iO4' ? 'AGV-1' : serial === 'IeJ4' ? 'AGV-2' : null),
           },
         },
         {

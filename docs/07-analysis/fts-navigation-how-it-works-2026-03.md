@@ -88,7 +88,7 @@ Die **CCU (Central Control Unit)** im APS-CCU-Backend.
 | **AIQS → HBW** | AGV am AIQS | `fts/v1/ff/{serial}/order` | SVR3QA0022 (HBW) |
 | **→ Intersection 2** | Bekannte AGV-Position | `fts/v1/ff/{serial}/order` | 2 (Intersection 2) |
 
-**Serial:** Verwendet wird die aktuell ausgewählte AGV-Serial (`selectedAgvSerial$`) – also AGV-1 (5iO4) oder AGV-2 (jp93) je nach Dropdown. Kein hart codiertes 5iO4 in den Command-Payloads.
+**Serial:** Verwendet wird die aktuell ausgewählte AGV-Serial (`selectedAgvSerial$`) – also AGV-1 (5iO4) oder AGV-2 (IeJ4) je nach Dropdown. Kein hart codiertes 5iO4 in den Command-Payloads.
 
 ### 3.2 Technische Umsetzung
 

@@ -93,7 +93,7 @@ describe('AgvTabComponent', () => {
 
     const mappingServiceMock = {
       getAgvOptions: jest.fn(() => [{ serial: '5iO4', label: 'AGV-1' }] as const),
-      getAgvLabel: jest.fn((serial: string) => (serial === '5iO4' ? 'AGV-1' : serial === 'jp93' ? 'AGV-2' : null)),
+      getAgvLabel: jest.fn((serial: string) => (serial === '5iO4' ? 'AGV-1' : serial === 'IeJ4' ? 'AGV-2' : null)),
     };
 
     const ftsRouteServiceMock = {

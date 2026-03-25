@@ -30,7 +30,7 @@ Im Sketch oben: `#define WIFI_MODE WIFI_MODE_DAHEIM` oder `WIFI_MODE_ORBIS`.
 | Modus | WLAN | Arduino-IP | Gateway | MQTT-Broker |
 |-------|------|------------|---------|-------------|
 | **DAHEIM** | Heimnetz (SSID/Passwort anpassen) | 192.168.178.95 | 192.168.178.1 | 192.168.178.65 (Mac) |
-| **ORBIS** | ORBIS-4711 | 192.168.0.95 | 192.168.0.1 | 192.168.0.100 |
+| **ORBIS** | ORBIS-4C57 (Messe LogiMAT 2026; vgl. [credentials](../credentials.md)) | 192.168.0.95 | 192.168.0.1 | 192.168.0.100 |
 
 Nur diese eine Zeile ändern, neu kompilieren, flashen. Bei DAHEIM: Arduino-IP in der Fritz!Box reservieren (z.B. .95).
 
@@ -141,12 +141,12 @@ Ohne Common Ground kann die Relais-Logik fehlschlagen.
 
 **Publish-Logik:** Bei Zustandsänderung sofort; bei Idle alle **5 s** als Heartbeat (MQTT_HEARTBEAT_INTERVAL). Schnellere UI-Aktualisierung als bei 15 s, Overhead vernachlässigbar.
 
-**Sketch-Versionierung:** SemVer im Header (`#define SKETCH_VERSION "1.1.0"`). Bei jedem Deployment Version anpassen. Serial Monitor zeigt „Sketch v1.1.0“ beim Start. Gängige Praxis: Version im Code, ggf. Git-Tag für Releases.
+**Sketch-Versionierung:** SemVer im Header (`#define SKETCH_VERSION "1.1.x"`). Bei jedem Deployment Version anpassen. Serial Monitor zeigt „Sketch v1.1.x“ beim Start. Gängige Praxis: Version im Code, ggf. Git-Tag für Releases.
 
 **Deployment-Checkliste:**
 1. `SKETCH_VERSION` im Sketch-Header anpassen (z.B. 1.1.0 → 1.2.0)
 2. Arduino IDE: Sketch öffnen, Board „Arduino Uno R4 WiFi“, Port wählen
-3. Upload, Serial Monitor (9600): „Sketch v1.1.0“ prüfen
+3. Upload, Serial Monitor (9600): „Sketch v1.1.x“ prüfen
 4. MQTT: `mosquitto_sub -h <broker> -t "osf/arduino/#" -v` – alle Sensoren melden?
 
 ---

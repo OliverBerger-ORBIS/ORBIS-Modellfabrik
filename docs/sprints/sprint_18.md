@@ -9,7 +9,7 @@
 
 **Kurz vor Messe (wenig Zeit, kein Fix-Roulette):** [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md)
 
-**Release:** **`v1.0.0`** – Messe-/Referenz-Tag. **`v1.0.1`** (2026-03-23) – Sensor-Tab DHT-Schwellen an Arduino **v1.1.1** angeglichen, Sprint-Tasks Messe-Verifikation (Kamera/AGV). **Deployment RPi:** `orbis-osf-ui:1.0.1`. Smoke: [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md).
+**Release:** **`v1.0.0`** – Messe-/Referenz-Tag. **`v1.0.1`** (2026-03-23) – DHT/UI-Sync, Messe-Verifikation-Tasks. **`v1.0.2`** (2026-03-25) – Shopfloor **DSP Action** live (`dsp/drill/action`, `dsp/aiqs/action`), **AGV-2** Serial **IeJ4**, Arduino Messe-WLAN/Doku. **Deployment RPi:** `orbis-osf-ui:1.0.2`. Smoke: [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md).
 
 ---
 
@@ -34,7 +34,7 @@
 - [x] **Fixture-Playback im Mock:** Fixtures in Production-Build aufgenommen (project.json). Mock-Fixture-Playback funktioniert auf RPi – Demo ohne Hardware, vorbereitete Sessions. Live-Modus unverändert. DR-19 ergänzt.
 - [x] **Flammensensor-Anzeige (Sensor-Tab):** Darstellung von linearer auf logarithmische Skala umstellen.
 - [x] **Flammensensor Alarm-Werte:** Live-Verifikation **ORBIS-WLAN** (OSF-UI Live): Werte aktualisieren sich; Alarmfall plausibel; **Sirene** bei aktivem UC-05-Toggle.
-- [x] **Arduino Sketch Deployment:** **v1.1.0** auf R4; `WIFI_MODE_ORBIS`, Broker `192.168.0.100`. **Daheim** → **ORBIS** durchlaufen; Live-Daten ok. **Offen vor LogiMAT:** Messe-**SSID `ORBIS-…`** im Sketch (`#else`-Block) anpassen, neu flashen. Doku: [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md) §4.
+- [x] **Arduino Sketch Deployment:** **v1.1.2** – Messe-WLAN **`ORBIS-4C57`** im `#else`-Block; `WIFI_MODE_ORBIS`, Broker `192.168.0.100`. **Daheim** → **ORBIS** durchlaufen; Live-Daten ok. **Vor Messe:** neu flashen. Doku: [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md) §4, [credentials.md](../credentials.md) WLAN.
 - [x] **UC-05 Live-Demo (Gefahrensimulation):** ~~Umsetzbar wie vorgestellt~~ – **CCU-Limitation:** `ccu/set/park` + `ccu/order/cancel` erreichen *keinen* vollständigen Sofort-Stop. IN_PROGRESS-Orders laufen weiter, laufende Stationen (z.B. AIQS) werden nicht abgebrochen. **Nach Stopp zwingend:** Reset + AGV-dock (manual-intervention). Button „Gefahr simulieren“ sendet Park+Cancel+FTS-Reset – Demo zeigt Sent Events; echter Prozess-Anhalt nur bei ENQUEUED. Siehe [alarm-fabrik-stop](../07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md).
 - [x] **UC-01 Anpassung:** Zusammenführung der Track-&-Trace-Kacheln (Konzept/Live) gemäß DR-22 – `TrackTraceUseCaseComponent`, nur `dsp/use-case/track-trace` mit `?tab=concept` / `?tab=live` (keine `…-genealogy`-Route mehr), DSP-Liste „Concept“ / „Live Demo“.
 
@@ -114,8 +114,8 @@
 
 - [Arduino R4 Multi-Sensor](../05-hardware/arduino-r4-multisensor.md)
 - [Use-Case Bibliothek](../02-architecture/use-case-library.md)
-- [Zweites AGV (jp93)](../07-analysis/second-agv-2026-03.md)
+- [Zweites AGV (IeJ4)](../07-analysis/second-agv-2026-03.md)
 
 ---
 
-*Letzte Aktualisierung: 23.03.2026 (Release **v1.0.1**; Tasks Camera/AGV; DHT UI↔Arduino v1.1.1; RPi-Deploy `orbis-osf-ui:1.0.1`)*
+*Letzte Aktualisierung: 25.03.2026 (Release **v1.0.2**: DSP-Action live, AGV-2 IeJ4, Changelog; vgl. 23.03. v1.0.1)*

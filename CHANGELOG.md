@@ -6,6 +6,19 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-03-25
+
+**Patch: Shopfloor DSP-Action-Live-Update (DRILL/AIQS), AGV-2-Serial IeJ4.**
+
+### Fixed
+- **Shopfloor-Tab / Modul-Detail:** Farbkacheln **Current/Previous** für **DSP Action** aktualisieren sich jetzt **live**, wenn nach einer Modul-Aktion Nachrichten auf **`dsp/drill/action`** (DRILL) bzw. **`dsp/aiqs/action`** (AIQS) eintreffen. Zuvor nur Snapshot beim Öffnen des Moduls. **Unterstützte Befehle:** `changeLight` und `changeColor` (DRILL wie AIQS).
+
+### Changed
+- **AGV-2 (zweites FTS):** MQTT-Serial überall von **`jp93`** auf **`IeJ4`** (Ersatz-Hardware) – u. a. [shopfloor_layout.json](osf/apps/osf-ui/public/shopfloor/shopfloor_layout.json), Fallback FTS-Listen, Tests, Fixtures `storage_blue_agv2` / `storage_blue_parallel`, Doku ([second-agv-2026-03.md](docs/07-analysis/second-agv-2026-03.md)).
+
+### Notes
+- **Arduino / Messe-WLAN:** siehe Sketch **v1.1.2** und [credentials.md](docs/credentials.md) (`ORBIS-4C57`), falls mit ausgeliefert.
+
 ## [1.0.1] - 2026-03-23
 
 **Patch: Sensor-Tab DHT-Schwellen an Arduino v1.1.1, Doku/Sprint.**

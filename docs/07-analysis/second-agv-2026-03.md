@@ -1,7 +1,7 @@
-# Zweites AGV (jp93) – Implementierung & Referenz
+# Zweites AGV (IeJ4) – Implementierung & Referenz
 
 **Sprint:** 17 | **Stand:** März 2026  
-**Kontext:** LogiMAT-Vorbereitung, zweites FTS mit Serial jp93
+**Kontext:** LogiMAT-Vorbereitung, zweites FTS mit MQTT-Serial **`IeJ4`** (Ersatzgerät; zuvor jp93).
 
 ---
 
@@ -12,9 +12,9 @@
 | **AGV-Tab** | Dropdown AGV-1/AGV-2; beide AGVs im Shopfloor sichtbar; Status/Battery/Loads/Commands pro ausgewähltem AGV |
 | **Shopfloor** | Beide AGVs mit Farben (AGV-1 orange, AGV-2 gelb) – im AGV-Tab und Presentation-Tab (DR-24) |
 | **Shopfloor-Tab** | Layout-Section ohne AGV-Overlay (`showFtsOverlay=false`); Transport-Rows pro AGV mit Dock/Charge |
-| **Track & Trace** | WorkpieceHistoryService dynamisch für beide Serials; Fixtures mit jp93 |
-| **Fixtures** | `storage_blue_agv2` (nur jp93), `storage_blue_parallel` (beide AGVs) |
-| **Layout** | `shopfloor_layout.json` – `fts`-Array mit 5iO4 (AGV-1), jp93 (AGV-2) |
+| **Track & Trace** | WorkpieceHistoryService dynamisch für beide Serials; Fixtures mit IeJ4 |
+| **Fixtures** | `storage_blue_agv2` (nur IeJ4), `storage_blue_parallel` (beide AGVs) |
+| **Layout** | `shopfloor_layout.json` – `fts`-Array mit 5iO4 (AGV-1), IeJ4 (AGV-2) |
 
 ---
 
@@ -41,4 +41,4 @@
 
 ---
 
-*Konsolidiert aus second-agv-integration-analysis und second-agv-extensions-design*
+*Konsolidiert aus second-agv-integration-analysis und second-agv-extensions-design. Historische Analysen mit Topic `fts/v1/ff/jp93/…` beziehen sich auf die frühere Hardware.*

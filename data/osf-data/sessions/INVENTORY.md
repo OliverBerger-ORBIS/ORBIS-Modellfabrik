@@ -46,7 +46,7 @@
 |-------|------------------------|-------|
 | ccu/set/park | *(keine in aktuellen Logs)* | Fabrik-Park-Befehl (z.B. UC-05 Gefahrensimulation) |
 | ccu/order/cancel | *(bei Bedarf prüfen)* | Order-Abbruch |
-| fts/v1/ff/5iO4/state, fts/v1/ff/jp93/state | two-agvs*, agv-2*, agv-1* | AGV-1 (5iO4), AGV-2 (jp93) |
+| fts/v1/ff/5iO4/state, fts/v1/ff/IeJ4/state | two-agvs*, agv-2*, agv-1* | AGV-1 (5iO4), AGV-2 (IeJ4) |
 
 ---
 

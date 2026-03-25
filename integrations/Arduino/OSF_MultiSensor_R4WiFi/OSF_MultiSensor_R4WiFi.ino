@@ -1,14 +1,14 @@
 /*
  * Projekt: OSF Multi-Sensor – Arduino R4 WiFi
  * Sketch: OSF_MultiSensor_R4WiFi
- * Version: 1.1.1  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
+ * Version: 1.1.2  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
  * Hardware: Arduino Uno R4 WiFi, MPU-6050 (I2C), SW-420 (D11), DHT11 (D12), Flamme (A1), MQ-2 Gas (A0), 4-Ch Relais, 12V Ampel
  * Quelle: docs/05-hardware/arduino-r4-multisensor.md
  *
  * Sensoren: MPU-6050 + SW-420 + DHT11 + Flammensensor + MQ-2 Gas. Gemeinsame Ampel (OR-Logik).
  * USE_MQTT: 0 = nur Serial, 1 = MQTT über WiFi
  */
-#define SKETCH_VERSION "1.1.1"
+#define SKETCH_VERSION "1.1.2"
 #define USE_MQTT 1
 
 /** Relais-Logik: 1 = aktiv-niedrig (LOW=ein, typisch). 0 = aktiv-hoch (HIGH=ein, manche Module). */
@@ -46,7 +46,7 @@
   const char* MQTT_BROKER = "192.168.178.65";     // Mac mit Mosquitto
 #else
   // WLAN ORBIS – RPi/APS-Betrieb (credentials.md)
-  const char* WIFI_SSID = "ORBIS-4711";
+  const char* WIFI_SSID = "ORBIS-4C57";
   const char* WIFI_PASS = "49117837";
   IPAddress arduinoIP(192, 168, 0, 95);
   IPAddress gatewayIP(192, 168, 0, 1);

@@ -988,5 +988,28 @@ Payload:
       expect(result.messages).toEqual([]);
     });
   });
+
+  describe('DRILL DSP Action (getDrillActionData)', () => {
+    const DRILL_ACTION_TOPIC = 'dsp/drill/action';
+
+    it('should treat changeColor like changeLight for current/previous', () => {
+      const component = createComponent();
+      const messageMonitorStub = (component as any).messageMonitor as MessageMonitorService;
+
+      const mockHistory = [
+        { topic: DRILL_ACTION_TOPIC, payload: { command: 'changeLight', value: '#FF0000' }, timestamp: '2025-11-10T18:00:00Z' },
+        { topic: DRILL_ACTION_TOPIC, payload: { command: 'changeColor', value: '#00FF00' }, timestamp: '2025-11-10T18:01:00Z' },
+      ];
+      jest.spyOn(messageMonitorStub, 'getHistory').mockImplementation((topic: string) => {
+        if (topic === DRILL_ACTION_TOPIC) return mockHistory as any;
+        return [];
+      });
+
+      const result = (component as any).getDrillActionData();
+
+      expect(result.currentLight).toBe('#00FF00');
+      expect(result.previousLight).toBe('#FF0000');
+    });
+  });
 });
 

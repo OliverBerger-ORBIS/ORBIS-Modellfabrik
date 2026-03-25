@@ -95,7 +95,7 @@ export interface ParsedRoad {
 export interface ShopfloorFtsConfig {
   id: string;
   label: string;
-  /** MQTT Serial-ID (e.g. 5iO4, jp93). Used for topic subscription and command targeting. */
+  /** MQTT Serial-ID (e.g. 5iO4, IeJ4). Used for topic subscription and command targeting. */
   serial?: string;
   icon?: string;
   capacity?: number;

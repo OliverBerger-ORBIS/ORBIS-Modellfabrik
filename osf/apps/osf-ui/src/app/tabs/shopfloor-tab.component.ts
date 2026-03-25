@@ -72,6 +72,10 @@ const AIQS_STATE_TOPIC = `module/v1/ff/${AIQS_SERIAL}/state`;
 const AIQS_CONNECTION_TOPIC = `module/v1/ff/${AIQS_SERIAL}/connection`;
 const QUALITY_CHECK_TOPIC = '/j1/txt/1/i/quality_check';
 
+/** DSP → Modul: Ampel/Farbe (Detail-Tab Kacheln); Messages kommen nach Modul-Aktion. */
+const DSP_DRILL_ACTION_TOPIC = 'dsp/drill/action';
+const DSP_AIQS_ACTION_TOPIC = 'dsp/aiqs/action';
+
 // DPS/AIQS Types
 type ActionStateType = 'WAITING' | 'INITIALIZING' | 'RUNNING' | 'FINISHED' | 'FAILED' | string;
 type DpsActionCommandType = 'INPUT_RGB' | 'RGB_NFC' | 'PICK' | 'DROP' | string;
@@ -258,6 +262,8 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   private moduleOverviewSub?: Subscription;
   private dpsStateSub?: Subscription;
   private aiqsStateSub?: Subscription;
+  private drillDspActionSub?: Subscription;
+  private aiqsDspActionSub?: Subscription;
   
   // Accumulated action history (persists across state updates)
   private allDpsActions: DpsActionState[] = [];
@@ -513,6 +519,8 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     this.moduleOverviewSub?.unsubscribe();
     this.dpsStateSub?.unsubscribe();
     this.aiqsStateSub?.unsubscribe();
+    this.drillDspActionSub?.unsubscribe();
+    this.aiqsDspActionSub?.unsubscribe();
   }
 
   trackById(_: number, row: ModuleRow): string {
@@ -1245,9 +1253,11 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     // Load sequence commands for this module type
     this.loadSequenceCommands(moduleType);
 
-    // Unsubscribe from previous DPS/AIQS subscriptions
+    // Unsubscribe from previous DPS/AIQS / DSP-action subscriptions
     this.dpsStateSub?.unsubscribe();
     this.aiqsStateSub?.unsubscribe();
+    this.drillDspActionSub?.unsubscribe();
+    this.aiqsDspActionSub?.unsubscribe();
     
     // Clear accumulated history when switching modules
     if (this.selectedModuleSerialNumber !== DPS_SERIAL) {
@@ -1335,6 +1345,32 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         }
       });
       this.subscriptions.add(this.aiqsStateSub);
+    }
+
+    if (moduleType === 'DRILL') {
+      const drillDsp$ = this.messageMonitor.getLastMessage(DSP_DRILL_ACTION_TOPIC);
+      if (drillDsp$) {
+        this.drillDspActionSub = drillDsp$.subscribe(() => {
+          if (this.selectedModuleMeta?.moduleType === 'DRILL') {
+            this.selectedModuleMeta.drillAction = this.getDrillActionData();
+            this.cdr.markForCheck();
+          }
+        });
+        this.subscriptions.add(this.drillDspActionSub);
+      }
+    }
+
+    if (moduleType === 'AIQS') {
+      const aiqsDsp$ = this.messageMonitor.getLastMessage(DSP_AIQS_ACTION_TOPIC);
+      if (aiqsDsp$) {
+        this.aiqsDspActionSub = aiqsDsp$.subscribe(() => {
+          if (this.selectedModuleMeta?.moduleType === 'AIQS') {
+            this.selectedModuleMeta.aiqsAction = this.getAiqsActionData();
+            this.cdr.markForCheck();
+          }
+        });
+        this.subscriptions.add(this.aiqsDspActionSub);
+      }
     }
 
     const iconKey = cell?.icon ?? cell?.name ?? moduleDetails?.subType ?? moduleDetails?.id ?? 'QUESTION';
@@ -2188,16 +2224,17 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     messages: MonitoredMessage[];
   } {
     try {
-      const history = this.messageMonitor.getHistory('dsp/drill/action');
+      const history = this.messageMonitor.getHistory(DSP_DRILL_ACTION_TOPIC) ?? [];
       const lastTwo = history.slice(-2).reverse();
 
-      // Determine current/previous changeLight values
       let currentLight: string | null = null;
       let previousLight: string | null = null;
       for (let i = history.length - 1; i >= 0; i -= 1) {
         const msg = history[i];
         const payload = this.parseDspActionPayload(msg);
-        if (payload?.command === 'changeLight' && payload.value) {
+        const colorCmd =
+          payload?.command === 'changeLight' || payload?.command === 'changeColor';
+        if (colorCmd && payload.value) {
           if (!currentLight) {
             currentLight = payload.value;
           } else if (!previousLight) {
@@ -2235,7 +2272,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     messages: MonitoredMessage[];
   } {
     try {
-      const history = this.messageMonitor.getHistory('dsp/aiqs/action');
+      const history = this.messageMonitor.getHistory(DSP_AIQS_ACTION_TOPIC) ?? [];
       const lastTwo = history.slice(-2).reverse();
 
       let currentLight: string | null = null;
