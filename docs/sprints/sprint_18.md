@@ -9,7 +9,7 @@
 
 **Kurz vor Messe (wenig Zeit, kein Fix-Roulette):** [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md)
 
-**Release:** **`v1.0.0`** – Messe-/Referenz-Tag. **`v1.0.1`** (2026-03-23) – DHT/UI-Sync, Messe-Verifikation-Tasks. **`v1.0.2`** (2026-03-25) – Shopfloor **DSP Action** live (`dsp/drill/action`, `dsp/aiqs/action`), **AGV-2** Serial **IeJ4**, Arduino Messe-WLAN/Doku. **Deployment RPi:** `orbis-osf-ui:1.0.2`. Smoke: [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md).
+**Release:** **`v1.0.0`** – Messe-/Referenz-Tag. **`v1.0.1`** (2026-03-23) – DHT/UI-Sync, Messe-Verifikation-Tasks. **`v1.0.2`** (2026-03-25) – Shopfloor **DSP Action** live (`dsp/drill/action`, `dsp/aiqs/action`), **AGV-2** Serial **IeJ4**, Arduino Messe-WLAN/Doku. **`v1.0.3`** (2026-03-25) – Shopfloor **FTS/AGV-2** Tests neutral (nur Layout-Serien in `fts[]`). **Deployment RPi:** `orbis-osf-ui:1.0.3`. Smoke: [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md).
 
 ---
 

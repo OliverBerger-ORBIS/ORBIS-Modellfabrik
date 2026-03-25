@@ -6,6 +6,13 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-03-25
+
+**Patch: Shopfloor FTS tests (AGV-2 serial only via layout `fts[]`, e.g. IeJ4).**
+
+### Changed
+- **Tests:** `ShopfloorMappingService` – assertions for unknown FTS serials use a neutral placeholder (`unknown-fts-serial`); documents that only serials listed in `shopfloor_layout.json` `fts[]` get AGV label/orange color (no legacy hardware id in test data).
+
 ## [1.0.2] - 2026-03-25
 
 **Patch: Shopfloor DSP-Action-Live-Update (DRILL/AIQS), AGV-2-Serial IeJ4.**
