@@ -1,5 +1,5 @@
 export const VERSION = {
-  full: '1.0.4',
+  full: '1.0.5',
   build: 'prod',
-  buildDate: '2026-03-25T09:32:03.875Z',
+  buildDate: '2026-03-30T23:04:48.216Z',
 };

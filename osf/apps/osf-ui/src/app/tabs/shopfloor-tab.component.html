@@ -34,7 +34,6 @@
           <tr>
             <th scope="col" i18n="@@moduleTableColumnId">ID</th>
             <th scope="col" i18n="@@moduleTableColumnName">Name</th>
-            <th scope="col" i18n="@@moduleTableColumnRegistryActive">Registry Active</th>
             <th scope="col" i18n="@@moduleTableColumnConnected">Connected</th>
             <th scope="col" i18n="@@moduleTableColumnAvailabilityStatus">Availability Status</th>
             <th scope="col" i18n="@@moduleTableColumnMessages">Messages</th>
@@ -44,23 +43,22 @@
         </thead>
         <tbody>
           <tr *ngFor="let row of rows; trackBy: trackById">
-            <td class="module-id">{{ row.id }}</td>
+            <td
+              class="module-id"
+              [attr.title]="row.registryActive ? layoutRegistryInHint : layoutRegistryOffHint"
+            >
+              <span class="module-id__row">
+                <span class="module-id__registry" [class.module-id__registry--inactive]="!row.registryActive" aria-hidden="true">{{
+                  row.registryActive ? '✓' : '✗'
+                }}</span>
+                <span class="module-id__serial">{{ row.id }}</span>
+              </span>
+            </td>
             <td class="module-name">
               <ng-container *ngIf="row.iconPath as icon">
                 <img [src]="icon" [alt]="row.name" class="module-icon" />
               </ng-container>
               <span>{{ row.name }}</span>
-            </td>
-            <td>
-              <span
-                class="status-pill"
-                [class.status-pill--positive]="row.registryActive"
-                [class.status-pill--negative]="!row.registryActive"
-              >
-                <span class="status-pill__icon">{{ row.registryIcon }}</span>
-                <span *ngIf="row.registryActive" i18n="@@moduleStatusActive">Active</span>
-                <span *ngIf="!row.registryActive" i18n="@@moduleStatusInactive">Inactive</span>
-              </span>
             </td>
             <td>
               <span class="status-indicator" [class.status-indicator--online]="row.connected">

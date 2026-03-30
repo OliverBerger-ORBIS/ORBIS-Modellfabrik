@@ -22,6 +22,16 @@ export interface AgvOption {
 
 @Injectable({ providedIn: 'root' })
 export class ShopfloorMappingService {
+  /** Station types first, then `fts[]` order — Shopfloor module table rows. */
+  private static readonly SHOPFLOOR_TABLE_MODULE_TYPE_ORDER = [
+    'DRILL',
+    'HBW',
+    'MILL',
+    'AIQS',
+    'DPS',
+    'CHRG',
+  ] as const;
+
   private initialized = false;
   private serialToModule = new Map<string, ModuleInfo>();
   private moduleTypeToSerials = new Map<string, Set<string>>();
@@ -32,6 +42,26 @@ export class ShopfloorMappingService {
 
   getAllModules(): ModuleInfo[] {
     return Array.from(this.serialToModule.values());
+  }
+
+  /**
+   * Serials in canonical Shopfloor table order: fixed station sequence, then AGVs as in `fts[]`.
+   */
+  getShopfloorTableRowSerialOrder(): string[] {
+    if (!this.initialized) {
+      return [];
+    }
+    const ids: string[] = [];
+    for (const t of ShopfloorMappingService.SHOPFLOOR_TABLE_MODULE_TYPE_ORDER) {
+      const serials = this.getAllSerialsForModuleType(t);
+      ids.push(...[...serials].sort());
+    }
+    for (const fts of this.ftsConfig) {
+      if (fts.serial) {
+        ids.push(fts.serial);
+      }
+    }
+    return ids;
   }
 
   initializeLayout(config: ShopfloorLayoutConfig): void {

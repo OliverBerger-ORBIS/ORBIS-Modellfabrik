@@ -6,6 +6,22 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-03-30
+
+**Patch: Shopfloor dual-AGV module table (row order, registry in ID column), docs/analysis alignment.**
+
+### Added
+- **ShopfloorMappingService:** `getShopfloorTableRowSerialOrder()` — kanonische Reihenfolge der Modul-/Transport-Zeilen (Modultyp-Reihenfolge inkl. FTS-Array aus dem Layout).
+
+### Changed
+- **Shopfloor-Tab / Modul-Tabelle:** Spalte **Registry Active** entfällt; Registry-Status und Seriennummer in der **ID**-Spalte (✓ Layout vs. ✗ nur Pairing). Transport-/FTS-Zeilen: Anzeigename wie Stationen **Kurz (Lang)** — **`AGV-1` / `AGV-2`** mit `getModuleFullName('FTS')`; konsistente Tooltips (Registry-Hinweise).
+- **Tests:** `shopfloor-tab`, `shopfloor-mapping`, `agv-tab` — dual-AGV (`5iO4` / `leJ4`), Row-Order und Anzeigenamen abgedeckt.
+- **I18n:** DE/FR (src + public `locale`) für die neuen Shopfloor-Registry-Strings.
+
+### Documentation
+- **`docs/07-analysis`:** README FTS/AGV-Cluster; [second-agv-2026-03.md](docs/07-analysis/second-agv-2026-03.md) §3 mit [OSF-MODIFICATIONS](integrations/APS-CCU/OSF-MODIFICATIONS.md) **Mod 3** (NAVIGATION `serialNumber` zurückgenommen) und **FtsOrderAssignmentService** abgestimmt; [order-agv-mapping-without-mod3-2026-03.md](docs/07-analysis/order-agv-mapping-without-mod3-2026-03.md) Dual-AGV/Layout und umgesetzte OrderCard-Logik; kleinere Korrekturen in weiteren Analyse-MDs.
+- **Projekt:** [PROJECT_STATUS.md](docs/PROJECT_STATUS.md), [sprint_18.md](docs/sprints/sprint_18.md) nachgezogen.
+
 ## [1.0.4] - 2026-03-25
 
 **Patch: AGV-2 Serial `leJ4` (kleines L), Shopfloor-Transports nur aus Layout-`fts[]`.**

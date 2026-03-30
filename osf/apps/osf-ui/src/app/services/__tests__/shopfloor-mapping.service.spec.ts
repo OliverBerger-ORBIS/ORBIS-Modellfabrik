@@ -315,4 +315,36 @@ describe('ShopfloorMappingService', () => {
       expect(service.getAgvColor('unknown-serial')).toBe(ORBIS_COLORS.orbisGrey.medium);
     });
   });
+
+  describe('getShopfloorTableRowSerialOrder', () => {
+    it('should list stations DRILL→HBW→MILL→AIQS→DPS→CHRG then fts[] serials', () => {
+      const config = mockConfig({
+        cells: [],
+        intersection_map: {},
+        modules_by_serial: {
+          SVR_MILL: { type: 'MILL', cell_id: 'c_mill' },
+          SVR_HBW: { type: 'HBW', cell_id: 'c_hbw' },
+          SVR_DRILL: { type: 'DRILL', cell_id: 'c_drill' },
+          SVR_DPS: { type: 'DPS', cell_id: 'c_dps' },
+          SVR_AIQS: { type: 'AIQS', cell_id: 'c_aiqs' },
+          CHRG0: { type: 'CHRG', cell_id: 'c_chrg' },
+        },
+        fts: [
+          { id: 'fts-1', label: 'AGV-1', serial: '5iO4' },
+          { id: 'fts-2', label: 'AGV-2', serial: 'leJ4' },
+        ],
+      });
+      service.initializeLayout(config);
+      expect(service.getShopfloorTableRowSerialOrder()).toEqual([
+        'SVR_DRILL',
+        'SVR_HBW',
+        'SVR_MILL',
+        'SVR_AIQS',
+        'SVR_DPS',
+        'CHRG0',
+        '5iO4',
+        'leJ4',
+      ]);
+    });
+  });
 });

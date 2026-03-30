@@ -200,12 +200,12 @@ type ModuleRow = {
   kind: 'module' | 'transport';
   name: string;
   iconPath: string | null;
+  /** Serial is listed in shopfloor layout (module or fts); false = live-only / off-layout */
   registryActive: boolean;
   connected: boolean;
   availabilityLabel: string;
   availabilityClass: string;
   availabilityIcon: string;
-  registryIcon: string;
   connectedIcon: string;
   messageCount: number;
   lastUpdate: string;
@@ -237,10 +237,6 @@ const MODULE_NAME_MAP: Record<string, string> = {
 const DEFAULT_SHOPFLOOR_ICON = SHOPFLOOR_ASSET_MAP['QUESTION'] ?? 'assets/svg/shopfloor/shared/question.svg';
 
 const STATUS_ICONS = {
-  registry: {
-    active: '✅',
-    inactive: '❌',
-  },
   connection: {
     connected: '📶',
     disconnected: '🚫',
@@ -477,19 +473,44 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   readonly shopfloorPreviewCollapseLabel = $localize`:@@moduleTabShopfloorPreviewCollapse:Collapse shopfloor preview`;
   readonly modulesStatusBadgeText = $localize`:@@moduleTabModulesStatusBadge:Modules Status`;
 
-  private initializeRegistry(): void {
-    // Build registry from mapping service (includes FTS from shopfloor_layout.json fts array)
-    const modules = this.mappingService.getAllModules();
-    this.moduleRegistry = modules.map((m: ModuleInfo) => ({
-      id: m.serialNumber,
-      type: (m.moduleType as keyof typeof MODULE_NAME_MAP) ?? 'UNKNOWN',
-      kind: m.moduleType === 'FTS' ? 'transport' : 'module',
-    }));
+  /** Tooltip: serial appears in shopfloor_layout (registry); same meaning as former “Registry active”. */
+  readonly layoutRegistryInHint = $localize`:@@moduleIdLayoutRegistryInHint:Listed in shopfloor layout`;
+  readonly layoutRegistryOffHint = $localize`:@@moduleIdLayoutRegistryOffHint:Not in shopfloor layout (pairing only)`;
 
-    this.moduleRegistryOrder = this.moduleRegistry.map((entry) => entry.id);
-    this.moduleRegistryLookup = new Map<string, ModuleRegistryEntry>(
-      this.moduleRegistry.map((entry) => [entry.id, entry])
-    );
+  private initializeRegistry(): void {
+    const modules = this.mappingService.getAllModules();
+    const bySerial = new Map(modules.map((m: ModuleInfo) => [m.serialNumber, m]));
+    const order = this.mappingService.getShopfloorTableRowSerialOrder();
+    const registryEntries: ModuleRegistryEntry[] = [];
+    const seen = new Set<string>();
+
+    for (const serial of order) {
+      const m = bySerial.get(serial);
+      if (!m) {
+        continue;
+      }
+      registryEntries.push({
+        id: m.serialNumber,
+        type: (m.moduleType as keyof typeof MODULE_NAME_MAP) ?? 'UNKNOWN',
+        kind: m.moduleType === 'FTS' ? 'transport' : 'module',
+      });
+      seen.add(serial);
+    }
+
+    for (const m of modules) {
+      if (!seen.has(m.serialNumber)) {
+        registryEntries.push({
+          id: m.serialNumber,
+          type: (m.moduleType as keyof typeof MODULE_NAME_MAP) ?? 'UNKNOWN',
+          kind: m.moduleType === 'FTS' ? 'transport' : 'module',
+        });
+        seen.add(m.serialNumber);
+      }
+    }
+
+    this.moduleRegistry = registryEntries;
+    this.moduleRegistryOrder = registryEntries.map((e) => e.id);
+    this.moduleRegistryLookup = new Map(registryEntries.map((entry) => [entry.id, entry]));
   }
 
   ngOnInit(): void {
@@ -1049,7 +1070,6 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       availabilityLabel,
       availabilityClass: this.getAvailabilityClass(module.availability),
       availabilityIcon: this.getAvailabilityIcon(module.availability),
-      registryIcon: isRegistryModule ? STATUS_ICONS.registry.active : STATUS_ICONS.registry.inactive,
       connectedIcon: module.connected ? STATUS_ICONS.connection.connected : STATUS_ICONS.connection.disconnected,
       messageCount,
       lastUpdate: module.lastUpdate ?? 'N/A',
@@ -1099,22 +1119,16 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     // Calculate message count for this specific transport (by serial-Id)
     const messageCount = this.getModuleMessageCount(transport.id);
 
-    const agvLabel = this.mappingService.getAgvLabel(transport.id);
-    const transportName = agvLabel
-      ? `${agvLabel} (${this.moduleNameService.getModuleFullName('FTS')})`
-      : this.moduleNameService.getModuleDisplayText('FTS', 'id-full');
-
     return {
       id: transport.id,
       kind: 'transport',
-      name: transportName,
+      name: this.transportRowDisplayName(transport.id),
       iconPath: this.resolveIconPath('FTS'),
       registryActive: Boolean(isRegistryTransport),
       connected: transport.connected,
       availabilityLabel,
       availabilityClass: this.getAvailabilityClass(transport.availability),
       availabilityIcon: this.getAvailabilityIcon(transport.availability),
-      registryIcon: isRegistryTransport ? STATUS_ICONS.registry.active : STATUS_ICONS.registry.inactive,
       connectedIcon: transport.connected
         ? STATUS_ICONS.connection.connected
         : STATUS_ICONS.connection.disconnected,
@@ -1136,9 +1150,26 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     return asset.startsWith('/') ? asset.slice(1) : asset;
   }
 
+  /**
+   * Shopfloor **Name** column: same pattern as stations (`getModuleDisplayText(…, 'id-full')` → `DRILL (Drilling Station)`).
+   * Layout FTS: **`AGV-1` / `AGV-2`** from `fts[].label` plus **`getModuleFullName('FTS')`** — e.g. `AGV-1 (Automated Guided Vehicle)`.
+   * Unknown serial (off layout): `FTS (Automated Guided Vehicle)` via `id-full`.
+   */
+  private transportRowDisplayName(serial: string): string {
+    const agvLabel = this.mappingService.getAgvLabel(serial);
+    if (agvLabel) {
+      const ftsFull = this.moduleNameService.getModuleFullName('FTS');
+      return `${agvLabel} (${ftsFull})`;
+    }
+    return this.moduleNameService.getModuleDisplayText('FTS', 'id-full');
+  }
+
   private createRegistryPlaceholderRow(entry: ModuleRegistryEntry): ModuleRow {
     const availability: ModuleAvailabilityStatus = 'Unknown';
-    const name = this.moduleNameService.getModuleDisplayText(entry.type, 'id-full');
+    const name =
+      entry.kind === 'transport'
+        ? this.transportRowDisplayName(entry.id)
+        : this.moduleNameService.getModuleDisplayText(entry.type, 'id-full');
     return {
       id: entry.id,
       kind: entry.kind,
@@ -1149,7 +1180,6 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       availabilityLabel: this.getAvailabilityLabel(availability),
       availabilityClass: this.getAvailabilityClass(availability),
       availabilityIcon: this.getAvailabilityIcon(availability),
-      registryIcon: STATUS_ICONS.registry.active,
       connectedIcon: STATUS_ICONS.connection.disconnected,
       messageCount: 0,
       lastUpdate: 'N/A',

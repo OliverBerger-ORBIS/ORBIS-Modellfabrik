@@ -18,9 +18,9 @@ Session-Logs liegen unter `data/osf-data/sessions/` als **JSON-Zeilen** (`*.log`
 
 | Rolle   | MQTT-Serial | Zeitraum / Quelle |
 |---------|-------------|-------------------|
-| AGV-1   | `5iO4`      | unverändert       |
-| AGV-2   | `jp93`      | Sessions **2026-03-12** in den Analysen unter diesem Topic-Segment |
-| AGV-2   | `leJ4`      | seit Hardware-Austausch / Messe; Layout, Tests, [second-agv-2026-03.md](second-agv-2026-03.md), [CHANGELOG](../../CHANGELOG.md) |
+| AGV-1   | `5iO4`      | Erstes `fts[]`-Element im Layout; Label **AGV-1** (orange) |
+| AGV-2   | `leJ4`      | Zweites `fts[]`-Element; seit Hardware-Austausch / Messe statt `jp93` |
+| AGV-2   | `jp93`      | Sessions **2026-03-12** unter diesem Topic-Segment (historisch) |
 
 **Topics:** Struktur `fts/v1/ff/<serial>/state|order|…` ist für beide Serien gleich — bei Literatur/älteren Logs **`jp93` durch `leJ4` ersetzen**, wenn es um aktuelle OSF-Konfiguration geht.
 
@@ -107,7 +107,7 @@ Parallel **CCU-Orders** (`ccu/order/active`, Order-Steps) und **Modul-States** (
 ## 6. Mapping OSF-Datenmodell (Kurz)
 
 - **Transport-/Pairing-Zeilen** pro FTS-Serial: aus Registry/Pairing + `fts$`-Stream; Felder wie `connected`, `lastUpdate`, `charging`, `waitingForLoadHandling` setzen sich aus MQTT-Auswertung zusammen (siehe `@osf/business` Merge mit FTS-State).
-- **Anzeige „AGV-1“ / „AGV-2“:** kommt aus `shopfloor_layout.json` `fts[]` (`label` + `serial`) — wenn Serial nicht im Layout steht, fällt die Shopfloor-Tabelle auf generischen **FTS**-Namen zurück (siehe `getAgvLabel` in Shopfloor-Tab).
+- **Anzeige „AGV-1“ / „AGV-2“:** `fts[]` (`label` + `serial`) im Layout; Shopfloor-Spalte **Name** wie bei Stationen im Format **Kurz (Langbezeichnung)** — z. B. `AGV-1 (Automated Guided Vehicle)` aus Layout-Label + `ModuleNameService.getModuleFullName('FTS')`; ohne Layout-Zuordnung Fallback `FTS (Automated Guided Vehicle)` (`getModuleDisplayText('FTS','id-full')`).
 
 ---
 

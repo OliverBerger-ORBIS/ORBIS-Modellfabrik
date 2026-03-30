@@ -6,6 +6,13 @@
 
 ---
 
+## Messe-Ergebnis: LogiMAT 2026 (24.–26.03.)
+
+- **Demo:** **Erfolgreich** — SmartFactory-Demo mit **zwei AGVs** auf der Messe gefahren.
+- **WLAN:** **Instabilitäten** im Messebetrieb; zulässig war **nur 2,4 GHz** (kein 5 GHz). Das Umfeld war **vorher bekannt** risikobehaftet. Unter dieser **ortsbedingten Einschränkung** ist **kaum mit einer robusten technischen „Lösung“** zu rechnen (Kanalüberlast, Störungen, viele parallele Netze) — vielmehr **Risiko/Erwartungsmanagement** für **künftige Messen** und vergleichbare Locations.
+
+---
+
 ## Releases (Überblick)
 
 | Version | Datum | Inhalt (kurz) |
@@ -39,8 +46,8 @@ Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
 - [x] **Shopfloor:** Route-Linie im Preview wieder sichtbar (Styles unter `.preview__route-overlay`). Visuell prüfen vor Merge → [osf-ui-shopfloor-route-agv-visual-gate.md](../04-howto/osf-ui-shopfloor-route-agv-visual-gate.md)
 - [x] **AGV Supervisor-Sequenz (Live):** **→ HBW** dann bei Bedarf **Clear load handling** — verifiziert (Nach `waitingForLoadHandling`: CCU kann wieder; visuelle Kontrolle sinnvoll). **DPS → HBW** getestet; **weitere Startpunkte** (Auto/DRILL/…) noch gezielt live prüfen. Doku: [fts-navigation-how-it-works-2026-03.md](../07-analysis/fts-navigation-how-it-works-2026-03.md) §5–6.
 - [x] **AGV:** Vergleich mit Fischertechnik: **Dock** sowie **Laden** / **Laden beenden** sollen abhängig vom **FTS-/AGV-Zustand** nur angezeigt werden bzw. nur **aktiv** sein, wenn der Zustand das erlaubt (nicht nur „Initialzustand“). Betrifft **Shopfloor-Tab** und **AGV-Tab**; Kriterien an `fts/.../state` (z. B. `lastNodeId`, `lastModuleSerialNumber`, `driving`, `paused`, `waitingForLoadHandling`, `batteryState.charging`, Ladestation) und ggf. CCU/Factsheet abstimmen.
-- [x] **AGV-Anzeige (Dual-Farben, beide Fahrzeuge auf der Karte):** AGV-1 orange, AGV-2 warmes Gelb (`ShopfloorMappingService.getAgvColor`). **AGV-Tab** „Route & Position“ und **Presentation** zeigen beide AGVs und getrennte Routen (Farben pro AGV), sobald State/Order da sind; **Orders**- und **Shopfloor**-Preview mit farbigen Overlays und Legende. Gateway: `fts$` nur Topics **`…/state`** (Orders überschreiben `ftsStates$` nicht mehr). Fixture **`production_blue_dual_agv_step15`** / Preset `order-production-blue-dual-agv-step15` — **Mock-Test OK** (März 2026). Z-Index/Overlay-Reihenfolge und **Routen-Berechnung** unverändert gelassen. **Follow-up (optional):** Shopfloor-Tabelle: generischer Name „FTS …“ für AGV-2; Modul-Status (READY/BUSY/…) auf AGV-Zeilen — siehe [DR-24](../03-decision-records/24-shopfloor-highlight-colors.md).
-- [ ] **shopfloor-Tab**. Feste Reihenfolge der Module in der Tabelle (DRILL, HBW,MILL, AIQS,DPS,CHRG,AGV-1, AGV-2), kein dynamische Umsortierung. Prüfung ob wir "Registry Active" benötigen. Fischertechnik UI hat das nicht. Es ist ein relikt aus der frühen Entwicklungsphase. Kann es gefahrlos entfernt werden?, oder ggf in Spalte "ID" mit angezeigt werden, so dass nur "neue" IDs keinen Haken bekommen? und wir das "Flag nicht mehr in eigener Spalte anzeigen?
+- [x] **AGV-Anzeige (Dual-Farben, beide Fahrzeuge auf der Karte):** Erstes Element in `fts[]` orange, zweites warmes Gelb (`getAgvColor`); Label **AGV-1/AGV-2** aus Layout (`getAgvLabel`). **AGV-Tab** „Route & Position“ und **Presentation** zeigen beide AGVs und getrennte Routen (Farben pro AGV), sobald State/Order da sind; **Orders**- und **Shopfloor**-Preview mit farbigen Overlays und Legende. Gateway: `fts$` nur Topics **`…/state`** (Orders überschreiben `ftsStates$` nicht mehr). Fixture **`production_blue_dual_agv_step15`** / Preset `order-production-blue-dual-agv-step15` — **Mock-Test OK** (März 2026). Z-Index/Overlay-Reihenfolge und **Routen-Berechnung** unverändert gelassen. **Follow-up (optional):** Modul-Status (READY/BUSY/…) auf AGV-Zeilen — siehe [DR-24](../03-decision-records/24-shopfloor-highlight-colors.md).
+- [x] **Shopfloor-Tab – Modul-Tabelle:** Feste Reihenfolge **DRILL → HBW → MILL → AIQS → DPS → CHRG → AGV-1 → AGV-2** via `getShopfloorTableRowSerialOrder()`; Spalte **Registry Active** entfernt — in Spalte **ID** **✓/✗** + Serial. **Name** für AGV-Zeilen wie Stationen: **`Kurz (Lang)`** — z. B. **`AGV-1 (Automated Guided Vehicle)`** (`getAgvLabel` + `getModuleFullName('FTS')`); **`fts[]`:** **5iO4 = AGV-1**, **leJ4 = AGV-2**.
 
 ### Message Monitor
 

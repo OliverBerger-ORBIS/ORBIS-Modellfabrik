@@ -12,6 +12,7 @@ import { AgvAnimationService } from '../../services/agv-animation.service';
 import { LanguageService } from '../../services/language.service';
 import { ChangeDetectorRef } from '@angular/core';
 import * as mockDashboard from '../../mock-dashboard';
+import { ORBIS_COLORS } from '../../assets/color-palette';
 
 // Mock getDashboardController
 jest.spyOn(mockDashboard, 'getDashboardController').mockReturnValue({
@@ -96,10 +97,24 @@ describe('AgvTabComponent', () => {
       getModuleDisplayText: jest.fn((id: string) => id),
     };
 
+    /** Mirrors `shopfloor_layout.json` fts[]: first serial = AGV-1 (orange), second = AGV-2 (warm yellow). */
     const mappingServiceMock = {
-      getAgvOptions: jest.fn(() => [{ serial: '5iO4', label: 'AGV-1' }] as const),
-      getAgvLabel: jest.fn((serial: string) => (serial === '5iO4' ? 'AGV-1' : serial === 'leJ4' ? 'AGV-2' : null)),
-      getAgvColor: jest.fn(() => '#f97316'),
+      getAgvOptions: jest.fn(() =>
+        [
+          { serial: '5iO4', label: 'AGV-1' },
+          { serial: 'leJ4', label: 'AGV-2' },
+        ] as const
+      ),
+      getAgvLabel: jest.fn((serial: string) =>
+        serial === '5iO4' ? 'AGV-1' : serial === 'leJ4' ? 'AGV-2' : null
+      ),
+      getAgvColor: jest.fn((serial: string) =>
+        serial === '5iO4'
+          ? ORBIS_COLORS.agv.agv1
+          : serial === 'leJ4'
+            ? ORBIS_COLORS.agv.agv2
+            : ORBIS_COLORS.orbisGrey.medium
+      ),
     };
 
     const ftsRouteServiceMock = {
@@ -199,6 +214,26 @@ describe('AgvTabComponent', () => {
 
   it('should detect mock mode', () => {
     expect(component.isMockMode).toBe(true);
+  });
+
+  describe('Dual AGV labels (shopfloor fts[] order)', () => {
+    it('maps MQTT serials to AGV-1 and AGV-2', () => {
+      expect(component.getAgvLabel('5iO4')).toBe('AGV-1');
+      expect(component.getAgvLabel('leJ4')).toBe('AGV-2');
+      expect(component.getAgvLabel('unknown-serial')).toBeNull();
+    });
+
+    it('exposes both AGVs in layout order (AGV-1 first)', () => {
+      expect(component.agvOptions.map((o) => o.serial)).toEqual(['5iO4', 'leJ4']);
+      expect(component.agvOptions.map((o) => o.label)).toEqual(['AGV-1', 'AGV-2']);
+    });
+
+    it('maps AGV colors by serial like ShopfloorMappingService', () => {
+      const mapping = TestBed.inject(ShopfloorMappingService);
+      expect(mapping.getAgvColor('5iO4')).toBe(ORBIS_COLORS.agv.agv1);
+      expect(mapping.getAgvColor('leJ4')).toBe(ORBIS_COLORS.agv.agv2);
+      expect(mapping.getAgvColor('other')).toBe(ORBIS_COLORS.orbisGrey.medium);
+    });
   });
 
   it('should detect replay mode', async () => {

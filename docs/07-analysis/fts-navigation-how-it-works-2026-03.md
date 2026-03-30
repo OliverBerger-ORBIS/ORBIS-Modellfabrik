@@ -75,7 +75,7 @@ Die **CCU (Central Control Unit)** im APS-CCU-Backend.
 | **AIQS → HBW** | AGV am AIQS | `fts/v1/ff/{serial}/order` | SVR3QA0022 (HBW) |
 | **→ Intersection 2** | Bekannte AGV-Position | `fts/v1/ff/{serial}/order` | Layout-Ref `intersection:2` (nicht CCU-Knoten-ID `"2"`) |
 
-**Serial:** Verwendet wird die aktuell ausgewählte AGV-Serial (`selectedAgvSerial$`) – also AGV-1 (5iO4) oder AGV-2 (leJ4) je nach Dropdown. Kein hart codiertes 5iO4 in den Command-Payloads.
+**Serial:** Verwendet wird die aktuell ausgewählte AGV-Serial (`selectedAgvSerial$`) – Labels **AGV-1 / AGV-2** entsprechen der **`fts[]`-Reihenfolge** in `shopfloor_layout.json` (aktuell: AGV-1 = **5iO4**, AGV-2 = **leJ4**). Kein hart codiertes Serial in den Command-Payloads.
 
 ### 3.2 Technische Umsetzung (`agv-tab.component.ts`)
 

@@ -1,18 +1,19 @@
 # ORBIS SmartFactory – Projektstatus
 
-**Letzte Aktualisierung:** 2026-03-19
+**Letzte Aktualisierung:** 2026-04-01
 
 > **Workflow:** Die Sprint-Tabelle wird bei jedem Sprint-Abschluss aktualisiert (neue Zeile, Events).  
 > Details: [sprints_README.md – Dokumenten-Workflow](sprints/sprints_README.md#-dokumenten-workflow-aktualität-sicherstellen)
 
 ## 🚦 Aktueller Status
-- OSF (vormals OMF3) produktionsreif für Kunden-Demos / LogiMAT 2026.
+- OSF (vormals OMF3) produktionsreif für Kunden-Demos; **LogiMAT 2026 durchgeführt** (Demo mit zwei AGVs erfolgreich).
+- **Messe-WLAN:** Nur **2,4 GHz** am Stand → **bekanntes Risiko** für Instabilität; angesichts der **ortsbedingten Einschränkung** keine zuverlässige technische „Lösung“ zu erwarten — **Lessons Learned** für weitere Events (Erwartungsmanagement). Siehe [sprint_18.md – Messe-Ergebnis](sprints/sprint_18.md).
 - OMF2 als Legacy eingefroren.
-- Aktuelle Entwicklung: Phase 5 – Erweiterbare Plattform (LogiMAT, Hannover Messe, Customer-Connect 2026).
+- Aktuelle Entwicklung: Phase 5 – Erweiterbare Plattform (Nachbereitung LogiMAT, Hannover Messe, Customer-Connect 2026).
 - **ORBIS-SmartFactory** ab Sprint 13 (Genehmigung ausstehend, Arbeit wird fortgeführt).
 
 ## 🔥 Aktuelle Schwerpunkte
-- LogiMAT-Vorbereitung (Messe-Setup, Hardware: Ampel-System).
+- **Nach LogiMAT:** offene Sprint-18-Tasks, Session-Aufzeichnung/Doku; nächster Außenauftritt v. a. **Hannover Messe** (siehe Roadmap).
 - **Phase 5 – MES/DSP-Integration:** ORBIS MES und DSP übernehmen zunehmend die Steuerung (QM-Check, Order-Entscheidungen). APS-CCU als Interim-Layer; Modifikationen: [integrations/APS-CCU/OSF-MODIFICATIONS.md](../integrations/APS-CCU/OSF-MODIFICATIONS.md).
 - MES-Integration: Prozessanpassungen (z.B. "2-mal Bohren").
 - Azure DevOps Migration.
@@ -23,7 +24,7 @@
 
 | Sprint | Zeitraum | Ereignis / Fokus | Status |
 |--------|----------|------------------|--------|
-| **18** | **19.03.26 - 01.04.26** | **LogiMAT-Messe Durchführung** | **Laufend** |
+| **18** | **19.03.26 - 01.04.26** | **LogiMAT** durchgeführt (Demo **erfolgreich**, 2 AGVs); WLAN **2,4 GHz** = bekanntes Risiko ([sprint_18 § Messe-Ergebnis](sprints/sprint_18.md)); Sprint-Arbeit / Nachbereitung **fortlaufend** | **Laufend** |
 | 17 | 05.03.26 - 18.03.26 | MES/Integration & LogiMAT Vorbereitung | Abgeschlossen |
 | 16 | 19.02.26 - 04.03.26 | Vibration-Sensor, Doku-Check, Marketing-Konsistenz | Abgeschlossen |
 | 15 | 05.02.26 - 18.02.26 | OSF-UI Docker, RPi-Deploy, Abschlussbericht | Abgeschlossen |
@@ -49,7 +50,7 @@
 | 15 | 05.02 - 18.02.2026 | ORBIS-SmartFactory | Phase 4 (v0.7.10) | OSF-Präsentation Glaston (10.02.) |
 | 16 | 19.02 - 04.03.2026 | ORBIS-SmartFactory | Phase 5 | — |
 | 17 | 05.03 - 18.03.2026 | ORBIS-SmartFactory | Phase 5 | LogiMAT Vorbereitung |
-| 18 | 19.03 - 01.04.2026 | ORBIS-SmartFactory | Phase 5 | LogiMAT Durchführung |
+| 18 | 19.03 - 01.04.2026 | ORBIS-SmartFactory | Phase 5 | LogiMAT Durchführung (Demo OK, 2 AGVs; Messe-WLAN 2,4 GHz) |
 
 > **Spalten-Erläuterung:**  
 > - **ORBIS-Projekt:** Interne Projektzuordnung für Abrechnung (ORBIS-Modellfabrik bzw. ORBIS-SmartFactory).  

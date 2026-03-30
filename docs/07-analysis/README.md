@@ -34,13 +34,23 @@ Sprint-bezogene und projektweite Analysen für OSF.
 
 ## Hardware / FTS / AGV
 
-- [agv-position-after-order-completion-2026-03.md](agv-position-after-order-completion-2026-03.md) – AGV-Position nach Production-/Storage-Abschluss und Quality-Fail (analytisch + empirisch)
-- [fts-navigation-how-it-works-2026-03.md](fts-navigation-how-it-works-2026-03.md) – FTS-Navigation: Wer erstellt NAV, Topics, Payloads, osf-ui manuelle NAV
-- [second-agv-2026-03.md](second-agv-2026-03.md) – Zweites AGV (leJ4) – Implementierung & Referenz (Sprint 17)
-- [two-agvs-mixed-session-data-inventory-2026-03.md](two-agvs-mixed-session-data-inventory-2026-03.md) – two-agvs-mixed: empirische Topics/Felder, Serial jp93→leJ4
-- [agv-overlay-rendering-differences-2026-03.md](agv-overlay-rendering-differences-2026-03.md) – AGV-Overlay: Rendering-Unterschiede Mac vs. RPi (z-index, filter, Cache)
-- [agv-order-tab-color-analysis-2026-03.md](agv-order-tab-color-analysis-2026-03.md) – AGV-Darstellung ORDER-Tab vs. AGV-Tab (→ DR-24)
-- [order-tab-active-module-highlight-analysis-2026-03.md](order-tab-active-module-highlight-analysis-2026-03.md) – ORDER-Tab: Aktives Modul blau vs. Grün (→ DR-24)
+**Referenz / Pflege:** [second-agv-2026-03.md](second-agv-2026-03.md) (Konsolidat), [fts-navigation-how-it-works-2026-03.md](fts-navigation-how-it-works-2026-03.md) (Navigation, manuell → HBW / clearLoadHandler).
+
+- [second-agv-2026-03.md](second-agv-2026-03.md) – Zweites AGV (leJ4), Dual-UI, Gateway `fts$`, Layout `fts[]`; Sprint 17→18
+- [fts-navigation-how-it-works-2026-03.md](fts-navigation-how-it-works-2026-03.md) – FTS/AGV-Navigation (CCU, Topics, osf-ui)
+- [two-agvs-mixed-session-data-inventory-2026-03.md](two-agvs-mixed-session-data-inventory-2026-03.md) – two-agvs-mixed: Topic-Inventar, jp93→leJ4 (empirisch)
+- [order-agv-mapping-without-mod3-2026-03.md](order-agv-mapping-without-mod3-2026-03.md) – Order↔AGV ohne Mod-3 in Steps (`fts/order`-Ableitung)
+- [agv-position-after-order-completion-2026-03.md](agv-position-after-order-completion-2026-03.md) – AGV-Endposition nach Orders (Code vs. Session; **Randbedingung:** leere Queue)
+- [agv-overlay-rendering-differences-2026-03.md](agv-overlay-rendering-differences-2026-03.md) – RPi vs. localhost Overlay (bekannt, ggf. ungelöst)
+- [agv-order-tab-color-analysis-2026-03.md](agv-order-tab-color-analysis-2026-03.md) – **historisch** → maßgeblich [DR-24](../03-decision-records/24-shopfloor-highlight-colors.md)
+- [order-tab-active-module-highlight-analysis-2026-03.md](order-tab-active-module-highlight-analysis-2026-03.md) – **historisch** → [DR-24](../03-decision-records/24-shopfloor-highlight-colors.md)
+
+**Tiefergehend (Session-Forensik März 2026, teils `jp93`):** für CCU/TXT/MES-Stillsitze, nicht als aktuelle UI-Spezifikation lesen — Serien heute **leJ4**.
+
+- [two-agvs-mixed-event-chain-fischertechnik-2026-03.md](two-agvs-mixed-event-chain-fischertechnik-2026-03.md) – Ursachenkette DPS busy / parallele Orders
+- [two-agvs-mixed-agv2-dps-busy-2026-03.md](two-agvs-mixed-agv2-dps-busy-2026-03.md) – DROP FINISHED / State-Serial NodeRed vs. TXT
+- [agv-2-mixed-standstill-2026-03.md](agv-2-mixed-standstill-2026-03.md) – agv-2-mixed Stillstand
+- [storage-order-rejection-two-agvs-2026-03.md](storage-order-rejection-two-agvs-2026-03.md) – Storage UNKNOWN / HBW loads leer
 
 ---
 

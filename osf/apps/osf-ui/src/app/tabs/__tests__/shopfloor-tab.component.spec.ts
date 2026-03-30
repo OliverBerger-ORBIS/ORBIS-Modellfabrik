@@ -82,6 +82,7 @@ const createComponent = () => {
   const mappingServiceStub = {
     initializeLayout: jest.fn(),
     getAllModules: jest.fn(() => []),
+    getShopfloorTableRowSerialOrder: jest.fn(() => []),
     getAgvLabel: jest.fn((_serial: string) => null),
     isInitialized: jest.fn(() => false),
     getModuleTypeFromSerial: jest.fn(() => null),
@@ -188,6 +189,109 @@ describe('ModuleTabComponent registry metadata', () => {
     const transportIds = rows.filter((r) => r.kind === 'transport').map((r) => r.id);
     expect(transportIds).toEqual(['5iO4', 'leJ4']);
     expect(transportIds).not.toContain('stray');
+  });
+});
+
+describe('Shopfloor module table — AGV display names & registry row order', () => {
+  const baseTransport = {
+    connected: false,
+    availability: 'Unknown' as const,
+    messageCount: 0,
+    lastUpdate: 'N/A',
+  };
+
+  /** Minimal layout modules + canonical serial order (DRILL… then fts serials). */
+  function attachRegistryFromLayout(component: ShopfloorTabComponent): void {
+    const modules = [
+      { serialNumber: 'SVR_DRILL', moduleType: 'DRILL' },
+      { serialNumber: '5iO4', moduleType: 'FTS' },
+      { serialNumber: 'leJ4', moduleType: 'FTS' },
+    ];
+    const order = ['SVR_DRILL', '5iO4', 'leJ4'];
+    (component as any).mappingService = {
+      initializeLayout: jest.fn(),
+      getAllModules: jest.fn(() => modules),
+      getShopfloorTableRowSerialOrder: jest.fn(() => order),
+      getAgvLabel: jest.fn((serial: string) =>
+        serial === '5iO4' ? 'AGV-1' : serial === 'leJ4' ? 'AGV-2' : null
+      ),
+      isInitialized: jest.fn(() => true),
+      getModuleTypeFromSerial: jest.fn((id: string) =>
+        id === '5iO4' || id === 'leJ4' ? 'FTS' : null
+      ),
+    };
+    (component as any).initializeRegistry();
+  }
+
+  it('transport row name uses AGV label + getModuleFullName(FTS), same pattern as station id-full', () => {
+    const component = createComponent();
+    attachRegistryFromLayout(component);
+    const transport: TransportOverviewStatus = {
+      id: 'leJ4',
+      ...baseTransport,
+    };
+    const row = (component as any).createTransportRow(transport);
+    expect(row.name).toBe('AGV-2 (FTS Full Name)');
+    expect(row.registryActive).toBe(true);
+  });
+
+  it('registry placeholder transport row matches live row naming for AGV-1', () => {
+    const component = createComponent();
+    attachRegistryFromLayout(component);
+    const row = (component as any).createRegistryPlaceholderRow({
+      id: '5iO4',
+      type: 'FTS',
+      kind: 'transport',
+    });
+    expect(row.name).toBe('AGV-1 (FTS Full Name)');
+    expect(row.registryActive).toBe(true);
+  });
+
+  it('unknown transport serial uses getModuleDisplayText(FTS, id-full) and registryActive false', () => {
+    const component = createComponent();
+    attachRegistryFromLayout(component);
+    const transport: TransportOverviewStatus = {
+      id: 'strangeSerial',
+      ...baseTransport,
+      availability: 'READY',
+    };
+    const row = (component as any).createTransportRow(transport);
+    expect(row.name).toBe('FTS (Test)');
+    expect(row.registryActive).toBe(false);
+  });
+
+  it('initializeRegistry follows getShopfloorTableRowSerialOrder, then appends unlisted modules', () => {
+    const component = createComponent();
+    const modules = [
+      { serialNumber: 'Z_MILL', moduleType: 'MILL' },
+      { serialNumber: 'A_DRILL', moduleType: 'DRILL' },
+      { serialNumber: 'leJ4', moduleType: 'FTS' },
+      { serialNumber: '5iO4', moduleType: 'FTS' },
+      { serialNumber: 'EXTRA', moduleType: 'HBW' },
+    ];
+    const canonical = ['A_DRILL', 'Z_MILL', '5iO4', 'leJ4'];
+    (component as any).mappingService = {
+      initializeLayout: jest.fn(),
+      getAllModules: jest.fn(() => modules),
+      getShopfloorTableRowSerialOrder: jest.fn(() => canonical),
+      getAgvLabel: jest.fn(),
+      isInitialized: jest.fn(() => true),
+      getModuleTypeFromSerial: jest.fn(),
+    };
+    (component as any).initializeRegistry();
+    expect((component as any).moduleRegistryOrder).toEqual([...canonical, 'EXTRA']);
+  });
+
+  it('sortRows orders by moduleRegistryOrder with unknown ids last', () => {
+    const component = createComponent();
+    (component as any).moduleRegistryOrder = ['b', 'a'];
+    const rows = [
+      { id: 'zzz', kind: 'module', registryActive: false },
+      { id: 'a', kind: 'module', registryActive: true },
+      { id: 'b', kind: 'module', registryActive: true },
+    ];
+    const sorted = (component as any).sortRows(rows);
+    expect(sorted.map((r: { id: string }) => r.id)).toEqual(['b', 'a', 'zzz']);
   });
 });
 

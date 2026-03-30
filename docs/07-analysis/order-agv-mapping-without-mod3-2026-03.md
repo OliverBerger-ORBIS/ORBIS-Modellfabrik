@@ -25,21 +25,24 @@
 
 Die FTS-Zuordnung passiert intern in `chooseReadyFtsForStep()` → `sendNavigationRequest()` → Publish an `fts/v1/ff/<ftsSerial>/order`, wird aber **nicht** in die Order-Steps zurückgeschrieben.
 
+**Abgestimmt mit Dual-AGV:** Welches physische FTS „AGV-1“ / „AGV-2“ ist, leitet die osf-ui aus `shopfloor_layout.json` (`fts[]`-Reihenfolge, z. B. **5iO4** / **leJ4**) ab — siehe [second-agv-2026-03.md](second-agv-2026-03.md). Die Step-Zuordnung über `fts/order` liefert die **Seriennummer**; die Label-Zuordnung zu AGV-1/AGV-2 erfolgt über `ShopfloorMappingService` / `getAgvLabel`.
+
 ---
 
 ## 2. osf-ui-Bedarf
 
 ### Verwendung
 
-- **OrderCardComponent** (`order-card.component.ts`): Für NAVIGATION-Steps wird `step.serialNumber` genutzt, um über `mappingService.getAgvLabel(serialNumber)` „AGV-1“ oder „AGV-2“ anzuzeigen
-- Ohne `serialNumber`: Fallback auf generisches „AGV“
+- **OrderCardComponent** (`order-card.component.ts`): Für NAVIGATION-Steps wird die effektive FTS-Seriennummer aus **`step.serialNumber`** (falls die CCU sie je mitschickt) **oder** aus **`FtsOrderAssignmentService.getFtsSerialForStep(orderId, step.id)`** (Option A, `fts/.../order`) gelesen; `getAgvLabel(serial)` liefert „AGV-1“ / „AGV-2“
+- Ohne beides: Fallback auf generisches „AGV“
 
 ```typescript
-// order-card.component.ts (Auszug)
+// order-card.component.ts (vereinfacht, vgl. moduleName / moduleFullName)
 if (step.type === 'NAVIGATION') {
-  const agvLabel = step.serialNumber
-    ? this.mappingService.getAgvLabel(step.serialNumber)
-    : null;
+  const ftsSerial =
+    step.serialNumber ??
+    this.ftsAssignmentService.getFtsSerialForStep(this.order?.orderId, step.id);
+  const agvLabel = ftsSerial ? this.mappingService.getAgvLabel(ftsSerial) : null;
   return agvLabel ?? $localize`:@@moduleNameAGV:AGV`;
 }
 ```
@@ -199,21 +202,22 @@ Die NAVIGATION-Step-Id steht im **letzten** Node (`action.id` des DOCK-Actions).
 
 ### Orders Tab (OrderCard – Steps)
 
-- **Aktuell:** `moduleName(step)` nutzt `step.serialNumber` für NAVIGATION → `getAgvLabel(serialNumber)` → „AGV-1“/„AGV-2“. Ohne serialNumber: Fallback „AGV“.
-- **Mit Option A:** `FtsOrderAssignmentService.getFtsSerialForStep(orderId, step.id)` liefert die Zuordnung. OrderCard nutzt `step.serialNumber ?? assignmentService.getFtsSerialForStep(...)` → **AGV-1/AGV-2 wie bei Mod 3**.
+- **Umgesetzt (Option A):** `moduleName` / `moduleFullName` nutzen für NAVIGATION `step.serialNumber ?? FtsOrderAssignmentService.getFtsSerialForStep(orderId, step.id)` → `getAgvLabel(ftsSerial)` → „AGV-1“/„AGV-2“. Ohne beides: Fallback „AGV“ (CCU ohne Mod 3).
 
 ### Track & Trace
 
 - **Shopfloor Events (linke Spalte):** Events werden aus FTS-State und Modul-State gebaut. Jedes Event hat eine Quelle (Topic): `fts/v1/ff/5iO4/state` oder `fts/v1/ff/leJ4/state` → Serial ist im Topic bzw. im Payload. `WorkpieceHistoryService` setzt `moduleName = getAgvLabel(moduleSerialId)` für FTS-Events. **AGV-1/AGV-2 wird bereits angezeigt** – keine Änderung nötig.
 - **Order Context (rechte Spalte):** Zeigt Order-Metadaten (orderId, Status, ERP-Links). Keine Darstellung von Steps mit AGV-Zuordnung – das ist bewusst so (Order-Ebene, nicht Step-Ebene).
 
-**Fazit:** Track & Trace zeigt FTS/AGV pro Event schon korrekt (Quelle = FTS-Topic). Option A ergänzt die fehlende Zuordnung nur dort, wo sie aus **ccu/order/active** kommt: im **Orders Tab** bei den Steps. Zusätzlich kann die **Shopfloor Preview** im OrderCard (Badge bei NAVIGATION) von „FTS“ auf „AGV-1“/„AGV-2“ umgestellt werden, sobald `effectiveSerial` aus dem Assignment-Service verfügbar ist.
+**Fazit:** Track & Trace zeigt FTS/AGV pro Event schon korrekt (Quelle = FTS-Topic). **Option A** ergänzt die Zuordnung dort, wo sie aus **ccu/order/active** allein fehlt: im **Orders Tab** bei den Steps; Shopfloor-Vorschau/Badges können dieselbe effektive Seriennummer nutzen.
 
 ---
 
 ## 7. Referenzen
 
+- [second-agv-2026-03.md](second-agv-2026-03.md) – Dual-AGV, Layout `fts[]`, Serien **5iO4** / **leJ4**
 - [OSF-MODIFICATIONS.md](../../integrations/APS-CCU/OSF-MODIFICATIONS.md) – Mod 3 Status
 - [order-card.component.ts](../../osf/apps/osf-ui/src/app/components/order-card/order-card.component.ts) – AGV-Label-Nutzung
+- [fts-order-assignment.service.ts](../../osf/apps/osf-ui/src/app/services/fts-order-assignment.service.ts) – Option A (`fts/.../order`)
 - [navigation.ts](../../integrations/APS-CCU/central-control/src/modules/fts/navigation/navigation.ts) – `sendNavigationRequest`, FTS-Order-Publish
 - [NavigatorService.getFTSOrder](../../integrations/APS-CCU/central-control/src/modules/fts/navigation/navigator-service.ts) – `actionId` = nav step id
