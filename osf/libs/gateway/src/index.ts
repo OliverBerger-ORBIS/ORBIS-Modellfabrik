@@ -135,8 +135,9 @@ export const createGateway = (
     filter((payload): payload is ModuleState => payload !== null)
   );
 
+  // Only telemetry state — not fts/.../order or instantAction (those would overwrite ftsStates$ with non-state payloads).
   const fts$ = shared.pipe(
-    filter((msg) => matchTopic(msg.topic, 'fts/v1')),
+    filter((msg) => matchTopic(msg.topic, 'fts/v1') && msg.topic.endsWith('/state')),
     map((msg) => parsePayload<FtsState>(msg.payload)),
     filter((payload): payload is FtsState => payload !== null)
   );

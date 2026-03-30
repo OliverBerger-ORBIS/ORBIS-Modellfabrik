@@ -41,6 +41,7 @@
           <app-order-card
             *ngFor="let order of orders"
             [order]="order"
+            [ftsPositions]="orderFtsPositions$ | async"
             [onRequestCorrelation]="requestCorrelation"
           />
         </ng-container>

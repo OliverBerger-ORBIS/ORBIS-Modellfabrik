@@ -193,6 +193,19 @@ describe('AgvRouteService', () => {
       expect(path).toEqual(['serial:SVR3QA0022', 'intersection:1', 'serial:SVR4H76530']);
     });
 
+    it('should map a BFS path to drawable route segments', () => {
+      const path = service.findRoutePath('SVR3QA0022', 'SVR4H76530');
+      expect(path).not.toBeNull();
+      const segs = service.pathToRouteSegments(path!);
+      expect(segs.length).toBe(2);
+      for (const s of segs) {
+        expect(typeof s.x1).toBe('number');
+        expect(typeof s.y1).toBe('number');
+        expect(typeof s.x2).toBe('number');
+        expect(typeof s.y2).toBe('number');
+      }
+    });
+
     it('should return null for unreachable nodes', () => {
       // Unknown node cannot be resolved, so path should be null
       const path = service.findRoutePath('SVR3QA0022', 'unknown');

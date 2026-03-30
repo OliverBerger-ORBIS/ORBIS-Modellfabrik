@@ -1,7 +1,7 @@
 # Sprint Documentation Index
 
-Version: 0.4  
-Letzte Aktualisierung: 2026-02-18  
+Version: 0.5  
+Letzte Aktualisierung: 2026-03-25  
 
 ---
 
@@ -39,16 +39,18 @@ Diese Aufgaben sind **Teil des laufenden Sprints** und müssen erledigt sein, **
 
 ---
 
-## 📐 Sprint-Dokumentation Vorgehen (ab Sprint 15)
+## 📐 Sprint-Dokumentation (Neuanlage / Überarbeitung)
 
-**Grundprinzip:** Eine Checkliste als einzige Quelle – keine Doppelung von Fortschritt/Abgeschlossen.
+**Eine Checkliste unter `## Aufgaben (thematisch, mit Haken)`:** Unter **`### Thema`** (z. B. OSF-UI, Hardware, Organisation) stehen **gemischt** `- [ ]` und `- [x]`. **Nicht** zwei Kapitel „Offen“ und „Erledigt“.
 
-| Element | Inhalt | Vermeiden |
-|---------|--------|-----------|
-| **Ziele** | Flache Checkliste `[x]` / `[ ]`, eine Zeile pro Task | Keine nested Sub-Checkboxen, kein "✅ Implementiert" zusätzlich zu `[x]` |
-| **Backlog (optional)** | Tasks bei Gelegenheit (z.B. Session-Log-Analyse, Doku-Lücken) | Kein separates Backlog-System |
-| **Übernommen** | Offene Tasks explizit in nächsten Sprint übernehmen | Kein separater "Fortschritt"-Block (redundant zur Checkliste) |
-| **Abgeschlossen** | Status auf "Abgeschlossen", Abschlussdatum, Verweis auf Nachfolge-Sprint | Kein eigener "Abgeschlossene Aufgaben"-Block (Checkboxen zeigen Status) |
+| Element | Inhalt |
+|---------|--------|
+| **Aufgaben** | Nur Checkbox-Zeilen; **Gruppierung nach Thema**, nicht nach Erledigt-Status |
+| **Releases** | Optional kurze Tabelle im Kopf; Details → [CHANGELOG.md](../../CHANGELOG.md) |
+| **Backlog** | Optional Abschnitt **ohne** Checkboxen, wenn noch keine klaren Tasks |
+| **Sprint-Wechsel** | Checkboxen am Ende von „Aufgaben“ oder eigene Thema-Überschrift |
+
+Template: [sprint_template.md](sprint_template.md) · Beispiel umgebaut: [sprint_18.md](sprint_18.md)
 
 ---
 

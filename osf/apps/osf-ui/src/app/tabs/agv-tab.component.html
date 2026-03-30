@@ -6,8 +6,20 @@
           <section class="fts-tab__section route-section">
             <div class="fts-legend">
               <span class="legend__item">
-                <span class="legend__dot legend__dot--route"></span>
-                <span i18n="@@ftsLegendRoute">Route</span>
+                <span class="legend__dot legend__dot--agv1"></span>
+                <span i18n="@@ftsLegendAgv1">AGV-1</span>
+              </span>
+              <span class="legend__item">
+                <span class="legend__dot legend__dot--agv2"></span>
+                <span i18n="@@ftsLegendAgv2">AGV-2</span>
+              </span>
+              <span class="legend__item">
+                <span class="legend__dot legend__dot--route-agv1"></span>
+                <span i18n="@@ftsLegendRouteAgv1">Route (AGV-1)</span>
+              </span>
+              <span class="legend__item">
+                <span class="legend__dot legend__dot--route-agv2"></span>
+                <span i18n="@@ftsLegendRouteAgv2">Route (AGV-2)</span>
               </span>
               <span class="legend__item">
                 <span class="legend__dot legend__dot--motion"></span>
@@ -31,7 +43,7 @@
                 [showBaseRoads]="true"
                 [showZoomControls]="true"
                 [ftsPositions]="ftsPositions$ | async"
-                [ftsRouteSegments]="activeRouteSegments$ | async"
+                [ftsRouteSegments]="combinedAgvRouteSegments$ | async"
               ></app-shopfloor-preview>
             </div>
           </section>
@@ -220,8 +232,12 @@
 
           <div class="fts-legend">
             <span class="legend__item">
-              <span class="legend__dot legend__dot--route"></span>
-              <span i18n="@@ftsLegendRoute">Route</span>
+              <span class="legend__dot legend__dot--route-agv1"></span>
+              <span i18n="@@ftsLegendRouteAgv1">Route (AGV-1)</span>
+            </span>
+            <span class="legend__item">
+              <span class="legend__dot legend__dot--route-agv2"></span>
+              <span i18n="@@ftsLegendRouteAgv2">Route (AGV-2)</span>
             </span>
             <span class="legend__item">
               <span class="legend__dot legend__dot--motion"></span>
@@ -247,7 +263,7 @@
               [showBaseRoads]="true"
               [showZoomControls]="true"
               [ftsPositions]="ftsPositions$ | async"
-              [ftsRouteSegments]="activeRouteSegments$ | async"
+              [ftsRouteSegments]="combinedAgvRouteSegments$ | async"
             ></app-shopfloor-preview>
           </div>
 

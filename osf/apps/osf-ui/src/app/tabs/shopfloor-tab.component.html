@@ -143,6 +143,15 @@
         <span class="legend__dot legend__dot--unknown"></span>
         <span i18n="@@legendUnknown">Unknown</span>
       </span>
+      <ng-container *ngIf="shopfloorFtsPositions$ | async as shopfloorAgvLegend">
+        <span
+          class="legend__item legend__item--agv-pos"
+          *ngFor="let p of shopfloorAgvLegend; trackBy: trackByAgvSerial"
+        >
+          <span class="legend__dot legend__dot--agv-pos" [style.background-color]="p.color"></span>
+          <span>{{ shopfloorAgvLegendLabel(p.serial) }}</span>
+        </span>
+      </ng-container>
     </div>
 
     <div class="shopfloor-tab__shopfloor-grid">
@@ -158,7 +167,8 @@
           [moduleStatusMap]="currentModuleStatusMap"
           [badgeText]="modulesStatusBadgeText"
           [infoText]="''"
-          [showFtsOverlay]="false"
+          [showFtsOverlay]="true"
+          [ftsPositions]="shopfloorFtsPositions$ | async"
           (cellSelected)="onModuleCellSelected($event)"
           (cellDoubleClicked)="onModuleCellDoubleClicked($event)"
         ></app-shopfloor-preview>

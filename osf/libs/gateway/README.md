@@ -35,4 +35,5 @@ nx build gateway                       # optional TypeScript build
 
 - Domain-agnostic: just shapes data; no business logic.
 - Mapping is prefix-based (`ccu/order`, `warehouse/stock`, `module/v1`, `fts/v1`).
+- `fts$` only includes topics ending in `/state` (not `.../order` or `.../instantAction`), so `FtsState` is not overwritten by route payloads.
 

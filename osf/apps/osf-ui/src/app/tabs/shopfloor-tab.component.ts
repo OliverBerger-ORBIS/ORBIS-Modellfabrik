@@ -15,7 +15,7 @@ import {
 import { SHOPFLOOR_ASSET_MAP, type OrderFixtureName } from '@osf/testing-fixtures';
 import { getDashboardController } from '../mock-dashboard';
 import type { Observable } from 'rxjs';
-import { of, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, of, Subscription } from 'rxjs';
 import {
   distinctUntilChanged,
   filter,
@@ -41,6 +41,7 @@ import { ShopfloorMappingService, type ModuleInfo } from '../services/shopfloor-
 import { AgvRouteService } from '../services/agv-route.service';
 import { ICONS } from '../shared/icons/icon.registry';
 import { isOsfConsoleDebugEnabled } from '../utils/osf-console-debug';
+import { buildFtsPreviewPositionsFromStates, type FtsPreviewPositionInput } from '../utils/build-fts-preview-positions';
 
 // DPS/AIQS Serial Numbers
 const DPS_SERIAL = 'SVR4H73275';
@@ -302,6 +303,31 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {
+    this.shopfloorFtsPositions$ = combineLatest([
+      this.dashboard.streams.ftsStates$,
+      this.shopfloorLayoutReady$.pipe(filter((ready) => ready)),
+    ]).pipe(
+      map(([ftsStates]) =>
+        buildFtsPreviewPositionsFromStates(
+          ftsStates,
+          this.mappingService.getAgvOptions().map((o) => o.serial),
+          (id) => this.getPositionFromNodeId(id),
+          (s) => this.mappingService.getAgvColor(s)
+        )
+      ),
+      distinctUntilChanged(
+        (a, b) =>
+          a.length === b.length &&
+          a.every(
+            (it, i) =>
+              b[i]?.serial === it.serial &&
+              Math.abs((b[i]?.x ?? 0) - it.x) < 1 &&
+              Math.abs((b[i]?.y ?? 0) - it.y) < 1 &&
+              b[i]?.color === it.color
+          )
+      ),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
     this.currentEnvironmentKey = this.environmentService.current.key;
     this.loadShopfloorPreviewState();
     this.bindCacheOutputs();
@@ -324,8 +350,14 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     'drill-action',
     'aiqs-action',
     'module-action-history',
+    'production_blue_dual_agv_step15',
   ];
-  readonly fixtureLabels: Partial<Record<OrderFixtureName | 'shopfloor-status' | 'drill-action' | 'aiqs-action' | 'module-action-history', string>> = {
+  readonly fixtureLabels: Partial<
+    Record<
+      OrderFixtureName | 'shopfloor-status' | 'drill-action' | 'aiqs-action' | 'module-action-history',
+      string
+    >
+  > = {
     startup: $localize`:@@fixtureLabelStartup:Startup`,
     white: $localize`:@@fixtureLabelWhite:White`,
     white_step3: $localize`:@@fixtureLabelWhiteStep3:White • Step 3`,
@@ -338,9 +370,15 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     'drill-action': $localize`:@@dspActionFixtureLabel:Drill Action`,
     'aiqs-action': $localize`:@@aiqsActionFixtureLabel:AIQS Action`,
     'module-action-history': $localize`:@@moduleActionHistoryFixtureLabel:Module Test Data`,
+    production_blue_dual_agv_step15: $localize`:@@fixtureLabelProductionBlueDualAgv:Production Blue • Dual AGV (step 15 demo)`,
   };
 
-  activeFixture: OrderFixtureName | 'shopfloor-status' | 'drill-action' | 'aiqs-action' | 'module-action-history' = 'startup';
+  activeFixture:
+    | OrderFixtureName
+    | 'shopfloor-status'
+    | 'drill-action'
+    | 'aiqs-action'
+    | 'module-action-history' = 'startup';
   moduleOverview$!: Observable<ModuleOverviewState>;
   rows$!: Observable<ModuleRow[]>;
   moduleStatusMap$!: Observable<Map<string, { connected: boolean; availability: ModuleAvailabilityStatus }>>;
@@ -348,8 +386,11 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   // Expose moduleStatusMap as a property for template access
   currentModuleStatusMap: Map<string, { connected: boolean; availability: ModuleAvailabilityStatus }> | null = null;
   
-  // FTS position for shopfloor preview
-  ftsPosition: { x: number; y: number } | null = null;
+  /** Layout + pairing ready — enables multi-AGV overlay positions */
+  private readonly shopfloorLayoutReady$ = new BehaviorSubject(false);
+
+  /** Both AGVs on shopfloor preview (orange / yellow by layout fts[] order) */
+  readonly shopfloorFtsPositions$: Observable<FtsPreviewPositionInput[]>;
 
   // Module details sidebar state
   sidebarOpen = false;
@@ -459,6 +500,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         this.mappingService.initializeLayout(config);
         this.agvRouteService.initializeLayout(config);
         this.initializeRegistry();
+        this.shopfloorLayoutReady$.next(true);
         
         // Check for module query parameter from architecture click
         this.route.queryParams.subscribe(params => {
@@ -523,6 +565,14 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     return row.id;
   }
 
+  trackByAgvSerial(_: number, item: { serial: string }): string {
+    return item.serial;
+  }
+
+  shopfloorAgvLegendLabel(serial: string): string {
+    return this.mappingService.getAgvLabel(serial) ?? serial;
+  }
+
   async onCommand(action: ModuleCommand): Promise<void> {
     try {
       await action.handler?.();
@@ -583,6 +633,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
           red: 'module-status-test',
           mixed: 'module-status-test',
           storage: 'module-status-test',
+          production_blue_dual_agv_step15: 'order-production-blue-dual-agv-step15',
         };
         
         const preset = presetMap[fixture] || 'module-status-test';
@@ -828,22 +879,6 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
 
     // Note: DPS/AIQS streams are subscribed in updateSelectedMeta when module is selected
     
-    // Subscribe to FTS states to get FTS position (for potential future use; layout has showFtsOverlay=false)
-    this.subscriptions.add(
-      this.dashboard.streams.ftsStates$.pipe(
-        map((ftsStates) => {
-          const ftsEntries = Object.values(ftsStates);
-          if (ftsEntries.length === 0) return null;
-          const first = ftsEntries[0] as FtsState & { lastNodeId?: string };
-          if (first.position) return first.position;
-          if (first.lastNodeId) return this.getPositionFromNodeId(first.lastNodeId);
-          return null;
-        })
-      ).subscribe((position) => {
-        this.ftsPosition = position;
-        this.cdr.markForCheck();
-      })
-    );
   }
 
   private getPositionFromNodeId(nodeId: string): { x: number; y: number } | null {

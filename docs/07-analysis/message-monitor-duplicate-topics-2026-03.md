@@ -3,7 +3,7 @@
 **Datum:** 2026-03  
 **Kontext:** Sprint 18 – Message Monitor zeigt Topics/Nachrichten doppelt. Blockiert Debugging auf Messe. Verfälschte Daten (z.B. Event-Anzahl für Track & Trace).
 
-**Sprint:** Sofort-Fix vs. Refactoring – [Sprint 18 § Nach LogiMAT (Refactoring)](../sprints/sprint_18.md#nach-logimat-refactoring-noch-sprint-18). **OSF-UI Konsole:** [osf-ui-console-debug.md](../04-howto/osf-ui-console-debug.md).
+**Sprint:** Code-Fix als Task unter [Sprint 18 → Aufgaben → Message Monitor](../sprints/sprint_18.md#aufgaben-thematisch-mit-haken). **OSF-UI Konsole:** [osf-ui-console-debug.md](../04-howto/osf-ui-console-debug.md).
 
 **Constraint (KRITISCH):** Mock-Modus darf den Live-Modus in keiner Weise beeinflussen. Fixes nur in Mock-spezifischem Code (z.B. `if (isMockMode)`-Blöcke).
 

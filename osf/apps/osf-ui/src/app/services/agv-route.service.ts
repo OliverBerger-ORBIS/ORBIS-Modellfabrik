@@ -290,6 +290,31 @@ export class AgvRouteService {
   }
 
   /**
+   * Convert a graph path (from {@link findRoutePath}) into drawable segments (FTS tab / multi-AGV routes).
+   * Uses full paths between consecutive nodes like {@link AgvAnimationService}.
+   */
+  pathToRouteSegments(path: string[]): RouteSegment[] {
+    const segments: RouteSegment[] = [];
+    for (let i = 0; i < path.length - 1; i++) {
+      const from = path[i];
+      const to = path[i + 1];
+      const fromCanonical = this.resolveNodeRef(from) ?? from;
+      const toCanonical = this.resolveNodeRef(to) ?? to;
+      if (fromCanonical === toCanonical) {
+        continue;
+      }
+      const road = this.findRoadBetween(from, to);
+      if (road) {
+        const segment = this.buildRoadSegment(road, true);
+        if (segment) {
+          segments.push(segment);
+        }
+      }
+    }
+    return segments;
+  }
+
+  /**
    * Build road segment with trimmed endpoints
    */
   buildRoadSegment(road: ParsedRoad, trimToCenter: boolean = false): RouteSegment | null {

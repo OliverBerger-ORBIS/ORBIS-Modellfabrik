@@ -539,6 +539,7 @@ export const createMockDashboardController = (options?: {
       'track-trace-storage-blue-agv2': 'storage_blue_agv2',
       'track-trace-storage-blue-parallel': 'storage_blue_parallel',
       'order-white-step3': 'white_step3',
+      'order-production-blue-dual-agv-step15': 'production_blue_dual_agv_step15',
     };
     currentFixture = presetToFixture[presetName] || 'startup';
 

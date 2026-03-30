@@ -100,6 +100,8 @@ interface RouteSegment {
   y1: number;
   x2: number;
   y2: number;
+  /** When set, overrides default orange route stroke (multi-AGV AGV tab). */
+  stroke?: string;
 }
 
 export interface FtsPositionItem {
@@ -175,6 +177,8 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   readonly minScale = 0.3;
   readonly maxScale = 2.0;
   readonly scaleStep = 0.1;
+  /** Default route stroke when segment.stroke is not set (Order tab, single-AGV). */
+  readonly defaultFtsRouteStroke = 'rgba(249, 115, 22, 0.95)';
 
   private layoutConfig?: ShopfloorLayoutConfig;
   private parsedRoads: ParsedRoad[] = [];

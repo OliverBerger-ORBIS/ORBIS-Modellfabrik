@@ -284,7 +284,7 @@ describe('ShopfloorMappingService', () => {
   });
 
   describe('getAgvColor', () => {
-    it('should return unified orange for all configured FTS serials', () => {
+    it('should return orange for first FTS and warm yellow for second', () => {
       const config = mockConfig({
         cells: [],
         intersection_map: {},
@@ -297,8 +297,7 @@ describe('ShopfloorMappingService', () => {
       service.initializeLayout(config);
 
       expect(service.getAgvColor('5iO4')).toBe(ORBIS_COLORS.agv.agv1);
-      expect(service.getAgvColor('leJ4')).toBe(ORBIS_COLORS.agv.agv1);
-      expect(service.getAgvColor('5iO4')).toBe(service.getAgvColor('leJ4'));
+      expect(service.getAgvColor('leJ4')).toBe(ORBIS_COLORS.agv.agv2);
       // Serial not listed in fts[] → no label / grey (not treated as a configured AGV)
       expect(service.getAgvLabel('unknown-fts-serial')).toBeNull();
       expect(service.getAgvColor('unknown-fts-serial')).toBe(ORBIS_COLORS.orbisGrey.medium);

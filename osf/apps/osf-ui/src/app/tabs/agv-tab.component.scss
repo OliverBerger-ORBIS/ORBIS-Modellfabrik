@@ -184,8 +184,28 @@
     border-radius: 50%;
     display: inline-block;
 
+    &--agv1 {
+      background: #f97316;
+      box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.25);
+    }
+
+    &--agv2 {
+      background: #e5a50a;
+      box-shadow: 0 0 0 2px rgba(229, 165, 10, 0.35);
+    }
+
     &--route {
-      background: rgba(249, 115, 22, 0.95); // Orange
+      background: rgba(249, 115, 22, 0.95); // Orange (legacy single-route legend)
+    }
+
+    &--route-agv1 {
+      background: #f97316;
+      box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.25);
+    }
+
+    &--route-agv2 {
+      background: #e5a50a;
+      box-shadow: 0 0 0 2px rgba(229, 165, 10, 0.35);
     }
 
     &--motion {

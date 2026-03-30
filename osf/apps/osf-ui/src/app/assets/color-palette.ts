@@ -123,12 +123,11 @@ export const ORBIS_COLORS = {
     bgGradientEnd: '#ffffff',         // White — Background gradient bottom
   },
 
-  // ========== AGV Colors (AGV-Tab, Presentation-Tab) ==========
-  // Unified shopfloor accent (orange) for all FTS – same as single-AGV era; DR-24 §2 amended.
-  // agv2 kept equal to agv1 for API stability; optional distinct yellow again after route overlay is stable.
+  // ========== AGV Colors (AGV-Tab, Presentation-Tab, Shopfloor FTS overlays) ==========
+  // AGV-1 orange / AGV-2 warm yellow – layout fts[] order; see DR-24 Sprint-18 amendment.
   agv: {
     agv1: '#f97316',   // RGB: 249, 115, 22 – shopfloorHighlight.strong, orange
-    agv2: '#f97316',   // Same as agv1 (unified accent); was yellow (#eab308) until 2026-03
+    agv2: '#e5a50a',   // Warm amber-yellow (distinct from route orange; good contrast on white map)
   },
 
   // ========== Track & Trace Event Colors (osf-weit) ==========

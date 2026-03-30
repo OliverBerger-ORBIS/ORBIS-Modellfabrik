@@ -377,6 +377,17 @@
   background: rgba(var(--orbis-grey-light-rgb), 0.8);
 }
 
+.legend__dot--agv-pos {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1);
+}
+
+.legend__item--agv-pos {
+  font-weight: 500;
+}
+
 .shopfloor-tab__shopfloor-preview-wrapper {
   border-radius: 0.75rem;
   background: #f9fafb;

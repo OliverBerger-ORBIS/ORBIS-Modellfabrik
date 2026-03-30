@@ -84,6 +84,33 @@ test('emits each order when payload is an array', async () => {
   assert.equal(orderOne.topic, 'ccu/order/completed');
 });
 
+test('fts$ emits only fts/.../state (not order topics)', async () => {
+  const subject = new Subject<RawMqttMessage>();
+  const gateway = createGateway(subject.asObservable());
+  const received: { lastNodeId?: string }[] = [];
+  const sub = gateway.fts$.subscribe((s) => received.push(s));
+
+  subject.next(
+    createMessage('fts/v1/ff/5iO4/order', {
+      serialNumber: '5iO4',
+      orderId: 'o1',
+      nodes: [{ id: 'A' }],
+    })
+  );
+  subject.next(
+    createMessage('fts/v1/ff/5iO4/state', {
+      serialNumber: '5iO4',
+      lastNodeId: 'SVR3QA0022',
+      driving: false,
+    })
+  );
+
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(received.length, 1);
+  assert.equal(received[0].lastNodeId, 'SVR3QA0022');
+  sub.unsubscribe();
+});
+
 test('maps pairing state messages with timestamp', async () => {
   const subject = new Subject<RawMqttMessage>();
   const gateway = createGateway(subject.asObservable());

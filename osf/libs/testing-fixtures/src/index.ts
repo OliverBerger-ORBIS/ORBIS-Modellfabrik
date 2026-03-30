@@ -27,7 +27,8 @@ export type OrderFixtureName =
   | 'storage_blue'
   | 'storage_blue_agv2'
   | 'storage_blue_parallel'
-  | 'track-trace-production-bwr';
+  | 'track-trace-production-bwr'
+  | 'production_blue_dual_agv_step15';
 export type ModuleFixtureName =
   | 'default'
   | 'white'
@@ -133,6 +134,8 @@ const FIXTURE_PATHS: Record<OrderFixtureName, string> = {
   storage_blue_agv2: 'storage_blue_agv2/storage_blue_agv2.log',
   storage_blue_parallel: 'storage_blue_parallel/storage_blue_parallel.log',
   'track-trace-production-bwr': 'track-trace/track-trace-production-bwr.log',
+  production_blue_dual_agv_step15:
+    'production_blue_dual_agv_step15/production_blue_dual_agv_step15.log',
 };
 
 const MODULE_FIXTURE_PATHS: Record<ModuleFixtureName, string> = {

@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import type { OrderActive, ProductionStep } from '@osf/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@osf/testing-fixtures';
-import { ShopfloorPreviewComponent } from '../shopfloor-preview/shopfloor-preview.component';
+import { ShopfloorPreviewComponent, type FtsPositionItem } from '../shopfloor-preview/shopfloor-preview.component';
 import { ModuleNameService } from '../../services/module-name.service';
 import { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
 import { CorrelationInfoService, type CorrelationInfo } from '../../services/correlation-info.service';
@@ -62,6 +62,8 @@ export class OrderCardComponent implements OnInit, OnChanges, OnDestroy {
   @Input({ transform: (v: unknown) => Boolean(v) }) isCompleted = false;
   @Input({ transform: (v: unknown) => Boolean(v) }) expanded = false;
   @Input() onRequestCorrelation: RequestCorrelationFn | null = null;
+  /** When set (e.g. from Orders tab), show all AGVs on the map with AGV-1/AGV-2 colors */
+  @Input() ftsPositions: FtsPositionItem[] | null = null;
 
   steps: ProductionStep[] = [];
   collapsed = false;

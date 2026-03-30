@@ -99,6 +99,7 @@ describe('AgvTabComponent', () => {
     const mappingServiceMock = {
       getAgvOptions: jest.fn(() => [{ serial: '5iO4', label: 'AGV-1' }] as const),
       getAgvLabel: jest.fn((serial: string) => (serial === '5iO4' ? 'AGV-1' : serial === 'leJ4' ? 'AGV-2' : null)),
+      getAgvColor: jest.fn(() => '#f97316'),
     };
 
     const ftsRouteServiceMock = {
@@ -107,6 +108,7 @@ describe('AgvTabComponent', () => {
       findRoute: jest.fn(() => []),
       findRoutePath: jest.fn(() => null),
       findRoadBetween: jest.fn(() => null),
+      pathToRouteSegments: jest.fn(() => []),
       resolveNodeRef: jest.fn((nodeId: string) => nodeId),
     };
 
@@ -114,12 +116,14 @@ describe('AgvTabComponent', () => {
       animationState$: new BehaviorSubject({
         isAnimating: false,
         animatedPosition: null,
-        currentRoute: [],
+        animationPath: [] as string[],
+        activeRouteSegments: [] as Array<{ x1: number; y1: number; x2: number; y2: number }>,
       }),
       getState: jest.fn(() => ({
         isAnimating: false,
         animatedPosition: null,
-        currentRoute: [],
+        animationPath: [] as string[],
+        activeRouteSegments: [] as Array<{ x1: number; y1: number; x2: number; y2: number }>,
       })),
       stopAnimation: jest.fn(),
       startAnimation: jest.fn(),
@@ -188,6 +192,7 @@ describe('AgvTabComponent', () => {
     expect(component.ftsOrder$).toBeDefined();
     expect(component.ftsPosition$).toBeDefined();
     expect(component.activeRouteSegments$).toBeDefined();
+    expect(component.combinedAgvRouteSegments$).toBeDefined();
     expect(component.currentPositionNode$).toBeDefined();
     expect(component.animationState$).toBeDefined();
   });
@@ -206,7 +211,11 @@ describe('AgvTabComponent', () => {
       environment$: replayEnvironmentSubject.asObservable(),
     };
     
-    const mappingMock = { getAgvOptions: () => [{ serial: '5iO4', label: 'AGV-1' }], getAgvLabel: () => null };
+    const mappingMock = {
+      getAgvOptions: () => [{ serial: '5iO4', label: 'AGV-1' }],
+      getAgvLabel: () => null,
+      getAgvColor: () => '#f97316',
+    };
     TestBed.resetTestingModule();
     await TestBed.configureTestingModule({
       imports: [AgvTabComponent],

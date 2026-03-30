@@ -37,6 +37,7 @@ Sprint-bezogene und projektweite Analysen für OSF.
 - [agv-position-after-order-completion-2026-03.md](agv-position-after-order-completion-2026-03.md) – AGV-Position nach Production-/Storage-Abschluss und Quality-Fail (analytisch + empirisch)
 - [fts-navigation-how-it-works-2026-03.md](fts-navigation-how-it-works-2026-03.md) – FTS-Navigation: Wer erstellt NAV, Topics, Payloads, osf-ui manuelle NAV
 - [second-agv-2026-03.md](second-agv-2026-03.md) – Zweites AGV (leJ4) – Implementierung & Referenz (Sprint 17)
+- [two-agvs-mixed-session-data-inventory-2026-03.md](two-agvs-mixed-session-data-inventory-2026-03.md) – two-agvs-mixed: empirische Topics/Felder, Serial jp93→leJ4
 - [agv-overlay-rendering-differences-2026-03.md](agv-overlay-rendering-differences-2026-03.md) – AGV-Overlay: Rendering-Unterschiede Mac vs. RPi (z-index, filter, Cache)
 - [agv-order-tab-color-analysis-2026-03.md](agv-order-tab-color-analysis-2026-03.md) – AGV-Darstellung ORDER-Tab vs. AGV-Tab (→ DR-24)
 - [order-tab-active-module-highlight-analysis-2026-03.md](order-tab-active-module-highlight-analysis-2026-03.md) – ORDER-Tab: Aktives Modul blau vs. Grün (→ DR-24)

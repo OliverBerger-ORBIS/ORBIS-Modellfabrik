@@ -80,3 +80,30 @@
 **Begründung:** Rückkehr zum stabilen Ein-AGV-Darstellungsmodell für Routen und Overlays; Unterscheidung weiterhin über **Label** und **Dropdown** (Seriennummer).
 
 **Optional später:** Wenn Route/Overlay stabil sind, kann eine **zweite** Akzentfarbe für AGV-2 wieder eingeführt werden (Unterscheidbarkeit), ohne die Logik zu duplizieren.
+
+---
+
+## Amendment (2026-03-30, Sprint 18) – Zwei AGV-Akzente + beide Fahrzeuge sichtbar
+
+**Kontext:** Visuelle Überladung durch Modul-Verfügbarkeitsfarben soll zurückgenommen werden; für visuell orientierte Betrachter sollen **beide** AGVs im Shopfloor- und Orders-Kontext erkennbar sein (auch wenn die Order-Route orange bleiben kann und AGV-1 orange ist).
+
+**Änderung:**
+
+- **AGV-1** nutzt **`agv1`** (orange), **AGV-2** nutzt **`agv2`** (warmes Gelb) über `ShopfloorMappingService.getAgvColor()` (Index 0 vs. ≥1).
+- **Shopfloor-Tab** und **aktive** Order-Cards zeigen **mehrere FTS-Positionen** (`ftsPositions`), nicht nur ein einzelnes Highlight.
+- **Review-Fixture:** `production_blue_dual_agv_step15` / Preset `order-production-blue-dual-agv-step15` – Production BLUE, bis ca. Schritt 15, zwei aktive Orders mit **5iO4** und **leJ4** sichtbar; in **Shopfloor-**, **Orders-** und **AGV-Tab** wählbar.
+
+**Begründung:** Zweifarbigkeit verbessert die Unterscheidbarkeit bei zwei Fahrzeugen; die Order-Route kann weiterhin orange dominieren – Nutzerakzeptanz wurde explizit für diese Überlappung bestätigt.
+
+---
+
+## Amendment (2026-03-30b) – Route & Position: beide AGVs + Gateway `fts$`
+
+**Kontext:** Im AGV-Tab (**Route & Position**, inkl. **Presentation**/URL) sollen **beide AGVs und ihre Routen** angezeigt werden, sobald für beide Serien die nötigen Infos vorliegen. In der Dual-Route-Demo erschien teils nur **ein** Fahrzeug, obwohl zwei Routen gezeichnet wurden: `ftsStates$` wurde durch in den FTS-Stream gemischte **`fts/.../order`**-Nachrichten überschrieben (Order-Payload ohne brauchbaren `lastNodeId`).
+
+**Änderung:**
+
+1. **Gateway (`@osf/gateway`):** `fts$` verarbeitet nur noch Topics, die mit **`/state`** enden (kein **`/order`**, kein **`/instantAction`** im gleichen Stream).
+2. **AGV-Tab:** Positionsermittlung pro Layout-AGV primär aus **`ftsStates$`**; fehlt dort ein gültiger `lastNodeId`, Fallback auf den **MessageMonitor**-Letztwert je Topic **`fts/v1/ff/<serial>/state`**. **Presentation** nutzt `app-agv-tab` und erhält dasselbe Verhalten.
+
+**Abweichung von älteren Formulierungen im DR:** Für die kombinierte Kartenansicht Route & Position / Presentation gilt nicht mehr „faktisch nur ein Fahrzeug sichtbar“, sondern: **beide AGVs**, sobald Telemetrie für beide existiert.

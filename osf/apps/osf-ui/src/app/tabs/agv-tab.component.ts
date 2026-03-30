@@ -207,6 +207,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     'storage_blue_agv2',
     'storage_blue_parallel',
     'track-trace-production-bwr',
+    'production_blue_dual_agv_step15',
   ];
   readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
     startup: $localize`:@@fixtureLabelStartup:Startup`,
@@ -221,6 +222,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     storage_blue_agv2: $localize`:@@fixtureLabelStorageBlueAgv2:Storage Blue (AGV-2)`,
     storage_blue_parallel: $localize`:@@fixtureLabelStorageBlueParallel:Storage Blue (Both AGVs)`,
     'track-trace-production-bwr': $localize`:@@fixtureLabelTrackTraceBwr:TrackTrace Production BWR`,
+    production_blue_dual_agv_step15: $localize`:@@fixtureLabelProductionBlueDualAgv:Production Blue • Dual AGV (step 15 demo)`,
   };
   activeFixture: OrderFixtureName | null = this.dashboard.getCurrentFixture();
 
@@ -235,8 +237,17 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   // FTS positions for all AGVs (multi-AGV with colors)
   ftsPositions$!: Observable<Array<{ serial: string; x: number; y: number; color?: string }>>;
   
-  // Active route segments for animation (orange - currently driving) - from animation service
+  // Active route segments for animation (currently driving) - from animation service
   activeRouteSegments$!: Observable<Array<{ x1: number; y1: number; x2: number; y2: number }>>;
+
+  /** Last FTS order payload per AGV (all serials in layout) – for multi-AGV route overlay. */
+  allAgvOrders$!: Observable<Array<{ serial: string; order: unknown }>>;
+
+  /** Last validated FTS state per AGV topic in MessageMonitor (ensures both markers when `ftsStates$` is incomplete). */
+  allAgvMonitorFtsStates$!: Observable<Record<string, FtsState | null>>;
+
+  /** Merged map segments: order-based routes per AGV in AGV colors; selected AGV uses animation path while animating. */
+  combinedAgvRouteSegments$!: Observable<Array<{ x1: number; y1: number; x2: number; y2: number; stroke?: string }>>;
   
   // Current position node (for highlighting current position in ORBIS-blue-medium)
   currentPositionNode$!: Observable<string[] | null>;
@@ -345,7 +356,32 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   private findRoutePath(start: string, target: string): string[] | null {
     return this.agvRouteService.findRoutePath(start, target);
   }
-  
+
+  /**
+   * Drawable route segments from FTS order.nodes (each consecutive pair resolved on the layout graph).
+   */
+  private buildRouteSegmentsFromFtsOrder(order: unknown): Array<{ x1: number; y1: number; x2: number; y2: number }> {
+    if (!order || typeof order !== 'object') {
+      return [];
+    }
+    const nodes = (order as { nodes?: Array<{ id?: string }> }).nodes;
+    if (!Array.isArray(nodes) || nodes.length < 2) {
+      return [];
+    }
+    const ids = nodes.map((n) => n?.id).filter((id): id is string => Boolean(id));
+    if (ids.length < 2) {
+      return [];
+    }
+    const all: Array<{ x1: number; y1: number; x2: number; y2: number }> = [];
+    for (let i = 0; i < ids.length - 1; i++) {
+      const path = this.agvRouteService.findRoutePath(ids[i], ids[i + 1]);
+      if (path && path.length >= 2) {
+        all.push(...this.agvRouteService.pathToRouteSegments(path));
+      }
+    }
+    return all;
+  }
+
   /**
    * Find road between two nodes
    * Delegates to AgvRouteService
@@ -549,6 +585,45 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     // Warm up order stream so direction map is populated
     this.subscriptions.add(this.ftsOrder$.subscribe());
 
+    const agvOpts =
+      this.mappingService.getAgvOptions().length > 0
+        ? this.mappingService.getAgvOptions()
+        : [{ serial: FTS_SERIAL_FALLBACK, label: 'AGV-1' }];
+
+    const perAgvOrderStreams = agvOpts.map((opt) =>
+      this.messageMonitor.getLastMessage<any>(ftsOrderTopic(opt.serial)).pipe(
+        map((msg) => ({ serial: opt.serial, order: msg?.payload ?? null })),
+        shareReplay({ bufferSize: 1, refCount: false })
+      )
+    );
+
+    this.allAgvOrders$ =
+      perAgvOrderStreams.length > 0
+        ? combineLatest(perAgvOrderStreams)
+        : of([] as Array<{ serial: string; order: unknown }>);
+
+    const perAgvMonitorStateStreams = agvOpts.map((opt) =>
+      this.messageMonitor.getLastMessage<FtsState>(ftsStateTopic(opt.serial)).pipe(
+        map((msg) => (msg !== null && msg.valid ? (msg.payload as FtsState) : null)),
+        startWith(null),
+        shareReplay({ bufferSize: 1, refCount: false })
+      )
+    );
+
+    this.allAgvMonitorFtsStates$ =
+      perAgvMonitorStateStreams.length > 0
+        ? combineLatest(perAgvMonitorStateStreams).pipe(
+            map((states) => {
+              const rec: Record<string, FtsState | null> = {};
+              agvOpts.forEach((opt, i) => {
+                rec[opt.serial] = states[i];
+              });
+              return rec;
+            }),
+            shareReplay({ bufferSize: 1, refCount: false })
+          )
+        : of({} as Record<string, FtsState | null>);
+
     // FTS position for shopfloor preview - calculated from lastNodeId using shopfloor layout
     // Use combineLatest to react to both state changes and animation updates
     this.ftsPosition$ = combineLatest([
@@ -646,17 +721,62 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     map((animState) => animState.activeRouteSegments),
     shareReplay({ bufferSize: 1, refCount: false })
   );
-  
+
+  this.combinedAgvRouteSegments$ = combineLatest([
+    this.animationState$,
+    this.allAgvOrders$,
+    this.selectedAgvSerial$.pipe(distinctUntilChanged()),
+  ]).pipe(
+    map(([anim, orders]) => {
+      const selected = this.selectedAgvSerial$.value;
+      const animSegs = anim?.activeRouteSegments ?? [];
+      const useAnimForSelected = Boolean(anim?.isAnimating && animSegs.length > 0);
+      const out: Array<{ x1: number; y1: number; x2: number; y2: number; stroke?: string }> = [];
+
+      for (const { serial, order } of orders) {
+        const stroke = this.mappingService.getAgvColor(serial);
+        if (useAnimForSelected && serial === selected) {
+          for (const s of animSegs) {
+            out.push({ ...s, stroke });
+          }
+          continue;
+        }
+        const fromOrder = this.buildRouteSegmentsFromFtsOrder(order);
+        for (const s of fromOrder) {
+          out.push({ ...s, stroke });
+        }
+      }
+      return out;
+    }),
+    distinctUntilChanged((a, b) => {
+      if (a.length !== b.length) {
+        return false;
+      }
+      return a.every((item, i) => {
+        const o = b[i];
+        return (
+          o &&
+          item.stroke === o.stroke &&
+          Math.abs(item.x1 - o.x1) < 0.5 &&
+          Math.abs(item.y1 - o.y1) < 0.5 &&
+          Math.abs(item.x2 - o.x2) < 0.5 &&
+          Math.abs(item.y2 - o.y2) < 0.5
+        );
+      });
+    }),
+    shareReplay({ bufferSize: 1, refCount: false })
+  );
+
   // Observable for current position node (for highlighting current position)
   this.currentPositionNode$ = this.ftsState$.pipe(
     map((state) => state?.lastNodeId ? [state.lastNodeId] : null),
     shareReplay({ bufferSize: 1, refCount: false })
   );
 
-  // FTS positions for all AGVs (multi-AGV with colors) - for shopfloor preview
-  // Merge: multi-AGV from ftsStates$ when available, else fallback to single AGV from ftsPosition$ (MessageMonitor)
+  // FTS positions for all AGVs — Route & Position + Presentation (both when telemetry exists)
   this.ftsPositions$ = combineLatest([
     this.dashboard.streams.ftsStates$,
+    this.allAgvMonitorFtsStates$,
     this.ftsPosition$,
     this.animationState$.pipe(
       map((a) => a.animatedPosition),
@@ -667,18 +787,32 @@ export class AgvTabComponent implements OnInit, OnDestroy {
       })
     ),
   ]).pipe(
-    map(([ftsStates, singlePosition, animatedPos]) => {
+    map(([ftsStates, monitorStates, singlePosition, animatedPos]) => {
       const opts = this.agvOptions;
       const selectedSerial = this.selectedAgvSerial$.value;
       const animState = this.agvAnimationService.getState();
       const result: Array<{ serial: string; x: number; y: number; color?: string }> = [];
 
-      // Try multi-AGV from ftsStates (keys: ftsId or serialNumber from payload)
+      const resolveRawState = (serial: string): { lastNodeId?: string; driving?: boolean } | undefined => {
+        const fromMap =
+          (ftsStates[serial] as FtsState | undefined) ??
+          (Object.entries(ftsStates).find(([, s]) => (s as FtsState | undefined)?.serialNumber === serial)?.[1] as
+            | FtsState
+            | undefined);
+        const fromMonitor = monitorStates[serial] ?? null;
+        const b = fromMap as { lastNodeId?: string; driving?: boolean } | undefined;
+        const m = fromMonitor as { lastNodeId?: string; driving?: boolean } | null;
+        if (b?.lastNodeId != null && String(b.lastNodeId).length > 0) {
+          return b;
+        }
+        if (m?.lastNodeId != null && String(m.lastNodeId).length > 0) {
+          return m;
+        }
+        return b ?? m ?? undefined;
+      };
+
       for (const opt of opts) {
-        const state = ftsStates[opt.serial] ?? (ftsStates as Record<string, { lastNodeId?: string; serialNumber?: string }>)[opt.serial];
-        // Also check entries keyed by serialNumber (business may use ftsId ?? serialNumber)
-        const bySerial = Object.entries(ftsStates).find(([, s]) => (s as { serialNumber?: string }).serialNumber === opt.serial);
-        const rawState = (state ?? bySerial?.[1]) as { lastNodeId?: string; driving?: boolean } | undefined;
+        const rawState = resolveRawState(opt.serial);
         const nodeId = rawState?.lastNodeId;
         if (!nodeId) continue;
         let pos: { x: number; y: number } | null = null;
@@ -698,7 +832,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
         }
       }
 
-      // Fallback: when no positions from ftsStates, use single AGV from MessageMonitor (ftsPosition$)
+      // Fallback: no multi layout match — selected AGV only from ftsPosition$
       if (result.length === 0 && singlePosition) {
         result.push({
           serial: selectedSerial,
@@ -855,6 +989,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
         storage_blue: 'track-trace-storage-blue',
         storage_blue_agv2: 'track-trace-storage-blue-agv2',
         storage_blue_parallel: 'track-trace-storage-blue-parallel',
+        production_blue_dual_agv_step15: 'order-production-blue-dual-agv-step15',
       };
       
       const preset = presetMap[fixture] || 'startup';

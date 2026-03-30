@@ -14,7 +14,7 @@ import * as mockDashboard from '../../../mock-dashboard';
 
 // Mock getDashboardController
 jest.spyOn(mockDashboard, 'getDashboardController').mockReturnValue({
-  streams: { orders$: of({}) },
+  streams: { orders$: of({}), ftsStates$: of({}) },
   loadTabFixture: jest.fn().mockResolvedValue(undefined),
   getCurrentFixture: jest.fn(() => 'startup'),
 } as any);
@@ -50,6 +50,9 @@ describe('PresentationPageComponent', () => {
       initializeLayout: jest.fn(),
       getNodePosition: jest.fn(() => ({ x: 100, y: 100 })),
       findRoute: jest.fn(() => []),
+      findRoutePath: jest.fn(() => null),
+      findRoadBetween: jest.fn(() => null),
+      pathToRouteSegments: jest.fn(() => []),
       resolveNodeRef: jest.fn((nodeId: string) => nodeId),
     };
 
@@ -57,12 +60,14 @@ describe('PresentationPageComponent', () => {
       animationState$: new BehaviorSubject({
         isAnimating: false,
         animatedPosition: null,
-        currentRoute: [],
+        animationPath: [] as string[],
+        activeRouteSegments: [] as Array<{ x1: number; y1: number; x2: number; y2: number }>,
       }),
       getState: jest.fn(() => ({
         isAnimating: false,
         animatedPosition: null,
-        currentRoute: [],
+        animationPath: [] as string[],
+        activeRouteSegments: [] as Array<{ x1: number; y1: number; x2: number; y2: number }>,
       })),
       stopAnimation: jest.fn(),
       startAnimation: jest.fn(),

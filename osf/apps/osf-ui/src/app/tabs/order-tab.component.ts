@@ -4,11 +4,16 @@ import type { OrderActive } from '@osf/entities';
 import { getDashboardController } from '../mock-dashboard';
 import { OrderCardComponent } from '../components/order-card/order-card.component';
 import type { OrderFixtureName } from '@osf/testing-fixtures';
-import { filter, map, shareReplay, startWith, distinctUntilChanged, take } from 'rxjs/operators';
-import { combineLatest, merge, Observable, of, Subscription } from 'rxjs';
+import { catchError, filter, map, shareReplay, startWith, distinctUntilChanged, take } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, merge, Observable, of, Subscription } from 'rxjs';
 import { EnvironmentService } from '../services/environment.service';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { ConnectionService } from '../services/connection.service';
+import { HttpClient } from '@angular/common/http';
+import { ShopfloorMappingService } from '../services/shopfloor-mapping.service';
+import { AgvRouteService } from '../services/agv-route.service';
+import type { ShopfloorLayoutConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
+import { buildFtsPreviewPositionsFromStates, type FtsPreviewPositionInput } from '../utils/build-fts-preview-positions';
 
 const ORDER_TYPES = {
   PRODUCTION: 'PRODUCTION',
@@ -45,14 +50,59 @@ const getOrderTimestamp = (order: OrderActive): number => {
 export class OrderTabComponent implements OnInit, OnDestroy {
   private dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
+  private readonly orderLayoutReady$ = new BehaviorSubject(false);
+
+  readonly orderFtsPositions$: Observable<FtsPreviewPositionInput[]>;
 
   constructor(
     private readonly environmentService: EnvironmentService,
     private readonly messageMonitor: MessageMonitorService,
     private readonly connectionService: ConnectionService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private readonly http: HttpClient,
+    private readonly mappingService: ShopfloorMappingService,
+    private readonly agvRouteService: AgvRouteService
   ) {
+    this.orderFtsPositions$ = combineLatest([
+      this.dashboard.streams.ftsStates$,
+      this.orderLayoutReady$.pipe(filter((ready) => ready)),
+    ]).pipe(
+      map(([ftsStates]) =>
+        buildFtsPreviewPositionsFromStates(
+          ftsStates,
+          this.mappingService.getAgvOptions().map((o) => o.serial),
+          (id) => this.getOrderTabNodePosition(id),
+          (s) => this.mappingService.getAgvColor(s)
+        )
+      ),
+      distinctUntilChanged(
+        (a, b) =>
+          a.length === b.length &&
+          a.every(
+            (it, i) =>
+              b[i]?.serial === it.serial &&
+              Math.abs((b[i]?.x ?? 0) - it.x) < 1 &&
+              Math.abs((b[i]?.y ?? 0) - it.y) < 1 &&
+              b[i]?.color === it.color
+          )
+      ),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
     this.initializeStreams();
+  }
+
+  private getOrderTabNodePosition(nodeId: string): { x: number; y: number } | null {
+    let pos = this.agvRouteService.getNodePosition(nodeId);
+    if (!pos) {
+      const canonical = this.agvRouteService.resolveNodeRef(nodeId);
+      if (canonical) pos = this.agvRouteService.getNodePosition(canonical);
+    }
+    if (!pos && nodeId.match(/^\d+$/)) {
+      pos =
+        this.agvRouteService.getNodePosition(`intersection:${nodeId}`) ??
+        this.agvRouteService.getNodePosition(nodeId);
+    }
+    return pos ? { x: pos.x, y: pos.y } : null;
   }
 
   get isMockMode(): boolean {
@@ -79,6 +129,7 @@ export class OrderTabComponent implements OnInit, OnDestroy {
     'storage_blue',
     'storage_blue_agv2',
     'storage_blue_parallel',
+    'production_blue_dual_agv_step15',
   ];
   readonly fixtureLabels: Partial<Record<OrderFixtureName, string>> = {
     white: $localize`:@@fixtureLabelWhite:White`,
@@ -91,6 +142,7 @@ export class OrderTabComponent implements OnInit, OnDestroy {
     storage_blue: $localize`:@@fixtureLabelStorageBlue:Storage Blue`,
     storage_blue_agv2: $localize`:@@fixtureLabelStorageBlueAgv2:Storage Blue AGV-2`,
     storage_blue_parallel: $localize`:@@fixtureLabelStorageBlueParallel:Storage Blue Parallel`,
+    production_blue_dual_agv_step15: $localize`:@@fixtureLabelProductionBlueDualAgv:Production Blue • Dual AGV (step 15 demo)`,
     startup: $localize`:@@fixtureLabelStartup:Startup`,
   };
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
@@ -266,6 +318,20 @@ export class OrderTabComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.add(
+      this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').pipe(
+        catchError((e) => {
+          console.warn('[order-tab] shopfloor layout load failed', e);
+          return of(null);
+        })
+      ).subscribe((config) => {
+        if (config) {
+          this.mappingService.initializeLayout(config);
+          this.agvRouteService.initializeLayout(config);
+          this.orderLayoutReady$.next(true);
+        }
+      })
+    );
+    this.subscriptions.add(
       this.connectionService.state$
         .pipe(distinctUntilChanged())
         .subscribe((state) => {
@@ -314,6 +380,7 @@ export class OrderTabComponent implements OnInit, OnDestroy {
       storage_blue: 'order-storage-blue',
       storage_blue_agv2: 'order-storage-blue-agv2',
       storage_blue_parallel: 'order-storage-blue-parallel',
+      production_blue_dual_agv_step15: 'order-production-blue-dual-agv-step15',
     };
     
     const preset = presetMap[fixture] || 'startup';
