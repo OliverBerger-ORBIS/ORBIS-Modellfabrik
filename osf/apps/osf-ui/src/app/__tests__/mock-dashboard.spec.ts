@@ -248,6 +248,11 @@ describe('MockDashboard', () => {
       expect(typeof controller.commands.dockFts).toBe('function');
     });
 
+    it('should have clearLoadHandlerFts command', () => {
+      expect(controller.commands.clearLoadHandlerFts).toBeDefined();
+      expect(typeof controller.commands.clearLoadHandlerFts).toBe('function');
+    });
+
     it('should have sendCustomerOrder command', () => {
       expect(controller.commands.sendCustomerOrder).toBeDefined();
       expect(typeof controller.commands.sendCustomerOrder).toBe('function');

@@ -52,6 +52,7 @@ export interface DashboardCommandSet {
   calibrateModule: (serialNumber: string) => Promise<void>;
   setFtsCharge: (serialNumber: string, charge: boolean) => Promise<void>;
   dockFts: (serialNumber: string, nodeId?: string) => Promise<void>;
+  clearLoadHandlerFts: (serialNumber: string, options?: { loadDropped?: boolean }) => Promise<void>;
   sendCustomerOrder: (workpieceType: string) => Promise<void>;
   requestRawMaterial: (workpieceType: string) => Promise<void>;
   requestCorrelationInfo: (params: { ccuOrderId?: string; requestId?: string }) => Promise<void>;
@@ -255,6 +256,7 @@ const createStreamSet = (
       calibrateModule: business.calibrateModule,
       setFtsCharge: business.setFtsCharge,
       dockFts: business.dockFts,
+      clearLoadHandlerFts: business.clearLoadHandlerFts,
       sendCustomerOrder: business.sendCustomerOrder,
       requestRawMaterial: business.requestRawMaterial,
       requestCorrelationInfo: business.requestCorrelationInfo,

@@ -85,6 +85,15 @@ export interface FtsState {
   lastSeen?: string;
   /** Node ID for position lookup when position not in payload (Fischertechnik format) */
   lastNodeId?: string;
+  lastModuleSerialNumber?: string;
+  driving?: boolean;
+  paused?: boolean;
+  waitingForLoadHandling?: boolean;
+  batteryState?: {
+    charging?: boolean;
+    currentVoltage?: number;
+    percentage?: number;
+  };
 }
 
 export type ModuleAvailabilityStatus = 'READY' | 'BUSY' | 'BLOCKED' | 'Unknown' | string;
@@ -163,6 +172,10 @@ export interface TransportOverviewStatus {
   lastNodeId?: string;
   lastModuleSerialNumber?: string;
   lastLoadPosition?: string;
+  /** Mirrored from latest `fts/.../state` when available (Shopfloor command gating). */
+  driving?: boolean;
+  paused?: boolean;
+  waitingForLoadHandling?: boolean;
   messageCount: number;
   lastUpdate: string;
 }
@@ -261,6 +274,8 @@ export interface ReplayEnvelope {
  * Basic parser helpers (simple, synchronous).
  * Replace with zod/io-ts validators after extracting real payloads.
  */
+export * from './fts-command-availability';
+
 export const safeJsonParse = (s: unknown) => {
   if (typeof s === 'string') {
     try {

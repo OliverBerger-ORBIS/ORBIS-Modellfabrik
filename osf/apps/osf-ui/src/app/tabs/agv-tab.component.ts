@@ -17,6 +17,12 @@ import { LanguageService, type LocaleKey } from '../services/language.service';
 import type { OrderFixtureName } from '@osf/testing-fixtures';
 import type { ShopfloorLayoutConfig, ShopfloorPoint, ParsedRoad, ShopfloorCellConfig, ShopfloorRoadEndpoint } from '../components/shopfloor-preview/shopfloor-layout.types';
 import { ICONS } from '../shared/icons/icon.registry';
+import {
+  ftsCanOfferInitialDockCommand,
+  ftsCanOfferStartChargeCommand,
+  ftsCanOfferStopChargeCommand,
+  type FtsCommandAvailabilityInput,
+} from '@osf/entities';
 
 // FTS Types (from example app - will be moved to @osf/entities later)
 interface FtsBatteryState {
@@ -77,13 +83,15 @@ const HBW_SERIAL = 'SVR3QA0022';
 const DPS_SERIAL = 'SVR4H73275';
 const AIQS_SERIAL = 'SVR4H76530';
 const INTERSECTION_2 = '2';
-const START_NODE_MAP: Record<string, string> = {
+/** Supervisor nav targets: module serials or layout node id (e.g. intersection `"2"`). */
+const NAV_TARGET_MAP: Record<string, string> = {
   MILL: 'SVR3QA2098',
   DRILL: 'SVR4H76449',
   HBW: HBW_SERIAL,
   DPS: DPS_SERIAL,
   AIQS: AIQS_SERIAL,
   CHRG: 'CHRG0',
+  IX2: INTERSECTION_2,
 };
 
 // Serial number to module type mapping (from message-monitor-tab.component.ts)
@@ -135,25 +143,45 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   get ftsInstantActionTopic(): string {
     return ftsInstantActionTopic(this.selectedAgvSerial$.value);
   }
-  readonly startNodeOptions = ['auto', 'MILL', 'DRILL', 'HBW', 'DPS', 'AIQS', 'CHRG'] as const;
-  selectedStartNode: (typeof this.startNodeOptions)[number] = 'auto';
+  /** Supervisor drive target (graph id via {@link NAV_TARGET_MAP}); start is always FTS-reported position. */
+  readonly navTargetModuleOptions = ['MILL', 'DRILL', 'HBW', 'DPS', 'AIQS', 'CHRG', 'IX2'] as const;
+  selectedNavTargetModule: (typeof this.navTargetModuleOptions)[number] = 'HBW';
   // Labels aligned to Module-Tab naming; default EN text, ready for translation (DE/FR)
   readonly labelChargeOn = $localize`:@@ftsCommandChargeOn:Charge`;
   readonly labelChargeOff = $localize`:@@ftsCommandChargeOff:Stop Charging`;
   readonly labelDockInitial = $localize`:@@ftsCommandDockInitial:Dock`;
-  /** Navigate to HBW from current route start (see Start selector: Auto = last reported node). */
-  readonly labelNavigateToHbw = $localize`:@@ftsCommandNavigateToHbw:→ HBW`;
-  readonly labelToIntersection2 = $localize`:@@ftsCommandToIntersection2:→ Intersection 2`;
-  readonly labelNavigateToHbwDisabledHint = $localize`:@@ftsCommandNavigateToHbwDisabledHint:No start position, already at HBW, or no route to HBW`;
-  readonly labelToIntersection2DisabledHint = $localize`:@@ftsCommandToIntersection2DisabledHint:AGV position unknown or no path to Intersection 2`;
-  readonly labelStartSelect = $localize`:@@ftsCommandStartSelect:Start`;
-  readonly labelStartAuto = $localize`:@@ftsCommandStartAuto:Auto (current position)`;
+  readonly labelNavigateToTargetDisabledHint = $localize`:@@ftsCommandNavigateToTargetDisabledHint:No live position, already at target, or no route`;
+  readonly labelNavigateNoFtsState = $localize`:@@ftsNavigateNoFtsState:Wait for FTS state (connect or select AGV)`;
+  readonly labelNavigatePositionUnclear = $localize`:@@ftsNavigatePositionUnclear:Reported position missing or UNKNOWN`;
+  readonly labelNavigateAlreadyAtTarget = $localize`:@@ftsNavigateAlreadyAtTarget:Already at selected target`;
+  readonly labelNavigateNoRoute = $localize`:@@ftsNavigateNoRoute:No route to selected target from reported position`;
+  readonly labelSupervisorSection = $localize`:@@ftsSupervisorSection:Supervisor navigation`;
+  readonly labelSupervisorTarget = $localize`:@@ftsSupervisorTarget:Target`;
+  readonly labelSupervisorFootnote = $localize`:@@ftsSupervisorFootnote:After manual → HBW the vehicle often waits for module load handling. Use Clear load handling when physically safe (empty bays / no active CCU PICK) to publish clearLoadHandler on instantAction — then the CCU can assign orders again.`;
+  readonly labelClearLoadHandler = $localize`:@@ftsCommandClearLoadHandler:Clear load handling`;
+  readonly labelClearLoadHandlerHint = $localize`:@@ftsCommandClearLoadHandlerHint:Available when FTS reports waiting for load handling`;
+  readonly labelSupervisorCcuReady = $localize`:@@ftsSupervisorCcuReady:CCU: Likely READY`;
+  readonly labelSupervisorCcuBusy = $localize`:@@ftsSupervisorCcuBusy:CCU: Likely BUSY`;
+  readonly labelSupervisorCcuBlocked = $localize`:@@ftsSupervisorCcuBlocked:CCU: Likely BLOCKED`;
+  readonly labelSupervisorCcuUnknown = $localize`:@@ftsSupervisorCcuUnknown:CCU: Unknown (no state)`;
+  readonly labelSupervisorCcuBusyDriving = $localize`:@@ftsSupervisorCcuBusyDriving:Driving or waiting for load handling`;
+  readonly labelSupervisorCcuBusyAction = $localize`:@@ftsSupervisorCcuBusyAction:Action not finished`;
+  readonly labelSupervisorCcuBlockedPaused = $localize`:@@ftsSupervisorCcuBlockedPaused:See details below`;
+  readonly labelNavTargetSelect = $localize`:@@ftsCommandNavTargetSelect:Target`;
+  readonly labelCommandDisabledNoTelemetry = $localize`:@@ftsCommandDisabledNoTelemetry:Wait for FTS state for this AGV`;
+  readonly labelDockDisabledPositionKnown = $localize`:@@ftsDockDisabledPositionKnown:Position already known (node and module)`;
+  readonly labelDockDisabledDriving = $localize`:@@ftsDockDisabledDriving:Not available while driving`;
+  readonly labelDockDisabledLoadHandling = $localize`:@@ftsDockDisabledLoadHandling:Not available while waiting for load handling`;
+  readonly labelChargeStartDisabledDriving = $localize`:@@ftsChargeStartDisabledDriving:Not available while driving`;
+  readonly labelChargeStartDisabledLoadHandling = $localize`:@@ftsChargeStartDisabledLoadHandling:Not available while waiting for load handling`;
+  readonly labelChargeStopDisabledNotCharging = $localize`:@@ftsChargeStopDisabledNotCharging:Not charging`;
+  readonly labelChargeCommandUnavailable = $localize`:@@ftsChargeCommandUnavailable:Charge command not available in this state`;
   readonly badgeTextFtsPosition = $localize`:@@ftsBadgePosition:Position`;
   readonly devModeTitle = $localize`:@@ftsDevModeTitle:Developer Mode (Topics & Payload)`;
   readonly devChargeTitle = $localize`:@@ftsDevChargeTitle:Charge ON/OFF`;
   readonly devDockTitle = $localize`:@@ftsDevDockTitle:Dock to Initial`;
-  readonly devNavigateToHbwTitle = $localize`:@@ftsDevNavigateToHbwTitle:→ HBW (from route start)`;
-  readonly devToIntersection2Title = $localize`:@@ftsDevToIntersection2Title:→ Intersection 2`;
+  readonly devNavigateToTargetTitle = $localize`:@@ftsDevNavigateToTargetTitle:Drive to target (from reported position)`;
+  readonly devClearLoadHandlerTitle = $localize`:@@ftsDevClearLoadHandlerTitle:Clear load handling (instantAction)`;
   readonly vehicleLabelEn = 'AGV';
   readonly vehicleLabelFr = 'AGV';
   readonly vehicleLabelDe = 'FTS';
@@ -950,12 +978,17 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     return this.turnDirectionByActionId.get(action.id);
   }
 
-  onStartNodeChange(value: string): void {
-    if (this.startNodeOptions.includes(value as any)) {
-      this.selectedStartNode = value as (typeof this.startNodeOptions)[number];
+  onNavTargetModuleChange(value: string): void {
+    if (this.navTargetModuleOptions.includes(value as (typeof this.navTargetModuleOptions)[number])) {
+      this.selectedNavTargetModule = value as (typeof this.navTargetModuleOptions)[number];
     } else {
-      this.selectedStartNode = 'auto';
+      this.selectedNavTargetModule = 'HBW';
     }
+  }
+
+  /** Button label e.g. `→ HBW` from {@link selectedNavTargetModule}. */
+  getNavigateToTargetButtonLabel(): string {
+    return `→ ${this.getNavTargetModuleLabel(this.selectedNavTargetModule)}`;
   }
 
   get isCharging(): boolean {
@@ -966,15 +999,71 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     return this.isCharging ? this.labelChargeOff : this.labelChargeOn;
   }
 
-  get showDockInitial(): boolean {
-    const node = this.lastFtsState?.lastNodeId;
-    return !node || node === 'UNKNOWN';
+  private getFtsCommandAvailabilityInput(): FtsCommandAvailabilityInput {
+    const s = this.lastFtsState;
+    if (!s) {
+      return { connected: false, charging: false };
+    }
+    return {
+      connected: true,
+      lastNodeId: s.lastNodeId,
+      lastModuleSerialNumber: s.lastModuleSerialNumber,
+      charging: s.batteryState?.charging ?? false,
+      driving: s.driving,
+      waitingForLoadHandling: s.waitingForLoadHandling,
+    };
   }
 
-  getStartOptionLabel(option: (typeof this.startNodeOptions)[number]): string {
+  canOfferInitialDock(): boolean {
+    return ftsCanOfferInitialDockCommand(this.getFtsCommandAvailabilityInput());
+  }
+
+  getDockInitialDisabledReason(): string | null {
+    if (this.canOfferInitialDock()) {
+      return null;
+    }
+    const input = this.getFtsCommandAvailabilityInput();
+    if (!input.connected) {
+      return this.labelCommandDisabledNoTelemetry;
+    }
+    if (input.driving === true) {
+      return this.labelDockDisabledDriving;
+    }
+    if (input.waitingForLoadHandling === true) {
+      return this.labelDockDisabledLoadHandling;
+    }
+    return this.labelDockDisabledPositionKnown;
+  }
+
+  canChargeCommandClick(): boolean {
+    const input = this.getFtsCommandAvailabilityInput();
+    return this.isCharging
+      ? ftsCanOfferStopChargeCommand(input)
+      : ftsCanOfferStartChargeCommand(input);
+  }
+
+  getChargeCommandDisabledReason(): string | null {
+    if (this.canChargeCommandClick()) {
+      return null;
+    }
+    const input = this.getFtsCommandAvailabilityInput();
+    if (!input.connected) {
+      return this.labelCommandDisabledNoTelemetry;
+    }
+    if (this.isCharging) {
+      return this.labelChargeStopDisabledNotCharging;
+    }
+    if (input.driving === true) {
+      return this.labelChargeStartDisabledDriving;
+    }
+    if (input.waitingForLoadHandling === true) {
+      return this.labelChargeStartDisabledLoadHandling;
+    }
+    return this.labelChargeCommandUnavailable;
+  }
+
+  getNavTargetModuleLabel(option: (typeof this.navTargetModuleOptions)[number]): string {
     switch (option) {
-      case 'auto':
-        return this.labelStartAuto;
       case 'MILL':
         return $localize`:@@ftsStartOptionMill:MILL`;
       case 'DRILL':
@@ -987,6 +1076,8 @@ export class AgvTabComponent implements OnInit, OnDestroy {
         return $localize`:@@ftsStartOptionAiqs:AIQS`;
       case 'CHRG':
         return $localize`:@@ftsStartOptionChrg:CHRG`;
+      case 'IX2':
+        return $localize`:@@ftsNavTargetIx2:Intersection 2`;
       default:
         return option;
     }
@@ -1019,6 +1110,10 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     return this.selectedAgvSerial$.value;
   }
 
+  private getSelectedNavTargetSerial(): string | null {
+    return NAV_TARGET_MAP[this.selectedNavTargetModule] ?? null;
+  }
+
   get chargeExamplePayload() {
     return {
       topic: CCU_SET_CHARGE_TOPIC,
@@ -1048,16 +1143,29 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     };
   }
 
-  get driveNavigateToHbwExamplePayload() {
+  get driveNavigateToTargetExamplePayload() {
+    const target = this.getSelectedNavTargetSerial() ?? HBW_SERIAL;
     const start = this.lastFtsState?.lastNodeId ?? DPS_SERIAL;
-    const { payload } = this.buildOrderFromTo(start, HBW_SERIAL);
+    const { payload } = this.buildOrderFromTo(start, target);
     return { topic: this.ftsOrderTopic, payload, options: { qos: 1, retain: false } };
   }
 
-  get driveToIntersection2ExamplePayload() {
-    const start = this.lastFtsState?.lastNodeId ?? DPS_SERIAL;
-    const { payload } = this.buildOrderFromTo(start, INTERSECTION_2);
-    return { topic: this.ftsOrderTopic, payload, options: { qos: 1, retain: false } };
+  get clearLoadHandlerExamplePayload() {
+    return {
+      topic: this.ftsInstantActionTopic,
+      payload: {
+        timestamp: new Date().toISOString(),
+        serialNumber: this.selectedAgvSerial,
+        actions: [
+          {
+            actionId: 'clear-load-example',
+            actionType: 'clearLoadHandler',
+            metadata: { loadDropped: false },
+          },
+        ],
+      },
+      options: { qos: 1, retain: false },
+    };
   }
 
   getStateClass(state: string): string {
@@ -1108,53 +1216,184 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     return resolved === canonical || resolved === moduleSerial;
   }
 
-  canDriveToIntersection2(ftsState: FtsState | null): boolean {
+  /**
+   * Loose mirror of CCU `updateFtsAvailability` for supervisor transparency only —
+   * the MQTT `fts/.../state` topic remains authoritative.
+   */
+  getSupervisorCcuReadiness(ftsState: FtsState | null): {
+    kind: 'ready' | 'busy' | 'blocked' | 'unknown';
+    badgeClass: string;
+    line: string;
+    detail?: string;
+  } {
+    if (!ftsState) {
+      return { kind: 'unknown', badgeClass: 'ccu-readiness--unknown', line: this.labelSupervisorCcuUnknown };
+    }
+    const last = ftsState.lastNodeId;
+    if (ftsState.paused || last === 'UNKNOWN' || this.ftsStateHasBlockingError(ftsState.errors)) {
+      return {
+        kind: 'blocked',
+        badgeClass: 'ccu-readiness--blocked',
+        line: this.labelSupervisorCcuBlocked,
+        detail: this.formatSupervisorBlockedDetail(ftsState),
+      };
+    }
+    if (ftsState.driving || ftsState.waitingForLoadHandling) {
+      return {
+        kind: 'busy',
+        badgeClass: 'ccu-readiness--busy',
+        line: this.labelSupervisorCcuBusy,
+        detail: this.labelSupervisorCcuBusyDriving,
+      };
+    }
+    const action = ftsState.actionState;
+    if (action && String(action.state).toUpperCase() !== 'FINISHED') {
+      return {
+        kind: 'busy',
+        badgeClass: 'ccu-readiness--busy',
+        line: this.labelSupervisorCcuBusy,
+        detail: this.labelSupervisorCcuBusyAction,
+      };
+    }
+    return { kind: 'ready', badgeClass: 'ccu-readiness--ready', line: this.labelSupervisorCcuReady };
+  }
+
+  private ftsStateHasBlockingError(errors: unknown[] | undefined): boolean {
+    if (!errors?.length) {
+      return false;
+    }
+    return errors.some((e) => {
+      if (e && typeof e === 'object' && 'errorLevel' in e) {
+        return String((e as { errorLevel?: string }).errorLevel).toUpperCase() === 'FATAL';
+      }
+      return false;
+    });
+  }
+
+  private ftsStateFirstFatalErrorSummary(errors: unknown[] | undefined): string | null {
+    if (!errors?.length) {
+      return null;
+    }
+    for (const e of errors) {
+      if (e && typeof e === 'object' && 'errorLevel' in e) {
+        const level = String((e as { errorLevel?: string }).errorLevel).toUpperCase();
+        if (level === 'FATAL') {
+          const errorType = (e as { errorType?: string }).errorType ?? 'FATAL';
+          return `${errorType} (FATAL)`;
+        }
+      }
+    }
+    return null;
+  }
+
+  private formatSupervisorBlockedDetail(ftsState: FtsState): string {
+    const parts: string[] = [];
+    if (ftsState.paused) {
+      parts.push('Paused');
+    }
+    if (ftsState.lastNodeId === 'UNKNOWN') {
+      parts.push('Last node UNKNOWN');
+    }
+    const fatal = this.ftsStateFirstFatalErrorSummary(ftsState.errors);
+    if (fatal) {
+      parts.push(fatal);
+    }
+    return parts.length > 0 ? parts.join(' · ') : this.labelSupervisorCcuBlockedPaused;
+  }
+
+  /** True when FTS reports a usable node for routing (not missing / UNKNOWN). */
+  isReportedPositionNavigable(ftsState: FtsState | null): boolean {
+    const id = ftsState?.lastNodeId;
+    return Boolean(id && id !== 'UNKNOWN');
+  }
+
+  getNavigateToTargetDisabledReason(ftsState: FtsState | null): string | null {
+    if (this.canDriveToSelectedNavTarget(ftsState)) {
+      return null;
+    }
+    if (!ftsState) {
+      return this.labelNavigateNoFtsState;
+    }
+    if (!this.isReportedPositionNavigable(ftsState)) {
+      return this.labelNavigatePositionUnclear;
+    }
     const start = this.resolveRouteStartNode(ftsState);
-    if (!start) return false;
-    const path = this.findRoutePath(start, INTERSECTION_2);
-    return path !== null && path.length >= 1;
+    const targetSerial = this.getSelectedNavTargetSerial();
+    if (!start || !targetSerial) {
+      return this.labelNavigateToTargetDisabledHint;
+    }
+    const startRef = this.resolveNodeRef(start) ?? start;
+    const targetRef = this.resolveNodeRef(targetSerial) ?? targetSerial;
+    if (startRef === targetRef) {
+      return this.labelNavigateAlreadyAtTarget;
+    }
+    if (this.findRoutePath(start, targetSerial) === null) {
+      return this.labelNavigateNoRoute;
+    }
+    return this.labelNavigateToTargetDisabledHint;
+  }
+
+  /** From line: always FTS-reported position (no manual start). */
+  getSupervisorNavFromSummary(ftsState: FtsState | null): string {
+    const node = ftsState?.lastNodeId;
+    const loc = node && node !== 'UNKNOWN' ? this.getLocationName(node) : '—';
+    const idPart = node && node !== 'UNKNOWN' ? node : '—';
+    return `From reported — ${loc} (${idPart})`;
+  }
+
+  getSupervisorNavTargetSummary(): string {
+    const mod = this.selectedNavTargetModule;
+    const serial = this.getSelectedNavTargetSerial();
+    const label = this.getNavTargetModuleLabel(mod);
+    return serial
+      ? `${this.labelSupervisorTarget}: ${label} (${serial})`
+      : `${this.labelSupervisorTarget}: ${label}`;
+  }
+
+  /** True when FTS is waiting for load/dock handshake — clearLoadHandler can release it (see APS-CCU agv.md). */
+  canClearLoadHandling(ftsState: FtsState | null): boolean {
+    return Boolean(ftsState?.waitingForLoadHandling);
+  }
+
+  async sendClearLoadHandlerSupervisor(): Promise<void> {
+    await this.dashboard.commands.clearLoadHandlerFts(this.selectedAgvSerial, { loadDropped: false });
   }
 
   /**
-   * True when a graph path exists from the selected route start to HBW and the AGV is not already at HBW.
-   * Route start = "Auto" → FTS lastNodeId; otherwise the module chosen in the Start dropdown.
+   * True when a route exists from FTS-reported position to {@link selectedNavTargetModule} and AGV is not already there.
    */
-  canDriveToHbw(ftsState: FtsState | null): boolean {
+  canDriveToSelectedNavTarget(ftsState: FtsState | null): boolean {
+    if (!this.isReportedPositionNavigable(ftsState)) {
+      return false;
+    }
     const start = this.resolveRouteStartNode(ftsState);
-    if (!start) return false;
+    const targetSerial = this.getSelectedNavTargetSerial();
+    if (!start || !targetSerial) return false;
     const startRef = this.resolveNodeRef(start) ?? start;
-    const hbwRef = this.resolveNodeRef(HBW_SERIAL) ?? HBW_SERIAL;
-    if (startRef === hbwRef) return false;
-    const path = this.findRoutePath(start, HBW_SERIAL);
+    const targetRef = this.resolveNodeRef(targetSerial) ?? targetSerial;
+    if (startRef === targetRef) return false;
+    const path = this.findRoutePath(start, targetSerial);
     return path !== null && path.length >= 1;
   }
 
-  async sendNavigateToHbw(): Promise<void> {
-    const start = this.resolveRouteStartNode(this.lastFtsState);
-    if (!start) {
-      console.warn('[AGV] Cannot navigate to HBW: no start position (set Start or wait for FTS state)');
+  async sendNavigateToTarget(): Promise<void> {
+    if (!this.isReportedPositionNavigable(this.lastFtsState)) {
+      console.warn('[AGV] Drive to target aborted: no clear reported position (wait for FTS state)');
       return;
     }
-    const { payload } = this.buildOrderFromTo(start, HBW_SERIAL);
+    const start = this.resolveRouteStartNode(this.lastFtsState);
+    const targetSerial = this.getSelectedNavTargetSerial();
+    if (!start || !targetSerial) {
+      console.warn('[AGV] Drive to target aborted: missing start or target');
+      return;
+    }
+    const { payload } = this.buildOrderFromTo(start, targetSerial);
     await this.connectionService.publish(this.ftsOrderTopic, payload, { qos: 1 });
   }
 
-  async sendToIntersection2(): Promise<void> {
-    const start = this.resolveRouteStartNode(this.lastFtsState);
-    if (!start) {
-      console.warn('[AGV] Cannot drive to Intersection 2: no start position known');
-      return;
-    }
-    const { payload } = this.buildOrderFromTo(start, INTERSECTION_2);
-    await this.connectionService.publish(this.ftsOrderTopic, payload, { qos: 1 });
-  }
-
-  /** Route start for manual navigation: matches Intersection-2 behaviour. */
+  /** Route start: FTS-reported `lastNodeId` only (supervisor target is chosen separately). */
   private resolveRouteStartNode(ftsState: FtsState | null): string | null {
-    if (this.selectedStartNode === 'auto') {
-      return ftsState?.lastNodeId ?? null;
-    }
-    return START_NODE_MAP[this.selectedStartNode] ?? null;
+    return ftsState?.lastNodeId ?? null;
   }
 
   /** Metadata for HBW DOCK actions (matches CCU/storage-order FTS order payloads). */
@@ -1176,6 +1415,86 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     };
   }
 
+  /**
+   * CCU / VDA payloads use factory-graph ids: module serial only, intersection as `"1"`, `"2"`, …
+   * (see `NavigatorService.convertPathToOrder`, session extracts under `data/osf-data/fts-analysis/`).
+   */
+  private ccuLayoutNodeId(shopfloorRef: string): string {
+    if (shopfloorRef.startsWith('serial:')) {
+      return shopfloorRef.slice('serial:'.length);
+    }
+    if (shopfloorRef.startsWith('intersection:')) {
+      return shopfloorRef.slice('intersection:'.length);
+    }
+    return shopfloorRef;
+  }
+
+  private invertRoadCardinal(d: ParsedRoad['direction']): ParsedRoad['direction'] {
+    const m: Record<ParsedRoad['direction'], ParsedRoad['direction']> = {
+      NORTH: 'SOUTH',
+      SOUTH: 'NORTH',
+      EAST: 'WEST',
+      WEST: 'EAST',
+    };
+    return m[d];
+  }
+
+  /** Travel direction from `fromRef` to `toRef` along one layout road (matches CCU directed edges). */
+  private travelDirectionAlongRoad(road: ParsedRoad, fromRef: string, toRef: string): ParsedRoad['direction'] | null {
+    if (road.from.ref === fromRef && road.to.ref === toRef) {
+      return road.direction;
+    }
+    if (road.from.ref === toRef && road.to.ref === fromRef) {
+      return this.invertRoadCardinal(road.direction);
+    }
+    return null;
+  }
+
+  /**
+   * Same orthogonality rules as `NavigatorService.inferTurnDirectionFromRoadDirections`.
+   * Returns null if directions are equal (caller should emit PASS) or on unexpected pairs.
+   */
+  private inferTurnLeftRightFromDirections(
+    inbound: ParsedRoad['direction'],
+    outbound: ParsedRoad['direction'],
+  ): 'LEFT' | 'RIGHT' | null {
+    if (inbound === outbound) {
+      return null;
+    }
+    if (inbound === 'NORTH') {
+      if (outbound === 'EAST') return 'RIGHT';
+      if (outbound === 'WEST') return 'LEFT';
+    } else if (inbound === 'SOUTH') {
+      if (outbound === 'EAST') return 'LEFT';
+      if (outbound === 'WEST') return 'RIGHT';
+    } else if (inbound === 'EAST') {
+      if (outbound === 'NORTH') return 'LEFT';
+      if (outbound === 'SOUTH') return 'RIGHT';
+    } else if (inbound === 'WEST') {
+      if (outbound === 'NORTH') return 'RIGHT';
+      if (outbound === 'SOUTH') return 'LEFT';
+    }
+    return null;
+  }
+
+  private intersectionActionForPath(path: string[], idx: number): { type: 'PASS' | 'TURN'; metadata?: Record<string, string> } {
+    const inboundRoad = this.findRoadBetween(path[idx - 1], path[idx]);
+    const outboundRoad = this.findRoadBetween(path[idx], path[idx + 1]);
+    if (!inboundRoad?.direction || !outboundRoad?.direction) {
+      return { type: 'PASS' };
+    }
+    const inDir = this.travelDirectionAlongRoad(inboundRoad, path[idx - 1], path[idx]);
+    const outDir = this.travelDirectionAlongRoad(outboundRoad, path[idx], path[idx + 1]);
+    if (!inDir || !outDir) {
+      return { type: 'PASS' };
+    }
+    const turn = this.inferTurnLeftRightFromDirections(inDir, outDir);
+    if (!turn) {
+      return { type: 'PASS' };
+    }
+    return { type: 'TURN', metadata: { direction: turn } };
+  }
+
   private buildOrderFromTo(startNodeId: string, targetNodeId: string): {
     payload: Record<string, unknown>;
     pathUsed: string[] | null;
@@ -1185,36 +1504,41 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     const edges: Array<{ id: string; length: number; linkedNodes: string[] }> = [];
     const targetIsHbw = targetNodeId === HBW_SERIAL;
 
-    if (path && path.length >= 1) {
+    if (path && path.length >= 2) {
+      const ccuPath = path.map((ref) => this.ccuLayoutNodeId(ref));
+
       for (let i = 0; i < path.length - 1; i++) {
         const a = path[i];
         const b = path[i + 1];
         const road = this.findRoadBetween(a, b);
         if (road) {
+          const fromCcu = this.ccuLayoutNodeId(a);
+          const toCcu = this.ccuLayoutNodeId(b);
           edges.push({
-            id: road.id,
+            id: `${fromCcu}-${toCcu}`,
             length: road.length,
-            linkedNodes: [road.from.ref, road.to.ref],
+            linkedNodes: [fromCcu, toCcu],
           });
         }
       }
 
-      const linkedEdgesMap = new Map<string, Set<string>>();
-      for (const e of edges) {
-        const [from, to] = e.linkedNodes;
-        if (!linkedEdgesMap.has(from)) linkedEdgesMap.set(from, new Set());
-        if (!linkedEdgesMap.has(to)) linkedEdgesMap.set(to, new Set());
-        linkedEdgesMap.get(from)!.add(e.id);
-        linkedEdgesMap.get(to)!.add(e.id);
-      }
+      const edgeIdAlongPath = (fromIdx: number, toIdx: number): string =>
+        `${ccuPath[fromIdx]}-${ccuPath[toIdx]}`;
 
       for (let idx = 0; idx < path.length; idx++) {
-        const nodeId = path[idx];
-        const edgeSet = linkedEdgesMap.get(nodeId) ?? new Set<string>();
-        const linkedEdges = Array.from(edgeSet);
+        const ccuId = ccuPath[idx];
+        let linkedEdges: string[];
+        if (idx === 0) {
+          linkedEdges = [edgeIdAlongPath(0, 1)];
+        } else if (idx === path.length - 1) {
+          linkedEdges = [edgeIdAlongPath(idx - 1, idx)];
+        } else {
+          linkedEdges = [edgeIdAlongPath(idx - 1, idx), edgeIdAlongPath(idx, idx + 1)];
+        }
+
         if (idx === 0) {
           nodes.push({
-            id: nodeId,
+            id: ccuId,
             linkedEdges,
           });
           continue;
@@ -1223,7 +1547,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
         if (isLast) {
           if (targetIsHbw) {
             nodes.push({
-              id: nodeId,
+              id: ccuId,
               linkedEdges,
               action: {
                 id: this.uuid(),
@@ -1233,7 +1557,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
             });
           } else {
             nodes.push({
-              id: nodeId,
+              id: ccuId,
               linkedEdges,
               action: {
                 id: `stop-${this.uuid()}`,
@@ -1244,19 +1568,20 @@ export class AgvTabComponent implements OnInit, OnDestroy {
           }
           continue;
         }
+        const passOrTurn = this.intersectionActionForPath(path, idx);
         nodes.push({
-          id: nodeId,
+          id: ccuId,
           linkedEdges,
           action: {
             id: this.uuid(),
-            type: 'PASS',
-            metadata: {},
+            type: passOrTurn.type,
+            metadata: passOrTurn.metadata ?? {},
           },
         });
       }
     } else {
       nodes.push({
-        id: targetNodeId,
+        id: this.ccuLayoutNodeId(targetNodeId),
         linkedEdges: [],
         action: targetIsHbw
           ? {
@@ -1272,14 +1597,13 @@ export class AgvTabComponent implements OnInit, OnDestroy {
       });
     }
 
-    const payload = {
+    const payload: Record<string, unknown> = {
       timestamp: new Date().toISOString(),
       orderId: this.uuid(),
       orderUpdateId: 0,
       nodes,
       edges,
       serialNumber: this.selectedAgvSerial,
-      metadata: { requestedFrom: startNodeId, target: targetNodeId },
     };
 
     return { payload, pathUsed: path };

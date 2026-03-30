@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { Subject, firstValueFrom } from 'rxjs';
-import { skip } from 'rxjs/operators';
+import { filter, skip } from 'rxjs/operators';
 
 import { createBusiness, type GatewayStreams } from '../index';
 import type {
@@ -187,6 +187,65 @@ test('aggregates module pairing overview', async () => {
   assert.equal(overview.modules['SVR3QA0022'].messageCount, 1);
   assert.equal(overview.modules['SVR3QA0022'].lastUpdate, '18:02:09');
   assert.equal(overview.transports['5iO4'].availability, 'READY');
+});
+
+test('merges fts live fields into transport overview', async () => {
+  const { streams, subjects } = createGateway();
+  const business = createBusiness(streams);
+
+  const overviewPromise = firstValueFrom(
+    business.moduleOverview$.pipe(filter((o) => o.transports['5iO4']?.driving === true)),
+  );
+
+  subjects.pairing$.next({
+    modules: [],
+    transports: [
+      {
+        serialNumber: '5iO4',
+        connected: true,
+        available: 'READY',
+        charging: false,
+        lastNodeId: 'SVR4H73275',
+      },
+    ],
+    timestamp: '2025-11-10T18:02:09.702936',
+  });
+
+  subjects.fts$.next({
+    serialNumber: '5iO4',
+    lastNodeId: 'SVR4H73275',
+    driving: true,
+    waitingForLoadHandling: false,
+    batteryState: { charging: false },
+  });
+
+  const overview = await overviewPromise;
+  assert.equal(overview.transports['5iO4'].driving, true);
+  assert.equal(overview.transports['5iO4'].waitingForLoadHandling, false);
+});
+
+test('applies cached fts to transport row when pairing arrives after fts', async () => {
+  const { streams, subjects } = createGateway();
+  const business = createBusiness(streams);
+
+  const overviewPromise = firstValueFrom(
+    business.moduleOverview$.pipe(filter((o) => o.transports['5iO4']?.driving === true)),
+  );
+
+  subjects.fts$.next({
+    serialNumber: '5iO4',
+    driving: true,
+    batteryState: { charging: false },
+  });
+
+  subjects.pairing$.next({
+    modules: [],
+    transports: [{ serialNumber: '5iO4', connected: true, available: 'READY', charging: false }],
+    timestamp: '2025-11-10T18:02:09.702936',
+  });
+
+  const overview = await overviewPromise;
+  assert.equal(overview.transports['5iO4'].driving, true);
 });
 
 test('aggregates inventory overview', async () => {

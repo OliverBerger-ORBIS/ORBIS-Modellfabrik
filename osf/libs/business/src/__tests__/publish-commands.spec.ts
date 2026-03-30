@@ -184,6 +184,28 @@ test('dockFts does not publish if serialNumber is empty', async () => {
   assert.equal(publishLog.length, 0);
 });
 
+test('clearLoadHandlerFts publishes clearLoadHandler instant action', async () => {
+  const { streams, publishLog } = createGateway();
+  const business = createBusiness(streams);
+
+  await business.clearLoadHandlerFts('5iO4', { loadDropped: false });
+
+  assert.equal(publishLog.length, 1);
+  assert.equal(publishLog[0]?.topic, 'fts/v1/ff/5iO4/instantAction');
+  const payload = publishLog[0]?.payload as Record<string, unknown>;
+  assert.equal(payload.serialNumber, '5iO4');
+  const actions = payload.actions as Array<Record<string, unknown>>;
+  assert.equal(actions[0].actionType, 'clearLoadHandler');
+  assert.equal((actions[0].metadata as { loadDropped: boolean }).loadDropped, false);
+});
+
+test('clearLoadHandlerFts does not publish if serialNumber is empty', async () => {
+  const { streams, publishLog } = createGateway();
+  const business = createBusiness(streams);
+  await business.clearLoadHandlerFts('');
+  assert.equal(publishLog.length, 0);
+});
+
 test('sendCustomerOrder publishes ccu/order/request with correct payload', async () => {
   const { streams, publishLog } = createGateway();
   const business = createBusiness(streams);

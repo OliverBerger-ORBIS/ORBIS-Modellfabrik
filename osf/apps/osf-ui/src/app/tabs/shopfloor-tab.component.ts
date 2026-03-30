@@ -7,6 +7,11 @@ import type {
   TransportOverviewStatus,
   FtsState,
 } from '@osf/entities';
+import {
+  ftsCanOfferInitialDockCommand,
+  ftsCanOfferStartChargeCommand,
+  ftsCanOfferStopChargeCommand,
+} from '@osf/entities';
 import { SHOPFLOOR_ASSET_MAP, type OrderFixtureName } from '@osf/testing-fixtures';
 import { getDashboardController } from '../mock-dashboard';
 import type { Observable } from 'rxjs';
@@ -207,6 +212,9 @@ type ModuleRow = {
   charging?: boolean;
   lastModuleSerialNumber?: string;
   lastNodeId?: string;
+  driving?: boolean;
+  waitingForLoadHandling?: boolean;
+  paused?: boolean;
 };
 
 type ModuleRegistryEntry = {
@@ -1020,26 +1028,37 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     const registryEntry = this.moduleRegistryLookup.get(transport.id);
     const isRegistryTransport = registryEntry?.kind === 'transport';
 
-    // Dock and Charge commands only when AGV is connected (matches original ff UI Modules tab)
+    // Dock / charge: only when allowed (shared rules with AGV tab — see @osf/entities fts-command-availability)
     if (transport.connected === true) {
-      const needsInitialDock =
-        !transport.lastModuleSerialNumber || transport.lastModuleSerialNumber === 'UNKNOWN';
+      const cmdInput = {
+        connected: true,
+        lastNodeId: transport.lastNodeId,
+        lastModuleSerialNumber: transport.lastModuleSerialNumber,
+        charging: transport.charging,
+        driving: transport.driving,
+        waitingForLoadHandling: transport.waitingForLoadHandling,
+      };
 
-      if (needsInitialDock) {
+      if (ftsCanOfferInitialDockCommand(cmdInput)) {
         actions.push({
           label: $localize`:@@moduleCommandDock:Dock`,
           handler: () => this.dashboard.commands.dockFts(transport.id, transport.lastNodeId),
         });
       }
 
-      actions.push({
-        label: transport.charging
-          ? $localize`:@@moduleCommandStopCharging:Stop Charging`
-          : $localize`:@@moduleCommandCharge:Charge`,
-        secondary: transport.charging ?? false,
-        handler: () =>
-          this.dashboard.commands.setFtsCharge(transport.id, !(transport.charging ?? false)),
-      });
+      if (ftsCanOfferStopChargeCommand(cmdInput)) {
+        actions.push({
+          label: $localize`:@@moduleCommandStopCharging:Stop Charging`,
+          secondary: true,
+          handler: () => this.dashboard.commands.setFtsCharge(transport.id, false),
+        });
+      } else if (ftsCanOfferStartChargeCommand(cmdInput)) {
+        actions.push({
+          label: $localize`:@@moduleCommandCharge:Charge`,
+          secondary: false,
+          handler: () => this.dashboard.commands.setFtsCharge(transport.id, true),
+        });
+      }
     }
 
     // Calculate message count for this specific transport (by serial-Id)
@@ -1070,6 +1089,9 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       charging: transport.charging ?? false,
       lastModuleSerialNumber: transport.lastModuleSerialNumber,
       lastNodeId: transport.lastNodeId,
+      driving: transport.driving,
+      waitingForLoadHandling: transport.waitingForLoadHandling,
+      paused: transport.paused,
     };
   }
 

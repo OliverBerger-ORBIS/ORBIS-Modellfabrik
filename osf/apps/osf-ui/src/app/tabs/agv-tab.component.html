@@ -358,40 +358,64 @@
             <span i18n="@@ftsCommandsTitle">Commands</span>
           </h2>
           <div class="command-start-select">
-            <label for="startNodeSelect">{{ labelStartSelect }}</label>
+            <label for="navTargetModuleSelect">{{ labelNavTargetSelect }}</label>
             <select
-              id="startNodeSelect"
-              (change)="onStartNodeChange($any($event.target).value || 'auto')"
+              id="navTargetModuleSelect"
+              (change)="onNavTargetModuleChange($any($event.target).value || 'HBW')"
             >
-              <option *ngFor="let opt of startNodeOptions" [value]="opt" [selected]="opt === selectedStartNode">
-                {{ getStartOptionLabel(opt) }}
+              <option *ngFor="let opt of navTargetModuleOptions" [value]="opt" [selected]="opt === selectedNavTargetModule">
+                {{ getNavTargetModuleLabel(opt) }}
               </option>
             </select>
           </div>
+          <div class="supervisor-nav">
+            <p class="supervisor-nav__title">{{ labelSupervisorSection }}</p>
+            <p class="supervisor-nav__row">{{ getSupervisorNavFromSummary(ftsState) }}</p>
+            <p class="supervisor-nav__row">{{ getSupervisorNavTargetSummary() }}</p>
+            <ng-container *ngIf="getSupervisorCcuReadiness(ftsState) as readiness">
+              <div class="ccu-readiness" [ngClass]="readiness.badgeClass">
+                <p class="ccu-readiness__line">{{ readiness.line }}</p>
+                <p class="ccu-readiness__detail" *ngIf="readiness.detail">{{ readiness.detail }}</p>
+              </div>
+            </ng-container>
+            <button
+              type="button"
+              class="command-button command-button--secondary"
+              [disabled]="!canClearLoadHandling(ftsState)"
+              [attr.title]="!canClearLoadHandling(ftsState) ? labelClearLoadHandlerHint : null"
+              (click)="sendClearLoadHandlerSupervisor()"
+            >
+              {{ labelClearLoadHandler }}
+            </button>
+            <p class="supervisor-nav__footnote">{{ labelSupervisorFootnote }}</p>
+          </div>
           <div class="command-button-group command-buttons--stacked">
-            <button type="button" class="command-button" (click)="sendCharge(!isCharging)">
+            <button
+              type="button"
+              class="command-button"
+              [disabled]="!canChargeCommandClick()"
+              [attr.title]="getChargeCommandDisabledReason()"
+              (click)="sendCharge(!isCharging)"
+            >
               {{ chargeButtonLabel }}
             </button>
-            <button type="button" class="command-button" *ngIf="showDockInitial" (click)="sendDockInitial()">
+            <button
+              type="button"
+              class="command-button"
+              [disabled]="!canOfferInitialDock()"
+              [attr.title]="getDockInitialDisabledReason()"
+              (click)="sendDockInitial()"
+            >
               {{ labelDockInitial }}
             </button>
             <button
               type="button"
               class="command-button"
-              [disabled]="!canDriveToHbw(ftsState)"
-              [attr.title]="!canDriveToHbw(ftsState) ? labelNavigateToHbwDisabledHint : null"
-              (click)="sendNavigateToHbw()"
+              [disabled]="!canDriveToSelectedNavTarget(ftsState)"
+              [attr.title]="getNavigateToTargetDisabledReason(ftsState)"
+              (click)="sendNavigateToTarget()"
             >
-              {{ labelNavigateToHbw }}
-            </button>
-            <button
-              type="button"
-              class="command-button"
-              [disabled]="!canDriveToIntersection2(ftsState)"
-              [attr.title]="!canDriveToIntersection2(ftsState) ? labelToIntersection2DisabledHint : null"
-              (click)="sendToIntersection2()"
-            >
-              {{ labelToIntersection2 }}
+              {{ getNavigateToTargetButtonLabel() }}
             </button>
           </div>
 
@@ -409,14 +433,14 @@
                 <pre class="mono">{{ dockExamplePayload | json }}</pre>
               </div>
               <div class="commands-dev__item">
-                <div class="detail-label">{{ devNavigateToHbwTitle }}</div>
+                <div class="detail-label">{{ devNavigateToTargetTitle }}</div>
                 <div class="mono">{{ ftsOrderTopic }}</div>
-                <pre class="mono">{{ driveNavigateToHbwExamplePayload | json }}</pre>
+                <pre class="mono">{{ driveNavigateToTargetExamplePayload | json }}</pre>
               </div>
               <div class="commands-dev__item">
-                <div class="detail-label">{{ devToIntersection2Title }}</div>
-                <div class="mono">{{ ftsOrderTopic }}</div>
-                <pre class="mono">{{ driveToIntersection2ExamplePayload | json }}</pre>
+                <div class="detail-label">{{ devClearLoadHandlerTitle }}</div>
+                <div class="mono">{{ ftsInstantActionTopic }}</div>
+                <pre class="mono">{{ clearLoadHandlerExamplePayload | json }}</pre>
               </div>
             </div>
           </details>

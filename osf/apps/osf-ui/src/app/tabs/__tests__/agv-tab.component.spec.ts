@@ -19,6 +19,11 @@ jest.spyOn(mockDashboard, 'getDashboardController').mockReturnValue({
     orders$: of({}),
     ftsStates$: of({}),
   },
+  commands: {
+    setFtsCharge: jest.fn(),
+    dockFts: jest.fn(),
+    clearLoadHandlerFts: jest.fn().mockResolvedValue(undefined),
+  },
   loadTabFixture: jest.fn().mockResolvedValue(undefined),
   getCurrentFixture: jest.fn(() => 'startup'),
 } as any);
@@ -389,20 +394,20 @@ describe('AgvTabComponent', () => {
     expect(liveLoadTabFixtureSpy).not.toHaveBeenCalled();
   });
 
-  it('should handle start node change', () => {
-    component.onStartNodeChange('MILL');
-    expect(component.selectedStartNode).toBe('MILL');
+  it('should handle nav target module change', () => {
+    component.onNavTargetModuleChange('MILL');
+    expect(component.selectedNavTargetModule).toBe('MILL');
   });
 
-  it('should reset to auto for invalid start node', () => {
-    component.onStartNodeChange('INVALID');
-    expect(component.selectedStartNode).toBe('auto');
+  it('should reset nav target to HBW for invalid value', () => {
+    component.onNavTargetModuleChange('INVALID');
+    expect(component.selectedNavTargetModule).toBe('HBW');
   });
 
-  it('should get start option label', () => {
-    expect(component.getStartOptionLabel('auto')).toBeDefined();
-    expect(component.getStartOptionLabel('MILL')).toBeDefined();
-    expect(component.getStartOptionLabel('DRILL')).toBeDefined();
+  it('should get nav target module label', () => {
+    expect(component.getNavTargetModuleLabel('MILL')).toBeDefined();
+    expect(component.getNavTargetModuleLabel('DRILL')).toBeDefined();
+    expect(component.getNavTargetModuleLabel('HBW')).toBeDefined();
   });
 
   it('should get vehicle label based on locale', () => {
@@ -437,10 +442,11 @@ describe('AgvTabComponent', () => {
     expect(component.labelChargeOn).toBeDefined();
     expect(component.labelChargeOff).toBeDefined();
     expect(component.labelDockInitial).toBeDefined();
-    expect(component.labelNavigateToHbw).toBeDefined();
+    expect(component.getNavigateToTargetButtonLabel()).toContain('HBW');
   });
 
-  it('should enable navigate to HBW when route exists from current node', () => {
+  it('should enable drive to selected target when route exists from reported node (default HBW)', () => {
+    component.selectedNavTargetModule = 'HBW';
     (ftsRouteService.findRoutePath as jest.Mock).mockImplementation(
       (start: string, target: string) => {
         if (start === 'SVR4H73275' && target === 'SVR3QA0022') {
@@ -449,13 +455,221 @@ describe('AgvTabComponent', () => {
         return null;
       }
     );
-    expect(component.canDriveToHbw(mockFtsState as never)).toBe(true);
+    expect(component.canDriveToSelectedNavTarget(mockFtsState as never)).toBe(true);
   });
 
-  it('should disable navigate to HBW when already at HBW', () => {
+  it('should enable drive to DRILL from DPS when route exists', () => {
+    component.selectedNavTargetModule = 'DRILL';
+    (ftsRouteService.findRoutePath as jest.Mock).mockImplementation(
+      (start: string, target: string) => {
+        if (start === 'SVR4H73275' && target === 'SVR4H76449') {
+          return ['SVR4H73275', 'SVR4H76449'];
+        }
+        return null;
+      }
+    );
+    expect(component.canDriveToSelectedNavTarget(mockFtsState as never)).toBe(true);
+  });
+
+  it('should enable drive to Intersection 2 when IX2 selected and path exists', () => {
+    component.selectedNavTargetModule = 'IX2';
+    (ftsRouteService.findRoutePath as jest.Mock).mockImplementation(
+      (start: string, target: string) => {
+        if (start === 'SVR4H73275' && target === '2') {
+          return ['SVR4H73275', '2'];
+        }
+        return null;
+      }
+    );
+    expect(component.canDriveToSelectedNavTarget(mockFtsState as never)).toBe(true);
+    expect(component.getNavigateToTargetButtonLabel()).toContain('Intersection');
+  });
+
+  it('should disable drive to target when FTS state is null', () => {
+    (ftsRouteService.findRoutePath as jest.Mock).mockReturnValue(['SVR4H76449', 'SVR3QA0022']);
+    expect(component.canDriveToSelectedNavTarget(null)).toBe(false);
+    expect(component.getNavigateToTargetDisabledReason(null)).toBe(component.labelNavigateNoFtsState);
+  });
+
+  it('should disable drive to target when lastNodeId is UNKNOWN', () => {
+    const unknown = { ...mockFtsState, lastNodeId: 'UNKNOWN' };
+    expect(component.canDriveToSelectedNavTarget(unknown as never)).toBe(false);
+    expect(component.getNavigateToTargetDisabledReason(unknown as never)).toBe(component.labelNavigatePositionUnclear);
+  });
+
+  it('should disable drive to target when already at selected target (HBW)', () => {
     (ftsRouteService.findRoutePath as jest.Mock).mockReturnValue(['SVR3QA0022']);
+    component.selectedNavTargetModule = 'HBW';
     const atHbw = { ...mockFtsState, lastNodeId: 'SVR3QA0022' };
-    expect(component.canDriveToHbw(atHbw as never)).toBe(false);
+    expect(component.canDriveToSelectedNavTarget(atHbw as never)).toBe(false);
+  });
+
+  it('buildOrderFromTo should emit CCU-style node and edge ids for DPS → HBW', () => {
+    const layoutPath = ['serial:SVR4H73275', 'intersection:2', 'intersection:1', 'serial:SVR3QA0022'];
+    (ftsRouteService.findRoutePath as jest.Mock).mockReturnValue(layoutPath);
+    (ftsRouteService.findRoadBetween as jest.Mock).mockImplementation((a: string, b: string) => {
+      const segs: Record<string, { length: number; direction: 'NORTH' | 'SOUTH' | 'EAST' | 'WEST' }> = {
+        'serial:SVR4H73275|intersection:2': { length: 380, direction: 'WEST' },
+        'intersection:2|intersection:1': { length: 360, direction: 'WEST' },
+        'intersection:1|serial:SVR3QA0022': { length: 380, direction: 'WEST' },
+      };
+      const key = `${a}|${b}`;
+      const rev = `${b}|${a}`;
+      if (segs[key]) {
+        const sd = segs[key];
+        return { id: 'omit', length: sd.length, direction: sd.direction, from: { ref: a }, to: { ref: b } };
+      }
+      if (segs[rev]) {
+        const sd = segs[rev];
+        return { id: 'omit', length: sd.length, direction: sd.direction, from: { ref: b }, to: { ref: a } };
+      }
+      return null;
+    });
+
+    const { payload, pathUsed } = (component as unknown as { buildOrderFromTo: (s: string, t: string) => unknown }).buildOrderFromTo(
+      'SVR4H73275',
+      'SVR3QA0022',
+    ) as { payload: Record<string, unknown>; pathUsed: string[] | null };
+
+    expect(pathUsed).toEqual(layoutPath);
+    expect(payload['serialNumber']).toBe('5iO4');
+    expect(payload['metadata']).toBeUndefined();
+    expect(payload['orderUpdateId']).toBe(0);
+    expect(payload['edges']).toEqual([
+      { id: 'SVR4H73275-2', length: 380, linkedNodes: ['SVR4H73275', '2'] },
+      { id: '2-1', length: 360, linkedNodes: ['2', '1'] },
+      { id: '1-SVR3QA0022', length: 380, linkedNodes: ['1', 'SVR3QA0022'] },
+    ]);
+    const orderNodes = payload['nodes'] as Array<Record<string, unknown>>;
+    expect(orderNodes.map((n) => n['id'])).toEqual(['SVR4H73275', '2', '1', 'SVR3QA0022']);
+    expect(orderNodes[0]).toEqual(
+      expect.objectContaining({ id: 'SVR4H73275', linkedEdges: ['SVR4H73275-2'] }),
+    );
+    expect(orderNodes[1]).toEqual(
+      expect.objectContaining({ id: '2', linkedEdges: ['SVR4H73275-2', '2-1'], action: expect.objectContaining({ type: 'PASS' }) }),
+    );
+    expect(orderNodes[2]).toEqual(
+      expect.objectContaining({ id: '1', linkedEdges: ['2-1', '1-SVR3QA0022'], action: expect.objectContaining({ type: 'PASS' }) }),
+    );
+    expect(orderNodes[3]).toEqual(
+      expect.objectContaining({
+        id: 'SVR3QA0022',
+        linkedEdges: ['1-SVR3QA0022'],
+        action: expect.objectContaining({ type: 'DOCK' }),
+      }),
+    );
+  });
+
+  it('buildOrderFromTo should emit TURN at intersections for DRILL → HBW (layout-accurate directions)', () => {
+    const layoutPath = ['serial:SVR4H76449', 'intersection:3', 'intersection:1', 'serial:SVR3QA0022'];
+    (ftsRouteService.findRoutePath as jest.Mock).mockReturnValue(layoutPath);
+    (ftsRouteService.findRoadBetween as jest.Mock).mockImplementation((a: string, b: string) => {
+      const segs: Record<string, { length: number; direction: 'NORTH' | 'SOUTH' | 'EAST' | 'WEST' }> = {
+        'serial:SVR4H76449|intersection:3': { length: 380, direction: 'EAST' },
+        'intersection:3|intersection:1': { length: 360, direction: 'NORTH' },
+        'intersection:1|serial:SVR3QA0022': { length: 380, direction: 'WEST' },
+      };
+      const key = `${a}|${b}`;
+      const rev = `${b}|${a}`;
+      if (segs[key]) {
+        const sd = segs[key];
+        return { id: 'omit', length: sd.length, direction: sd.direction, from: { ref: a }, to: { ref: b } };
+      }
+      if (segs[rev]) {
+        const sd = segs[rev];
+        return { id: 'omit', length: sd.length, direction: sd.direction, from: { ref: b }, to: { ref: a } };
+      }
+      return null;
+    });
+
+    const { payload } = (component as unknown as { buildOrderFromTo: (s: string, t: string) => unknown }).buildOrderFromTo(
+      'SVR4H76449',
+      'SVR3QA0022',
+    ) as { payload: Record<string, unknown> };
+    const orderNodes = payload['nodes'] as Array<{ id?: string; action?: { type?: string; metadata?: { direction?: string } } }>;
+    expect(orderNodes[1].action?.type).toBe('TURN');
+    expect(orderNodes[1].action?.metadata?.direction).toBe('LEFT');
+    expect(orderNodes[2].action?.type).toBe('TURN');
+    expect(orderNodes[2].action?.metadata?.direction).toBe('LEFT');
+  });
+
+  describe('getSupervisorCcuReadiness', () => {
+    it('returns unknown when FTS state is null', () => {
+      expect(component.getSupervisorCcuReadiness(null).kind).toBe('unknown');
+    });
+
+    it('returns busy when driving', () => {
+      const s = { ...mockFtsState, driving: true };
+      expect(component.getSupervisorCcuReadiness(s as never).kind).toBe('busy');
+    });
+
+    it('returns busy when waiting for load handling', () => {
+      const s = { ...mockFtsState, waitingForLoadHandling: true };
+      expect(component.getSupervisorCcuReadiness(s as never).kind).toBe('busy');
+    });
+
+    it('returns blocked when paused', () => {
+      const s = { ...mockFtsState, paused: true };
+      const r = component.getSupervisorCcuReadiness(s as never);
+      expect(r.kind).toBe('blocked');
+      expect(r.detail).toContain('Paused');
+    });
+
+    it('returns blocked when lastNodeId is UNKNOWN', () => {
+      const s = { ...mockFtsState, lastNodeId: 'UNKNOWN' };
+      const r = component.getSupervisorCcuReadiness(s as never);
+      expect(r.kind).toBe('blocked');
+      expect(r.detail).toContain('Last node UNKNOWN');
+    });
+
+    it('returns blocked with FATAL error summary when errors include FATAL', () => {
+      const s = {
+        ...mockFtsState,
+        errors: [{ errorLevel: 'FATAL', errorType: 'NAV_FAULT' }],
+      };
+      const r = component.getSupervisorCcuReadiness(s as never);
+      expect(r.kind).toBe('blocked');
+      expect(r.detail).toContain('NAV_FAULT');
+      expect(r.detail).toContain('FATAL');
+    });
+
+    it('returns busy when primary action is not FINISHED', () => {
+      const s = {
+        ...mockFtsState,
+        actionState: { ...mockFtsState.actionState, state: 'RUNNING' },
+      };
+      expect(component.getSupervisorCcuReadiness(s as never).kind).toBe('busy');
+    });
+
+    it('returns ready when stopped and action FINISHED', () => {
+      const s = {
+        ...mockFtsState,
+        driving: false,
+        waitingForLoadHandling: false,
+        actionState: { ...mockFtsState.actionState, state: 'FINISHED' },
+      };
+      expect(component.getSupervisorCcuReadiness(s as never).kind).toBe('ready');
+    });
+  });
+
+  it('canClearLoadHandling is true when waitingForLoadHandling', () => {
+    const s = { ...mockFtsState, waitingForLoadHandling: true };
+    expect(component.canClearLoadHandling(s as never)).toBe(true);
+    expect(component.canClearLoadHandling(mockFtsState as never)).toBe(false);
+  });
+
+  it('sendClearLoadHandlerSupervisor calls dashboard command', async () => {
+    const clearLoad = jest.fn().mockResolvedValue(undefined);
+    (component as unknown as { dashboard: { commands: Record<string, jest.Mock> } }).dashboard = {
+      ...((component as unknown as { dashboard: object }).dashboard ?? {}),
+      commands: {
+        setFtsCharge: jest.fn(),
+        dockFts: jest.fn(),
+        clearLoadHandlerFts: clearLoad,
+      },
+    };
+    await component.sendClearLoadHandlerSupervisor();
+    expect(clearLoad).toHaveBeenCalledWith('5iO4', { loadDropped: false });
   });
 });
 

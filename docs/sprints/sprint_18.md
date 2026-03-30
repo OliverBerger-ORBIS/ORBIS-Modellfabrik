@@ -1,121 +1,105 @@
 # Sprint 18 – LogiMAT-Messe Durchführung
 
-**Zeitraum:** 19.03.2026 - 01.04.2026 (2 Wochen)  
-**Status:** Laufend
+**Zeitraum:** 19.03.2026 – 01.04.2026 · **Status:** Laufend · **Vorheriger Sprint:** [Sprint 17](./sprint_17.md)
 
-**Vorgänger:** [Sprint 17](./sprint_17.md)
-
-**Stakeholder-Update:** Fokus auf LogiMAT-Durchführung, kritische Bugfixes und Hardware-Demo-Stabilität.
-
-**Kurz vor Messe (wenig Zeit, kein Fix-Roulette):** [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md)
-
-**Release:** **`v1.0.0`** – Messe-/Referenz-Tag. **`v1.0.1`** (2026-03-23) – DHT/UI-Sync, Messe-Verifikation-Tasks. **`v1.0.2`** (2026-03-25) – Shopfloor **DSP Action** live (`dsp/drill/action`, `dsp/aiqs/action`), **AGV-2** Serial **leJ4**, Arduino Messe-WLAN/Doku. **`v1.0.3`** (2026-03-25) – Shopfloor **FTS/AGV-2** Tests neutral (nur Layout-Serien in `fts[]`). **`v1.0.4`** (2026-03-25) – **AGV-2** kanonisch **`leJ4`** (L nicht I); Shopfloor zeigt nur Layout-FTS. **Letzter RPi-Deploy:** `orbis-osf-ui:1.0.3`; lokal: **`npm run serve:osf-ui`** → Dashboard **v1.0.4**. Smoke: [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md).
+**Kurz:** Messe stabil halten, Bugs fixen, Demo-Hardware zuverlässig.
 
 ---
 
-## 🎯 Ziele
+## Releases (Überblick)
 
-### Priorität 1: Kritische Bugs (LogiMAT)
-
-- [x] **Message Monitor (Messe):** Doppelte Topic-Anzeige – **Ursache analysiert**, **Konsole-Debug dokumentiert** (`osf.debug`), damit Messe-Debugging möglich ist. **Analyse:** [message-monitor-duplicate-topics-2026-03.md](../07-analysis/message-monitor-duplicate-topics-2026-03.md). **How-to:** [osf-ui-console-debug.md](../04-howto/osf-ui-console-debug.md). *Technischer Fix (kein Doppel-Ingest mehr) → Abschnitt „Nach LogiMAT (Refactoring)“ unten.*
-- [ ] **Camera / DPS-TXT – Live-Daten (Prüfung, 23.03.):** End-to-End-Test zeigt **keine neuen** Kamera-Daten: `mosquitto_sub` auf `/j1/txt/1/i/cam` liefert **nur Retain / gleichen `ts`** (kein Strom neuer Publishes). **AP-UI (TXT)** ebenfalls **ohne** frische Cam-Daten. OSF Sensor-Tab: Bild ggf. **eingefroren** (letzter Frame). **Ursache vermutlich Publisher auf DPS-TXT** (alter Projektstand / Prozess) – **nicht** primär OSF-UI. **Nächste Schritte:** TXT-Version/Deployment des Cam-Publishers abgleichen, nach Re-Deploy MQTT auf **neue `ts`** in `<1 min` prüfen. **Analyse:** [sensor-tab-camera-live-loading-2026-03.md](../07-analysis/sensor-tab-camera-live-loading-2026-03.md).
-- [ ] **AGV FTS – Navigation DPS → HBW (Live, 23.03.):** Manueller Test **→ HBW** bei **aktueller Position DPS** **fehlgeschlagen** (OSF-UI FTS-Tab: **Andocken** / **Vorbeifahren** / letzte Aktionen **Fehlgeschlagen**, ~08:09; Status **Gestoppt**, Standort DPS). **Beleg:** Screenshot FTS-Tab ~08:15 (DPS, Fehlversuche). **Hinweis:** Erledigter Task „NAV-Button-Payload“ ([x] unten) betrifft **Payload-Format** – dieser Punkt ist **Live-Repro/Analyse** (CCU, FTS-Order, Docking, ggf. Reset). **Prüfung:** Session-Logs `fts/v1/ff/.../order`, Vergleich [osf-ui-logimat-smoke-checklist.md](../04-howto/osf-ui-logimat-smoke-checklist.md) FTS.
-- [x] **AGV-Tab NAV-Buttons:** Manuell „→ HBW“ / Intersection-2: Payload folgt CCU-Muster (`PASS`/`DOCK`, nicht `STOP`). **→ HBW** nutzt Routenstart wie „Start“-Dropdown (Auto = `lastNodeId`). Session-Analyse: `data/osf-data/sessions/storage-*.log` (`fts/v1/ff/.../order`).
-- [x] **FTS Route-Overlay / Order-Tab Route:** SCSS-Regression (v0.9.3): Route-`<line>`-Styles lagen unter `.preview__fts-layer` statt `.preview__route-overlay` → Linie unsichtbar. **Fix:** Styles wieder unter `.preview__route-overlay`. **Pflicht ab jetzt:** visuelle Checks vor Merge → [osf-ui-shopfloor-route-agv-visual-gate.md](../04-howto/osf-ui-shopfloor-route-agv-visual-gate.md). Optional weiter: RPi vs. localhost.
-- [x] **Customer LogiMAT:** Darstellung DSP-Architecture mit LogiMAT Business Apps (ORBIS-MES EWM (SAP)...)
-
-### Nach LogiMAT (Refactoring, noch Sprint 18)
-
-- [ ] **Message Monitor:** Code-Fix – doppelte Topic-/Nachrichten-Anzeige **beheben** (Root Cause: doppelte `addMessage`-Pfade im Mock; siehe Analyse §2). **Analyse:** [message-monitor-duplicate-topics-2026-03.md](../07-analysis/message-monitor-duplicate-topics-2026-03.md). *Nach Messe, Umsetzung noch Sprint 18. Ergänzt den abgehakten Messe-Task „Message Monitor (Messe)“ oben.*
-
-### Priorität 2: Übernommen aus Sprint 17
-
-- [x] **Vibrationssensor-Station:** Fertigstellung messetaugliche Platte und Transportsicherung (Arduino R4 + MPU-6050 + SW-420 + DHT11 + Flamme + MQ-2 + Ampel + Sirene). Verdrahtung, Konfiguration, Doku konsolidiert ([arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md)), alle Sensoren getestet.
-- [x] **Fixture-Playback im Mock:** Fixtures in Production-Build aufgenommen (project.json). Mock-Fixture-Playback funktioniert auf RPi – Demo ohne Hardware, vorbereitete Sessions. Live-Modus unverändert. DR-19 ergänzt.
-- [x] **Flammensensor-Anzeige (Sensor-Tab):** Darstellung von linearer auf logarithmische Skala umstellen.
-- [x] **Flammensensor Alarm-Werte:** Live-Verifikation **ORBIS-WLAN** (OSF-UI Live): Werte aktualisieren sich; Alarmfall plausibel; **Sirene** bei aktivem UC-05-Toggle.
-- [x] **Arduino Sketch Deployment:** **v1.1.2** – Messe-WLAN **`ORBIS-4C57`** im `#else`-Block; `WIFI_MODE_ORBIS`, Broker `192.168.0.100`. **Daheim** → **ORBIS** durchlaufen; Live-Daten ok. **Vor Messe:** neu flashen. Doku: [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md) §4, [credentials.md](../credentials.md) WLAN.
-- [x] **UC-05 Live-Demo (Gefahrensimulation):** ~~Umsetzbar wie vorgestellt~~ – **CCU-Limitation:** `ccu/set/park` + `ccu/order/cancel` erreichen *keinen* vollständigen Sofort-Stop. IN_PROGRESS-Orders laufen weiter, laufende Stationen (z.B. AIQS) werden nicht abgebrochen. **Nach Stopp zwingend:** Reset + AGV-dock (manual-intervention). Button „Gefahr simulieren“ sendet Park+Cancel+FTS-Reset – Demo zeigt Sent Events; echter Prozess-Anhalt nur bei ENQUEUED. Siehe [alarm-fabrik-stop](../07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md).
-- [x] **UC-01 Anpassung:** Zusammenführung der Track-&-Trace-Kacheln (Konzept/Live) gemäß DR-22 – `TrackTraceUseCaseComponent`, nur `dsp/use-case/track-trace` mit `?tab=concept` / `?tab=live` (keine `…-genealogy`-Route mehr), DSP-Liste „Concept“ / „Live Demo“.
-
-### Organisatorisches
-
-- [ ] **Azure DevOps Migration:** Von Github zu Azure Devops (Repo + Boards).
-- [ ] **Blog-Serie:** Review A1 (Marketing), A2 (Track & Trace), A3 (Überarbeitung).
-
-### E2E-Tests & Verifikation
-
-- [ ] **dsp/correlation/info:** End-to-End Test mit Request/Response Szenario finalisieren.
-- [ ] **ccu/order/request von MES/DSP:** Simulierter Ersatzauftrag nach Quality-Fail; osf-ui zeigt neue Order.
-
-### Sprint-Abschluss (Vorbereitung Sprint 19)
-
-*Erledigung vor Start Sprint 19.*
-
-- [ ] Sprint-Dokument [Sprint 18]: Status → „Abgeschlossen“, Abschlussdatum setzen
-- [ ] Neuer Sprint [Sprint 19]: Aus Template anlegen, offene `[ ]` übernehmen
-- [ ] PROJECT_STATUS: Neue Zeile für Sprint 19 anlegen
-- [ ] Roadmap prüfen: Phasen/Daten noch stimmig?
+| Version | Datum | Inhalt (kurz) |
+|---------|--------|----------------|
+| v1.0.4 | 03-25 | AGV-2 **`leJ4`**, Shopfloor nur Layout-FTS, RPi **`orbis-osf-ui:1.0.4`** |
+| v1.0.3 | 03-25 | Tests / Registry-Texte |
+| v1.0.2 | 03-25 | DSP Action live, Arduino Messe-WLAN-Doku |
+| v1.0.1 | 03-23 | DHT/UI, Verifikation |
+| v1.0.0 | — | Messe-Referenz |
 
 ---
 
-## 📋 Backlog (Optional / Prio 2)
+## Vor der Messe (Kurzablauf, kein Extra-Dokument)
 
-### EPIC: Prozess-Anpassung "2-mal Bohren" (Product WHITE)
-*Ziel: Das Produkt "Weiß" soll an der Bohrstation eine abweichende Bearbeitung (2 Löcher statt 1) erhalten. Dies erfordert Anpassungen durch die gesamte Kette.*
-
-- **Story 1 (MES/DSP):** Definition des Produkts "WHITE" mit speziellem Workplan-Parameter (z.B. `drill_count: 2`) im MES-Auftrag.
-- **Story 2 (CCU/Logic):** Anpassung der `OrderManager`-Logik, um den Parameter auszuwerten. Entweder Generierung zweier separater Bohr-Steps im Workplan (`Drill -> Drill`) oder Erweiterung des Kommandos an die Station.
-- **Story 3 (Station/Hardware):** Anpassung der Bohrstation (TXT-Controller), um differenzierte Kommandos ("1x Bohren" vs. "2x Bohren") zu verstehen und physikalisch auszuführen.
-- **Story 4 (AI/OSF-AIQS):** Neues ML-Modell trainieren. Erweiterung der Klassifikation um den Zustand "2 Löcher" (vs. "1 Loch" vs. "kein Loch").
-- **Story 5 (Hardware/Prep):** Anpassung der Werkstücke (Produkt WHITE) mit Aufklebern/Folien, um das Bohrergebnis "2 Löcher" visuell für die Kamera zu simulieren.
-
-- **Customer Architecture Netzsch:** Neue DSP-Customer-Config `NETZSCH_CONFIG` anlegen – Vorlage: `osf/apps/osf-ui/.../customer/ecme/` und `customer-selector-page.component.ts`.
-
-### Sensor-Erweiterung Arduino (Backlog)
-
-*Siehe [Arduino R4 Multi-Sensor](../05-hardware/arduino-r4-multisensor.md).* Backlog: TM1637/MAX7219 Display für 4-stelliges 7-Segment.
-
-### OSF-UI: Gemeinsamer SVG-/Label-Umbruch & Breiten-Heuristik (Backlog)
-
-*Refactoring / Wartbarkeit – nicht LogiMAT-kritisch; nach Messe oder Sprint 19 priorisieren.*
-
-**Ausgang:** UC-01 Partitur (`uc-01-svg-generator.service.ts`) enthält feste Box-Schrift, Wortumbruch, deutsche Komposita-Suffixe und Silbentrennung mit Bindestrich – **nur** für dieses Diagramm.
-
-**Bereits ähnliche Logik (dupliziert / andere Heuristik):**
-
-| Ort | Inhalt (Kurz) |
-|-----|----------------|
-| `dsp-architecture.component.ts` | `getWrappedLabelLines()` – `charWidth ≈ fontSize * 0.6`, `maxCharsPerLine`, nur `device`-Container, **max. 2 Zeilen**, Wort-für-Wort |
-| `dsp-animation.component.ts` | `getWrappedLabelLines()` – u. a. `fontSize * 0.58`, Break-Hints (`" / "`), lange Tokens; Tests: `dsp-animation.component.label-wrapping.spec.ts` |
-| UC-01 SVG-Generator | String→SVG, feste 18px, DE-Suffixe, `Teil - teil` / `Teil-` + Rest |
-
-**Ziel:** Einen **gemeinsamen, injizierbaren Service** (oder `osf`-Lib-Utility) für **Zeilenumbruch in SVG-Boxen** evaluieren und ggf. einführen: einheitliche **Zeichenbreiten-Heuristik**, optionale **Strategien** (Sprache/Locale, Break-Hints, max. Zeilen, Bindestrich-Trennung), **keine** Copy-Paste-Weiterentwicklung pro Diagramm.
-
-**Akzeptanz (Richtung):** UC-01 und DSP-Architecture (mindestens) können den Service nutzen oder dünne Wrapper behalten; bestehende Tests (DSP Animation Label-Wrapping) als Referenz für Regression.
-
-### EPIC: Aufbau eines Test-Frameworks für osf-ui (Backlog)
-
-*Siehe [Test-Framework vs. Replay – Analyse](../07-analysis/test-framework-replay-comparison-2026-03.md).* Optionale Ergänzung zum Replay-Workflow: Framework-Evaluierung (Playwright/Cypress), Fixture-Anbindung, Pilot-Tests für kritische Szenarien.
-
-### Kurz / Info (Backlog)
-
-- **Analyse Stillstand bei zwei AGVs im mixed-Modus:** Zur Info. Nicht messerelevant für LogiMAT.
+- Vor Demo: aktuellen **Git-Stand** notieren.
+- **Mock:** OSF starten → Shopfloor (Fixture) → Sensor (Mock) → Message Monitor; bei Fehlern **Hard-Reload**.
+- **Live:** Broker verbunden; Kamera nur prüfen, wenn Publisher da ist (nicht raten).
+- **Nicht starten bis nach Messe:** Message-Monitor-**Code**-Fix (nur Analyse erledigt), große Refactorings, Kamera-UI ohne MQTT-Repro.
+- Debug: `osf.debug` = `1` → [osf-ui-console-debug.md](../04-howto/osf-ui-console-debug.md)
 
 ---
 
-## 🔗 Entscheidungen
+## Aufgaben (thematisch, mit Haken)
 
-- [DR-22](../03-decision-records/22-dsp-use-case-konzept-live-demo.md), [Alarm → Fabrik-Stop](../07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md)
+Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
+
+### OSF-UI – Shopfloor & AGV
+
+- [x] **AGV-Tab:** NAV-Buttons (→ HBW etc.); Order aus Shopfloor-Pfad (CCU-kompatible Knoten-/Kanten-IDs; Kreuzungen **`PASS`/`TURN`** aus Streckenrichtung wie `NavigatorService` — [fts-navigation-how-it-works-2026-03.md](../07-analysis/fts-navigation-how-it-works-2026-03.md)).
+- [x] **AGV Supervisor (US):** Als Supervisor das AGV von **beliebigem Start** (Auto = gemeldete Position oder manuelles Start-Modul) zum **HBW** steuern; nach Ankunft sollen **CCU-Flows** (z. B. `ccu/order/request`, Ladefahrt) wieder möglich sein. **Umsetzung OSF:** Block „Supervisor navigation“ — Route **von/bis**, Readiness-Badge; **`clearLoadHandler`**-Button (**Clear load handling**), wenn `waitingForLoadHandling` (Freigabe für neue NAV/CCU nach DOCK ohne Modul-Handshake). Siehe [fts-navigation-how-it-works-2026-03.md](../07-analysis/fts-navigation-how-it-works-2026-03.md) §5.
+- [x] **Shopfloor:** Route-Linie im Preview wieder sichtbar (Styles unter `.preview__route-overlay`). Visuell prüfen vor Merge → [osf-ui-shopfloor-route-agv-visual-gate.md](../04-howto/osf-ui-shopfloor-route-agv-visual-gate.md)
+- [x] **AGV Supervisor-Sequenz (Live):** **→ HBW** dann bei Bedarf **Clear load handling** — verifiziert (Nach `waitingForLoadHandling`: CCU kann wieder; visuelle Kontrolle sinnvoll). **DPS → HBW** getestet; **weitere Startpunkte** (Auto/DRILL/…) noch gezielt live prüfen. Doku: [fts-navigation-how-it-works-2026-03.md](../07-analysis/fts-navigation-how-it-works-2026-03.md) §5–6.
+- [x] **AGV:** Vergleich mit Fischertechnik: **Dock** sowie **Laden** / **Laden beenden** sollen abhängig vom **FTS-/AGV-Zustand** nur angezeigt werden bzw. nur **aktiv** sein, wenn der Zustand das erlaubt (nicht nur „Initialzustand“). Betrifft **Shopfloor-Tab** und **AGV-Tab**; Kriterien an `fts/.../state` (z. B. `lastNodeId`, `lastModuleSerialNumber`, `driving`, `paused`, `waitingForLoadHandling`, `batteryState.charging`, Ladestation) und ggf. CCU/Factsheet abstimmen.
+- [ ] **AGV-Anzeige:** AGV-1 und AGV-2 sollen unterschiedliche Farbe bekommen. AGV-1 bleibt in "orange", AGV-2 soll in "warmes gelb" angezeigt werden. Das betrifft vor allem das layout im AGV-Tab. Dort sollen beide AGVs angezeigt werden. Ebenso in Presenatation (ggf ist Legende anzupassen). Wir hatten Probleme mit der Darstellung (Stichwort: Overlay und wer überdeckt wen? wer ist oben angeordnet?.) Das sollte nicht verändert werden. Die Berechnung von Routen oder Teilroten und die Darstellung (wie weit geht eine Route; ist unterschiedlich im shopfloor-Tab und im AGV-Tab). Die Routen-Berechnung sollte nicht angepasst werden. Die Route soll nach wie wie vor so berechnet werden wie zuvor. Es wäre gut wenn im Shopfloor und im Orders-Tab die AGVs als AGV-1 (orange) und AGV-2 (gelb) angezeigt werden. AGV-2 (Serial leJ4) wird im Shopfloor-Tab in der Tabelle im Namen als "FTS .." angezeigt. Prüfe ob und wie man den "Modul-Status auch auf die AGV-1 und AGV-2 anwenden kann.
+- [] **shopfloor-Tab**. Feste Reihenfolge der Module in der Tabelle (DRILL, HBW,MILL, AIQS,DPS,CHRG,AGV-1, AGV-2), kein dynamuische Umsortierung. Prüfung ob wir "Registry Active" benötigen. Fischertechnik UI hat dsas nicht. Es ist ein relikt aus der frühen Entwicklungsphase. Kann es gefahrlos entfernt werden, oder ggf in Spalte "ID" mit angezeigt werden, so dass nur "neue" IDs keinen Haken bekommen?
+
+### Message Monitor
+
+- [x] **Doppelte Topics:** Ursache dokumentiert, Konsole `osf.debug` beschrieben → [message-monitor-duplicate-topics-2026-03.md](../07-analysis/message-monitor-duplicate-topics-2026-03.md)
+- [ ] **Doppelte Topics:** **Code-Fix** im Mock (doppelte `addMessage`-Pfade).
+
+### Sensor & Kamera
+
+- [x] **Kamera Live:** Keine frischen Bilder auf `/j1/txt/1/i/cam` – Defekt in DPS Station in SPS (Fehler-Anzeige)Camera Bilder wurden am 24.03 gepublished am 25.03 kammen keine mehr. prüfen → [sensor-tab-camera-live-loading-2026-03.md](../07-analysis/sensor-tab-camera-live-loading-2026-03.md)
+- [x] **Flammensensor:** Anzeige **logarithmisch** statt linear (Sensor-Tab).
+- [x] **Flammensensor:** Alarm / Sirene mit UC-05 in Live-WLAN geprüft.
+
+### Arduino & Hardware-Station
+
+- [x] **Vibrationssensor-Station:** Platte, Transport, Verdrahtung, Tests → [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md)
+- [x] **Sketch v1.1.2:** Messe-WLAN `ORBIS-4C57`, Broker `192.168.0.100` → Doku §4, [credentials.md](../credentials.md)
+- [x] **Mock-Fixtures:** Playback im Production-Build, Demo auf RPi ohne Hardware (DR-19).
+- [ ] **DHT-Sensor:** Hat wie andere analoge Sensoren zwei Schwellen (grün -> gelb und gelb -> rot). Wenn Sensor in "warnung = gelb-Bereich ist, dann werden keine weiteren Erhöhungen mehr angezeigt. Der Übergang in einen Warn-Bereich darf die Sensor-Daten Anzeige und den Übergang von Warnung zu Alarm nicht unterbinden. Generell sollte der Sensor so lange im jeweilen Bereich bleibenun die Ampel Schalten bis ein neuer Schwellenübergang erreicht wird. Mindestduer für einen Warnung oder Alarm sollte allerdings mindestens 2 sekunden dauern.
+
+### DSP / LogiMAT-Inhalt
+
+- [x] **Customer-Ansicht:** DSP-Architecture mit LogiMAT Business Apps (z. B. ORBIS-MES EWM).
+- [x] **UC-01:** Track & Trace eine Kachel, Tabs Konzept / Live (DR-22).
+- [x] **UC-05:** Gefahren-Button; Grenzen CCU dokumentiert → [alarm-fabrik-stop-ccu-commands-2026-03.md](../07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md)
+
+### Integration & Tests (E2E)
+
+- [ ] **dsp/correlation/info:** E2E Request/Response abgeschlossen dokumentieren / durchführen.
+- [ ] **ccu/order/request:** E2E Ersatzauftrag nach Quality-Fail; OSF zeigt neue Order.
+
+### Organisation
+
+- [ ] **Azure DevOps:** Repo + Boards von GitHub umziehen.
+- [ ] **Blog:** Reviews A1, A2, A3.
+
+### Sprint-Wechsel (wenn Sprint 18 zu Ende ist)
+
+- [ ] Sprint 18: Status **Abgeschlossen**, Abschlussdatum eintragen.
+- [ ] Sprint 19: Datei neu aus [sprint_template.md](./sprint_template.md), **alle noch offenen `[ ]`** von hier übernehmen.
+- [ ] **PROJECT_STATUS:** neue Zeile Sprint 19.
+- [ ] **Roadmap** kurz gegenlesen.
 
 ---
 
-## 📎 Referenzen
+## Später (Backlog, nicht zum Abhaken im Sprint)
 
-- [Arduino R4 Multi-Sensor](../05-hardware/arduino-r4-multisensor.md)
-- [Use-Case Bibliothek](../02-architecture/use-case-library.md)
-- [Zweites AGV (leJ4)](../07-analysis/second-agv-2026-03.md)
+- **Produkt WHITE „2× Bohren“:** MES/CCU/Station/Kamera-Kette – siehe frühere Epic-Aufzählung; angehen, wenn priorisiert.
+- **Netzsch:** eigene Customer-Config `NETZSCH_CONFIG`.
+- **Arduino:** optionales 7-Segment (TM1637/MAX7219).
+- **OSF:** gemeinsamer SVG-Zeilenumbruch für Diagramme (nach Messe).
+- **Tests:** optionales UI-Test-Framework → [test-framework-replay-comparison-2026-03.md](../07-analysis/test-framework-replay-comparison-2026-03.md)
+- **Info:** Analyse Stillstand zwei AGVs im Mixed-Betrieb – nur zur Einordnung.
 
 ---
 
-*Letzte Aktualisierung: 25.03.2026 (Release **v1.0.4**: AGV-2 `leJ4`, Shopfloor nur Layout-FTS; RPi zuletzt 1.0.3)*
+## Links (Entscheidungen & Tiefe)
+
+- [DR-22](../03-decision-records/22-dsp-use-case-konzept-live-demo.md) · [Zweites AGV leJ4](../07-analysis/second-agv-2026-03.md) · [Use-Case-Bibliothek](../02-architecture/use-case-library.md)
+
+---
+
+*Stand: 30.03.2026*

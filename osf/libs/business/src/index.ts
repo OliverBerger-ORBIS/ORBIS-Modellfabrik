@@ -21,6 +21,7 @@ import type {
   LdrSnapshot,
   SensorOverviewState,
   CameraFrame,
+  TransportOverviewStatus,
 } from '@osf/entities';
 import { OrderStreamPayload, type GatewayPublishFn } from '@osf/gateway';
 
@@ -61,6 +62,11 @@ export interface BusinessCommands {
   calibrateModule: (serialNumber: string) => Promise<void>;
   setFtsCharge: (serialNumber: string, charge: boolean) => Promise<void>;
   dockFts: (serialNumber: string, nodeId?: string) => Promise<void>;
+  /**
+   * VDA instant action `clearLoadHandler` — clears `waitingForLoadHandling` on the FTS so it can accept new navigation.
+   * Use after manual nav when the vehicle is docked and stuck waiting for load handling without a CCU PICK/DROP.
+   */
+  clearLoadHandlerFts: (serialNumber: string, options?: { loadDropped?: boolean }) => Promise<void>;
   sendCustomerOrder: (workpieceType: WorkpieceType) => Promise<void>;
   requestRawMaterial: (workpieceType: WorkpieceType) => Promise<void>;
   requestCorrelationInfo: (params: { ccuOrderId?: string; requestId?: string }) => Promise<void>;
@@ -219,7 +225,31 @@ const buildInventoryOverview = (snapshot: StockSnapshot | null | undefined): Inv
   };
 };
 
-const applyPairingSnapshot = (state: ModuleOverviewState, snapshot: ModulePairingState): ModuleOverviewState => {
+/** Overlay latest `fts/.../state` fields onto a transport overview row (pairing + live FTS). */
+const mergeTransportRowWithFts = (row: TransportOverviewStatus, fts: FtsState): TransportOverviewStatus => {
+  const serial = fts.serialNumber ?? fts.ftsId;
+  if (!serial || row.id !== serial) {
+    return row;
+  }
+  const charging = fts.batteryState?.charging ?? row.charging ?? false;
+  return {
+    ...row,
+    lastNodeId: fts.lastNodeId ?? row.lastNodeId,
+    lastModuleSerialNumber: fts.lastModuleSerialNumber ?? row.lastModuleSerialNumber,
+    charging,
+    batteryVoltage: fts.batteryState?.currentVoltage ?? row.batteryVoltage,
+    batteryPercentage: fts.batteryState?.percentage ?? row.batteryPercentage,
+    driving: fts.driving ?? row.driving,
+    paused: fts.paused ?? row.paused,
+    waitingForLoadHandling: fts.waitingForLoadHandling ?? row.waitingForLoadHandling,
+  };
+};
+
+const applyPairingSnapshot = (
+  state: ModuleOverviewState,
+  snapshot: ModulePairingState,
+  lastFtsBySerial: Record<string, FtsState>,
+): ModuleOverviewState => {
   const timestamp = snapshot.timestamp ?? new Date().toISOString();
   const nextModules = { ...state.modules };
   const nextTransports = { ...state.transports };
@@ -254,7 +284,7 @@ const applyPairingSnapshot = (state: ModuleOverviewState, snapshot: ModulePairin
       return;
     }
 
-    nextTransports[transport.serialNumber] = {
+    const base: TransportOverviewStatus = {
       id: transport.serialNumber,
       connected: Boolean(transport.connected),
       availability: (transport.available ?? prev?.availability ?? 'Unknown') as ModuleAvailabilityStatus,
@@ -267,14 +297,38 @@ const applyPairingSnapshot = (state: ModuleOverviewState, snapshot: ModulePairin
       lastNodeId: transport.lastNodeId ?? prev?.lastNodeId,
       lastModuleSerialNumber: transport.lastModuleSerialNumber ?? prev?.lastModuleSerialNumber,
       lastLoadPosition: transport.lastLoadPosition ?? prev?.lastLoadPosition,
+      driving: prev?.driving,
+      paused: prev?.paused,
+      waitingForLoadHandling: prev?.waitingForLoadHandling,
       messageCount: (prev?.messageCount ?? 0) + 1,
       lastUpdate: formatTimestamp(timestamp),
     };
+    const ftsSnap = lastFtsBySerial[transport.serialNumber];
+    nextTransports[transport.serialNumber] = ftsSnap ? mergeTransportRowWithFts(base, ftsSnap) : base;
   });
 
   return {
     modules: nextModules,
     transports: nextTransports,
+  };
+};
+
+/** Merge live FTS state into the transport row for this serial (overview + command availability in Shopfloor). */
+const applyFtsStateToTransports = (state: ModuleOverviewState, fts: FtsState): ModuleOverviewState => {
+  const serial = fts.serialNumber ?? fts.ftsId;
+  if (!serial) {
+    return state;
+  }
+  const prev = state.transports[serial];
+  if (!prev) {
+    return state;
+  }
+  return {
+    ...state,
+    transports: {
+      ...state.transports,
+      [serial]: mergeTransportRowWithFts(prev, fts),
+    },
   };
 };
 
@@ -343,6 +397,15 @@ const accumulateOrders = (acc: OrdersAccumulator, payload: OrderStreamPayload): 
 
 export const createBusiness = (gateway: GatewayStreams): BusinessStreams & BusinessCommands => {
   const publish = gateway.publish;
+  /** Latest FTS payload per serial (for pairing rows + shopfloor command gating). */
+  const lastFtsBySerial: Record<string, FtsState> = {};
+  gateway.fts$.subscribe((fts) => {
+    const id = fts.serialNumber ?? fts.ftsId;
+    if (id) {
+      lastFtsBySerial[id] = fts;
+    }
+  });
+
   const ordersState$ = gateway.orders$.pipe(
     scan(accumulateOrders, { active: {}, completed: {} } as OrdersAccumulator),
     startWith({ active: {}, completed: {} } as OrdersAccumulator),
@@ -431,7 +494,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
       map(
         (snapshot) =>
           (state: ModuleOverviewState): ModuleOverviewState =>
-            applyPairingSnapshot(state, snapshot)
+            applyPairingSnapshot(state, snapshot, lastFtsBySerial)
       )
     ),
     gateway.moduleFactsheets$.pipe(
@@ -439,6 +502,13 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
         (factsheet) =>
           (state: ModuleOverviewState): ModuleOverviewState =>
             applyFactsheetSnapshot(state, factsheet)
+      )
+    ),
+    gateway.fts$.pipe(
+      map(
+        (fts) =>
+          (state: ModuleOverviewState): ModuleOverviewState =>
+            applyFtsStateToTransports(state, fts)
       )
     )
   ).pipe(
@@ -513,6 +583,28 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
           actionId: `dock-${Date.now()}`,
           metadata: {
             nodeId: targetNodeId,
+          },
+        },
+      ],
+    };
+
+    await publish(`fts/v1/ff/${serialNumber}/instantAction`, payload, { qos: 1, retain: false });
+  };
+
+  const clearLoadHandlerFts: BusinessCommands['clearLoadHandlerFts'] = async (serialNumber, options) => {
+    if (!serialNumber) {
+      return;
+    }
+    const loadDropped = options?.loadDropped ?? false;
+    const payload = {
+      timestamp: new Date().toISOString(),
+      serialNumber,
+      actions: [
+        {
+          actionType: 'clearLoadHandler',
+          actionId: `clear-load-${Date.now()}`,
+          metadata: {
+            loadDropped,
           },
         },
       ],
@@ -664,6 +756,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     calibrateModule,
     setFtsCharge,
     dockFts,
+    clearLoadHandlerFts,
     sendCustomerOrder,
     requestCorrelationInfo,
     requestRawMaterial,

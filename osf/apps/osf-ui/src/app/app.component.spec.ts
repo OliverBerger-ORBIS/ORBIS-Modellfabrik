@@ -30,6 +30,7 @@ jest.spyOn(mockDashboard, 'getDashboardController').mockReturnValue({
     calibrateModule: jest.fn(),
     setFtsCharge: jest.fn(),
     dockFts: jest.fn(),
+    clearLoadHandlerFts: jest.fn(),
     sendCustomerOrder: jest.fn(),
     requestRawMaterial: jest.fn(),
     requestCorrelationInfo: jest.fn(),
