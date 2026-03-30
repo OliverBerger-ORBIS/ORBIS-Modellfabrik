@@ -21,7 +21,7 @@ Architektur-Entscheidungen (ADRs) für die OSF-Entwicklung.
 
 ### Wie
 1. [Template](decision_template.md) als Vorlage nutzen
-2. Neue Datei: `NN-kurzer-titel.md` (NN = nächste freie Nummer: **20**, siehe Liste unten)
+2. Neue Datei: `NN-kurzer-titel.md` (NN = nächste freie Nummer, siehe Liste unten)
 3. Ausfüllen: Kontext, Entscheidung, Alternativen, Konsequenzen
 4. In diese README unter "Entscheidungen" eintragen
 5. Bei Bedarf: Verweise in Architektur-Doku oder How-Tos ergänzen
@@ -94,4 +94,4 @@ Für neue Decision Records: [decision_template.md](decision_template.md)
 
 ---
 
-*Letzte Aktualisierung: 2026-03-12*
+*Letzte Aktualisierung: 2026-03-30*

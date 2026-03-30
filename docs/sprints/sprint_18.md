@@ -68,6 +68,7 @@ Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
 
 ### Integration & Tests (E2E)
 
+- [ ] **Session-Aufzeichnung (Analysen):** Neue **Shopfloor-Sessions mit zwei AGVs** (Mixed-Betrieb) erfassen und unter `data/osf-data/sessions/` ablegen. Im **Session Manager** konfigurierbare **Topic-Filter / Preset** (z. B. „Analyse“), damit beim Record **keine** MQTT-Messages zu **Arduino-Sensordaten** (`osf/arduino/…`), **BME680** (`/j1/txt/1/i/bme680`) und **Kamera** (`/j1/txt/1/i/cam`) geschrieben werden — Volumen/Noise reduzieren, ohne FTS/CCU-Kerntopics zu verlieren. Policy: [DR-25](../03-decision-records/25-session-log-topic-filters.md).
 - [ ] **dsp/correlation/info:** E2E Request/Response abgeschlossen dokumentieren / durchführen.
 - [ ] **ccu/order/request:** E2E Ersatzauftrag nach Quality-Fail; OSF zeigt neue Order.
 
@@ -98,7 +99,7 @@ Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
 
 ## Links (Entscheidungen & Tiefe)
 
-- [DR-22](../03-decision-records/22-dsp-use-case-konzept-live-demo.md) · [Zweites AGV leJ4](../07-analysis/second-agv-2026-03.md) · [Use-Case-Bibliothek](../02-architecture/use-case-library.md)
+- [DR-22](../03-decision-records/22-dsp-use-case-konzept-live-demo.md) · [DR-25 Session-Logs & Topic-Filter](../03-decision-records/25-session-log-topic-filters.md) · [Zweites AGV leJ4](../07-analysis/second-agv-2026-03.md) · [Use-Case-Bibliothek](../02-architecture/use-case-library.md)
 
 ---
 

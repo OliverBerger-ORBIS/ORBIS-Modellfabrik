@@ -88,6 +88,7 @@ User kann Tasks mit Präfix kennzeichnen – Agent muss entsprechend handeln:
 - **Dokumentation:** `docs/` (Alle Projekt-Dokumente)
 - **Session-Daten:** `data/osf-data/sessions/` (Log-Dateien, JSON-Zeilen-Format)
 - **Log-Dateien:** `data/logs/` (nicht mehr ins Projekt-Root)
+- **Session-Logs & Cursor:** Auswertung von Session-Logs für Analysen und Agent-Aufgaben ist **erwünscht**. **`data/osf-data/sessions/`**, übliche Projekt-**`*.log`** und ähnliche Aufzeichnungen **nicht** in `.cursorignore` eintragen, um sie vor der KI zu verstecken. Optional schlanke Aufnahmen über **Topic-Ausschlüsse** im Session Manager (Arduino-Sensor-, BME680-, Cam-Topics) — [DR-25](docs/03-decision-records/25-session-log-topic-filters.md).
 
 ### Dokumentations-Struktur (docs/) – Agent: richtige Stelle nutzen!
 - **Analysen, temporäre Planung, empirische Auswertungen:** `docs/07-analysis/` (Index: [README.md](docs/07-analysis/README.md))

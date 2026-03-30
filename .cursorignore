@@ -1,5 +1,8 @@
 # Cursor AI - Ignore Rules
 # Diese Dateien sollen NICHT von Cursor AI verändert werden
+#
+# Session-Logs (data/osf-data/sessions/, *.log): bewusst NICHT ignorieren —
+# Auswertung für Analysen ist erwünscht; schlanke Aufnahmen via Session-Manager-Filter (DR-25).
 
 # Git Hooks - KRITISCH: Nie verändern!
 git-hooks/pre-commit
@@ -8,11 +11,6 @@ git-hooks/pre-commit
 .gitignore
 requirements.txt
 pytest.ini
-
-# Log-Dateien (werden automatisch generiert)
-logs/
-*.log
-*.jsonl
 
 # Temporäre Dateien
 *.tmp
@@ -26,8 +24,5 @@ dist/
 build/
 out/
 
-# Große Session-Dateien (werden nicht für Code-Analyse benötigt)
-data/osf-data/sessions/*.log
-data/osf-data/sessions/*.db
 
 
