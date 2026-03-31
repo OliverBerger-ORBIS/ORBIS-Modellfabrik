@@ -2,6 +2,8 @@
 
 Diese Anleitung beschreibt Schritt für Schritt, wie Sie eine neue Kundenkonfiguration für die DSP-Animation hinzufügen.
 
+> **Überblick SVG-Text (alle Diagrammtypen):** Wo DSP-Architecture, DSP-Animation und Use-Case-SVGs sich bei **Zeilenumbruch** unterscheiden — siehe Projekt-How-to [osf-ui-svg-label-text-conventions.md](../../../../../../docs/04-howto/osf-ui-svg-label-text-conventions.md).
+
 ## Übersicht
 
 Eine Kundenkonfiguration besteht aus:

@@ -11,6 +11,8 @@ Die **Use-Case Bibliothek** im OSF Dashboard präsentiert die DSP (Digital Shopf
 
 **SVG-Export:** `node scripts/export-use-case-svgs.js`. Bei Fehlermeldung zu Chrome: `npx puppeteer browsers install chrome` ausführen.
 
+**SVG-Text / Zeilenumbruch (Konventionen):** [osf-ui-svg-label-text-conventions.md](../04-howto/osf-ui-svg-label-text-conventions.md) — unterscheidet DSP-Architecture, DSP-Animation und UC-SVG-Generatoren (z. B. UC-01).
+
 ### 1.1 Zentraler Einstieg
 
 | Komponente | Beschreibung |

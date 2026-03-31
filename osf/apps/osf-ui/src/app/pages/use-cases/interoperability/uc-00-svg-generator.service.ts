@@ -2,6 +2,14 @@ import { Injectable } from '@angular/core';
 import { getAssetPath } from '../../../assets/detail-asset-map';
 import { createUc00Structure, type Uc00Structure, type Uc00Chip, type Uc00Lane, type Uc00Column } from './uc-00-structure.config';
 import { ORBIS_COLORS } from '../../../assets/color-palette';
+import {
+  escapeXmlForSvgText,
+  maxCharsPerLineFromInnerWidth,
+  wrapWordsToLinesSimple,
+} from '../../../utils/svg-text-utils';
+
+/** ~UC-01 box labels: avg char width estimate for wrap budget in UC-00 step boxes */
+const UC00_STEP_LABEL_CHAR_FACTOR = 0.52;
 
 /**
  * Service for generating UC-00 SVG dynamically with I18n support
@@ -100,6 +108,7 @@ export class Uc00SvgGeneratorService {
       .hl { opacity: 1; filter: drop-shadow(0 4px 12px rgba(var(--orbis-blue-strong-rgb), 0.2)); }
       .dim { opacity: 0.5; }
       .hidden { display: none; }
+      .uc00-dsp-step-desc { font: 400 18px "Segoe UI", Arial, sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
     </style>
   </defs>`;
   }
@@ -187,15 +196,15 @@ export class Uc00SvgGeneratorService {
     return svg;
   }
   
-  private generateDspColumn(dsp: { column: { x: number; y: number; width: number; height: number; headerX: number; headerY: number; headerKey: string }; steps: Array<{ id: string; x: number; y: number; width: number; height: number; titleKey: string; descriptionKey: string }>; bars: Array<{ id: string; x: number; y: number; width: number; height: number; textKey: string; textLines?: string[]; multiline?: boolean }> }, getText: (key: string) => string): string {
+  private generateDspColumn(dsp: { column: { x: number; y: number; width: number; height: number; headerX: number; headerY: number; headerKey: string }; steps: Array<{ id: string; x: number; y: number; width: number; height: number; titleLine1Key: string; titleLine2Key: string; descriptionKey: string }>; bars: Array<{ id: string; x: number; y: number; width: number; height: number; textKey: string; textLines?: string[]; multiline?: boolean }> }, getText: (key: string) => string): string {
     let svg = `<g id="uc00_col_dsp">`;
     svg += `<rect class="panel-dsp" x="${dsp.column.x}" y="${dsp.column.y}" width="${dsp.column.width}" height="${dsp.column.height}" rx="20" ry="20"/>`;
     svg += `<text x="${dsp.column.headerX}" y="${dsp.column.headerY}" class="h2">${this.escapeXml(getText(dsp.column.headerKey))}</text>`;
     dsp.steps.forEach((step, stepIndex) => {
       svg += `<g id="uc00_step_${step.id}">`;
       svg += `<rect class="stepBox" x="${step.x}" y="${step.y}" width="${step.width}" height="${step.height}" rx="14" ry="14"/>`;
-      svg += `<text x="${step.x + step.width / 2}" y="${step.y + 50}" text-anchor="middle" class="p"><tspan font-weight="700">${this.escapeXml(getText(step.titleKey))}</tspan></text>`;
-      svg += `<text x="${step.x + step.width / 2}" y="${step.y + 85}" text-anchor="middle" class="small muted">${this.escapeXml(getText(step.descriptionKey))}</text></g>`;
+      svg += this.buildDspStepTexts(step, getText);
+      svg += '</g>';
       if (stepIndex < dsp.steps.length - 1) {
         const next = dsp.steps[stepIndex + 1];
         const arrowX = step.x + step.width / 2;
@@ -207,6 +216,93 @@ export class Uc00SvgGeneratorService {
     });
     (dsp.bars || []).forEach((bar) => { svg += this.generateBar(bar, getText); });
     svg += '</g>';
+    return svg;
+  }
+
+  /**
+   * DSP Normalize / Enrich / Correlate: two explicit i18n title lines + wrapped description (max 2 lines).
+   * Gap title block → description equals title line height (same as between title lines).
+   */
+  private buildDspStepTexts(
+    step: { x: number; y: number; width: number; height: number; titleLine1Key: string; titleLine2Key: string; descriptionKey: string },
+    getText: (key: string) => string,
+  ): string {
+    const padX = 16;
+    const cx = step.x + step.width / 2;
+    const innerW = Math.max(0, step.width - padX * 2);
+    const titleFontPx = 20;
+    const descFontPx = 18;
+    const maxDescChars = maxCharsPerLineFromInnerWidth(innerW, descFontPx, UC00_STEP_LABEL_CHAR_FACTOR);
+    const rawTitle1 = getText(step.titleLine1Key).trim();
+    const rawTitle2 = getText(step.titleLine2Key).trim();
+    const titleLines: string[] = [];
+    if (rawTitle1) titleLines.push(rawTitle1);
+    if (rawTitle2) titleLines.push(rawTitle2);
+    const descLines = wrapWordsToLinesSimple(getText(step.descriptionKey), maxDescChars, 2);
+
+    const titleLineHeight = 22;
+    const descLineHeight = 19;
+    const gapTitleToDesc = titleLineHeight;
+
+    const nTitle = titleLines.length;
+    const nDesc = descLines.length;
+    if (nTitle === 0 && nDesc === 0) {
+      return '';
+    }
+
+    // Approximate ascenders/descenders for vertical centering in step box (Segoe UI ~ 20 / 18 px).
+    const titleAscent = Math.round(titleFontPx * 0.75);
+    const titleDescent = Math.round(titleFontPx * 0.25);
+    const descAscent = Math.round(descFontPx * 0.72);
+    const descDescent = Math.round(descFontPx * 0.28);
+
+    let deltaFirstToLastBaseline = 0;
+    if (nTitle > 0 && nDesc > 0) {
+      deltaFirstToLastBaseline = (nTitle - 1) * titleLineHeight + gapTitleToDesc + (nDesc - 1) * descLineHeight;
+    } else if (nTitle > 0) {
+      deltaFirstToLastBaseline = (nTitle - 1) * titleLineHeight;
+    } else {
+      deltaFirstToLastBaseline = (nDesc - 1) * descLineHeight;
+    }
+
+    const topAscent = nTitle > 0 ? titleAscent : descAscent;
+    const bottomDescent = nDesc > 0 ? descDescent : titleDescent;
+    const boxMidY = step.y + step.height / 2;
+    const firstContentBaseline =
+      boxMidY + (topAscent - deltaFirstToLastBaseline - bottomDescent) / 2;
+
+    let svg = '';
+    if (nTitle > 0) {
+      svg += '<text text-anchor="middle" class="p">';
+      titleLines.forEach((line, i) => {
+        const safe = this.escapeXml(line);
+        if (i === 0) {
+          svg += `<tspan x="${cx}" y="${firstContentBaseline}" font-weight="700">${safe}</tspan>`;
+        } else {
+          svg += `<tspan x="${cx}" dy="${titleLineHeight}" font-weight="700">${safe}</tspan>`;
+        }
+      });
+      svg += '</text>';
+    }
+
+    if (nDesc > 0) {
+      const descFirstY =
+        nTitle > 0
+          ? firstContentBaseline + (nTitle - 1) * titleLineHeight + gapTitleToDesc
+          : firstContentBaseline;
+
+      svg += '<text text-anchor="middle" class="uc00-dsp-step-desc">';
+      descLines.forEach((line, i) => {
+        const safe = this.escapeXml(line);
+        if (i === 0) {
+          svg += `<tspan x="${cx}" y="${descFirstY}">${safe}</tspan>`;
+        } else {
+          svg += `<tspan x="${cx}" dy="${descLineHeight}">${safe}</tspan>`;
+        }
+      });
+      svg += '</text>';
+    }
+
     return svg;
   }
   
@@ -287,6 +383,6 @@ export class Uc00SvgGeneratorService {
   }
   
   private escapeXml(text: string): string {
-    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+    return escapeXmlForSvgText(text);
   }
 }

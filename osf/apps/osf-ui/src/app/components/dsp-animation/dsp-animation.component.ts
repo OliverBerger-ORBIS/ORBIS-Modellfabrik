@@ -22,6 +22,10 @@ import {
 import { ModuleNameService } from '../../services/module-name.service';
 import { ExternalLinksService } from '../../services/external-links.service';
 import type { CustomerDspConfig } from './configs/types';
+import {
+  DSP_ANIMATION_LABEL_CHAR_WIDTH_FACTOR,
+  maxCharsPerLineFromInnerWidth,
+} from '../../utils/svg-text-utils';
 
 /**
  * DspAnimationComponent - Animated SVG-based architecture diagram.
@@ -633,9 +637,15 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     const label = this.getContainerLabel(container.id);
     if (!label) return [];
 
-    // Approximate character capacity based on width and font size
     const fontSize = container.fontSize || 12;
-    const maxCharsPerLine = Math.max(8, Math.floor((container.width - 12) / (fontSize * 0.58)));
+    const maxCharsPerLine = Math.max(
+      8,
+      maxCharsPerLineFromInnerWidth(
+        container.width - 12,
+        fontSize,
+        DSP_ANIMATION_LABEL_CHAR_WIDTH_FACTOR,
+      ),
+    );
     const maxLines = 3;
 
     // First check if the entire label fits in one line

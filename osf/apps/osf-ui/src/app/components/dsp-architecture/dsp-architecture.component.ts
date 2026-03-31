@@ -25,6 +25,11 @@ import {
   VIEWBOX_WIDTH,
   VIEWBOX_HEIGHT,
 } from '../dsp-animation/layout.config';
+import {
+  DSP_ARCHITECTURE_LABEL_CHAR_WIDTH_FACTOR,
+  maxCharsPerLineFromInnerWidth,
+  wrapWordsToLinesSimple,
+} from '../../utils/svg-text-utils';
 
 /**
  * DspArchitectureComponent - Animated SVG-based architecture diagram.
@@ -408,41 +413,15 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
       return [label];
     }
 
-    // Estimate character width (approximate: fontSize * 0.6 for average character width)
     const fontSize = container.fontSize || 10;
-    const charWidth = fontSize * 0.6;
-    const maxWidth = container.width - 16; // Leave some padding (8px on each side)
-    const maxCharsPerLine = Math.floor(maxWidth / charWidth);
+    const innerWidth = container.width - 16; // padding 8px each side
+    const maxCharsPerLine = maxCharsPerLineFromInnerWidth(
+      innerWidth,
+      fontSize,
+      DSP_ARCHITECTURE_LABEL_CHAR_WIDTH_FACTOR,
+    );
 
-    // If label fits on one line, return as is
-    if (label.length <= maxCharsPerLine) {
-      return [label];
-    }
-
-    // Split label into words
-    const words = label.split(/\s+/);
-    const lines: string[] = [];
-    let currentLine = '';
-
-    for (const word of words) {
-      const testLine = currentLine ? `${currentLine} ${word}` : word;
-      
-      // If adding this word would exceed the line length, start a new line
-      if (testLine.length > maxCharsPerLine && currentLine) {
-        lines.push(currentLine);
-        currentLine = word;
-      } else {
-        currentLine = testLine;
-      }
-    }
-
-    // Add the last line
-    if (currentLine) {
-      lines.push(currentLine);
-    }
-
-    // Limit to 2 lines maximum
-    return lines.slice(0, 2);
+    return wrapWordsToLinesSimple(label, maxCharsPerLine, 2);
   }
 
   /**

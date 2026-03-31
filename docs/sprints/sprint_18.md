@@ -72,12 +72,16 @@ Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
 - [x] **UC-01:** Track & Trace eine Kachel, Tabs Konzept / Live (DR-22).
 - [x] **UC-05:** Gefahren-Button; Grenzen CCU dokumentiert → [alarm-fabrik-stop-ccu-commands-2026-03.md](../07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md)
 
+### OSF-UI – SVG-Diagramme (Konzept / Presentation / generiert)
+
+- [ ] **SVG systematisch je Diagramm & Spalte/Lane:** Das mit UC-00 DSP-Column **durchürbte Prinzip** auf **alle** relevanten OSF-UI-SVGs ausrollen: pro **Diagramm** (z. B. UC-00 … UC-06 Konzept-Tab, DSP-Architecture, DSP-Animation, weitere Presentation-SVGs) und darin **der Reihe nach** jede **Spalte, Lane oder gleichartige Box-Gruppe**. **Vorgehen (Orientierung):** (1) **Inventar** — welche Komponenten/Services liefern welches SVG (`*-svg-generator.service`, `dsp-architecture`, `dsp-animation`, …); Verweis [osf-ui-svg-label-text-conventions.md](../04-howto/osf-ui-svg-label-text-conventions.md). (2) **Priorität** — Messe/Demo-Routen und zuerst Bereiche mit Fließtext in **fixen Boxen**. (3) **Pro Bereich** — kurze i18n-Strings; wo nötig **explizite Mehrzeiligkeit** (mehrere Keys statt heuristischem Wrap); max. Zeilen und Abstände **festschreiben**; Kontrast (nicht nur `.muted` auf Weiß); kein horizontaler Überlauf, keine Überlagerung Titel/Body. (4) **Visuelles Gate** wo Shopfloor/Route betroffen — analog zu bestehenden How-tos. Optional danach: weitere Generatoren konsequent auf `escapeXmlForSvgText` / gemeinsame Helper, wo sinnvoll.
+
 ### Integration & Tests (E2E)
 
 - [ ] **Session-Aufzeichnung (Analysen):** Neue **Shopfloor-Sessions mit zwei AGVs** (Mixed-Betrieb) erfassen und unter `data/osf-data/sessions/` ablegen. Im **Session Manager** konfigurierbare **Topic-Filter / Preset** (z. B. „Analyse“), damit beim Record **keine** MQTT-Messages zu **Arduino-Sensordaten** (`osf/arduino/…`), **BME680** (`/j1/txt/1/i/bme680`) und **Kamera** (`/j1/txt/1/i/cam`) geschrieben werden — Volumen/Noise reduzieren, ohne FTS/CCU-Kerntopics zu verlieren. Policy: [DR-25](../03-decision-records/25-session-log-topic-filters.md).
 - [x] **OSF / Session Manager — UTC-Zeitstempel:** Kanonisch **`utcIsoTimestampMs`** (`@osf/entities`) bzw. **`utc_iso_timestamp_ms()`** (Python) — ISO-8601 UTC mit Millisekunden (`YYYY-MM-DDThh:mm:ss.sssZ`), abgestimmt mit Arduino **v1.1.6** (CCU/TXT unverändert). Formal: [DR-26](../03-decision-records/26-utc-iso-timestamp-ms-convention.md).
 - [ ] **dsp/correlation/info:** E2E Request/Response abgeschlossen dokumentieren / durchführen.
-- [ ] **ccu/order/request:** E2E Ersatzauftrag nach Quality-Fail; OSF zeigt neue Order.
+- [ ] **ccu/order/request:** E2E Ersatzauftrag nach Quality-Fail; OSF zeigt neue Order wenn MES neue Order anlegt als reaktion auf Fail (Voraussetzung)
 
 ### Organisation
 
@@ -98,7 +102,6 @@ Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
 - **Produkt WHITE „2× Bohren“:** MES/CCU/Station/Kamera-Kette – siehe frühere Epic-Aufzählung; angehen, wenn priorisiert.
 - **Netzsch:** eigene Customer-Config `NETZSCH_CONFIG`.
 - **Arduino:** optionales 7-Segment (TM1637/MAX7219).
-- **OSF:** gemeinsamer SVG-Zeilenumbruch für Diagramme (nach Messe).
 - **Tests:** optionales UI-Test-Framework → [test-framework-replay-comparison-2026-03.md](../07-analysis/test-framework-replay-comparison-2026-03.md)
 - **Info:** Analyse Stillstand zwei AGVs im Mixed-Betrieb – nur zur Einordnung.
 - **Backend OSF Service:** Persistenz der Daten (Prozess, Shopfloor, Umwelt) mit dem Ziel der Analyse (in der cloiud, auf RPI mit Grafana Dashboard)

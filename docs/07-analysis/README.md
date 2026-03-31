@@ -56,6 +56,7 @@ Sprint-bezogene und projektweite Analysen für OSF.
 
 ## Weitere Analysen
 
+- **SVG-Diagramme (Doku):** [OSF-UI: SVG label text & line breaks](../04-howto/osf-ui-svg-label-text-conventions.md) — drei Kontexte (DSP-Architecture, DSP-Animation, UC-01); visueller Check; Phase 2: gemeinsame Utils.
 - **Konvention (Doku):** [DR-26 – UTC-Zeitstempel (ms)](../03-decision-records/26-utc-iso-timestamp-ms-convention.md) — OSF/Session Manager; CCU/TXT unverändert.
 - [publish-buttons-tests-summary.md](publish-buttons-tests-summary.md) – Publish-Button Tests
 - [AS-IS-FISCHERTECHNIK-COMPARISON.md](AS-IS-FISCHERTECHNIK-COMPARISON.md) – Abgleich AS-IS vs. Fischertechnik

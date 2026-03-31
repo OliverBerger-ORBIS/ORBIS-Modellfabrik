@@ -16,6 +16,7 @@
 - OSF-UI
   - [Browser console debug (`osf.debug`)](osf-ui-console-debug.md)
   - [LogiMAT: kurze Smoke-Checkliste (vor Messe)](osf-ui-logimat-smoke-checklist.md)
+  - [SVG label text & line breaks (DSP-Architecture, Animation, UC-01)](osf-ui-svg-label-text-conventions.md)
 - Shopfloor
   - [Shopfloor Layout Guide](SHOPFLOOR_LAYOUT_GUIDE.md)
   - [Route & AGV overlay – visual gate before merge](osf-ui-shopfloor-route-agv-visual-gate.md) (mandatory for route/z-index/AGV UI changes)

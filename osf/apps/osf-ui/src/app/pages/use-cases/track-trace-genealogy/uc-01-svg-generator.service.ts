@@ -11,6 +11,7 @@ import {
   type Uc01Phase,
 } from './uc-01-structure.config';
 import { ORBIS_COLORS } from '../../../assets/color-palette';
+import { escapeXmlForSvgText } from '../../../utils/svg-text-utils';
 
 /**
  * Service for generating UC-01 Track & Trace Genealogy SVG (Partiture layout)
@@ -471,11 +472,6 @@ export class Uc01SvgGeneratorService {
   // ───── Helpers ─────
 
   private esc(text: string): string {
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&apos;');
+    return escapeXmlForSvgText(text);
   }
 }

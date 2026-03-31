@@ -71,7 +71,8 @@ export interface Uc00Step {
   y: number;
   width: number;
   height: number;
-  titleKey: string;
+  titleLine1Key: string;
+  titleLine2Key: string;
   descriptionKey: string;
 }
 
@@ -324,9 +325,9 @@ export function createUc00Structure(): Uc00Structure {
       dsp: {
         column: { id: 'dsp', x: UC00_DSP_X, y: colY, width: UC00_COLUMN_WIDTH, height: colH, headerX: UC00_DSP_X + 40, headerY: colY + 50, headerKey: 'uc00.dsp.header' },
         steps: [
-          { id: 'normalize', x: UC00_DSP_X + 40, y: colY + 80, width: 520, height: 130, titleKey: 'uc00.step.normalize.title', descriptionKey: 'uc00.step.normalize.description' },
-          { id: 'enrich', x: UC00_DSP_X + 40, y: colY + 250, width: 520, height: 130, titleKey: 'uc00.step.enrich.title', descriptionKey: 'uc00.step.enrich.description' },
-          { id: 'correlate', x: UC00_DSP_X + 40, y: colY + 420, width: 520, height: 130, titleKey: 'uc00.step.correlate.title', descriptionKey: 'uc00.step.correlate.description' },
+          { id: 'normalize', x: UC00_DSP_X + 40, y: colY + 80, width: 520, height: 130, titleLine1Key: 'uc00.step.normalize.titleLine1', titleLine2Key: 'uc00.step.normalize.titleLine2', descriptionKey: 'uc00.step.normalize.description' },
+          { id: 'enrich', x: UC00_DSP_X + 40, y: colY + 250, width: 520, height: 130, titleLine1Key: 'uc00.step.enrich.titleLine1', titleLine2Key: 'uc00.step.enrich.titleLine2', descriptionKey: 'uc00.step.enrich.description' },
+          { id: 'correlate', x: UC00_DSP_X + 40, y: colY + 420, width: 520, height: 130, titleLine1Key: 'uc00.step.correlate.titleLine1', titleLine2Key: 'uc00.step.correlate.titleLine2', descriptionKey: 'uc00.step.correlate.description' },
         ],
         arrows: [
           { x1: UC00_DSP_X + UC00_COLUMN_WIDTH / 2, y1: colY + 215, x2: UC00_DSP_X + UC00_COLUMN_WIDTH / 2, y2: colY + 225 },
