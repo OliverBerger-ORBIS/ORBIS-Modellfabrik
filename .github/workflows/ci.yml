@@ -45,7 +45,7 @@ jobs:
     
     # IMPORTANT: Use 'npm test' (NOT 'npx nx test --all')
     # See .github/WORKFLOW_GUIDELINES.md for details
-    - name: Run OMF3 tests
+    - name: Run OSF tests
       run: |
         npm test
     
@@ -96,11 +96,11 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
-    - name: ESLint OMF3
+    - name: ESLint OSF
       run: npx nx lint osf-ui
     
-    - name: TypeScript Check OMF3 Libraries
-      run: npx nx run-many -t build --projects=mqtt-client,gateway,business,testing-fixtures --parallel=3
+    - name: TypeScript Check OSF Libraries
+      run: npx nx run-many -t build --verbose --projects=mqtt-client,gateway,business,testing-fixtures --parallel=3 --nx-bail=false
 
   build:
     runs-on: ubuntu-latest
