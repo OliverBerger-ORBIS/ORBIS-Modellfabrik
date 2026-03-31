@@ -13,6 +13,30 @@
 
 ---
 
+## Externe Termine (nach LogiMAT, vor Hannover)
+
+| Datum | Event | Nutzen für OSF |
+|--------|--------|----------------|
+| **02.04.2026** | **ORBIS-intern: Vertriebsmeeting** — Präsentation **OSF** | Vertrieb soll zeigen können, **wie OSF genutzt wird**, um **ORBIS-Produkte** (**DSP**, **MES**, **SmartFactory-Konzept**) zu vermitteln — nicht Messe-Publikum, sondern eigener Vertrieb. |
+| *Fälligkeit* | Termin liegt auf dem **ersten Tag von Sprint 19** (Sprint 18 endet 01.04.) | **Vorbereitung** (OBS-Durchlauf, Inhalt, Technik) soll **Ende Sprint 18** starten bzw. abgeschlossen sein; siehe Tasks unten **Presentation & Vertrieb**. |
+
+**Hinweis:** Parallel **Hannover Messe** (20–24.04.2026) bleibt separater Meilenstein → [PROJECT_STATUS.md](../PROJECT_STATUS.md) § Wichtige Events.
+
+### Live-Rehearsal ORBIS (Windows: OBS + Kamera)
+
+**Zweck:** Einmal **vor Ort** mit dem **Windows-Präsentationsrechner** durchspielen — gleiche **URL/Env** wie am **Vertriebstermin 02.04.2026**. Die Punkte spiegeln den Sprint-Block **Presentation, OBS & Shopfloor-UX** (Checkliste unten).
+
+1. **Inhalt & Story:** Wie Vertrieb **DSP / MES / SmartFactory** mit OSF erklärt — Fahrplan oder Slides, **wer führt** (Task: *Vertriebsmeeting … inhaltlich abstimmen*).
+2. **OBS — Komplettlauf:** Szenen und Quellen (**Browser-Fenster**, **Kamera**), Ausgabe auf Beamer/Display; im Browser OSF mit **Fixtures** und **kritischen Routen** ohne Abbrüche (Task: *OBS-Präsentation*).
+3. **Shopfloor / Kamera / Konftel:** Bildausrichtung für Publikum konsistent — primär **OBS** (spiegeln/drehen) vs. später OSF (Task: *Shopfloor-Rotation …*); **Kamera** in OBS und ggf. **Sensor-Tab** nur prüfen, wenn **Publisher** da ist (nicht raten).
+4. **Navigation:** Rückweg bei **per Link geöffneten Tabs** — *Back* oder gleichwertig; bei Problemen **Hard-Reload** kennen (Task: *Navigation*).
+5. **Layout / Zoom:** Eine **typische** Zielauflösung für den Termin festlegen; UC- und Shopfloor-Skalierung probeweise prüfen (Task: *Einheitliche Diagramm-/Layout-Größe*).
+6. **Technik Windows:** Energiesparen/Fullscreen; **OBS-Hotkeys**; **Reserve** (z. B. zweite Szene oder direkter Browser-Tab ohne OBS), falls Capture oder Grafiktreiber zicken.
+
+Abweichungen nach dem Lauf als **Follow-up in Sprint 19** einplanen (wie in den offenen Sprint-Tasks beschrieben).
+
+---
+
 ## Releases (Überblick)
 
 | Version | Datum | Inhalt (kurz) |
@@ -66,6 +90,10 @@ Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
 - [x] **Sketch v1.1.2:** Messe-WLAN `ORBIS-4C57`, Broker `192.168.0.100` → Doku §4, [credentials.md](../credentials.md)
 - [x] **Mock-Fixtures:** Playback im Production-Build, Demo auf RPi ohne Hardware (DR-19).
 - [x] **Arduino MQTT (Warn/Alarm-Telemetrie + UTC-Timestamps):** Sketch **v1.1.6** — wie v1.1.5, **Payload-`timestamp`** mit **Millisekunden** (`YYYY-MM-DDThh:mm:ss.sssZ`). Siehe [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md); OSF/Session Manager: [DR-26](../03-decision-records/26-utc-iso-timestamp-ms-convention.md).
+- [ ] **24V Sensor-Station (Strompfad, ohne Löten):** Funduino **F23105924** (XL4005), Molex Mini-Fit Jr **Inline-Verlängerung + Tap**, Inline-Sicherung (**2 A** liegt vor), **12 V** auf Ampel + Arduino R4 **Barrel/VIN**; Acryl-Freifläche ca. **8×5 cm** vor Arduino auf **25×15 cm** Platte. Doku & Verbindungsgrafik → [sensor-station-24v-bom-wiring.md](../05-hardware/sensor-station-24v-bom-wiring.md).
+- [ ] **Sensor-Station-Box:** Deckel: 25×15 cm + 4 Seitenteile Höhe 28 cm mit Winkelprofilverstärkung.
+- [ ] **ARDUINO-API:** API zur Steuerung der Schwellenwerte der Sensoren (vermutlich über MQTT-Topics"). Erweiterung der OSF-UI um ARDUINO-Steuerung an geeigneter Stelle z.B Konfiguration-Tab Parameter für Arduino. (Prüfen ob WIFI-Setup Parallel betrieben werden kann, default ORBIS Fallback daheim, wenn nach n Sekunden keine Verbindung aufgebaut wurde, dann müssen wir nicht den Sketch neu Laden wenn bei ORBIS oder DAHEIM im Wechsel)
+
 ### DSP / LogiMAT-Inhalt
 
 - [x] **Customer-Ansicht:** DSP-Architecture mit LogiMAT Business Apps (z. B. ORBIS-MES EWM).
@@ -83,6 +111,14 @@ Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
 - [ ] **dsp/correlation/info:** E2E Request/Response abgeschlossen dokumentieren / durchführen.
 - [ ] **ccu/order/request:** E2E Ersatzauftrag nach Quality-Fail; OSF zeigt neue Order wenn MES neue Order anlegt als reaktion auf Fail (Voraussetzung)
 
+### Presentation, OBS & Shopfloor-UX (Vertrieb 02.04.)
+
+- [ ] **Vertriebsmeeting 02.04.2026:** OSF-Präsentation inhaltlich **abstimmen** (Story: wie Vertrieb **DSP / MES / SmartFactory** mit OSF erklärt); Slides oder OSF-Fahrplan dokumentieren, wer **führt**.
+- [ ] **OBS-Präsentation:** **Komplettlauf** testen (Browser, Fixtures, kritische Routen) **vor** dem Termin; Abweichungen/Mängel als Follow-up in **Sprint 19** einplanen.
+- [ ] **Shopfloor-Rotation 90° / 180° / 270° (Analyse):** Darstellung an **Monitor- und Laptop-Position** anpassen (inkl. **Konftel-50** / externer Kamera). **Variante A:** Rotation in **OSF** (betrifft u. a. Tab **Shopfloor**, **Orders**, **Konfiguration**, **AGV**, **Presentation**). **Variante B:** Ausrichtung primär über **OBS** spiegeln/drehen, damit Bild zu Konftel konsistent ist — Optionen dokumentieren, ggf. in **DR/Analyse** auslagern; Umsetzung kann eigener Sprint-19-Task werden.
+- [ ] **Navigation:** **Back** (oder gleichwertig), damit Nutzer bei **per Link geöffneten Tabs** zur Ausgangssicht zurückkommen.
+- [ ] **Einheitliche Diagramm-/Layout-Größe:** Heute **mehrere** Stellen für **Shopfloor-Layout-** und **UC-Diagramm-**Skalierung; bei **typisch fester** Browser-/Monitor-Größe **eine zentrale** Steuerung anstreben, die **alle** relevanten UC-/Shopfloor-Darstellungen mitzieht (Konzept + Aufwand klären).
+
 ### Organisation
 
 - [ ] **Azure DevOps:** Repo + Boards von GitHub umziehen.
@@ -91,8 +127,8 @@ Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
 ### Sprint-Wechsel (wenn Sprint 18 zu Ende ist)
 
 - [ ] Sprint 18: Status **Abgeschlossen**, Abschlussdatum eintragen.
-- [ ] Sprint 19: Datei neu aus [sprint_template.md](./sprint_template.md), **alle noch offenen `[ ]`** von hier übernehmen.
-- [ ] **PROJECT_STATUS:** neue Zeile Sprint 19.
+- [ ] Sprint 19: Datei neu aus [sprint_template.md](./sprint_template.md), **alle noch offenen `[ ]`** von hier übernehmen — **inkl.** offener Punkte unter **Presentation, OBS & Shopfloor-UX**, sofern nicht am 01.04. erledigt.
+- [ ] **PROJECT_STATUS:** neue Zeile Sprint 19; Spalte **Externe Events:** **02.04.2026 ORBIS-Vertriebsmeeting (OSF)** eintragen.
 - [ ] **Roadmap** kurz gegenlesen.
 
 ---
@@ -104,7 +140,7 @@ Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
 - **Arduino:** optionales 7-Segment (TM1637/MAX7219).
 - **Tests:** optionales UI-Test-Framework → [test-framework-replay-comparison-2026-03.md](../07-analysis/test-framework-replay-comparison-2026-03.md)
 - **Info:** Analyse Stillstand zwei AGVs im Mixed-Betrieb – nur zur Einordnung.
-- **Backend OSF Service:** Persistenz der Daten (Prozess, Shopfloor, Umwelt) mit dem Ziel der Analyse (in der cloiud, auf RPI mit Grafana Dashboard)
+- **Backend OSF Service:** Persistenz der Daten (Prozess, Shopfloor, Umwelt) mit dem Ziel der Analyse (in der cloud, Ziel: Backend auf RPI mit Grafana Dashboard; oder später backend ersetzen durch DSP-Komponente DISC; wichtig: Interface für Grafana damit OSF-Backend und DSP-DISC ausgetauscht werden können)
 
 ---
 
@@ -114,4 +150,4 @@ Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
 
 ---
 
-*Stand: 31.03.2026*
+*Stand: 01.04.2026*

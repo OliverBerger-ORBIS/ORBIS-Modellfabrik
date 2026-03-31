@@ -101,6 +101,10 @@ Relais aktiv-niedrig: LOW = ein, HIGH = aus. Ruhe = Grün ein (D7 LOW).
 
 ## 3. 12V & Ampel (Netzteil → Relais → Ampel)
 
+### 3.0 Alternative: 12 V aus 24 V-APS (Molex / Step-Down)
+
+Liegt die Sensorstation an einer **24 V-Kaskade** und soll **ohne separates 12 V-Steckernetzteil** auskommen: **ein** DC/DC **24 V→12 V** (z. B. Funduino **F23105924** / XL4005), gemeinsame **12 V-Schiene** für Relais/Ampel und **Arduino VIN** — vollständige BOM, Mermaid-Schema, **DAHEIM vs. ORBIS** (USB + Tisch‑12 V vs. APS) → [sensor-station-24v-bom-wiring.md](sensor-station-24v-bom-wiring.md). **Relais, Ampel und Common Ground** in den folgenden Abschnitten bleiben unverändert; nur die **Quelle** für 12 V+ / 12 V− weicht ab.
+
 ### 3.1 COM-Kette (alle COMs an 12V+)
 
 | Verbindung | Beschreibung |

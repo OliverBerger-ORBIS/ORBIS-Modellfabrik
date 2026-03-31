@@ -13,7 +13,9 @@
 - **ORBIS-SmartFactory** ab Sprint 13 (Genehmigung ausstehend, Arbeit wird fortgeführt).
 
 ## 🔥 Aktuelle Schwerpunkte
-- **Nach LogiMAT:** offene Sprint-18-Tasks, Session-Aufzeichnung/Doku; nächster Außenauftritt v. a. **Hannover Messe** (siehe Roadmap).
+- **Nach LogiMAT:** offene Sprint-18-Tasks, Session-Aufzeichnung/Doku.
+- **02.04.2026:** ORBIS-internes **Vertriebsmeeting** — **OSF-Präsentation** (Vertrieb soll Nutzen für **DSP / MES / SmartFactory** kennen); **OBS-/Demo-Durchlauf** vorbereiten — Details [sprint_18.md — Externe Termine](sprints/sprint_18.md).
+- Nächster großer Außenauftritt v. a. **Hannover Messe** (siehe Roadmap).
 - **Phase 5 – MES/DSP-Integration:** ORBIS MES und DSP übernehmen zunehmend die Steuerung (QM-Check, Order-Entscheidungen). APS-CCU als Interim-Layer; Modifikationen: [integrations/APS-CCU/OSF-MODIFICATIONS.md](../integrations/APS-CCU/OSF-MODIFICATIONS.md).
 - MES-Integration: Prozessanpassungen (z.B. "2-mal Bohren").
 - Azure DevOps Migration.
@@ -62,6 +64,7 @@
 
 ## 📆 Wichtige Events (Ausblick)
 - **LogiMAT 2026:** 24–26. März 2026
+- **02.04.2026:** **ORBIS Vertriebsmeeting** — Präsentation **OSF** (intern, vor Hannover); erster Tag **Sprint 19** → [sprint_18.md](sprints/sprint_18.md)
 - **Hannover Messe 2026:** 20–24. April 2026
 - **ORBIS Customer-Connect Event 2026:** Ende April 2026
 

@@ -19,6 +19,10 @@
 
 *Kurze Stichpunkte ohne Checkbox, wenn nötig.*
 
+### Externe Termine (optional)
+
+*Kurze Tabelle oder Liste: Datum, Event (Vertrieb/Messe/Partner), Link ins Projektziel. Größere Ereignisse zusätzlich bei Sprint-Abschluss in **PROJECT_STATUS** → Spalte **Externe Events** eintragen.*
+
 ---
 
 ## Aufgaben (thematisch, mit Haken)

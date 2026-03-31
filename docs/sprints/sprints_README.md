@@ -48,6 +48,7 @@ Diese Aufgaben sind **Teil des laufenden Sprints** und müssen erledigt sein, **
 | **Aufgaben** | Nur Checkbox-Zeilen; **Gruppierung nach Thema**, nicht nach Erledigt-Status |
 | **Releases** | Optional kurze Tabelle im Kopf; Details → [CHANGELOG.md](../../CHANGELOG.md) |
 | **Backlog** | Optional Abschnitt **ohne** Checkboxen, wenn noch keine klaren Tasks |
+| **Externe Events** | Optional **`## Externe Termine`** (Tabelle) + zugehörige Tasks unter einem Thema (z. B. Presentation); bei Sprint-Abschluss Zeile **PROJECT_STATUS** → Spalte **Externe Events** pflegen |
 | **Sprint-Wechsel** | Checkboxen am Ende von „Aufgaben“ oder eigene Thema-Überschrift |
 
 Template: [sprint_template.md](sprint_template.md) · Beispiel umgebaut: [sprint_18.md](sprint_18.md)
