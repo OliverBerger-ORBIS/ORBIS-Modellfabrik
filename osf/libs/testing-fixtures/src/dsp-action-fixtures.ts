@@ -1,3 +1,4 @@
+import { utcIsoTimestampMs } from '@osf/entities';
 import type { RawMqttMessage } from '@osf/gateway';
 
 /**
@@ -21,7 +22,7 @@ const DSP_DRILL_ACTION_FIXTURES: DspActionFixture[] = [
       command: 'changeLight',
       value: '#FF0000', // Red
     },
-    timestamp: new Date(Date.now() - 5000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 5000)),
   },
   {
     topic: 'dsp/drill/action',
@@ -29,7 +30,7 @@ const DSP_DRILL_ACTION_FIXTURES: DspActionFixture[] = [
       command: 'changeLight',
       value: '#00FF00', // Green
     },
-    timestamp: new Date(Date.now() - 4000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 4000)),
   },
   {
     topic: 'dsp/drill/action',
@@ -37,7 +38,7 @@ const DSP_DRILL_ACTION_FIXTURES: DspActionFixture[] = [
       command: 'changeLight',
       value: '#0000FF', // Blue
     },
-    timestamp: new Date(Date.now() - 3000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 3000)),
   },
   {
     topic: 'dsp/drill/action',
@@ -45,7 +46,7 @@ const DSP_DRILL_ACTION_FIXTURES: DspActionFixture[] = [
       command: 'changeLight',
       value: '#FFFF00', // Yellow
     },
-    timestamp: new Date(Date.now() - 2000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 2000)),
   },
   {
     topic: 'dsp/drill/action',
@@ -53,7 +54,7 @@ const DSP_DRILL_ACTION_FIXTURES: DspActionFixture[] = [
       command: 'changeLight',
       value: '#FF00FF', // Magenta
     },
-    timestamp: new Date(Date.now() - 1000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 1000)),
   },
 ];
 
@@ -64,7 +65,7 @@ const DSP_AIQS_ACTION_FIXTURES: DspActionFixture[] = [
       command: 'changeLight',
       value: '#FF0000', // Red
     },
-    timestamp: new Date(Date.now() - 5000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 5000)),
   },
   {
     topic: 'dsp/aiqs/action',
@@ -72,7 +73,7 @@ const DSP_AIQS_ACTION_FIXTURES: DspActionFixture[] = [
       command: 'changeColor',
       value: '#00FF00', // Green
     },
-    timestamp: new Date(Date.now() - 4000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 4000)),
   },
   {
     topic: 'dsp/aiqs/action',
@@ -80,7 +81,7 @@ const DSP_AIQS_ACTION_FIXTURES: DspActionFixture[] = [
       command: 'changeLight',
       value: '#0000FF', // Blue
     },
-    timestamp: new Date(Date.now() - 3000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 3000)),
   },
   {
     topic: 'dsp/aiqs/action',
@@ -88,7 +89,7 @@ const DSP_AIQS_ACTION_FIXTURES: DspActionFixture[] = [
       command: 'changeColor',
       value: '#FFFF00', // Yellow
     },
-    timestamp: new Date(Date.now() - 2000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 2000)),
   },
   {
     topic: 'dsp/aiqs/action',
@@ -96,7 +97,7 @@ const DSP_AIQS_ACTION_FIXTURES: DspActionFixture[] = [
       command: 'changeLight',
       value: '#FF00FF', // Magenta
     },
-    timestamp: new Date(Date.now() - 1000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 1000)),
   },
 ];
 

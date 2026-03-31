@@ -56,6 +56,7 @@ Sprint-bezogene und projektweite Analysen für OSF.
 
 ## Weitere Analysen
 
+- **Konvention (Doku):** [DR-26 – UTC-Zeitstempel (ms)](../03-decision-records/26-utc-iso-timestamp-ms-convention.md) — OSF/Session Manager; CCU/TXT unverändert.
 - [publish-buttons-tests-summary.md](publish-buttons-tests-summary.md) – Publish-Button Tests
 - [AS-IS-FISCHERTECHNIK-COMPARISON.md](AS-IS-FISCHERTECHNIK-COMPARISON.md) – Abgleich AS-IS vs. Fischertechnik
 - [INTEGRATIONS-VENDOR-ANALYSIS.md](INTEGRATIONS-VENDOR-ANALYSIS.md) – integrations vs. vendor

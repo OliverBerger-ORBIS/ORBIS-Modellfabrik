@@ -1,4 +1,5 @@
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { utcIsoTimestampMs } from '@osf/entities';
 import mqtt from 'mqtt';
 import type { IClientOptions, MqttClient } from 'mqtt';
 
@@ -80,7 +81,7 @@ export class WebSocketMqttAdapter implements MqttAdapter {
           console.log('[WebSocketMqttAdapter] Browser:', navigator.userAgent);
           console.log('[WebSocketMqttAdapter] Current page protocol:', window.location.protocol);
           console.log('[WebSocketMqttAdapter] Current page host:', window.location.host);
-          console.log('[WebSocketMqttAdapter] Timestamp:', new Date().toISOString());
+          console.log('[WebSocketMqttAdapter] Timestamp:', utcIsoTimestampMs());
 
           // Test raw WebSocket connection first in diagnostic mode
           this.testRawWebSocket(url).then((result) => {
@@ -123,7 +124,7 @@ export class WebSocketMqttAdapter implements MqttAdapter {
           this.messagesSubject.next({
             topic,
             payload: payload.toString(),
-            timestamp: new Date().toISOString(),
+            timestamp: utcIsoTimestampMs(),
           });
         });
 

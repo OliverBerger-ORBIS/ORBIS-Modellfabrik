@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestro
 import { CommonModule } from '@angular/common';
 import { Observable, Subscription, merge, timer } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, startWith, take } from 'rxjs/operators';
-import type { InventoryOverviewState, InventorySlotState, StockSnapshot } from '@osf/entities';
+import { utcIsoTimestampMs, type InventoryOverviewState, type InventorySlotState, type StockSnapshot } from '@osf/entities';
 import { InventoryStateService } from '../../services/inventory-state.service';
 import { EnvironmentService } from '../../services/environment.service';
 import { MessageMonitorService } from '../../services/message-monitor.service';
@@ -236,7 +236,7 @@ export class HbwStockGridComponent implements OnInit, OnDestroy {
       slots,
       availableCounts,
       reservedCounts,
-      lastUpdated: normalizedSnapshot?.ts ?? new Date().toISOString(),
+      lastUpdated: normalizedSnapshot?.ts ?? utcIsoTimestampMs(),
     };
   }
 

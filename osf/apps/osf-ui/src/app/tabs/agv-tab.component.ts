@@ -21,6 +21,7 @@ import {
   ftsCanOfferInitialDockCommand,
   ftsCanOfferStartChargeCommand,
   ftsCanOfferStopChargeCommand,
+  utcIsoTimestampMs,
   type FtsCommandAvailabilityInput,
   type OrderActive,
 } from '@osf/entities';
@@ -1362,7 +1363,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     return {
       topic: this.ftsInstantActionTopic,
       payload: {
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
         serialNumber: this.selectedAgvSerial,
         actions: [
           {
@@ -1806,7 +1807,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     }
 
     const payload: Record<string, unknown> = {
-      timestamp: new Date().toISOString(),
+      timestamp: utcIsoTimestampMs(),
       orderId: this.uuid(),
       orderUpdateId: 0,
       nodes,

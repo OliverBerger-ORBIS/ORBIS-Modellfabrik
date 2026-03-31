@@ -14,6 +14,7 @@ import streamlit as st
 from ..utils.logging_config import get_logger
 from ..utils.path_constants import PROJECT_ROOT
 from ..utils.ui_refresh import RerunController
+from ..utils.utc_iso_timestamp import utc_iso_timestamp_ms
 
 logger = get_logger("omf.helper_apps.session_manager.components.session_recorder")
 
@@ -407,7 +408,7 @@ def on_message_received(client, userdata, msg):
         message = {
             "topic": msg.topic,
             "payload": msg.payload.decode("utf-8"),
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": utc_iso_timestamp_ms(),
             "qos": getattr(msg, "qos", 0),
             "retain": is_retain,
         }

@@ -1,3 +1,4 @@
+import { utcIsoTimestampMs } from '@osf/entities';
 import { defer, from, Observable, of } from 'rxjs';
 import { concatMap, delay, repeat, switchMap } from 'rxjs/operators';
 import type { RawMqttMessage } from '@osf/gateway';
@@ -38,7 +39,7 @@ const MODULE_STATUS_FIXTURES: ModuleStatusFixture[] = [
       connected: true,
       moduleStatus: 'operational',
     },
-    timestamp: new Date(Date.now() - 10000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 10000)),
   },
   // Module: MILL (SVR3QA2098) - BUSY, Connected
   {
@@ -50,7 +51,7 @@ const MODULE_STATUS_FIXTURES: ModuleStatusFixture[] = [
       connected: true,
       moduleStatus: 'processing',
     },
-    timestamp: new Date(Date.now() - 9000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 9000)),
   },
   // Module: HBW (SVR3QA0022) - BLOCKED, Connected
   {
@@ -62,7 +63,7 @@ const MODULE_STATUS_FIXTURES: ModuleStatusFixture[] = [
       connected: true,
       moduleStatus: 'error',
     },
-    timestamp: new Date(Date.now() - 8000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 8000)),
   },
   // Module: AIQS (SVR4H76530) - READY, Disconnected
   {
@@ -74,7 +75,7 @@ const MODULE_STATUS_FIXTURES: ModuleStatusFixture[] = [
       connected: false,
       moduleStatus: 'offline',
     },
-    timestamp: new Date(Date.now() - 7000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 7000)),
   },
   // Module: DPS (SVR4H73275) - BUSY, Disconnected
   {
@@ -86,7 +87,7 @@ const MODULE_STATUS_FIXTURES: ModuleStatusFixture[] = [
       connected: false,
       moduleStatus: 'offline',
     },
-    timestamp: new Date(Date.now() - 6000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 6000)),
   },
   // FTS (5iO4) - Position and Status
   // Use fts/v1/ff/<serial> format (will be processed by gateway.fts$)
@@ -98,7 +99,7 @@ const MODULE_STATUS_FIXTURES: ModuleStatusFixture[] = [
       speed: 0.5,
       ftsStatus: 'idle',
     },
-    timestamp: new Date(Date.now() - 5000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 5000)),
   },
   // Additional FTS position update (moving)
   {
@@ -109,7 +110,7 @@ const MODULE_STATUS_FIXTURES: ModuleStatusFixture[] = [
       speed: 1.2,
       ftsStatus: 'moving',
     },
-    timestamp: new Date(Date.now() - 2000).toISOString(),
+    timestamp: utcIsoTimestampMs(new Date(Date.now() - 2000)),
   },
 ];
 

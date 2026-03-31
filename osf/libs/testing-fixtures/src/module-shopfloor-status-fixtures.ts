@@ -1,3 +1,4 @@
+import { utcIsoTimestampMs } from '@osf/entities';
 import { defer, from, Observable, of } from 'rxjs';
 import { concatMap, delay, repeat, switchMap } from 'rxjs/operators';
 import type { RawMqttMessage } from '@osf/gateway';
@@ -103,9 +104,9 @@ const MODULE_SHOPFLOOR_STATUS_FIXTURES: ModuleShopfloorStatusFixture[] = [
           lastNodeId: 'NODE_1',
         },
       ],
-      timestamp: new Date().toISOString(),
+      timestamp: utcIsoTimestampMs(),
     },
-    timestamp: new Date().toISOString(),
+    timestamp: utcIsoTimestampMs(),
   },
 ];
 

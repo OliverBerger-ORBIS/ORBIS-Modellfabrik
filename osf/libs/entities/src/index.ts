@@ -276,6 +276,8 @@ export interface ReplayEnvelope {
  */
 export * from './fts-command-availability';
 
+export { utcIsoTimestampMs } from './utc-iso-timestamp';
+
 export const safeJsonParse = (s: unknown) => {
   if (typeof s === 'string') {
     try {

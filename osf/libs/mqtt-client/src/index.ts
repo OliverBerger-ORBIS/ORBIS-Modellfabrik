@@ -1,4 +1,5 @@
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { utcIsoTimestampMs } from '@osf/entities';
 
 export type ConnState = 'disconnected' | 'connecting' | 'connected' | 'error';
 
@@ -77,7 +78,7 @@ export class SubjectMqttAdapter implements MqttAdapter {
       topic,
       payload,
       options,
-      timestamp: new Date().toISOString(),
+      timestamp: utcIsoTimestampMs(),
     });
     return Promise.resolve();
   }

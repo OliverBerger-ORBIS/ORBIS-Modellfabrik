@@ -33,7 +33,7 @@
 // === WLAN-Konfiguration – Umschaltung daheim / ORBIS ===
 #define WIFI_MODE_DAHEIM 0
 #define WIFI_MODE_ORBIS  1
-#define WIFI_MODE WIFI_MODE_DAHEIM  // <-- DAHEIM oder ORBIS (LogiMAT: später ggf. SSID in #else anpassen)
+#define WIFI_MODE WIFI_MODE_ORBIS  // <-- DAHEIM oder ORBIS (LogiMAT: später ggf. SSID in #else anpassen)
 
 #if WIFI_MODE == WIFI_MODE_DAHEIM
   // WLAN Daheim – Fritz!Box 192.168.178.x, Arduino .95 reserviert

@@ -92,8 +92,10 @@ npx tsx scripts/replay-sessions.ts --session data/osf-data/sessions/start-osf_20
 JSON-Lines (eine Zeile = ein Objekt), inkl. qos/retain:
 
 ```json
-{"topic": "module/v1/ff/SVR4H73275/state", "payload": "{...}", "timestamp": "...", "qos": 1, "retain": true}
+{"topic": "module/v1/ff/SVR4H73275/state", "payload": "{...}", "timestamp": "2026-03-31T10:15:30.123Z", "qos": 1, "retain": true}
 ```
+
+**Envelope-`timestamp` (von OSF/Session Manager geschrieben):** UTC, ISO-8601 mit Millisekunden — [DR-26](../03-decision-records/26-utc-iso-timestamp-ms-convention.md).
 
 ---
 

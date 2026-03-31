@@ -20,6 +20,7 @@ from ..mqtt.mqtt_client import SessionManagerMQTTClient
 from ..utils.logging_config import get_logger
 from ..utils.path_constants import PROJECT_ROOT
 from ..utils.ui_refresh import RerunController
+from ..utils.utc_iso_timestamp import utc_iso_timestamp_ms
 
 # Logging konfigurieren - Verzeichnis sicherstellen
 log_dir = Path("logs/session_manager")
@@ -391,7 +392,7 @@ def show_replay_station():
         if st.button("📤 Senden", key="send_test_1"):
             send_test_message(
                 "test/session_manager",
-                {"message": "Hello from Session Manager!", "timestamp": datetime.now().isoformat()},
+                {"message": "Hello from Session Manager!", "timestamp": utc_iso_timestamp_ms()},
             )
 
     # Test Message 2

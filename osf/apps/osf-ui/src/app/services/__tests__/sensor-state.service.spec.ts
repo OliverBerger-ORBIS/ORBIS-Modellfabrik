@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { SensorStateService } from '../sensor-state.service';
 import { firstValueFrom } from 'rxjs';
-import type { SensorOverviewState } from '@osf/entities';
+import { utcIsoTimestampMs, type SensorOverviewState } from '@osf/entities';
 
 describe('SensorStateService', () => {
   let service: SensorStateService;
@@ -33,7 +33,7 @@ describe('SensorStateService', () => {
   describe('State Management', () => {
     it('should set and get state', async () => {
       const mockState: SensorOverviewState = {
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
         temperatureC: 25,
         humidityPercent: 50,
         pressureHpa: 1013,
@@ -48,7 +48,7 @@ describe('SensorStateService', () => {
 
     it('should update state', async () => {
       const state1: SensorOverviewState = {
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
         temperatureC: 25,
         humidityPercent: 50,
         pressureHpa: 1013,
@@ -56,7 +56,7 @@ describe('SensorStateService', () => {
       };
 
       const state2: SensorOverviewState = {
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
         temperatureC: 30,
         humidityPercent: 60,
         pressureHpa: 1015,
@@ -72,7 +72,7 @@ describe('SensorStateService', () => {
 
     it('should clear state', async () => {
       const mockState: SensorOverviewState = {
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
         temperatureC: 25,
         humidityPercent: 50,
         pressureHpa: 1013,
@@ -88,7 +88,7 @@ describe('SensorStateService', () => {
 
     it('should handle multiple environments independently', async () => {
       const state1: SensorOverviewState = {
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
         temperatureC: 25,
         humidityPercent: 50,
         pressureHpa: 1013,
@@ -96,7 +96,7 @@ describe('SensorStateService', () => {
       };
 
       const state2: SensorOverviewState = {
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
         temperatureC: 30,
         humidityPercent: 60,
         pressureHpa: 1015,
@@ -117,7 +117,7 @@ describe('SensorStateService', () => {
   describe('Snapshot', () => {
     it('should return current snapshot', () => {
       const mockState: SensorOverviewState = {
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
         temperatureC: 25,
         humidityPercent: 50,
         pressureHpa: 1013,
@@ -132,7 +132,7 @@ describe('SensorStateService', () => {
 
     it('should return null snapshot after clear', () => {
       const mockState: SensorOverviewState = {
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
         temperatureC: 25,
         humidityPercent: 50,
         pressureHpa: 1013,
@@ -150,7 +150,7 @@ describe('SensorStateService', () => {
   describe('Edge Cases', () => {
     it('should handle empty environment key', async () => {
       const mockState: SensorOverviewState = {
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
       };
 
       service.setState('', mockState);
@@ -162,7 +162,7 @@ describe('SensorStateService', () => {
     it('should handle very long environment key', async () => {
       const longKey = 'a'.repeat(1000);
       const mockState: SensorOverviewState = {
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
         temperatureC: 25,
         humidityPercent: 50,
         pressureHpa: 1013,
@@ -177,7 +177,7 @@ describe('SensorStateService', () => {
 
     it('should handle state with null sensors', async () => {
       const nullState: SensorOverviewState = {
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
       };
 
       service.setState('test-env', nullState);
@@ -188,7 +188,7 @@ describe('SensorStateService', () => {
 
     it('should handle state with partial sensors', async () => {
       const partialState: SensorOverviewState = {
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
         temperatureC: 25,
         humidityPercent: 50,
         pressureHpa: 1013,
@@ -202,9 +202,9 @@ describe('SensorStateService', () => {
 
     it('should handle rapid state changes', async () => {
       const states: SensorOverviewState[] = [
-        { timestamp: new Date().toISOString(), temperatureC: 20, humidityPercent: 40, pressureHpa: 1010, lightLux: 50 },
-        { timestamp: new Date().toISOString(), temperatureC: 25, humidityPercent: 50, pressureHpa: 1013, lightLux: 100 },
-        { timestamp: new Date().toISOString(), temperatureC: 30, humidityPercent: 60, pressureHpa: 1015, lightLux: 150 },
+        { timestamp: utcIsoTimestampMs(), temperatureC: 20, humidityPercent: 40, pressureHpa: 1010, lightLux: 50 },
+        { timestamp: utcIsoTimestampMs(), temperatureC: 25, humidityPercent: 50, pressureHpa: 1013, lightLux: 100 },
+        { timestamp: utcIsoTimestampMs(), temperatureC: 30, humidityPercent: 60, pressureHpa: 1015, lightLux: 150 },
       ];
 
       states.forEach((state) => {
@@ -231,7 +231,7 @@ describe('SensorStateService', () => {
 
     it('should handle multiple clears', async () => {
       const mockState: SensorOverviewState = {
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
         temperatureC: 25,
         humidityPercent: 50,
         pressureHpa: 1013,
@@ -249,7 +249,7 @@ describe('SensorStateService', () => {
 
     it('should handle state with extreme sensor values', async () => {
       const extremeState: SensorOverviewState = {
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
         temperatureC: -50,
         humidityPercent: 0,
         pressureHpa: 500,
@@ -264,7 +264,7 @@ describe('SensorStateService', () => {
 
     it('should handle state with very high sensor values', async () => {
       const highState: SensorOverviewState = {
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
         temperatureC: 150,
         humidityPercent: 100,
         pressureHpa: 2000,

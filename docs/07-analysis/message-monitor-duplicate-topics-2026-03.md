@@ -72,63 +72,26 @@ Wenn Haupt-Fixture und Tab-Fixtures dieselben Topics abdecken (z.B. `ccu/pairing
 
 ---
 
-## 4. Lösungsplan
+## 4. Entscheidung (umgesetzt)
 
-### Option A: Direkte addMessage-Aufrufe in Shopfloor entfernen (empfohlen)
+**Eine Quelle pro Nachricht:** Fixture-Loader rufen nur **`dashboard.injectMessage`** auf; **`setupMessageMonitorForwarding`** (`mock-dashboard.ts`) leitet daraus **ein** `messageMonitor.addMessage` ab. Direktes `messageMonitor.addMessage` neben `injectMessage` entfällt (Mock-Modus).
 
-**Prinzip:** Nur eine Quelle für `addMessage` pro Nachricht.
+- **Shopfloor-Tab:** betroffene Loader ohne zweites `addMessage` (siehe historische Zeilenverweise in §2.1 — Zeilennummern können sich ändern).
+- **DSP-Action-Tab:** `loadDrillActionFixture` ebenfalls über **`injectMessage`**, damit derselbe Pfad gilt und Gateway-Streams die Messages mitsehen.
 
-- **Shopfloor-Tab:** In allen Fixture-Loadern die direkten `messageMonitor.addMessage()`-Aufrufe **entfernen**.
-- **Beibehalten:** `dashboard.injectMessage(message)` – die Nachricht geht in `messageSubject`, und `setupMessageMonitorForwarding` ruft `addMessage` auf.
-
-**Vorteil:** Einfach, konsistent mit dem bestehenden Mock-Flow.  
-**Risiko:** Gering – `injectMessage` ist bereits vorhanden und wird genutzt.
-
-**Live-Modus unberührt:** Alle betroffenen Fixture-Loader sind in `if (!this.isMockMode) { return; }`-Blöcken – sie laufen im Live-Modus gar nicht. Keine Änderung an ConnectionService oder MQTT-Pfad.
-
-### Option B: injectMessage entfernen, nur addMessage
-
-- Shopfloor ruft nur `messageMonitor.addMessage()` auf.
-- `injectMessage` wird nicht mehr genutzt (oder nur für Streams, nicht für MessageMonitor).
-
-**Nachteil:** Dashboard-Streams (z.B. `moduleOverview$`) bekommen die Nachricht nicht über `messageSubject`. Die Tab-Fixtures müssten weiterhin über `messageSubject` laufen. Daher weniger geeignet.
-
-### Option C: Deduplizierung im MessageMonitorService
-
-- Vor `addToBuffer`: Prüfen, ob die letzte Nachricht für dasselbe Topic mit gleichem Timestamp bereits existiert.
-- Wenn ja: nicht erneut hinzufügen.
-
-**Vorteil:** Robuster gegen mehrere Quellen.  
-**Nachteil:** Zusätzliche Logik, mögliche Edge-Cases (z.B. legitime Duplikate mit gleichem Timestamp).
+**Live/Replay:** unverändert (`ConnectionService` → ein `addMessage`).
 
 ---
 
-## 5. Empfehlung
+## 5. Stand Code / Verifikation
 
-**Option A umsetzen:** In `shopfloor-tab.component.ts` alle direkten `messageMonitor.addMessage()`-Aufrufe in den Fixture-Loadern entfernen. Nur `injectMessage` beibehalten.
+**Stand 2026-03-30:** `shopfloor-tab.component.ts` — Fixture-Loader nur `injectMessage` (kein paralleles `messageMonitor.addMessage`). **`dsp-action-tab.component.ts`** — Drill-Fixtures über `injectMessage` wie oben.
 
-**Zusätzlich prüfen:** Ob `dsp-action-tab` ähnlich doppelt füttert (z.B. wenn Haupt-Fixture und Tab-Fixture beide DSP-Actions liefern). Dort gibt es nur `addMessage`, kein `injectMessage` – Duplikate entstehen nur, wenn dieselbe Nachricht von zwei Stellen kommt.
-
----
-
-## 6. Implementierungsschritte (Option A)
-
-**Voraussetzung:** Alle Änderungen ausschließlich in Mock-only-Code (z.B. `loadModuleStatusFixture` hat `if (!this.isMockMode) return` – Live-Modus wird nicht ausgeführt).
-
-1. `loadModuleStatusFixture`: `messageMonitor.addMessage` entfernen (Zeilen 602, 616).
-2. `loadDrillActionFixture`: `messageMonitor.addMessage` entfernen (Zeile 641).
-3. `loadAiqsActionFixture`: `messageMonitor.addMessage` entfernen (Zeile 662).
-4. `loadModuleActionHistoryFixture`: `messageMonitor.addMessage` entfernen (Zeile 682).
-5. `loadQualityCheckFixture`: `messageMonitor.addMessage` entfernen (Zeile 709).
-6. Sicherstellen, dass überall `injectMessage` vorher aufgerufen wird (bereits der Fall).
-7. Manuell testen: Mock-Modus, Fixture laden, Message Monitor – keine doppelten Einträge.
-8. Unit-Tests anpassen, falls nötig.
-
-**Stand 2026-03-30:** `shopfloor-tab.component.ts` — Fixture-Loader nur `dashboard.injectMessage` (kein zweites `messageMonitor.addMessage`; Regressions-Analyse §2.1 damit abgedeckt). **`dsp-action-tab.component.ts`** — `loadDrillActionFixture` von direktem `messageMonitor.addMessage` auf **`injectMessage`** umgestellt, damit derselbe Mock-Pfad gilt (**messageSubject** → `setupMessageMonitorForwarding` → ein `addMessage`), und optional **Gateway-Streams** die DSP-Messages mitsehen.
+**Manuell:** Mock-Modus, Shopfloor-Fixtures laden, Message Monitor — keine doppelten Zeilen pro identischer Nachricht (siehe §6).
 
 ---
 
-## 7. Testanleitung (Vorher/Nachher)
+## 6. Testanleitung (Vorher/Nachher)
 
 ### Voraussetzung
 

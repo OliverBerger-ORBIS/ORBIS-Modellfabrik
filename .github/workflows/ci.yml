@@ -100,7 +100,7 @@ jobs:
       run: npx nx lint osf-ui
     
     - name: TypeScript Check OSF Libraries
-      run: npx nx run-many -t build --verbose --projects=mqtt-client,gateway,business,testing-fixtures --parallel=3 --nx-bail=false
+      run: npx nx run-many -t build --verbose --projects=entities,mqtt-client,gateway,business,testing-fixtures --parallel=3 --nx-bail=false
 
   build:
     runs-on: ubuntu-latest

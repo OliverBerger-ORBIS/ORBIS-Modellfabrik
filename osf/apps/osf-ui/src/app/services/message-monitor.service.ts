@@ -1,4 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import { utcIsoTimestampMs } from '@osf/entities';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { isOsfConsoleDebugEnabled } from '../utils/osf-console-debug';
 import { MessageValidationService } from './message-validation.service';
@@ -110,7 +111,7 @@ export class MessageMonitorService implements OnDestroy {
    * This validates, stores, persists, and broadcasts the message
    */
   addMessage(topic: string, payload: unknown, timestamp?: string): void {
-    const ts = timestamp || new Date().toISOString();
+    const ts = timestamp || utcIsoTimestampMs();
     
     // Validate message against schema
     const validation = this.validationService.validate(topic, payload);

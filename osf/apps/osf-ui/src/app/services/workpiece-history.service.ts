@@ -1,4 +1,5 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
+import { utcIsoTimestampMs } from '@osf/entities';
 import { BehaviorSubject, Observable, combineLatest, Subscription, merge } from 'rxjs';
 import { map, distinctUntilChanged, shareReplay, startWith, filter } from 'rxjs/operators';
 import { MessageMonitorService } from './message-monitor.service';
@@ -662,7 +663,7 @@ export class WorkpieceHistoryService implements OnDestroy {
             existingHistory.events.push({
               ...baseEvent,
               eventType: 'PROCESS',
-              timestamp: processTime.toISOString(),
+              timestamp: utcIsoTimestampMs(processTime),
               processDuration: processDuration,
               subOrderId,
               actionId,
@@ -678,7 +679,7 @@ export class WorkpieceHistoryService implements OnDestroy {
             existingHistory.events.push({
               ...baseEvent,
               eventType: 'DROP',
-              timestamp: dropTime.toISOString(),
+              timestamp: utcIsoTimestampMs(dropTime),
               subOrderId,
               actionId,
               details: { actionState: 'FINISHED', loadPosition: loadItem.loadPosition },
@@ -1109,7 +1110,7 @@ export class WorkpieceHistoryService implements OnDestroy {
             toLocation = 'target' in lastStep ? String(lastStep.target) : undefined;
           }
 
-          const orderDate = 'startedAt' in order ? String(order.startedAt) : new Date().toISOString();
+          const orderDate = 'startedAt' in order ? String(order.startedAt) : utcIsoTimestampMs();
           
           // Determine order status: ERROR/FAILED from order.state take precedence (e.g. quality-check failure)
           const orderState = String((order.state ?? order.status ?? '')).toUpperCase();
@@ -1209,8 +1210,8 @@ export class WorkpieceHistoryService implements OnDestroy {
           purchaseOrderId:
             fromCorrStorage?.purchaseOrderId ?? erpPurchaseData?.purchaseOrderId ?? generatePurchaseOrderId(),
           supplierId: fromCorrStorage?.supplierId ?? erpPurchaseData?.supplierId ?? generateSupplierId(),
-          orderDate: fromCorrStorage?.orderDate ?? erpPurchaseData?.orderDate ?? oneHourAgo.toISOString(),
-          startTime: oneHourAgo.toISOString(),
+          orderDate: fromCorrStorage?.orderDate ?? erpPurchaseData?.orderDate ?? utcIsoTimestampMs(oneHourAgo),
+          startTime: utcIsoTimestampMs(oneHourAgo),
         },
         {
           orderId: ftsOrderId,
@@ -1218,8 +1219,8 @@ export class WorkpieceHistoryService implements OnDestroy {
           customerOrderId:
             fromCorrProduction?.customerOrderId ?? erpCustomerData?.customerOrderId ?? generateCustomerOrderId(),
           customerId: fromCorrProduction?.customerId ?? erpCustomerData?.customerId ?? generateCustomerId(),
-          orderDate: fromCorrProduction?.orderDate ?? erpCustomerData?.orderDate ?? now.toISOString(),
-          startTime: now.toISOString(),
+          orderDate: fromCorrProduction?.orderDate ?? erpCustomerData?.orderDate ?? utcIsoTimestampMs(now),
+          startTime: utcIsoTimestampMs(now),
         },
       ];
     }

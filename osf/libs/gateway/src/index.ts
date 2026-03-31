@@ -16,6 +16,7 @@ import {
   type LdrSnapshot,
   type CameraFrameSnapshot,
   type CameraFrame,
+  utcIsoTimestampMs,
 } from '@osf/entities';
 
 export interface GatewayPublishOptions {
@@ -146,7 +147,7 @@ export const createGateway = (
     filter((msg) => msg.topic === 'ccu/pairing/state'),
     map((msg) => ({
       payload: parsePayload<ModulePairingState>(msg.payload),
-      fallbackTimestamp: msg.timestamp ?? new Date().toISOString(),
+      fallbackTimestamp: msg.timestamp ?? utcIsoTimestampMs(),
     })),
     filter(
       (
@@ -188,7 +189,7 @@ export const createGateway = (
       return {
         ...parsed,
         serialNumber: serial,
-        timestamp: parsed.timestamp ?? msg.timestamp ?? new Date().toISOString(),
+        timestamp: parsed.timestamp ?? msg.timestamp ?? utcIsoTimestampMs(),
         topic: msg.topic,
       } as ModuleFactsheetSnapshot;
     }),
@@ -210,7 +211,7 @@ export const createGateway = (
 
       return {
         ...parsed,
-        ts: parsed.ts ?? msg.timestamp ?? new Date().toISOString(),
+        ts: parsed.ts ?? msg.timestamp ?? utcIsoTimestampMs(),
       } as StockSnapshot;
     }),
     filter((snapshot): snapshot is StockSnapshot => snapshot !== null && Array.isArray(snapshot.stockItems)),
@@ -233,7 +234,7 @@ export const createGateway = (
       }
       return {
         ...parsed,
-        timestamp: parsed.timestamp ?? msg.timestamp ?? new Date().toISOString(),
+        timestamp: parsed.timestamp ?? msg.timestamp ?? utcIsoTimestampMs(),
       } as CcuConfigSnapshot;
     }),
     filter((payload): payload is CcuConfigSnapshot => payload !== null),
@@ -262,7 +263,7 @@ export const createGateway = (
         return null;
       }
       return {
-        timestamp: parsed.ts ?? msg.timestamp ?? new Date().toISOString(),
+        timestamp: parsed.ts ?? msg.timestamp ?? utcIsoTimestampMs(),
         dataUrl: parsed.data,
       } as CameraFrame;
     }),

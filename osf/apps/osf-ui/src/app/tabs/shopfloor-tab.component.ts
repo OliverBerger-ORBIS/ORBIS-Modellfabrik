@@ -11,6 +11,7 @@ import {
   ftsCanOfferInitialDockCommand,
   ftsCanOfferStartChargeCommand,
   ftsCanOfferStopChargeCommand,
+  utcIsoTimestampMs,
 } from '@osf/entities';
 import { SHOPFLOOR_ASSET_MAP, type OrderFixtureName } from '@osf/testing-fixtures';
 import { getDashboardController } from '../mock-dashboard';
@@ -1757,7 +1758,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     // Add current timestamp to command payload (overwrite placeholder if exists)
     const commandWithTimestamp = {
       ...command,
-      timestamp: new Date().toISOString(),
+      timestamp: utcIsoTimestampMs(),
     };
     
     try {
@@ -1768,7 +1769,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       this.sentSequenceCommands.push({
         command: commandWithTimestamp,
         topic: this.sequenceCommands.topic,
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
       });
       
       // Keep only last 10 sent commands
@@ -2432,7 +2433,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
             recentActions.push({
               command: p.actionState.command || 'Unknown',
               state: p.actionState.state || 'Unknown',
-              timestamp: p.actionState.timestamp || msg.timestamp || new Date().toISOString(),
+              timestamp: p.actionState.timestamp || msg.timestamp || utcIsoTimestampMs(),
               result: p.actionState.result
             });
           }
@@ -2445,7 +2446,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         currentAction: payload.actionState ? {
           command: payload.actionState.command || 'Unknown',
           state: payload.actionState.state || 'Unknown',
-          timestamp: payload.actionState.timestamp || lastMsg.timestamp || new Date().toISOString()
+          timestamp: payload.actionState.timestamp || lastMsg.timestamp || utcIsoTimestampMs()
         } : undefined,
         storageSlot: payload.actionState?.metadata?.slot,
         storageLevel: payload.actionState?.metadata?.level,
@@ -2498,7 +2499,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
             recentActions.push({
               command: p.actionState.command || 'Unknown',
               state: p.actionState.state || 'Unknown',
-              timestamp: p.actionState.timestamp || msg.timestamp || new Date().toISOString(),
+              timestamp: p.actionState.timestamp || msg.timestamp || utcIsoTimestampMs(),
               result: p.actionState.result
             });
           }
@@ -2559,7 +2560,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         currentAction: actionState ? {
           command: actionState.command || 'Unknown',
           state: actionState.state || 'Unknown',
-          timestamp: actionState.timestamp || lastMsg.timestamp || new Date().toISOString()
+          timestamp: actionState.timestamp || lastMsg.timestamp || utcIsoTimestampMs()
         } : undefined,
         drillDepth: drillAction?.metadata?.drillDepth ?? actionState?.metadata?.drillDepth,
         drillSpeed: drillAction?.metadata?.drillSpeed ?? actionState?.metadata?.drillSpeed,
@@ -2611,7 +2612,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
             recentActions.push({
               command: p.actionState.command || 'Unknown',
               state: p.actionState.state || 'Unknown',
-              timestamp: p.actionState.timestamp || msg.timestamp || new Date().toISOString(),
+              timestamp: p.actionState.timestamp || msg.timestamp || utcIsoTimestampMs(),
               result: p.actionState.result
             });
           }
@@ -2672,7 +2673,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
         currentAction: actionState ? {
           command: actionState.command || 'Unknown',
           state: actionState.state || 'Unknown',
-          timestamp: actionState.timestamp || lastMsg.timestamp || new Date().toISOString()
+          timestamp: actionState.timestamp || lastMsg.timestamp || utcIsoTimestampMs()
         } : undefined,
         millDepth: millAction?.metadata?.millDepth ?? actionState?.metadata?.millDepth,
         millSpeed: millAction?.metadata?.millSpeed ?? actionState?.metadata?.millSpeed,

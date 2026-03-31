@@ -14,6 +14,7 @@ import streamlit as st
 from ..utils.logging_config import get_logger
 from ..utils.path_constants import PROJECT_ROOT
 from ..utils.ui_refresh import RerunController
+from ..utils.utc_iso_timestamp import utc_iso_timestamp_ms
 
 logger = get_logger("omf.helper_apps.session_manager.components.topic_recorder")
 
@@ -712,7 +713,7 @@ def on_message_received(client, userdata, msg):
                     "payload": payload,
                     "qos": qos,
                     "retain": retain,
-                    "timestamp": datetime.now().isoformat(),
+                    "timestamp": utc_iso_timestamp_ms(),
                     "type": "periodic",
                 }
 
@@ -733,7 +734,7 @@ def on_message_received(client, userdata, msg):
                 "payload": payload,
                 "qos": qos,
                 "retain": retain,
-                "timestamp": datetime.now().isoformat(),
+                "timestamp": utc_iso_timestamp_ms(),
                 "sequence": sequence,
                 "type": "interesting",
             }

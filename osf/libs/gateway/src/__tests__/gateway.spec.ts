@@ -4,12 +4,13 @@ import test from 'node:test';
 import { Subject, firstValueFrom } from 'rxjs';
 import { skip } from 'rxjs/operators';
 
+import { utcIsoTimestampMs } from '@osf/entities';
 import { createGateway, type RawMqttMessage } from '../index';
 
 const createMessage = (topic: string, payload: unknown): RawMqttMessage => ({
   topic,
   payload: JSON.stringify(payload),
-  timestamp: new Date().toISOString(),
+  timestamp: utcIsoTimestampMs(),
 });
 
 test('maps orders topic to OrderActive', async () => {
@@ -74,7 +75,7 @@ test('emits each order when payload is an array', async () => {
       { orderId: '123', productId: 'A', quantity: 1, status: 'completed' },
       { orderId: '456', productId: 'B', quantity: 2, status: 'completed' },
     ]),
-    timestamp: new Date().toISOString(),
+    timestamp: utcIsoTimestampMs(),
   });
 
   const orderOne = await first;

@@ -14,6 +14,12 @@
         "main": "osf/libs/entities/src/index.ts",
         "assets": []
       }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx osf/libs/entities/src/__tests__/utc-iso-timestamp.spec.ts"
+      }
     }
   },
   "tags": ["scope:shared", "type:lib"]

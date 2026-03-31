@@ -86,6 +86,14 @@ RPi mit CCU-Stack nutzt 32-bit (armv7). OSF-UI muss armv7 bauen – arm64 führt
 **Status:** Accepted | **Datum:** 2026-03-10  
 Order-Tab: Aktives Modul und FTS auf Route in Grün (aktiver Schritt). AGV-1/2-Farben im AGV-Tab und Presentation-Tab.
 
+### 25. [Session-Log: Topic-Filter / Presets](25-session-log-topic-filters.md)
+**Status:** Accepted  
+Konfigurierbare Topic-Filter beim Session-Record; Reduktion von Noise (Sensoren/Kamera) bei erhaltener Kernabdeckung.
+
+### 26. [UTC-Zeitstempel: ISO-8601 mit Millisekunden (OSF & Session Manager)](26-utc-iso-timestamp-ms-convention.md)
+**Status:** Accepted | **Datum:** 2026-03-31  
+Kanonisches Format `YYYY-MM-DDThh:mm:ss.sssZ`; `utcIsoTimestampMs` (`@osf/entities`) bzw. `utc_iso_timestamp_ms()` (Python). CCU/TXT-Publisher unverändert.
+
 ---
 
 ## Template
@@ -94,4 +102,4 @@ Für neue Decision Records: [decision_template.md](decision_template.md)
 
 ---
 
-*Letzte Aktualisierung: 2026-03-30*
+*Letzte Aktualisierung: 2026-03-31*

@@ -42,11 +42,11 @@
 {
   "vibrationDetected": false,
   "impulseCount": 0,
-  "timestamp": "2026-02-23T12:05:01Z"
+  "timestamp": "2026-02-23T12:05:01.234Z"
 }
 ```
 - `vibrationDetected`: boolean – SW-420 direkt; MPU-6050: true bei gelb/rot
-- `timestamp`: ISO 8601 (analog Fischertechnik/DSP). MPU-6050: per NTP bei USE_MQTT 1; SW-420 ohne RTC: `""`
+- `timestamp`: ISO-8601 **UTC** mit **Millisekunden** (Sketch **v1.1.6+**); siehe [DR-26](26-utc-iso-timestamp-ms-convention.md). MPU-6050: per NTP bei USE_MQTT 1; SW-420 ohne RTC: `""`
 - Hardware: Relais → Ampel (Grün/Gelb/Rot+Sirene). UI: vibrationLevel/vibrationDetected → Ampel-Darstellung.
 
 ---

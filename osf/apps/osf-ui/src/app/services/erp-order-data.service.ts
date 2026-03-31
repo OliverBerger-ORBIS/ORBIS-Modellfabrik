@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { utcIsoTimestampMs } from '@osf/entities';
 import type { PurchaseOrderData, CustomerOrderData } from '../components/erp-info-box/erp-info-box.component';
 
 export type WorkpieceType = 'BLUE' | 'WHITE' | 'RED';
@@ -52,7 +53,7 @@ export class ErpOrderDataService {
     const stored: StoredPurchaseOrderData = {
       ...data,
       workpieceType,
-      timestamp: new Date().toISOString(),
+      timestamp: utcIsoTimestampMs(),
     };
     const current = this.purchaseOrdersSubject.value;
     this.purchaseOrdersSubject.next([...current, stored]);
@@ -65,7 +66,7 @@ export class ErpOrderDataService {
   storeCustomerOrder(data: CustomerOrderData): void {
     const stored: StoredCustomerOrderData = {
       ...data,
-      timestamp: new Date().toISOString(),
+      timestamp: utcIsoTimestampMs(),
     };
     const current = this.customerOrdersSubject.value;
     this.customerOrdersSubject.next([...current, stored]);

@@ -1,27 +1,28 @@
 import { combineLatest, merge, Observable } from 'rxjs';
 import { map, scan, shareReplay, startWith } from 'rxjs/operators';
 
-import type {
-  FtsState,
-  ModuleState,
-  OrderActive,
-  StockMessage,
-  ModulePairingState,
-  ModuleOverviewState,
-  ModuleAvailabilityStatus,
-  ModuleFactsheetSnapshot,
-  StockSnapshot,
-  InventoryOverviewState,
-  InventorySlotState,
-  StockWorkpiece,
-  WorkpieceType,
-  ProductionFlowMap,
-  CcuConfigSnapshot,
-  Bme680Snapshot,
-  LdrSnapshot,
-  SensorOverviewState,
-  CameraFrame,
-  TransportOverviewStatus,
+import {
+  utcIsoTimestampMs,
+  type FtsState,
+  type ModuleState,
+  type OrderActive,
+  type StockMessage,
+  type ModulePairingState,
+  type ModuleOverviewState,
+  type ModuleAvailabilityStatus,
+  type ModuleFactsheetSnapshot,
+  type StockSnapshot,
+  type InventoryOverviewState,
+  type InventorySlotState,
+  type StockWorkpiece,
+  type WorkpieceType,
+  type ProductionFlowMap,
+  type CcuConfigSnapshot,
+  type Bme680Snapshot,
+  type LdrSnapshot,
+  type SensorOverviewState,
+  type CameraFrame,
+  type TransportOverviewStatus,
 } from '@osf/entities';
 import { OrderStreamPayload, type GatewayPublishFn } from '@osf/gateway';
 
@@ -221,7 +222,7 @@ const buildInventoryOverview = (snapshot: StockSnapshot | null | undefined): Inv
     slots,
     availableCounts,
     reservedCounts,
-    lastUpdated: snapshot?.ts ?? new Date().toISOString(),
+    lastUpdated: snapshot?.ts ?? utcIsoTimestampMs(),
   };
 };
 
@@ -250,7 +251,7 @@ const applyPairingSnapshot = (
   snapshot: ModulePairingState,
   lastFtsBySerial: Record<string, FtsState>,
 ): ModuleOverviewState => {
-  const timestamp = snapshot.timestamp ?? new Date().toISOString();
+  const timestamp = snapshot.timestamp ?? utcIsoTimestampMs();
   const nextModules = { ...state.modules };
   const nextTransports = { ...state.transports };
 
@@ -356,7 +357,7 @@ const applyFactsheetSnapshot = (
   nextModules[serial] = {
     ...prev,
     configured: true,
-    factsheetTimestamp: formatTimestamp(snapshot.timestamp ?? new Date().toISOString()),
+    factsheetTimestamp: formatTimestamp(snapshot.timestamp ?? utcIsoTimestampMs()),
     messageCount: (prev.messageCount ?? 0) + 1,
     lastUpdate: formatTimestamp(snapshot.timestamp ?? prev.lastUpdate),
   };
@@ -545,7 +546,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     }
 
     const payload = {
-      timestamp: new Date().toISOString(),
+      timestamp: utcIsoTimestampMs(),
       serialNumber,
       command: 'startCalibration',
     };
@@ -575,7 +576,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     const targetNodeId = nodeId && nodeId !== 'UNKNOWN' ? nodeId : 'SVR4H73275';
 
     const payload = {
-      timestamp: new Date().toISOString(),
+      timestamp: utcIsoTimestampMs(),
       serialNumber,
       actions: [
         {
@@ -597,7 +598,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     }
     const loadDropped = options?.loadDropped ?? false;
     const payload = {
-      timestamp: new Date().toISOString(),
+      timestamp: utcIsoTimestampMs(),
       serialNumber,
       actions: [
         {
@@ -627,7 +628,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
 
     const payload = {
       type: workpieceType,
-      timestamp: new Date().toISOString(),
+      timestamp: utcIsoTimestampMs(),
       orderType: 'PRODUCTION',
       requestId: generateRequestId(),
     };
@@ -641,7 +642,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
       return;
     }
     const payload: Record<string, string> = {
-      timestamp: new Date().toISOString(),
+      timestamp: utcIsoTimestampMs(),
     };
     if (ccuOrderId) {
       payload['ccuOrderId'] = ccuOrderId;
@@ -659,7 +660,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
 
     const payload = {
       type: workpieceType,
-      timestamp: new Date().toISOString(),
+      timestamp: utcIsoTimestampMs(),
       orderType: 'RAW_MATERIAL',
       workpieceType,
     };
@@ -671,7 +672,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     // Format: ISO timestamp with milliseconds ending with Z
     // Based on session logs: "ts":"2025-11-10T16:48:45.975Z"
     // Based on examples: 'home' and 'stop' don't have 'degree' field
-    const ts = new Date().toISOString();
+    const ts = utcIsoTimestampMs();
     
     const payload: { ts: string; cmd: string; degree?: number } = {
       ts,
@@ -692,7 +693,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     // Payload: {"timestamp": datetime.now().isoformat(), "withStorage": False}
     // QoS: 1, Retain: False
     const payload = {
-      timestamp: new Date().toISOString(),
+      timestamp: utcIsoTimestampMs(),
       withStorage,
     };
 
@@ -700,7 +701,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
   };
 
   const parkFactory: BusinessCommands['parkFactory'] = async () => {
-    const payload = { timestamp: new Date().toISOString() };
+    const payload = { timestamp: utcIsoTimestampMs() };
     await publish('ccu/set/park', payload, { qos: 2, retain: false });
   };
 
@@ -708,9 +709,9 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     // Gefahrensimulation: ccu/set/park + ccu/order/cancel (ENQUEUED) + FTS-Reset (Option C)
     // docs/07-analysis/alarm-fabrik-stop-ccu-commands-2026-03.md
     const sentTopics: Array<{ topic: string; timestamp: string }> = [];
-    const addSent = (topic: string) => sentTopics.push({ topic, timestamp: new Date().toISOString() });
+    const addSent = (topic: string) => sentTopics.push({ topic, timestamp: utcIsoTimestampMs() });
 
-    const payloadPark = { timestamp: new Date().toISOString() };
+    const payloadPark = { timestamp: utcIsoTimestampMs() };
     await publish('ccu/set/park', payloadPark, { qos: 2, retain: false });
     addSent('ccu/set/park');
 
@@ -727,7 +728,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
       const actionId = crypto.randomUUID?.() ?? `osf-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const payload = {
         serialNumber: serial,
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
         actions: [{ actionId, actionType: 'reset' }],
       };
       try {

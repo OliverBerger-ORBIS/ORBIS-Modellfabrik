@@ -1,4 +1,5 @@
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { utcIsoTimestampMs } from '@osf/entities';
 
 import {
   ConnState,
@@ -57,7 +58,7 @@ export class MockMqttAdapter implements MqttAdapter {
       topic,
       payload,
       options,
-      timestamp: new Date().toISOString(),
+      timestamp: utcIsoTimestampMs(),
     });
   }
 }

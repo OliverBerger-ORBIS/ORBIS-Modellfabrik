@@ -4,12 +4,13 @@ import test from 'node:test';
 import { Subject, firstValueFrom, lastValueFrom } from 'rxjs';
 import { take, toArray } from 'rxjs/operators';
 
+import { utcIsoTimestampMs } from '@osf/entities';
 import { createGateway, type RawMqttMessage, type GatewayPublishFn } from '../index';
 
 const createMessage = (topic: string, payload: unknown, timestamp?: string): RawMqttMessage => ({
   topic,
   payload: JSON.stringify(payload),
-  timestamp: timestamp ?? new Date().toISOString(),
+  timestamp: timestamp ?? utcIsoTimestampMs(),
 });
 
 test('Gateway Integration: MQTT Client → Gateway Message Flow', async () => {
@@ -98,7 +99,7 @@ test('Gateway Integration: Error Handling with Invalid Messages', async () => {
   subject.next({
     topic: 'ccu/order/active',
     payload: 'invalid-json-{',
-    timestamp: new Date().toISOString(),
+    timestamp: utcIsoTimestampMs(),
   });
 
   // Gateway should handle gracefully - stream should not error

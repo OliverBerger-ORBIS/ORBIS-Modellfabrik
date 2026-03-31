@@ -1,3 +1,4 @@
+import { utcIsoTimestampMs } from '@osf/entities';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MessageMonitorTabComponent } from '../message-monitor-tab.component';
 import { MessageMonitorService } from '../../services/message-monitor.service';
@@ -119,7 +120,7 @@ describe.skip('MessageMonitorTabComponent Integration', () => {
       const mockMessage: MonitoredMessage = {
         topic: 'test/topic',
         payload: { data: 'test' },
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
         valid: true,
       };
 

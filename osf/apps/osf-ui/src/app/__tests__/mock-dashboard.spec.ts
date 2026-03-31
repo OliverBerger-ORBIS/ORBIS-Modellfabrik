@@ -1,3 +1,4 @@
+import { utcIsoTimestampMs } from '@osf/entities';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, skip } from 'rxjs';
 import {
@@ -25,7 +26,7 @@ describe('MockDashboard', () => {
         messages.get(topic)!.push({
           topic,
           payload,
-          timestamp: timestamp ?? new Date().toISOString(),
+          timestamp: timestamp ?? utcIsoTimestampMs(),
           valid: true,
         });
       },
@@ -384,7 +385,7 @@ describe('getDashboardController mode switching (Live vs Mock)', () => {
         messages.get(topic)!.push({
           topic,
           payload,
-          timestamp: timestamp ?? new Date().toISOString(),
+          timestamp: timestamp ?? utcIsoTimestampMs(),
           valid: true,
         });
       },
@@ -415,7 +416,7 @@ describe('getDashboardController mode switching (Live vs Mock)', () => {
         messages.get(topic)!.push({
           topic,
           payload,
-          timestamp: timestamp ?? new Date().toISOString(),
+          timestamp: timestamp ?? utcIsoTimestampMs(),
           valid: true,
         });
       },

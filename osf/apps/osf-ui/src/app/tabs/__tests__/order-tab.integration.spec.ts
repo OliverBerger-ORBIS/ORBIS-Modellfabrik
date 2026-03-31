@@ -1,3 +1,4 @@
+import { utcIsoTimestampMs } from '@osf/entities';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
@@ -59,7 +60,7 @@ describe.skip('OrderTabComponent Integration', () => {
         orderType: 'PRODUCTION',
         state: 'ACTIVE',
         status: 'ACTIVE',
-        startedAt: new Date().toISOString(),
+        startedAt: utcIsoTimestampMs(),
       };
 
       messageMonitor.addMessage('ccu/order/active', orderPayload);
@@ -92,7 +93,7 @@ describe.skip('OrderTabComponent Integration', () => {
         orderType: 'PRODUCTION',
         state: 'ACTIVE',
         status: 'ACTIVE',
-        startedAt: new Date().toISOString(),
+        startedAt: utcIsoTimestampMs(),
       };
 
       messageMonitor.addMessage('ccu/order/active', order);
@@ -115,7 +116,7 @@ describe.skip('OrderTabComponent Integration', () => {
         orderType: 'PRODUCTION',
         state: 'ACTIVE',
         status: 'ACTIVE',
-        startedAt: new Date().toISOString(),
+        startedAt: utcIsoTimestampMs(),
       };
 
       const storageOrder: OrderActive = {
@@ -123,7 +124,7 @@ describe.skip('OrderTabComponent Integration', () => {
         orderType: 'STORAGE',
         state: 'ACTIVE',
         status: 'ACTIVE',
-        startedAt: new Date().toISOString(),
+        startedAt: utcIsoTimestampMs(),
       };
 
       messageMonitor.addMessage('ccu/order/active', productionOrder);
@@ -174,7 +175,7 @@ describe.skip('OrderTabComponent Integration', () => {
         orderType: 'PRODUCTION',
         state: 'ACTIVE',
         status: 'ACTIVE',
-        startedAt: new Date().toISOString(),
+        startedAt: utcIsoTimestampMs(),
       };
 
       messageMonitor.addMessage('ccu/order/active', order);
@@ -190,7 +191,7 @@ describe.skip('OrderTabComponent Integration', () => {
         ...order,
         state: 'COMPLETED',
         status: 'COMPLETED',
-        updatedAt: new Date().toISOString(),
+        updatedAt: utcIsoTimestampMs(),
       };
 
       messageMonitor.addMessage('ccu/order/active', completedOrder);

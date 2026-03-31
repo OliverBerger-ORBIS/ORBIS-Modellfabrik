@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import type { OrderActive, ProductionFlowMap, InventoryOverviewState, StockSnapshot } from '@osf/entities';
+import { utcIsoTimestampMs, type OrderActive, type ProductionFlowMap, type InventoryOverviewState, type StockSnapshot } from '@osf/entities';
 import { getDashboardController, type DashboardStreamSet } from '../mock-dashboard';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { EnvironmentService } from '../services/environment.service';
@@ -292,9 +292,9 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
     return {
       purchaseOrderId: `ERP-PO-${random}`,
       supplierId: `SUP-${supplierRandom}`,
-      orderDate: now.toISOString(),
+      orderDate: utcIsoTimestampMs(now),
       orderAmount: 1,
-      plannedDeliveryDate: deliveryDate.toISOString(),
+      plannedDeliveryDate: utcIsoTimestampMs(deliveryDate),
     };
   }
 
@@ -313,9 +313,9 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
     return {
       customerOrderId: `ERP-CO-${random}`,
       customerId: `CUST-${customerRandom}`,
-      orderDate: now.toISOString(),
+      orderDate: utcIsoTimestampMs(now),
       orderAmount: 1,
-      plannedDeliveryDate: deliveryDate.toISOString(),
+      plannedDeliveryDate: utcIsoTimestampMs(deliveryDate),
     };
   }
 
@@ -626,7 +626,7 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
       slots,
       availableCounts,
       reservedCounts,
-      lastUpdated: normalizedSnapshot?.ts ?? new Date().toISOString(),
+      lastUpdated: normalizedSnapshot?.ts ?? utcIsoTimestampMs(),
     };
   }
 

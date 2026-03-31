@@ -4,7 +4,7 @@ import { getDashboardController, type DashboardStreamSet } from '../mock-dashboa
 import type { Observable } from 'rxjs';
 import { map, shareReplay, filter, startWith, distinctUntilChanged } from 'rxjs/operators';
 import { merge, combineLatest, Subscription } from 'rxjs';
-import type { SensorOverviewState, CameraFrame, Bme680Snapshot, LdrSnapshot } from '@osf/entities';
+import { utcIsoTimestampMs, type SensorOverviewState, type CameraFrame, type Bme680Snapshot, type LdrSnapshot } from '@osf/entities';
 
 /** osf/arduino/vibration/{sw420-1|mpu6050-1}/state – Vibrationssensor; OSF-UI mappt auf Ampel */
 export interface VibrationStatePayload {
@@ -555,12 +555,12 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     const payload: VibrationStatePayload = {
       vibrationDetected,
       impulseCount: vibrationDetected ? 99 : 0,
-      timestamp: new Date().toISOString(),
+      timestamp: utcIsoTimestampMs(),
     };
     const message = {
       topic: this.VIBRATION_TOPIC_SW420,
       payload,
-      timestamp: new Date().toISOString(),
+      timestamp: utcIsoTimestampMs(),
     };
     this.dashboard.injectMessage?.(message);
   }

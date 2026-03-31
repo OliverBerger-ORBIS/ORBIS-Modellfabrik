@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { utcIsoTimestampMs } from '@osf/entities';
 
-let VERSION = { full: '0.0.0-dev', build: 'dev', buildDate: new Date().toISOString() };
+let VERSION = { full: '0.0.0-dev', build: 'dev', buildDate: utcIsoTimestampMs() };
 try {
   // Version file is generated during build (see deploy.yml workflow)
   VERSION = require('../../../environments/version').VERSION;

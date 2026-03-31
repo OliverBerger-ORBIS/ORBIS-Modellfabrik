@@ -5,18 +5,19 @@ import { Subject, firstValueFrom } from 'rxjs';
 import { take, toArray } from 'rxjs/operators';
 
 import { createBusiness, type GatewayStreams } from '../index';
-import type {
-  FtsState,
-  ModuleState,
-  StockMessage,
-  ModulePairingState,
-  ModuleFactsheetSnapshot,
-  StockSnapshot,
-  ProductionFlowMap,
-  CcuConfigSnapshot,
-  Bme680Snapshot,
-  LdrSnapshot,
-  CameraFrame,
+import {
+  utcIsoTimestampMs,
+  type FtsState,
+  type ModuleState,
+  type StockMessage,
+  type ModulePairingState,
+  type ModuleFactsheetSnapshot,
+  type StockSnapshot,
+  type ProductionFlowMap,
+  type CcuConfigSnapshot,
+  type Bme680Snapshot,
+  type LdrSnapshot,
+  type CameraFrame,
 } from '@osf/entities';
 import type { OrderStreamPayload, GatewayPublishFn } from '@osf/gateway';
 
@@ -150,7 +151,7 @@ test('Business Integration: Stock By Part Aggregation', async () => {
     itemId: 'BLUE-WORKPIECE',
     location: 'HBW',
     quantity: 5,
-    timestamp: new Date().toISOString(),
+    timestamp: utcIsoTimestampMs(),
   } as StockMessage);
 
   const stock = await stockPromise;
@@ -236,7 +237,7 @@ test('Business Integration: Inventory Overview State', async () => {
         quantity: 10,
       },
     ],
-    timestamp: new Date().toISOString(),
+    timestamp: utcIsoTimestampMs(),
   } as StockSnapshot);
 
   const inventory = await inventoryPromise;
@@ -260,7 +261,7 @@ test('Business Integration: Production Flows Processing', async () => {
         partType: 'BLUE',
       },
     ],
-    timestamp: new Date().toISOString(),
+    timestamp: utcIsoTimestampMs(),
   } as ProductionFlowMap);
 
   const flows = await flowsPromise;
@@ -279,7 +280,7 @@ test('Business Integration: Config Snapshot Processing', async () => {
     modules: {
       HBW: { moduleId: 'HBW', type: 'WAREHOUSE', enabled: true },
     },
-    timestamp: new Date().toISOString(),
+    timestamp: utcIsoTimestampMs(),
   } as CcuConfigSnapshot);
 
   const config = await configPromise;
@@ -301,10 +302,10 @@ test('Business Integration: Sensor Overview Aggregation', async () => {
         humidity: 45,
         pressure: 1013.25,
         gasResistance: 50000,
-        timestamp: new Date().toISOString(),
+        timestamp: utcIsoTimestampMs(),
       },
     },
-    timestamp: new Date().toISOString(),
+    timestamp: utcIsoTimestampMs(),
   } as Bme680Snapshot);
 
   const sensorOverview = await sensorPromise;
@@ -322,7 +323,7 @@ test('Business Integration: Camera Frames Pass-through', async () => {
   gateway.emit.camera({
     moduleId: 'CAMERA-001',
     image: 'base64-encoded-image-data',
-    timestamp: new Date().toISOString(),
+    timestamp: utcIsoTimestampMs(),
   } as CameraFrame);
 
   const frame = await cameraPromise;

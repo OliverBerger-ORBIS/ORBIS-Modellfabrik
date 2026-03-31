@@ -6,12 +6,24 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
-### Hardware / Arduino
+## [1.0.6] - 2026-03-31
 
-- **`OSF_MultiSensor_R4WiFi` v1.1.3:** MQTT-State für **MPU, SW-420, DHT11, Flamme, Gas** wird im Warn-/Alarmbetrieb mindestens alle **2 s** erneut publiziert (`MQTT_WARN_ALARM_TELEMETRY_INTERVAL`), damit die OSF-UI Rohwerte nicht einfriert, wenn sich die Messung innerhalb desselben Warn-/Alarmbands ändert. Ampel-Mindestdauer unverändert. Siehe [arduino-r4-multisensor.md](docs/05-hardware/arduino-r4-multisensor.md).
-- **`OSF_MultiSensor_R4WiFi` v1.1.4:** **NTP** direkt nach WiFi (`forceUpdate`, mehrere Server); **`timestamp`** in allen State-Payloads als ISO-8601 UTC (`…Z`) oder `""` wenn keine Sync-Zeit. **DHT**-State enthält ebenfalls `timestamp`. Optionaler Fallback **`WiFi.getTime()`**, wenn NTPClient noch nicht gesetzt.
-- **`OSF_MultiSensor_R4WiFi` v1.1.5:** Zeit ohne **NTPClient** (auf R4 WiFi oft ohne Antwort): **`WiFi.getTime()`** mit langen Retries, danach **UDP-NTP** wie WiFiUdpNtpClient zu **Gateway + feste IPs**; UTC über **`gUtcEpochBase` + `millis()`** zwischen Syncs. Behebt leere Payload-`timestamp` bei funktionierendem MQTT.
-- **`OSF_MultiSensor_R4WiFi` v1.1.6:** MQTT-**`timestamp`** in State-Payloads mit **Millisekunden** (`YYYY-MM-DDThh:mm:ss.sssZ`), aus NTP-Sekunden + `millis()`-Offset seit letztem Sync (angleichen an OSF `toISOString()`).
+**Patch: UTC ISO-8601 timestamps with milliseconds (OSF + Session Manager), DR-26, entities tests, mock Message Monitor regression, default Arduino WiFi ORBIS.**
+
+### Added
+
+- **`utcIsoTimestampMs`** in `@osf/entities` with **`nx test entities`**; CI lint builds **`entities`** explicitly. Formal convention: [DR-26](docs/03-decision-records/26-utc-iso-timestamp-ms-convention.md).
+- **Session Manager:** `utc_iso_timestamp_ms()` for JSON-line and topic-recorder timestamps (aligned with Arduino **`OSF_MultiSensor_R4WiFi` v1.1.6** payload shape). CCU/TXT publishers unchanged.
+
+### Changed
+
+- OSF **business**, **gateway**, **mqtt-client**, **osf-ui**, and **testing-fixtures** use the canonical helper wherever OSF generates timestamps.
+- **Arduino sketch** `OSF_MultiSensor_R4WiFi.ino`: default **`WIFI_MODE_ORBIS`** (Shopfloor/Messe AP `ORBIS-4C57` block). Switch to `WIFI_MODE_DAHEIM` for home WiFi.
+- **Documentation:** DR-18 example payload, DR README (25–26), sprint 18, session-log howto, analysis index, Message Monitor duplicate-topic note (decision-only), publish-buttons summary.
+
+### Fixed
+
+- **Mock Mode / Message Monitor:** Shopfloor fixture loaders feed the monitor only via **`injectMessage`** (single `addMessage` path), avoiding duplicate rows in the Message Monitor tab.
 
 ## [1.0.5] - 2026-03-30
 

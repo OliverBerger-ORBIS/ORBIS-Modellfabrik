@@ -1,3 +1,4 @@
+import { utcIsoTimestampMs } from '@osf/entities';
 import { TestBed } from '@angular/core/testing';
 import { ModuleOverviewStateService } from '../module-overview-state.service';
 import { firstValueFrom } from 'rxjs';
@@ -52,7 +53,7 @@ describe('ModuleOverviewStateService', () => {
             availability: 'available',
             configured: true,
             messageCount: 0,
-            lastUpdate: new Date().toISOString(),
+            lastUpdate: utcIsoTimestampMs(),
           },
         },
         transports: {},
@@ -66,7 +67,7 @@ describe('ModuleOverviewStateService', () => {
             availability: 'busy',
             configured: true,
             messageCount: 1,
-            lastUpdate: new Date().toISOString(),
+            lastUpdate: utcIsoTimestampMs(),
           },
         },
         transports: {},
@@ -88,7 +89,7 @@ describe('ModuleOverviewStateService', () => {
             availability: 'available',
             configured: true,
             messageCount: 0,
-            lastUpdate: new Date().toISOString(),
+            lastUpdate: utcIsoTimestampMs(),
           },
         },
         transports: {},
@@ -110,7 +111,7 @@ describe('ModuleOverviewStateService', () => {
             availability: 'available',
             configured: true,
             messageCount: 0,
-            lastUpdate: new Date().toISOString(),
+            lastUpdate: utcIsoTimestampMs(),
           },
         },
         transports: {},
@@ -124,7 +125,7 @@ describe('ModuleOverviewStateService', () => {
             availability: 'available',
             configured: true,
             messageCount: 0,
-            lastUpdate: new Date().toISOString(),
+            lastUpdate: utcIsoTimestampMs(),
           },
         },
         transports: {},
@@ -151,7 +152,7 @@ describe('ModuleOverviewStateService', () => {
             availability: 'available',
             configured: true,
             messageCount: 0,
-            lastUpdate: new Date().toISOString(),
+            lastUpdate: utcIsoTimestampMs(),
           },
         },
         transports: {},
@@ -172,7 +173,7 @@ describe('ModuleOverviewStateService', () => {
             availability: 'available',
             configured: true,
             messageCount: 0,
-            lastUpdate: new Date().toISOString(),
+            lastUpdate: utcIsoTimestampMs(),
           },
         },
         transports: {},
@@ -231,7 +232,7 @@ describe('ModuleOverviewStateService', () => {
         availability: 'available' as const,
         configured: true,
         messageCount: 0,
-        lastUpdate: new Date().toISOString(),
+        lastUpdate: utcIsoTimestampMs(),
       };
 
       const states: ModuleOverviewState[] = [
@@ -271,7 +272,7 @@ describe('ModuleOverviewStateService', () => {
             availability: 'available',
             configured: true,
             messageCount: 0,
-            lastUpdate: new Date().toISOString(),
+            lastUpdate: utcIsoTimestampMs(),
           },
         },
         transports: {},

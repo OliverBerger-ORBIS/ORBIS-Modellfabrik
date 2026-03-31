@@ -5,6 +5,7 @@
  * with different variants (e.g., production vs storage orders, error states, etc.)
  */
 
+import { utcIsoTimestampMs } from '@osf/entities';
 import { defer, from, merge, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import type { RawMqttMessage } from '@osf/gateway';
@@ -119,7 +120,7 @@ export interface TabFixtureConfig {
  * OSF Arduino vibration sensor (SW-420) fixture – für Message-Monitor OSF-Topics-Filter-Test
  */
 function createOsfVibrationFixture(): Observable<RawMqttMessage> {
-  const ts = new Date().toISOString();
+  const ts = utcIsoTimestampMs();
   return from([
     {
       topic: 'osf/arduino/vibration/sw420-1/connection',
@@ -134,14 +135,14 @@ function createOsfVibrationFixture(): Observable<RawMqttMessage> {
     {
       topic: 'osf/arduino/vibration/sw420-1/state',
       payload: { vibrationDetected: true, impulseCount: 42, timestamp: '' },
-      timestamp: new Date(Date.now() + 1000).toISOString(),
+      timestamp: utcIsoTimestampMs(new Date(Date.now() + 1000)),
     },
   ]);
 }
 
 /** Arduino Multi-Sensor fixture – Idle: all green, normal temp/humidity, no flame, low gas */
 function createOsfArduinoIdleFixture(): Observable<RawMqttMessage> {
-  const ts = new Date().toISOString();
+  const ts = utcIsoTimestampMs();
   return from([
     { topic: 'osf/arduino/vibration/mpu6050-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'mpu6050-1' }, timestamp: ts },
     { topic: 'osf/arduino/vibration/mpu6050-1/state', payload: { vibrationLevel: 'green', vibrationDetected: false, impulseCount: 0, magnitude: 16500, timestamp: ts }, timestamp: ts },
@@ -158,7 +159,7 @@ function createOsfArduinoIdleFixture(): Observable<RawMqttMessage> {
 
 /** Arduino Multi-Sensor fixture – Warning: yellow vibration, elevated temp/humidity, gas level 1 (orange border) */
 function createOsfArduinoWarningFixture(): Observable<RawMqttMessage> {
-  const ts = new Date().toISOString();
+  const ts = utcIsoTimestampMs();
   return from([
     { topic: 'osf/arduino/vibration/mpu6050-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'mpu6050-1' }, timestamp: ts },
     { topic: 'osf/arduino/vibration/mpu6050-1/state', payload: { vibrationLevel: 'yellow', vibrationDetected: true, impulseCount: 3, magnitude: 20000, timestamp: ts }, timestamp: ts },
@@ -175,7 +176,7 @@ function createOsfArduinoWarningFixture(): Observable<RawMqttMessage> {
 
 /** Arduino Multi-Sensor fixture – Alarm: red vibration, critical temp/humidity, flame + gas level 2 */
 function createOsfArduinoAlarmFixture(): Observable<RawMqttMessage> {
-  const ts = new Date().toISOString();
+  const ts = utcIsoTimestampMs();
   return from([
     { topic: 'osf/arduino/vibration/mpu6050-1/connection', payload: { connectionState: 'ONLINE', ip: '192.168.0.95', serialNumber: 'mpu6050-1' }, timestamp: ts },
     { topic: 'osf/arduino/vibration/mpu6050-1/state', payload: { vibrationLevel: 'red', vibrationDetected: true, impulseCount: 15, magnitude: 28000, timestamp: ts }, timestamp: ts },

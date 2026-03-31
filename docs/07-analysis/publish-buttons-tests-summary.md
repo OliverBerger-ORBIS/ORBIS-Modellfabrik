@@ -1,5 +1,7 @@
 # Publish Buttons Tests - Zusammenfassung
 
+**OSF-generierte `timestamp`-Felder** in den hier getesteten Publish-Payloads folgen [DR-26](../03-decision-records/26-utc-iso-timestamp-ms-convention.md) (UTC, ISO-8601 mit ms). **TXT/OMF2**-Spezialfälle (z. B. Kamera-Feld `ts`) bleiben wie von der Quelle definiert.
+
 ## ✅ Abgeschlossene Änderungen
 
 ### 1. Button-Label-Wechsel (bereits implementiert)

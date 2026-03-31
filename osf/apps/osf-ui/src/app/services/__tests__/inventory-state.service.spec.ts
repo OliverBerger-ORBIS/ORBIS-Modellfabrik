@@ -1,3 +1,4 @@
+import { utcIsoTimestampMs } from '@osf/entities';
 import { TestBed } from '@angular/core/testing';
 import { InventoryStateService } from '../inventory-state.service';
 import { firstValueFrom } from 'rxjs';
@@ -36,7 +37,7 @@ describe('InventoryStateService', () => {
         slots: {},
         availableCounts: { BLUE: 5, WHITE: 3, RED: 2 },
         reservedCounts: { BLUE: 1, WHITE: 0, RED: 0 },
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: utcIsoTimestampMs(),
       };
 
       service.setState('test-env', mockState);
@@ -50,14 +51,14 @@ describe('InventoryStateService', () => {
         slots: {},
         availableCounts: { BLUE: 5, WHITE: 0, RED: 0 },
         reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 },
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: utcIsoTimestampMs(),
       };
 
       const state2: InventoryOverviewState = {
         slots: {},
         availableCounts: { BLUE: 10, WHITE: 0, RED: 0 },
         reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 },
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: utcIsoTimestampMs(),
       };
 
       service.setState('test-env', state1);
@@ -72,7 +73,7 @@ describe('InventoryStateService', () => {
         slots: {},
         availableCounts: { BLUE: 5, WHITE: 0, RED: 0 },
         reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 },
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: utcIsoTimestampMs(),
       };
 
       service.setState('test-env', mockState);
@@ -87,14 +88,14 @@ describe('InventoryStateService', () => {
         slots: {},
         availableCounts: { BLUE: 5, WHITE: 0, RED: 0 },
         reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 },
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: utcIsoTimestampMs(),
       };
 
       const state2: InventoryOverviewState = {
         slots: {},
         availableCounts: { BLUE: 0, WHITE: 10, RED: 0 },
         reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 },
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: utcIsoTimestampMs(),
       };
 
       service.setState('env1', state1);
@@ -114,7 +115,7 @@ describe('InventoryStateService', () => {
         slots: {},
         availableCounts: { BLUE: 5, WHITE: 0, RED: 0 },
         reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 },
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: utcIsoTimestampMs(),
       };
 
       service.setState('test-env', mockState);
@@ -128,7 +129,7 @@ describe('InventoryStateService', () => {
         slots: {},
         availableCounts: { BLUE: 5, WHITE: 0, RED: 0 },
         reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 },
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: utcIsoTimestampMs(),
       };
 
       service.setState('test-env', mockState);
@@ -145,7 +146,7 @@ describe('InventoryStateService', () => {
         slots: {},
         availableCounts: { BLUE: 0, WHITE: 0, RED: 0 },
         reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 },
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: utcIsoTimestampMs(),
       };
 
       service.setState('', mockState);
@@ -160,7 +161,7 @@ describe('InventoryStateService', () => {
         slots: {},
         availableCounts: { BLUE: 5, WHITE: 0, RED: 0 },
         reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 },
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: utcIsoTimestampMs(),
       };
 
       service.setState(longKey, mockState);
@@ -175,7 +176,7 @@ describe('InventoryStateService', () => {
         slots: {},
         availableCounts: { BLUE: 5, WHITE: 0, RED: 0 },
         reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 },
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: utcIsoTimestampMs(),
       };
 
       service.setState(specialKey, mockState);
@@ -189,7 +190,7 @@ describe('InventoryStateService', () => {
         slots: {},
         availableCounts: { BLUE: 0, WHITE: 0, RED: 0 },
         reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 },
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: utcIsoTimestampMs(),
       };
 
       service.setState('test-env', emptyState);
@@ -203,7 +204,7 @@ describe('InventoryStateService', () => {
         slots: {},
         availableCounts: { BLUE: 10, WHITE: 20, RED: 30 },
         reservedCounts: { BLUE: 5, WHITE: 10, RED: 15 },
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: utcIsoTimestampMs(),
       };
 
       service.setState('test-env', fullState);
@@ -214,9 +215,9 @@ describe('InventoryStateService', () => {
 
     it('should handle rapid state changes', async () => {
       const states: InventoryOverviewState[] = [
-        { slots: {}, availableCounts: { BLUE: 1, WHITE: 0, RED: 0 }, reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 }, lastUpdated: new Date().toISOString() },
-        { slots: {}, availableCounts: { BLUE: 2, WHITE: 0, RED: 0 }, reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 }, lastUpdated: new Date().toISOString() },
-        { slots: {}, availableCounts: { BLUE: 3, WHITE: 0, RED: 0 }, reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 }, lastUpdated: new Date().toISOString() },
+        { slots: {}, availableCounts: { BLUE: 1, WHITE: 0, RED: 0 }, reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 }, lastUpdated: utcIsoTimestampMs() },
+        { slots: {}, availableCounts: { BLUE: 2, WHITE: 0, RED: 0 }, reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 }, lastUpdated: utcIsoTimestampMs() },
+        { slots: {}, availableCounts: { BLUE: 3, WHITE: 0, RED: 0 }, reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 }, lastUpdated: utcIsoTimestampMs() },
       ];
 
       states.forEach((state) => {
@@ -246,7 +247,7 @@ describe('InventoryStateService', () => {
         slots: {},
         availableCounts: { BLUE: 5, WHITE: 0, RED: 0 },
         reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 },
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: utcIsoTimestampMs(),
       };
 
       service.setState('test-env', mockState);
@@ -263,7 +264,7 @@ describe('InventoryStateService', () => {
         slots: {},
         availableCounts: { BLUE: 0, WHITE: 0, RED: 0 },
         reservedCounts: { BLUE: 0, WHITE: 0, RED: 0 },
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: utcIsoTimestampMs(),
       };
 
       service.setState('test-env', stateWithZeros);

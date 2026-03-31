@@ -1,3 +1,4 @@
+import { utcIsoTimestampMs } from '@osf/entities';
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { WorkpieceHistoryService } from '../workpiece-history.service';
@@ -144,9 +145,9 @@ describe('WorkpieceHistoryService', () => {
       erpOrderDataService.storePurchaseOrder('BLUE', {
         purchaseOrderId: 'ERP-PO-TEST',
         supplierId: 'SUP-TEST',
-        orderDate: new Date().toISOString(),
+        orderDate: utcIsoTimestampMs(),
         orderAmount: 1,
-        plannedDeliveryDate: new Date().toISOString(),
+        plannedDeliveryDate: utcIsoTimestampMs(),
       });
 
       // This would be called during generateOrderContext
@@ -164,9 +165,9 @@ describe('WorkpieceHistoryService', () => {
       erpOrderDataService.storeCustomerOrder({
         customerOrderId: 'ERP-CO-TEST',
         customerId: 'CUST-TEST',
-        orderDate: new Date().toISOString(),
+        orderDate: utcIsoTimestampMs(),
         orderAmount: 1,
-        plannedDeliveryDate: new Date().toISOString(),
+        plannedDeliveryDate: utcIsoTimestampMs(),
       });
 
       // This would be called during generateOrderContext

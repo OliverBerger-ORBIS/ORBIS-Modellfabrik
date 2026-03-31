@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import type { OrderActive, ProductionStep } from '@osf/entities';
+import { utcIsoTimestampMs, type OrderActive, type ProductionStep } from '@osf/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@osf/testing-fixtures';
 import { ShopfloorPreviewComponent, type FtsPositionItem } from '../shopfloor-preview/shopfloor-preview.component';
 import { ModuleNameService } from '../../services/module-name.service';
@@ -246,7 +246,7 @@ export class OrderCardComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // If no active step yet, show duration from start to now
-    return this.formatDuration(orderStartedAt, new Date().toISOString());
+    return this.formatDuration(orderStartedAt, utcIsoTimestampMs());
   }
 
   get workpieceId(): string | null {
