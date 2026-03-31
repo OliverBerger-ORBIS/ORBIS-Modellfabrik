@@ -1,14 +1,14 @@
 /*
  * Projekt: OSF Multi-Sensor – Arduino R4 WiFi
  * Sketch: OSF_MultiSensor_R4WiFi
- * Version: 1.1.2  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
+ * Version: 1.1.3  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
  * Hardware: Arduino Uno R4 WiFi, MPU-6050 (I2C), SW-420 (D11), DHT11 (D12), Flamme (A1), MQ-2 Gas (A0), 4-Ch Relais, 12V Ampel
  * Quelle: docs/05-hardware/arduino-r4-multisensor.md
  *
  * Sensoren: MPU-6050 + SW-420 + DHT11 + Flammensensor + MQ-2 Gas. Gemeinsame Ampel (OR-Logik).
  * USE_MQTT: 0 = nur Serial, 1 = MQTT über WiFi
  */
-#define SKETCH_VERSION "1.1.2"
+#define SKETCH_VERSION "1.1.3"
 #define USE_MQTT 1
 
 /** Relais-Logik: 1 = aktiv-niedrig (LOW=ein, typisch). 0 = aktiv-hoch (HIGH=ein, manche Module). */
@@ -545,35 +545,40 @@ void loop() {
 #if USE_MQTT
   if (WiFi.status() == WL_CONNECTED) {
     bool shouldPublishMpu = (currentLevel != lastPublishedLevel) ||
-        (currentLevel == 0 && (now - lastPublishTime) >= MQTT_HEARTBEAT_INTERVAL);
+        (currentLevel == 0 && (now - lastPublishTime) >= MQTT_HEARTBEAT_INTERVAL) ||
+        (currentLevel >= 1 && (now - lastPublishTime) >= MQTT_WARN_ALARM_TELEMETRY_INTERVAL);
     if (shouldPublishMpu) {
       publishMpuState(levelStr, mag);
       lastPublishedLevel = currentLevel;
       lastPublishTime = now;
     }
     bool shouldPublishSw420 = (lastSw420Level != lastPublishedSw420Level) ||
-        (lastSw420Level == 0 && (now - lastSw420PublishTime) >= MQTT_HEARTBEAT_INTERVAL);
+        (lastSw420Level == 0 && (now - lastSw420PublishTime) >= MQTT_HEARTBEAT_INTERVAL) ||
+        (lastSw420Level >= 1 && (now - lastSw420PublishTime) >= MQTT_WARN_ALARM_TELEMETRY_INTERVAL);
     if (shouldPublishSw420) {
       publishSw420State(sw420Triggered);
       lastPublishedSw420Level = lastSw420Level;
       lastSw420PublishTime = now;
     }
     bool shouldPublishDht = (dhtLevel != lastPublishedDhtLevel) ||
-        (dhtLevel == 0 && (now - lastDhtPublish) >= MQTT_HEARTBEAT_INTERVAL);
+        (dhtLevel == 0 && (now - lastDhtPublish) >= MQTT_HEARTBEAT_INTERVAL) ||
+        (dhtLevel >= 1 && (now - lastDhtPublish) >= MQTT_WARN_ALARM_TELEMETRY_INTERVAL);
     if (shouldPublishDht) {
       publishDht11State(lastTemp, lastHum);
       lastPublishedDhtLevel = dhtLevel;
       lastDhtPublish = now;
     }
     bool shouldPublishFlame = (flameDetected != lastFlameDetected) ||
-        (!flameDetected && (now - lastFlamePublish) >= MQTT_HEARTBEAT_INTERVAL);
+        (!flameDetected && (now - lastFlamePublish) >= MQTT_HEARTBEAT_INTERVAL) ||
+        (flameDetected && (now - lastFlamePublish) >= MQTT_WARN_ALARM_TELEMETRY_INTERVAL);
     if (shouldPublishFlame) {
       publishFlameState(flameRaw, flameDetected);
       lastFlameDetected = flameDetected;
       lastFlamePublish = now;
     }
     bool shouldPublishGas = (gasDetected != lastGasDetected) ||
-        (!gasDetected && (now - lastGasPublish) >= MQTT_HEARTBEAT_INTERVAL);
+        (!gasDetected && (now - lastGasPublish) >= MQTT_HEARTBEAT_INTERVAL) ||
+        (gasDetected && (now - lastGasPublish) >= MQTT_WARN_ALARM_TELEMETRY_INTERVAL);
     if (shouldPublishGas) {
       publishGasState(gasRaw, gasDetected, gasLevel);
       lastGasDetected = gasDetected;

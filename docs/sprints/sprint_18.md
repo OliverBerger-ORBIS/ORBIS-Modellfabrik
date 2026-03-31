@@ -65,14 +65,7 @@ Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
 - [x] **Vibrationssensor-Station:** Platte, Transport, Verdrahtung, Tests → [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md)
 - [x] **Sketch v1.1.2:** Messe-WLAN `ORBIS-4C57`, Broker `192.168.0.100` → Doku §4, [credentials.md](../credentials.md)
 - [x] **Mock-Fixtures:** Playback im Production-Build, Demo auf RPi ohne Hardware (DR-19).
-- [ ] **DHT-Sensor:** Hat wie andere analoge Sensoren zwei Schwellen (grün -> gelb und gelb -> rot). Wenn Sensor in "warnung = gelb-Bereich ist, dann werden keine weiteren Erhöhungen mehr angezeigt. Der Übergang in einen Warn-Bereich darf die Sensor-Daten Anzeige und den Übergang von Warnung zu Alarm nicht unterbinden. Generell sollte der Sensor so lange im jeweilen Bereich bleibenun die Ampel Schalten bis ein neuer Schwellenübergang erreicht wird. Mindestduer für einen Warnung oder Alarm sollte allerdings mindestens 2 sekunden dauern. Prüfe Programm-Logik _ Vorschlag mit unserer Implementierung, insbesondere Debounce/Hysterese
- Programm-Logik (bewährt)
-
-    Sensor initialisieren (I²C/SPI)
-    Sampling in fester Rate (z. B. 800 Hz)
-    In Sliding-Window (z. B. 200 ms) RMS + Peak berechnen
-    Alle 100 ms Telemetrie publishen (10 Hz)
-    Wenn Peak/RMS > Schwellwert und „Debounce/Hysterese“ erfüllt → Alarm publishen
+- [x] **Arduino MQTT (Warn/Alarm-Telemetrie):** Sketch **v1.1.3** — solange ein Sensor Warnung/Alarm meldet, werden **MPU, SW-420, DHT11, Flamme, Gas** mindestens alle **2 s** erneut publiziert (Rohwerte für OSF; zuvor nur bei Level-Wechsel → „eingefrorene“ Anzeige z. B. DHT im Gelb-Band). Ampel-Mindestdauer unverändert (`GELB_MIN_DURATION` / `ROT_MIN_DURATION`). Siehe [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md).
 ### DSP / LogiMAT-Inhalt
 
 - [x] **Customer-Ansicht:** DSP-Architecture mit LogiMAT Business Apps (z. B. ORBIS-MES EWM).

@@ -6,6 +6,10 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+### Hardware / Arduino
+
+- **`OSF_MultiSensor_R4WiFi` v1.1.3:** MQTT-State für **MPU, SW-420, DHT11, Flamme, Gas** wird im Warn-/Alarmbetrieb mindestens alle **2 s** erneut publiziert (`MQTT_WARN_ALARM_TELEMETRY_INTERVAL`), damit die OSF-UI Rohwerte nicht einfriert, wenn sich die Messung innerhalb desselben Warn-/Alarmbands ändert. Ampel-Mindestdauer unverändert. Siehe [arduino-r4-multisensor.md](docs/05-hardware/arduino-r4-multisensor.md).
+
 ## [1.0.5] - 2026-03-30
 
 **Patch: Shopfloor dual-AGV module table (row order, registry in ID column), docs/analysis alignment.**

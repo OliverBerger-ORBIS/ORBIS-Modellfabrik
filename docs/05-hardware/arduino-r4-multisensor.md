@@ -177,6 +177,8 @@ mosquitto_pub -h 192.168.178.65 -t "osf/arduino/alarm/enabled" -m "true"
 mosquitto_sub -h 192.168.178.65 -t "osf/arduino/#" -v
 ```
 
+**Warnung/Alarm — kontinuierliche Telemetrie (Sketch v1.1.3+):** Während die **Gesamtampel** gelb oder rot ist, wird der **MPU-State** zusätzlich alle **2 s** gesendet (aktualisierte `magnitude`/`vibrationLevel`). **DHT-, SW-420-, Flammen- und Gas-Topics** ebenfalls alle **2 s**, solange der jeweilige Sensor im **eigenen** Warn- oder Alarmband ist (`dhtLevel` / Vibration / `flameDetected` / `gasDetected`). Im reinen **Grün**-Betrieb bleibt der **5 s**-Heartbeat pro Topic. Hintergrund: Nur „Publish bei Level-Wechsel“ ließ Rohwerte in der OSF-UI im gleichen Warnband stehen (z. B. steigende Luftfeuchte bei konstantem Gelb).
+
 ---
 
 ## 6. Checkliste Verdrahtung
