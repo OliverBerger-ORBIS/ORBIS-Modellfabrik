@@ -15,7 +15,7 @@ export interface VibrationStatePayload {
   impulseCount: number;
   /** MPU-6050: Beschleunigungs-Magnitude */
   magnitude?: number;
-  /** ISO 8601 UTC (Arduino v1.1.5+ WiFi.getTime/UDP-NTP); empty if no sync */
+  /** ISO 8601 UTC with ms (Arduino v1.1.6+); empty if no sync */
   timestamp?: string;
   /** @deprecated Legacy: ampel (GRUEN/GELB/ROT) */
   ampel?: string;
@@ -27,7 +27,7 @@ export interface Dht11StatePayload {
   humidity?: number;
   temperatureUnit?: string;
   humidityUnit?: string;
-  /** ISO 8601 UTC (Arduino v1.1.5+); optional for older payloads */
+  /** ISO 8601 UTC with ms (Arduino v1.1.6+); optional for older payloads */
   timestamp?: string;
 }
 

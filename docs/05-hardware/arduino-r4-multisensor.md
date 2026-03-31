@@ -155,7 +155,7 @@ Ohne Common Ground kann die Relais-Logik fehlschlagen.
 
 | Topic | Inhalt |
 |------|--------|
-| `osf/arduino/vibration/mpu6050-1/state` | `{"vibrationLevel":"green\|yellow\|red","vibrationDetected":bool,"magnitude":n,"timestamp":"…"}` |
+| `osf/arduino/vibration/mpu6050-1/state` | `{"vibrationLevel":"green\|yellow\|red","vibrationDetected":bool,"magnitude":n,"timestamp":"…"}` (ISO UTC mit ms, z. B. `…T12:05:01.234Z`) |
 | `osf/arduino/vibration/mpu6050-1/connection` | LWT, Online-Status, IP |
 | `osf/arduino/vibration/sw420-1/state` | `{"vibrationDetected":bool,"impulseCount":n,"timestamp":"…"}` |
 | `osf/arduino/vibration/sw420-1/connection` | LWT |
@@ -179,7 +179,7 @@ mosquitto_sub -h 192.168.178.65 -t "osf/arduino/#" -v
 
 **Warnung/Alarm — kontinuierliche Telemetrie (Sketch v1.1.3+):** Während die **Gesamtampel** gelb oder rot ist, wird der **MPU-State** zusätzlich alle **2 s** gesendet (aktualisierte `magnitude`/`vibrationLevel`). **DHT-, SW-420-, Flammen- und Gas-Topics** ebenfalls alle **2 s**, solange der jeweilige Sensor im **eigenen** Warn- oder Alarmband ist (`dhtLevel` / Vibration / `flameDetected` / `gasDetected`). Im reinen **Grün**-Betrieb bleibt der **5 s**-Heartbeat pro Topic. Hintergrund: Nur „Publish bei Level-Wechsel“ ließ Rohwerte in der OSF-UI im gleichen Warnband stehen (z. B. steigende Luftfeuchte bei konstantem Gelb).
 
-**`timestamp` in State-Payloads (Sketch v1.1.4+):** ISO-8601 **UTC** (`YYYY-MM-DDThh:mm:ssZ`). Ohne UTC bleibt der Wert `""`. **v1.1.5:** Die **NTPClient-Library** entfällt (auf Uno R4 WiFi oft keine UDP-NTP-Antwort trotz funktionierendem MQTT). Stattdessen: lange **`WiFi.getTime()`**-Versuche, dann **rohes UDP-NTP** (wie Beispiel **WiFiUdpNtpClient**) zu **LAN-Gateway** (z. B. Fritz!Box) und öffentliche NTP-IPs; Fortlaufende Uhr aus **`gUtcEpochBase` + `millis()`**, alle 2 s **`WiFi.getTime()`** zur Driftkorrektur. Voraussetzung: **UDP-Port 123 ausgehend** zur NTP-Ziel-IP (Firewall/Router).
+**`timestamp` in State-Payloads (Sketch v1.1.4+):** ISO-8601 **UTC**. **v1.1.6:** mit **Millisekunden** (`YYYY-MM-DDThh:mm:ss.sssZ`), aus **Sync-Zeit (Sekunden)** plus **Offset aus `millis()`** seit letztem Sync. Ohne UTC bleibt der Wert `""`. **v1.1.5+:** Kein **NTPClient**; Zeit über **`WiFi.getTime()`** + **rohes UDP-NTP** zu Gateway/Öffentlich; **`gUtcEpochBase` + `millis()`** zwischen Syncs; alle 2 s **`WiFi.getTime()`** zur Driftkorrektur. **UDP-Port 123** ausgehend zur NTP-Ziel-IP beachten.
 
 ---
 

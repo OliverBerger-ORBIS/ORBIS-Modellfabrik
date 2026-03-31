@@ -11,6 +11,7 @@ All notable changes to OSF Dashboard will be documented here.
 - **`OSF_MultiSensor_R4WiFi` v1.1.3:** MQTT-State für **MPU, SW-420, DHT11, Flamme, Gas** wird im Warn-/Alarmbetrieb mindestens alle **2 s** erneut publiziert (`MQTT_WARN_ALARM_TELEMETRY_INTERVAL`), damit die OSF-UI Rohwerte nicht einfriert, wenn sich die Messung innerhalb desselben Warn-/Alarmbands ändert. Ampel-Mindestdauer unverändert. Siehe [arduino-r4-multisensor.md](docs/05-hardware/arduino-r4-multisensor.md).
 - **`OSF_MultiSensor_R4WiFi` v1.1.4:** **NTP** direkt nach WiFi (`forceUpdate`, mehrere Server); **`timestamp`** in allen State-Payloads als ISO-8601 UTC (`…Z`) oder `""` wenn keine Sync-Zeit. **DHT**-State enthält ebenfalls `timestamp`. Optionaler Fallback **`WiFi.getTime()`**, wenn NTPClient noch nicht gesetzt.
 - **`OSF_MultiSensor_R4WiFi` v1.1.5:** Zeit ohne **NTPClient** (auf R4 WiFi oft ohne Antwort): **`WiFi.getTime()`** mit langen Retries, danach **UDP-NTP** wie WiFiUdpNtpClient zu **Gateway + feste IPs**; UTC über **`gUtcEpochBase` + `millis()`** zwischen Syncs. Behebt leere Payload-`timestamp` bei funktionierendem MQTT.
+- **`OSF_MultiSensor_R4WiFi` v1.1.6:** MQTT-**`timestamp`** in State-Payloads mit **Millisekunden** (`YYYY-MM-DDThh:mm:ss.sssZ`), aus NTP-Sekunden + `millis()`-Offset seit letztem Sync (angleichen an OSF `toISOString()`).
 
 ## [1.0.5] - 2026-03-30
 

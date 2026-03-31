@@ -65,7 +65,7 @@ Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
 - [x] **Vibrationssensor-Station:** Platte, Transport, Verdrahtung, Tests → [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md)
 - [x] **Sketch v1.1.2:** Messe-WLAN `ORBIS-4C57`, Broker `192.168.0.100` → Doku §4, [credentials.md](../credentials.md)
 - [x] **Mock-Fixtures:** Playback im Production-Build, Demo auf RPi ohne Hardware (DR-19).
-- [x] **Arduino MQTT (Warn/Alarm-Telemetrie + UTC-Timestamps):** Sketch **v1.1.5** — **2 s** Warn/Alarm wie v1.1.3; **Payload-`timestamp`** via **WiFi.getTime + UDP-NTP** (ohne NTPClient). Siehe [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md).
+- [x] **Arduino MQTT (Warn/Alarm-Telemetrie + UTC-Timestamps):** Sketch **v1.1.6** — wie v1.1.5, **Payload-`timestamp`** mit **Millisekunden** (`…sssZ`). Siehe [arduino-r4-multisensor.md](../05-hardware/arduino-r4-multisensor.md).
 ### DSP / LogiMAT-Inhalt
 
 - [x] **Customer-Ansicht:** DSP-Architecture mit LogiMAT Business Apps (z. B. ORBIS-MES EWM).
@@ -74,7 +74,7 @@ Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
 
 ### Integration & Tests (E2E)
 
-- [ ] **Session-Aufzeichnung (Analysen):** Neue **Shopfloor-Sessions mit zwei AGVs** (Mixed-Betrieb) erfassen und unter `data/osf-data/sessions/` ablegen. Im **Session Manager** konfigurierbare **Topic-Filter / Preset** (z. B. „Analyse“), damit beim Record **keine** MQTT-Messages zu **Arduino-Sensordaten** (`osf/arduino/…`), **BME680** (`/j1/txt/1/i/bme680`) und **Kamera** (`/j1/txt/1/i/cam`) geschrieben werden — Volumen/Noise reduzieren, ohne FTS/CCU-Kerntopics zu verlieren. Policy: [DR-25](../03-decision-records/25-session-log-topic-filters.md).
+- [ ] **Session-Aufzeichnung (Analysen):** Neue **Shopfloor-Sessions mit zwei AGVs** (Mixed-Betrieb) erfassen und unter `data/osf-data/sessions/` ablegen. Im **Session Manager** konfigurierbare **Topic-Filter / Preset** (z. B. „Analyse“), damit beim Record **keine** MQTT-Messages zu **Arduino-Sensordaten** (`osf/arduino/…`), **BME680** (`/j1/txt/1/i/bme680`) und **Kamera** (`/j1/txt/1/i/cam`) geschrieben werden — Volumen/Noise reduzieren, ohne FTS/CCU-Kerntopics zu verlieren. Policy: [DR-25](../03-decision-records/25-session-log-topic-filters.md). **Nebenbei (nicht blockierend):** `session_recorder.on_message_received` nutzt `datetime.now().isoformat()` — bei dieser Story auf **UTC mit Millisekunden** angleichen (z. B. `datetime.now(timezone.utc)` + einheitliches `…Z` wie Arduino **v1.1.6** / `toISOString()` im OSF), damit Log-Zeilen mit Payload-Timestamps vergleichbar sind.
 - [ ] **dsp/correlation/info:** E2E Request/Response abgeschlossen dokumentieren / durchführen.
 - [ ] **ccu/order/request:** E2E Ersatzauftrag nach Quality-Fail; OSF zeigt neue Order.
 

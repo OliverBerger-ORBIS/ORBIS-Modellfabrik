@@ -1,7 +1,7 @@
 /*
  * Projekt: OSF Multi-Sensor – Arduino R4 WiFi
  * Sketch: OSF_MultiSensor_R4WiFi
- * Version: 1.1.5  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
+ * Version: 1.1.6  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
  * Hardware: Arduino Uno R4 WiFi, MPU-6050 (I2C), SW-420 (D11), DHT11 (D12), Flamme (A1), MQ-2 Gas (A0), 4-Ch Relais, 12V Ampel
  * Quelle: docs/05-hardware/arduino-r4-multisensor.md
  *
@@ -203,15 +203,16 @@ void epochToYMD(unsigned long epoch, int& y, int& m, int& d) {
   y += (m <= 2 ? 1 : 0);
 }
 
-/** Single UTC instant → ISO-8601 (…Z) for JSON; date and time from same epoch. */
-void formatEpochUtcIso(unsigned long epoch, char* buf, size_t len) {
+/** UTC instant (whole seconds + 0–999 ms within that second) → ISO-8601 for JSON …sssZ (OSF / Browser-kompatibel). */
+void formatEpochUtcIsoMs(unsigned long epochSec, unsigned subMs, char* buf, size_t len) {
   int y, mo, day;
-  epochToYMD(epoch, y, mo, day);
-  unsigned long sod = epoch % 86400UL;
+  epochToYMD(epochSec, y, mo, day);
+  unsigned long sod = epochSec % 86400UL;
   int H = (int)(sod / 3600);
   int Mi = (int)((sod % 3600) / 60);
   int S = (int)(sod % 60);
-  snprintf(buf, len, "\"%04d-%02d-%02dT%02d:%02d:%02dZ\"", y, mo, day, H, Mi, S);
+  unsigned ms = subMs % 1000U;
+  snprintf(buf, len, "\"%04d-%02d-%02dT%02d:%02d:%02d.%03uZ\"", y, mo, day, H, Mi, S, ms);
 }
 
 const int NTP_RAW_PACKET_SIZE = 48;
@@ -339,18 +340,25 @@ unsigned long resolveUtcEpochForPayload() {
 }
 
 void getTimestamp(char* buf, size_t len) {
-  unsigned long epoch = resolveUtcEpochForPayload();
-  if (epoch > NTP_SYNC_THRESHOLD) {
-    formatEpochUtcIso(epoch, buf, len);
-  } else {
+  if (WiFi.status() != WL_CONNECTED) {
     snprintf(buf, len, "\"\"");
+    return;
   }
+  (void)resolveUtcEpochForPayload();
+  if (gUtcEpochBase == 0) {
+    snprintf(buf, len, "\"\"");
+    return;
+  }
+  unsigned long elapsed = millis() - gMillisAtUtcBase;
+  unsigned long sec = gUtcEpochBase + elapsed / 1000UL;
+  unsigned ms = (unsigned)(elapsed % 1000UL);
+  formatEpochUtcIsoMs(sec, ms, buf, len);
 }
 
 void publishMpuState(const char* level, long magnitude) {
   if (!mqttClient.connected()) return;
   bool detected = (level[0] != 'g');
-  char tsBuf[32];
+  char tsBuf[40];
   getTimestamp(tsBuf, sizeof(tsBuf));
   char payload[200];
   snprintf(payload, sizeof(payload),
@@ -361,9 +369,9 @@ void publishMpuState(const char* level, long magnitude) {
 
 void publishSw420State(bool vibrationDetected) {
   if (!mqttClient.connected()) return;
-  char tsBuf[32];
+  char tsBuf[40];
   getTimestamp(tsBuf, sizeof(tsBuf));
-  char payload[140];
+  char payload[150];
   snprintf(payload, sizeof(payload),
            "{\"vibrationDetected\":%s,\"impulseCount\":%lu,\"timestamp\":%s}",
            vibrationDetected ? "true" : "false", sw420ImpulseCount, tsBuf);
@@ -372,9 +380,9 @@ void publishSw420State(bool vibrationDetected) {
 
 void publishDht11State(float temp, float hum) {
   if (!mqttClient.connected()) return;
-  char tsBuf[32];
+  char tsBuf[40];
   getTimestamp(tsBuf, sizeof(tsBuf));
-  char payload[200];
+  char payload[220];
   snprintf(payload, sizeof(payload),
            "{\"temperature\":%.1f,\"humidity\":%.1f,\"temperatureUnit\":\"C\",\"humidityUnit\":\"%%\",\"timestamp\":%s}",
            temp, hum, tsBuf);
@@ -383,9 +391,9 @@ void publishDht11State(float temp, float hum) {
 
 void publishFlameState(int rawValue, bool flameDetected) {
   if (!mqttClient.connected()) return;
-  char tsBuf[32];
+  char tsBuf[40];
   getTimestamp(tsBuf, sizeof(tsBuf));
-  char payload[140];
+  char payload[150];
   snprintf(payload, sizeof(payload),
            "{\"flameDetected\":%s,\"rawValue\":%d,\"timestamp\":%s}",
            flameDetected ? "true" : "false", rawValue, tsBuf);
@@ -394,9 +402,9 @@ void publishFlameState(int rawValue, bool flameDetected) {
 
 void publishGasState(int rawValue, bool gasDetected, int gasLevel) {
   if (!mqttClient.connected()) return;
-  char tsBuf[32];
+  char tsBuf[40];
   getTimestamp(tsBuf, sizeof(tsBuf));
-  char payload[140];
+  char payload[150];
   snprintf(payload, sizeof(payload), "{\"gasDetected\":%s,\"gasLevel\":%d,\"rawValue\":%d,\"timestamp\":%s}",
            gasDetected ? "true" : "false", gasLevel, rawValue, tsBuf);
   mqttClient.publish(TOPIC_GAS_STATE, payload, true);
