@@ -185,8 +185,3 @@ Für steckbaren **2×3**-Pfad (Housing + Kontakte), passend zu **LIYY 4×0,75 
 - [arduino-r4-multisensor.md](arduino-r4-multisensor.md) — 5 V-Sensoren, Relais, Ampel, MQTT  
 - [inventory-electronics.md](inventory-electronics.md) — DC-Adapter, Klemmen  
 - [arduino-r4-multisensor-verdrahtung.mermaid](arduino-r4-multisensor-verdrahtung.mermaid) — Signal-/Relais-Diagramm (bestehend)
-</think>
-
-
-<｜tool▁calls▁begin｜><｜tool▁call▁begin｜>
-StrReplace
