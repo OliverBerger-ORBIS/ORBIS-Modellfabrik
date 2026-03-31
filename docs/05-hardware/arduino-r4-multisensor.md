@@ -155,15 +155,15 @@ Ohne Common Ground kann die Relais-Logik fehlschlagen.
 
 | Topic | Inhalt |
 |------|--------|
-| `osf/arduino/vibration/mpu6050-1/state` | `{"vibrationLevel":"green\|yellow\|red","vibrationDetected":bool,"magnitude":n}` |
+| `osf/arduino/vibration/mpu6050-1/state` | `{"vibrationLevel":"green\|yellow\|red","vibrationDetected":bool,"magnitude":n,"timestamp":"…"}` |
 | `osf/arduino/vibration/mpu6050-1/connection` | LWT, Online-Status, IP |
-| `osf/arduino/vibration/sw420-1/state` | `{"vibrationDetected":bool,"impulseCount":n}` |
+| `osf/arduino/vibration/sw420-1/state` | `{"vibrationDetected":bool,"impulseCount":n,"timestamp":"…"}` |
 | `osf/arduino/vibration/sw420-1/connection` | LWT |
-| `osf/arduino/temperature/dht11-1/state` | `{"temperature":n,"humidity":n,"temperatureUnit":"C","humidityUnit":"%"}` |
+| `osf/arduino/temperature/dht11-1/state` | `{"temperature":n,"humidity":n,"temperatureUnit":"C","humidityUnit":"%","timestamp":"…"}` |
 | `osf/arduino/temperature/dht11-1/connection` | LWT |
 | `osf/arduino/flame/flame-1/state` | `{"flameDetected":bool,"rawValue":n}` |
 | `osf/arduino/flame/flame-1/connection` | LWT |
-| `osf/arduino/gas/mq2-1/state` | `{"gasDetected":bool,"gasLevel":0\|1\|2,"rawValue":n}` – gasLevel: 0=normal, 1=warning, 2=alarm |
+| `osf/arduino/gas/mq2-1/state` | `{"gasDetected":bool,"gasLevel":0\|1\|2,"rawValue":n,"timestamp":"…"}` – gasLevel: 0=normal, 1=warning, 2=alarm |
 | `osf/arduino/gas/mq2-1/connection` | LWT |
 | `osf/arduino/alarm/enabled` | **Subscribe:** `true`/`false` – Sirene nur bei Alarm, wenn Toggle aktiv |
 
@@ -178,6 +178,8 @@ mosquitto_sub -h 192.168.178.65 -t "osf/arduino/#" -v
 ```
 
 **Warnung/Alarm — kontinuierliche Telemetrie (Sketch v1.1.3+):** Während die **Gesamtampel** gelb oder rot ist, wird der **MPU-State** zusätzlich alle **2 s** gesendet (aktualisierte `magnitude`/`vibrationLevel`). **DHT-, SW-420-, Flammen- und Gas-Topics** ebenfalls alle **2 s**, solange der jeweilige Sensor im **eigenen** Warn- oder Alarmband ist (`dhtLevel` / Vibration / `flameDetected` / `gasDetected`). Im reinen **Grün**-Betrieb bleibt der **5 s**-Heartbeat pro Topic. Hintergrund: Nur „Publish bei Level-Wechsel“ ließ Rohwerte in der OSF-UI im gleichen Warnband stehen (z. B. steigende Luftfeuchte bei konstantem Gelb).
+
+**`timestamp` in State-Payloads (Sketch v1.1.4+):** ISO-8601 **UTC** (`YYYY-MM-DDThh:mm:ssZ`). Ohne UTC bleibt der Wert `""`. **v1.1.5:** Die **NTPClient-Library** entfällt (auf Uno R4 WiFi oft keine UDP-NTP-Antwort trotz funktionierendem MQTT). Stattdessen: lange **`WiFi.getTime()`**-Versuche, dann **rohes UDP-NTP** (wie Beispiel **WiFiUdpNtpClient**) zu **LAN-Gateway** (z. B. Fritz!Box) und öffentliche NTP-IPs; Fortlaufende Uhr aus **`gUtcEpochBase` + `millis()`**, alle 2 s **`WiFi.getTime()`** zur Driftkorrektur. Voraussetzung: **UDP-Port 123 ausgehend** zur NTP-Ziel-IP (Firewall/Router).
 
 ---
 

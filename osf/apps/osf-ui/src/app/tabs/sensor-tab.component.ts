@@ -15,7 +15,7 @@ export interface VibrationStatePayload {
   impulseCount: number;
   /** MPU-6050: Beschleunigungs-Magnitude */
   magnitude?: number;
-  /** ISO 8601 (analog Fischertechnik/DSP) – MPU-6050 via NTP, SW-420 ohne RTC: "" */
+  /** ISO 8601 UTC (Arduino v1.1.5+ WiFi.getTime/UDP-NTP); empty if no sync */
   timestamp?: string;
   /** @deprecated Legacy: ampel (GRUEN/GELB/ROT) */
   ampel?: string;
@@ -27,6 +27,8 @@ export interface Dht11StatePayload {
   humidity?: number;
   temperatureUnit?: string;
   humidityUnit?: string;
+  /** ISO 8601 UTC (Arduino v1.1.5+); optional for older payloads */
+  timestamp?: string;
 }
 
 /** osf/arduino/flame/flame-1/state – KY-026 Flame sensor. rawValue 0–1023; low = flame. Inverted bar: left=high (safe), right=low (danger) */

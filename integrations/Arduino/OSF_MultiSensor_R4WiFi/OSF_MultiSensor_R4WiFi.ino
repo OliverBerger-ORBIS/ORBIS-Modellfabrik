@@ -1,14 +1,14 @@
 /*
  * Projekt: OSF Multi-Sensor – Arduino R4 WiFi
  * Sketch: OSF_MultiSensor_R4WiFi
- * Version: 1.1.3  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
+ * Version: 1.1.5  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
  * Hardware: Arduino Uno R4 WiFi, MPU-6050 (I2C), SW-420 (D11), DHT11 (D12), Flamme (A1), MQ-2 Gas (A0), 4-Ch Relais, 12V Ampel
  * Quelle: docs/05-hardware/arduino-r4-multisensor.md
  *
  * Sensoren: MPU-6050 + SW-420 + DHT11 + Flammensensor + MQ-2 Gas. Gemeinsame Ampel (OR-Logik).
  * USE_MQTT: 0 = nur Serial, 1 = MQTT über WiFi
  */
-#define SKETCH_VERSION "1.1.3"
+#define SKETCH_VERSION "1.1.5"
 #define USE_MQTT 1
 
 /** Relais-Logik: 1 = aktiv-niedrig (LOW=ein, typisch). 0 = aktiv-hoch (HIGH=ein, manche Module). */
@@ -28,13 +28,12 @@
 #if USE_MQTT
 #include <WiFiS3.h>
 #include <WiFiUdp.h>
-#include <NTPClient.h>
 #include <PubSubClient.h>
 
 // === WLAN-Konfiguration – Umschaltung daheim / ORBIS ===
 #define WIFI_MODE_DAHEIM 0
 #define WIFI_MODE_ORBIS  1
-#define WIFI_MODE WIFI_MODE_ORBIS  // <-- DAHEIM oder ORBIS (LogiMAT: später ggf. SSID in #else anpassen)
+#define WIFI_MODE WIFI_MODE_DAHEIM  // <-- DAHEIM oder ORBIS (LogiMAT: später ggf. SSID in #else anpassen)
 
 #if WIFI_MODE == WIFI_MODE_DAHEIM
   // WLAN Daheim – Fritz!Box 192.168.178.x, Arduino .95 reserviert
@@ -71,18 +70,21 @@ const char* TOPIC_ALARM_ENABLED = "osf/arduino/alarm/enabled";  // true/false �
 
 /** MQTT Publish-Interval: Jedes Topic wird bei Zustandsänderung sofort gesendet; bei Idle alle 5s als Heartbeat. */
 const unsigned long MQTT_HEARTBEAT_INTERVAL = 5000;
+/** Bei Warnung/Alarm: mindestens alle 2s erneut publizieren (OSF UI „friert“ sonst bei gleicher Ampelstufe ein; passt zu GELB_MIN_DURATION). */
+const unsigned long MQTT_WARN_ALARM_TELEMETRY_INTERVAL = 2000;
 const float DHT_TEMP_WARN = 30.0;   // °C – Gelb
 const float DHT_TEMP_DANGER = 35.0; // °C – Rot
 const float DHT_HUM_WARN = 60.0;    // % – Gelb (Orange)
 const float DHT_HUM_DANGER = 85.0;  // % – Rot (Alarm)
 
-WiFiUDP udp;
-NTPClient timeClient(udp, "pool.ntp.org", 0, 60000);
-
 unsigned long lastReconnectAttempt = 0;
 const unsigned long RECONNECT_INTERVAL = 5000;
-unsigned long lastNtpUpdate = 0;  // NTP nur alle 2 s – update() blockiert sonst Sensor-Loop
+unsigned long lastNtpUpdate = 0;  // WiFi-Zeit neu abfragen (Modem), drift mit UTC-Basis korrigieren
 const unsigned long NTP_UPDATE_INTERVAL = 2000;
+/** Letzter bekannter UTC-Epoch (s) zum Zeitpunkt gMillisAtUtcBase (WiFi.getTime oder UDP-NTP). */
+unsigned long gUtcEpochBase = 0;
+unsigned long gMillisAtUtcBase = 0;
+static unsigned long lastWifiTimeAttemptMs = 0;
 int lastPublishedLevel = -1;
 unsigned long lastPublishTime = 0;
 
@@ -201,14 +203,145 @@ void epochToYMD(unsigned long epoch, int& y, int& m, int& d) {
   y += (m <= 2 ? 1 : 0);
 }
 
+/** Single UTC instant → ISO-8601 (…Z) for JSON; date and time from same epoch. */
+void formatEpochUtcIso(unsigned long epoch, char* buf, size_t len) {
+  int y, mo, day;
+  epochToYMD(epoch, y, mo, day);
+  unsigned long sod = epoch % 86400UL;
+  int H = (int)(sod / 3600);
+  int Mi = (int)((sod % 3600) / 60);
+  int S = (int)(sod % 60);
+  snprintf(buf, len, "\"%04d-%02d-%02dT%02d:%02d:%02dZ\"", y, mo, day, H, Mi, S);
+}
+
+const int NTP_RAW_PACKET_SIZE = 48;
+const unsigned long NTP_UNIX_OFFSET = 2208988800UL;
+
+void setUtcBaseFromEpoch(unsigned long unixEpoch) {
+  if (unixEpoch > NTP_SYNC_THRESHOLD) {
+    gUtcEpochBase = unixEpoch;
+    gMillisAtUtcBase = millis();
+  }
+}
+
+unsigned long currentUtcEpochFromBase() {
+  if (gUtcEpochBase == 0) return 0;
+  return gUtcEpochBase + (millis() - gMillisAtUtcBase) / 1000UL;
+}
+
+/** Ein UDP-NTP-Request (WiFiUdpNtpClient-Muster); auf R4 oft zuverlässiger als die NTPClient-Library. */
+unsigned long ntpRawUnixFromServer(const IPAddress& server) {
+  WiFiUDP ntpUdp;
+  byte pb[NTP_RAW_PACKET_SIZE];
+  memset(pb, 0, NTP_RAW_PACKET_SIZE);
+  pb[0] = 0b11100011;
+  pb[1] = 0;
+  pb[2] = 6;
+  pb[3] = 0xEC;
+  pb[12] = 49;
+  pb[13] = 0x4E;
+  pb[14] = 49;
+  pb[15] = 52;
+
+  ntpUdp.stop();
+  uint16_t localPort = (uint16_t)(40123 + (millis() & 0x0FFF));
+  if (ntpUdp.begin(localPort) != 1) {
+    return 0;
+  }
+  ntpUdp.beginPacket(server, 123);
+  ntpUdp.write(pb, NTP_RAW_PACKET_SIZE);
+  ntpUdp.endPacket();
+
+  unsigned long t0 = millis();
+  while (millis() - t0 < 2000UL) {
+    int n = ntpUdp.parsePacket();
+    if (n >= NTP_RAW_PACKET_SIZE) {
+      ntpUdp.read(pb, NTP_RAW_PACKET_SIZE);
+      unsigned long highWord = word(pb[40], pb[41]);
+      unsigned long lowWord = word(pb[42], pb[43]);
+      unsigned long secsSince1900 = (highWord << 16) | lowWord;
+      ntpUdp.stop();
+      if (secsSince1900 < NTP_UNIX_OFFSET) return 0;
+      return secsSince1900 - NTP_UNIX_OFFSET;
+    }
+    delay(15);
+  }
+  ntpUdp.stop();
+  return 0;
+}
+
+/** Modem-Zeit + UDP-NTP (Gateway, öffentliche IPs). Kein NTPClient – WiFiS3 inkompatibel in der Praxis. */
+bool syncNetworkTimeAtBoot() {
+  delay(1000);
+  Serial.println(F("Zeit: WiFi.getTime..."));
+  for (int i = 0; i < 35; i++) {
+    unsigned long wt = WiFi.getTime();
+    if (wt > NTP_SYNC_THRESHOLD) {
+      setUtcBaseFromEpoch(wt);
+      Serial.print(F("Zeit OK WiFi.getTime "));
+      Serial.println(wt);
+      return true;
+    }
+    delay(400);
+  }
+
+  IPAddress servers[] = {
+    gatewayIP,
+    IPAddress(162, 159, 200, 123),
+    IPAddress(216, 239, 35, 12),
+    IPAddress(129, 6, 15, 29)
+  };
+  Serial.println(F("Zeit: UDP-NTP..."));
+  for (int s = 0; s < 4; s++) {
+    for (int attempt = 0; attempt < 4; attempt++) {
+      unsigned long e = ntpRawUnixFromServer(servers[s]);
+      if (e > NTP_SYNC_THRESHOLD) {
+        setUtcBaseFromEpoch(e);
+        Serial.print(F("Zeit OK UDP idx="));
+        Serial.println(s);
+        return true;
+      }
+      delay(250);
+    }
+  }
+  Serial.println(F("WARN: keine UTC – timestamp leer (NTP: UDP 123 ausgehend?)."));
+  return false;
+}
+
+void refreshUtcPeriodic() {
+  if (WiFi.status() != WL_CONNECTED) return;
+  unsigned long wt = WiFi.getTime();
+  if (wt > NTP_SYNC_THRESHOLD) {
+    setUtcBaseFromEpoch(wt);
+  }
+}
+
+unsigned long resolveUtcEpochForPayload() {
+  if (WiFi.status() != WL_CONNECTED) return 0;
+  unsigned long e = currentUtcEpochFromBase();
+  if (e > NTP_SYNC_THRESHOLD) return e;
+
+  unsigned long now = millis();
+  if (now - lastWifiTimeAttemptMs > 5000UL) {
+    lastWifiTimeAttemptMs = now;
+    unsigned long wt = WiFi.getTime();
+    if (wt > NTP_SYNC_THRESHOLD) {
+      setUtcBaseFromEpoch(wt);
+      return wt;
+    }
+    unsigned long u = ntpRawUnixFromServer(gatewayIP);
+    if (u > NTP_SYNC_THRESHOLD) {
+      setUtcBaseFromEpoch(u);
+      return u;
+    }
+  }
+  return 0;
+}
+
 void getTimestamp(char* buf, size_t len) {
-  unsigned long epoch = timeClient.getEpochTime();
+  unsigned long epoch = resolveUtcEpochForPayload();
   if (epoch > NTP_SYNC_THRESHOLD) {
-    int y, m, d;
-    epochToYMD(epoch, y, m, d);
-    snprintf(buf, len, "\"%04d-%02d-%02dT%02d:%02d:%02dZ\"",
-             y, m, d,
-             timeClient.getHours(), timeClient.getMinutes(), timeClient.getSeconds());
+    formatEpochUtcIso(epoch, buf, len);
   } else {
     snprintf(buf, len, "\"\"");
   }
@@ -228,33 +361,42 @@ void publishMpuState(const char* level, long magnitude) {
 
 void publishSw420State(bool vibrationDetected) {
   if (!mqttClient.connected()) return;
-  char payload[96];
-  snprintf(payload, sizeof(payload), "{\"vibrationDetected\":%s,\"impulseCount\":%lu,\"timestamp\":\"\"}",
-           vibrationDetected ? "true" : "false", sw420ImpulseCount);
+  char tsBuf[32];
+  getTimestamp(tsBuf, sizeof(tsBuf));
+  char payload[140];
+  snprintf(payload, sizeof(payload),
+           "{\"vibrationDetected\":%s,\"impulseCount\":%lu,\"timestamp\":%s}",
+           vibrationDetected ? "true" : "false", sw420ImpulseCount, tsBuf);
   mqttClient.publish(TOPIC_SW420_STATE, payload, true);
 }
 
 void publishDht11State(float temp, float hum) {
   if (!mqttClient.connected()) return;
-  char payload[120];
-  snprintf(payload, sizeof(payload), "{\"temperature\":%.1f,\"humidity\":%.1f,\"temperatureUnit\":\"C\",\"humidityUnit\":\"%%\"}",
-           temp, hum);
+  char tsBuf[32];
+  getTimestamp(tsBuf, sizeof(tsBuf));
+  char payload[200];
+  snprintf(payload, sizeof(payload),
+           "{\"temperature\":%.1f,\"humidity\":%.1f,\"temperatureUnit\":\"C\",\"humidityUnit\":\"%%\",\"timestamp\":%s}",
+           temp, hum, tsBuf);
   mqttClient.publish(TOPIC_DHT11_STATE, payload, true);
 }
 
 void publishFlameState(int rawValue, bool flameDetected) {
   if (!mqttClient.connected()) return;
-  char payload[96];
-  snprintf(payload, sizeof(payload), "{\"flameDetected\":%s,\"rawValue\":%d,\"timestamp\":\"\"}",
-           flameDetected ? "true" : "false", rawValue);
+  char tsBuf[32];
+  getTimestamp(tsBuf, sizeof(tsBuf));
+  char payload[140];
+  snprintf(payload, sizeof(payload),
+           "{\"flameDetected\":%s,\"rawValue\":%d,\"timestamp\":%s}",
+           flameDetected ? "true" : "false", rawValue, tsBuf);
   mqttClient.publish(TOPIC_FLAME_STATE, payload, true);
 }
 
 void publishGasState(int rawValue, bool gasDetected, int gasLevel) {
   if (!mqttClient.connected()) return;
-  char payload[96];
   char tsBuf[32];
   getTimestamp(tsBuf, sizeof(tsBuf));
+  char payload[140];
   snprintf(payload, sizeof(payload), "{\"gasDetected\":%s,\"gasLevel\":%d,\"rawValue\":%d,\"timestamp\":%s}",
            gasDetected ? "true" : "false", gasLevel, rawValue, tsBuf);
   mqttClient.publish(TOPIC_GAS_STATE, payload, true);
@@ -346,7 +488,9 @@ void setup() {
     Serial.println("WiFi fehlgeschlagen. MQTT deaktiviert.");
   }
 
-  timeClient.begin();
+  if (WiFi.status() == WL_CONNECTED) {
+    syncNetworkTimeAtBoot();
+  }
   mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
   mqttClient.setBufferSize(256);
   mqttClient.setSocketTimeout(3);
@@ -388,7 +532,7 @@ void loop() {
     unsigned long now = millis();
     if (lastNtpUpdate == 0 || now - lastNtpUpdate >= NTP_UPDATE_INTERVAL) {
       lastNtpUpdate = now;
-      timeClient.update();  // Kann blockieren – nur alle 2 s ausführen
+      refreshUtcPeriodic();
     }
   }
   if (WiFi.status() == WL_CONNECTED && !mqttClient.connected()) {
