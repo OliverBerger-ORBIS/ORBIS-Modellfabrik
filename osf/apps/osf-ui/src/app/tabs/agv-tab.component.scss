@@ -1081,6 +1081,31 @@
       background: #475569;
     }
   }
+
+  &--full-width {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+.command-clear-load-outside {
+  margin-top: 0.65rem;
+  width: 100%;
+}
+
+.details-disclosure-marker {
+  display: inline-block;
+  font-size: 0.85em;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--color-text-secondary, #64748b);
+  transition: transform 0.15s ease;
+  transform-origin: center;
+}
+
+.supervisor-nav-details[open] > .supervisor-nav-details__toggle .details-disclosure-marker,
+.commands-dev[open] > .commands-dev__toggle .details-disclosure-marker {
+  transform: rotate(90deg);
 }
 
 .commands-dev {
@@ -1090,6 +1115,14 @@
     cursor: pointer;
     font-weight: 600;
     color: var(--orbis-nightblue);
+    list-style: none;
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
   }
 
   &__content {
@@ -1129,6 +1162,59 @@
   }
 }
 
+.supervisor-nav-details {
+  margin-top: 1rem;
+
+  &__toggle {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--orbis-nightblue);
+    list-style: none;
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+}
+
+.supervisor-ccu-orders {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px dashed var(--color-border, #e2e8f0);
+
+  &__heading {
+    margin: 0 0 0.2rem 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--color-text-secondary, #64748b);
+  }
+
+  &__topic {
+    margin: 0 0 0.35rem 0;
+    font-size: 0.72rem;
+    color: var(--color-text-secondary, #64748b);
+  }
+
+  &__list {
+    margin: 0;
+    padding-left: 1.1rem;
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  &__empty {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--color-text-secondary, #64748b);
+    line-height: 1.35;
+  }
+}
+
 .supervisor-nav {
   margin-bottom: 1rem;
   padding: 0.75rem 1rem;
@@ -1137,6 +1223,11 @@
   background: var(--color-surface-muted, #f8fafc);
   font-size: 0.875rem;
   line-height: 1.45;
+
+  &--nested {
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+  }
 
   &__title {
     margin: 0 0 0.5rem 0;

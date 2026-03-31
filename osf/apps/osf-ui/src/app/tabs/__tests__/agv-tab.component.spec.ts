@@ -696,6 +696,59 @@ describe('AgvTabComponent', () => {
     });
   });
 
+  describe('filterCcuActiveOrdersForAgv', () => {
+    const serial = '5iO4';
+
+    it('matches by FTS state orderId', () => {
+      const fts = { ...mockFtsState, orderId: 'order-a' };
+      const orders = [
+        { orderId: 'order-a', productionSteps: [] },
+        { orderId: 'order-b', productionSteps: [] },
+      ];
+      const r = component.filterCcuActiveOrdersForAgv(orders as never, serial, fts as never);
+      expect(r).toHaveLength(1);
+      expect(r[0].orderId).toBe('order-a');
+    });
+
+    it('matches by productionSteps serialNumber', () => {
+      const fts = { ...mockFtsState, orderId: '' };
+      const orders = [
+        {
+          orderId: 'x1',
+          productionSteps: [{ id: '1', type: 'MANUFACTURE', state: 'RUNNING', serialNumber: 'leJ4' }],
+        },
+      ];
+      const r = component.filterCcuActiveOrdersForAgv(orders as never, 'leJ4', fts as never);
+      expect(r).toHaveLength(1);
+      expect(r[0].orderId).toBe('x1');
+    });
+
+    it('dedupes when orderId and step both match', () => {
+      const fts = { ...mockFtsState, orderId: 'order-a' };
+      const orders = [
+        {
+          orderId: 'order-a',
+          productionSteps: [{ id: 's', type: 'MANUFACTURE', state: 'RUNNING', serialNumber: serial }],
+        },
+      ];
+      const r = component.filterCcuActiveOrdersForAgv(orders as never, serial, fts as never);
+      expect(r).toHaveLength(1);
+    });
+  });
+
+  describe('formatSupervisorCcuOrderSummary', () => {
+    it('includes id state and orderType', () => {
+      const line = component.formatSupervisorCcuOrderSummary({
+        orderId: 'abc',
+        state: 'IN_PROGRESS',
+        orderType: 'PRODUCTION',
+      } as never);
+      expect(line).toContain('abc');
+      expect(line).toContain('IN_PROGRESS');
+      expect(line).toContain('PRODUCTION');
+    });
+  });
+
   it('canClearLoadHandling is true when waitingForLoadHandling', () => {
     const s = { ...mockFtsState, waitingForLoadHandling: true };
     expect(component.canClearLoadHandling(s as never)).toBe(true);

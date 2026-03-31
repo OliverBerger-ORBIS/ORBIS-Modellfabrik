@@ -384,27 +384,6 @@
               </option>
             </select>
           </div>
-          <div class="supervisor-nav">
-            <p class="supervisor-nav__title">{{ labelSupervisorSection }}</p>
-            <p class="supervisor-nav__row">{{ getSupervisorNavFromSummary(ftsState) }}</p>
-            <p class="supervisor-nav__row">{{ getSupervisorNavTargetSummary() }}</p>
-            <ng-container *ngIf="getSupervisorCcuReadiness(ftsState) as readiness">
-              <div class="ccu-readiness" [ngClass]="readiness.badgeClass">
-                <p class="ccu-readiness__line">{{ readiness.line }}</p>
-                <p class="ccu-readiness__detail" *ngIf="readiness.detail">{{ readiness.detail }}</p>
-              </div>
-            </ng-container>
-            <button
-              type="button"
-              class="command-button command-button--secondary"
-              [disabled]="!canClearLoadHandling(ftsState)"
-              [attr.title]="!canClearLoadHandling(ftsState) ? labelClearLoadHandlerHint : null"
-              (click)="sendClearLoadHandlerSupervisor()"
-            >
-              {{ labelClearLoadHandler }}
-            </button>
-            <p class="supervisor-nav__footnote">{{ labelSupervisorFootnote }}</p>
-          </div>
           <div class="command-button-group command-buttons--stacked">
             <button
               type="button"
@@ -434,9 +413,47 @@
               {{ getNavigateToTargetButtonLabel() }}
             </button>
           </div>
+          <div class="command-clear-load-outside" *ngIf="canClearLoadHandling(ftsState)">
+            <button
+              type="button"
+              class="command-button command-button--secondary command-button--full-width"
+              [attr.title]="labelClearLoadHandlerHint"
+              (click)="sendClearLoadHandlerSupervisor()"
+            >
+              {{ labelClearLoadHandler }}
+            </button>
+          </div>
+          <details class="supervisor-nav-details">
+            <summary class="supervisor-nav-details__toggle">
+              <span class="details-disclosure-marker" aria-hidden="true">></span>
+              {{ labelSupervisorDetailsToggle }}
+            </summary>
+            <div class="supervisor-nav supervisor-nav--nested">
+              <div class="supervisor-ccu-orders" *ngIf="supervisorCcuOrdersForAgv$ | async as ccuOrders">
+                <p class="supervisor-ccu-orders__heading">{{ labelSupervisorCcuOrdersHeading }}</p>
+                <p class="supervisor-ccu-orders__topic mono">{{ labelSupervisorCcuOrdersTopic }}</p>
+                <ul class="supervisor-ccu-orders__list" *ngIf="ccuOrders.length > 0">
+                  <li *ngFor="let o of ccuOrders">{{ formatSupervisorCcuOrderSummary(o) }}</li>
+                </ul>
+                <p class="supervisor-ccu-orders__empty" *ngIf="ccuOrders.length === 0">{{ labelSupervisorCcuOrdersEmpty }}</p>
+              </div>
+              <p class="supervisor-nav__row">{{ getSupervisorNavFromSummary(ftsState) }}</p>
+              <p class="supervisor-nav__row">{{ getSupervisorNavTargetSummary() }}</p>
+              <ng-container *ngIf="getSupervisorCcuReadiness(ftsState) as readiness">
+                <div class="ccu-readiness" [ngClass]="readiness.badgeClass">
+                  <p class="ccu-readiness__line">{{ readiness.line }}</p>
+                  <p class="ccu-readiness__detail" *ngIf="readiness.detail">{{ readiness.detail }}</p>
+                </div>
+              </ng-container>
+              <p class="supervisor-nav__footnote">{{ labelSupervisorFootnote }}</p>
+            </div>
+          </details>
 
           <details class="commands-dev">
-            <summary class="commands-dev__toggle">{{ devModeTitle }}</summary>
+            <summary class="commands-dev__toggle">
+              <span class="details-disclosure-marker" aria-hidden="true">></span>
+              {{ devModeTitle }}
+            </summary>
             <div class="commands-dev__content">
               <div class="commands-dev__item">
                 <div class="detail-label">{{ devChargeTitle }}</div>

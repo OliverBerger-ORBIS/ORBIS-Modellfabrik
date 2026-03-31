@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { filter, map, shareReplay, startWith, switchMap, catchError, tap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { Observable, Subscription, of, combineLatest, BehaviorSubject } from 'rxjs';
+import { Observable, Subscription, of, combineLatest, BehaviorSubject, merge } from 'rxjs';
 import { EnvironmentService } from '../services/environment.service';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { ConnectionService } from '../services/connection.service';
@@ -22,6 +22,7 @@ import {
   ftsCanOfferStartChargeCommand,
   ftsCanOfferStopChargeCommand,
   type FtsCommandAvailabilityInput,
+  type OrderActive,
 } from '@osf/entities';
 
 // FTS Types (from example app - will be moved to @osf/entities later)
@@ -155,7 +156,12 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   readonly labelNavigatePositionUnclear = $localize`:@@ftsNavigatePositionUnclear:Reported position missing or UNKNOWN`;
   readonly labelNavigateAlreadyAtTarget = $localize`:@@ftsNavigateAlreadyAtTarget:Already at selected target`;
   readonly labelNavigateNoRoute = $localize`:@@ftsNavigateNoRoute:No route to selected target from reported position`;
-  readonly labelSupervisorSection = $localize`:@@ftsSupervisorSection:Supervisor navigation`;
+  /** Collapsible summary (Commands section); full supervisor content hidden by default like Developer Mode. */
+  readonly labelSupervisorDetailsToggle = $localize`:@@ftsSupervisorDetailsToggle:Supervisor navigation (status & hints)`;
+  readonly labelSupervisorCcuOrdersHeading = $localize`:@@ftsSupervisorCcuOrdersHeading:CCU active orders`;
+  readonly labelSupervisorCcuOrdersEmpty = $localize`:@@ftsSupervisorCcuOrdersEmpty:No active CCU order matches this AGV (FTS order id or step serialNumber).`;
+  /** MQTT topic name (same in all locales; translators keep the technical id). */
+  readonly labelSupervisorCcuOrdersTopic = $localize`:@@ftsSupervisorCcuOrdersTopic:ccu/order/active`;
   readonly labelSupervisorTarget = $localize`:@@ftsSupervisorTarget:Target`;
   readonly labelSupervisorFootnote = $localize`:@@ftsSupervisorFootnote:After manual → HBW the vehicle often waits for module load handling. Use Clear load handling when physically safe (empty bays / no active CCU PICK) to publish clearLoadHandler on instantAction — then the CCU can assign orders again.`;
   readonly labelClearLoadHandler = $localize`:@@ftsCommandClearLoadHandler:Clear load handling`;
@@ -248,12 +254,18 @@ export class AgvTabComponent implements OnInit, OnDestroy {
 
   /** Merged map segments: order-based routes per AGV in AGV colors; selected AGV uses animation path while animating. */
   combinedAgvRouteSegments$!: Observable<Array<{ x1: number; y1: number; x2: number; y2: number; stroke?: string }>>;
+
+  /** CCU snapshot filtered to orders likely involving the selected AGV (see {@link filterCcuActiveOrdersForAgv}). */
+  supervisorCcuOrdersForAgv$!: Observable<OrderActive[]>;
   
   // Current position node (for highlighting current position in ORBIS-blue-medium)
   currentPositionNode$!: Observable<string[] | null>;
   
   // Animation state from service (initialized in constructor)
   animationState$!: Observable<AnimationState>;
+
+  /** Cached CCU `ccu/order/active` list (MessageMonitor + mock dashboard merge). */
+  private ccuOrderActiveList$?: Observable<OrderActive[]>;
 
   // UI state (removed batteryDetailsExpanded - always show details like example)
 
@@ -512,6 +524,58 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     // Route segments are managed by animation service
   }
 
+  private getCcuOrderActiveList$(): Observable<OrderActive[]> {
+    if (!this.ccuOrderActiveList$) {
+      const fromMonitor = this.messageMonitor.getLastMessage<OrderActive | OrderActive[]>('ccu/order/active').pipe(
+        filter((msg) => msg !== null && msg.valid),
+        map((msg) => {
+          const p = msg!.payload as OrderActive | OrderActive[];
+          return Array.isArray(p) ? p : [p];
+        }),
+        startWith([] as OrderActive[])
+      );
+      const source$ = this.isMockMode ? merge(fromMonitor, this.dashboard.streams.orders$) : fromMonitor;
+      this.ccuOrderActiveList$ = source$.pipe(
+        map((payload) => {
+          if (!Array.isArray(payload)) {
+            return [];
+          }
+          return payload.filter((o) => o && typeof o.orderId === 'string' && o.orderId.length > 0);
+        }),
+        shareReplay({ bufferSize: 1, refCount: false })
+      );
+    }
+    return this.ccuOrderActiveList$;
+  }
+
+  /**
+   * Orders from `ccu/order/active` that likely involve this AGV: same `orderId` as FTS state, or any step with `serialNumber` = AGV MQTT serial.
+   */
+  filterCcuActiveOrdersForAgv(orders: OrderActive[], agvSerial: string, fts: FtsState | null): OrderActive[] {
+    const serial = agvSerial?.trim() ?? '';
+    const ftsOrderId = fts?.orderId?.trim() ?? '';
+    const byId =
+      ftsOrderId.length > 0 ? orders.filter((o) => o.orderId === ftsOrderId) : ([] as OrderActive[]);
+    const byStep = orders.filter((o) =>
+      (o.productionSteps ?? []).some((s) => s.serialNumber === serial)
+    );
+    const map = new Map<string, OrderActive>();
+    for (const o of [...byId, ...byStep]) {
+      map.set(o.orderId, o);
+    }
+    return [...map.values()];
+  }
+
+  /** One-line summary for supervisor panel (English source; FR/DE via message files if needed). */
+  formatSupervisorCcuOrderSummary(order: OrderActive): string {
+    const state = String(order.state ?? order.status ?? '—');
+    const type = String(order.orderType ?? order.type ?? '').trim();
+    const id = order.orderId;
+    const idShort = id.length > 12 ? `${id.slice(0, 12)}…` : id;
+    const typePart = type.length > 0 ? ` · ${type}` : '';
+    return `${idShort} · ${state}${typePart}`;
+  }
+
   get isMockMode(): boolean {
     return this.environmentService.current.key === 'mock';
   }
@@ -722,11 +786,20 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     shareReplay({ bufferSize: 1, refCount: false })
   );
 
-  this.combinedAgvRouteSegments$ = combineLatest([
-    this.animationState$,
-    this.allAgvOrders$,
-    this.selectedAgvSerial$.pipe(distinctUntilChanged()),
-  ]).pipe(
+    this.supervisorCcuOrdersForAgv$ = combineLatest([
+      this.getCcuOrderActiveList$(),
+      this.selectedAgvSerial$.pipe(distinctUntilChanged()),
+      this.ftsState$,
+    ]).pipe(
+      map(([orders, serial, fts]) => this.filterCcuActiveOrdersForAgv(orders, serial, fts)),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+
+    this.combinedAgvRouteSegments$ = combineLatest([
+      this.animationState$,
+      this.allAgvOrders$,
+      this.selectedAgvSerial$.pipe(distinctUntilChanged()),
+    ]).pipe(
     map(([anim, orders]) => {
       const selected = this.selectedAgvSerial$.value;
       const animSegs = anim?.activeRouteSegments ?? [];
