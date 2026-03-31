@@ -8,8 +8,16 @@
     "declarationMap": true,
     "tsBuildInfoFile": "../../../dist/out-tsc/testing-fixtures/tsconfig.lib.tsbuildinfo"
   },
-  "include": ["src/**/*.ts", "../gateway/src/index.ts", "../entities/src/index.ts"],
-  "exclude": ["src/**/*.spec.ts"],
+  "include": [
+    "src/**/*.ts",
+    "../entities/src/**/*.ts",
+    "../gateway/src/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.spec.ts",
+    "../entities/src/**/*.spec.ts",
+    "../gateway/src/**/*.spec.ts"
+  ],
   "references": [
     {
       "path": "../gateway/tsconfig.lib.json"

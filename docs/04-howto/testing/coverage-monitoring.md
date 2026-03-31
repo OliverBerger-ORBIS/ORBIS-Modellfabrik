@@ -99,13 +99,18 @@ start coverage/osf-ui/index.html
     npm run test:coverage:check || echo "⚠️ Coverage thresholds not met"
   continue-on-error: true
 
-- name: Upload Coverage Report
+- name: Upload Coverage
   uses: codecov/codecov-action@v4
   if: always()
+  continue-on-error: true
   with:
-    files: ./coverage/osf-ui/coverage-final.json
-    flags: osf-ui
-    name: osf-ui-coverage
+    files: |
+      ./coverage/osf-ui/coverage-final.json
+      ./coverage/mqtt-client/coverage-final.json
+      ./coverage/gateway/coverage-final.json
+      ./coverage/business/coverage-final.json
+    flags: osf
+    name: osf-coverage
     fail_ci_if_error: false
 ```
 
@@ -113,6 +118,13 @@ start coverage/osf-ui/index.html
 - ✅ Coverage Check in CI/CD
 - ✅ Coverage Report Upload (Codecov)
 - ✅ Non-blocking (warnet nur, blockiert nicht den Build)
+
+### Codecov.io (Projekt-Einstellungen)
+
+Im Repo liegt **keine** `codecov.yml` — Upload und **Flag** kommen nur aus dem Workflow (`flags: osf`, Upload-Name `osf-coverage`). Auf [codecov.io](https://app.codecov.io) beim passenden Repository prüfen:
+
+- **Components / Flags:** Ob noch Filter oder Carryforward-Regeln auf das alte Flag **`omf3`** zeigen; ggf. auf **`osf`** umstellen oder Duplikate zusammenführen (ältere Uploads behalten historisch das Label `omf3`, neue Läufe liefern `osf`).
+- **Secrets:** Bei privatem Repo oder Team-Features ggf. `CODECOV_TOKEN` unter GitHub → *Settings → Secrets*; der verwendete Workflow nutzt die Action Defaults, sobald das Repo bei Codecov verknüpft ist.
 
 ---
 

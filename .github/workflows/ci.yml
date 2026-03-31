@@ -63,8 +63,8 @@ jobs:
           ./coverage/mqtt-client/coverage-final.json
           ./coverage/gateway/coverage-final.json
           ./coverage/business/coverage-final.json
-        flags: omf3
-        name: omf3-coverage
+        flags: osf
+        name: osf-coverage
         fail_ci_if_error: false
     
     - name: Validate structure

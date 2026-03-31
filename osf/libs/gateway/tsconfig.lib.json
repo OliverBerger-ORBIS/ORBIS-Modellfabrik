@@ -10,10 +10,11 @@
   },
   "include": [
     "src/**/*.ts",
-    "../entities/src/index.ts"
+    "../entities/src/**/*.ts"
   ],
   "exclude": [
-    "src/**/*.spec.ts"
+    "src/**/*.spec.ts",
+    "../entities/src/**/*.spec.ts"
   ],
   "references": [
     {
