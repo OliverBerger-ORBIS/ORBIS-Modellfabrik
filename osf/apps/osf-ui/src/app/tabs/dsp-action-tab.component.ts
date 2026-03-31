@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MessageMonitorService, MonitoredMessage } from '../services/message-monitor.service';
 import { EnvironmentService } from '../services/environment.service';
 import { LanguageService } from '../services/language.service';
+import { getDashboardController } from '../mock-dashboard';
 import { BehaviorSubject, combineLatest, interval, Subscription } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
@@ -26,6 +27,11 @@ interface DspActionMessage {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DspActionTabComponent implements OnInit, OnDestroy {
+  /** Same as Shopfloor: inject → messageSubject → MessageMonitor forwarding (single addMessage path in mock). */
+  private get dashboard() {
+    return getDashboardController();
+  }
+
   private readonly subscriptions = new Subscription();
   private readonly refreshTrigger = new BehaviorSubject<number>(0);
   
@@ -190,13 +196,12 @@ export class DspActionTabComponent implements OnInit, OnDestroy {
       // Subscribe to the stream and add messages directly to MessageMonitor
       const subscription = stream$.subscribe((message) => {
         try {
-          const payload = typeof message.payload === 'string' 
-            ? JSON.parse(message.payload) 
-            : message.payload;
-          this.messageMonitor.addMessage(message.topic, payload, message.timestamp);
+          if (this.dashboard.injectMessage) {
+            this.dashboard.injectMessage(message);
+          }
           this.refreshTrigger.next(Date.now());
         } catch (error) {
-          console.error('[dsp-action] Failed to parse message payload:', error);
+          console.error('[dsp-action] Failed to inject fixture message:', error);
         }
       });
       // Store subscription to clean up later if needed

@@ -124,6 +124,8 @@ Wenn Haupt-Fixture und Tab-Fixtures dieselben Topics abdecken (z.B. `ccu/pairing
 7. Manuell testen: Mock-Modus, Fixture laden, Message Monitor – keine doppelten Einträge.
 8. Unit-Tests anpassen, falls nötig.
 
+**Stand 2026-03-30:** `shopfloor-tab.component.ts` — Fixture-Loader nur `dashboard.injectMessage` (kein zweites `messageMonitor.addMessage`; Regressions-Analyse §2.1 damit abgedeckt). **`dsp-action-tab.component.ts`** — `loadDrillActionFixture` von direktem `messageMonitor.addMessage` auf **`injectMessage`** umgestellt, damit derselbe Mock-Pfad gilt (**messageSubject** → `setupMessageMonitorForwarding` → ein `addMessage`), und optional **Gateway-Streams** die DSP-Messages mitsehen.
+
 ---
 
 ## 7. Testanleitung (Vorher/Nachher)
