@@ -12,7 +12,8 @@
         "outputPath": "dist/libs/mqtt-client",
         "tsConfig": "osf/libs/mqtt-client/tsconfig.lib.json",
         "main": "osf/libs/mqtt-client/src/index.ts",
-        "assets": []
+        "assets": [],
+        "rootDir": "."
       }
     },
     "test": {
