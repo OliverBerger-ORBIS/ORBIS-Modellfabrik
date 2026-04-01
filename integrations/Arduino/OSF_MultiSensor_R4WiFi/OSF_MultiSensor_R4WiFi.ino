@@ -1,7 +1,7 @@
 /*
  * Projekt: OSF Multi-Sensor – Arduino R4 WiFi
  * Sketch: OSF_MultiSensor_R4WiFi
- * Version: 1.1.6  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
+ * Version: 1.1.7  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
  * Hardware: Arduino Uno R4 WiFi, MPU-6050 (I2C), SW-420 (D11), DHT11 (D12), Flamme (A1), MQ-2 Gas (A0), 4-Ch Relais, 12V Ampel
  * Quelle: docs/05-hardware/arduino-r4-multisensor.md
  *
@@ -286,14 +286,27 @@ bool syncNetworkTimeAtBoot() {
     delay(400);
   }
 
+#if WIFI_MODE == WIFI_MODE_ORBIS
+  /** ORBIS: Shopfloor-RPi chrony NTP first (same host as MQTT_BROKER), then gateway + public pools. */
+  IPAddress servers[] = {
+    IPAddress(192, 168, 0, 100),
+    gatewayIP,
+    IPAddress(162, 159, 200, 123),
+    IPAddress(216, 239, 35, 12),
+    IPAddress(129, 6, 15, 29)
+  };
+  const int NTP_SERVER_COUNT = 5;
+#else
   IPAddress servers[] = {
     gatewayIP,
     IPAddress(162, 159, 200, 123),
     IPAddress(216, 239, 35, 12),
     IPAddress(129, 6, 15, 29)
   };
+  const int NTP_SERVER_COUNT = 4;
+#endif
   Serial.println(F("Zeit: UDP-NTP..."));
-  for (int s = 0; s < 4; s++) {
+  for (int s = 0; s < NTP_SERVER_COUNT; s++) {
     for (int attempt = 0; attempt < 4; attempt++) {
       unsigned long e = ntpRawUnixFromServer(servers[s]);
       if (e > NTP_SYNC_THRESHOLD) {
@@ -330,7 +343,15 @@ unsigned long resolveUtcEpochForPayload() {
       setUtcBaseFromEpoch(wt);
       return wt;
     }
-    unsigned long u = ntpRawUnixFromServer(gatewayIP);
+    unsigned long u;
+#if WIFI_MODE == WIFI_MODE_ORBIS
+    u = ntpRawUnixFromServer(IPAddress(192, 168, 0, 100));
+    if (u > NTP_SYNC_THRESHOLD) {
+      setUtcBaseFromEpoch(u);
+      return u;
+    }
+#endif
+    u = ntpRawUnixFromServer(gatewayIP);
     if (u > NTP_SYNC_THRESHOLD) {
       setUtcBaseFromEpoch(u);
       return u;

@@ -183,7 +183,11 @@ mosquitto_sub -h 192.168.178.65 -t "osf/arduino/#" -v
 
 **Warnung/Alarm — kontinuierliche Telemetrie (Sketch v1.1.3+):** Während die **Gesamtampel** gelb oder rot ist, wird der **MPU-State** zusätzlich alle **2 s** gesendet (aktualisierte `magnitude`/`vibrationLevel`). **DHT-, SW-420-, Flammen- und Gas-Topics** ebenfalls alle **2 s**, solange der jeweilige Sensor im **eigenen** Warn- oder Alarmband ist (`dhtLevel` / Vibration / `flameDetected` / `gasDetected`). Im reinen **Grün**-Betrieb bleibt der **5 s**-Heartbeat pro Topic. Hintergrund: Nur „Publish bei Level-Wechsel“ ließ Rohwerte in der OSF-UI im gleichen Warnband stehen (z. B. steigende Luftfeuchte bei konstantem Gelb).
 
-**`timestamp` in State-Payloads (Sketch v1.1.4+):** ISO-8601 **UTC**. **v1.1.6:** mit **Millisekunden** (`YYYY-MM-DDThh:mm:ss.sssZ`), aus **Sync-Zeit (Sekunden)** plus **Offset aus `millis()`** seit letztem Sync. Ohne UTC bleibt der Wert `""`. **v1.1.5+:** Kein **NTPClient**; Zeit über **`WiFi.getTime()`** + **rohes UDP-NTP** zu Gateway/Öffentlich; **`gUtcEpochBase` + `millis()`** zwischen Syncs; alle 2 s **`WiFi.getTime()`** zur Driftkorrektur. **UDP-Port 123** ausgehend zur NTP-Ziel-IP beachten.
+**`timestamp` in State-Payloads (Sketch v1.1.4+):** ISO-8601 **UTC**. **v1.1.6:** mit **Millisekunden** (`YYYY-MM-DDThh:mm:ss.sssZ`), aus **Sync-Zeit (Sekunden)** plus **Offset aus `millis()`** seit letztem Sync. Ohne UTC bleibt der Wert `""`. **v1.1.7:** In **`WIFI_MODE_ORBIS`** wird **NTP** zuerst gegen den **Shopfloor-RPi** (`192.168.0.100`, **chrony**) versucht, danach Gateway und öffentliche Pools — siehe [rpi-chrony-ntp-server.md](../04-howto/rpi-chrony-ntp-server.md). **v1.1.5+:** Kein **NTPClient**; Zeit über **`WiFi.getTime()`** + **rohes UDP-NTP** zu Gateway/Öffentlich; **`gUtcEpochBase` + `millis()`** zwischen Syncs; alle 2 s **`WiFi.getTime()`** zur Driftkorrektur. **UDP-Port 123** ausgehend zur NTP-Ziel-IP beachten.
+
+**ORBIS / Firmennetz — leere `timestamp`:** Steht im Serial Monitor z. B. `WARN: keine UTC – timestamp leer (NTP: UDP 123 ausgehend?)`, sind **WLAN und MQTT** oft trotzdem in Ordnung; es scheitert nur die **UTC-Synchronisation**. Häufig: **`WiFi.getTime()`** liefert vom Access Point keine Zeit; **UDP 123** ausgehend ist zu **öffentlichen** NTP-Servern oder zum **Gateway** gesperrt; oder der **Router** antwortet nicht auf NTP.
+
+**Lokaler NTP auf dem RPi (gleiches 192.168.x-Netz):** Auf dem **Shopfloor-RPi** (Broker im ORBIS-LAN typisch **`192.168.0.100`**, Arduino z. B. **`192.168.0.95`**) kann **chrony** auf dem **Host** als NTP-Server für das LAN laufen (**`allow`** in `/etc/chrony/conf.d/`). Einrichtung: [rpi-chrony-ntp-server.md](../04-howto/rpi-chrony-ntp-server.md). **Sketch v1.1.7+** trägt **`192.168.0.100`** in **`WIFI_MODE_ORBIS`** als **ersten** NTP-Server ein (`servers[]` / Fallback) — nach RPi-Setup neu flashen. Vorab im LAN prüfen: `sntp -d 192.168.0.100`.
 
 ---
 
@@ -222,6 +226,8 @@ mosquitto_sub -h 192.168.178.65 -t "osf/arduino/#" -v
 - Broker-IP erreichbar? `ping 192.168.178.65`
 - Mosquitto läuft? `lsof -i :1883`
 - Arduino im gleichen Netz? Fritz!Box-Reservierung für .95 prüfen.
+
+**`timestamp` in MQTT leer, Serial `WARN: keine UTC`:** Siehe **§5** (ORBIS/Firmennetz, NTP). Kurz: **UDP 123** / interner **NTP** (z. B. **RPi** im gleichen Subnetz) oder Sketch-Serverliste anpassen.
 
 **Sirene schaltet nicht:** Toggle `osf/arduino/alarm/enabled` auf `true` setzen (osf-ui oder mosquitto_pub). Sirene nur bei Alarm (Rot-Stufe) aktiv.
 

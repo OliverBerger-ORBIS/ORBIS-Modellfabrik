@@ -46,7 +46,7 @@
 }
 ```
 - `vibrationDetected`: boolean – SW-420 direkt; MPU-6050: true bei gelb/rot
-- `timestamp`: ISO-8601 **UTC** mit **Millisekunden** (Sketch **v1.1.6+**); siehe [DR-26](26-utc-iso-timestamp-ms-convention.md). MPU-6050: per NTP bei USE_MQTT 1; SW-420 ohne RTC: `""`
+- `timestamp`: ISO-8601 **UTC** mit **Millisekunden** (Sketch **v1.1.6+**); siehe [DR-26](26-utc-iso-timestamp-ms-convention.md). **v1.1.7 (ORBIS):** NTP bevorzugt Shopfloor-RPi (`192.168.0.100`); **Payload-Form** unverändert. MPU-6050: per NTP bei USE_MQTT 1; SW-420 ohne RTC: `""`
 - Hardware: Relais → Ampel (Grün/Gelb/Rot+Sirene). UI: vibrationLevel/vibrationDetected → Ampel-Darstellung.
 
 ---

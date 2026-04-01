@@ -68,7 +68,7 @@ This document contains default login credentials and access information for the 
 - **SSID (2.4GHz)**: `ORBIS-4711`
 - **SSID (5GHz)**: `ORBIS-4711_5G`
 - **Password**: `49117837`
-- **Messe LogiMAT (2026-03):** SSID **`ORBIS-4C57`** (2.4 GHz für Arduino / Shopfloor am Messe-AP). Passwort wie oben, sofern gleiches Netz – **Arduino-Sketch:** `OSF_MultiSensor_R4WiFi` **v1.1.6+** (2 s Warn/Alarm-Telemetrie, `timestamp` UTC mit ms).
+- **Messe LogiMAT (2026-03):** SSID **`ORBIS-4C57`** (2.4 GHz für Arduino / Shopfloor am Messe-AP). Passwort wie oben, sofern gleiches Netz – **Arduino-Sketch:** `OSF_MultiSensor_R4WiFi` **v1.1.7+** (ORBIS: NTP via Shopfloor-RPi chrony; **v1.1.6+** `timestamp` UTC mit ms).
 - **Modules Update Procedure**:
   - Connect to TXT Controller (Touchscreen).
   - Go to **Settings > Network > WLAN**.

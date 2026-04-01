@@ -6,6 +6,10 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+### Hardware / Arduino firmware
+
+- **`OSF_MultiSensor_R4WiFi` v1.1.7:** In **`WIFI_MODE_ORBIS`**, NTP sync tries **Shopfloor RPi** (`192.168.0.100`, **chrony** on host) **first**, then gateway and public pools. **MQTT payload** (`timestamp` ISO-8601 UTC with ms) **unchanged** since v1.1.6. **Docs:** [rpi-chrony-ntp-server.md](docs/04-howto/rpi-chrony-ntp-server.md), [arduino-r4-multisensor.md](docs/05-hardware/arduino-r4-multisensor.md) § MQTT-Topics.
+
 ## [1.0.6] - 2026-03-31
 
 **Patch: UTC ISO-8601 timestamps with milliseconds (OSF + Session Manager), DR-26, entities tests, mock Message Monitor regression, default Arduino WiFi ORBIS.**

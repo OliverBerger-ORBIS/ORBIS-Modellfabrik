@@ -2,7 +2,7 @@
 
 **Datum:** 2026-03-31  
 **Status:** Accepted  
-**Kontext:** OSF-UI, Business/Gateway/MQTT-Adapter und Session Manager erzeugen Zeichenketten für **Envelope-`timestamp`**, generierte Events und Session-Logs. Arduino **`OSF_MultiSensor_R4WiFi` v1.1.6** liefert Payload-**`timestamp`** als ISO-8601 **UTC mit Millisekunden**. Ohne gemeinsame Konvention sind Log-Zeilen und MQTT-Payloads schwer vergleichbar; Ad-hoc `new Date().toISOString()` bzw. `datetime.now().isoformat()` ohne feste UTC-/Format-Regel führen zu Inkonsistenz.
+**Kontext:** OSF-UI, Business/Gateway/MQTT-Adapter und Session Manager erzeugen Zeichenketten für **Envelope-`timestamp`**, generierte Events und Session-Logs. Arduino **`OSF_MultiSensor_R4WiFi` v1.1.6+** liefert Payload-**`timestamp`** als ISO-8601 **UTC mit Millisekunden** (ab **v1.1.7** ORBIS: NTP zuerst Shopfloor-RPi — **Payload-Form** gleich). Ohne gemeinsame Konvention sind Log-Zeilen und MQTT-Payloads schwer vergleichbar; Ad-hoc `new Date().toISOString()` bzw. `datetime.now().isoformat()` ohne feste UTC-/Format-Regel führen zu Inkonsistenz.
 
 > **Vorgehensweise:** [README – Wann ein DR?](README.md#vorgehensweise-wann-wird-ein-decision-record-erstellt)
 
