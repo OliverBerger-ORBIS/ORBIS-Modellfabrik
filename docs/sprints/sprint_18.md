@@ -1,6 +1,6 @@
 # Sprint 18 – LogiMAT-Messe Durchführung
 
-**Zeitraum:** 19.03.2026 – 01.04.2026 · **Status:** Laufend · **Vorheriger Sprint:** [Sprint 17](./sprint_17.md)
+**Zeitraum:** 19.03.2026 – 01.04.2026 · **Status:** Abgeschlossen · **Vorheriger Sprint:** [Sprint 17](./sprint_17.md) · **Nachfolger:** [Sprint 19](./sprint_19.md)
 
 **Kurz:** Messe stabil halten, Bugs fixen, Demo-Hardware zuverlässig.
 
@@ -114,8 +114,8 @@ Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
 
 ### Presentation, OBS & Shopfloor-UX (Vertrieb 02.04.)
 
-- [ ] **Vertriebsmeeting 02.04.2026:** OSF-Präsentation inhaltlich **abstimmen** (Story: wie Vertrieb **DSP / MES / SmartFactory** mit OSF erklärt); Slides oder OSF-Fahrplan dokumentieren, wer **führt**.
-- [ ] **OBS-Präsentation:** **Komplettlauf** testen (Browser, Fixtures, kritische Routen) **vor** dem Termin; Abweichungen/Mängel als Follow-up in **Sprint 19** einplanen.
+- [x] **Vertriebsmeeting 02.04.2026:** OSF-Präsentation inhaltlich **abstimmen** (Story: wie Vertrieb **DSP / MES / SmartFactory** mit OSF erklärt); Slides oder OSF-Fahrplan dokumentieren, wer **führt**.
+- [x] **OBS-Präsentation:** **Komplettlauf** testen (Browser, Fixtures, kritische Routen) **vor** dem Termin; Abweichungen/Mängel als Follow-up in **Sprint 19** einplanen.
 - [ ] **Shopfloor-Rotation 90° / 180° / 270° (Analyse):** Darstellung an **Monitor- und Laptop-Position** anpassen (inkl. **Konftel-50** / externer Kamera). **Variante A:** Rotation in **OSF** (betrifft u. a. Tab **Shopfloor**, **Orders**, **Konfiguration**, **AGV**, **Presentation**). **Variante B:** Ausrichtung primär über **OBS** spiegeln/drehen, damit Bild zu Konftel konsistent ist — Optionen dokumentieren, ggf. in **DR/Analyse** auslagern; Umsetzung kann eigener Sprint-19-Task werden.
 - [ ] **Navigation:** **Back** (oder gleichwertig), damit Nutzer bei **per Link geöffneten Tabs** zur Ausgangssicht zurückkommen.
 - [ ] **Einheitliche Diagramm-/Layout-Größe:** Heute **mehrere** Stellen für **Shopfloor-Layout-** und **UC-Diagramm-**Skalierung; bei **typisch fester** Browser-/Monitor-Größe **eine zentrale** Steuerung anstreben, die **alle** relevanten UC-/Shopfloor-Darstellungen mitzieht (Konzept + Aufwand klären).
@@ -127,10 +127,10 @@ Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
 
 ### Sprint-Wechsel (wenn Sprint 18 zu Ende ist)
 
-- [ ] Sprint 18: Status **Abgeschlossen**, Abschlussdatum eintragen.
-- [ ] Sprint 19: Datei neu aus [sprint_template.md](./sprint_template.md), **alle noch offenen `[ ]`** von hier übernehmen — **inkl.** offener Punkte unter **Presentation, OBS & Shopfloor-UX**, sofern nicht am 01.04. erledigt.
-- [ ] **PROJECT_STATUS:** neue Zeile Sprint 19; Spalte **Externe Events:** **02.04.2026 ORBIS-Vertriebsmeeting (OSF)** eintragen.
-- [ ] **Roadmap** kurz gegenlesen.
+- [x] Sprint 18: Status **Abgeschlossen**, Abschlussdatum **02.04.2026**.
+- [x] Sprint 19: Datei neu aus [sprint_template.md](./sprint_template.md), **alle noch offenen `[ ]`** von hier übernommen — **inkl.** offener Punkte unter **Presentation, OBS & Shopfloor-UX** (nicht erledigt: Rotation, Navigation, Layout).
+- [x] **PROJECT_STATUS:** neue Zeile Sprint 19; **Externe Events** ergänzt.
+- [x] **Roadmap** kurz gegenlesen.
 
 ---
 
@@ -151,4 +151,4 @@ Hier alle Sprint-Punkte **in Themenblöcken**. Erledigt = `[x]`, offen = `[ ]`.
 
 ---
 
-*Stand: 01.04.2026*
+*Stand: 02.04.2026*

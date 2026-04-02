@@ -1,7 +1,7 @@
 # ORBIS SmartFactory – Roadmap & Entwicklungsphasen
 
 **Version:** 2.0  
-**Letzte Aktualisierung:** 2026-03-09  
+**Letzte Aktualisierung:** 2026-04-02  
 
 ---
 
@@ -70,15 +70,15 @@ OSF-UI ←→ APS-CCU ←→ APS-NodeRED ←→ ORBIS-DSP ←→ OPC-UA Module
 ---
 
 ### **Phase 5: Erweiterbare Plattform – MES/DSP-Integration**
-- **Status:** 🔄 In Bearbeitung (Fokus Sprint 16/17)
+- **Status:** 🔄 In Bearbeitung (Fokus Sprint 19)
 - **Strategic direction:** Entscheidungen und Orchestrierung werden aus der CCU ausgelagert und durch MES/DSP ersetzt. ORBIS MES und DSP übernehmen zunehmend die Steuerung (z.B. Ersatzauftrag bei Quality-Fail, Order-Entscheidungen). APS-CCU dient als Interim-Layer bis zur vollständigen Übernahme. **OSF-UI bleibt zentrale alternative Quelle** zur Auftragsanlage – gleichberechtigt neben MES/DSP.
 - **Ausgangslage:** Fischertechnik-Dokumentation liegt vor und erleichtert Erweiterungen.
 - **Erweiterungsrichtungen:**
   - **Hardware:** ✅ Arduino Vibrationssensor integriert (Sprint 16). 🔄 **Neu:** Ampel-System (neuer Sensor) für LogiMAT. Use Case: Predictive Maintenance / Monitoring.
   - **APS-CCU:** 🔄 ERP/MES-Integration (QM-Check Verlagerung, Order-Steuerung, Quality-Fail-Verhalten). CCU-Modifikationen: [OSF-MODIFICATIONS.md](../../integrations/APS-CCU/OSF-MODIFICATIONS.md) (siehe [DR-20](../03-decision-records/20-aps-ccu-osf-modifications-documentation.md)).
 - **Aktuelle Prioritäten:**
-  - **LogiMAT 2026:** (24.–26.03.2026) – Showcase Readiness sicherstellen.
-  - **Hannover Messe 2026**
+  - **LogiMAT 2026:** (24.–26.03.2026) – abgeschlossen (siehe [sprint_18](../sprints/sprint_18.md)).
+  - **Sprint 19:** Sensor-Station / Backend-Grafana / Blog; **Hannover Messe 2026** vorbereiten.
   - **ORBIS Customer-Connect Event 2026** (Ende April 2026)
 
 ---

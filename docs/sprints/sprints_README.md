@@ -51,7 +51,7 @@ Diese Aufgaben sind **Teil des laufenden Sprints** und müssen erledigt sein, **
 | **Externe Events** | Optional **`## Externe Termine`** (Tabelle) + zugehörige Tasks unter einem Thema (z. B. Presentation); bei Sprint-Abschluss Zeile **PROJECT_STATUS** → Spalte **Externe Events** pflegen |
 | **Sprint-Wechsel** | Checkboxen am Ende von „Aufgaben“ oder eigene Thema-Überschrift |
 
-Template: [sprint_template.md](sprint_template.md) · Beispiel umgebaut: [sprint_18.md](sprint_18.md)
+Template: [sprint_template.md](sprint_template.md) · Beispiele: [sprint_18.md](sprint_18.md), [sprint_19.md](sprint_19.md)
 
 ---
 
@@ -73,7 +73,8 @@ Template: [sprint_template.md](sprint_template.md) · Beispiel umgebaut: [sprint
 - [Sprint 15](sprint_15.md) – Use-Case-Bibliothek & Blog-Serie Fortsetzung (05.02 - 18.02.2026) ✅
 - [Sprint 16](sprint_16.md) – Vibration-Sensor, Doku-Check, Marketing-Konsistenz (19.02 - 04.03.2026) ✅
 - [Sprint 17](sprint_17.md) – MES/Integration & LogiMAT Vorbereitung (05.03 - 18.03.2026) ✅
-- [Sprint 18](sprint_18.md) – LogiMAT-Messe Durchführung (19.03 - 01.04.2026) ⏳ **AKTUELL**
+- [Sprint 18](sprint_18.md) – LogiMAT-Messe Durchführung (19.03 - 01.04.2026) ✅
+- [Sprint 19](sprint_19.md) – Sensor-Station, Backend/Grafana & Hannover-Vorbereitung (02.04 - 15.04.2026) ⏳ **AKTUELL**
 
 ## 📊 Berichte
 - [ORBIS-Projekt-Abschlussbericht Sprints 1-12](ORBIS-Projekt-Abschlussbericht_sprints_01-12.md) – Erstes ORBIS-Projekt (ORBIS-Modellfabrik)
