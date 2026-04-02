@@ -14,6 +14,18 @@ All notable changes to OSF Dashboard will be documented here.
 
 - **`OSF_MultiSensor_R4WiFi` v1.1.7:** In **`WIFI_MODE_ORBIS`**, NTP sync tries **Shopfloor RPi** (`192.168.0.100`, **chrony** on host) **first**, then gateway and public pools. **MQTT payload** (`timestamp` ISO-8601 UTC with ms) **unchanged** since v1.1.6. **Docs:** [rpi-chrony-ntp-server.md](docs/04-howto/rpi-chrony-ntp-server.md), [arduino-r4-multisensor.md](docs/05-hardware/arduino-r4-multisensor.md) § MQTT-Topics.
 
+## [1.0.7] - 2026-04-02
+
+**Patch: AGV Tab — planned route overlay hides when stationary at order destination.**
+
+### Fixed
+
+- **AGV Tab — Route & Position:** Planned MQTT-order polylines for **dual AGV** are suppressed when **`driving === false`** and **`lastNodeId`** matches the **last** node of the current FTS order (normalized via `resolveNodeRef`). While **driving**, or when stopped **before** the final node, the route remains visible. **Unit tests** for overlay policy.
+
+### Changed
+
+- **`combinedAgvRouteSegments$`** combines **`allAgvMonitorFtsStates$`** per serial with orders for visibility. Selected-AGV animation path unchanged.
+
 ## [1.0.6] - 2026-03-31
 
 **Patch: UTC ISO-8601 timestamps with milliseconds (OSF + Session Manager), DR-26, entities tests, mock Message Monitor regression, default Arduino WiFi ORBIS.**

@@ -768,5 +768,42 @@ describe('AgvTabComponent', () => {
     await component.sendClearLoadHandlerSupervisor();
     expect(clearLoad).toHaveBeenCalledWith('5iO4', { loadDropped: false });
   });
+
+  describe('planned route overlay (driving + destination)', () => {
+    const orderThreeNodes = {
+      nodes: [{ id: 'A' }, { id: 'B' }, { id: 'DEST' }],
+    };
+
+    const asOverlay = (s: unknown, o: unknown) =>
+      (
+        component as unknown as {
+          shouldShowPlannedRouteOverlay: (state: unknown, order: unknown) => boolean;
+        }
+      ).shouldShowPlannedRouteOverlay(s, o);
+
+    it('shows when driving even if reported at destination node', () => {
+      expect(
+        asOverlay({ ...mockFtsState, lastNodeId: 'DEST', driving: true }, orderThreeNodes),
+      ).toBe(true);
+    });
+
+    it('hides when stationary at last order node (C)', () => {
+      expect(
+        asOverlay({ ...mockFtsState, lastNodeId: 'DEST', driving: false }, orderThreeNodes),
+      ).toBe(false);
+    });
+
+    it('shows when stationary but not yet at last node', () => {
+      expect(
+        asOverlay({ ...mockFtsState, lastNodeId: 'B', driving: false }, orderThreeNodes),
+      ).toBe(true);
+    });
+
+    it('shows when lastNodeId missing and not driving', () => {
+      expect(
+        asOverlay({ ...mockFtsState, lastNodeId: '', driving: false }, orderThreeNodes),
+      ).toBe(true);
+    });
+  });
 });
 

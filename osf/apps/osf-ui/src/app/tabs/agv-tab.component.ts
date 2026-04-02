@@ -396,6 +396,63 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Last node id from FTS order `nodes` (destination of the current order).
+   */
+  private getLastOrderNodeId(order: unknown): string | null {
+    if (!order || typeof order !== 'object') {
+      return null;
+    }
+    const nodes = (order as { nodes?: Array<{ id?: string }> }).nodes;
+    if (!Array.isArray(nodes) || nodes.length === 0) {
+      return null;
+    }
+    const last = nodes[nodes.length - 1];
+    const id = last?.id;
+    return typeof id === 'string' && id.length > 0 ? id : null;
+  }
+
+  /**
+   * Canonical id for comparing {@link FtsState#lastNodeId} with order node ids (layout aliases).
+   */
+  private canonicalNodeIdForRouteCompare(id: string | undefined): string {
+    if (!id) {
+      return '';
+    }
+    return this.resolveNodeRef(id) ?? id;
+  }
+
+  /**
+   * True when the vehicle is at the last node of the current order (both normalized).
+   */
+  private hasReachedOrderDestination(state: FtsState | null | undefined, order: unknown): boolean {
+    const lastNodeId = state?.lastNodeId;
+    if (!lastNodeId) {
+      return false;
+    }
+    const dest = this.getLastOrderNodeId(order);
+    if (!dest) {
+      return false;
+    }
+    const a = this.canonicalNodeIdForRouteCompare(lastNodeId);
+    const b = this.canonicalNodeIdForRouteCompare(dest);
+    return a.length > 0 && a === b;
+  }
+
+  /**
+   * Planned route overlay from MQTT order: show while {@link FtsState#driving} (A) or until destination
+   * is reached; hide when stationary at destination (C). Animation path uses a separate branch.
+   */
+  private shouldShowPlannedRouteOverlay(state: FtsState | null | undefined, order: unknown): boolean {
+    if (state?.driving === true) {
+      return true;
+    }
+    if (this.hasReachedOrderDestination(state, order)) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
    * Find road between two nodes
    * Delegates to AgvRouteService
    */
@@ -799,9 +856,10 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     this.combinedAgvRouteSegments$ = combineLatest([
       this.animationState$,
       this.allAgvOrders$,
+      this.allAgvMonitorFtsStates$,
       this.selectedAgvSerial$.pipe(distinctUntilChanged()),
     ]).pipe(
-    map(([anim, orders]) => {
+    map(([anim, orders, monitorStates]) => {
       const selected = this.selectedAgvSerial$.value;
       const animSegs = anim?.activeRouteSegments ?? [];
       const useAnimForSelected = Boolean(anim?.isAnimating && animSegs.length > 0);
@@ -813,6 +871,10 @@ export class AgvTabComponent implements OnInit, OnDestroy {
           for (const s of animSegs) {
             out.push({ ...s, stroke });
           }
+          continue;
+        }
+        const ftsState = monitorStates[serial] ?? null;
+        if (!this.shouldShowPlannedRouteOverlay(ftsState, order)) {
           continue;
         }
         const fromOrder = this.buildRouteSegmentsFromFtsOrder(order);
