@@ -465,6 +465,7 @@ Diese Komponenten sind innerhalb des `dsp-edge` Containers angeordnet (3x3 Grid)
 | `sf-system-warehouse` | Warehouse System | `warehouse-system` | `warehouse-system.svg` | `device` |
 | `sf-system-factory` | Factory System | `factory-system` | `factory-system.svg` | `device` |
 | `sf-system-scada` | SCADA System | `scada-system` | `scada-system.svg` | `device` |
+| `sf-system-sensor` | Sensor Station | `sensor-station-system` | `sensor-station-system.svg` | `device` |
 | `sf-system-industrial-process` | Industrial Process System | `industrial-process-system` | `industrial-process-system.svg` | `device` |
 | `sf-system-cargo` | Cargo System | `cargo-system` | `cargo-system.svg` | `device` |
 | `sf-system-pump` | Pump System | `pump-system` | `pump-system.svg` | `device` |
@@ -501,6 +502,12 @@ Diese Komponenten sind innerhalb des `dsp-edge` Containers angeordnet (3x3 Grid)
 <img src="../../../../assets/svg/shopfloor/systems/scada-system.svg" alt="SCADA System" width="64" height="64" />
 <div style="font-weight: 600; margin-top: 8px;">`scada-system`</div>
 <div style="font-size: 0.9em; color: #666;">scada-system.svg</div>
+</div>
+
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../../../assets/svg/shopfloor/systems/sensor-station-system.svg" alt="Sensor Station" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`sensor-station-system`</div>
+<div style="font-size: 0.9em; color: #666;">sensor-station-system.svg</div>
 </div>
 
 <div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
@@ -660,6 +667,12 @@ Alle Shopfloor Systems und Devices haben Connections zum DSP Edge. Die Connectio
 - **`conn_dsp-edge_sf-system-any`** - Edge → Any System
   - **From:** `dsp-edge` (bottom)
   - **To:** `sf-system-any` (top)
+  - **Bidirectional:** Ja
+  - **Arrow:** Ja
+
+- **`conn_dsp-edge_sf-system-sensor`** - Edge → Sensor Station
+  - **From:** `dsp-edge` (bottom)
+  - **To:** `sf-system-sensor` (top)
   - **Bidirectional:** Ja
   - **Arrow:** Ja
 

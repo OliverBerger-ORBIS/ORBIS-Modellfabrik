@@ -56,6 +56,8 @@ describe('SettingsTabComponent', () => {
     dspControlUrl: 'https://dsp.example.com',
     managementCockpitUrl: 'https://management.example.com',
     erpSystemUrl: 'https://erp.example.com',
+    mesSystemUrl: '',
+    ewmSystemUrl: '',
   };
 
   beforeEach(async () => {

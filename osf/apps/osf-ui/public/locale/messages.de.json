@@ -12,7 +12,7 @@
     "navModule": "Module",
     "navSettings": "Einstellungen",
     "headerTitle": "SmartFactory",
-    "headerSubtitle": "Modellfabrik von Fischertechnik (APS) orchestriert durch ORBIS DSP — IT/OT-Integration, ERP-Anbindung und KI-unterstützte Shopfloor-Intelligenz.",
+    "headerSubtitle": "Modellfabrik von Fischertechnik (APS) orchestriert durch ORBIS DSP — IT/OT-Integration, ERP-Anbindung, ORBIS-MES- und EWM-Integration sowie KI-unterstützte Shopfloor-Intelligenz.",
     "headerResetButton": "Fabrik zurücksetzen",
     "headerParkButton": "Fabrik parken",
     "sidebarEnvironmentHeading": "Umgebung",

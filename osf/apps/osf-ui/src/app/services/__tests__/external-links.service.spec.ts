@@ -31,6 +31,8 @@ describe('ExternalLinksService', () => {
       expect(settings.dspControlUrl).toBeDefined();
       expect(settings.managementCockpitUrl).toBeDefined();
       expect(settings.erpSystemUrl).toBeDefined();
+      expect(settings.mesSystemUrl).toBeDefined();
+      expect(settings.ewmSystemUrl).toBeDefined();
     });
 
     it('should emit current settings on subscription', async () => {
@@ -49,6 +51,8 @@ describe('ExternalLinksService', () => {
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
         erpSystemUrl: 'process',
+        mesSystemUrl: '',
+        ewmSystemUrl: '',
       };
 
       service.updateSettings(newSettings);
@@ -65,6 +69,8 @@ describe('ExternalLinksService', () => {
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
         erpSystemUrl: 'process',
+        mesSystemUrl: '',
+        ewmSystemUrl: '',
       };
 
       service.updateSettings(newSettings);
@@ -82,6 +88,8 @@ describe('ExternalLinksService', () => {
         dspControlUrl: 'https://stored.dsp.com',
         managementCockpitUrl: 'https://stored.cockpit.com',
         erpSystemUrl: 'process',
+        mesSystemUrl: '',
+        ewmSystemUrl: '',
       };
 
       localStorage.setItem('OSF.externalLinks', JSON.stringify(storedSettings));
@@ -111,6 +119,8 @@ describe('ExternalLinksService', () => {
             dspControlUrl: 'https://test.dsp.com',
             managementCockpitUrl: 'https://test.cockpit.com',
             erpSystemUrl: 'process',
+            mesSystemUrl: '',
+            ewmSystemUrl: '',
           };
           service.updateSettings(newSettings);
         } else if (callCount === 2) {
@@ -134,6 +144,8 @@ describe('ExternalLinksService', () => {
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
         erpSystemUrl: 'process',
+        mesSystemUrl: '',
+        ewmSystemUrl: '',
       };
 
       expect(() => {
@@ -184,6 +196,8 @@ describe('ExternalLinksService', () => {
         dspControlUrl: '',
         managementCockpitUrl: '',
         erpSystemUrl: '',
+        mesSystemUrl: '',
+        ewmSystemUrl: '',
       };
 
       service.updateSettings(emptySettings);
@@ -201,6 +215,8 @@ describe('ExternalLinksService', () => {
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
         erpSystemUrl: 'process',
+        mesSystemUrl: '',
+        ewmSystemUrl: '',
       };
 
       service.updateSettings(longSettings);
@@ -216,6 +232,8 @@ describe('ExternalLinksService', () => {
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
         erpSystemUrl: 'process',
+        mesSystemUrl: '',
+        ewmSystemUrl: '',
       };
 
       const settings2: ExternalLinksSettings = {
@@ -224,6 +242,8 @@ describe('ExternalLinksService', () => {
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
         erpSystemUrl: 'process',
+        mesSystemUrl: '',
+        ewmSystemUrl: '',
       };
 
       service.updateSettings(settings1);
@@ -239,6 +259,8 @@ describe('ExternalLinksService', () => {
         dspControlUrl: 'https://test.dsp.com',
         managementCockpitUrl: 'https://test.cockpit.com',
         erpSystemUrl: 'process',
+        mesSystemUrl: '',
+        ewmSystemUrl: '',
       };
 
       service.updateSettings(specialSettings);
@@ -254,6 +276,8 @@ describe('ExternalLinksService', () => {
         dspControlUrl: '/dsp',
         managementCockpitUrl: '/cockpit',
         erpSystemUrl: 'process',
+        mesSystemUrl: '',
+        ewmSystemUrl: '',
       };
 
       service.updateSettings(relativeSettings);

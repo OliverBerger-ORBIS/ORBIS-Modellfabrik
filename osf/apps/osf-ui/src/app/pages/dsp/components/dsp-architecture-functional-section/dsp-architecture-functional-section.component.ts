@@ -1,17 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { DspAnimationComponent } from '../../../../components/dsp-animation/dsp-animation.component';
 import { ExternalLinksService } from '../../../../services/external-links.service';
 import { LanguageService } from '../../../../services/language.service';
-import { FMF_CONFIG } from '../../../../components/dsp-animation/configs/fmf/fmf-config';
-import { map } from 'rxjs/operators';
+import { OSF_CONFIG } from '../../../../components/dsp-animation/configs/osf/osf-config';
 
 /**
  * DSP Architecture Functional Section Component
  * 
  * Displays the DSP architecture animation in functional view mode.
- * Uses FMF (Fischertechnik Modellfabrik) as default customer configuration.
+ * Default customer: OSF (ORBIS Smart Factory demo).
  */
 @Component({
   standalone: true,
@@ -26,11 +25,10 @@ export class DspArchitectureFunctionalSectionComponent {
   readonly sectionSubtitle = $localize`:@@dspArchFunctionalSectionSubtitle:Functional view of the DSP reference architecture with step-by-step animation.`;
   
   readonly viewMode = 'functional' as const;
-  readonly customerConfig = FMF_CONFIG; // Use FMF as default customer
+  readonly customerConfig = OSF_CONFIG;
 
   constructor(
     private readonly router: Router,
-    private readonly route: ActivatedRoute,
     private readonly externalLinksService: ExternalLinksService,
     private readonly languageService: LanguageService
   ) {}

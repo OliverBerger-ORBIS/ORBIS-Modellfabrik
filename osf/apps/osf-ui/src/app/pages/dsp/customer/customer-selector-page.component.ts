@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ECME_CONFIG } from '../../../components/dsp-animation/configs/ecme/ecme-config';
 import { FMF_CONFIG } from '../../../components/dsp-animation/configs/fmf/fmf-config';
 import { LOGIMAT_CONFIG } from '../../../components/dsp-animation/configs/logimat/logimat-config';
+import { OSF_CONFIG } from '../../../components/dsp-animation/configs/osf/osf-config';
 import type { CustomerDspConfig } from '../../../components/dsp-animation/configs/types';
 
 interface CustomerOption {
@@ -194,6 +195,10 @@ export class CustomerSelectorPageComponent {
    * Available customer configurations
    */
   readonly availableCustomers: CustomerOption[] = [
+    {
+      config: OSF_CONFIG,
+      route: '/dsp/customer/osf',
+    },
     {
       config: FMF_CONFIG,
       route: '/dsp/customer/fmf',

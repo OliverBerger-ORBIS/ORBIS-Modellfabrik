@@ -159,6 +159,22 @@ import { LanguageService, LocaleKey } from '../services/language.service';
             <small i18n="@@settingsErpSystemLinkHint">Internal route (e.g., 'process') or external ERP/SAP URL for future integration.</small>
           </label>
 
+          <label>
+            <span i18n="@@settingsMesSystemLinkLabel">MES system URL (ORBIS MES)</span>
+            <input type="url" formControlName="mesSystemUrl" placeholder="https://" />
+            <small i18n="@@settingsMesSystemLinkHint"
+              >Opens in a new tab when the MES box is clicked in the DSP architecture animation. Leave empty to disable.</small
+            >
+          </label>
+
+          <label>
+            <span i18n="@@settingsEwmSystemLinkLabel">EWM system URL (SAP EWM)</span>
+            <input type="url" formControlName="ewmSystemUrl" placeholder="https://" />
+            <small i18n="@@settingsEwmSystemLinkHint"
+              >Opens in a new tab when the EWM Application box is clicked in the DSP architecture animation. Leave empty to disable.</small
+            >
+          </label>
+
           <footer>
             <button type="submit" class="primary" [disabled]="linksForm.pristine || linksForm.invalid" i18n="@@settingsSaveButton">
               Save changes
@@ -256,7 +272,7 @@ export class SettingsTabComponent implements OnInit {
     {
       label: 'DSP Customer Architecture',
       path: '/#/en/dsp/customer',
-      description: 'Select and view customer-specific DSP architecture demonstrations (FMF, ECME).',
+      description: 'Select and view customer-specific DSP architecture demonstrations (OSF, FMF, LogiMAT, ECME).',
       available: true,
     },
   ];
@@ -361,6 +377,8 @@ export class SettingsTabComponent implements OnInit {
       dspControlUrl: [linkSettings.dspControlUrl, [Validators.required]],
       managementCockpitUrl: [linkSettings.managementCockpitUrl, [Validators.required]],
       erpSystemUrl: [linkSettings.erpSystemUrl],
+      mesSystemUrl: [linkSettings.mesSystemUrl],
+      ewmSystemUrl: [linkSettings.ewmSystemUrl],
     });
   }
 

@@ -167,6 +167,7 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     'bp-data-lake': $localize`:@@dspArchLabelDataLake:Data Lake`,
     'bp-ewm': $localize`:@@dspArchLabelEWMApp:EWM Application`,
     'sf-system-any': $localize`:@@dspArchLabelAnySystem:any System`,
+    'sf-system-sensor': $localize`:@@dspArchLabelSensorStation:Sensor Station`,
     'sf-system-warehouse': $localize`:@@dspArchLabelWarehouse:Warehouse`,
     'sf-system-factory': $localize`:@@dspArchLabelFactory:Factory`,
     'sf-system-fts': $localize`:@@dspArchLabelFTS:AGV\nSystem`,
@@ -912,6 +913,12 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
         case 'bp-erp':
           // Task 12: Use ERP URL from settings, fallback to 'process' for internal route
           container.url = links.erpSystemUrl || 'process';
+          break;
+        case 'bp-mes':
+          container.url = links.mesSystemUrl?.trim() || undefined;
+          break;
+        case 'bp-ewm':
+          container.url = links.ewmSystemUrl?.trim() || undefined;
           break;
       }
     });

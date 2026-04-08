@@ -122,7 +122,7 @@ export class AppComponent implements OnDestroy {
 
   readonly headerTitle = $localize`:@@headerTitle:SmartFactory`;
   readonly headerSubtitle =
-    $localize`:@@headerSubtitle:Fischertechnik Model Factory (APS) orchestrated by ORBIS DSP — IT/OT integration, ERP connectivity and AI-enabled shopfloor intelligence.`;
+    $localize`:@@headerSubtitle:Fischertechnik Model Factory (APS) orchestrated by ORBIS DSP — IT/OT integration, ERP connectivity, ORBIS MES and EWM integration, and AI-enabled shopfloor intelligence.`;
   readonly parkLabel = $localize`:@@headerParkButton:Park factory`;
   readonly resetLabel = $localize`:@@headerResetButton:Reset factory`;
   readonly connectButtonLabel = $localize`:@@headerConnectButtonLabel:Connect`;

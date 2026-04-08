@@ -6,6 +6,8 @@ Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Archit
 
 **Hinweis:** SVGs die bereits in der DSP Architecture Objects Reference dokumentiert sind, werden hier nicht angezeigt, um Redundanz zu vermeiden.
 
+**OSF-UI-Verifikation:** Manuelle Prüfung über osf-ui erfolgreich (2026-04-08). `sf-system-sensor` / `sensor-station-system.svg` sind in der [DSP Architecture Objects Reference](../../osf/apps/osf-ui/src/app/components/dsp-animation/configs/DSP_Architecture_Objects_Reference.md) dokumentiert; Checkliste siehe [dsp-osf-customer-integration-plan.md](../04-howto/dsp-osf-customer-integration-plan.md).
+
 **Use-Case-Karten und -Diagramme** (svg/dsp/use-cases, svg/use-cases) sind im [Use-Case Inventory](use-case-inventory.md) mit grafischer Übersicht dokumentiert.
 
 ## Verfügbare SVG-Assets (nach Verzeichnissen gruppiert)

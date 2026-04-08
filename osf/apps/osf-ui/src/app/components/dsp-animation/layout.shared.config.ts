@@ -1365,11 +1365,13 @@ export function createCustomerContainers(customerConfig?: CustomerDspConfig): Co
       }
     }
     
-    // Determine URL based on system type (Task 10: AGV/FTS → AGV-Tab)
+    // Determine URL: Sensor Station → Sensor tab; AGV/FTS → AGV tab
     let systemUrl: string | undefined;
     const labelLower = system.label.toLowerCase();
-    if (labelLower.includes('agv') || system.iconKey === 'agv') {
-      systemUrl = 'agv'; // AGV/FTS System → AGV-Tab
+    if (system.id === 'sf-system-sensor') {
+      systemUrl = 'sensor';
+    } else if (labelLower.includes('agv') || system.iconKey === 'agv') {
+      systemUrl = 'agv';
     }
     
     containers.push({

@@ -97,7 +97,7 @@ export type IconKey =
   | 'cnc-station' | 'hydraulic-station' | 'printer-3d-station' | 'weight-station' | 'laser-station'
   // New semantic keys with -system suffix (systems)
   | 'scada-system' | 'industrial-process-system' | 'cargo-system' | 'pump-system'
-  | 'any-system' | 'agv-system'
+  | 'any-system' | 'agv-system' | 'sensor-station-system'
   // Hardware configuration icons
   | 'opc-ua-station' | 'txt-controller';
 
@@ -240,6 +240,7 @@ export const ICON_MAP: Record<IconKey, string> = {
   'pump-system': 'assets/svg/shopfloor/systems/pump-system.svg',
   'any-system': 'assets/svg/shopfloor/systems/any-system.svg',
   'agv-system': 'assets/svg/shopfloor/systems/agv-system.svg',
+  'sensor-station-system': 'assets/svg/shopfloor/systems/sensor-station-system.svg',
   
   // Hardware configuration icons
   'opc-ua-station': 'assets/svg/shopfloor/stations/opc-ua-server.svg',

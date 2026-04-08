@@ -140,6 +140,8 @@ describe('ConfigurationTabComponent', () => {
         grafanaDashboardUrl: '',
         smartfactoryDashboardUrl: '',
         erpSystemUrl: '',
+        mesSystemUrl: '',
+        ewmSystemUrl: '',
       }),
     };
 

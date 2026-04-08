@@ -7,6 +7,10 @@ export interface ExternalLinksSettings {
   readonly dspControlUrl: string;
   readonly managementCockpitUrl: string;
   readonly erpSystemUrl: string; // Task 12: ERP/SAP System URL for future integration
+  /** External ORBIS MES (or other MES) URL; DSP animation bp-mes opens this when set */
+  readonly mesSystemUrl: string;
+  /** External SAP EWM (or other EWM) URL; DSP animation bp-ewm opens this when set */
+  readonly ewmSystemUrl: string;
 }
 
 const STORAGE_KEY = 'OSF.externalLinks';
@@ -17,6 +21,8 @@ const DEFAULT_SETTINGS: ExternalLinksSettings = {
   dspControlUrl: 'https://www.orbis-group.com/de-de/sap-orbis-loesungen/distributed-shopfloor-processing.html',
   managementCockpitUrl: 'https://dspmcorbisprd.powerappsportals.com',
   erpSystemUrl: 'process', // Default: internal Process-Tab, can be changed to external ERP/SAP URL
+  mesSystemUrl: '',
+  ewmSystemUrl: '',
 };
 
 @Injectable({ providedIn: 'root' })

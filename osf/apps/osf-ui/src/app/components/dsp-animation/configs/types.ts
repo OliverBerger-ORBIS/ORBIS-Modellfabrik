@@ -19,7 +19,7 @@ export type GenericIconKey =
   | 'scada' | 'industrial-process' | 'cargo' | 'pump'
   // Systems (new semantic keys with -system suffix)
   | 'scada-system' | 'industrial-process-system' | 'cargo-system' | 'pump-system'
-  | 'any-system' | 'agv-system'
+  | 'any-system' | 'agv-system' | 'sensor-station-system'
   // Brands
   | 'sap' | 'alpha-x' | 'aws' | 'azure' | 'powerbi' | 'grafana';
 

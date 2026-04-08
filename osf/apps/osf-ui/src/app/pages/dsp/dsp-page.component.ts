@@ -36,7 +36,7 @@ import { DspMethodologySectionComponent } from './components/dsp-methodology-sec
 })
 export class DspPageComponent {
   readonly pageTitle = $localize`:@@dspPageTitle:Distributed Shopfloor Processing`;
-  readonly pageSubtitle = $localize`:@@dspPageSubtitle:Edge-to-Cloud Orchestration for Smart Manufacturing`;
+  readonly pageSubtitle = $localize`:@@dspPageSubtitle:Edge-to-cloud orchestration with ORBIS MES, DSP, and smart manufacturing`;
   
   // Accordion state - track which sections are expanded
   protected expandedSections = new Set<string>();

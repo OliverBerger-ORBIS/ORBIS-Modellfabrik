@@ -25,6 +25,9 @@ describe('DspAnimationComponent - Label Wrapping', () => {
         smartfactoryDashboardUrl: '',
         dspControlUrl: '',
         managementCockpitUrl: '',
+        erpSystemUrl: 'process',
+        mesSystemUrl: '',
+        ewmSystemUrl: '',
       }),
       get current() {
         return {
@@ -32,6 +35,9 @@ describe('DspAnimationComponent - Label Wrapping', () => {
           smartfactoryDashboardUrl: '',
           dspControlUrl: '',
           managementCockpitUrl: '',
+          erpSystemUrl: 'process',
+          mesSystemUrl: '',
+          ewmSystemUrl: '',
         };
       },
     };
