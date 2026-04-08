@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import type { CcuConfigSnapshot, ModuleOverviewState } from '@osf/entities';
 import { SHOPFLOOR_ASSET_MAP, type OrderFixtureName } from '@osf/testing-fixtures';
@@ -12,7 +13,7 @@ import { ModuleNameService } from '../services/module-name.service';
 import { ShopfloorMappingService } from '../services/shopfloor-mapping.service';
 import { ModuleHardwareService } from '../services/module-hardware.service';
 import { EnvironmentService } from '../services/environment.service';
-import { ConnectionService } from '../services/connection.service';
+import { ConnectionService, type ConnectionState } from '../services/connection.service';
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
 import { DspDetailComponent } from '../components/dsp-detail/dsp-detail.component';
 import { DspArchitectureComponent } from '../components/dsp-architecture/dsp-architecture.component';
@@ -29,6 +30,17 @@ import {
 } from './configuration-detail.types';
 import { DETAIL_ASSET_MAP, getAssetPath } from '../assets/detail-asset-map';
 import { getIconPath } from '../assets/icon-registry';
+import {
+  OSF_ARDUINO_STATION_CONFIG_TOPIC,
+  OSF_ARDUINO_STATION_FACTSHEET_TOPIC,
+} from '../constants/arduino-station.constants';
+import type { ArduinoStationFactsheet, ArduinoStationThresholdDraft } from '../types/arduino-station-factsheet.types';
+import {
+  buildArduinoConfigPayload,
+  defaultArduinoThresholdDraft,
+  draftFromFactsheet,
+  isArduinoStationFactsheet,
+} from '../types/arduino-station-factsheet.utils';
 
 type LayoutCellKind = 'module' | 'fixed';
 
@@ -81,7 +93,7 @@ interface ConfigurationViewModel {
 @Component({
   standalone: true,
   selector: 'app-configuration-tab',
-  imports: [CommonModule, ShopfloorPreviewComponent, DspDetailComponent, DspArchitectureComponent],
+  imports: [CommonModule, FormsModule, ShopfloorPreviewComponent, DspDetailComponent, DspArchitectureComponent],
   templateUrl: './configuration-tab.component.html',
   styleUrl: './configuration-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -102,6 +114,41 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
   readonly gridPositionLabel = $localize`:@@configurationGridPositionLabel:Grid Position`;
   readonly cellPositionLabel = $localize`:@@configurationCellPositionLabel:Cell Position`;
   readonly cellDimensionLabel = $localize`:@@configurationCellDimensionLabel:Cell Dimension`;
+
+  readonly arduinoStationHeadline = $localize`:@@configurationArduinoStationHeadline:Sensor station (Arduino)`;
+  readonly arduinoStationDescription = $localize`:@@configurationArduinoStationDescription:Capabilities and thresholds from the station factsheet (MQTT).`;
+  readonly arduinoStationNoFactsheet = $localize`:@@configurationArduinoStationNoFactsheet:No factsheet received yet. Connect OSF to the same MQTT broker as the Arduino (e.g. DAHEIM) and ensure sketch v1.1.8+ publishes osf/arduino/station/factsheet.`;
+  readonly arduinoStationPersistWarning = $localize`:@@configurationArduinoStationPersistWarning:Changes apply in RAM on the Arduino only until power cycle. To keep defaults in firmware, update thresholds in the sketch and flash a new version.`;
+  readonly arduinoStationApplySuccessLead = $localize`:@@configurationArduinoApplySuccessLead:Topic "osf/arduino/station/config" published.`;
+  readonly arduinoStationApplyLabel = $localize`:@@configurationArduinoStationApplyLabel:Apply thresholds`;
+  readonly arduinoStationApplyMqttHint = $localize`:@@configurationArduinoApplyMqttHint:Connect to MQTT (status: connected) before applying thresholds.`;
+  readonly arduinoStationSketchLabel = $localize`:@@configurationArduinoStationSketchLabel:Sketch version`;
+  readonly arduinoStationTileDhtTitle = $localize`:@@configurationArduinoTileDhtTitle:DHT11`;
+  readonly arduinoStationTileMpuTitle = $localize`:@@configurationArduinoTileMpuTitle:MPU-6050`;
+  readonly arduinoStationTileSw420Title = $localize`:@@configurationArduinoTileSw420Title:SW-420`;
+  readonly arduinoStationTileSw420Hint = $localize`:@@configurationArduinoTileSw420Hint:Digital vibration (on/off only). No threshold fields.`;
+  readonly arduinoStationTileGasTitle = $localize`:@@configurationArduinoTileGasTitle:MQ-2 gas`;
+  readonly arduinoStationTileFlameTitle = $localize`:@@configurationArduinoTileFlameTitle:Flame`;
+
+  /** Paths: `assets/svg/shopfloor/shared/*.svg` — aligned with dsp-svg-inventory (DHT11: temp+humidity; MPU-6050: tilt). */
+  readonly arduinoStationIcons = {
+    dhtTemp: ICONS.shopfloor.shared.temperatureSensor,
+    humidity: ICONS.shopfloor.shared.humiditySensor,
+    mpu: ICONS.shopfloor.shared.tiltSensor,
+    sw420: ICONS.shopfloor.shared.vibrationSensor,
+    gas: ICONS.shopfloor.shared.gasSensor,
+    flame: ICONS.shopfloor.shared.flameSensor,
+  } as const;
+
+  /** Live factsheet from `osf/arduino/station/factsheet` (retained). */
+  arduinoFactsheet: ArduinoStationFactsheet | null = null;
+  arduinoDraft: ArduinoStationThresholdDraft = defaultArduinoThresholdDraft();
+  arduinoApplyError: string | null = null;
+  arduinoApplyPending = false;
+  arduinoApplySuccess = false;
+  /** Tracks MQTT connection for disabling Apply (avoids publish→reconnect when broker is unreachable). */
+  mqttConnectionState: ConnectionState = 'disconnected';
+  private lastArduinoFactsheetSig = '';
 
   private readonly fixedPositionDetails: Record<
     string,
@@ -235,7 +282,8 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly mappingService: ShopfloorMappingService,
-    private readonly moduleHardwareService: ModuleHardwareService
+    private readonly moduleHardwareService: ModuleHardwareService,
+    private readonly cdr: ChangeDetectorRef
   ) {
     this.externalLinks$ = this.externalLinksService.settings$;
     this.layoutInfo$ = this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').pipe(
@@ -642,6 +690,23 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     return null;
   }
 
+  async applyArduinoThresholds(): Promise<void> {
+    this.arduinoApplyError = null;
+    this.arduinoApplySuccess = false;
+    this.arduinoApplyPending = true;
+    this.cdr.markForCheck();
+    try {
+      const payload = buildArduinoConfigPayload(this.arduinoDraft);
+      await this.connectionService.publish(OSF_ARDUINO_STATION_CONFIG_TOPIC, payload, { qos: 0 });
+      this.arduinoApplySuccess = true;
+    } catch (err) {
+      this.arduinoApplyError = err instanceof Error ? err.message : 'Publish failed';
+    } finally {
+      this.arduinoApplyPending = false;
+      this.cdr.markForCheck();
+    }
+  }
+
   formatTimestamp(timestamp: string): string {
     try {
       const date = new Date(timestamp);
@@ -660,12 +725,35 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.add(
+      this.messageMonitor.getLastMessage<unknown>(OSF_ARDUINO_STATION_FACTSHEET_TOPIC).subscribe((msg) => {
+        if (!msg?.valid || msg.payload == null) {
+          return;
+        }
+        const p = msg.payload;
+        if (!isArduinoStationFactsheet(p)) {
+          return;
+        }
+        const sig = JSON.stringify(p);
+        if (sig === this.lastArduinoFactsheetSig) {
+          return;
+        }
+        this.lastArduinoFactsheetSig = sig;
+        this.arduinoFactsheet = p;
+        this.arduinoDraft = draftFromFactsheet(p);
+        this.arduinoApplyError = null;
+        this.cdr.markForCheck();
+      })
+    );
+
+    this.subscriptions.add(
       this.connectionService.state$
         .pipe(distinctUntilChanged())
         .subscribe((state) => {
+          this.mqttConnectionState = state;
           if (state === 'connected') {
             this.initializeStreams();
           }
+          this.cdr.markForCheck();
         })
     );
 

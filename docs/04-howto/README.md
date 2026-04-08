@@ -15,6 +15,7 @@
 - MQTT
   - [MQTT WebSocket Debug Guide](mqtt-websocket-debug-guide.md)
 - OSF-UI
+  - [Replay: LAN-Mosquitto / Arduino zu Hause (WebSocket)](osf-mqtt-replay-local-broker.md)
   - [Browser console debug (`osf.debug`)](osf-ui-console-debug.md)
   - [LogiMAT: kurze Smoke-Checkliste (vor Messe)](osf-ui-logimat-smoke-checklist.md)
   - [SVG label text & line breaks (DSP-Architecture, Animation, UC-01)](osf-ui-svg-label-text-conventions.md)

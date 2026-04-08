@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { buildReplayConnectionDefaults } from '../../environments/mqtt-user.defaults';
 
 export type EnvironmentKey = 'mock' | 'replay' | 'live';
 
@@ -27,13 +28,7 @@ const DEFAULT_CONNECTIONS: Record<EnvironmentKey, EnvironmentConnection> = {
     mqttHost: 'mock://fixtures',
     mqttPort: 0,
   },
-  replay: {
-    mqttHost: 'localhost',
-    mqttPort: 9001, // WebSocket MQTT port (Browser requires WebSocket, not TCP)
-    mqttPath: '',
-    mqttUsername: undefined,
-    mqttPassword: undefined,
-  },
+  replay: buildReplayConnectionDefaults(),
   live: {
     mqttHost: '192.168.0.100',
     mqttPort: 9001, // WebSocket MQTT port (Browser requires WebSocket, not TCP MQTT on 1883)
@@ -61,13 +56,13 @@ export class EnvironmentService {
       replay: {
         key: 'replay',
         label: $localize`:@@environmentReplay:Replay environment`,
-        description: $localize`:@@environmentReplayDescription:Connect to local MQTT gateway and replay recorded sessions.`,
+        description: $localize`:@@environmentReplayDescription:WebSocket MQTT — point at the same broker as your hardware (e.g. LAN Mosquitto). Replays sessions when using recorded data.`,
         connection: storedConnections.replay,
       },
       live: {
         key: 'live',
         label: $localize`:@@environmentLive:Live environment`,
-        description: $localize`:@@environmentLiveDescription:Connect to production MQTT gateway with live shopfloor data.`,
+        description: $localize`:@@environmentLiveDescription:Shopfloor broker (RPi, default 192.168.0.100). Not available from home unless that host is reachable.`,
         connection: storedConnections.live,
       },
     } satisfies Record<EnvironmentKey, EnvironmentDefinition>;

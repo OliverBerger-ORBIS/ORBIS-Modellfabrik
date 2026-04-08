@@ -8,6 +8,19 @@ Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Archit
 
 **OSF-UI-Verifikation:** Manuelle Prüfung über osf-ui erfolgreich (2026-04-08). `sf-system-sensor` / `sensor-station-system.svg` sind in der [DSP Architecture Objects Reference](../../osf/apps/osf-ui/src/app/components/dsp-animation/configs/DSP_Architecture_Objects_Reference.md) dokumentiert; Checkliste siehe [dsp-osf-customer-integration-plan.md](../04-howto/dsp-osf-customer-integration-plan.md).
 
+**Sensor-Icons (OSF-UI) — eine Quelle:** Die Kacheln im Tab *Configuration* (Sensor station) und alle Referenzen in [`icon.registry.ts`](../../osf/apps/osf-ui/src/app/shared/icons/icon.registry.ts) zeigen auf **`assets/svg/shopfloor/shared/<name>.svg`**. **Kanonisch:** Dateien nur unter **`osf/apps/osf-ui/src/assets/svg/shopfloor/shared/`** pflegen (nach Build: `/assets/svg/shopfloor/shared/...`). **`public/assets/svg/shopfloor/shared/`** wird **nicht** für dieselben Pfade gespiegelt — doppelte Dateien würden beim Merge mit `src/assets` zu verwirrendem Verhalten und „alten“ Bildern führen.
+
+**Cache-Busting (Browser):** `icon.registry.ts` hängt `?v=…` aus [`environments/version.ts`](../../osf/apps/osf-ui/src/environments/version.ts) an (Sync via `npm run update-version`). **Development:** `osf-ui:serve` setzt in [`project.json`](../../osf/apps/osf-ui/project.json) unter `serve.options.headers` **`Cache-Control: no-store`**, damit Chrome `/assets/…` nicht aus dem Disk-Cache mit alten SVG-Bytes bedient (allein `?v=` reicht oft nicht, wenn der Browser nicht neu lädt). Nach **SVG-Änderungen** für Releases: **`npm run update-version`** und neu bauen — nicht manuell `?v=` in Code pflegen.
+
+| Configuration-Tab-Kachel | `icon.registry.ts` (shopfloor.shared) | Datei |
+|--------------------------|----------------------------------------|--------|
+| DHT11 (Temp) | `temperatureSensor` | `temperature-sensor.svg` |
+| DHT11 (Feuchte) | `humiditySensor` | `humidity-sensor.svg` |
+| MPU-6050 | `tiltSensor` | `tilt-sensor.svg` |
+| SW-420 | `vibrationSensor` | `vibration-sensor.svg` |
+| MQ-2 | `gasSensor` | `gas-sensor.svg` |
+| Flamme | `flameSensor` | `flame-sensor.svg` |
+
 **Use-Case-Karten und -Diagramme** (svg/dsp/use-cases, svg/use-cases) sind im [Use-Case Inventory](use-case-inventory.md) mit grafischer Übersicht dokumentiert.
 
 ## Verfügbare SVG-Assets (nach Verzeichnissen gruppiert)
@@ -287,6 +300,21 @@ Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Archit
 <img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/drop-event.svg" alt="drop-event.svg" width="64" height="64" />
 <div style="font-weight: 600; margin-top: 8px;">`drop-event`</div>
 <div style="font-size: 0.9em; color: #666;">drop-event.svg</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/flame-sensor.svg" alt="flame-sensor.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`flame-sensor`</div>
+<div style="font-size: 0.9em; color: #666;">flame-sensor.svg · icon.registry: `flameSensor`</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/gas-sensor.svg" alt="gas-sensor.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`gas-sensor`</div>
+<div style="font-size: 0.9em; color: #666;">gas-sensor.svg · icon.registry: `gasSensor`</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/humidity-sensor.svg" alt="humidity-sensor.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`humidity-sensor`</div>
+<div style="font-size: 0.9em; color: #666;">humidity-sensor.svg · icon.registry: `humiditySensor`</div>
 </div>
 <div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
 <img src="../../osf/apps/osf-ui/src/assets/svg/shopfloor/shared/location-marker.svg" alt="location-marker.svg" width="64" height="64" />

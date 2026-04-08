@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { getDashboardController, type DashboardStreamSet } from '../mock-dashboard';
 import type { Observable } from 'rxjs';
 import { map, shareReplay, filter, startWith, distinctUntilChanged } from 'rxjs/operators';
@@ -50,6 +50,9 @@ import { EnvironmentService } from '../services/environment.service';
 import type { OrderFixtureName } from '@osf/testing-fixtures';
 import { ConnectionService, type ConnectionState } from '../services/connection.service';
 import { SensorStateService } from '../services/sensor-state.service';
+import { OSF_ARDUINO_STATION_FACTSHEET_TOPIC } from '../constants/arduino-station.constants';
+import type { ArduinoStationFactsheet } from '../types/arduino-station-factsheet.types';
+import { draftFromThresholdsOnly, isArduinoStationFactsheet } from '../types/arduino-station-factsheet.utils';
 
 @Component({
   standalone: true,
@@ -69,11 +72,12 @@ export class SensorTabComponent implements OnInit, OnDestroy {
   readonly gaugeCenterX = 110;
   readonly gaugeCenterY = 95;
 
-  /** DHT11 thresholds – keep in sync with `integrations/Arduino/OSF_MultiSensor_R4WiFi/OSF_MultiSensor_R4WiFi.ino` */
-  private readonly dhtTempWarnC = 30;
-  private readonly dhtTempDangerC = 35;
-  private readonly dhtHumidityWarnPercent = 60;
-  private readonly dhtHumidityDangerPercent = 85;
+  /**
+   * Retained factsheet thresholds for DHT warn/alarm borders; defaults match sketch when absent.
+   * @see draftFromThresholdsOnly
+   */
+  private arduinoStationFactsheet: ArduinoStationFactsheet | null = null;
+  private lastArduinoFactsheetSig = '';
 
   readonly sensorHeadingIcon = 'assets/svg/ui/heading-sensors.svg';
   readonly cameraHeadingIcon = 'assets/svg/ui/heading-camera.svg';
@@ -132,7 +136,8 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     private readonly messageMonitor: MessageMonitorService,
     private readonly environmentService: EnvironmentService,
     private readonly connectionService: ConnectionService,
-    private readonly sensorState: SensorStateService
+    private readonly sensorState: SensorStateService,
+    private readonly cdr: ChangeDetectorRef
   ) {
     this.alarmEnabled$ = this.messageMonitor.getLastMessage<unknown>(this.ALARM_ENABLED_TOPIC).pipe(
       map((msg) => msg?.payload === true || msg?.payload === 'true'),
@@ -426,23 +431,25 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     return this.sw420Level(vibration) === 'red';
   }
 
-  /** Alarm state for highlighting (temp >= danger or humidity >= danger %) – matches Arduino. */
+  /** Alarm state for highlighting (temp >= danger or humidity >= danger %) – matches Arduino / factsheet thresholds. */
   isDhtAlarm(dht: Dht11StatePayload | null): boolean {
     if (!dht) return false;
+    const th = draftFromThresholdsOnly(this.arduinoStationFactsheet?.thresholds);
     const t = dht.temperature ?? 0;
     const h = dht.humidity ?? 0;
-    return t >= this.dhtTempDangerC || h >= this.dhtHumidityDangerPercent;
+    return t >= th.dhtTempDanger || h >= th.dhtHumDanger;
   }
 
-  /** Warning state – orange border; humidity warn/danger bands match Arduino. */
+  /** Warning state – orange border; uses factsheet thresholds when available. */
   isDhtWarning(dht: Dht11StatePayload | null): boolean {
     if (!dht) return false;
+    const th = draftFromThresholdsOnly(this.arduinoStationFactsheet?.thresholds);
     const t = dht.temperature ?? 0;
     const h = dht.humidity ?? 0;
-    if (this.isDhtAlarm(dht)) return false;
+    if (t >= th.dhtTempDanger || h >= th.dhtHumDanger) return false;
     return (
-      (t >= this.dhtTempWarnC && t < this.dhtTempDangerC) ||
-      (h >= this.dhtHumidityWarnPercent && h < this.dhtHumidityDangerPercent)
+      (t >= th.dhtTempWarn && t < th.dhtTempDanger) ||
+      (h >= th.dhtHumWarn && h < th.dhtHumDanger)
     );
   }
 
@@ -648,6 +655,25 @@ export class SensorTabComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.subscriptions.add(
+      this.messageMonitor.getLastMessage<unknown>(OSF_ARDUINO_STATION_FACTSHEET_TOPIC).subscribe((msg) => {
+        if (!msg?.valid || msg.payload == null) {
+          return;
+        }
+        const p = msg.payload;
+        if (!isArduinoStationFactsheet(p)) {
+          return;
+        }
+        const sig = JSON.stringify(p);
+        if (sig === this.lastArduinoFactsheetSig) {
+          return;
+        }
+        this.lastArduinoFactsheetSig = sig;
+        this.arduinoStationFactsheet = p;
+        this.cdr.markForCheck();
+      })
+    );
+
     this.subscriptions.add(
       this.connectionService.state$
         .pipe(distinctUntilChanged())

@@ -57,7 +57,8 @@ export class WebSocketMqttAdapter implements MqttAdapter {
 
         // Prepare MQTT.js connection options
         const mqttOptions: IClientOptions = {
-          connectTimeout: 10000,
+          // Slow brokers / LAN contention after a reconnect storm need headroom (connack timeout).
+          connectTimeout: 20000,
           reconnectPeriod: 0, // Disable auto-reconnect, we handle it ourselves
         };
 
@@ -136,7 +137,7 @@ export class WebSocketMqttAdapter implements MqttAdapter {
             this.handleConnectionError('Connection timeout');
             reject(new Error('Connection timeout'));
           }
-        }, 10000);
+        }, 20000);
 
         this.client.on('connect', () => {
           clearTimeout(timeout);

@@ -11,15 +11,17 @@
 
 ## 0. Architektur-Prinzip: Wahrheit liegt beim Arduino
 
-**Single Source of Truth:** Schwellen und Klassifikation (normal/warning/alarm) werden ausschließlich im Arduino-Sketch definiert. Die osf-ui interpretiert keine Rohwerte – sie zeigt nur an, was der Sensor publiziert.
+**Single Source of Truth (Firmware):** Schwellen und Klassifikation sind im **Sketch** und im **Factsheet** (`osf/arduino/station/factsheet`, retained) dokumentiert. Die osf-ui interpretiert keine Rohwerte in Telemetrie – sie zeigt an, was der Sensor publiziert.
+
+**Laufzeit-Anpassung (optional, selten):** Über **`osf/arduino/station/config`** können Schwellen in **RAM** gesetzt werden (OSF **Configuration**-Tab). Nach **Reset/Neustart** gelten wieder die Sketch-Defaults; dauerhafte Werte gehören in eine **neue Sketch-Version** und Flash.
 
 | Aspekt | Arduino | osf-ui |
 |--------|---------|--------|
-| Schwellen (Flame, Gas, DHT) | ✓ definiert | — |
+| Schwellen (Flame, Gas, DHT) | ✓ definiert + Factsheet | Configuration: Anzeige + optional MQTT-Config |
 | Klassifikation (gasLevel 0/1/2) | ✓ berechnet | nur Darstellung |
 | Raw-Wert | ✓ gemessen, gesendet | nur Anzeige |
 
-**Folge:** Änderungen an Schwellen nur im Sketch; Sensor-Tab **Rahmenfarben** für DHT nutzen dieselben Grenzwerte wie der Sketch (siehe `sensor-tab.component.ts`, Konstanten neben Arduino). **DHT-Luftfeuchte (Stand Sketch v1.1.1):** Warn (Gelb) ab **60 %**, Alarm (Rot) ab **85 %** (Temp unverändert: 30 °C / 35 °C). Deployment: Serial Monitor „Sketch v1.1.x“ prüfen.
+**Folge:** Environmental Data (Sensor-Tab): DHT-Warn-/Alarm-Rahmen folgen **`osf/arduino/station/factsheet`** (retained), sobald empfangen; sonst Sketch-Defaults wie in `draftFromThresholdsOnly` (z. B. 30/35 °C, 60/85 % rel.). **DHT-Luftfeuchte (Stand Sketch v1.1.1):** Warn (Gelb) ab **60 %**, Alarm (Rot) ab **85 %**. Deployment: Serial Monitor „Sketch v1.1.x“ prüfen.
 
 ---
 
@@ -170,6 +172,8 @@ Ohne Common Ground kann die Relais-Logik fehlschlagen.
 | `osf/arduino/gas/mq2-1/state` | `{"gasDetected":bool,"gasLevel":0\|1\|2,"rawValue":n,"timestamp":"…"}` – gasLevel: 0=normal, 1=warning, 2=alarm |
 | `osf/arduino/gas/mq2-1/connection` | LWT |
 | `osf/arduino/alarm/enabled` | **Subscribe:** `true`/`false` – Sirene nur bei Alarm, wenn Toggle aktiv |
+| `osf/arduino/station/factsheet` | **Publish (retained):** Ein JSON mit `sketchVersion`, `stationId`, `configTopic`, `thresholds` (aktuelle Schwellen) und **`sensors`[]** (id, label, stateTopic, capabilities). Wird nach MQTT-Verbindung publiziert. |
+| `osf/arduino/station/config` | **Subscribe:** JSON `{"thresholds":{...}}` mit Feldern wie `dhtTempWarn`, `dhtTempDanger`, `gasWarn`, `gasDanger`, `flameRaw`, `mpuMagnitudeYellow`, `mpuMagnitudeRed` – nur **RAM**, kein Flash. |
 
 **Sirene aktivieren (Test):**
 ```bash

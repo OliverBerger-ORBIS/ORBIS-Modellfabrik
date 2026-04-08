@@ -483,6 +483,25 @@ describe('ConnectionService', () => {
         (service as any).reconnectWithTimeout()
       ).rejects.toThrow('No environment available for reconnect');
     });
+
+    it('should await disconnectAsync before connect when an mqtt client exists', async () => {
+      (service as any).currentEnvironment = mockEnvironment;
+      (service as any)._mqttClient = {
+        disconnect: jest.fn().mockResolvedValue(undefined),
+      };
+      const disconnectAsyncSpy = jest.spyOn(service as any, 'disconnectAsync');
+      const connectSpy = jest.spyOn(service, 'connect').mockImplementation(() => {
+        (service as any).updateState('connected');
+      });
+
+      await (service as any).reconnectWithTimeout();
+
+      expect(disconnectAsyncSpy).toHaveBeenCalled();
+      expect(connectSpy).toHaveBeenCalledWith(mockEnvironment);
+
+      disconnectAsyncSpy.mockRestore();
+      connectSpy.mockRestore();
+    });
   });
 });
 

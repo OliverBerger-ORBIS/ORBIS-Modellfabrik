@@ -115,6 +115,157 @@
     </div>
   </section>
 
+  <section class="card arduino-station-card" *ngIf="!isMockMode">
+    <header class="section-header">
+      <img [src]="parametersIcon" alt="" width="48" height="48" />
+      <div>
+        <h2>{{ arduinoStationHeadline }}</h2>
+        <p>{{ arduinoStationDescription }}</p>
+      </div>
+    </header>
+
+    <p *ngIf="!arduinoFactsheet" class="arduino-station-card__hint">{{ arduinoStationNoFactsheet }}</p>
+
+    <ng-container *ngIf="arduinoFactsheet as fs">
+      <p class="arduino-station-card__sketch">
+        <strong>{{ arduinoStationSketchLabel }}:</strong> {{ fs.sketchVersion }}
+      </p>
+      <p class="arduino-station-card__persist-hint">{{ arduinoStationPersistWarning }}</p>
+
+      <form class="arduino-station-card__tiles-form" (ngSubmit)="applyArduinoThresholds()">
+        <div class="arduino-station-tiles">
+          <article class="arduino-tile">
+            <header class="arduino-tile__head">
+              <div class="arduino-tile__icons" aria-hidden="true">
+                <img [src]="arduinoStationIcons.dhtTemp" alt="" width="40" height="40" />
+                <img [src]="arduinoStationIcons.humidity" alt="" width="40" height="40" />
+              </div>
+              <div class="arduino-tile__titles">
+                <h3 class="arduino-tile__title">{{ arduinoStationTileDhtTitle }}</h3>
+                <code class="arduino-tile__topic">osf/arduino/temperature/dht11-1/state</code>
+              </div>
+            </header>
+            <div class="arduino-tile__grid">
+              <label>
+                <span i18n="@@configurationArduinoDhtTempWarn">Temp warn</span>
+                <input type="number" name="dhtTempWarn" [(ngModel)]="arduinoDraft.dhtTempWarn" step="0.1" />
+              </label>
+              <label>
+                <span i18n="@@configurationArduinoDhtTempDanger">Temp danger</span>
+                <input type="number" name="dhtTempDanger" [(ngModel)]="arduinoDraft.dhtTempDanger" step="0.1" />
+              </label>
+              <label>
+                <span i18n="@@configurationArduinoDhtHumWarn">Humidity warn</span>
+                <input type="number" name="dhtHumWarn" [(ngModel)]="arduinoDraft.dhtHumWarn" step="0.1" />
+              </label>
+              <label>
+                <span i18n="@@configurationArduinoDhtHumDanger">Humidity danger</span>
+                <input type="number" name="dhtHumDanger" [(ngModel)]="arduinoDraft.dhtHumDanger" step="0.1" />
+              </label>
+            </div>
+          </article>
+
+          <article class="arduino-tile">
+            <header class="arduino-tile__head">
+              <div class="arduino-tile__icons" aria-hidden="true">
+                <img [src]="arduinoStationIcons.mpu" alt="" width="40" height="40" />
+              </div>
+              <div class="arduino-tile__titles">
+                <h3 class="arduino-tile__title">{{ arduinoStationTileMpuTitle }}</h3>
+                <code class="arduino-tile__topic">osf/arduino/vibration/mpu6050-1/state</code>
+              </div>
+            </header>
+            <div class="arduino-tile__grid arduino-tile__grid--2">
+              <label>
+                <span i18n="@@configurationArduinoMpuYellow">Yellow</span>
+                <input type="number" name="mpuY" [(ngModel)]="arduinoDraft.mpuMagnitudeYellow" step="1" />
+              </label>
+              <label>
+                <span i18n="@@configurationArduinoMpuRed">Red</span>
+                <input type="number" name="mpuR" [(ngModel)]="arduinoDraft.mpuMagnitudeRed" step="1" />
+              </label>
+            </div>
+          </article>
+
+          <article class="arduino-tile arduino-tile--static">
+            <header class="arduino-tile__head">
+              <div class="arduino-tile__icons" aria-hidden="true">
+                <img [src]="arduinoStationIcons.sw420" alt="" width="40" height="40" />
+              </div>
+              <div class="arduino-tile__titles">
+                <h3 class="arduino-tile__title">{{ arduinoStationTileSw420Title }}</h3>
+                <code class="arduino-tile__topic">osf/arduino/vibration/sw420-1/state</code>
+              </div>
+            </header>
+            <p class="arduino-tile__static-hint">{{ arduinoStationTileSw420Hint }}</p>
+          </article>
+
+          <article class="arduino-tile">
+            <header class="arduino-tile__head">
+              <div class="arduino-tile__icons" aria-hidden="true">
+                <img [src]="arduinoStationIcons.gas" alt="" width="40" height="40" />
+              </div>
+              <div class="arduino-tile__titles">
+                <h3 class="arduino-tile__title">{{ arduinoStationTileGasTitle }}</h3>
+                <code class="arduino-tile__topic">osf/arduino/gas/mq2-1/state</code>
+              </div>
+            </header>
+            <div class="arduino-tile__grid arduino-tile__grid--2">
+              <label>
+                <span i18n="@@configurationArduinoGasWarn">Warn</span>
+                <input type="number" name="gasWarn" [(ngModel)]="arduinoDraft.gasWarn" step="1" />
+              </label>
+              <label>
+                <span i18n="@@configurationArduinoGasDanger">Danger</span>
+                <input type="number" name="gasDanger" [(ngModel)]="arduinoDraft.gasDanger" step="1" />
+              </label>
+            </div>
+          </article>
+
+          <article class="arduino-tile">
+            <header class="arduino-tile__head">
+              <div class="arduino-tile__icons" aria-hidden="true">
+                <img [src]="arduinoStationIcons.flame" alt="" width="40" height="40" />
+              </div>
+              <div class="arduino-tile__titles">
+                <h3 class="arduino-tile__title">{{ arduinoStationTileFlameTitle }}</h3>
+                <code class="arduino-tile__topic">osf/arduino/flame/flame-1/state</code>
+              </div>
+            </header>
+            <div class="arduino-tile__grid arduino-tile__grid--1">
+              <label>
+                <span i18n="@@configurationArduinoFlameRaw">Threshold</span>
+                <input type="number" name="flameRaw" [(ngModel)]="arduinoDraft.flameRaw" step="1" />
+              </label>
+            </div>
+          </article>
+        </div>
+
+        <footer class="arduino-station-card__actions">
+          <button
+            type="submit"
+            class="primary"
+            [disabled]="arduinoApplyPending || mqttConnectionState !== 'connected'"
+          >
+            {{ arduinoStationApplyLabel }}
+          </button>
+          <span *ngIf="arduinoApplyPending" class="arduino-station-card__pending" i18n="@@configurationArduinoApplying"
+            >Applying…</span
+          >
+        </footer>
+        <p *ngIf="mqttConnectionState !== 'connected'" class="arduino-station-card__mqtt-hint">
+          {{ arduinoStationApplyMqttHint }}
+        </p>
+      </form>
+
+      <div *ngIf="arduinoApplySuccess" class="arduino-station-card__apply-success" role="status">
+        <p class="arduino-station-card__apply-success-lead">{{ arduinoStationApplySuccessLead }}</p>
+        <p class="arduino-station-card__apply-success-note">{{ arduinoStationPersistWarning }}</p>
+      </div>
+      <p *ngIf="arduinoApplyError" class="arduino-station-card__error" role="alert">{{ arduinoApplyError }}</p>
+    </ng-container>
+  </section>
+
 </section>
 
 <ng-template #loading>

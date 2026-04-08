@@ -32,6 +32,7 @@ const RETENTION_CONFIG: Record<string, number> = {
   '/j1/txt/1/i/ldr': 100,     // LDR sensor: high retention
   // AIQS: last quality image — persisted so UI can show it after reload (retention capped: image payload)
   '/j1/txt/1/i/quality_check': 5,
+  'osf/arduino/station/factsheet': 5, // Sensor station: one retained JSON snapshot
 };
 
 @Injectable({ providedIn: 'root' })

@@ -1,3 +1,20 @@
+import { VERSION } from '../../../environments/version';
+
+/**
+ * Cache-bust for `shopfloor/shared/*.svg` URLs. Uses `VERSION` from `environments/version.ts`
+ * (written by `npm run update-version` from root `package.json` + current build date).
+ *
+ * Do not use a hand-maintained `?v=…` — it is easy to forget; run `npm run update-version`
+ * after changing SVGs so `buildDate` (and/or `full` after a version bump) changes.
+ */
+function shopfloorSharedCacheQuery(): string {
+  return `?v=${encodeURIComponent(`${VERSION.full}|${VERSION.buildDate}`)}`;
+}
+
+function sfShared(file: string): string {
+  return `assets/svg/shopfloor/shared/${file}${shopfloorSharedCacheQuery()}`;
+}
+
 export const ICONS = {
   brand: {
     orbis: 'assets/svg/brand/orbis-logo.svg',
@@ -21,8 +38,8 @@ export const ICONS = {
       laser: 'assets/svg/shopfloor/stations/laser-station.svg',
     },
     systems: {
-      agv: 'assets/svg/shopfloor/shared/agv-vehicle.svg',
-      fts: 'assets/svg/shopfloor/shared/agv-vehicle.svg', // alias for MQTT terminology
+      agv: sfShared('agv-vehicle.svg'),
+      fts: sfShared('agv-vehicle.svg'), // alias for MQTT terminology
       any: 'assets/svg/shopfloor/systems/any-system.svg',
       factory: 'assets/svg/shopfloor/systems/factory-system.svg',
       warehouse: 'assets/svg/shopfloor/systems/warehouse-system.svg',
@@ -38,30 +55,33 @@ export const ICONS = {
       4: 'assets/svg/shopfloor/intersections/intersection-4.svg',
     },
     shared: {
-      agvVehicle: 'assets/svg/shopfloor/shared/agv-vehicle.svg',
-      question: 'assets/svg/shopfloor/shared/question.svg',
-      turnEvent: 'assets/svg/shopfloor/shared/turn-event.svg',
-      turnLeftEvent: 'assets/svg/shopfloor/shared/turn-left-event.svg',
-      turnRightEvent: 'assets/svg/shopfloor/shared/turn-right-event.svg',
-      dockEvent: 'assets/svg/shopfloor/shared/dock-event.svg',
-      passEvent: 'assets/svg/shopfloor/shared/pass-event.svg',
-      pickEvent: 'assets/svg/shopfloor/shared/pick-event.svg',
-      dropEvent: 'assets/svg/shopfloor/shared/drop-event.svg',
-      processEvent: 'assets/svg/shopfloor/shared/process-event.svg',
-      battery: 'assets/svg/shopfloor/shared/battery.svg',
-      drivingStatus: 'assets/svg/shopfloor/shared/driving-status.svg',
-      stoppedStatus: 'assets/svg/shopfloor/shared/stopped-status.svg',
-      pausedStatus: 'assets/svg/shopfloor/shared/paused-status.svg',
-      chargingActive: 'assets/svg/shopfloor/shared/charging-active.svg',
-      locationMarker: 'assets/svg/shopfloor/shared/location-marker.svg',
-      orderTracking: 'assets/svg/shopfloor/shared/order-tracking.svg',
-      temperatureSensor: 'assets/svg/shopfloor/shared/temperature-sensor.svg',
-      vibrationSensor: 'assets/svg/shopfloor/shared/vibration-sensor.svg',
-      tiltSensor: 'assets/svg/shopfloor/shared/tilt-sensor.svg',
-      tuningFork: 'assets/svg/shopfloor/shared/tuning-fork.svg',
-      pressureSensor: 'assets/svg/shopfloor/shared/pressure-sensor.svg',
-      alarm: 'assets/svg/shopfloor/shared/alarm.svg',
-      bellAlarm: 'assets/svg/shopfloor/shared/bell-alarm.svg',
+      agvVehicle: sfShared('agv-vehicle.svg'),
+      question: sfShared('question.svg'),
+      turnEvent: sfShared('turn-event.svg'),
+      turnLeftEvent: sfShared('turn-left-event.svg'),
+      turnRightEvent: sfShared('turn-right-event.svg'),
+      dockEvent: sfShared('dock-event.svg'),
+      passEvent: sfShared('pass-event.svg'),
+      pickEvent: sfShared('pick-event.svg'),
+      dropEvent: sfShared('drop-event.svg'),
+      processEvent: sfShared('process-event.svg'),
+      battery: sfShared('battery.svg'),
+      drivingStatus: sfShared('driving-status.svg'),
+      stoppedStatus: sfShared('stopped-status.svg'),
+      pausedStatus: sfShared('paused-status.svg'),
+      chargingActive: sfShared('charging-active.svg'),
+      locationMarker: sfShared('location-marker.svg'),
+      orderTracking: sfShared('order-tracking.svg'),
+      temperatureSensor: sfShared('temperature-sensor.svg'),
+      humiditySensor: sfShared('humidity-sensor.svg'),
+      flameSensor: sfShared('flame-sensor.svg'),
+      gasSensor: sfShared('gas-sensor.svg'),
+      vibrationSensor: sfShared('vibration-sensor.svg'),
+      tiltSensor: sfShared('tilt-sensor.svg'),
+      tuningFork: sfShared('tuning-fork.svg'),
+      pressureSensor: sfShared('pressure-sensor.svg'),
+      alarm: sfShared('alarm.svg'),
+      bellAlarm: sfShared('bell-alarm.svg'),
     },
     workpieces: {
       blue: {

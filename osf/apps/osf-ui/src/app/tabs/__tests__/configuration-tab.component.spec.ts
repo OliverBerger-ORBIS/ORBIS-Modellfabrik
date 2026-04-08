@@ -115,7 +115,12 @@ describe('ConfigurationTabComponent', () => {
     };
 
     const messageMonitorMock = {
-      getLastMessage: jest.fn(() => of({ valid: false, payload: null })),
+      getLastMessage: jest.fn((topic: string) => {
+        if (topic === 'osf/arduino/station/factsheet') {
+          return of(null);
+        }
+        return of({ valid: false, payload: null });
+      }),
       getHistory: jest.fn(() => of([])),
       clearTopic: jest.fn(),
     };
@@ -131,6 +136,7 @@ describe('ConfigurationTabComponent', () => {
 
     const connectionServiceMock = {
       state$: new BehaviorSubject<'disconnected'>('disconnected'),
+      publish: jest.fn().mockResolvedValue(undefined),
     };
 
     const externalLinksServiceMock = {

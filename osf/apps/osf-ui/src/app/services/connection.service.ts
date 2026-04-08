@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
+import { skip } from 'rxjs/operators';
 import { EnvironmentDefinition, EnvironmentService } from './environment.service';
 import { createMqttClient, MockMqttAdapter, WebSocketMqttAdapter, MqttClientWrapper } from '@osf/mqtt-client';
 import { MessageMonitorService } from './message-monitor.service';
@@ -31,7 +32,11 @@ export class ConnectionService {
   private messagesSub?: Subscription;
   private currentEnvironment?: EnvironmentDefinition;
   private reconnectAttempts = 0;
-  private readonly RECONNECT_TIMEOUT_MS = 10000;
+  /**
+   * Must be greater than `connectTimeout` in `WebSocketMqttAdapter` (mqtt.js, currently 20000ms);
+   * otherwise `reconnectWithTimeout` rejects while the client is still waiting for CONNACK.
+   */
+  private readonly RECONNECT_TIMEOUT_MS = 30000;
   private readonly MAX_RECONNECT_ATTEMPTS = 3;
 
   constructor(
@@ -107,15 +112,20 @@ export class ConnectionService {
     if (this.connectionStateSub) {
       this.connectionStateSub.unsubscribe();
     }
-    this.connectionStateSub = this._mqttClient.connectionState$.subscribe((state) => {
-      this.updateState(state as ConnectionState);
-      
-      // Reset reconnect attempts on successful connection
-      if (state === 'connected') {
-        this.reconnectAttempts = 0;
-        console.log('[connection] Connected successfully, reset reconnect attempts');
-      }
-    });
+    // WebSocketMqttAdapter uses BehaviorSubject('disconnected'): subscribing replays that value
+    // synchronously and would overwrite updateState('connecting') above — UI then looks disconnected
+    // while the client is connecting; publish() skips the "connected" fast path and tears down MQTT.
+    this.connectionStateSub = this._mqttClient.connectionState$
+      .pipe(skip(1))
+      .subscribe((state) => {
+        this.updateState(state as ConnectionState);
+
+        // Reset reconnect attempts on successful connection
+        if (state === 'connected') {
+          this.reconnectAttempts = 0;
+          console.log('[connection] Connected successfully, reset reconnect attempts');
+        }
+      });
 
     // Build connection URL
     const { mqttHost, mqttPort, mqttPath, mqttUsername, mqttPassword } = environment.connection;
@@ -141,6 +151,9 @@ export class ConnectionService {
       })
       .catch((error) => {
         console.error('[connection] Failed to connect:', error);
+        // Drop stale client reference so the next connect() does not orphan mqtt.js sockets
+        // (otherwise connack timeout / duplicate handshakes stack up).
+        this.disconnect();
         this.handleConnectionFailure(error?.message || 'Unable to connect');
       });
   }
@@ -160,6 +173,30 @@ export class ConnectionService {
         console.error('[connection] Failed to disconnect:', error);
       });
       this._mqttClient = undefined;
+    }
+    this.updateState('disconnected');
+    this.errorSubject.next(null);
+  }
+
+  /** Await MQTT end before opening a new socket (publish reconnect path). */
+  private async disconnectAsync(): Promise<void> {
+    this.clearRetry();
+    if (this.connectionStateSub) {
+      this.connectionStateSub.unsubscribe();
+      this.connectionStateSub = undefined;
+    }
+    if (this.messagesSub) {
+      this.messagesSub.unsubscribe();
+      this.messagesSub = undefined;
+    }
+    if (this._mqttClient) {
+      const client = this._mqttClient;
+      this._mqttClient = undefined;
+      try {
+        await client.disconnect();
+      } catch (error) {
+        console.error('[connection] Failed to disconnect:', error);
+      }
     }
     this.updateState('disconnected');
     this.errorSubject.next(null);
@@ -297,6 +334,16 @@ export class ConnectionService {
   private async reconnectWithTimeout(): Promise<void> {
     if (!this.currentEnvironment) {
       throw new Error('No environment available for reconnect');
+    }
+
+    // Only tear down an existing client. Unconditional disconnect() here was closing a working
+    // WebSocket; the next connect() then hit connack timeout / broker overload while retry()
+    // also hammered connect() — see WebSocketMqttAdapter "Connection closed" + connack timeout.
+    if (this._mqttClient) {
+      await this.disconnectAsync();
+    } else if (this.currentState === 'connected' || this.currentState === 'connecting') {
+      // connect() no-ops while state is connected/connecting; clear stale UI state without a socket.
+      this.updateState('disconnected');
     }
 
     return new Promise<void>((resolve, reject) => {

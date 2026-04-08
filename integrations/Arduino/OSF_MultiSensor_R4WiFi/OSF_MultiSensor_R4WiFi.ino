@@ -1,14 +1,14 @@
 /*
  * Projekt: OSF Multi-Sensor – Arduino R4 WiFi
  * Sketch: OSF_MultiSensor_R4WiFi
- * Version: 1.1.7  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
+ * Version: 1.1.8  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
  * Hardware: Arduino Uno R4 WiFi, MPU-6050 (I2C), SW-420 (D11), DHT11 (D12), Flamme (A1), MQ-2 Gas (A0), 4-Ch Relais, 12V Ampel
  * Quelle: docs/05-hardware/arduino-r4-multisensor.md
  *
  * Sensoren: MPU-6050 + SW-420 + DHT11 + Flammensensor + MQ-2 Gas. Gemeinsame Ampel (OR-Logik).
  * USE_MQTT: 0 = nur Serial, 1 = MQTT über WiFi
  */
-#define SKETCH_VERSION "1.1.5"
+#define SKETCH_VERSION "1.1.8"
 #define USE_MQTT 1
 
 /** Relais-Logik: 1 = aktiv-niedrig (LOW=ein, typisch). 0 = aktiv-hoch (HIGH=ein, manche Module). */
@@ -21,6 +21,7 @@
 #define SENSOR_ACTIVE_HIGH 1  // SW-420: 1 = HIGH bei Vibration, 0 = LOW bei Vibration
 
 #include <Wire.h>
+#include <string.h>
 #include <math.h>
 #include <MPU6050.h>
 #include <DHT.h>
@@ -33,7 +34,7 @@
 // === WLAN-Konfiguration – Umschaltung daheim / ORBIS ===
 #define WIFI_MODE_DAHEIM 0
 #define WIFI_MODE_ORBIS  1
-#define WIFI_MODE WIFI_MODE_ORBIS  // <-- DAHEIM oder ORBIS (LogiMAT: später ggf. SSID in #else anpassen)
+#define WIFI_MODE WIFI_MODE_DAHEIM  // <-- DAHEIM oder ORBIS (LogiMAT: später ggf. SSID in #else anpassen)
 
 #if WIFI_MODE == WIFI_MODE_DAHEIM
   // WLAN Daheim – Fritz!Box 192.168.178.x, Arduino .95 reserviert
@@ -67,6 +68,10 @@ const char* TOPIC_FLAME_CONNECTION = "osf/arduino/flame/flame-1/connection";
 const char* TOPIC_GAS_STATE = "osf/arduino/gas/mq2-1/state";
 const char* TOPIC_GAS_CONNECTION = "osf/arduino/gas/mq2-1/connection";
 const char* TOPIC_ALARM_ENABLED = "osf/arduino/alarm/enabled";  // true/false – Sirene nur bei aktivem Toggle
+/** Single retained JSON: sensors + capabilities + current thresholds — docs/05-hardware/arduino-r4-multisensor.md */
+const char* TOPIC_STATION_FACTSHEET = "osf/arduino/station/factsheet";
+/** Runtime threshold overrides (RAM); not written to flash — pair with OSF Configuration tab */
+const char* TOPIC_STATION_CONFIG = "osf/arduino/station/config";
 
 /** MQTT Publish-Interval: Jedes Topic wird bei Zustandsänderung sofort gesendet; bei Idle alle 5s als Heartbeat. */
 const unsigned long MQTT_HEARTBEAT_INTERVAL = 5000;
@@ -118,6 +123,17 @@ const unsigned long GELB_MIN_DURATION = 2000;
 const long MAG_THRESHOLD_GELB = 18500;
 const long MAG_THRESHOLD_ROT = 26500;
 
+/** Mutable copies (factsheet + loop); config MQTT updates RAM only */
+float runtimeDhtTempWarn = DHT_TEMP_WARN;
+float runtimeDhtTempDanger = DHT_TEMP_DANGER;
+float runtimeDhtHumWarn = DHT_HUM_WARN;
+float runtimeDhtHumDanger = DHT_HUM_DANGER;
+long runtimeMagGelb = MAG_THRESHOLD_GELB;
+long runtimeMagRot = MAG_THRESHOLD_ROT;
+int runtimeGasWarn = GAS_THRESHOLD_WARN;
+int runtimeGasDanger = GAS_THRESHOLD_DANGER;
+int runtimeFlameThreshold = FLAME_THRESHOLD;
+
 unsigned long impulseCount = 0;
 unsigned long sw420ImpulseCount = 0;
 unsigned long lastSample = 0;
@@ -147,6 +163,9 @@ unsigned long redStartedAt = 0;
 unsigned long yellowStartedAt = 0;
 
 #if USE_MQTT
+static void applyStationConfigPayload(const char* payload, unsigned int length);
+void publishFactsheet();
+
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
   if (strcmp(topic, TOPIC_ALARM_ENABLED) == 0 && length >= 4) {
     if (payload[0] == 't' && payload[1] == 'r' && payload[2] == 'u' && payload[3] == 'e') {
@@ -156,12 +175,18 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
       alarmEnabled = false;
       Serial.println("Alarm-Toggle: Sirene AUS");
     }
+    return;
+  }
+  if (strcmp(topic, TOPIC_STATION_CONFIG) == 0) {
+    applyStationConfigPayload((const char*)payload, length);
+    return;
   }
 }
 
 void mqttReconnect() {
   if (mqttClient.connect(MQTT_CLIENT_ID, MQTT_USER, MQTT_PASS, TOPIC_MPU_CONNECTION, 1, true, "{\"connectionState\":\"OFFLINE\"}")) {
     mqttClient.subscribe(TOPIC_ALARM_ENABLED);
+    mqttClient.subscribe(TOPIC_STATION_CONFIG);
     IPAddress ip = WiFi.localIP();
     char payload[120];
     snprintf(payload, sizeof(payload), "{\"connectionState\":\"ONLINE\",\"ip\":\"%d.%d.%d.%d\",\"serialNumber\":\"mpu6050-1\"}",
@@ -179,6 +204,7 @@ void mqttReconnect() {
     snprintf(payload, sizeof(payload), "{\"connectionState\":\"ONLINE\",\"ip\":\"%d.%d.%d.%d\",\"serialNumber\":\"mq2-1\"}",
              ip[0], ip[1], ip[2], ip[3]);
     mqttClient.publish(TOPIC_GAS_CONNECTION, payload, true);
+    publishFactsheet();
     Serial.print("MQTT verbunden. IP: ");
     Serial.println(WiFi.localIP());
   } else {
@@ -430,6 +456,123 @@ void publishGasState(int rawValue, bool gasDetected, int gasLevel) {
            gasDetected ? "true" : "false", gasLevel, rawValue, tsBuf);
   mqttClient.publish(TOPIC_GAS_STATE, payload, true);
 }
+
+static bool jsonGetFloatAfterKey(const char* json, const char* key, float* out) {
+  char pat[40];
+  snprintf(pat, sizeof(pat), "\"%s\"", key);
+  const char* p = strstr(json, pat);
+  if (!p) return false;
+  p = strchr(p, ':');
+  if (!p) return false;
+  p++;
+  while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++;
+  *out = (float)atof(p);
+  return true;
+}
+
+static bool jsonGetLongAfterKey(const char* json, const char* key, long* out) {
+  char pat[40];
+  snprintf(pat, sizeof(pat), "\"%s\"", key);
+  const char* p = strstr(json, pat);
+  if (!p) return false;
+  p = strchr(p, ':');
+  if (!p) return false;
+  p++;
+  while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++;
+  *out = atol(p);
+  return true;
+}
+
+static void applyStationConfigPayload(const char* payload, unsigned int length) {
+  if (!payload || length == 0) return;
+  char buf[520];
+  if (length >= sizeof(buf)) length = sizeof(buf) - 1;
+  memcpy(buf, payload, length);
+  buf[length] = '\0';
+
+  float f;
+  long lg;
+  int changed = 0;
+  if (jsonGetFloatAfterKey(buf, "dhtTempWarn", &f)) {
+    runtimeDhtTempWarn = f;
+    changed++;
+  }
+  if (jsonGetFloatAfterKey(buf, "dhtTempDanger", &f)) {
+    runtimeDhtTempDanger = f;
+    changed++;
+  }
+  if (jsonGetFloatAfterKey(buf, "dhtHumWarn", &f)) {
+    runtimeDhtHumWarn = f;
+    changed++;
+  }
+  if (jsonGetFloatAfterKey(buf, "dhtHumDanger", &f)) {
+    runtimeDhtHumDanger = f;
+    changed++;
+  }
+  if (jsonGetLongAfterKey(buf, "gasWarn", &lg)) {
+    runtimeGasWarn = (int)lg;
+    changed++;
+  }
+  if (jsonGetLongAfterKey(buf, "gasDanger", &lg)) {
+    runtimeGasDanger = (int)lg;
+    changed++;
+  }
+  if (jsonGetLongAfterKey(buf, "flameRaw", &lg)) {
+    runtimeFlameThreshold = (int)lg;
+    changed++;
+  }
+  if (jsonGetLongAfterKey(buf, "mpuMagnitudeYellow", &lg)) {
+    runtimeMagGelb = lg;
+    changed++;
+  }
+  if (jsonGetLongAfterKey(buf, "mpuMagnitudeRed", &lg)) {
+    runtimeMagRot = lg;
+    changed++;
+  }
+
+  if (changed > 0) {
+    Serial.print(F("Station-Config angewendet (RAM, "));
+    Serial.print(changed);
+    Serial.println(F(" Felder). Nicht im Flash — Reset → Sketch-Defaults."));
+    publishFactsheet();
+  }
+}
+
+void publishFactsheet() {
+  if (!mqttClient.connected()) return;
+  char buf[1200];
+  int n = snprintf(buf, sizeof(buf),
+                   "{\"sketchVersion\":\"%s\",\"stationId\":\"sensor-station-1\","
+                   "\"configTopic\":\"%s\","
+                   "\"thresholds\":{"
+                   "\"dhtTempWarn\":%.1f,\"dhtTempDanger\":%.1f,\"dhtHumWarn\":%.1f,\"dhtHumDanger\":%.1f,"
+                   "\"gasWarn\":%d,\"gasDanger\":%d,\"flameRaw\":%d,"
+                   "\"mpuMagnitudeYellow\":%ld,\"mpuMagnitudeRed\":%ld"
+                   "},"
+                   "\"sensors\":["
+                   "{\"id\":\"mpu6050-1\",\"label\":\"MPU-6050\",\"stateTopic\":\"%s\","
+                   "\"capabilities\":{\"thresholds\":{\"magnitudeYellow\":%ld,\"magnitudeRed\":%ld}}},"
+                   "{\"id\":\"sw420-1\",\"label\":\"SW-420\",\"stateTopic\":\"%s\",\"capabilities\":{}},"
+                   "{\"id\":\"dht11-1\",\"label\":\"DHT11\",\"stateTopic\":\"%s\","
+                   "\"capabilities\":{\"thresholds\":{\"tempWarn\":%.1f,\"tempDanger\":%.1f,\"humWarn\":%.1f,\"humDanger\":%.1f}}},"
+                   "{\"id\":\"flame-1\",\"label\":\"Flame KY-026\",\"stateTopic\":\"%s\","
+                   "\"capabilities\":{\"thresholds\":{\"rawThreshold\":%d}}},"
+                   "{\"id\":\"mq2-1\",\"label\":\"MQ-2 Gas\",\"stateTopic\":\"%s\","
+                   "\"capabilities\":{\"thresholds\":{\"warn\":%d,\"danger\":%d}}}"
+                   "]}",
+                   SKETCH_VERSION, TOPIC_STATION_CONFIG,
+                   runtimeDhtTempWarn, runtimeDhtTempDanger, runtimeDhtHumWarn, runtimeDhtHumDanger,
+                   runtimeGasWarn, runtimeGasDanger, runtimeFlameThreshold,
+                   runtimeMagGelb, runtimeMagRot,
+                   TOPIC_MPU_STATE, runtimeMagGelb, runtimeMagRot,
+                   TOPIC_SW420_STATE,
+                   TOPIC_DHT11_STATE, runtimeDhtTempWarn, runtimeDhtTempDanger, runtimeDhtHumWarn, runtimeDhtHumDanger,
+                   TOPIC_FLAME_STATE, runtimeFlameThreshold,
+                   TOPIC_GAS_STATE, runtimeGasWarn, runtimeGasDanger);
+  if (n > 0 && n < (int)sizeof(buf)) {
+    mqttClient.publish(TOPIC_STATION_FACTSHEET, buf, true);
+  }
+}
 #endif
 
 void setup() {
@@ -521,7 +664,7 @@ void setup() {
     syncNetworkTimeAtBoot();
   }
   mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
-  mqttClient.setBufferSize(256);
+  mqttClient.setBufferSize(1200);
   mqttClient.setSocketTimeout(3);
   mqttClient.setCallback(mqttCallback);
   if (WiFi.status() == WL_CONNECTED) {
@@ -585,7 +728,7 @@ void loop() {
   bool sw420Triggered = (digitalRead(SW420_PIN) == (SENSOR_ACTIVE_HIGH ? HIGH : LOW));
 
   int flameRaw = analogRead(FLAME_PIN);
-  bool rawBelowThreshold = FLAME_INVERTED ? (flameRaw < FLAME_THRESHOLD) : (flameRaw > FLAME_THRESHOLD);
+  bool rawBelowThreshold = FLAME_INVERTED ? (flameRaw < runtimeFlameThreshold) : (flameRaw > runtimeFlameThreshold);
   if (rawBelowThreshold) {
     flameConfirmCount++;
     if (flameConfirmCount > FLAME_CONFIRM_SAMPLES) flameConfirmCount = FLAME_CONFIRM_SAMPLES;
@@ -597,8 +740,8 @@ void loop() {
 
   int gasRaw = analogRead(GAS_PIN);
   int gasLevel = 0;
-  if (gasRaw > GAS_THRESHOLD_DANGER) gasLevel = 2;
-  else if (gasRaw > GAS_THRESHOLD_WARN) gasLevel = 1;
+  if (gasRaw > runtimeGasDanger) gasLevel = 2;
+  else if (gasRaw > runtimeGasWarn) gasLevel = 1;
   bool gasDetected = (gasLevel >= 1);
 
   float temp = lastTemp;
@@ -629,8 +772,8 @@ void loop() {
   }
   // Warn/Alarm immer aus letzten Messwerten (jedes Loop), nicht nur beim DHT-Poll –
   // sonst DHT_READ_INTERVAL (2s) → dhtLevel zwischendurch 0 → Ampel kurz Grün trotz hoher Luftfeuchte.
-  if (lastTemp >= DHT_TEMP_DANGER || lastHum >= DHT_HUM_DANGER) dhtLevel = 2;
-  else if (lastTemp >= DHT_TEMP_WARN || lastHum >= DHT_HUM_WARN) dhtLevel = 1;
+  if (lastTemp >= runtimeDhtTempDanger || lastHum >= runtimeDhtHumDanger) dhtLevel = 2;
+  else if (lastTemp >= runtimeDhtTempWarn || lastHum >= runtimeDhtHumWarn) dhtLevel = 1;
 
   if (sw420Triggered) {
     if (!lastSw420Triggered) {
@@ -668,8 +811,8 @@ void loop() {
   bool forceYellow = (yellowStartedAt != 0 && (now - yellowStartedAt) < GELB_MIN_DURATION);
 
   int mpuLevel = 0;
-  if (mag >= MAG_THRESHOLD_ROT) mpuLevel = 2;
-  else if (mag >= MAG_THRESHOLD_GELB) mpuLevel = 1;
+  if (mag >= runtimeMagRot) mpuLevel = 2;
+  else if (mag >= runtimeMagGelb) mpuLevel = 1;
   int sw420Level = sw420Triggered ? 2 : 0;
   int combinedLevel = mpuLevel;
   if (sw420Level > combinedLevel) combinedLevel = sw420Level;
