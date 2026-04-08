@@ -86,6 +86,21 @@ Dies ist die **Master-Szene**, die während der Präsentation hauptsächlich gez
    - *Falls schwarz:* Eigenschaften der Source öffnen -> Fenstertitel neu auswählen.
 4. [ ] **Zoom-Check (S5):** Prüfen, ob die Chrome-Ansicht (Hero) in der "Hero +2" Szene korrekt eingepasst ist (ggf. Zoom-Faktor ~66% prüfen).
 
+### DSP-Architektur Check (wichtig für Hero 1040×1080)
+
+Im DSP-Tab in Chrome-Hero (`1040x1080`) jeweils kurz prüfen:
+
+1. **Architecture / Functional View**
+2. **Architecture / Component View**
+3. **Architecture / Deployment View**
+
+**Erwartung:**
+- Diagramm ist vollständig im sichtbaren Ausschnitt
+- **Kein interner Scroll-Balken** im Diagramm-Container
+- Keine abgeschnittenen Controls durch internes Scrolling
+
+Wenn ein Scroll-Balken sichtbar ist: Browser-Zoom auf 100% prüfen, dann Szene/Window-Capture neu aktivieren.
+
 ### Während der Präsentation
 1. **Start:** `S7 Hold-Slate` -> `S4 Camera Vollbild` (Intro).
 2. **Demo:** Wechsel auf `S5 Hero +2`.

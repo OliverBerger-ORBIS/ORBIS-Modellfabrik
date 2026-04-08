@@ -1,6 +1,8 @@
 # DSP-Architektur Resizing – Tiefe Analyse & Lösungsoptionen
 
-**Status:** Analyse-Phase  
+> **Hinweis (historisch):** Dieses Dokument beschreibt den Analyse- und Entscheidungsstand aus Sprint 13 inklusive verworfener Optionen. Maßgeblich für die aktuelle Präsentationspraxis ist die OBS-How-To-Doku in `obs-video-presentation-setup.md`.
+
+**Status:** Historische Analyse (Sprint 13)  
 **Datum:** 2026-01-08  
 **Sprint:** Sprint 13  
 **Ziel:** Komplette DSP-Architektur + Animation-Controls sichtbar ohne Scrollen

@@ -1,6 +1,8 @@
 # App-Resizing-Optimierung für OBS-Videopräsentation – Analyse
 
-**Status:** Analyse-Phase  
+> **Hinweis (historisch):** Dieses Dokument ist eine Planungs-/Analysebasis aus Sprint 13. Für den aktuellen operativen Ablauf und verbindliche Checks gilt die OBS-How-To-Doku `obs-video-presentation-setup.md`.
+
+**Status:** Historische Analyse (Sprint 13)  
 **Sprint:** Sprint 13  
 **Ziel:** Optimierung der Angular-App für OBS-Videopräsentation mit einheitlicher Handhabung von Landscape- und Hero-Modi
 
