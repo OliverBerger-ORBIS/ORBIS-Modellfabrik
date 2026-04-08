@@ -96,10 +96,103 @@ Dies ist die **Master-Szene**, die während der Präsentation hauptsächlich gez
 
 ---
 
-## 3. Fehlerbehebung
+## 2a. Teams-Freigabe über OBS Projector
 
-- **Browser-Fenster schwarz im OBS?**
-  - Stellen Sie "Capture Method" in den Source-Eigenschaften auf **Windows 10 (1903 and up)**.
-  - Alternativ: Hardwarebeschleunigung im Browser deaktivieren.
-- **Fenstergröße ändert sich?**
-  - Nutzen Sie Tools wie *Sizer* oder *FancyZones*, um 1920x1080 exakt wiederherzustellen.
+Für Präsentationen in Microsoft Teams wird **nicht das OBS-Hauptfenster** geteilt, sondern ein separates **OBS-Projector-Fenster** oder alternativ ein dedizierter Monitor.
+
+### Grundprinzip
+- Das **OBS-Hauptfenster** bleibt auf dem Steuerungs-Monitor sichtbar.
+- Die eigentliche Präsentation wird über ein **OBS Projector-Fenster** ausgegeben.
+- In Teams wird dann **nur dieses Projector-Fenster** oder **der Ziel-Monitor** geteilt.
+
+Dadurch bleiben folgende Elemente für die Teilnehmer unsichtbar:
+- OBS Docks
+- Szenenliste
+- Audio-Mixer
+- Quellen
+- Steuer-UI
+
+---
+
+### Variante A: Teams teilt ein OBS-Projector-Fenster
+Diese Variante ist oft die flexibelste.
+
+#### Vorgehen
+1. Im OBS-Hauptfenster in die große Vorschau klicken.
+2. **Rechtsklick** auf die Vorschau.
+3. **Open Preview Projector** wählen.
+4. Danach entweder:
+   - **New Window**  
+     oder
+   - einen **Display/Monitor** auswählen.
+
+#### Empfehlung
+Für Teams ist **New Window** oft die beste Wahl:
+- OBS öffnet ein separates Fenster, z. B. `Projector Preview`.
+- In Teams kann gezielt dieses Fenster über **Share → Window** ausgewählt werden.
+- Der Steuerungsbildschirm bleibt unabhängig nutzbar.
+
+#### Hinweis
+Wird in Teams das Fenster **Projector Preview** geteilt, sehen die Teilnehmer **nur das OBS-Projector-Fenster**.  
+Das ist für Standard-Präsentationen meist die sauberste Lösung.
+
+---
+
+### Variante B: Teams teilt einen ganzen Monitor
+Alternativ kann ein kompletter Monitor geteilt werden.
+
+#### Vorgehen
+1. Im OBS-Hauptfenster in die große Vorschau klicken.
+2. **Rechtsklick** auf die Vorschau.
+3. **Open Preview Projector** wählen.
+4. Einen **Display/Monitor** auswählen.
+5. In Teams über **Share → Monitor X** genau diesen Monitor teilen.
+
+#### Vorteil
+- Es kann flexibel entschieden werden, **welches Fenster** auf dem geteilten Monitor angezeigt wird.
+- Neben dem OBS-Projector können dort bei Bedarf auch andere Fenster oder Apps platziert werden.
+
+#### Wichtiger Hinweis
+Wenn in Teams ein ganzer Monitor geteilt wird, sieht das Publikum **alles**, was auf diesem Monitor geöffnet oder eingeblendet wird.  
+Daher sollte dieser Monitor als **reiner Präsentationsmonitor** behandelt werden.
+
+---
+
+### Unterschied zu Multiview
+Unter **View → Multiview → New Window** kann ein separates **Projector Multiview**-Fenster geöffnet werden.
+
+Das ist nützlich für die **interne Regie-/Steuerungsansicht**, aber:
+
+- Multiview zeigt mehrere Szenen gleichzeitig
+- es ist **keine reine Präsentationsausgabe**
+- für Teams sollte Multiview **nur dann geteilt werden**, wenn bewusst eine Regie-/Übersichtsansicht gezeigt werden soll
+
+Für normale Kundenpräsentationen ist daher in der Regel **Preview Projector** bzw. später **Program Projector** die bessere Wahl.
+
+---
+
+### Empfehlung für OSF-Präsentationen
+Für Standard-Termine empfehlen wir:
+
+- **Steuerung:** OBS-Hauptfenster auf Monitor 1
+- **Freigabe:** `Projector Preview` als **New Window**
+- **Teams:** Teilen über **Share → Window → Projector Preview**
+
+Alternative bei 2 Monitoren:
+- OBS Projector auf Monitor 2 legen
+- in Teams **Monitor 2** teilen
+
+---
+
+### Praktische Nutzung während der Präsentation
+- OBS bleibt auf dem Steuerungsmonitor offen.
+- Der Präsentator kann dort:
+  - Szenen wechseln
+  - Browser-Tabs umschalten
+  - Inhalte vorbereiten
+- Teams sieht nur den Projector-Inhalt.
+
+Damit ist eine klare Trennung zwischen:
+- **Steuerung**
+- und **Ausgabe an das Publikum**
+gewährleistet.
