@@ -339,6 +339,19 @@ class SettingsUI:
         st.markdown("#### 🔴 Recording Einstellungen")
         recording_settings = self.settings_manager.get_setting("session_recorder", "recording", {})
 
+        preset_labels = ("Alle Topics (unfiltered)", "Analyse: ohne Arduino / BME680 / Kamera / LDR (DR-25)")
+        preset_values = ("none", "analysis")
+        current_preset = self.settings_manager.get_session_recorder_recording_exclusion_preset()
+        preset_index = preset_values.index(current_preset) if current_preset in preset_values else 0
+        selected_label = st.selectbox(
+            "Topic-Aufnahme (Session Recorder)",
+            options=list(preset_labels),
+            index=preset_index,
+            help="„Analyse“ unterdrückt Schreiben von Arduino-, BME680-, Kamera- und LDR-Topics (DR-25).",
+            key=f"settings_recorder_exclusion_preset_{current_preset}",
+        )
+        recording_exclusion_preset = preset_values[preset_labels.index(selected_label)]
+
         col1, col2 = st.columns(2)
 
         with col1:
@@ -377,6 +390,7 @@ class SettingsUI:
                     "auto_save": auto_save,
                     "save_interval": save_interval,
                     "max_file_size": max_file_size,
+                    "recording_exclusion_preset": recording_exclusion_preset,
                 },
             )
             st.success("✅ Recording Einstellungen gespeichert!")

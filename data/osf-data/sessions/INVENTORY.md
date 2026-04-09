@@ -4,6 +4,14 @@
 
 **Ziel:** Anhand der Abläufe entscheiden, ob eine Session für Start-up, Production, Storage oder Mixed-Analyse geeignet ist.
 
+### Pflege
+
+- **Neue `.log`-Datei:** passende Zeile in der Schnellübersicht **ergänzen** (Session-Name = Dateiname ohne `.log`).
+- **Datei gelöscht:** Zeile **entfernen** oder als veraltet markieren.
+- **Detaillierte Kontexte** (Orders, Ergebnis, Dauer, OSF-Version): stehen in der **ersten Zeile** der jeweiligen `.log` (`session_meta`), siehe [README.md](./README.md) — die Tabelle hier bleibt die kompakte Übersicht.
+
+Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzählige Einträge heuristisch).
+
 ---
 
 ## Schnellübersicht

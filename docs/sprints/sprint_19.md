@@ -15,10 +15,25 @@
 
 ---
 
-## Erledigt (Stand 08.04.2026)
+## Erledigt (Stand 09.04.2026)
 
 - [x] **DSP / OSF-Story:** Default-Kunde OSF, **Sensor Station** in Animation, **MES/EWM**-URLs (Settings), Klick → Sensor-Tab bzw. extern; Route `dsp/customer/osf` — [dsp-osf-customer-integration-plan.md](../04-howto/dsp-osf-customer-integration-plan.md), Reference `sf-system-sensor`.
-- [x] **Doku:** [dsp-svg-inventory.md](../02-architecture/dsp-svg-inventory.md) Verifikation osf-ui (08.04.2026).
+- [x] **Doku:** [dsp-svg-inventory.md](../02-architecture/dsp-svg-inventory.md) Verifikation osf-ui (09.04.2026).
+- [x] **OSF v1.0.10:** Replay-Defaults **ORBIS** (`mqtt-user.defaults.ts` → Shopfloor-RPi); Arduino **ORBIS** per Default, optional `wifi_mode_local.h` (DAHEIM ohne Repo-Edit).
+- [x] **Session Manager / DR-25:** Topic-Aufnahme-Preset (**„Analyse“** ohne Arduino / BME680 / Kamera / LDR) — nur **Schreibpfad**; persistiert in `session_recorder.recording.recording_exclusion_preset` — [DR-25](../03-decision-records/25-session-log-topic-filters.md), [session-recorder.md](../04-howto/helper_apps/session-manager/session-recorder.md).
+- [x] **Session-Meta:** optionale **erste Zeile** `session_meta` in `.log` (Dauer, Broker, Preset, OSF-Workspace-Version, CCU/Order-Kurzinfo); Replay/Loader ignorieren sie; INVENTORY-Pflegehinweise + `scripts/check_session_inventory.py`.
+- [x] **Session Recorder UX:** Sprung **⚙️ Einstellungen** aus dem Recorder-Tab (`main_sidebar_tab`); Meta-Felder während Aufnahme.
+
+---
+
+## Session Manager – geplanter Umbau (nach Priorität)
+
+Fokus: schlanker **Replay + Session Recorder**; Randfunktionen entlasten oder entfernen.
+
+- [ ] **Topic Recorder**-Tab **entfernen** (oder aus App auslagern — nur noch bei Bedarf)
+- [ ] **Session-Analyse**-Tab **entfernen** (Analyse über OSF / externe Tools / Notebooks)
+- [ ] **Logging** verschlanken (kein eigener Top-Level-Tab nötig): Level, Live-Log-Hinweis, ggf. **Pfad** in **⚙️ Einstellungen** bündeln
+- [ ] **OSF:** optionale **Replay**-Funktionalität (z. B. näher an UI-Workflows) — **später** / Backlog, nicht Blocker für den Umbau
 
 ---
 
@@ -50,7 +65,7 @@
 
 ### Integration & Tests
 
-- [ ] Sessions **2 AGVs**; DR-25 Topic-Filter; Record optional ohne Arduino/BME/Kamera
+- [ ] Sessions **2 AGVs**; weitere Aufnahmen mit **Analyse**-Preset (DR-25) bei Bedarf
 - [ ] **dsp/correlation/info** E2E
 - [ ] **ccu/order/request** E2E (Ersatzauftrag nach Quality-Fail)
 
@@ -72,6 +87,7 @@
 - Produkt WHITE „2× Bohren“ (MES/CCU/Kette)
 - Customer **Netzsch** (`NETZSCH_CONFIG`)
 - Arduino: optionales 7-Segment
+- **OSF:** Replay näher an Produkt-Workflows (optional, nach Session-Manager-Umbau)
 - UI-Test-Framework — [test-framework-replay-comparison-2026-03.md](../07-analysis/test-framework-replay-comparison-2026-03.md)
 - Mixed-Session zwei AGVs: Einordnung (Analyse)
 
@@ -83,4 +99,4 @@
 
 ---
 
-*Stand: 08.04.2026* · [sprints_README.md](sprints_README.md)
+*Stand: 09.04.2026* · [sprints_README.md](sprints_README.md)

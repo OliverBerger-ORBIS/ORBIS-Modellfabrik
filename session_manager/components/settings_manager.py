@@ -66,6 +66,8 @@ class SettingsManager:
                     "auto_save": True,
                     "save_interval": 300,  # 5 Minuten
                     "max_file_size": 100,  # MB
+                    # DR-25: "none" = alle Topics; "analysis" = ohne Arduino/BME680/Kamera/LDR (TXT)
+                    "recording_exclusion_preset": "none",
                 },
             },
             "topic_recorder": {
@@ -195,6 +197,20 @@ class SettingsManager:
 
         self.settings["session_recorder"]["session_directory"] = directory
         self.save_settings()
+
+    def get_session_recorder_recording_exclusion_preset(self) -> str:
+        """Preset für Topic-Ausschluss beim Record (DR-25): none | analysis."""
+        rec = self.get_setting("session_recorder", "recording", {})
+        preset = rec.get("recording_exclusion_preset", "none")
+        return preset if preset in ("none", "analysis") else "none"
+
+    def set_session_recorder_recording_exclusion_preset(self, preset: str) -> None:
+        """Persistiert recording_exclusion_preset unter session_recorder.recording."""
+        if preset not in ("none", "analysis"):
+            preset = "none"
+        rec = dict(self.get_setting("session_recorder", "recording", {}))
+        rec["recording_exclusion_preset"] = preset
+        self.set_setting("session_recorder", "recording", rec)
 
     def update_session_recorder_mqtt_settings(
         self, host: str, port: int, qos: int, timeout: int, username: str = "", password: str = ""

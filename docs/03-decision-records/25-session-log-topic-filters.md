@@ -16,6 +16,7 @@
    - **Arduino-Sensordaten** nach Topic-Schema aus [DR-18](18-osf-extensions-ip-and-mqtt-topics.md) (`osf/arduino/…`)
    - **BME680** am TXT: `/j1/txt/1/i/bme680`
    - **Kamera** am TXT: `/j1/txt/1/i/cam` (JPEG-Payload, dominiert oft das Logvolumen — vgl. u. a. [two-agvs-mixed-session-data-inventory-2026-03.md](../07-analysis/two-agvs-mixed-session-data-inventory-2026-03.md))
+   - **LDR** am TXT: `/j1/txt/1/i/ldr`, `/j1/txt/1/c/ldr` (regelmäßige Helligkeits-Updates)
 
    Technisch: Nachricht mit passendem Topic **nicht** in die Session-Zeilenausgabe schreiben (oder konfigurierbar „nur Metadaten“), ohne `subscribe`/`on_connect`-Invarianten des MQTT-Clients zu brechen ([`.cursorrules`](../../.cursorrules) — Session Recorder).
 
@@ -32,9 +33,9 @@
 
 ## Implementierung
 
-- [ ] Session Manager: UI-Option (Preset „Analyse (ohne Sensor-Cam-Noise)“) + persistente Konfiguration
-- [ ] Session Manager: Filter im Write-Pfad des Recorders (Tests mit Mock-Messages)
-- [ ] `session_manager/README.md`: kurze How-to-Sektion zu Preset und Topic-Liste
+- [x] Session Manager: UI-Option (Preset „Analyse …“ / `recording_exclusion_preset`) + persistente Konfiguration (`session_recorder.recording`)
+- [x] Session Manager: Filter im Write-Pfad des Recorders (`utils/recording_topic_filter.py`, Tests in `session_manager/tests/test_recording_topic_filter.py`)
+- [x] `session_manager/README.md`: How-to zu Preset und Topic-Liste
 - [ ] Verweis von Sprint/Task oder Backlog auf dieses DR nach Umsetzung abhaken
 
 ---

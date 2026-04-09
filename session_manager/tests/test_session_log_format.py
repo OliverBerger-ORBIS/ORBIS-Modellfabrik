@@ -19,6 +19,19 @@ from session_manager.components.session_recorder import save_log_session
 class TestSessionLogFormat(unittest.TestCase):
     """Tests für .log Session-Format (JSON-Zeilen)"""
 
+    def test_load_log_session_skips_session_meta_first_line(self):
+        """Erste Zeile session_meta (ohne topic/payload/timestamp) wird nicht als Message geladen."""
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".log", delete=False, encoding="utf-8") as f:
+            f.write('{"_kind":"session_meta","schema":1,"note":"x"}\n')
+            f.write('{"topic": "t1", "payload": "{}", "timestamp": "2025-01-15T10:00:00Z"}\n')
+            log_path = Path(f.name)
+        try:
+            messages = load_log_session(log_path)
+            self.assertEqual(len(messages), 1)
+            self.assertEqual(messages[0]["topic"], "t1")
+        finally:
+            log_path.unlink(missing_ok=True)
+
     def test_load_log_session_parses_json_lines(self):
         """Test dass load_log_session JSON-Zeilen korrekt parst"""
         with tempfile.NamedTemporaryFile(mode="w", suffix=".log", delete=False, encoding="utf-8") as f:
@@ -65,10 +78,12 @@ class TestSessionLogFormat(unittest.TestCase):
             log_path = Path(f.name)
 
         try:
-            save_log_session(log_path, messages)
+            save_log_session(log_path, messages, meta_line='{"_kind":"session_meta","schema":1}')
             lines = log_path.read_text(encoding="utf-8").strip().split("\n")
-            self.assertEqual(len(lines), 2)
-            for i, line in enumerate(lines):
+            self.assertEqual(len(lines), 3)
+            first = json.loads(lines[0])
+            self.assertEqual(first.get("_kind"), "session_meta")
+            for i, line in enumerate(lines[1:], start=0):
                 data = json.loads(line)
                 self.assertEqual(data["topic"], messages[i]["topic"])
                 self.assertEqual(data["payload"], messages[i]["payload"])

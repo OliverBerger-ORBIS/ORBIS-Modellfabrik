@@ -87,6 +87,21 @@ sequenceDiagram
 - **QoS:** Level 1 für zuverlässige Übertragung
 - **Retain:** Optional (Checkbox „Retained Messages am Start miterfassen“)
 
+### **Topic-Aufnahme (DR-25)**
+
+Im Tab **Session Recorder** (und unter **Einstellungen → Session Recorder → Recording**): **Topic-Aufnahme**
+
+- **Alle Topics (unfiltered):** jede empfangene Message landet im `.log` (Baseline / volle Topic-Union).
+- **Analyse: ohne Arduino / BME680 / Kamera / LDR:** Messages zu `osf/arduino/…`, TXT `…/i/cam`, `…/i/bme680`, `…/i/ldr` (u. a.) werden **nicht** geschrieben — `subscribe("#")` bleibt unverändert; nur der **Schreibpfad** filtert.
+
+Persistenz: `session_manager_settings.json` → `session_recorder.recording.recording_exclusion_preset` (`none` | `analysis`).
+
+### **Session-Meta (erste Zeile in der `.log`)**
+
+Beim Speichern schreibt der Recorder optional eine **erste JSON-Zeile** mit `_kind: "session_meta"` (ohne `topic` / `payload` / `timestamp`). **Replay** und `load_log_session` ignorieren sie. Felder u. a.: `recordingStartedAt`, `recordingEndedAt`, `durationSec`, `recordingExclusionPreset`, `brokerHost`, `osfWorkspaceVersion` (aus Root-`package.json`), `ccuOrdersDescription`, `ccuOrderOutcome` (`ok` | `nok` | `mixed` | `unknown`), `note`.
+
+Die **INVENTORY**-Tabelle unter `data/osf-data/sessions/INVENTORY.md` sollte bei neuen/gelöschten Sessions manuell mitgepflegt werden; Hilfe: `python scripts/check_session_inventory.py`.
+
 ### **⚠️ Kritische Paho-MQTT-Patterns (nicht ändern)**
 
 | Pattern | Grund |
@@ -94,6 +109,7 @@ sequenceDiagram
 | **`subscribe("#")` in `on_connect`** | Paho erfordert Subscribe *nach* Verbindung. Subscribe vor/nach `connect()` bricht die Aufnahme (keine Nachrichten). |
 | **Erneuter Start nach Stop:** `subscribe("#")` in `start_recording` | Nach `unsubscribe` bei Stop muss bei erneutem Start erneut subscribt werden (on_connect feuert nicht). |
 | **`_recording_active`-Filter in `on_message_received`** | Nur während Aufnahme speichern; verhindert Akkumulation alter Messages. |
+| **Topic-Ausschluss nur im Write-Pfad** | Kein Weglassen von `subscribe` — siehe [DR-25](../../../03-decision-records/25-session-log-topic-filters.md). |
 
 ### **Daten-Speicherung**
 - **SQLite:** Strukturierte Nachrichten-Daten

@@ -191,18 +191,19 @@ def main():
     # Sidebar Navigation
     st.sidebar.title("Navigation")
 
-    # Tab selection - Replay Station als Default
+    # Tab selection — `key` erlaubt Sprung aus z. B. Session Recorder (Einstellungen-Button)
+    tab_options = [
+        "📡 Replay Station",
+        "📂 Topic Recorder",
+        "🎙️ Session Recorder",
+        "📊 Session Analyse",
+        "⚙️ Einstellungen",
+        "📝 Logging",
+    ]
     tab = st.sidebar.selectbox(
         "Wähle einen Tab:",
-        [
-            "📡 Replay Station",
-            "📂 Topic Recorder",
-            "🎙️ Session Recorder",
-            "📊 Session Analyse",
-            "⚙️ Einstellungen",
-            "📝 Logging",
-        ],
-        index=0,
+        tab_options,
+        key="main_sidebar_tab",
     )
 
     # Tab content

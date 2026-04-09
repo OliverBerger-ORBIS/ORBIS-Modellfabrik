@@ -13,6 +13,8 @@ import streamlit as st
 
 from ..utils.logging_config import get_logger
 from ..utils.path_constants import PROJECT_ROOT
+from ..utils.recording_topic_filter import should_write_message_to_session_log
+from ..utils.session_meta_line import build_session_meta_line
 from ..utils.ui_refresh import RerunController
 from ..utils.utc_iso_timestamp import utc_iso_timestamp_ms
 
@@ -51,6 +53,7 @@ message_buffer = ThreadSafeMessageBuffer()
 # Flags für on_message_received (Callback läuft im MQTT-Thread – kein st.session_state)
 _recording_active = False
 _include_retained = False
+_recording_exclusion_preset = "none"
 
 
 def show_session_recorder():
@@ -62,7 +65,10 @@ def show_session_recorder():
     rerun_controller = RerunController()
 
     st.header("🔴 Session Recorder")
-    st.markdown("Einfache 1:1 Aufnahme von MQTT-Nachrichten - **Konfiguration in ⚙️ Einstellungen**")
+    st.markdown(
+        "Aufnahme von MQTT-Messages als JSON-Zeilen-Log. **Broker**, **Session-Verzeichnis** und "
+        "**MQTT-Auth** sind im Tab **⚙️ Einstellungen** (Sidebar) — oder über den Button rechts."
+    )
 
     # Konfiguration aus Settings laden
     from .settings_manager import SettingsManager
@@ -105,8 +111,15 @@ def show_session_recorder():
         st.subheader("📁 Konfiguration")
         st.info(f"**Session-Verzeichnis:** `{session_directory}`")
         st.info("**Format:** log (JSON-Zeilen)")
-        st.markdown("**Einstellungen** können hier konfiguriert werden")
-        st.info("💡 Recording-Einstellungen werden automatisch geladen")
+        st.caption("Pfad, Broker und Zugangsdaten werden **nicht** hier, sondern unter **⚙️ Einstellungen** gepflegt.")
+        if st.button("⚙️ Zu Einstellungen wechseln", help="Öffnet den Tab Einstellungen in der Sidebar"):
+            st.session_state["main_sidebar_tab"] = "⚙️ Einstellungen"
+            st.rerun()
+        st.caption(
+            "Hohe Rate durch Sensoren: Preset **Topic-Aufnahme** (unten) auf **Analyse** stellen — "
+            "dann werden u. a. `osf/arduino/…`, BME680, Kamera und LDR nicht ins Log geschrieben "
+            "(Subscribe bleibt `#`)."
+        )
 
     st.markdown("---")
 
@@ -159,6 +172,24 @@ def show_session_recorder():
         "**Normal:** Nur Nachrichten während der Aufnahme. **Mit Retained:** Zusätzlich initialer Stand beim Start."
     )
 
+    preset_labels = ("Alle Topics (unfiltered)", "Analyse: ohne Arduino / BME680 / Kamera / LDR (DR-25)")
+    preset_values = ("none", "analysis")
+    current_preset = settings_manager.get_session_recorder_recording_exclusion_preset()
+    preset_index = preset_values.index(current_preset) if current_preset in preset_values else 0
+    selected_label = st.selectbox(
+        "Topic-Aufnahme",
+        options=list(preset_labels),
+        index=preset_index,
+        help=(
+            "Baseline: alle Topics. Analyse: schreibt keine Messages zu osf/arduino/…, "
+            "TXT BME680/Kamera/LDR — kleinere Logs für CCU/FTS/Module (vgl. DR-25)."
+        ),
+        key=f"session_recorder_exclusion_preset_{current_preset}",
+    )
+    new_preset = preset_values[preset_labels.index(selected_label)]
+    if new_preset != current_preset:
+        settings_manager.set_session_recorder_recording_exclusion_preset(new_preset)
+
     if not st.session_state.session_recorder["session_name"]:
         st.warning("⚠️ Bitte Session-Name eingeben")
     else:
@@ -182,13 +213,36 @@ def show_session_recorder():
                 "⏹️ Aufnahme Beenden", disabled=not st.session_state.session_recorder["recording"], type="secondary"
             ):
                 stop_recording()
-                st.session_state.session_recorder["recording"] = False
-                st.session_state.session_recorder["start_time"] = None
                 st.success("⏹️ Aufnahme beendet und gespeichert!")
                 rerun_controller.request_rerun()
 
     # Status anzeigen
     if st.session_state.session_recorder["recording"]:
+        st.markdown("---")
+        st.subheader("📋 Session-Meta (optional)")
+        st.caption(
+            "Wird als **erste Zeile** in der `.log` gespeichert (ohne topic/payload/timestamp — Replay ignoriert sie). "
+            "Enthält u. a. Dauer, Preset, Broker, OSF-Workspace-Version (`package.json`), CCU/Order-Kontext."
+        )
+        st.selectbox(
+            "CCU / Order-Ergebnis (Kurz)",
+            options=["unknown", "ok", "nok", "mixed"],
+            key="session_recorder_meta_outcome",
+            help="Zusammenfassung des Order-Ergebnisses für INVENTORY / Analyse.",
+        )
+        st.text_area(
+            "CCU / Orders (was wurde geordert / Szenario)",
+            height=100,
+            key="session_recorder_meta_ccu",
+            placeholder="z. B. zwei parallele Lageraufträge, Quality-Fail → Ersatzauftrag …",
+        )
+        st.text_area(
+            "Zusätzliche Notiz",
+            height=68,
+            key="session_recorder_meta_note",
+            placeholder="Optional",
+        )
+
         st.markdown("---")
         st.subheader("📊 Aufnahme-Status")
 
@@ -297,7 +351,7 @@ def start_recording(mqtt_settings=None, rerun_controller=None) -> bool:
     Startet die Aufnahme. Verbindet bei Bedarf automatisch zum Broker.
     Nur Nachrichten während der Aufnahme werden gespeichert.
     """
-    global _recording_active, _include_retained
+    global _recording_active, _include_retained, _recording_exclusion_preset
     try:
         logger.info("🔴 Session-Aufnahme wird gestartet...")
 
@@ -307,14 +361,15 @@ def start_recording(mqtt_settings=None, rerun_controller=None) -> bool:
         # Flags für Callback setzen (läuft im MQTT-Thread)
         _recording_active = True
         _include_retained = st.session_state.session_recorder.get("include_retained", False)
+        from .settings_manager import SettingsManager
+
+        settings_manager = SettingsManager()
+        _recording_exclusion_preset = settings_manager.get_session_recorder_recording_exclusion_preset()
 
         # Falls nicht verbunden: zuerst verbinden (Subscribe erfolgt in on_connect)
         just_connected = False
         if not st.session_state.session_recorder["mqtt_client"]:
             if not mqtt_settings:
-                from .settings_manager import SettingsManager
-
-                settings_manager = SettingsManager()
                 mqtt_settings = settings_manager.get_session_recorder_mqtt_settings()
             if not connect_to_broker(mqtt_settings):
                 _recording_active = False
@@ -383,6 +438,7 @@ def stop_recording():
             message_buffer.clear()
             st.session_state.session_recorder["session_name"] = ""
             st.session_state.session_recorder["start_time"] = None
+            _clear_session_meta_widget_keys()
             logger.info("✅ Session erfolgreich gespeichert")
         else:
             logger.warning("⚠️ Keine Messages zum Speichern vorhanden")
@@ -397,12 +453,14 @@ def stop_recording():
 
 def on_message_received(client, userdata, msg):
     """Callback für empfangene MQTT-Nachrichten – nur während Aufnahme, optional ohne retained"""
-    global _recording_active, _include_retained
+    global _recording_active, _include_retained, _recording_exclusion_preset
     try:
         if not _recording_active:
             return
         is_retain = getattr(msg, "retain", False)
         if is_retain and not _include_retained:
+            return
+        if not should_write_message_to_session_log(msg.topic, _recording_exclusion_preset):
             return
 
         message = {
@@ -454,7 +512,23 @@ def save_session():
         log_filename = f"{session_name}_{timestamp}.log"
         log_filepath = session_dir / log_filename
         logger.info(f"📝 Log-Datei wird erstellt: {log_filename}")
-        save_log_session(log_filepath, messages)
+
+        mqtt_settings = settings_manager.get_session_recorder_mqtt_settings()
+        ended_at = datetime.now()
+        started_at = st.session_state.session_recorder.get("start_time") or ended_at
+        meta_line = build_session_meta_line(
+            session_name=session_name,
+            log_filename=log_filename,
+            recording_started_at=started_at,
+            recording_ended_at=ended_at,
+            recording_exclusion_preset=settings_manager.get_session_recorder_recording_exclusion_preset(),
+            broker_host=str(mqtt_settings.get("host", "")),
+            broker_port=int(mqtt_settings.get("port", 1883)),
+            ccu_orders_description=str(st.session_state.get("session_recorder_meta_ccu", "") or ""),
+            ccu_order_outcome=str(st.session_state.get("session_recorder_meta_outcome", "unknown") or "unknown"),
+            note=str(st.session_state.get("session_recorder_meta_note", "") or ""),
+        )
+        save_log_session(log_filepath, messages, meta_line=meta_line)
         logger.info(f"✅ Log Session gespeichert: {log_filepath}")
 
         st.success(f"💾 Session gespeichert: {log_filename}")
@@ -465,12 +539,28 @@ def save_session():
         st.error(f"❌ Fehler beim Speichern: {e}")
 
 
-def save_log_session(filepath: Path, messages: List[Dict[str, Any]]):
-    """Speichert Session als Log-Datei"""
+def _clear_session_meta_widget_keys() -> None:
+    """Entfernt Meta-Widget-Keys nach Speichern (nächste Aufnahme startet leer)."""
+    for k in (
+        "session_recorder_meta_ccu",
+        "session_recorder_meta_note",
+        "session_recorder_meta_outcome",
+    ):
+        st.session_state.pop(k, None)
+
+
+def save_log_session(
+    filepath: Path,
+    messages: List[Dict[str, Any]],
+    meta_line: str | None = None,
+):
+    """Speichert Session als Log-Datei. Optional: erste Zeile session_meta (ohne topic/payload/timestamp)."""
     try:
         logger.debug(f"📝 Log-Datei wird erstellt: {filepath}")
 
         with open(filepath, "w", encoding="utf-8") as f:
+            if meta_line:
+                f.write(meta_line.strip() + "\n")
             for msg in messages:
                 log_entry = {
                     "topic": msg["topic"],
