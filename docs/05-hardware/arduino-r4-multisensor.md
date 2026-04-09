@@ -27,14 +27,16 @@
 
 ## 1. WLAN-Konfiguration (Sketch)
 
-Im Sketch oben: `#define WIFI_MODE WIFI_MODE_DAHEIM` oder `WIFI_MODE_ORBIS`.
+**Standard (Repo):** **ORBIS** — kein Zusatzfile nötig (`WIFI_MODE_ORBIS`, MQTT `192.168.0.100`).
+
+**Wechsel ohne Commit (lokal):** `wifi_mode_local.h.example` nach `wifi_mode_local.h` kopieren (liegt im Sketch-Ordner, wird per `.gitignore` nicht committed) und darin `WIFI_MODE` auf `WIFI_MODE_DAHEIM` oder `WIFI_MODE_ORBIS` setzen. Fehlt `wifi_mode_local.h`, gilt weiterhin **ORBIS**.
 
 | Modus | WLAN | Arduino-IP | Gateway | MQTT-Broker |
 |-------|------|------------|---------|-------------|
 | **DAHEIM** | Heimnetz (SSID/Passwort anpassen) | 192.168.178.95 | 192.168.178.1 | 192.168.178.65 (Mac) |
-| **ORBIS** | ORBIS-4C57 (Messe LogiMAT 2026; vgl. [credentials](../credentials.md)) | 192.168.0.95 | 192.168.0.1 | 192.168.0.100 |
+| **ORBIS** | ORBIS-4C57 (vgl. [credentials](../credentials.md)) | 192.168.0.95 | 192.168.0.1 | 192.168.0.100 |
 
-Nur diese eine Zeile ändern, neu kompilieren, flashen. Bei DAHEIM: Arduino-IP in der Fritz!Box reservieren (z.B. .95).
+Neu kompilieren, flashen. Bei DAHEIM: Arduino-IP in der Fritz!Box reservieren (z.B. .95).
 
 ---
 

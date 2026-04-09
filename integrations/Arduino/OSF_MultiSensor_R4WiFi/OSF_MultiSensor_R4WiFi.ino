@@ -34,7 +34,12 @@
 // === WLAN-Konfiguration – Umschaltung daheim / ORBIS ===
 #define WIFI_MODE_DAHEIM 0
 #define WIFI_MODE_ORBIS  1
-#define WIFI_MODE WIFI_MODE_DAHEIM  // <-- DAHEIM oder ORBIS (LogiMAT: später ggf. SSID in #else anpassen)
+// Optional: copy wifi_mode_local.h.example → wifi_mode_local.h (gitignored) to force DAHEIM/ORBIS without editing the repo.
+#if __has_include("wifi_mode_local.h")
+#include "wifi_mode_local.h"
+#else
+#define WIFI_MODE WIFI_MODE_ORBIS  // Standard: APS / Shopfloor (RPi MQTT 192.168.0.100)
+#endif
 
 #if WIFI_MODE == WIFI_MODE_DAHEIM
   // WLAN Daheim – Fritz!Box 192.168.178.x, Arduino .95 reserviert

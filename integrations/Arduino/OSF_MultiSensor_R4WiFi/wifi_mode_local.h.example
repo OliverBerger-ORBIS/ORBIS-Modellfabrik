@@ -1,0 +1,11 @@
+#pragma once
+/**
+ * Local WiFi / site mode — **not committed** (see `.gitignore` in this folder).
+ *
+ * 1. Copy this file to `wifi_mode_local.h` (same folder as the sketch).
+ * 2. Uncomment exactly **one** of the two lines below.
+ *
+ * If `wifi_mode_local.h` is **missing**, the sketch defaults to **ORBIS** (shopfloor / APS).
+ */
+// #define WIFI_MODE WIFI_MODE_ORBIS
+#define WIFI_MODE WIFI_MODE_DAHEIM
