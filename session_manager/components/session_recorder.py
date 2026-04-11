@@ -416,19 +416,23 @@ def pause_recording():
         logger.error(f"❌ Fehler beim Pausieren der Aufnahme: {e}")
 
 
-def stop_recording():
-    """Beendet die Aufnahme und speichert"""
+def stop_recording() -> bool:
+    """Beendet die Aufnahme und speichert. Setzt ``session_recorder['recording']`` immer zurück (finally)."""
     global _recording_active
+    _recording_active = False
+    stopped_ok = True
     try:
         logger.info("⏹️ Session-Aufnahme wird gestoppt...")
 
-        _recording_active = False
-
-        # Aufnahme stoppen – unsubscribe, damit keine weiteren Messages ankommen
+        # Unsubscribe separat: Broker-Fehler darf Speichern + UI-Reset nicht verhindern
         if st.session_state.session_recorder["mqtt_client"]:
             mqtt_client = st.session_state.session_recorder["mqtt_client"]
-            mqtt_client.unsubscribe("#")
-            logger.info("📡 MQTT Topics deabonniert")
+            try:
+                mqtt_client.unsubscribe("#")
+                logger.info("📡 MQTT Topics deabonniert")
+            except Exception as ue:
+                logger.error(f"❌ MQTT unsubscribe beim Stoppen: {ue}")
+                stopped_ok = False
 
         # Session speichern
         message_count = message_buffer.count()
@@ -443,12 +447,15 @@ def stop_recording():
         else:
             logger.warning("⚠️ Keine Messages zum Speichern vorhanden")
 
-        # Session State aktualisieren
-        st.session_state.session_recorder["recording"] = False
         logger.info("✅ Session-Aufnahme beendet")
 
     except Exception as e:
         logger.error(f"❌ Fehler beim Stoppen der Aufnahme: {e}")
+        stopped_ok = False
+    finally:
+        st.session_state.session_recorder["recording"] = False
+
+    return stopped_ok
 
 
 def on_message_received(client, userdata, msg):
@@ -521,7 +528,7 @@ def save_session():
             log_filename=log_filename,
             recording_started_at=started_at,
             recording_ended_at=ended_at,
-            recording_exclusion_preset=settings_manager.get_session_recorder_recording_exclusion_preset(),
+            recording_exclusion_preset=_recording_exclusion_preset,
             broker_host=str(mqtt_settings.get("host", "")),
             broker_port=int(mqtt_settings.get("port", 1883)),
             ccu_orders_description=str(st.session_state.get("session_recorder_meta_ccu", "") or ""),
