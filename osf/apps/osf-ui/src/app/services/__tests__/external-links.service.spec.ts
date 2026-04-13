@@ -1,21 +1,27 @@
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ExternalLinksService, ExternalLinksSettings } from '../external-links.service';
 import { firstValueFrom } from 'rxjs';
 
 describe('ExternalLinksService', () => {
   let service: ExternalLinksService;
+  let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    localStorage.clear();
-
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       providers: [ExternalLinksService],
     });
     service = TestBed.inject(ExternalLinksService);
+    httpMock = TestBed.inject(HttpTestingController);
+    // ExternalLinksService loads repo config once on construction.
+    // Most tests don't care about its content; flush an empty object to avoid pending requests.
+    const req = httpMock.expectOne((r) => r.url.includes('assets/config/external-links.json'));
+    req.flush({});
   });
 
   afterEach(() => {
-    localStorage.clear();
+    httpMock.verify();
   });
 
   describe('Initialization', () => {
@@ -62,49 +68,6 @@ describe('ExternalLinksService', () => {
       expect(current.dspControlUrl).toBe('https://test.dsp.com');
     });
 
-    it('should persist settings to localStorage', () => {
-      const newSettings: ExternalLinksSettings = {
-        grafanaDashboardUrl: 'https://test.grafana.com',
-        smartfactoryDashboardUrl: '/test-dsp',
-        dspControlUrl: 'https://test.dsp.com',
-        managementCockpitUrl: 'https://test.cockpit.com',
-        erpSystemUrl: 'process',
-        mesSystemUrl: '',
-        ewmSystemUrl: '',
-      };
-
-      service.updateSettings(newSettings);
-
-      const stored = localStorage.getItem('OSF.externalLinks');
-      expect(stored).toBeTruthy();
-      const parsed = JSON.parse(stored!);
-      expect(parsed.grafanaDashboardUrl).toBe('https://test.grafana.com');
-    });
-
-    it('should load settings from localStorage', () => {
-      const storedSettings: ExternalLinksSettings = {
-        grafanaDashboardUrl: 'https://stored.grafana.com',
-        smartfactoryDashboardUrl: '/stored-dsp',
-        dspControlUrl: 'https://stored.dsp.com',
-        managementCockpitUrl: 'https://stored.cockpit.com',
-        erpSystemUrl: 'process',
-        mesSystemUrl: '',
-        ewmSystemUrl: '',
-      };
-
-      localStorage.setItem('OSF.externalLinks', JSON.stringify(storedSettings));
-
-      // Need to create new service instance to load from localStorage
-      TestBed.resetTestingModule();
-      TestBed.configureTestingModule({
-        providers: [ExternalLinksService],
-      });
-      const newService = TestBed.inject(ExternalLinksService);
-      const current = newService.current;
-
-      expect(current.grafanaDashboardUrl).toBe('https://stored.grafana.com');
-    });
-
     it('should emit settings changes', (done) => {
       const settings$ = service.settings$;
       let callCount = 0;
@@ -132,61 +95,21 @@ describe('ExternalLinksService', () => {
   });
 
   describe('Edge Cases', () => {
-    it('should handle localStorage errors gracefully', () => {
-      const originalSetItem = localStorage.setItem;
-      localStorage.setItem = jest.fn(() => {
-        throw new Error('Storage quota exceeded');
-      });
-
-      const newSettings: ExternalLinksSettings = {
-        grafanaDashboardUrl: 'https://test.grafana.com',
-        smartfactoryDashboardUrl: '/test-dsp',
-        dspControlUrl: 'https://test.dsp.com',
-        managementCockpitUrl: 'https://test.cockpit.com',
-        erpSystemUrl: 'process',
-        mesSystemUrl: '',
-        ewmSystemUrl: '',
-      };
-
-      expect(() => {
-        service.updateSettings(newSettings);
-      }).not.toThrow();
-
-      // Settings should still be updated in memory
-      expect(service.current.grafanaDashboardUrl).toBe('https://test.grafana.com');
-
-      localStorage.setItem = originalSetItem;
-    });
-
-    it('should handle corrupted localStorage data', () => {
-      localStorage.setItem('OSF.externalLinks', 'invalid json{{{');
-
-      const newService = TestBed.inject(ExternalLinksService);
-      const current = newService.current;
-
-      // Should fallback to defaults
-      expect(current).toBeDefined();
-      expect(current.grafanaDashboardUrl).toBeDefined();
-    });
-
-    it('should handle partial settings in localStorage', () => {
-      const partialSettings = {
-        grafanaDashboardUrl: 'https://partial.grafana.com',
-      };
-
-      localStorage.setItem('OSF.externalLinks', JSON.stringify(partialSettings));
-
-      // Need to create new service instance to load from localStorage
+    it('should handle repo config load errors gracefully', () => {
+      // Create a new service instance to simulate load failure.
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
+        imports: [HttpClientTestingModule],
         providers: [ExternalLinksService],
       });
       const newService = TestBed.inject(ExternalLinksService);
-      const current = newService.current;
+      const newHttpMock = TestBed.inject(HttpTestingController);
+      const req = newHttpMock.expectOne((r) => r.url.includes('assets/config/external-links.json'));
+      req.error(new ProgressEvent('error'));
+      newHttpMock.verify();
 
-      // Should merge with defaults
-      expect(current.grafanaDashboardUrl).toBe('https://partial.grafana.com');
-      expect(current.dspControlUrl).toBeDefined(); // From defaults
+      // Falls back to defaults
+      expect(newService.current.grafanaDashboardUrl).toBeTruthy();
     });
 
     it('should handle empty string URLs', () => {

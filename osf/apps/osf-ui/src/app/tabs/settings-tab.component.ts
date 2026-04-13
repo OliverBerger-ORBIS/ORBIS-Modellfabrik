@@ -179,7 +179,20 @@ import { LanguageService, LocaleKey } from '../services/language.service';
             <button type="submit" class="primary" [disabled]="linksForm.pristine || linksForm.invalid" i18n="@@settingsSaveButton">
               Save changes
             </button>
+            <button
+              type="button"
+              class="secondary"
+              (click)="exportExternalLinksJson()"
+              [disabled]="linksForm.invalid"
+              i18n="@@settingsExportLinksButton"
+            >
+              Export JSON
+            </button>
           </footer>
+          <p class="hint" i18n="@@settingsLinksRepoHint">
+            Repo-managed config: export and paste into <code>osf/apps/osf-ui/public/assets/config/external-links.json</code>,
+            then commit & deploy to apply on the RPi.
+          </p>
         </form>
       </section>
 
@@ -415,5 +428,23 @@ export class SettingsTabComponent implements OnInit {
     const value = this.linksForm.value as ExternalLinksSettings;
     this.externalLinksService.updateSettings(value);
     this.linksForm.markAsPristine();
+  }
+
+  exportExternalLinksJson(): void {
+    if (!this.linksForm || this.linksForm.invalid) {
+      return;
+    }
+    const value = this.linksForm.value as ExternalLinksSettings;
+    const content = `${JSON.stringify(value, null, 2)}\n`;
+    const blob = new Blob([content], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    try {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'external-links.json';
+      a.click();
+    } finally {
+      URL.revokeObjectURL(url);
+    }
   }
 }

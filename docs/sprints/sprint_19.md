@@ -43,6 +43,7 @@
 - [x] **10.04.2026:** Externe **OSF-Präsentation per Video** für Kunden **Netzsch** (Remote). Setup-Hinweise: Abschnitt **Präsentation / Demo-Setup** oben.
 - [x] **OSF-UI / I18n:** Production-Build `nx run osf-ui:build:production` (Locales EN/DE/FR) **ohne** „No translation found for …“ — `messages.de.json` / `messages.fr.json` decken die IDs; Verifikation 2026-04-13.
 - [x] **Session Manager v1.3.0:** Nur noch Sidebar-Tabs **Replay Station**, **Session Recorder**, **Einstellungen**; Logging in Einstellungen gebündelt (siehe Abschnitt „Session Manager – geplanter Umbau“).
+- [x] **OSF-UI / External Links:** Repo-managed Config `osf/apps/osf-ui/public/assets/config/external-links.json` (kein localStorage Override); Settings-Tab bietet JSON-Export für manuelles Übernehmen ins Repo; Verifikation 2026-04-13: `nx test osf-ui`.
 
 ---
 
@@ -52,7 +53,7 @@
 
 - [ ] **Zweites AGV (Shopfloor):** Ein **altes** zweites AGV ist in der UI noch **sichtbar** und **registriert**, bleibt aber **dauerhaft unconnected** (Hardware existiert so nicht). Das **neue** zweite AGV wird **nicht** angezeigt — UI/Registrierung bereinigen bzw. an aktuelle FTS-IDs anbinden.
 - [ ] **Track & Trace – Live-Daten:** Es wirkt so, als würden **mehr Events pro NFC-Tag** angezeigt werden, als **tatsächlich per MQTT** eingegangen sind (Verdacht: **Fixtures**, gecachte Streams, oder andere Quellen — Klärung/Deduplizierung).
-- [ ] **Settings – externe Links (MES, EWM, …):** Auf dem **RPi-Deploy** waren die in der **lokalen** Session gesetzten URLs **nicht übernommen** (typisch: **localStorage** pro Browser/Rechner; Docker-Image enthält keine Nutzer-Settings). Entweder **auf dem Ziel-Browser** am RPi/Shopfloor-PC erneut eintragen oder Persistenz/Defaults klären (Bug vs. erwartetes Verhalten dokumentieren).
+- [x] **Settings – externe Links (MES, EWM, …):** Repo-managed Config (Deploy-Single-Source) statt **localStorage**; gleiche Links auf localhost und RPi nach Deploy.
 - [ ] **Sprache / Language-Switch:** Vermutung: **Locale-Wechsel** löst **Reconnect** oder Neuinitialisierung von Streams aus — danach sind **Track & Trace**-Daten (und ggf. andere Tab-Daten) **nicht mehr sichtbar**, bis Reload/Neuverbindung. Reproduktion und Tab-Stream-Pattern prüfen ([DR-11 Tab-Stream](../03-decision-records/11-tab-stream-initialization-pattern.md)).
 
 ---

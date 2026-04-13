@@ -1,5 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
+import { getAssetPath } from '../assets/detail-asset-map';
 
 export interface ExternalLinksSettings {
   readonly grafanaDashboardUrl: string;
@@ -12,8 +14,6 @@ export interface ExternalLinksSettings {
   /** External SAP EWM (or other EWM) URL; DSP animation bp-ewm opens this when set */
   readonly ewmSystemUrl: string;
 }
-
-const STORAGE_KEY = 'OSF.externalLinks';
 
 const DEFAULT_SETTINGS: ExternalLinksSettings = {
   grafanaDashboardUrl: 'http://192.168.0.201:3000/dashboards',
@@ -28,9 +28,11 @@ const DEFAULT_SETTINGS: ExternalLinksSettings = {
 @Injectable({ providedIn: 'root' })
 export class ExternalLinksService {
   private readonly settingsSubject: BehaviorSubject<ExternalLinksSettings>;
+  private readonly http = inject(HttpClient);
 
   constructor() {
-    this.settingsSubject = new BehaviorSubject<ExternalLinksSettings>(this.loadSettings());
+    this.settingsSubject = new BehaviorSubject<ExternalLinksSettings>(DEFAULT_SETTINGS);
+    this.loadFromRepoConfig();
   }
 
   get settings$() {
@@ -43,27 +45,21 @@ export class ExternalLinksService {
 
   updateSettings(settings: ExternalLinksSettings): void {
     this.settingsSubject.next({ ...settings });
-    try {
-      localStorage?.setItem(STORAGE_KEY, JSON.stringify(settings));
-    } catch (error) {
-      console.warn('[external-links] Failed to persist settings', error);
-    }
   }
 
-  private loadSettings(): ExternalLinksSettings {
-    try {
-      const stored = localStorage?.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored) as Partial<ExternalLinksSettings>;
-        return {
+  private loadFromRepoConfig(): void {
+    const url = getAssetPath('assets/config/external-links.json');
+    this.http.get<Partial<ExternalLinksSettings>>(url).subscribe({
+      next: (config) => {
+        this.settingsSubject.next({
           ...DEFAULT_SETTINGS,
-          ...parsed,
-        };
-      }
-    } catch (error) {
-      console.warn('[external-links] Failed to parse stored settings', error);
-    }
-    return DEFAULT_SETTINGS;
+          ...config,
+        });
+      },
+      error: (error) => {
+        console.warn('[external-links] Failed to load repo config', error);
+      },
+    });
   }
 }
 
