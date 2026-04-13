@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, of } from 'rxjs';
 import { AgvTabComponent } from '../agv-tab.component';
 import { EnvironmentService } from '../../services/environment.service';
@@ -10,6 +9,7 @@ import { ShopfloorMappingService } from '../../services/shopfloor-mapping.servic
 import { AgvRouteService } from '../../services/agv-route.service';
 import { AgvAnimationService } from '../../services/agv-animation.service';
 import { LanguageService } from '../../services/language.service';
+import { ShopfloorLayoutService } from '../../services/shopfloor-layout.service';
 import { ChangeDetectorRef } from '@angular/core';
 import * as mockDashboard from '../../mock-dashboard';
 import { ORBIS_COLORS } from '../../assets/color-palette';
@@ -40,7 +40,7 @@ describe('AgvTabComponent', () => {
   let ftsAnimationService: jest.Mocked<AgvAnimationService>;
   let languageService: jest.Mocked<LanguageService>;
   let cdr: jest.Mocked<ChangeDetectorRef>;
-  let http: any;
+  let layoutService: jest.Mocked<ShopfloorLayoutService>;
 
   const mockFtsState = {
     serialNumber: '5iO4',
@@ -154,8 +154,14 @@ describe('AgvTabComponent', () => {
       detectChanges: jest.fn(),
     };
 
-    const httpMock = {
-      get: jest.fn(() => of({ cells: [], roads: [] })),
+    const layoutServiceMock = {
+      snapshot$: of({
+        config: { cells: [], roads: [], fts: [] } as any,
+        hash: '0123456789abcdef',
+        url: '/shopfloor/shopfloor_layout.json',
+      }),
+      config$: of({ cells: [], roads: [], fts: [] } as any),
+      hash$: of('0123456789abcdef'),
     };
 
     await TestBed.configureTestingModule({
@@ -170,7 +176,7 @@ describe('AgvTabComponent', () => {
         { provide: AgvAnimationService, useValue: ftsAnimationServiceMock },
         { provide: LanguageService, useValue: languageServiceMock },
         { provide: ChangeDetectorRef, useValue: cdrMock },
-        { provide: HttpClient, useValue: httpMock },
+        { provide: ShopfloorLayoutService, useValue: layoutServiceMock },
       ],
     }).compileComponents();
 
@@ -184,7 +190,7 @@ describe('AgvTabComponent', () => {
     ftsAnimationService = TestBed.inject(AgvAnimationService) as any;
     languageService = TestBed.inject(LanguageService) as any;
     cdr = TestBed.inject(ChangeDetectorRef) as any;
-    http = TestBed.inject(HttpClient) as any;
+    layoutService = TestBed.inject(ShopfloorLayoutService) as any;
 
     // Note: ngOnInit is called automatically by Angular, but we can also call it explicitly
     // The constructor already calls initializeStreams, so ngOnInit mainly sets up connection subscription
@@ -264,7 +270,18 @@ describe('AgvTabComponent', () => {
         { provide: AgvAnimationService, useValue: ftsAnimationService },
         { provide: LanguageService, useValue: languageService },
         { provide: ChangeDetectorRef, useValue: cdr },
-        { provide: HttpClient, useValue: http },
+        {
+          provide: ShopfloorLayoutService,
+          useValue: {
+            snapshot$: of({
+              config: { cells: [], roads: [], fts: [] } as any,
+              hash: '0123456789abcdef',
+              url: '/shopfloor/shopfloor_layout.json',
+            }),
+            config$: of({ cells: [], roads: [], fts: [] } as any),
+            hash$: of('0123456789abcdef'),
+          },
+        },
       ],
     }).compileComponents();
     
@@ -285,7 +302,8 @@ describe('AgvTabComponent', () => {
   });
 
   it('should load shopfloor layout on init', () => {
-    expect(http.get).toHaveBeenCalledWith('shopfloor/shopfloor_layout.json');
+    expect(layoutService.snapshot$).toBeDefined();
+    expect(component.layoutHashShort).toBe('01234567');
   });
 
   it('should initialize route service when layout is loaded', () => {
@@ -427,7 +445,18 @@ describe('AgvTabComponent', () => {
         { provide: AgvAnimationService, useValue: ftsAnimationService },
         { provide: LanguageService, useValue: languageService },
         { provide: ChangeDetectorRef, useValue: cdr },
-        { provide: HttpClient, useValue: http },
+        {
+          provide: ShopfloorLayoutService,
+          useValue: {
+            snapshot$: of({
+              config: { cells: [], roads: [], fts: [] } as any,
+              hash: '0123456789abcdef',
+              url: '/shopfloor/shopfloor_layout.json',
+            }),
+            config$: of({ cells: [], roads: [], fts: [] } as any),
+            hash$: of('0123456789abcdef'),
+          },
+        },
       ],
     }).compileComponents();
     

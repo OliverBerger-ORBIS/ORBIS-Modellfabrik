@@ -63,6 +63,10 @@
         <p class="fts-tab__subtitle">
           {{ statusSubtitle }}
         </p>
+        <p class="fts-tab__subtitle fts-tab__subtitle--layout" *ngIf="layoutHashShort as h">
+          <span i18n="@@agvTabLayoutHashLabel">Shopfloor layout</span>
+          <code>{{ h }}</code>
+        </p>
       </div>
     </div>
     <div class="fts-tab__agv-select" *ngIf="agvOptions.length > 1">

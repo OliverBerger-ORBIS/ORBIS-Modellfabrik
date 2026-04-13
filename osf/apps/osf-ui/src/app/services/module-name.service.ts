@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, map, shareReplay } from 'rxjs';
+import { Observable, filter, shareReplay } from 'rxjs';
 import { ShopfloorLayoutConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
 import { AgvRouteService } from './agv-route.service';
 import { ShopfloorMappingService } from './shopfloor-mapping.service';
+import { ShopfloorLayoutService } from './shopfloor-layout.service';
 
 export interface ModuleDisplayName {
   id: string;
@@ -19,20 +19,15 @@ export interface SerialToModuleInfo {
 export class ModuleNameService {
   private readonly ftsRouteService = inject(AgvRouteService);
   private readonly mappingService = inject(ShopfloorMappingService);
+  private readonly layoutService = inject(ShopfloorLayoutService);
   private layoutConfig$?: Observable<ShopfloorLayoutConfig>;
 
-  constructor(private readonly http: HttpClient) {
-    // Load shopfloor layout to build serial-to-module mapping
-    this.layoutConfig$ = this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').pipe(
-      map((config) => {
-        // Initialize centralized mapping service
-        this.mappingService.initializeLayout(config);
-        return config;
-      }),
-      shareReplay({ bufferSize: 1, refCount: true })
+  constructor() {
+    // Ensure shopfloor layout is loaded once (shared across app) to build serial-to-module mapping.
+    this.layoutConfig$ = this.layoutService.config$.pipe(
+      filter((config): config is ShopfloorLayoutConfig => config !== null),
+      shareReplay({ bufferSize: 1, refCount: false })
     );
-    // Trigger load
-    this.layoutConfig$.subscribe();
   }
 
   /**

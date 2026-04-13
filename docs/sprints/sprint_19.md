@@ -44,6 +44,7 @@
 - [x] **OSF-UI / I18n:** Production-Build `nx run osf-ui:build:production` (Locales EN/DE/FR) **ohne** „No translation found for …“ — `messages.de.json` / `messages.fr.json` decken die IDs; Verifikation 2026-04-13.
 - [x] **Session Manager v1.3.0:** Nur noch Sidebar-Tabs **Replay Station**, **Session Recorder**, **Einstellungen**; Logging in Einstellungen gebündelt (siehe Abschnitt „Session Manager – geplanter Umbau“).
 - [x] **OSF-UI / External Links:** Repo-managed Config `osf/apps/osf-ui/public/assets/config/external-links.json` (kein localStorage Override); Settings-Tab bietet JSON-Export für manuelles Übernehmen ins Repo; Verifikation 2026-04-13: `nx test osf-ui`.
+- [x] **OSF-UI / AGV Layout (Single Source) + Unknown Serial:** Shopfloor Layout wird zentral geladen (Hash im AGV-Tab); AGV-1/AGV-2 kommen strikt aus `shopfloor_layout.json`, weitere live Serials werden als **AGV-?** angezeigt; Verifikation 2026-04-13: `nx test osf-ui`.
 
 ---
 
@@ -51,7 +52,7 @@
 
 *Stand Shopfloor nach Deploy; zur Nachverfolgung im Sprint / Backlog.*
 
-- [ ] **Zweites AGV (Shopfloor):** Ein **altes** zweites AGV ist in der UI noch **sichtbar** und **registriert**, bleibt aber **dauerhaft unconnected** (Hardware existiert so nicht). Das **neue** zweite AGV wird **nicht** angezeigt — UI/Registrierung bereinigen bzw. an aktuelle FTS-IDs anbinden.
+- [x] **Zweites AGV (Shopfloor):** Layout als deployte Single Source (Hash sichtbar); AGV-1/AGV-2 strikt aus `fts[]` im Layout, weitere Serials als **AGV-?** sichtbar (nicht falsch zugeordnet).
 - [ ] **Track & Trace – Live-Daten:** Es wirkt so, als würden **mehr Events pro NFC-Tag** angezeigt werden, als **tatsächlich per MQTT** eingegangen sind (Verdacht: **Fixtures**, gecachte Streams, oder andere Quellen — Klärung/Deduplizierung).
 - [x] **Settings – externe Links (MES, EWM, …):** Repo-managed Config (Deploy-Single-Source) statt **localStorage**; gleiche Links auf localhost und RPi nach Deploy.
 - [ ] **Sprache / Language-Switch:** Vermutung: **Locale-Wechsel** löst **Reconnect** oder Neuinitialisierung von Streams aus — danach sind **Track & Trace**-Daten (und ggf. andere Tab-Daten) **nicht mehr sichtbar**, bis Reload/Neuverbindung. Reproduktion und Tab-Stream-Pattern prüfen ([DR-11 Tab-Stream](../03-decision-records/11-tab-stream-initialization-pattern.md)).

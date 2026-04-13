@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, Input } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { filter, map, shareReplay, startWith, switchMap, catchError, tap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { Observable, Subscription, of, combineLatest, BehaviorSubject, merge } from 'rxjs';
+import { Observable, Subscription, of, combineLatest, BehaviorSubject, merge, timer } from 'rxjs';
 import { EnvironmentService } from '../services/environment.service';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { ConnectionService } from '../services/connection.service';
@@ -14,6 +13,7 @@ import { AgvAnimationService, type AnimationState } from '../services/agv-animat
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
 import { getDashboardController } from '../mock-dashboard';
 import { LanguageService, type LocaleKey } from '../services/language.service';
+import { ShopfloorLayoutService } from '../services/shopfloor-layout.service';
 import type { OrderFixtureName } from '@osf/testing-fixtures';
 import type { ShopfloorLayoutConfig, ShopfloorPoint, ParsedRoad, ShopfloorCellConfig, ShopfloorRoadEndpoint } from '../components/shopfloor-preview/shopfloor-layout.types';
 import { ICONS } from '../shared/icons/icon.registry';
@@ -124,6 +124,8 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   private layoutConfig: ShopfloorLayoutConfig | null = null;
   private turnDirectionByActionId = new Map<string, 'LEFT' | 'RIGHT' | string>();
   private lastFtsState: FtsState | null = null;
+  private unknownAgvOptions: AgvOption[] = [];
+  layoutHashShort: string | null = null;
 
   // Icons - neue SVGs aus assets/svg/ui & shopfloor
   readonly headingIcon = 'assets/svg/shopfloor/shared/agv-vehicle.svg'; // FTS/AGV Icon
@@ -280,7 +282,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     private readonly agvAnimationService: AgvAnimationService,
     private readonly languageService: LanguageService,
     private readonly cdr: ChangeDetectorRef,
-    private readonly http: HttpClient
+    private readonly layoutService: ShopfloorLayoutService
   ) {
     // Initialize animation state observable after service is available
     this.animationState$ = this.agvAnimationService.animationState$;
@@ -290,16 +292,13 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   
   private loadShopfloorLayout(): void {
     this.subscriptions.add(
-      this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').pipe(
-        catchError((error) => {
-          console.warn('[FTS Tab] Failed to load shopfloor layout:', error);
-          return of(null);
-        })
-      ).subscribe((config) => {
-        if (config) {
-          this.layoutConfig = config;
-          this.parseLayout(config);
+      this.layoutService.snapshot$.subscribe((snapshot) => {
+        this.layoutHashShort = snapshot.hash ? snapshot.hash.slice(0, 8) : null;
+        if (snapshot.config) {
+          this.layoutConfig = snapshot.config;
+          this.parseLayout(snapshot.config);
         }
+        this.cdr.markForCheck();
       })
     );
   }
@@ -331,7 +330,8 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   /** AGV options for dropdown (AGV-1, AGV-2); fallback if layout not loaded */
   get agvOptions(): AgvOption[] {
     const opts = this.mappingService.getAgvOptions();
-    return opts.length > 0 ? opts : [{ serial: FTS_SERIAL_FALLBACK, label: 'AGV-1' }];
+    const base = opts.length > 0 ? opts : [{ serial: FTS_SERIAL_FALLBACK, label: 'AGV-1' }];
+    return [...base, ...this.unknownAgvOptions];
   }
 
   onSelectedAgvChange(serial: string): void {
@@ -650,6 +650,22 @@ export class AgvTabComponent implements OnInit, OnDestroy {
           this.initializeStreams();
         })
     );
+
+    // Surface additional AGVs that appear on MQTT topics but are not listed in shopfloor_layout.json.
+    // These are intentionally *not* assigned AGV-1/AGV-2 labels, but should still be visible/selectable.
+    this.subscriptions.add(
+      timer(0, 1000)
+        .pipe(
+          map(() => this.detectUnknownAgvOptions()),
+          distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
+        )
+        .subscribe((opts) => {
+          this.unknownAgvOptions = opts;
+          // Rebuild multi-AGV streams so unknown AGVs are included in the overlay/markers.
+          this.initializeStreams();
+          this.cdr.markForCheck();
+        })
+    );
   }
 
   ngOnDestroy(): void {
@@ -707,10 +723,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     // Warm up order stream so direction map is populated
     this.subscriptions.add(this.ftsOrder$.subscribe());
 
-    const agvOpts =
-      this.mappingService.getAgvOptions().length > 0
-        ? this.mappingService.getAgvOptions()
-        : [{ serial: FTS_SERIAL_FALLBACK, label: 'AGV-1' }];
+    const agvOpts = this.agvOptions.length > 0 ? this.agvOptions : [{ serial: FTS_SERIAL_FALLBACK, label: 'AGV-1' }];
 
     const perAgvOrderStreams = agvOpts.map((opt) =>
       this.messageMonitor.getLastMessage<any>(ftsOrderTopic(opt.serial)).pipe(
@@ -989,6 +1002,22 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     debounceTime(100),
     shareReplay({ bufferSize: 1, refCount: false })
   );
+  }
+
+  private detectUnknownAgvOptions(): AgvOption[] {
+    const configured = new Set(this.mappingService.getAgvOptions().map((o) => o.serial));
+    const topics = this.messageMonitor.getTopics();
+    const serials = new Set<string>();
+    for (const topic of topics) {
+      const m = /^fts\/v1\/ff\/([^/]+)\/state$/.exec(topic);
+      if (m?.[1]) {
+        serials.add(m[1]);
+      }
+    }
+    return [...serials]
+      .filter((s) => !configured.has(s))
+      .sort()
+      .map((serial) => ({ serial, label: `AGV-? (${serial})` }));
   }
 
   /** Helper: resolve lastNodeId to shopfloor coordinates */
