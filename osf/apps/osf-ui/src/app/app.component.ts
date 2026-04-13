@@ -126,6 +126,7 @@ export class AppComponent implements OnDestroy {
   readonly parkLabel = $localize`:@@headerParkButton:Park factory`;
   readonly resetLabel = $localize`:@@headerResetButton:Reset factory`;
   readonly connectButtonLabel = $localize`:@@headerConnectButtonLabel:Connect`;
+  readonly refreshButtonLabel = $localize`:@@headerRefreshButtonLabel:Refresh`;
   readonly orbitLogoPath = 'assets/svg/brand/orbis-logo.svg';
 
   readonly mqttStatusLabel = $localize`:@@sidebarMqttStatusLabel:MQTT connection`;
@@ -333,6 +334,15 @@ export class AppComponent implements OnDestroy {
     if (environment) {
       this.connectionService.connect(environment);
     }
+  }
+
+  refresh(): void {
+    // Trigger a soft refresh without locale reload:
+    // - clear message monitor buffers
+    // - clear Track & Trace history
+    // Tabs will repopulate from retained MQTT messages / new incoming messages.
+    this.messageMonitor.clearAll();
+    this.workpieceHistoryService.clear(this.environmentService.current.key);
   }
 
   manualDisconnect(): void {

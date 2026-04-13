@@ -12,7 +12,9 @@ import {
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { LanguageService } from '../../../services/language.service';
+import { ViewScaleService } from '../../../services/view-scale.service';
 import { applyStepToSvg } from './use-case-step-apply';
+import { Subscription, distinctUntilChanged } from 'rxjs';
 
 /**
  * Common step interface for all Use-Case diagram steps.
@@ -65,12 +67,14 @@ export abstract class BaseUseCaseComponent implements OnInit, AfterViewInit, OnD
   protected readonly zoomOutLabel = $localize`:@@shopfloorPreviewZoomOut:Zoom out`;
   protected readonly zoomInLabel = $localize`:@@shopfloorPreviewZoomIn:Zoom in`;
   protected readonly resetZoomLabel = $localize`:@@shopfloorPreviewResetZoom:Reset zoom`;
+  private readonly subscriptions = new Subscription();
 
   constructor(
     protected readonly sanitizer: DomSanitizer,
     protected readonly cdr: ChangeDetectorRef,
     protected readonly http: HttpClient,
-    protected readonly languageService: LanguageService
+    protected readonly languageService: LanguageService,
+    protected readonly viewScale: ViewScaleService
   ) {}
 
   abstract getStepsUrl(): string;
@@ -79,6 +83,13 @@ export abstract class BaseUseCaseComponent implements OnInit, AfterViewInit, OnD
   abstract loadSvgContent(): Promise<string>;
 
   async ngOnInit(): Promise<void> {
+    this.zoom = this.viewScale.current;
+    this.subscriptions.add(
+      this.viewScale.scale$.pipe(distinctUntilChanged()).subscribe((scale) => {
+        this.zoom = scale;
+        this.cdr.markForCheck();
+      })
+    );
     await Promise.all([this.loadSteps(), this.loadSvg()]);
   }
 
@@ -88,6 +99,7 @@ export abstract class BaseUseCaseComponent implements OnInit, AfterViewInit, OnD
 
   ngOnDestroy(): void {
     this.stopAutoPlay();
+    this.subscriptions.unsubscribe();
   }
 
   protected async loadSteps(): Promise<void> {
@@ -235,17 +247,20 @@ export abstract class BaseUseCaseComponent implements OnInit, AfterViewInit, OnD
   protected zoomIn(): void {
     const step = this.zoom < 1 ? this.ZOOM_STEP_FINE : this.ZOOM_STEP_COARSE;
     this.zoom = Math.min(this.maxZoom, this.zoom + step);
+    this.viewScale.setScale(this.zoom);
     this.cdr.markForCheck();
   }
 
   protected zoomOut(): void {
     const step = this.zoom <= 1 ? this.ZOOM_STEP_FINE : this.ZOOM_STEP_COARSE;
     this.zoom = Math.max(this.minZoom, this.zoom - step);
+    this.viewScale.setScale(this.zoom);
     this.cdr.markForCheck();
   }
 
   protected resetZoom(): void {
     this.zoom = 1;
+    this.viewScale.setScale(this.zoom);
     this.cdr.markForCheck();
   }
 }

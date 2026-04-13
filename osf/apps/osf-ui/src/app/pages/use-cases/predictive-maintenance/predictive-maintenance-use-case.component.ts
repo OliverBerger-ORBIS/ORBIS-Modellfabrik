@@ -16,6 +16,7 @@ import { EnvironmentService } from '../../../services/environment.service';
 import { Observable, Subscription, combineLatest, firstValueFrom } from 'rxjs';
 import { filter, map, startWith, debounceTime, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 import { ShopfloorMappingService } from '../../../services/shopfloor-mapping.service';
+import { ViewScaleService } from '../../../services/view-scale.service';
 
 const VIBRATION_TOPIC_SW420 = 'osf/arduino/vibration/sw420-1/state';
 const VIBRATION_TOPIC_MPU6050 = 'osf/arduino/vibration/mpu6050-1/state';
@@ -86,7 +87,7 @@ export class PredictiveMaintenanceUseCaseComponent extends BaseUseCaseComponent 
   activeTab: 'concept' | 'live-demo' = 'concept';
 
   private readonly dashboard = getDashboardController();
-  private readonly subscriptions = new Subscription();
+  private readonly pmSubscriptions = new Subscription();
   private sensorAlarmSub?: Subscription;
   private feedbackTimeout: ReturnType<typeof setTimeout> | null = null;
   enqueuedOrderIds: string[] = [];
@@ -108,6 +109,7 @@ export class PredictiveMaintenanceUseCaseComponent extends BaseUseCaseComponent 
     cdr: ChangeDetectorRef,
     http: HttpClient,
     languageService: LanguageService,
+    viewScale: ViewScaleService,
     private readonly svgGenerator: Uc05SvgGeneratorService,
     private readonly i18nService: Uc05I18nService,
     private readonly messageMonitor: MessageMonitorService,
@@ -115,7 +117,7 @@ export class PredictiveMaintenanceUseCaseComponent extends BaseUseCaseComponent 
     private readonly environmentService: EnvironmentService,
     private readonly mappingService: ShopfloorMappingService
   ) {
-    super(sanitizer, cdr, http, languageService);
+    super(sanitizer, cdr, http, languageService, viewScale);
     this.canUseAutoPark$ = combineLatest([
       this.connectionService.state$,
       this.environmentService.environment$,
@@ -131,7 +133,7 @@ export class PredictiveMaintenanceUseCaseComponent extends BaseUseCaseComponent 
       distinctUntilChanged(),
       shareReplay({ bufferSize: 1, refCount: false })
     );
-    this.subscriptions.add(
+    this.pmSubscriptions.add(
       this.messageMonitor
         .getLastMessage<{ orderId?: string; state?: string; status?: string }[] | { orderId?: string; state?: string; status?: string }>(
           'ccu/order/active'
@@ -168,7 +170,7 @@ export class PredictiveMaintenanceUseCaseComponent extends BaseUseCaseComponent 
   override ngOnDestroy(): void {
     this.sensorAlarmSub?.unsubscribe();
     if (this.feedbackTimeout) clearTimeout(this.feedbackTimeout);
-    this.subscriptions.unsubscribe();
+    this.pmSubscriptions.unsubscribe();
     super.ngOnDestroy();
   }
 

@@ -10,6 +10,12 @@
       </p>
     </div>
 
+    <div class="process-tab__actions">
+      <button type="button" class="secondary" (click)="refreshProcessData()" i18n="@@processTabRefreshButton">
+        Refresh
+      </button>
+    </div>
+
     <div class="process-tab__fixtures" *ngIf="isMockMode">
       <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
       <div class="fixture-switch">

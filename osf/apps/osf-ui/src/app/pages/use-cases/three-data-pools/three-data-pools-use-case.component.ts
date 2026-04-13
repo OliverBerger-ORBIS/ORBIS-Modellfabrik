@@ -9,6 +9,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ChangeDetectorRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { LanguageService } from '../../../services/language.service';
+import { ViewScaleService } from '../../../services/view-scale.service';
 
 export type Uc02ViewMode = 'concept' | 'lanes';
 
@@ -37,11 +38,12 @@ export class ThreeDataPoolsUseCaseComponent extends BaseUseCaseComponent {
     cdr: ChangeDetectorRef,
     http: HttpClient,
     languageService: LanguageService,
+    viewScale: ViewScaleService,
     private readonly svgGenerator: Uc02SvgGeneratorService,
     private readonly svgGeneratorLanes: Uc02SvgGeneratorLanesService,
     private readonly i18nService: Uc02I18nService
   ) {
-    super(sanitizer, cdr, http, languageService);
+    super(sanitizer, cdr, http, languageService, viewScale);
   }
 
   override getStepsUrl(): string {

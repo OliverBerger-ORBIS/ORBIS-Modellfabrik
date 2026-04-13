@@ -21,11 +21,13 @@ import {
 } from './layout.config';
 import { ModuleNameService } from '../../services/module-name.service';
 import { ExternalLinksService } from '../../services/external-links.service';
+import { ViewScaleService } from '../../services/view-scale.service';
 import type { CustomerDspConfig } from './configs/types';
 import {
   DSP_ANIMATION_LABEL_CHAR_WIDTH_FACTOR,
   maxCharsPerLineFromInnerWidth,
 } from '../../utils/svg-text-utils';
+import { Subscription } from 'rxjs';
 
 /**
  * DspAnimationComponent - Animated SVG-based architecture diagram.
@@ -147,6 +149,7 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   protected readonly zoomOutLabel = $localize`:@@shopfloorPreviewZoomOut:Zoom out`;
   protected readonly zoomInLabel = $localize`:@@shopfloorPreviewZoomIn:Zoom in`;
   protected readonly resetZoomLabel = $localize`:@@shopfloorPreviewResetZoom:Reset zoom`;
+  private readonly subscriptions = new Subscription();
 
   // Container labels
   protected readonly containerLabels: Record<string, string> = {
@@ -194,10 +197,18 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private readonly cdr: ChangeDetectorRef,
     private readonly moduleNameService: ModuleNameService,
-    private readonly externalLinksService: ExternalLinksService
+    private readonly externalLinksService: ExternalLinksService,
+    private readonly viewScale: ViewScaleService
   ) {}
 
   ngOnInit(): void {
+    this.zoom = this.viewScale.current;
+    this.subscriptions.add(
+      this.viewScale.scale$.subscribe((scale) => {
+        this.zoom = scale;
+        this.cdr.markForCheck();
+      })
+    );
     this.loadConfiguration();
   }
 
@@ -211,6 +222,7 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     this.stopAutoPlay();
+    this.subscriptions.unsubscribe();
   }
 
   /**
@@ -1069,6 +1081,7 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   protected zoomIn(): void {
     if (this.zoom < this.maxZoom) {
       this.zoom = Math.min(this.zoom + this.getZoomStep(), this.maxZoom);
+      this.viewScale.setScale(this.zoom);
       this.cdr.markForCheck();
     }
   }
@@ -1080,12 +1093,14 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   protected zoomOut(): void {
     if (this.zoom > this.minZoom) {
       this.zoom = Math.max(this.zoom - this.getZoomStep(), this.minZoom);
+      this.viewScale.setScale(this.zoom);
       this.cdr.markForCheck();
     }
   }
 
   protected resetZoom(): void {
     this.zoom = 1;
+    this.viewScale.setScale(this.zoom);
     this.cdr.markForCheck();
   }
 

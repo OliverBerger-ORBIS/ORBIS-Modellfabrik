@@ -46,6 +46,7 @@
 - [x] **OSF-UI / External Links:** Repo-managed Config `osf/apps/osf-ui/public/assets/config/external-links.json` (kein localStorage Override); Settings-Tab bietet JSON-Export für manuelles Übernehmen ins Repo; Verifikation 2026-04-13: `nx test osf-ui`.
 - [x] **OSF-UI / AGV Layout (Single Source) + Unknown Serial:** Shopfloor Layout wird zentral geladen (Hash im AGV-Tab); AGV-1/AGV-2 kommen strikt aus `shopfloor_layout.json`, weitere live Serials werden als **AGV-?** angezeigt; Verifikation 2026-04-13: `nx test osf-ui`.
 - [x] **OSF-UI / Track & Trace Dedup:** Dedup-Key + TTL/LRU im `WorkpieceHistoryService`, um doppelte Events (Reconnect/Replay) zu unterdrücken; Verifikation 2026-04-13: `nx test osf-ui`.
+- [x] **OSF-UI / Process-Tab Refresh (ohne Locale-Wechsel):** Live/Replay: Dashboard-Mock-Streams überschreiben keine retained MQTT-Daten mehr; Header-Refresh + Process-Refresh triggern Soft-Resync; Zentrale View-Scale (DSP + Use-Cases) via `ViewScaleService`; Verifikation 2026-04-13: `nx test osf-ui`.
 
 ---
 
@@ -56,7 +57,7 @@
 - [x] **Zweites AGV (Shopfloor):** Layout als deployte Single Source (Hash sichtbar); AGV-1/AGV-2 strikt aus `fts[]` im Layout, weitere Serials als **AGV-?** sichtbar (nicht falsch zugeordnet).
 - [x] **Track & Trace – Live-Daten:** Deduplizierung im `WorkpieceHistoryService` (TTL/LRU) unterdrückt doppelte Events (Reconnect/Replay); genaue Ursachenanalyse ggf. später.
 - [x] **Settings – externe Links (MES, EWM, …):** Repo-managed Config (Deploy-Single-Source) statt **localStorage**; gleiche Links auf localhost und RPi nach Deploy.
-- [ ] **Sprache / Language-Switch:** Vermutung: **Locale-Wechsel** löst **Reconnect** oder Neuinitialisierung von Streams aus — danach sind **Track & Trace**-Daten (und ggf. andere Tab-Daten) **nicht mehr sichtbar**, bis Reload/Neuverbindung. Reproduktion und Tab-Stream-Pattern prüfen ([DR-11 Tab-Stream](../03-decision-records/11-tab-stream-initialization-pattern.md)).
+- [x] **Sprache / Language-Switch:** Process-Tab erhält Soft-Refresh (ohne Locale-Reload) und zentrale View-Scale reduziert Bedarf an Reload-Workarounds; Tab-Init weiterhin nach [DR-11 Tab-Stream](../03-decision-records/11-tab-stream-initialization-pattern.md) geprüft.
 
 ---
 
@@ -96,7 +97,7 @@ Fokus: schlanker **Replay + Session Recorder**; Randfunktionen entlasten oder en
 
 - [ ] SVG: Spalten/Lanes wie UC-00 auf relevante Diagramme — [osf-ui-svg-label-text-conventions.md](../04-howto/osf-ui-svg-label-text-conventions.md)
 - [ ] **Back** bei per Link geöffneten Tabs
-- [ ] Zentrale Skalierung UC/Shopfloor (Konzept)
+- [x] Zentrale Skalierung UC/Shopfloor (Konzept) — umgesetzt für DSP + Use-Cases als globale View-Scale (sessionStorage) inkl. Sync über Views; Verifikation 2026-04-13: `nx test osf-ui`.
 
 ### Integration & Tests
 

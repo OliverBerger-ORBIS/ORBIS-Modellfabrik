@@ -97,41 +97,57 @@
         </div>
       </div>
       <div class="header__actions">
-        <div class="connection-status">
-          <span 
+        <div class="connection-status header__status">
+          <span
             class="status-label"
             [class.status-label--connected]="(connectionState$ | async) === 'connected'"
             [class.status-label--disconnected]="(connectionState$ | async) === 'disconnected'"
             [class.status-label--connecting]="(connectionState$ | async) === 'connecting'"
             [class.status-label--error]="(connectionState$ | async) === 'error'"
+            [attr.title]="currentError ?? connectionStatusLabels[(connectionState$ | async) ?? 'disconnected']"
+            [attr.aria-label]="connectionStatusLabels[(connectionState$ | async) ?? 'disconnected']"
+            i18n-aria-label="@@headerConnectionStatusAriaLabel"
           >
-            {{ connectionStatusLabels[(connectionState$ | async) ?? 'disconnected'] }}
           </span>
-          <ng-container *ngIf="currentError as error">
-            <span class="status-error">{{ error }}</span>
-          </ng-container>
         </div>
         <button
-          *ngIf="(connectionState$ | async) !== 'connected' && (environment$ | async)?.key !== 'mock'"
           type="button"
-          class="connect-btn"
-          (click)="manualConnect()"
-          [disabled]="(connectionState$ | async) === 'connecting'"
-          [attr.aria-label]="connectButtonLabel"
-          i18n-aria-label="@@headerConnectButtonAriaLabel"
+          class="header-action-btn refresh-btn header__refresh"
+          (click)="refresh()"
+          [attr.aria-label]="refreshButtonLabel"
+          i18n-aria-label="@@headerRefreshButtonAriaLabel"
+          [attr.title]="refreshButtonLabel"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="8" y="2" width="8" height="12" rx="1" />
-            <path d="M10 6h4M10 10h4" />
-            <path d="M12 14v6M9 18h6" />
+            <path d="M21 12a9 9 0 1 1-3-6.7" />
+            <polyline points="21 3 21 9 15 9" />
           </svg>
-          <span i18n="@@headerConnectButtonLabel">Connect</span>
         </button>
-        <button type="button" class="park-btn" (click)="parkFactory()">
-          {{ parkLabel }}
+        <button
+          type="button"
+          class="header-action-btn park-btn header__park"
+          (click)="parkFactory()"
+          [attr.title]="parkLabel"
+          [attr.aria-label]="parkLabel"
+          i18n-aria-label="@@headerParkButtonAriaLabel"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="4" y="3" width="16" height="18" rx="2" />
+            <path d="M9 17V7h5a3 3 0 0 1 0 6H9" />
+          </svg>
         </button>
-        <button type="button" class="reset-btn" (click)="resetFactory()">
-          {{ resetLabel }}
+        <button
+          type="button"
+          class="header-action-btn reset-btn header__reset"
+          (click)="resetFactory()"
+          [attr.title]="resetLabel"
+          [attr.aria-label]="resetLabel"
+          i18n-aria-label="@@headerResetButtonAriaLabel"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2v10" />
+            <path d="M5.5 4.6a10 10 0 1 0 13 0" />
+          </svg>
         </button>
       </div>
     </header>

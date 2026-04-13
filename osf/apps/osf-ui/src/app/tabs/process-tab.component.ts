@@ -10,7 +10,7 @@ import type { OrderFixtureName } from '@osf/testing-fixtures';
 import { SHOPFLOOR_ASSET_MAP } from '@osf/testing-fixtures';
 import type { Observable } from 'rxjs';
 import { map, shareReplay, filter, startWith, distinctUntilChanged, switchMap, take } from 'rxjs/operators';
-import { merge, Subscription, combineLatest, timer } from 'rxjs';
+import { EMPTY, merge, Subscription, combineLatest, timer } from 'rxjs';
 import { ICONS } from '../shared/icons/icon.registry';
 import { ErpInfoBoxComponent, type PurchaseOrderData, type CustomerOrderData, type ErpOrderType } from '../components/erp-info-box/erp-info-box.component';
 import { ErpOrderDataService } from '../services/erp-order-data.service';
@@ -275,6 +275,18 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.warn('Failed to load process fixture', fixture, error);
     }
+  }
+
+  refreshProcessData(): void {
+    // Force a resync from retained messages / recent MessageMonitor history without relying on locale reloads.
+    this.resetInventoryTracking();
+    this.bindInventoryOutputs();
+    this.setupInventoryStreamSubscription();
+    this.initializeFlowsStream();
+    if (this.isMockMode) {
+      void this.loadFixture(this.activeFixture);
+    }
+    this.cdr.markForCheck();
   }
 
   /**
@@ -680,7 +692,13 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
       take(1)
     );
 
-    return merge(lastInventory, lateArrivingStock$, this.dashboard.streams.inventoryOverview$).pipe(
+    // The mock dashboard emits fixture-driven inventory states. In live/replay, it can lag behind
+    // the actual MQTT retained snapshot and may overwrite correct data with an empty state.
+    return merge(
+      lastInventory,
+      lateArrivingStock$,
+      this.isMockMode ? this.dashboard.streams.inventoryOverview$ : EMPTY
+    ).pipe(
       shareReplay({ bufferSize: 1, refCount: false })
     );
   }
@@ -693,7 +711,7 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
       startWith({} as ProductionFlowMap)
     );
 
-    this.flows$ = merge(lastFlows, this.dashboard.streams.flows$).pipe(
+    this.flows$ = merge(lastFlows, this.isMockMode ? this.dashboard.streams.flows$ : EMPTY).pipe(
       shareReplay({ bufferSize: 1, refCount: false })
     );
 

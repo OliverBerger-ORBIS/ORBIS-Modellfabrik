@@ -9,6 +9,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ChangeDetectorRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { LanguageService } from '../../../services/language.service';
+import { ViewScaleService } from '../../../services/view-scale.service';
 
 /**
  * AI Lifecycle Use Case Component (UC-03)
@@ -30,10 +31,11 @@ export class AiLifecycleUseCaseComponent extends BaseUseCaseComponent {
     cdr: ChangeDetectorRef,
     http: HttpClient,
     languageService: LanguageService,
+    viewScale: ViewScaleService,
     private readonly svgGenerator: Uc03SvgGeneratorService,
     private readonly i18nService: Uc03I18nService
   ) {
-    super(sanitizer, cdr, http, languageService);
+    super(sanitizer, cdr, http, languageService, viewScale);
   }
 
   override getStepsUrl(): string {

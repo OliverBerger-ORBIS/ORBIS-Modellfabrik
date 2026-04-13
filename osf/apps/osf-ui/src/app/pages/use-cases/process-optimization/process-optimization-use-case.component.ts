@@ -8,6 +8,7 @@ import { Uc06I18nService } from './uc-06-i18n.service';
 import { UC06_CONNECTION_IDS } from './uc-06-structure.config';
 import { BaseUseCaseComponent } from '../shared/base-use-case.component';
 import { LanguageService } from '../../../services/language.service';
+import { ViewScaleService } from '../../../services/view-scale.service';
 
 /**
  * Process Optimization Use Case Component (UC-06)
@@ -29,10 +30,11 @@ export class ProcessOptimizationUseCaseComponent extends BaseUseCaseComponent {
     cdr: ChangeDetectorRef,
     http: HttpClient,
     languageService: LanguageService,
+    viewScale: ViewScaleService,
     private readonly svgGenerator: Uc06SvgGeneratorService,
     private readonly i18nService: Uc06I18nService
   ) {
-    super(sanitizer, cdr, http, languageService);
+    super(sanitizer, cdr, http, languageService, viewScale);
   }
 
   override getStepsUrl(): string {
