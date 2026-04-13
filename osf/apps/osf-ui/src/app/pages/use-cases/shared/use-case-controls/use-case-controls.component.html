@@ -1,4 +1,11 @@
-<div class="use-case-controls" [class.use-case-controls--with-view-toggle]="viewToggleTemplate">
+<div
+  class="use-case-controls"
+  [class.use-case-controls--with-view-toggle]="viewToggleTemplate"
+  [class.use-case-controls--with-back]="showBack"
+>
+  <div class="use-case-controls__back" *ngIf="showBack">
+    <app-back-button [fallbackPath]="backFallbackPath" />
+  </div>
   <div class="use-case-controls__title">
     @if (useCaseCode && useCaseTitle) {
       <span class="use-case-controls__code">{{ useCaseCode }}:</span>

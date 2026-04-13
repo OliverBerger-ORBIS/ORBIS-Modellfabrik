@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 import { DspArchitecturePageComponent } from '../dsp-architecture.component';
 import { DspArchitectureConfigService } from '../../../services/dsp-architecture-config.service';
 import type { ViewMode } from '../../../components/dsp-animation/types';
+import { NavigationBackService } from '../../../services/navigation-back.service';
 
 describe('DspArchitecturePageComponent', () => {
   let component: DspArchitecturePageComponent;
@@ -23,6 +24,7 @@ describe('DspArchitecturePageComponent', () => {
       providers: [
         { provide: HttpClient, useValue: httpMock },
         { provide: DspArchitectureConfigService, useValue: configServiceMock },
+        { provide: NavigationBackService, useValue: { backOrNavigate: jest.fn() } },
       ],
     }).compileComponents();
 

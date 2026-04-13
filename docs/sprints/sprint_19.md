@@ -96,7 +96,7 @@ Fokus: schlanker **Replay + Session Recorder**; Randfunktionen entlasten oder en
 ### OSF-UI – SVG / Presentation
 
 - [ ] SVG: Spalten/Lanes wie UC-00 auf relevante Diagramme — [osf-ui-svg-label-text-conventions.md](../04-howto/osf-ui-svg-label-text-conventions.md)
-- [ ] **Back** bei per Link geöffneten Tabs
+- [x] **Back** bei per Link geöffneten Tabs — In-App Back-Button (History back mit Fallback) für Deep-Links/Direct-Pages + Use-Case Detail-Header; Verifikation 2026-04-13: `nx test osf-ui`.
 - [x] Zentrale Skalierung UC/Shopfloor (Konzept) — umgesetzt für DSP + Use-Cases als globale View-Scale (sessionStorage) inkl. Sync über Views; Verifikation 2026-04-13: `nx test osf-ui`.
 
 ### Integration & Tests

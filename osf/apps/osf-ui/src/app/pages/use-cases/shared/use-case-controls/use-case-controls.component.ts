@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, TemplateRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import type { UseCaseStep } from '../base-use-case.component';
+import { BackButtonComponent } from '../../../../components/back-button/back-button.component';
 
 /**
  * Shared header controls for Use-Case diagram components.
@@ -9,12 +10,16 @@ import type { UseCaseStep } from '../base-use-case.component';
 @Component({
   selector: 'app-use-case-controls',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BackButtonComponent],
   templateUrl: './use-case-controls.component.html',
   styleUrls: ['./use-case-controls.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UseCaseControlsComponent {
+  @Input() showBack = false;
+  /** Path without locale prefix, e.g. 'dsp/use-case' */
+  @Input() backFallbackPath = 'dsp/use-case';
+
   @Input() steps: UseCaseStep[] = [];
   @Input() currentStepIndex = 0;
   @Input() zoom = 1;

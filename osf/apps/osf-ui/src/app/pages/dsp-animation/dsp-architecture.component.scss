@@ -17,6 +17,13 @@
   text-align: center;
   padding-bottom: 16px;
   border-bottom: 2px solid #e0e0e0;
+  position: relative;
+}
+
+.demo-header__back {
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 .demo-title {

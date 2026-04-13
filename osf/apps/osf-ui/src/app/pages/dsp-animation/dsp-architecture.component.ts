@@ -6,13 +6,14 @@
 
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { DspAnimationComponent } from '../../components/dsp-animation/dsp-animation.component';
 import type { ViewMode } from '../../components/dsp-animation/types';
 
 @Component({
   selector: 'app-dsp-architecture-page',
   standalone: true,
-  imports: [CommonModule, DspAnimationComponent],
+  imports: [CommonModule, BackButtonComponent, DspAnimationComponent],
   templateUrl: './dsp-architecture.component.html',
   styleUrls: ['./dsp-architecture.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

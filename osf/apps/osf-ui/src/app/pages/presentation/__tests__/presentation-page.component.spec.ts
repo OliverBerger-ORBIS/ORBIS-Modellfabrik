@@ -9,6 +9,7 @@ import { ModuleNameService } from '../../../services/module-name.service';
 import { AgvRouteService } from '../../../services/agv-route.service';
 import { AgvAnimationService } from '../../../services/agv-animation.service';
 import { LanguageService } from '../../../services/language.service';
+import { NavigationBackService } from '../../../services/navigation-back.service';
 import { ChangeDetectorRef } from '@angular/core';
 import * as mockDashboard from '../../../mock-dashboard';
 
@@ -97,6 +98,7 @@ describe('PresentationPageComponent', () => {
         { provide: AgvRouteService, useValue: ftsRouteServiceMock },
         { provide: AgvAnimationService, useValue: ftsAnimationServiceMock },
         { provide: LanguageService, useValue: languageServiceMock },
+        { provide: NavigationBackService, useValue: { backOrNavigate: jest.fn() } },
         { provide: ChangeDetectorRef, useValue: cdrMock },
         { provide: HttpClient, useValue: httpMock },
       ],
