@@ -51,6 +51,10 @@ try {
   execSync('npm run update-version && npx nx reset && npx nx build osf-ui --configuration=production --localize', {
     cwd: rootDir,
     stdio: 'inherit',
+    env: {
+      ...process.env,
+      BASELINE_BROWSER_MAPPING_IGNORE_OLD_DATA: 'true',
+    },
   });
 } catch {
   console.error('\n✗ Host build failed');

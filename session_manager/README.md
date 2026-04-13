@@ -33,17 +33,6 @@ streamlit run session_manager/app.py --server.port 8502
   - Automatischer Preload aus `data/osf-data/test_topics/preloads/`
 - **Speed Control:** Replay-Geschwindigkeit anpassbar
 
-### 📊 Session Analysis
-- **Timeline-Visualisierung:** Grafische Darstellung des Nachrichtenflusses
-- **Topic-Filterung:** Filter nach Kategorien und Keywords
-- **Order-Flow-Analyse:** Verfolgung von Order-IDs durch das System
-- **Statistiken:** Nachrichten-Counts, Zeitstempel-Analyse
-
-### 📝 Topic Recording
-- **Erste Message:** Speichert erste Nachricht pro Topic
-- **Test-Daten-Sammlung:** Valide Beispiele für Tests
-- **JSON-Export:** Strukturierte Test-Daten
-
 ### 📋 Live-Logs
 - **Ring-Buffer:** Zeigt letzte N Log-Nachrichten
 - **Level-Filter:** DEBUG, INFO, WARNING, ERROR
@@ -61,18 +50,12 @@ session_manager/
 ├── session_manager_settings.json  # Settings
 ├── README.md                      # Diese Datei
 ├── components/                    # UI-Komponenten
-│   ├── session_analysis.py        # Session-Analyse-Tab
 │   ├── session_recorder.py        # Recording-Tab
-│   ├── topic_recorder.py          # Topic-Recording-Tab
 │   ├── replay_station.py          # Replay-Tab
 │   ├── logs.py                    # Logs-Tab
 │   ├── settings_ui.py             # Settings-Tab
-│   ├── session_analyzer.py        # Analyzer-Core
-│   ├── ui_components.py           # UI-Helpers
 │   ├── order_analyzer.py          # Order-Flow-Analyse
 │   ├── auftrag_rot_analyzer.py    # Auftrag-Analyse
-│   ├── topic_manager.py           # Topic-Filter-Manager
-│   ├── timeline_visualizer.py     # Timeline-Visualisierung
 │   └── settings_manager.py        # Settings-Manager
 ├── utils/                         # Utils (eigenständig)
 │   ├── logging_config.py          # Thread-sicheres Logging
@@ -161,12 +144,6 @@ ORBIS-Modellfabrik/
 3. Wähle JSON-Dateien aus
 4. Klicke **"📤 Ausgewählte Topics senden"**
 
-### 4. Session analysieren
-1. Öffne **"📊 Session Analysis"** Tab
-2. Wähle Session-Datei (`.log`)
-3. Nutze Filter und Suche
-4. Visualisiere Timeline und Order-Flows
-
 ---
 
 ## 🐛 Troubleshooting
@@ -215,7 +192,7 @@ Diese Features sind aktuell **auskommentiert** und können bei Bedarf reaktivier
 ### Topic Categorization
 ```python
 # OmfTopicManager in utils/ implementieren
-# Dann in topic_manager.py und timeline_visualizer.py aktivieren
+# Dann in geeigneten Komponenten aktivieren (die früheren Analysis-Komponenten wurden entfernt)
 ```
 
 ---

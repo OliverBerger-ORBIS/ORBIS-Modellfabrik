@@ -1,12 +1,13 @@
 # 📹 Session Recorder - Tab Dokumentation
 
+**Navigation:** In der Sidebar **🎙️ Session Recorder** wählen. Broker, Zielverzeichnis und Aufnahme-Optionen liegen unter **⚙️ Einstellungen** (Tabs **Session Recorder** bzw. **Logging & Diagnose**).
+
 ## 🎯 Zweck
 
 Der **Session Recorder** ermöglicht die Aufnahme von MQTT-Sessions der APS-Fabrik für zwei Hauptzwecke:
 
-1. **📊 Session Analysis** - Analyse der Nachrichten-Ströme und -Muster
-2. **🔍 Template Generierung** - Automatische Erkennung von Message-Templates
-3. **🎬 Replay Station** - Sessions für reproduzierbare Tests des OSF-UI
+1. **🔍 Template Generierung** - Automatische Erkennung von Message-Templates
+2. **🎬 Replay Station** - Sessions für reproduzierbare Tests des OSF-UI
 
 **Aufgenommene Sessions** werden als SQLite-Datenbank und Log-Datei gespeichert und dienen als Basis für alle weiteren Analysen und Tests.
 
@@ -130,5 +131,4 @@ Die **INVENTORY**-Tabelle unter `data/osf-data/sessions/INVENTORY.md` sollte bei
 ## 🔗 Verwandte Komponenten
 
 - [**Replay Station**](replay-station.md) - Wiedergabe der aufgenommenen Sessions
-- [**Session Analysis**](session-analysis.md) - Analyse der Session-Daten
 - [**Settings**](../../development/dashboard-components.md) - MQTT-Konfiguration

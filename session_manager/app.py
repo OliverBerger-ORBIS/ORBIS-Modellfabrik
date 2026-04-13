@@ -18,13 +18,10 @@ import argparse
 import streamlit as st
 
 # Import components
-from session_manager.components.logs import show_logs
 from session_manager.components.replay_station import show_replay_station
-from session_manager.components.session_analysis import show_session_analysis
 from session_manager.components.session_recorder import show_session_recorder
 from session_manager.components.settings_manager import SettingsManager
 from session_manager.components.settings_ui import SettingsUI
-from session_manager.components.topic_recorder import show_topic_recorder
 
 # Absolute imports for main script (entry point)
 from session_manager.utils.logging_config import configure_logging, get_logger
@@ -68,102 +65,6 @@ def _init_logging_once():
     st.session_state["_log_init"] = True
 
 
-def show_logging_settings(logger):
-    """Logging-Konfiguration und Live-Logs Tab"""
-    st.subheader("📝 Logging-Konfiguration")
-
-    # UI-Refresh System initialisiert (wird in main() verwendet)
-
-    # Aktuelles Level anzeigen
-    current_level = st.session_state.get("logging_level", "INFO")
-    st.info(f"🔍 Aktuelles Logging-Level: **{current_level}**")
-
-    # Level-Auswahl
-    level_options = ["DEBUG", "INFO", "WARNING", "ERROR"]
-    selected_level = st.selectbox(
-        "Logging-Level auswählen:",
-        level_options,
-        index=level_options.index(current_level),
-        help=(
-            "DEBUG: Detaillierte Debug-Informationen\n"
-            "INFO: Allgemeine Informationen\n"
-            "WARNING: Warnungen\n"
-            "ERROR: Nur Fehler"
-        ),
-    )
-
-    # Level-Änderung verarbeiten
-    if selected_level != current_level:
-        st.session_state["logging_level"] = selected_level
-        st.success(f"✅ Logging-Level auf **{selected_level}** geändert")
-        request_refresh()
-
-    # Info über automatisches Log-Cleanup
-    st.info("ℹ️ **Hinweis:** Alte Log-Dateien werden automatisch beim Neustart der Anwendung gelöscht.")
-
-    # Log-Datei Info
-    log_file = Path("logs/session_manager.jsonl")
-    if log_file.exists():
-        file_size = log_file.stat().st_size
-        file_size_mb = file_size / (1024 * 1024)
-        st.markdown(f"📄 **Log-Datei:** `{log_file}`")
-        st.markdown(f"📊 **Dateigröße:** {file_size_mb:.2f} MB")
-
-        # Log-Datei löschen Option
-        if st.button("🗑️ Log-Datei löschen", help="Löscht die aktuelle Log-Datei"):
-            try:
-                log_file.unlink()
-                st.success("✅ Log-Datei gelöscht")
-                request_refresh()
-            except Exception as e:
-                st.error(f"❌ Fehler beim Löschen: {e}")
-    else:
-        st.warning("📄 Log-Datei existiert noch nicht")
-
-    # Demo-Sektion
-    st.markdown("### 🧪 Logging-Demo")
-    st.markdown("Teste verschiedene Log-Level:")
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        if st.button("🐛 DEBUG"):
-            logger.debug("Debug-Nachricht: Detaillierte Debug-Informationen")
-            st.success("Debug-Nachricht gesendet")
-
-    with col2:
-        if st.button("ℹ️ INFO"):
-            logger.info("Info-Nachricht: Allgemeine Informationen")
-            st.success("Info-Nachricht gesendet")
-
-    with col3:
-        if st.button("⚠️ WARNING"):
-            logger.warning("Warning-Nachricht: Warnung vor einem Problem")
-            st.success("Warning-Nachricht gesendet")
-
-    with col4:
-        if st.button("❌ ERROR"):
-            logger.error("Error-Nachricht: Ein Fehler ist aufgetreten")
-            st.success("Error-Nachricht gesendet")
-
-    # Log-Viewer
-    st.markdown("### 📋 Live Log-Viewer")
-    if log_file.exists():
-        try:
-            with open(log_file, encoding="utf-8") as f:
-                log_lines = f.readlines()
-
-            # Letzte 20 Zeilen anzeigen
-            recent_lines = log_lines[-20:] if len(log_lines) > 20 else log_lines
-            log_content = "".join(recent_lines)
-
-            st.code(log_content, language="text")
-        except Exception as e:
-            st.error(f"❌ Fehler beim Lesen der Log-Datei: {e}")
-    else:
-        st.info("📄 Keine Log-Datei vorhanden")
-
-
 def main():
     """Hauptfunktion des Session Managers"""
 
@@ -194,11 +95,8 @@ def main():
     # Tab selection — `key` erlaubt Sprung aus z. B. Session Recorder (Einstellungen-Button)
     tab_options = [
         "📡 Replay Station",
-        "📂 Topic Recorder",
         "🎙️ Session Recorder",
-        "📊 Session Analyse",
         "⚙️ Einstellungen",
-        "📝 Logging",
     ]
     tab = st.sidebar.selectbox(
         "Wähle einen Tab:",
@@ -206,25 +104,16 @@ def main():
         key="main_sidebar_tab",
     )
 
-    # Tab content
-    if tab == "📂 Topic Recorder":
-        show_topic_recorder()
-    elif tab == "📡 Replay Station":
+    if tab == "📡 Replay Station":
         show_replay_station()
     elif tab == "🎙️ Session Recorder":
         show_session_recorder()
-    elif tab == "📊 Session Analyse":
-        show_session_analysis()
     elif tab == "⚙️ Einstellungen":
         st.session_state.settings_ui.render_settings_page()
-    elif tab == "📝 Logging":
-        show_logging_settings(logger)
-        st.markdown("---")
-        show_logs()
 
     # Footer
     st.sidebar.markdown("---")
-    st.sidebar.markdown("**Session Manager v1.2.0**")
+    st.sidebar.markdown("**Session Manager v1.3.0**")
     st.sidebar.markdown("ORBIS Smart-Factory")
 
 

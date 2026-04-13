@@ -167,7 +167,6 @@ sequenceDiagram
 
 ## 🔗 Verwandte Komponenten
 
-- [**Session Analysis**](session-analysis.md) - Basis für Template-Analyse
 - [**Session Recorder**](session-recorder.md) - Aufnahme der zu analysierenden Sessions
 - [**OSF-UI**](../../development/dashboard-components.md) - Nutzer der Registry-Templates
 - [**Registry Model**](../../../02-architecture/registry-model.md) - OSF-Registry System und Template-Speicherung

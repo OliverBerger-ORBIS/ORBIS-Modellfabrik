@@ -50,30 +50,6 @@ Issue: Timing-Probleme beim Replay
 3. **MQTT-Broker:** Broker-Performance prüfen
 4. **Threading:** Background-Thread läuft?
 
-### 📊 Session Analysis
-
-#### **Problem: Timeline wird nicht angezeigt**
-```
-Error: Failed to render timeline
-```
-
-**Lösung:**
-1. **Plotly:** Plotly installiert? `pip install plotly`
-2. **Daten-Format:** Session-Daten korrekt?
-3. **Memory:** Ausreichend RAM für große Sessions?
-4. **Browser:** JavaScript aktiviert?
-
-#### **Problem: Graph-Visualisierung fehlt**
-```
-Error: Graph visualization not available
-```
-
-**Lösung:**
-1. **NetworkX:** NetworkX installiert? `pip install networkx`
-2. **Meta-Daten:** orderID, workpieceId verfügbar?
-3. **Message-Chains:** Verbindungen zwischen Messages?
-4. **Performance:** Session zu groß für Graph?
-
 ### 🔍 Template Analysis
 
 #### **Problem: Analyzer läuft nicht**
@@ -172,5 +148,4 @@ Bei weiteren Problemen:
 
 - [**Session Recorder**](session-recorder.md) - Aufnahme-Probleme
 - [**Replay Station**](replay-station.md) - Wiedergabe-Probleme
-- [**Session Analysis**](session-analysis.md) - Analyse-Probleme
 - [**Template Analysis**](template-analysis.md) - Template-Probleme

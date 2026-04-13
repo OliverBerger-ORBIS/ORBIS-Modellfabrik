@@ -3,10 +3,13 @@ Settings UI für Session Manager
 Streamlit UI für die Einstellungen
 """
 
+from pathlib import Path
+
 import streamlit as st
 
 from ..utils.logging_config import get_logger
-from ..utils.ui_refresh import RerunController
+from ..utils.ui_refresh import RerunController, request_refresh
+from .logs import show_logs
 from .settings_manager import SettingsManager
 
 logger = get_logger(__name__)
@@ -23,121 +26,91 @@ class SettingsUI:
         """Rendert die komplette Settings-Seite"""
         logger.info("⚙️ Settings Tab geladen")
         st.title("⚙️ Einstellungen")
-        st.markdown("Zentrale Konfiguration für alle Session Manager Tabs")
-
-        # Tabs für verschiedene Sektionen
-        tab1, tab2, tab3, tab4 = st.tabs(
-            ["📂 Topic Recorder", "📊 Session Analyse", "▶️ Replay Station", "🔴 Session Recorder"]
+        st.markdown(
+            "Konfiguration für **Replay Station**, **Session Recorder**, **Logging** und Import/Export der Einstellungsdatei."
         )
 
+        tab1, tab2, tab3 = st.tabs(["▶️ Replay Station", "🔴 Session Recorder", "📝 Logging & Diagnose"])
+
         with tab1:
-            self._render_topic_recorder_settings()
-
-        with tab2:
-            self._render_session_analysis_settings()
-
-        with tab3:
             self._render_replay_station_settings()
 
-        with tab4:
+        with tab2:
             self._render_session_recorder_settings()
 
-        # Allgemeine Einstellungen
+        with tab3:
+            self._render_logging_and_diagnostics()
+
         st.markdown("---")
         self._render_general_settings()
 
-    def _render_session_analysis_settings(self):
-        """Rendert die Session Analyse Einstellungen"""
-        st.subheader("📊 Session Analyse Einstellungen")
+    def _render_logging_and_diagnostics(self):
+        """Logging-Level, Log-Datei und Live-Logs (ehemals Top-Level-Tab „Logging“)."""
+        st.subheader("📝 Logging")
+        diag_logger = get_logger("session_manager.settings_ui")
 
-        # Session-Verzeichnis
-        st.markdown("**📁 Session-Verzeichnis**")
-        st.markdown("Verzeichnis in dem die Session-Dateien gespeichert sind")
-
-        current_directory = self.settings_manager.get_session_directory("session_analysis")
-        new_directory = st.text_input(
-            "Session-Verzeichnis:", value=current_directory, help="Pfad zum Verzeichnis mit Session-Dateien (.log)"
+        current_level = st.session_state.get("logging_level", "INFO")
+        st.caption(
+            f"Aktuelles Level: **{current_level}** · Live-Stream unten (Ring-Buffer). JSONL-Datei unter Projekt-`logs/`."
         )
+        level_options = ["DEBUG", "INFO", "WARNING", "ERROR"]
+        selected_level = st.selectbox(
+            "Logging-Level",
+            level_options,
+            index=level_options.index(current_level) if current_level in level_options else 1,
+            help="Gilt für neue Logger-Ausgaben nach Änderung (Seite neu laden kann nötig sein).",
+            key="settings_logging_level_select",
+        )
+        if selected_level != current_level:
+            st.session_state["logging_level"] = selected_level
+            st.success(f"Level auf **{selected_level}** gesetzt — bei Bedarf App neu starten für volle Wirkung.")
+            request_refresh()
 
-        if new_directory != current_directory:
-            if st.button("💾 Verzeichnis speichern", key="save_session_dir"):
-                self.settings_manager.set_setting("session_analysis", "session_directory", new_directory)
-                st.success(f"Session-Verzeichnis gespeichert: {new_directory}")
-                self.rerun_controller.request_rerun()
+        st.info("Alte Log-Dateien werden beim App-Start bereinigt (siehe `logging_config`).")
+
+        log_file = Path("logs/session_manager.jsonl")
+        st.markdown(f"**Log-Datei:** `{log_file}`")
+        if log_file.exists():
+            size_mb = log_file.stat().st_size / (1024 * 1024)
+            st.markdown(f"**Größe:** {size_mb:.2f} MB")
+            if st.button("🗑️ Log-Datei löschen", key="settings_delete_jsonl"):
+                try:
+                    log_file.unlink()
+                    st.success("Log-Datei gelöscht.")
+                    request_refresh()
+                except OSError as e:
+                    st.error(f"Löschen fehlgeschlagen: {e}")
+        else:
+            st.warning("Datei existiert noch nicht.")
+
+        with st.expander("JSONL-Datei — letzte Zeilen"):
+            if log_file.exists():
+                try:
+                    lines = log_file.read_text(encoding="utf-8").splitlines()
+                    tail = "\n".join(lines[-20:]) if lines else ""
+                    st.code(tail or "(leer)", language="text")
+                except OSError as e:
+                    st.error(str(e))
+            else:
+                st.caption("Keine Datei.")
+
+        with st.expander("Optional: Test-Logzeilen senden"):
+            c1, c2, c3, c4 = st.columns(4)
+            with c1:
+                if st.button("DEBUG", key="log_demo_debug"):
+                    diag_logger.debug("Debug-Testzeile (Settings)")
+            with c2:
+                if st.button("INFO", key="log_demo_info"):
+                    diag_logger.info("Info-Testzeile (Settings)")
+            with c3:
+                if st.button("WARNING", key="log_demo_warn"):
+                    diag_logger.warning("Warning-Testzeile (Settings)")
+            with c4:
+                if st.button("ERROR", key="log_demo_err"):
+                    diag_logger.error("Error-Testzeile (Settings)")
 
         st.markdown("---")
-
-        # Vorfilter-Topics
-        st.markdown("**🔧 Vorfilter-Topics**")
-        st.markdown("Topics die standardmäßig aus der Timeline ausgefiltert werden")
-
-        current_topics = self.settings_manager.get_prefilter_topics()
-
-        # Topic hinzufügen
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            new_topic = st.text_input("Neues Topic hinzufügen:", placeholder="/j1/txt/1/i/example")
-        with col2:
-            if st.button("➕ Hinzufügen", key="add_topic"):
-                if new_topic and new_topic not in current_topics:
-                    self.settings_manager.add_prefilter_topic(new_topic)
-                    self.rerun_controller.request_rerun()
-
-        # Vorfilter-Topics mit Aktiv/Nicht-Aktiv Buttons
-        st.markdown("**Aktivierte Vorfilter-Topics:**")
-
-        # Standard-Topics die häufig gefiltert werden
-        common_topics = [
-            "/j1/txt/1/i/cam",  # Kamera-Daten
-            "/j1/txt/1/i/bme",  # BME680-Sensor-Daten
-            "/j1/txt/1/c/bme680",  # BME680-Sensor-Daten (andere Schreibweise)
-            "/j1/txt/1/c/cam",  # Kamera-Daten (andere Schreibweise)
-            "/j1/txt/1/c/ldr",  # LDR-Sensor-Daten
-            "/j1/txt/1/i/ldr",  # LDR-Sensor-Daten (andere Schreibweise)
-        ]
-
-        # Alle Topics (Standard + aktuelle)
-        all_topics = list(set(common_topics + current_topics))
-
-        if all_topics:
-            for i, topic in enumerate(sorted(all_topics)):
-                col1, col2, col3 = st.columns([4, 1, 1])
-                with col1:
-                    st.code(topic)
-                with col2:
-                    is_active = topic in current_topics
-                    if st.button("✅" if is_active else "❌", key=f"toggle_topic_{i}"):
-                        if is_active:
-                            self.settings_manager.remove_prefilter_topic(topic)
-                        else:
-                            self.settings_manager.add_prefilter_topic(topic)
-                        self.rerun_controller.request_rerun()
-                with col3:
-                    if topic not in common_topics:  # Nur benutzerdefinierte Topics können gelöscht werden
-                        if st.button("🗑️", key=f"delete_topic_{i}"):
-                            self.settings_manager.remove_prefilter_topic(topic)
-                            self.rerun_controller.request_rerun()
-        else:
-            st.info("Keine Vorfilter-Topics konfiguriert")
-
-        # Weitere Session Analyse Einstellungen
-        st.markdown("**⚙️ Weitere Einstellungen**")
-
-        show_all_topics = self.settings_manager.get_setting("session_analysis", "show_all_topics_by_default", False)
-        if st.checkbox("Alle Topics standardmäßig anzeigen", value=show_all_topics):
-            self.settings_manager.set_setting("session_analysis", "show_all_topics_by_default", True)
-        else:
-            self.settings_manager.set_setting("session_analysis", "show_all_topics_by_default", False)
-
-        timeline_height = self.settings_manager.get_setting("session_analysis", "timeline_height", 600)
-        new_height = st.slider("Timeline-Höhe (Pixel)", 300, 1000, timeline_height)
-        if new_height != timeline_height:
-            self.settings_manager.set_setting("session_analysis", "timeline_height", new_height)
-
-        max_topics = self.settings_manager.get_setting("session_analysis", "max_topics_display", 50)
-        new_max = st.slider("Max. Topics in Anzeige", 10, 200, max_topics)
-        if new_max != max_topics:
-            self.settings_manager.set_setting("session_analysis", "max_topics_display", new_max)
+        show_logs()
 
     def _render_replay_station_settings(self):
         """Rendert die Replay Station Einstellungen"""
@@ -394,158 +367,6 @@ class SettingsUI:
                 },
             )
             st.success("✅ Recording Einstellungen gespeichert!")
-
-    def _render_topic_recorder_settings(self):
-        """Rendert die Topic Recorder Einstellungen"""
-        st.subheader("📂 Topic Recorder Einstellungen")
-
-        # Topics-Verzeichnis Einstellungen
-        st.markdown("#### 📁 Topics-Verzeichnis")
-        current_dir = self.settings_manager.get_topic_recorder_directory()
-
-        topics_directory = st.text_input(
-            "Topics-Verzeichnis",
-            value=current_dir,
-            help="Verzeichnis in dem die Topic-Dateien gespeichert werden",
-            key="topic_recorder_topics_dir",
-        )
-
-        # Topics-Verzeichnis Einstellungen speichern
-        if st.button("💾 Topics-Verzeichnis speichern", key="save_topic_recorder_dir"):
-            self.settings_manager.update_topic_recorder_directory(topics_directory)
-            st.success("✅ Topics-Verzeichnis gespeichert!")
-
-        st.markdown("---")
-
-        # MQTT Broker Einstellungen
-        st.markdown("#### 🔌 MQTT Broker Konfiguration")
-        mqtt_settings = self.settings_manager.get_topic_recorder_mqtt_settings()
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            mqtt_host = st.text_input(
-                "MQTT Broker Host",
-                value=mqtt_settings.get("host", "localhost"),
-                help="Hostname oder IP-Adresse des MQTT Brokers",
-                key="topic_recorder_mqtt_host",
-            )
-
-            mqtt_port = st.number_input(
-                "MQTT Broker Port",
-                min_value=1,
-                max_value=65535,
-                value=mqtt_settings.get("port", 1883),
-                help="Port des MQTT Brokers",
-                key="topic_recorder_mqtt_port",
-            )
-
-        with col2:
-            mqtt_qos = st.selectbox(
-                "QoS Level",
-                options=[0, 1, 2],
-                index=mqtt_settings.get("qos", 1),
-                help="Quality of Service Level für MQTT Nachrichten",
-                key="topic_recorder_mqtt_qos",
-            )
-
-            mqtt_timeout = st.number_input(
-                "Timeout (Sekunden)",
-                min_value=1,
-                max_value=60,
-                value=mqtt_settings.get("timeout", 5),
-                help="Timeout für MQTT Verbindungen",
-                key="topic_recorder_mqtt_timeout",
-            )
-
-        # Username und Password in separater Zeile
-        col3, col4 = st.columns(2)
-
-        with col3:
-            mqtt_username = st.text_input(
-                "MQTT Username (optional)",
-                value=mqtt_settings.get("username", ""),
-                help="Benutzername für MQTT Broker Authentifizierung",
-                key="topic_recorder_mqtt_username",
-            )
-
-        with col4:
-            mqtt_password = st.text_input(
-                "MQTT Password (optional)",
-                value=mqtt_settings.get("password", ""),
-                type="password",
-                help="Passwort für MQTT Broker Authentifizierung",
-                key="topic_recorder_mqtt_password",
-            )
-
-        # MQTT Einstellungen speichern
-        if st.button("💾 MQTT Broker Einstellungen speichern", key="save_topic_recorder_mqtt"):
-            self.settings_manager.update_topic_recorder_mqtt_settings(
-                mqtt_host, int(mqtt_port), int(mqtt_qos), int(mqtt_timeout), mqtt_username, mqtt_password
-            )
-            st.success("✅ MQTT Broker Einstellungen gespeichert!")
-
-        st.markdown("---")
-
-        # Info über Dateinamen-Format
-        st.markdown("#### 📋 Dateinamen-Format")
-        st.info("**Format:** `<topic>.json` - JSON mit allen MQTT-Metadaten")
-        st.markdown("**Dateiname-Beispiele:**")
-        st.code("ccu_order_active.json  (Topic: ccu/order/active)", language="text")
-        st.code("_j1_txt_1_i_bme680.json  (Topic: /j1/txt/1/i/bme680)", language="text")
-
-        st.markdown("**Datei-Inhalt (JSON):**")
-        example_json = """{
-  "topic": "/j1/txt/1/i/bme680",
-  "payload": "temperature=25.3",
-  "qos": 1,
-  "retain": false,
-  "timestamp": "2025-10-01T14:30:00.123Z"
-}"""
-        st.code(example_json, language="json")
-        st.info(
-            "💡 **Verhalten:** Pro Topic wird nur die erste Nachricht gespeichert (valides Test-Beispiel, keine Überschreibung)"
-        )
-
-        st.markdown("---")
-
-        # Periodische Topics verwalten
-        st.markdown("#### 🔄 Periodische Topics")
-        st.markdown("Topics die manuell als 'periodisch' markiert sind (nur erste Nachricht wird gespeichert)")
-
-        periodic_topics = self.settings_manager.get_topic_recorder_periodic_topics()
-
-        # Neues Topic hinzufügen
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            new_topic = st.text_input(
-                "Neues periodisches Topic hinzufügen:", placeholder="/j1/txt/1/i/cam", key="add_periodic_topic_input"
-            )
-        with col2:
-            if st.button("➕ Hinzufügen", key="add_periodic_topic_btn"):
-                if new_topic and new_topic not in periodic_topics:
-                    self.settings_manager.add_topic_recorder_periodic_topic(new_topic)
-                    st.success(f"✅ Topic hinzugefügt: {new_topic}")
-                    self.rerun_controller.request_rerun()
-
-        # Liste der periodischen Topics
-        if periodic_topics:
-            st.markdown("**Konfigurierte periodische Topics:**")
-            for i, topic in enumerate(periodic_topics):
-                col1, col2 = st.columns([4, 1])
-                with col1:
-                    st.code(topic, language="text")
-                with col2:
-                    if st.button("🗑️", key=f"delete_periodic_topic_{i}"):
-                        self.settings_manager.remove_topic_recorder_periodic_topic(topic)
-                        st.success(f"✅ Topic entfernt: {topic}")
-                        self.rerun_controller.request_rerun()
-        else:
-            st.info("📋 Keine periodischen Topics konfiguriert - verwende Analyse-Ergebnisse")
-
-        st.caption(
-            "💡 **Hinweis:** Diese Topics werden zusätzlich zu den automatisch erkannten als periodisch behandelt"
-        )
 
     # def _render_template_analysis_settings(self):
     #     """Rendert die Template Analyse Einstellungen"""

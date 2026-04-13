@@ -41,6 +41,8 @@
 - [x] **Session-Meta:** optionale **erste Zeile** `session_meta` in `.log` (Dauer, Broker, Preset, OSF-Workspace-Version, CCU/Order-Kurzinfo); Replay/Loader ignorieren sie; INVENTORY-Pflegehinweise + `scripts/check_session_inventory.py`.
 - [x] **Session Recorder UX:** Sprung **⚙️ Einstellungen** aus dem Recorder-Tab (`main_sidebar_tab`); Meta-Felder während Aufnahme.
 - [x] **10.04.2026:** Externe **OSF-Präsentation per Video** für Kunden **Netzsch** (Remote). Setup-Hinweise: Abschnitt **Präsentation / Demo-Setup** oben.
+- [x] **OSF-UI / I18n:** Production-Build `nx run osf-ui:build:production` (Locales EN/DE/FR) **ohne** „No translation found for …“ — `messages.de.json` / `messages.fr.json` decken die IDs; Verifikation 2026-04-13.
+- [x] **Session Manager v1.3.0:** Nur noch Sidebar-Tabs **Replay Station**, **Session Recorder**, **Einstellungen**; Logging in Einstellungen gebündelt (siehe Abschnitt „Session Manager – geplanter Umbau“).
 
 ---
 
@@ -59,9 +61,9 @@
 
 Fokus: schlanker **Replay + Session Recorder**; Randfunktionen entlasten oder entfernen.
 
-- [ ] **Topic Recorder**-Tab **entfernen** (oder aus App auslagern — nur noch bei Bedarf)
-- [ ] **Session-Analyse**-Tab **entfernen** (Analyse über OSF / externe Tools / Notebooks)
-- [ ] **Logging** verschlanken (kein eigener Top-Level-Tab nötig): Level, Live-Log-Hinweis, ggf. **Pfad** in **⚙️ Einstellungen** bündeln
+- [x] **Topic Recorder**-Tab **entfernen** — UI-Tab weg; Modul `topic_recorder.py` bleibt im Repo für ggf. spätere Nutzung.
+- [x] **Session-Analyse**-Tab **entfernen** — UI-Tab weg; Analyse über OSF / externe Tools; Modul `session_analysis.py` bleibt optional.
+- [x] **Logging** verschlanken: Level, JSONL-Pfad, Live-Ring-Buffer und optionale Diagnose unter **⚙️ Einstellungen → Tab „Logging & Diagnose“** (Session Manager **v1.3.0**).
 - [ ] **OSF:** optionale **Replay**-Funktionalität (z. B. näher an UI-Workflows) — **später** / Backlog, nicht Blocker für den Umbau
 
 ---
@@ -93,10 +95,6 @@ Fokus: schlanker **Replay + Session Recorder**; Randfunktionen entlasten oder en
 - [ ] **Back** bei per Link geöffneten Tabs
 - [ ] Zentrale Skalierung UC/Shopfloor (Konzept)
 
-### OSF-UI – I18n
-
-- [ ] **Fehlende Übersetzungs-Tags:** Build-Warnungen **„No translation found for …“** beim **Production-Build** (`--localize`) abarbeiten — Einträge in `messages.de.json` / `messages.fr.json` für die genannten Message-IDs ergänzen (Default-Strings bleiben **EN** im Template; vgl. Projekt-I18n-Regeln). Ziel: weniger Lärm im Build, konsistente DE/FR für Demo und Messe.
-
 ### Integration & Tests
 
 - [ ] Sessions **2 AGVs**; weitere Aufnahmen mit **Analyse**-Preset (DR-25) bei Bedarf
@@ -119,7 +117,7 @@ Fokus: schlanker **Replay + Session Recorder**; Randfunktionen entlasten oder en
 ## Später (Backlog)
 
 - Produkt WHITE „2× Bohren“ (MES/CCU/Kette)
-- Customer **Netzsch:** Erstkontakt-Präsentation **10.04.2026** erfolgt; Folge: **`NETZSCH_CONFIG`** / Produkt-Themen
+- Customer **Netzsch** (`NETZSCH_CONFIG`)
 - Arduino: optionales 7-Segment
 - **OSF:** Replay näher an Produkt-Workflows (optional, nach Session-Manager-Umbau)
 - UI-Test-Framework — [test-framework-replay-comparison-2026-03.md](../07-analysis/test-framework-replay-comparison-2026-03.md)

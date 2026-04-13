@@ -1,0 +1,14 @@
+---
+description: Sprint-Markdown – erledigte Tasks abhaken und unter Erledigt dokumentieren
+alwaysApply: true
+---
+
+# `docs/sprints/sprint_*.md` – Checklistenpflege
+
+Wenn eine Aufgabe **fertig umgesetzt oder verifiziert** ist und **explizit** als `- [ ] …` im **aktuellen** Sprint (`docs/sprints/sprint_NN.md`) steht:
+
+1. **Abhaken:** die Zeile von `- [ ]` auf `- [x]` setzen **oder** (bevorzugt bei Abschluss) die Zeile unter **## Erledigt** als `- [x] …` mit **kurzer** Verifikation (Datum, Kommando, Ergebnis) eintragen und den entsprechenden Eintrag unter **Offen** entfernen, damit **Offen** nur offene Punkte enthält.
+2. **Kein Leerstand:** leere `###`-Abschnitte unter **Offen** entfernen.
+3. **Nicht raten:** nur abhaken, wenn die Arbeit im Repo/Build nachvollziehbar erledigt ist (kein reines „vermutlich schon fertig“ ohne Check).
+
+Siehe auch Projektregeln zu **Sprints** und **I18n** (Production-Build mit Lokalisierung).

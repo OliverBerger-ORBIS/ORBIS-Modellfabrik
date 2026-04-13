@@ -26,7 +26,7 @@ class SessionManagerLogger:
     def __init__(self, session_name: str, log_dir: str = "logs"):
         """
         Args:
-            session_name: Name der Session (z.B. "session_analysis", "replay_station")
+            session_name: Name der Session (z.B. "replay_station", "session_recorder")
             log_dir: Verzeichnis für Log-Dateien
         """
         self.session_name = session_name

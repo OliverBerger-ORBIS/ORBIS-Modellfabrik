@@ -149,5 +149,4 @@ sequenceDiagram
 ## 🔗 Verwandte Komponenten
 
 - [**Session Recorder**](session-recorder.md) - Aufnahme der Sessions
-- [**Session Analysis**](session-analysis.md) - Analyse der Session-Daten
 - [**OSF-UI**](../../development/dashboard-components.md) - Empfänger der Replay-Nachrichten

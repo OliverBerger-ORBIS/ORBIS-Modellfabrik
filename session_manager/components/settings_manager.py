@@ -5,7 +5,7 @@ Zentrale Verwaltung aller Einstellungen für die verschiedenen Tabs
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from ..utils.logging_config import get_logger
 
@@ -41,19 +41,6 @@ class SettingsManager:
     def _get_default_settings(self) -> Dict[str, Any]:
         """Gibt die Standard-Einstellungen zurück"""
         return {
-            "session_analysis": {
-                "session_directory": "data/osf-data/sessions",
-                "prefilter_topics": [
-                    "/j1/txt/1/i/cam",  # Kamera-Daten
-                    "/j1/txt/1/i/bme",  # BME680-Sensor-Daten
-                    "/j1/txt/1/c/bme680",  # BME680-Sensor-Daten (andere Schreibweise)
-                    "/j1/txt/1/c/cam",  # Kamera-Daten (andere Schreibweise)
-                    "/j1/txt/1/c/ldr",  # LDR-Sensor-Daten
-                ],
-                "show_all_topics_by_default": False,
-                "timeline_height": 600,
-                "max_topics_display": 50,
-            },
             "replay_station": {
                 "session_directory": "data/osf-data/sessions",
                 "mqtt_broker": {"host": "localhost", "port": 1883, "qos": 1, "timeout": 5},
@@ -70,16 +57,6 @@ class SettingsManager:
                     "recording_exclusion_preset": "none",
                 },
             },
-            "topic_recorder": {
-                "topics_directory": "data/osf-data/topics",
-                "mqtt_broker": {"host": "localhost", "port": 1883, "qos": 1, "timeout": 5},
-                "periodic_topics": [
-                    "ccu/pairing/state",
-                    "/j1/txt/1/i/cam",
-                    "module/v1/ff/SVR4H73275/instantAction",
-                ],
-            },
-            "template_analysis": {"show_payload_preview": True, "max_payload_length": 200},
         }
 
     def save_settings(self):
@@ -111,40 +88,6 @@ class SettingsManager:
         self.settings[section] = settings
         self.save_settings()
 
-    def get_prefilter_topics(self) -> List[str]:
-        """Holt die Vorfilter-Topics für Session Analysis"""
-        return self.get_setting("session_analysis", "prefilter_topics", [])
-
-    def set_prefilter_topics(self, topics: List[str]):
-        """Setzt die Vorfilter-Topics für Session Analysis"""
-        self.set_setting("session_analysis", "prefilter_topics", topics)
-
-    def add_prefilter_topic(self, topic: str):
-        """Fügt ein Topic zum Vorfilter hinzu"""
-        topics = self.get_prefilter_topics()
-        if topic not in topics:
-            topics.append(topic)
-            self.set_prefilter_topics(topics)
-
-    def remove_prefilter_topic(self, topic: str):
-        """Entfernt ein Topic vom Vorfilter"""
-        topics = self.get_prefilter_topics()
-        if topic in topics:
-            topics.remove(topic)
-            self.set_prefilter_topics(topics)
-
-    def toggle_prefilter_topic(self, topic: str):
-        """Schaltet ein Topic im Vorfilter ein/aus"""
-        topics = self.get_prefilter_topics()
-        if topic in topics:
-            self.remove_prefilter_topic(topic)
-        else:
-            self.add_prefilter_topic(topic)
-
-    def is_prefilter_topic_active(self, topic: str) -> bool:
-        """Prüft ob ein Topic im Vorfilter aktiv ist"""
-        return topic in self.get_prefilter_topics()
-
     def get_mqtt_broker_settings(self) -> Dict[str, Any]:
         """Gibt die MQTT Broker Einstellungen zurück"""
         return self.settings.get("replay_station", {}).get(
@@ -161,10 +104,7 @@ class SettingsManager:
 
     def get_session_directory(self, section: str = "replay_station") -> str:
         """Gibt das Session-Verzeichnis zurück"""
-        if section == "session_analysis":
-            directory = self.settings.get("session_analysis", {}).get("session_directory", "data/osf-data/sessions")
-        else:
-            directory = self.settings.get("replay_station", {}).get("session_directory", "data/osf-data/sessions")
+        directory = self.settings.get(section, {}).get("session_directory", "data/osf-data/sessions")
         logger.debug(f"🔍 Settings: get_session_directory({section}) = {directory}")
         return directory
 
@@ -228,67 +168,6 @@ class SettingsManager:
             "password": password,
         }
         self.save_settings()
-
-    def get_topic_recorder_mqtt_settings(self) -> Dict[str, Any]:
-        """Gibt die MQTT Broker Einstellungen für Topic Recorder zurück"""
-        return self.settings.get("topic_recorder", {}).get(
-            "mqtt_broker", {"host": "localhost", "port": 1883, "qos": 1, "timeout": 5, "username": "", "password": ""}
-        )
-
-    def get_topic_recorder_directory(self) -> str:
-        """Gibt das Topics-Verzeichnis für Topic Recorder zurück"""
-        return self.settings.get("topic_recorder", {}).get("topics_directory", "data/osf-data/topics")
-
-    def update_topic_recorder_mqtt_settings(
-        self, host: str, port: int, qos: int, timeout: int, username: str = "", password: str = ""
-    ):
-        """Aktualisiert die MQTT Broker Einstellungen für Topic Recorder"""
-        if "topic_recorder" not in self.settings:
-            self.settings["topic_recorder"] = {}
-
-        self.settings["topic_recorder"]["mqtt_broker"] = {
-            "host": host,
-            "port": port,
-            "qos": qos,
-            "timeout": timeout,
-            "username": username,
-            "password": password,
-        }
-        self.save_settings()
-
-    def update_topic_recorder_directory(self, directory: str):
-        """Aktualisiert das Topics-Verzeichnis für Topic Recorder"""
-        if "topic_recorder" not in self.settings:
-            self.settings["topic_recorder"] = {}
-
-        self.settings["topic_recorder"]["topics_directory"] = directory
-        self.save_settings()
-
-    def get_topic_recorder_periodic_topics(self) -> list:
-        """Gibt die Liste der manuell konfigurierten periodischen Topics zurück"""
-        return self.settings.get("topic_recorder", {}).get("periodic_topics", [])
-
-    def update_topic_recorder_periodic_topics(self, topics: list):
-        """Aktualisiert die Liste der periodischen Topics"""
-        if "topic_recorder" not in self.settings:
-            self.settings["topic_recorder"] = {}
-
-        self.settings["topic_recorder"]["periodic_topics"] = topics
-        self.save_settings()
-
-    def add_topic_recorder_periodic_topic(self, topic: str):
-        """Fügt ein Topic zur Liste der periodischen Topics hinzu"""
-        topics = self.get_topic_recorder_periodic_topics()
-        if topic not in topics:
-            topics.append(topic)
-            self.update_topic_recorder_periodic_topics(topics)
-
-    def remove_topic_recorder_periodic_topic(self, topic: str):
-        """Entfernt ein Topic aus der Liste der periodischen Topics"""
-        topics = self.get_topic_recorder_periodic_topics()
-        if topic in topics:
-            topics.remove(topic)
-            self.update_topic_recorder_periodic_topics(topics)
 
     def reset_to_defaults(self):
         """Setzt alle Einstellungen auf Standard zurück"""
