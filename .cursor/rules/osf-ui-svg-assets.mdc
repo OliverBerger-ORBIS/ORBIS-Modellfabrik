@@ -1,0 +1,58 @@
+---
+description: OSF-UI SVG-Assets — src/assets/svg (brand, business, dsp, shopfloor, ui, …) → public spiegeln, icon.registry, dsp-svg-inventory
+globs: osf/apps/osf-ui/src/assets/**/*.svg,osf/apps/osf-ui/src/app/shared/icons/icon.registry.ts,osf/apps/osf-ui/public/**/*.svg,docs/02-architecture/dsp-svg-inventory.md
+alwaysApply: true
+---
+
+# OSF-UI: SVG-Assets (`assets/svg/`)
+
+## Gültigkeit: der gesamte SVG-Baum — nicht nur Shopfloor
+
+Unter **`osf/apps/osf-ui/src/assets/svg/`** liegen u. a.:
+
+| Bereich | Beispielpfad / Nutzung |
+|--------|-------------------------|
+| **`brand/`** | Logos (`icon.registry.ts` → `ICONS.brand.*`) |
+| **`business/`** | Business-Diagramme |
+| **`dsp/`** | Architektur, Functions, Methodology, … (`ICONS.dsp.*`) |
+| **`shopfloor/`** | Shared, stations, systems, workpieces, intersections (`ICONS.shopfloor.*`) |
+| **`ui/`** | Tab-Überschriften, UI-Chips |
+| **`use-cases/`** | Use-Case-Grafiken |
+
+**Kanonisch:** immer **`src/assets/svg/...`**.  
+**Technischer Spiegel:** **`public/assets/svg/...`** (gleiche relative Pfade), damit URLs wie `assets/svg/brand/...` unter Serve/Deploy konsistent aufgelöst werden.
+
+## Synchronisation (ein Kommando für alles)
+
+Nach **jeder** Änderung irgendwo unter **`src/assets/svg/`**:
+
+```bash
+bash scripts/sync-osf-ui-assets-svg-public.sh
+```
+
+(`rsync` **src → public**, **ohne** `--delete`: Legacy-Dateien nur in **`public`** bleiben, bis bereinigt.)
+
+**Nur in `src` editieren**, dann Script ausführen — nicht nur bei `shopfloor/`.
+
+## `icon.registry.ts`
+
+Verweise auf **`assets/svg/brand/...`**, **`assets/svg/dsp/...`**, **`sfShared()`** für **`shopfloor/shared/`**, usw. — Cache-Bust über `environments/version.ts`, keine manuellen `?v=…`.
+
+## Neue SVG-Datei
+
+1. Unter **`src/assets/svg/<Bereich>/`** anlegen.  
+2. **`icon.registry.ts`** / Komponenten anpassen.  
+3. **`bash scripts/sync-osf-ui-assets-svg-public.sh`** ausführen.  
+4. Bei sichtbaren DSP-/Sensor-Assets: **`docs/02-architecture/dsp-svg-inventory.md`** ergänzen.
+
+## Release
+
+Nach SVG-Änderungen: **`npm run update-version`** (bei Release zusätzlich `package.json`-Version).
+
+## Build-Verifikation (Production)
+
+`nx run osf-ui:build:production` legt unter `dist/apps/osf-ui/browser/<locale>/assets/svg/` **alle** SVGs aus **`src/assets/svg/`** ab (kein fehlender relativer Pfad gegenüber `src`). Beispiel-Checks: `brand/orbis-logo.svg`, `shopfloor/shared/temperature-sensor.svg` sind im Output vorhanden.
+
+Zusätzlich im Output können **nur-in-`public`**-Dateien landen (z. B. `business/data-lake.svg`, `shopfloor/stations/conveyor.svg`, …), die **nicht** unter `src` liegen — die kommen ausschließlich aus **`public/`**.
+
+**Schlussfolgerung:** Für alles, was **nur** in **`src`** gepflegt wird, reicht der **Standard-Angular-Build** — **`public`** ist dafür **kein** technisches Muss. Der **`rsync`** nach **`public`** hält beide Bäume **gleich**, solange dieselbe URL noch aus **beiden** Quellen bedient werden kann (Legacy, Dev-Server, alte Deploys); optional **langfristig**: nur noch **`src`**, **`public/assets/svg`** bereinigen.

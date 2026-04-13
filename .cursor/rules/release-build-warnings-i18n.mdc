@@ -1,0 +1,24 @@
+---
+description: Bei Versions-Release / RPi-deployfähigem Build Production-Warnungen prüfen (v. a. I18n) und beheben.
+globs: package.json,osf/apps/osf-ui/**/*
+alwaysApply: false
+---
+
+# Release: Build-Warnungen (I18n & Co.)
+
+Gilt bei **neuer Workspace-Version** (`package.json` → `npm run update-version`) und vor **Deploys**, die dasselbe **Production-Build** nutzen wie der RPi (z. B. `npm run docker:osf-ui:deploy`).
+
+## Pflicht-Check nach Version-Bump oder vor Release-Commit
+
+1. **Production-Build** (mit Lokalisierung):  
+   `npx nx run osf-ui:build:production`
+2. **Ausgabe prüfen** auf:
+   - `No translation found for "…"` → fehlende Einträge in `osf/apps/osf-ui/src/locale/messages.de.json` und `messages.fr.json` ergänzen (Default bleibt EN in den Templates). Bei Bedarf `public/locale/*.json` mit **src** synchron halten, falls im Projekt gespiegelt.
+   - Weitere sinnvoll behebbare Build-Warnungen (Budget ist separat; nur wenn explizit gewünscht).
+
+3. **Ziel:** Keine **I18n**-„No translation found“-Warnungen im Production-Build, soweit Übersetzungen lieferbar.
+
+## Nicht automatisch
+
+- `nx serve` / Dev-Server nur mit User-Freigabe ([`.cursorrules`](../../.cursorrules)).
+- Version **nur** in `package.json` ändern; danach `npm run update-version` — nicht `version.ts` manuell pflegen.
