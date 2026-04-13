@@ -111,6 +111,13 @@ export interface FtsPositionItem {
   color?: string;
 }
 
+/** When set, zoom is persisted under a dedicated localStorage key per context. */
+export type ShopfloorPreviewScaleStorageScope =
+  | 'configuration'
+  | 'shopfloor'
+  | 'agv'
+  | 'presentation';
+
 interface RouteOverlay {
   x: number;
   y: number;
@@ -151,9 +158,14 @@ interface RouteGraphEdge {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShopfloorPreviewComponent implements OnInit, OnChanges {
+  private static readonly LEGACY_ORDER_KEY = 'shopfloor-preview-scale';
+  private static readonly LEGACY_CONFIG_KEY = 'shopfloor-config-scale';
+  private static readonly SCOPED_KEY_PREFIX = 'OSF.shopfloorScale.';
+
   @Input({ required: true }) order: OrderActive | null | undefined;
   @Input() activeStep?: ProductionStep | null;
   @Input() scale = 0.6;
+  @Input() scaleStorageScope: ShopfloorPreviewScaleStorageScope | null = null;
   @Input() highlightModulesOverride: string[] | null = null;
   @Input() highlightFixedOverride: string[] | null = null;
   @Input() currentPositionModulesOverride: string[] | null = null; // Current position modules for FTS tab (ORBIS-blue-medium highlighting)
@@ -171,6 +183,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   @Input() highlightStyle: 'selection' | 'active-step' = 'selection';
   @Output() cellSelected = new EventEmitter<{ id: string; kind: 'module' | 'fixed' }>();
   @Output() cellDoubleClicked = new EventEmitter<{ id: string; kind: 'module' | 'fixed' }>();
+  @Output() viewportChanged = new EventEmitter<{ widthPx: number; heightPx: number; scale: number }>();
 
   viewModel: ShopfloorView | null = null;
   currentScale = 0.6;
@@ -200,7 +213,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     // Load saved scale from localStorage, or use input scale
     // Use different storage key based on context (configuration tab vs orders tab)
     const storageKey = this.getStorageKey();
-    const savedScale = this.loadSavedScale(storageKey);
+    const savedScale = this.loadSavedScaleWithMigration(storageKey);
     this.currentScale = savedScale ?? this.scale;
     this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').subscribe({
       next: (config) => {
@@ -215,6 +228,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
           }
         }
         this.updateViewModel();
+        this.emitViewport();
         this.cdr.markForCheck();
       },
       error: (error) => {
@@ -224,35 +238,56 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['scaleStorageScope'] && !changes['scaleStorageScope'].firstChange) {
+      const storageKey = this.getStorageKey();
+      const savedScale = this.loadSavedScaleWithMigration(storageKey);
+      this.currentScale = savedScale ?? this.scale;
+      this.emitViewport();
+      this.cdr.markForCheck();
+    }
     // Only reset scale from input if it's the first change and no saved scale exists
     if (changes['scale'] && !changes['scale'].firstChange) {
       const storageKey = this.getStorageKey();
-      const savedScale = this.loadSavedScale(storageKey);
+      const savedScale = this.loadSavedScaleWithMigration(storageKey);
       if (!savedScale) {
         this.currentScale = this.scale;
       }
     }
     if (changes['activeStep'] || changes['order'] || changes['highlightModulesOverride'] || changes['highlightFixedOverride'] || changes['currentPositionModulesOverride'] || changes['moduleStatusMap'] || changes['ftsPosition'] || changes['ftsPositions'] || changes['showFtsOverlay'] || changes['ftsRouteSegments']) {
       this.updateViewModel();
+      this.emitViewport();
     }
   }
 
   zoomIn(): void {
     this.currentScale = Math.min(this.currentScale + this.scaleStep, this.maxScale);
     this.saveScale(this.getStorageKey());
+    this.emitViewport();
     this.cdr.markForCheck();
   }
 
   zoomOut(): void {
     this.currentScale = Math.max(this.currentScale - this.scaleStep, this.minScale);
     this.saveScale(this.getStorageKey());
+    this.emitViewport();
     this.cdr.markForCheck();
   }
 
   resetZoom(): void {
     this.currentScale = this.scale;
     this.clearSavedScale(this.getStorageKey());
+    this.emitViewport();
     this.cdr.markForCheck();
+  }
+
+  private emitViewport(): void {
+    const vm = this.viewModel;
+    if (!vm) {
+      return;
+    }
+    const widthPx = Math.max(1, Math.round(vm.width * this.currentScale));
+    const heightPx = Math.max(1, Math.round(vm.height * this.currentScale));
+    this.viewportChanged.emit({ widthPx, heightPx, scale: this.currentScale });
   }
 
   /**
@@ -260,14 +295,38 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
    * This allows separate zoom settings for different use cases
    */
   private getStorageKey(): string {
-    // If order is provided, we're in orders tab context
-    // Otherwise, we're in configuration tab context
-    return this.order ? 'shopfloor-preview-scale' : 'shopfloor-config-scale';
+    if (this.scaleStorageScope) {
+      return `${ShopfloorPreviewComponent.SCOPED_KEY_PREFIX}${this.scaleStorageScope}`;
+    }
+    return this.order ? ShopfloorPreviewComponent.LEGACY_ORDER_KEY : ShopfloorPreviewComponent.LEGACY_CONFIG_KEY;
+  }
+
+  /**
+   * Reads saved scale; for new scoped keys, one-time copy from legacy shared key so users keep their zoom.
+   */
+  private loadSavedScaleWithMigration(primaryKey: string): number | null {
+    const direct = this.loadSavedScale(primaryKey);
+    if (direct !== null) {
+      return direct;
+    }
+    if (!primaryKey.startsWith(ShopfloorPreviewComponent.SCOPED_KEY_PREFIX)) {
+      return null;
+    }
+    // Scoped previews use [order]="null"; copy once from the former shared config key.
+    const legacy = this.loadSavedScale(ShopfloorPreviewComponent.LEGACY_CONFIG_KEY);
+    if (legacy !== null) {
+      this.persistScaleToKey(primaryKey, legacy);
+    }
+    return legacy;
   }
 
   private saveScale(storageKey: string): void {
+    this.persistScaleToKey(storageKey, this.currentScale);
+  }
+
+  private persistScaleToKey(storageKey: string, scale: number): void {
     try {
-      localStorage.setItem(storageKey, this.currentScale.toString());
+      localStorage.setItem(storageKey, scale.toString());
     } catch (error) {
       // Ignore localStorage errors (e.g., in private browsing mode)
     }

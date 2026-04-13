@@ -152,10 +152,11 @@
       </ng-container>
     </div>
 
-    <div class="shopfloor-tab__shopfloor-grid">
+    <div class="shopfloor-tab__shopfloor-grid" [style.--shopfloor-grid-cols]="shopfloorGridColsVar">
       <div class="shopfloor-tab__shopfloor-preview-wrapper">
         <app-shopfloor-preview
           [order]="null"
+          scaleStorageScope="shopfloor"
           [scale]="0.6"
           [highlightModulesOverride]="selectedModuleSerialNumber ? [selectedModuleSerialNumber] : null"
           [highlightFixedOverride]="null"
@@ -167,6 +168,7 @@
           [infoText]="''"
           [showFtsOverlay]="true"
           [ftsPositions]="shopfloorFtsPositions$ | async"
+          (viewportChanged)="onShopfloorViewportChanged($event)"
           (cellSelected)="onModuleCellSelected($event)"
           (cellDoubleClicked)="onModuleCellDoubleClicked($event)"
         ></app-shopfloor-preview>

@@ -10,10 +10,11 @@
       </div>
     </header>
 
-    <div class="configuration-layout-grid">
+    <div class="configuration-layout-grid" [style.--configuration-grid-cols]="layoutGridColsVar">
       <div class="shopfloor-wrapper">
         <app-shopfloor-preview
           [order]="null"
+          scaleStorageScope="configuration"
           [scale]="1"
           [badgeText]="vm.badgeText"
           [infoText]="vm.infoText"
@@ -22,6 +23,7 @@
           [selectionEnabled]="true"
           [showBaseRoads]="false"
           [showZoomControls]="true"
+          (viewportChanged)="onShopfloorViewportChanged($event)"
           (cellSelected)="onCellSelected($event)"
         ></app-shopfloor-preview>
       </div>

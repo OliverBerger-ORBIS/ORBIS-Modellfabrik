@@ -1,7 +1,7 @@
 <ng-container *ngIf="presentationMode; else fullView">
   <section class="fts-tab fts-tab--presentation">
     <div class="fts-tab__content">
-      <div class="fts-tab__grid fts-tab__grid--single">
+      <div class="fts-tab__grid fts-tab__grid--single" [style.--fts-grid-cols]="ftsGridColsVar">
         <div class="fts-tab__column fts-tab__column--center">
           <section class="fts-tab__section route-section">
             <div class="fts-legend">
@@ -33,6 +33,7 @@
             <div class="shopfloor-wrapper">
               <app-shopfloor-preview
                 [order]="null"
+                scaleStorageScope="presentation"
                 [scale]="0.9"
                 [badgeText]="badgeTextVehiclePosition"
                 [infoText]="getLocationName((ftsState$ | async)?.lastNodeId || '')"
@@ -44,6 +45,7 @@
                 [showZoomControls]="true"
                 [ftsPositions]="ftsPositions$ | async"
                 [ftsRouteSegments]="combinedAgvRouteSegments$ | async"
+                (viewportChanged)="onShopfloorViewportChanged($event)"
               ></app-shopfloor-preview>
             </div>
           </section>
@@ -99,7 +101,7 @@
   </header>
 
   <div class="fts-tab__content" *ngIf="ftsState$ | async as ftsState; else noData">
-    <div class="fts-tab__grid">
+    <div class="fts-tab__grid" [style.--fts-grid-cols]="ftsGridColsVar">
       <!-- Left Column: Status & Battery (1) -->
       <div class="fts-tab__column fts-tab__column--left">
         <!-- Status Section -->
@@ -256,8 +258,8 @@
           <div class="shopfloor-wrapper">
             <app-shopfloor-preview
               [order]="null"
+              scaleStorageScope="agv"
               [scale]="0.8"
-              [badgeText]="'FTS Position'"
               [badgeText]="badgeTextVehiclePosition"
               [infoText]="getLocationName(ftsState.lastNodeId)"
               [highlightModulesOverride]="null"
@@ -268,6 +270,7 @@
               [showZoomControls]="true"
               [ftsPositions]="ftsPositions$ | async"
               [ftsRouteSegments]="combinedAgvRouteSegments$ | async"
+              (viewportChanged)="onShopfloorViewportChanged($event)"
             ></app-shopfloor-preview>
           </div>
 

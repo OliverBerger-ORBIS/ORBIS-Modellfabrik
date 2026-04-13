@@ -47,6 +47,7 @@
 - [x] **OSF-UI / AGV Layout (Single Source) + Unknown Serial:** Shopfloor Layout wird zentral geladen (Hash im AGV-Tab); AGV-1/AGV-2 kommen strikt aus `shopfloor_layout.json`, weitere live Serials werden als **AGV-?** angezeigt; Verifikation 2026-04-13: `nx test osf-ui`.
 - [x] **OSF-UI / Track & Trace Dedup:** Dedup-Key + TTL/LRU im `WorkpieceHistoryService`, um doppelte Events (Reconnect/Replay) zu unterdrücken; Verifikation 2026-04-13: `nx test osf-ui`.
 - [x] **OSF-UI / Process-Tab Refresh (ohne Locale-Wechsel):** Live/Replay: Dashboard-Mock-Streams überschreiben keine retained MQTT-Daten mehr; Header-Refresh + Process-Refresh triggern Soft-Resync; Zentrale View-Scale (DSP + Use-Cases) via `ViewScaleService`; Verifikation 2026-04-13: `nx test osf-ui`.
+- [x] **OSF-UI / Shopfloor-Preview-Zoom:** Getrennte Persistenz pro Kontext (`scaleStorageScope`: configuration, shopfloor, agv, presentation); einmalige Migration aus `shopfloor-config-scale`; Grid-Mitte an Vorschau-Breite (Configuration / Shopfloor / AGV); Verifikation 2026-04-13: `nx test osf-ui`.
 
 ---
 
@@ -85,7 +86,7 @@ Fokus: schlanker **Replay + Session Recorder**; Randfunktionen entlasten oder en
 ### Arduino & Sensor-Station
 
 - [ ] **24 V:** XL4005, Mini-Fit Tap, 2 A, 12 V Ampel + R4 — [sensor-station-24v-bom-wiring.md](../05-hardware/sensor-station-24v-bom-wiring.md)
-- [ ] **Transportbox:** 25×15 Deckel, Seiten 28 cm, Winkel
+- [x] **Transportbox:** 25×15 Deckel, Seiten 28 cm, Winkel
 - [ ] **Sensor-Tab:** UX/Demo (Rest; DSP-Anbindung liegt)
 - [ ] **Schwellen:** MQTT/API + OSF (Config); DAHEIM/ORBIS ohne Flash (Sprint-18-Thema)
 
@@ -98,6 +99,7 @@ Fokus: schlanker **Replay + Session Recorder**; Randfunktionen entlasten oder en
 - [ ] SVG: Spalten/Lanes wie UC-00 auf relevante Diagramme — [osf-ui-svg-label-text-conventions.md](../04-howto/osf-ui-svg-label-text-conventions.md)
 - [x] **Back** bei per Link geöffneten Tabs — In-App Back-Button (History back mit Fallback) für Deep-Links/Direct-Pages + Use-Case Detail-Header; Verifikation 2026-04-13: `nx test osf-ui`.
 - [x] Zentrale Skalierung UC/Shopfloor (Konzept) — umgesetzt für DSP + Use-Cases als globale View-Scale (sessionStorage) inkl. Sync über Views; Verifikation 2026-04-13: `nx test osf-ui`.
+- [x] **Shopfloor-Preview-Zoom** (Tabs + Presentation) — eigene Keys `OSF.shopfloorScale.*`, Migration vom gemeinsamen Config-Key; Verifikation 2026-04-13: `nx test osf-ui`.
 
 ### Integration & Tests
 

@@ -43,6 +43,7 @@ import { AgvRouteService } from '../services/agv-route.service';
 import { ICONS } from '../shared/icons/icon.registry';
 import { isOsfConsoleDebugEnabled } from '../utils/osf-console-debug';
 import { buildFtsPreviewPositionsFromStates, type FtsPreviewPositionInput } from '../utils/build-fts-preview-positions';
+import type { FtsPositionItem } from '../components/shopfloor-preview/shopfloor-preview.component';
 
 // DPS/AIQS Serial Numbers
 const DPS_SERIAL = 'SVR4H73275';
@@ -264,6 +265,8 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     return getDashboardController();
   }
   private readonly subscriptions = new Subscription();
+
+  shopfloorGridColsVar: string | null = null;
   private fixtureSubscriptions = new Subscription();
   private moduleOverviewSub?: Subscription;
   private dpsStateSub?: Subscription;
@@ -329,6 +332,15 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     this.loadShopfloorPreviewState();
     this.bindCacheOutputs();
     this.initializeStreams();
+  }
+
+  onShopfloorViewportChanged(viewport: { widthPx: number; heightPx: number; scale: number }): void {
+    // Keep the split layout responsive to the actual (scaled) shopfloor canvas size.
+    // The preview wrapper adds padding; add a small buffer so scrollbars don't appear prematurely.
+    const bufferedLeft = viewport.widthPx + 48;
+    const clampedLeft = clamp(bufferedLeft, 420, 1400);
+    this.shopfloorGridColsVar = `${clampedLeft}px 1fr`;
+    this.cdr.markForCheck();
   }
 
   get isMockMode(): boolean {
@@ -2928,4 +2940,8 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     if (actions.length === 0 && state?.actionState?.result) return true;
     return this.hasAnyResult(actions) || !!state?.actionState?.result;
   }
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
 }

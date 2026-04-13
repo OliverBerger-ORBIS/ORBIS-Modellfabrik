@@ -118,6 +118,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   @Input() presentationMode = false;
   private dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
+  ftsGridColsVar: string | null = null;
   
   // Route animation state (from Example-App)
   private previousNodeId: string | null = null;
@@ -288,6 +289,13 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     this.animationState$ = this.agvAnimationService.animationState$;
     this.loadShopfloorLayout();
     this.initializeStreams();
+  }
+
+  onShopfloorViewportChanged(viewport: { widthPx: number; heightPx: number; scale: number }): void {
+    const bufferedCenter = viewport.widthPx + 48;
+    const clampedCenter = clamp(bufferedCenter, 520, 1400);
+    this.ftsGridColsVar = this.presentationMode ? '1fr' : `1fr ${clampedCenter}px 1fr`;
+    this.cdr.markForCheck();
   }
   
   private loadShopfloorLayout(): void {
@@ -1914,5 +1922,9 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   }
 
   // Removed toggleBatteryDetails - always show details like example app
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
 }
 

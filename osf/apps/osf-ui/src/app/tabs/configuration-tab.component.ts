@@ -102,6 +102,7 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
   private dashboard = getDashboardController();
   private readonly selectedCellSubject = new BehaviorSubject<string | null>(null);
   private readonly subscriptions = new Subscription();
+  layoutGridColsVar: string | null = null;
 
   readonly yesLabel = $localize`:@@commonYes:Yes`;
   readonly noLabel = $localize`:@@commonNo:No`;
@@ -306,6 +307,15 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
 
   onCellSelected(event: { id: string; kind: LayoutCellKind }): void {
     this.selectCell(event.id);
+  }
+
+  onShopfloorViewportChanged(viewport: { widthPx: number; heightPx: number; scale: number }): void {
+    // Keep the split layout responsive to the actual (scaled) shopfloor canvas size.
+    // The shopfloor wrapper adds padding; add a small buffer so scrollbars don't appear prematurely.
+    const bufferedLeft = viewport.widthPx + 48;
+    const clampedLeft = clamp(bufferedLeft, 420, 1400);
+    this.layoutGridColsVar = `${clampedLeft}px 1fr`;
+    this.cdr.markForCheck();
   }
 
   onCellDoubleClick(event: { id: string; kind: LayoutCellKind }): void {
@@ -1024,5 +1034,9 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     return (cell.type ?? cell.label ?? cell.id ?? '').toUpperCase();
   }
 
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
 }
 
