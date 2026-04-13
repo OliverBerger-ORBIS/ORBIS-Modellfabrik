@@ -401,4 +401,26 @@ describe('WorkpieceHistoryService', () => {
       expect(event.details?.['direction']).toBe('LEFT');
     });
   });
+
+  describe('Deduplication', () => {
+    it('should deduplicate identical events for the same workpiece', () => {
+      const svc = service as unknown as {
+        shouldAppendEvent: (environmentKey: string, workpieceId: string, event: TrackTraceEvent) => boolean;
+      };
+
+      const event: TrackTraceEvent = {
+        timestamp: '2026-04-13T10:00:00Z',
+        eventType: 'DOCK',
+        workpieceId: 'wp-1',
+        orderId: 'order-1',
+        orderUpdateId: 1,
+        actionId: 'a1',
+        location: 'SVR3QA0022',
+        moduleId: '5iO4',
+      };
+
+      expect(svc.shouldAppendEvent('mock', 'wp-1', event)).toBe(true);
+      expect(svc.shouldAppendEvent('mock', 'wp-1', event)).toBe(false);
+    });
+  });
 });

@@ -171,6 +171,13 @@ export class WorkpieceHistoryService implements OnDestroy {
   private readonly correlationInfoService = inject(CorrelationInfoService);
   // TURN direction lookup (from order stream) - similar to FTS-Tab
   private readonly turnDirectionByActionId = new Map<string, 'LEFT' | 'RIGHT' | string>();
+  /**
+   * Dedup cache to avoid duplicate events in Track & Trace history.
+   * Keyed by environment -> workpieceId -> eventKey -> lastSeenEpochMs.
+   */
+  private readonly dedupSeen = new Map<string, Map<string, Map<string, number>>>();
+  private static readonly DEDUP_TTL_MS = 30 * 60 * 1000; // 30 min is enough for reconnect/replay duplicates
+  private static readonly DEDUP_MAX_KEYS_PER_WORKPIECE = 400;
 
   ngOnDestroy(): void {
     // Clean up all subscriptions
@@ -649,7 +656,7 @@ export class WorkpieceHistoryService implements OnDestroy {
           if (isModuleStation && orderType === 'PRODUCTION' && canBeProcessed) {
             // Generate PICK -> PROCESS -> DROP sequence for manufacturing stations
             // PICK event
-            existingHistory.events.push({
+            this.tryAppendEvent(environmentKey, existingHistory, {
               ...baseEvent,
               eventType: 'PICK',
               timestamp: state.timestamp,
@@ -660,7 +667,7 @@ export class WorkpieceHistoryService implements OnDestroy {
 
             // PROCESS event (drilling, milling, etc.)
             const processTime = new Date(new Date(state.timestamp).getTime() + 1000);
-            existingHistory.events.push({
+            this.tryAppendEvent(environmentKey, existingHistory, {
               ...baseEvent,
               eventType: 'PROCESS',
               timestamp: utcIsoTimestampMs(processTime),
@@ -676,7 +683,7 @@ export class WorkpieceHistoryService implements OnDestroy {
 
             // DROP event
             const dropTime = new Date(processTime.getTime() + (processDuration || 10) * 1000);
-            existingHistory.events.push({
+            this.tryAppendEvent(environmentKey, existingHistory, {
               ...baseEvent,
               eventType: 'DROP',
               timestamp: utcIsoTimestampMs(dropTime),
@@ -701,7 +708,7 @@ export class WorkpieceHistoryService implements OnDestroy {
               }
             }
             
-            existingHistory.events.push({
+            this.tryAppendEvent(environmentKey, existingHistory, {
               ...baseEvent,
               eventType: eventType,
               subOrderId,
@@ -833,19 +840,6 @@ export class WorkpieceHistoryService implements OnDestroy {
       return;
     }
 
-    // Check if this event already exists (avoid duplicates)
-    const eventExists = matchingHistory.events.some(
-      (event) =>
-        event.moduleId === moduleSerialId &&
-        event.eventType === mappedCommand &&
-        event.actionId === actionState.id &&
-        event.timestamp === moduleState.timestamp
-    );
-
-    if (eventExists) {
-      return; // Event already exists, skip
-    }
-
     // Generate event
     // IMPORTANT: For module events, use stationName (DRILL, AIQS, etc.) as moduleName
     // This ensures that events in Level 3 show "DRILL PICK" instead of "FTS PICK"
@@ -904,7 +898,7 @@ export class WorkpieceHistoryService implements OnDestroy {
     baseEvent.subOrderId = subOrderId;
 
     // Add event to history
-    matchingHistory.events.push(baseEvent as TrackTraceEvent);
+    this.tryAppendEvent(environmentKey, matchingHistory, baseEvent as TrackTraceEvent);
 
     // Sort events by timestamp, then subOrderId, then actionId
     matchingHistory.events.sort((a, b) => {
@@ -926,6 +920,77 @@ export class WorkpieceHistoryService implements OnDestroy {
 
     historyMap.set(matchingWorkpieceId, matchingHistory);
     this.getStore(environmentKey).next(historyMap);
+  }
+
+  private tryAppendEvent(environmentKey: string, history: WorkpieceHistory, event: TrackTraceEvent): void {
+    if (!event.workpieceId) {
+      history.events.push(event);
+      return;
+    }
+    if (!this.shouldAppendEvent(environmentKey, event.workpieceId, event)) {
+      return;
+    }
+    history.events.push(event);
+  }
+
+  private shouldAppendEvent(environmentKey: string, workpieceId: string, event: TrackTraceEvent): boolean {
+    const env = this.getOrCreate(this.dedupSeen, environmentKey, () => new Map<string, Map<string, number>>());
+    const wp = this.getOrCreate(env, workpieceId, () => new Map<string, number>());
+
+    const now = Date.now();
+    const cutoff = now - WorkpieceHistoryService.DEDUP_TTL_MS;
+    // Cheap prune on every insert attempt.
+    for (const [key, lastSeen] of wp) {
+      if (lastSeen < cutoff) {
+        wp.delete(key);
+      }
+    }
+
+    const key = this.buildDedupKey(event);
+    const prev = wp.get(key);
+    if (prev !== undefined && prev >= cutoff) {
+      return false;
+    }
+
+    wp.set(key, now);
+    if (wp.size > WorkpieceHistoryService.DEDUP_MAX_KEYS_PER_WORKPIECE) {
+      // Evict oldest entries (simple O(n) scan; size is capped and small).
+      const entries = [...wp.entries()].sort((a, b) => a[1] - b[1]);
+      const toDelete = entries.length - WorkpieceHistoryService.DEDUP_MAX_KEYS_PER_WORKPIECE;
+      for (let i = 0; i < toDelete; i++) {
+        wp.delete(entries[i]![0]);
+      }
+    }
+
+    return true;
+  }
+
+  private buildDedupKey(event: TrackTraceEvent): string {
+    // Key must stay stable even if subOrderId generation changes (e.g. due to reprocessing).
+    // Prefer actionId + canonical fields over event array index.
+    const detailsDir = typeof event.details?.['direction'] === 'string' ? String(event.details['direction']) : '';
+    return [
+      event.eventType ?? '',
+      event.timestamp ?? '',
+      event.workpieceId ?? '',
+      event.orderId ?? '',
+      String(event.orderUpdateId ?? ''),
+      event.actionId ?? '',
+      event.location ?? '',
+      event.moduleId ?? '',
+      event.stationId ?? '',
+      detailsDir,
+    ].join('|');
+  }
+
+  private getOrCreate<K, V>(map: Map<K, V>, key: K, factory: () => V): V {
+    const existing = map.get(key);
+    if (existing !== undefined) {
+      return existing;
+    }
+    const created = factory();
+    map.set(key, created);
+    return created;
   }
 
   /**
