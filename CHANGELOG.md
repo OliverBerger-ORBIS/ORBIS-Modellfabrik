@@ -14,6 +14,18 @@ All notable changes to OSF Dashboard will be documented here.
 
 - **`OSF_MultiSensor_R4WiFi` v1.1.7:** In **`WIFI_MODE_ORBIS`**, NTP sync tries **Shopfloor RPi** (`192.168.0.100`, **chrony** on host) **first**, then gateway and public pools. **MQTT payload** (`timestamp` ISO-8601 UTC with ms) **unchanged** since v1.1.6. **Docs:** [rpi-chrony-ntp-server.md](docs/04-howto/rpi-chrony-ntp-server.md), [arduino-r4-multisensor.md](docs/05-hardware/arduino-r4-multisensor.md) § MQTT-Topics.
 
+## [1.0.11] - 2026-04-13
+
+**Patch: Global view scale (DSP + use cases), shopfloor preview zoom per context, order card layout.**
+
+### Added
+
+- **Shopfloor preview:** `scaleStorageScope` with separate `localStorage` keys (`OSF.shopfloorScale.*`) for **configuration**, **shopfloor**, **AGV**, and **presentation**; one-time migration from legacy `shopfloor-config-scale`. **Configuration / Shopfloor / AGV** tabs adjust the FTS grid center column from the preview `viewportChanged` width.
+
+### Changed
+
+- **ViewScaleService:** **DSP animation** and **use-case** diagram components subscribe to the shared session zoom; local zoom controls update the global scale. **Order cards:** the two-column layout width follows the embedded shopfloor preview via `viewportChanged`.
+
 ## [1.0.7] - 2026-04-02
 
 **Patch: AGV Tab — planned route overlay hides when stationary at order destination.**
