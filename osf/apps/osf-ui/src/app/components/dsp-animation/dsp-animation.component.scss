@@ -179,7 +179,7 @@
   // Diagram wrapper - contains scrollable zoom area
   &__diagram-wrapper {
     position: relative;
-    overflow: hidden;
+    overflow: auto;
     max-height: none;
     min-height: 0;
     height: auto;
@@ -193,13 +193,14 @@
     padding: 0.5rem;
     transform-origin: top left;
     transition: transform 0.3s ease;
-    width: 100%;
+    width: auto;
 
     .diagram-svg {
-      width: 100%;
+      width: auto;
       height: auto;
       min-height: 0;
       max-height: none;  // Allow full height when zoomed
+      display: block;
     }
   }
 

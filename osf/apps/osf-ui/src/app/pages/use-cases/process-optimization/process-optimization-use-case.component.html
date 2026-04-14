@@ -1,5 +1,10 @@
 <section class="process-optimization-use-case">
-  <header class="process-optimization-use-case__header">
+  <header
+    class="process-optimization-use-case__header"
+    [style.maxWidth.px]="scaledViewportWidthPx"
+    [style.marginLeft]="'auto'"
+    [style.marginRight]="'auto'"
+  >
     <app-use-case-controls
       useCaseCode="UC-06"
       [useCaseTitle]="useCaseTitle"
@@ -26,14 +31,31 @@
     />
   </header>
 
-  <div class="process-optimization-use-case__content">
-    <div class="process-optimization-use-case__diagram-wrapper">
-      <div class="process-optimization-use-case__diagram" [style.transform]="'scale(' + zoom + ')'">
+  <div
+    class="process-optimization-use-case__content"
+    [style.maxWidth.px]="scaledViewportWidthPx"
+    [style.marginLeft]="'auto'"
+    [style.marginRight]="'auto'"
+  >
+    <div
+      class="process-optimization-use-case__diagram-wrapper"
+      [style.width.px]="scaledViewportWidthPx"
+      [style.height.px]="scaledViewportHeightPx"
+      [style.marginLeft]="'auto'"
+      [style.marginRight]="'auto'"
+    >
+      <div
+        class="process-optimization-use-case__diagram"
+        [style.width.px]="baseViewportWidthPx"
+        [style.height.px]="baseViewportHeightPx"
+        [style.transform]="'scale(' + zoom + ')'"
+      >
         <div *ngIf="isLoading" class="process-optimization-use-case__loading" i18n="@@loadingSvg">Loading SVG...</div>
         <div
           #svgContainer
           *ngIf="!isLoading && svgContent"
           class="process-optimization-use-case__svg-wrapper"
+          [style.width.px]="baseViewportWidthPx"
           [innerHTML]="svgContent"
         ></div>
         <div *ngIf="!isLoading && !svgContent" class="process-optimization-use-case__loading" i18n="@@svgLoadError">Failed to load SVG.</div>

@@ -29,7 +29,7 @@
   </header>
 
   <section class="order-card__content" *ngIf="!collapsed">
-    <div class="order-card__content-grid">
+    <div class="order-card__content-grid" [style.--order-card-grid-cols]="contentGridColsVar">
       <!-- Left: Shopfloor Preview -->
       <div class="order-card__shopfloor">
         <app-shopfloor-preview
@@ -39,6 +39,7 @@
           [showZoomControls]="true"
           [highlightStyle]="'active-step'"
           [ftsPositions]="ftsPositions"
+          (viewportChanged)="onShopfloorViewportChanged($event)"
         />
       </div>
 

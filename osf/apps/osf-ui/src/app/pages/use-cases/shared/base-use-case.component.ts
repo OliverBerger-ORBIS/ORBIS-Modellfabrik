@@ -46,6 +46,8 @@ export abstract class BaseUseCaseComponent implements OnInit, AfterViewInit, OnD
 
   svgContent: SafeHtml | null = null;
   isLoading = true;
+  private svgBaseWidth: number | null = null;
+  private svgBaseHeight: number | null = null;
 
   steps: UseCaseStep[] = [];
   currentStepIndex = 0;
@@ -121,10 +123,16 @@ export abstract class BaseUseCaseComponent implements OnInit, AfterViewInit, OnD
 
       const svgString = await this.loadSvgContent();
       if (svgString) {
+        const baseSize = extractSvgBaseSize(svgString);
+        this.svgBaseWidth = baseSize?.width ?? null;
+        this.svgBaseHeight = baseSize?.height ?? null;
         this.svgContent = this.sanitizer.bypassSecurityTrustHtml(svgString);
         this.isLoading = false;
         this.cdr.markForCheck();
         this.cdr.detectChanges();
+        // Some generated SVGs or sanitization pipelines can break regex parsing.
+        // After the SVG is actually in the DOM, read its viewBox as a reliable fallback.
+        setTimeout(() => this.updateSvgBaseSizeFromDom(), 0);
         setTimeout(() => this.applyStep(this.currentStepIndex), 80);
       }
     } catch (error) {
@@ -132,6 +140,32 @@ export abstract class BaseUseCaseComponent implements OnInit, AfterViewInit, OnD
       this.isLoading = false;
       this.cdr.markForCheck();
     }
+  }
+
+  /**
+   * Effective diagram width in px after applying zoom.
+   * Used to keep controls aligned with the visible diagram footprint (avoid empty layout space).
+   */
+  get scaledViewportWidthPx(): number | null {
+    if (!this.svgBaseWidth) {
+      return null;
+    }
+    return Math.max(1, Math.round(this.svgBaseWidth * this.zoom));
+  }
+
+  get scaledViewportHeightPx(): number | null {
+    if (!this.svgBaseHeight) {
+      return null;
+    }
+    return Math.max(1, Math.round(this.svgBaseHeight * this.zoom));
+  }
+
+  get baseViewportWidthPx(): number | null {
+    return this.svgBaseWidth;
+  }
+
+  get baseViewportHeightPx(): number | null {
+    return this.svgBaseHeight;
   }
 
   protected prevStep(): void {
@@ -263,4 +297,56 @@ export abstract class BaseUseCaseComponent implements OnInit, AfterViewInit, OnD
     this.viewScale.setScale(this.zoom);
     this.cdr.markForCheck();
   }
+
+  private updateSvgBaseSizeFromDom(): void {
+    try {
+      const svgElement = this.svgContainer?.nativeElement?.querySelector('svg');
+      if (!svgElement) {
+        return;
+      }
+
+      const viewBox = svgElement.viewBox?.baseVal;
+      const width = viewBox?.width ?? NaN;
+      const height = viewBox?.height ?? NaN;
+      if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
+        return;
+      }
+
+      const nextW = Math.round(width);
+      const nextH = Math.round(height);
+      if (this.svgBaseWidth !== nextW || this.svgBaseHeight !== nextH) {
+        this.svgBaseWidth = nextW;
+        this.svgBaseHeight = nextH;
+        this.cdr.markForCheck();
+      }
+    } catch {
+      // ignore
+    }
+  }
+}
+
+function extractSvgBaseSize(svgString: string): { width: number; height: number } | null {
+  // Prefer viewBox since many generated SVGs are responsive.
+  const viewBoxMatch = svgString.match(/viewBox\s*=\s*["']([^"']+)["']/i);
+  if (viewBoxMatch?.[1]) {
+    const parts = viewBoxMatch[1].trim().split(/\s+/).map((p) => Number(p));
+    if (parts.length === 4) {
+      const width = parts[2];
+      const height = parts[3];
+      if (Number.isFinite(width) && Number.isFinite(height) && width > 0 && height > 0) {
+        return { width, height };
+      }
+    }
+  }
+
+  // Fallback to width/height attributes (strip common units).
+  const widthMatch = svgString.match(/\bwidth\s*=\s*["']([^"']+)["']/i);
+  const heightMatch = svgString.match(/\bheight\s*=\s*["']([^"']+)["']/i);
+  const width = widthMatch?.[1] ? Number(String(widthMatch[1]).replace(/[a-z%]+/gi, '')) : NaN;
+  const height = heightMatch?.[1] ? Number(String(heightMatch[1]).replace(/[a-z%]+/gi, '')) : NaN;
+  if (Number.isFinite(width) && Number.isFinite(height) && width > 0 && height > 0) {
+    return { width, height };
+  }
+
+  return null;
 }

@@ -141,7 +141,7 @@
 
 .order-card__content-grid {
   display: grid;
-  grid-template-columns: 3fr 2fr;
+  grid-template-columns: var(--order-card-grid-cols, 3fr 2fr);
   gap: 1.5rem;
   align-items: start;
 

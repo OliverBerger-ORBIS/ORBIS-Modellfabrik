@@ -67,6 +67,7 @@ export class OrderCardComponent implements OnInit, OnChanges, OnDestroy {
 
   steps: ProductionStep[] = [];
   collapsed = false;
+  contentGridColsVar: string | null = null;
 
   private readonly orderIdSubject = new BehaviorSubject<string>('');
   private assignmentsSubscription?: Subscription;
@@ -93,6 +94,14 @@ export class OrderCardComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     this.assignmentsSubscription?.unsubscribe();
+  }
+
+  onShopfloorViewportChanged(viewport: { widthPx: number; heightPx: number; scale: number }): void {
+    // Order cards are narrower than full-page tabs; use tighter clamps.
+    const bufferedLeft = viewport.widthPx + 32;
+    const clampedLeft = clamp(bufferedLeft, 320, 820);
+    this.contentGridColsVar = `${clampedLeft}px 1fr`;
+    this.cdr.markForCheck();
   }
 
   async requestCorrelation(): Promise<void> {
@@ -501,5 +510,9 @@ export class OrderCardComponent implements OnInit, OnChanges, OnDestroy {
     const state = (this.order?.state ?? this.order?.status ?? '').toUpperCase();
     return ['COMPLETED', 'FINISHED', 'ERROR', 'FAILED'].includes(state);
   }
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
 }
 

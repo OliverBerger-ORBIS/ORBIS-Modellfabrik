@@ -104,6 +104,22 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   protected readonly viewBoxWidth = VIEWBOX_WIDTH;
   protected readonly viewBoxHeight = VIEWBOX_HEIGHT;
 
+  get scaledViewportWidthPx(): number {
+    return Math.max(1, Math.round(this.viewBoxWidth * this.zoom));
+  }
+
+  get scaledViewportHeightPx(): number {
+    return Math.max(1, Math.round(this.viewBoxHeight * this.zoom));
+  }
+
+  get baseViewportWidthPx(): number {
+    return this.viewBoxWidth;
+  }
+
+  get baseViewportHeightPx(): number {
+    return this.viewBoxHeight;
+  }
+
   // i18n labels
   protected readonly baseTitle = $localize`:@@dspAnimationBaseTitle:DSP Architecture, interactive demonstration of DSP architecture visualisation with multiple views and animation`;
   protected readonly subtitle = $localize`:@@dspAnimationSubtitle:Reference Architecture`;
