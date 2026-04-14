@@ -32,9 +32,9 @@ export class ShopfloorRotationService {
       if (raw === 'cw90' || raw === 'ccw90' || raw === 'none') {
         return raw;
       }
-      return 'ccw90';
+      return 'none';
     } catch {
-      return 'ccw90';
+      return 'none';
     }
   }
 }

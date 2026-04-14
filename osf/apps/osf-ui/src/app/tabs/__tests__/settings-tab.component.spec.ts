@@ -92,8 +92,8 @@ describe('SettingsTabComponent', () => {
     };
 
     const shopfloorRotationMock = {
-      current: 'ccw90',
-      rotation$: new BehaviorSubject('ccw90'),
+      current: 'none',
+      rotation$: new BehaviorSubject('none'),
       setRotation: jest.fn(),
     };
 
@@ -166,7 +166,7 @@ describe('SettingsTabComponent', () => {
 
   it('should initialize shopfloor rotation form', () => {
     expect(component.shopfloorForm).toBeDefined();
-    expect(component.shopfloorForm.get('rotation')?.value).toBe('ccw90');
+    expect(component.shopfloorForm.get('rotation')?.value).toBe('none');
   });
 
   it('should initialize links form', () => {
