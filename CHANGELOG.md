@@ -14,6 +14,14 @@ All notable changes to OSF Dashboard will be documented here.
 
 - **`OSF_MultiSensor_R4WiFi` v1.1.7:** In **`WIFI_MODE_ORBIS`**, NTP sync tries **Shopfloor RPi** (`192.168.0.100`, **chrony** on host) **first**, then gateway and public pools. **MQTT payload** (`timestamp` ISO-8601 UTC with ms) **unchanged** since v1.1.6. **Docs:** [rpi-chrony-ntp-server.md](docs/04-howto/rpi-chrony-ntp-server.md), [arduino-r4-multisensor.md](docs/05-hardware/arduino-r4-multisensor.md) § MQTT-Topics.
 
+## [1.0.12] - 2026-04-14
+
+**Patch: Shopfloor rotation setting for presentation & camera alignment.**
+
+### Added
+
+- **Shopfloor rotation (global):** New Settings option to rotate the shopfloor layout by **±90°** across all previews (incl. presentation). Geometry (cells, roads, routes, FTS overlays) rotates while modules remain clickable; compound cells (HBW/DPS) rotate their internal subcells (squares) and keep main icons aligned to the intersection grid.
+
 ## [1.0.11] - 2026-04-13
 
 **Patch: Global view scale (DSP + use cases), shopfloor preview zoom per context, order card layout.**

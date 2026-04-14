@@ -6,19 +6,21 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   SimpleChanges,
 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { ORBIS_COLORS } from '../../assets/color-palette';
 import type { OrderActive, ProductionStep, ModuleAvailabilityStatus } from '@osf/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@osf/testing-fixtures';
 import { resolveLegacyShopfloorPath } from '../../shared/icons/legacy-shopfloor-map';
 import { ModuleNameService } from '../../services/module-name.service';
 import { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
+import { ShopfloorRotationService, type ShopfloorRotation } from '../../services/shopfloor-rotation.service';
 import type {
   ParsedRoad,
   ShopfloorCellConfig,
@@ -59,6 +61,7 @@ interface RenderModule {
   showLabel: boolean;
   attachments: RenderAttachment[];
   status?: ModuleStatus; // Module status for overlays and highlighting
+  compoundType?: 'HBW' | 'DPS';
 }
 
 interface RenderFixed {
@@ -70,6 +73,7 @@ interface RenderFixed {
   height: number;
   background?: string;
   icon?: string;
+  iconRotationDeg?: number;
   iconWidth?: number; // Optional explicit icon width (for DSP logo with specific sizing)
   iconHeight?: number; // Optional explicit icon height (for DSP logo with specific sizing)
   highlighted: boolean;
@@ -157,7 +161,7 @@ interface RouteGraphEdge {
   styleUrl: './shopfloor-preview.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ShopfloorPreviewComponent implements OnInit, OnChanges {
+export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
   private static readonly LEGACY_ORDER_KEY = 'shopfloor-preview-scale';
   private static readonly LEGACY_CONFIG_KEY = 'shopfloor-config-scale';
   private static readonly SCOPED_KEY_PREFIX = 'OSF.shopfloorScale.';
@@ -200,13 +204,16 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   private nodePoints = new Map<string, ShopfloorPoint>();
   private cellByRouteRef = new Map<string, ShopfloorCellConfig>();
   private iconSizing = new Map<string, number>();
+  private rotation: ShopfloorRotation = 'none';
+  private readonly subscriptions = new Subscription();
 
   constructor(
     private readonly http: HttpClient,
     private readonly cdr: ChangeDetectorRef,
     private readonly sanitizer: DomSanitizer,
     private readonly moduleNameService: ModuleNameService,
-    private readonly mappingService: ShopfloorMappingService
+    private readonly mappingService: ShopfloorMappingService,
+    private readonly rotationService: ShopfloorRotationService
   ) {}
 
   ngOnInit(): void {
@@ -220,6 +227,15 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
         this.layoutConfig = config;
         this.parsedRoads = config.parsed_roads ?? [];
         this.indexLayout(config);
+        this.rotation = this.rotationService.current;
+        this.subscriptions.add(this.rotationService.rotation$.subscribe((value) => {
+          if (value !== this.rotation) {
+            this.rotation = value;
+            this.updateViewModel();
+            this.emitViewport();
+            this.cdr.markForCheck();
+          }
+        }));
         if (config.scaling && this.scale === 0.6) {
           this.scale = config.scaling.default_percent / 100;
           // Only use default scale if no saved scale exists
@@ -235,6 +251,10 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
         console.error('Failed to load shopfloor layout', error);
       },
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -685,7 +705,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       }
     }
 
-    this.viewModel = {
+    const unrotated: ShopfloorView = {
       width,
       height,
       modules,
@@ -696,6 +716,153 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       routeEndpoints,
       routeOverlay,
       ftsOverlays,
+    };
+
+    this.viewModel = this.applyRotation(unrotated, this.rotation);
+  }
+
+  private applyRotation(view: ShopfloorView, rotation: ShopfloorRotation): ShopfloorView {
+    if (rotation === 'none') {
+      return view;
+    }
+
+    const oldW = view.width;
+    const oldH = view.height;
+
+    const rotateRect = (r: { left: number; top: number; width: number; height: number }) => {
+      if (rotation === 'cw90') {
+        return {
+          left: oldH - (r.top + r.height),
+          top: r.left,
+          width: r.height,
+          height: r.width,
+        };
+      }
+      return {
+        left: r.top,
+        top: oldW - (r.left + r.width),
+        width: r.height,
+        height: r.width,
+      };
+    };
+
+    const rotatePoint = (p: ShopfloorPoint): ShopfloorPoint => {
+      if (rotation === 'cw90') {
+        return { x: oldH - p.y, y: p.x };
+      }
+      return { x: p.y, y: oldW - p.x };
+    };
+
+    const width = oldH;
+    const height = oldW;
+
+    const modules = view.modules.map((m) => {
+      const r = rotateRect({ left: m.left, top: m.top, width: m.width, height: m.height });
+      const rotated = { ...m, left: r.left, top: r.top, width: r.width, height: r.height };
+      if (!rotated.compoundType) {
+        return rotated;
+      }
+      return this.rotateCompoundModuleContents(rotated, rotation, m.width, m.height);
+    });
+
+    const fixedPositions = view.fixedPositions.map((f) => {
+      const r = rotateRect({ left: f.left, top: f.top, width: f.width, height: f.height });
+      const rotateIcon = this.shouldRotateFixedIconWithWorld(f.id, f.label);
+      const iconRotationDeg = rotateIcon ? (rotation === 'cw90' ? 90 : -90) : 0;
+      return { ...f, left: r.left, top: r.top, width: r.width, height: r.height, iconRotationDeg };
+    });
+
+    const intersections = view.intersections.map((i) => {
+      const r = rotateRect({ left: i.left, top: i.top, width: i.width, height: i.height });
+      return { ...i, left: r.left, top: r.top, width: r.width, height: r.height };
+    });
+
+    const roads = view.roads.map((road) => {
+      const p1 = rotatePoint({ x: road.x1, y: road.y1 });
+      const p2 = rotatePoint({ x: road.x2, y: road.y2 });
+      return { x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y };
+    });
+
+    const activeRouteSegments = view.activeRouteSegments?.map((seg) => {
+      const p1 = rotatePoint({ x: seg.x1, y: seg.y1 });
+      const p2 = rotatePoint({ x: seg.x2, y: seg.y2 });
+      return { ...seg, x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y };
+    });
+
+    const routeEndpoints = view.routeEndpoints?.map(rotatePoint);
+
+    const rotateOverlay = (o: RouteOverlay): RouteOverlay => {
+      const w = o.width ?? 48;
+      const h = o.height ?? 48;
+      const r = rotateRect({ left: o.x, top: o.y, width: w, height: h });
+      return { ...o, x: r.left, y: r.top, width: r.width, height: r.height };
+    };
+
+    const routeOverlay = view.routeOverlay ? rotateOverlay(view.routeOverlay) : undefined;
+    const ftsOverlays = view.ftsOverlays.map(rotateOverlay);
+
+    return {
+      width,
+      height,
+      modules,
+      fixedPositions,
+      intersections,
+      roads,
+      activeRouteSegments,
+      routeEndpoints,
+      routeOverlay,
+      ftsOverlays,
+    };
+  }
+
+  private shouldRotateFixedIconWithWorld(id: string, label: string): boolean {
+    const key = `${id} ${label}`.toUpperCase();
+    // ORBIS + DSP logo cells: rotate icon with the world (text may be upside down / sideways by design).
+    return key.includes('ORBIS') || key.includes('DSP');
+  }
+
+  private rotateCompoundModuleContents(
+    module: RenderModule,
+    rotation: Exclude<ShopfloorRotation, 'none'>,
+    oldModuleWidth: number,
+    oldModuleHeight: number
+  ): RenderModule {
+    const rotateWithin = (p: { x: number; y: number }): { x: number; y: number } => {
+      // Rotate *layout* inside the module, but keep icons upright.
+      if (rotation === 'cw90') {
+        return { x: oldModuleHeight - p.y, y: p.x };
+      }
+      return { x: p.y, y: oldModuleWidth - p.x };
+    };
+
+    const rotateCenterBox = (box: { left: number; top: number; width: number; height: number }) => {
+      const center = { x: box.left + box.width / 2, y: box.top + box.height / 2 };
+      const rotatedCenter = rotateWithin(center);
+      return {
+        left: rotatedCenter.x - box.width / 2,
+        top: rotatedCenter.y - box.height / 2,
+        width: box.width,
+        height: box.height,
+      };
+    };
+
+    const iconBox = rotateCenterBox({
+      left: module.iconLeft,
+      top: module.iconTop,
+      width: module.iconWidth,
+      height: module.iconHeight,
+    });
+
+    const attachments = module.attachments.map((att) => {
+      const r = rotateCenterBox({ left: att.left, top: att.top, width: att.width, height: att.height });
+      return { ...att, left: r.left, top: r.top };
+    });
+
+    return {
+      ...module,
+      iconLeft: iconBox.left,
+      iconTop: iconBox.top,
+      attachments,
     };
   }
 
@@ -811,6 +978,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     }
 
     // Offset positions by padding to account for increased canvas size
+    const compoundType = cell.is_compound ? (cell.name?.toUpperCase() === 'HBW' || cell.name?.toUpperCase() === 'DPS' ? (cell.name.toUpperCase() as 'HBW' | 'DPS') : undefined) : undefined;
     return {
       id: cell.id,
       label,
@@ -832,6 +1000,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
         left: att.left + padding,
       })),
       status, // Include status for overlays and highlighting
+      compoundType,
     };
   }
 
@@ -842,20 +1011,20 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     const highlighted = highlightCandidates.some((candidate) => candidate && highlightAliases.has(candidate));
 
     // DSP gets label on the right, ORBIS and others keep label below
-    const isDsp = cell.name?.toUpperCase() === 'DSP' || cell.id?.toUpperCase().includes('DSP');
+    const upperName = cell.name?.toUpperCase();
+    const isDsp = upperName === 'DSP' || cell.id?.toUpperCase().includes('DSP');
+    const isOrbis = upperName === 'ORBIS' || cell.id?.toUpperCase().includes('ORBIS');
     const labelPosition: 'bottom' | 'right' | 'left' = isDsp ? 'right' : 'bottom';
 
-    // For DSP logo: calculate size based on maximum x-coordinate (width)
-    // New SVG dimensions: 260 x 120 mm, aspect ratio: 260/120 = 2.167
-    // Use maximum width available in cell, maintain aspect ratio
+    // For ORBIS/DSP logos: set explicit sizing so rotation doesn't shrink the logo.
+    // We base it on the max dimension of the cell, keeping aspect ratio.
     let iconWidth: number | undefined;
     let iconHeight: number | undefined;
-    if (isDsp && icon) {
-      // Use maximum width (cell.width * 0.95 for minimal padding), maintain aspect ratio
-      const maxWidth = cell.size.w * 0.95;
-      const aspectRatio = 260 / 120; // 2.167
-      iconWidth = maxWidth;
-      iconHeight = maxWidth / aspectRatio;
+    if ((isDsp || isOrbis) && icon) {
+      const maxDim = Math.max(cell.size.w, cell.size.h) * 0.8;
+      const aspectRatio = isDsp ? 260 / 120 : 790.77 / 339.87;
+      iconWidth = maxDim;
+      iconHeight = maxDim / aspectRatio;
     }
 
     return {

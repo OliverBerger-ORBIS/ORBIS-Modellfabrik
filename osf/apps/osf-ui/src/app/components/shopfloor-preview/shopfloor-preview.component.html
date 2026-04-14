@@ -80,6 +80,7 @@
             [alt]="fixed.label"
             [style.width.px]="fixed.iconWidth"
             [style.height.px]="fixed.iconHeight"
+            [style.transform]="fixed.iconRotationDeg ? ('rotate(' + fixed.iconRotationDeg + 'deg)') : null"
           />
           <span *ngIf="fixed.showLabel" class="preview__module-label preview__fixed-label">{{ fixed.label }}</span>
         </div>

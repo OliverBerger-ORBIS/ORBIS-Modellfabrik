@@ -7,6 +7,7 @@ import { EnvironmentDefinition, EnvironmentService, EnvironmentKey } from '../se
 import { ConnectionService, ConnectionSettings } from '../services/connection.service';
 import { ExternalLinksService, ExternalLinksSettings } from '../services/external-links.service';
 import { LanguageService, LocaleKey } from '../services/language.service';
+import { ShopfloorRotationService, type ShopfloorRotation } from '../services/shopfloor-rotation.service';
 
 @Component({
   standalone: true,
@@ -121,6 +122,26 @@ import { LanguageService, LocaleKey } from '../services/language.service';
               Save changes
             </button>
           </footer>
+        </form>
+      </section>
+
+      <section class="shopfloor-settings">
+        <header>
+          <h3 i18n="@@settingsShopfloorHeadline">Shopfloor layout</h3>
+          <p i18n="@@settingsShopfloorDescription">
+            Rotation is applied to all shopfloor previews (including presentation mode). Labels stay readable.
+          </p>
+        </header>
+
+        <form [formGroup]="shopfloorForm" class="shopfloor-form">
+          <label>
+            <span i18n="@@settingsShopfloorRotationLabel">Rotation</span>
+            <select formControlName="rotation">
+              <option value="none" i18n="@@settingsShopfloorRotationNone">No rotation</option>
+              <option value="cw90" i18n="@@settingsShopfloorRotationCw90">90° clockwise</option>
+              <option value="ccw90" i18n="@@settingsShopfloorRotationCcw90">90° counter-clockwise</option>
+            </select>
+          </label>
         </form>
       </section>
 
@@ -244,6 +265,7 @@ export class SettingsTabComponent implements OnInit {
   environments: EnvironmentDefinition[] = [];
   readonly forms = new Map<EnvironmentDefinition['key'], FormGroup>();
   connectionForm!: FormGroup;
+  shopfloorForm!: FormGroup;
   linksForm!: FormGroup;
   readonly directPages = [
     {
@@ -360,7 +382,8 @@ export class SettingsTabComponent implements OnInit {
     private readonly externalLinksService: ExternalLinksService,
     private readonly languageService: LanguageService,
     private readonly router: Router,
-    private readonly fb: FormBuilder
+    private readonly fb: FormBuilder,
+    private readonly shopfloorRotation: ShopfloorRotationService
   ) {}
 
   ngOnInit(): void {
@@ -381,6 +404,13 @@ export class SettingsTabComponent implements OnInit {
       autoConnect: [settings.autoConnect],
       retryEnabled: [settings.retryEnabled],
       retryIntervalMs: [settings.retryIntervalMs, [Validators.required, Validators.min(1000)]],
+    });
+
+    this.shopfloorForm = this.fb.group({
+      rotation: [this.shopfloorRotation.current],
+    });
+    this.shopfloorForm.get('rotation')?.valueChanges.subscribe((value) => {
+      this.shopfloorRotation.setRotation(value as ShopfloorRotation);
     });
 
     const linkSettings = this.externalLinksService.current;

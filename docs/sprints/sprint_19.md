@@ -80,7 +80,7 @@ Fokus: schlanker **Replay + Session Recorder**; Randfunktionen entlasten oder en
 - [ ] Kamera: Halterung, Vogelperspektive, Tests OSF/OBS
 - [ ] **Layout:** Windows + **FancyZones** für Messe-Setup (vgl. **Präsentation / Demo-Setup** — Hero+2)
 - [ ] OBS-Szenen Hannover — [obs-video-presentation-setup.md](../04-howto/presentation/obs-video-presentation-setup.md) (OBS bleibt fragil; Alternative siehe oben)
-- [ ] Shopfloor-Rotation vs. OBS/Konftel — Optionen kurz dokumentieren (gleicher How-to)
+- [x] Shopfloor-Rotation vs. OBS/Konftel — Optionen kurz dokumentieren (gleicher How-to)
 - [ ] Konftel-20: Remote/Szenen ohne Demo-Pipeline zu blockieren
 
 ### Arduino & Sensor-Station

@@ -7,6 +7,7 @@ import { EnvironmentService, EnvironmentDefinition } from '../../services/enviro
 import { ConnectionService, ConnectionSettings } from '../../services/connection.service';
 import { ExternalLinksService, ExternalLinksSettings } from '../../services/external-links.service';
 import { LanguageService, LocaleKey } from '../../services/language.service';
+import { ShopfloorRotationService } from '../../services/shopfloor-rotation.service';
 
 describe('SettingsTabComponent', () => {
   let component: SettingsTabComponent;
@@ -15,6 +16,7 @@ describe('SettingsTabComponent', () => {
   let connectionService: jest.Mocked<ConnectionService>;
   let externalLinksService: jest.Mocked<ExternalLinksService>;
   let languageService: jest.Mocked<LanguageService>;
+  let shopfloorRotation: jest.Mocked<ShopfloorRotationService>;
   let router: jest.Mocked<Router>;
 
   const mockEnvironments: EnvironmentDefinition[] = [
@@ -89,6 +91,12 @@ describe('SettingsTabComponent', () => {
       url: '/en/overview',
     };
 
+    const shopfloorRotationMock = {
+      current: 'ccw90',
+      rotation$: new BehaviorSubject('ccw90'),
+      setRotation: jest.fn(),
+    };
+
     // Mock localStorage
     Object.defineProperty(window, 'localStorage', {
       value: {
@@ -116,6 +124,7 @@ describe('SettingsTabComponent', () => {
         { provide: ConnectionService, useValue: connectionServiceMock },
         { provide: ExternalLinksService, useValue: externalLinksServiceMock },
         { provide: LanguageService, useValue: languageServiceMock },
+        { provide: ShopfloorRotationService, useValue: shopfloorRotationMock },
         { provide: Router, useValue: routerMock },
       ],
     }).compileComponents();
@@ -126,6 +135,7 @@ describe('SettingsTabComponent', () => {
     connectionService = TestBed.inject(ConnectionService) as any;
     externalLinksService = TestBed.inject(ExternalLinksService) as any;
     languageService = TestBed.inject(LanguageService) as any;
+    shopfloorRotation = TestBed.inject(ShopfloorRotationService) as any;
     router = TestBed.inject(Router) as any;
     
     // Trigger ngOnInit
@@ -152,6 +162,11 @@ describe('SettingsTabComponent', () => {
     expect(component.connectionForm.get('autoConnect')?.value).toBe(true);
     expect(component.connectionForm.get('retryEnabled')?.value).toBe(true);
     expect(component.connectionForm.get('retryIntervalMs')?.value).toBe(5000);
+  });
+
+  it('should initialize shopfloor rotation form', () => {
+    expect(component.shopfloorForm).toBeDefined();
+    expect(component.shopfloorForm.get('rotation')?.value).toBe('ccw90');
   });
 
   it('should initialize links form', () => {
