@@ -4,6 +4,12 @@
   "dspControlUrl": "https://www.orbis-group.com/de-de/sap-orbis-loesungen/distributed-shopfloor-processing.html",
   "managementCockpitUrl": "https://dspmcorbisprd.powerappsportals.com",
   "erpSystemUrl": "process",
+  "bpErpApplicationUrl": "process",
+  "bpPlanningApplicationUrl": "https://www.orbis-group.com/de-de/sap-orbis-loesungen/logistics/",
+  "bpMesApplicationUrl": "https://www.orbis-group.com/de-de/sap-orbis-loesungen/mes/",
+  "bpEwmApplicationUrl": "https://www.orbis-group.com/de-de/sap-orbis-loesungen/logistics/apps.html",
+  "bpAnalyticsApplicationUrl": "http://192.168.0.201:3000/dashboards",
+  "bpDataLakeApplicationUrl": "",
   "mesSystemUrl": "https://www.orbis-group.com/de-de/sap-orbis-loesungen/mes/",
   "ewmSystemUrl": "https://www.orbis-group.com/de-de/sap-orbis-loesungen/logistics/apps.html"
 }

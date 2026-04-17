@@ -1,27 +1,14 @@
 /**
- * OSF (ORBIS Smart Factory) default customer: LogiMAT-style business layer (ORBIS MES, EWM, …),
- * shopfloor with Sensor Station (Arduino) + FTS instead of generic “any system”.
+ * OSF default customer config.
+ *
+ * This should always point to the "current demo" variant, while older event variants remain
+ * available as separate customer configs (e.g. Hannover Messe, Customer Connect).
  */
 import type { CustomerDspConfig } from '../types';
-import { FMF_CONFIG } from '../fmf/fmf-config';
-import { LOGIMAT_CONFIG } from '../logimat/logimat-config';
+import { OSF_HANNOVER_2026_CONFIG } from './osf-hannover-2026-config';
 
 export const OSF_CONFIG: CustomerDspConfig = {
+  ...OSF_HANNOVER_2026_CONFIG,
   customerKey: 'osf',
   customerName: 'ORBIS Smart Factory (Demo)',
-  sfDevices: FMF_CONFIG.sfDevices.map((d) => ({ ...d })),
-  sfSystems: [
-    {
-      id: 'sf-system-sensor',
-      label: $localize`:@@dspArchLabelSensorStation:Sensor Station`,
-      iconKey: 'sensor-station-system',
-    },
-    {
-      id: 'sf-system-fts',
-      label: $localize`:@@dspArchLabelFTS:AGV\nSystem`,
-      iconKey: 'agv-system',
-    },
-  ],
-  bpProcesses: LOGIMAT_CONFIG.bpProcesses.map((bp) => ({ ...bp })),
-  customerLogoPath: 'assets/customers/fmf/logo.svg',
 };

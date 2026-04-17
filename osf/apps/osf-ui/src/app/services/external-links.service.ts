@@ -8,11 +8,25 @@ export interface ExternalLinksSettings {
   readonly smartfactoryDashboardUrl: string;
   readonly dspControlUrl: string;
   readonly managementCockpitUrl: string;
-  readonly erpSystemUrl: string; // Task 12: ERP/SAP System URL for future integration
-  /** External ORBIS MES (or other MES) URL; DSP animation bp-mes opens this when set */
+  /** Legacy: ERP/SAP URL (used outside DSP animation). Prefer `bpErpApplicationUrl` for BP box mapping. */
+  readonly erpSystemUrl: string;
+  /** Legacy: ORBIS MES URL. Prefer `bpMesApplicationUrl` for BP box mapping. */
   readonly mesSystemUrl: string;
-  /** External SAP EWM (or other EWM) URL; DSP animation bp-ewm opens this when set */
+  /** Legacy: SAP EWM URL. Prefer `bpEwmApplicationUrl` for BP box mapping. */
   readonly ewmSystemUrl: string;
+
+  /** DSP Architecture: BP-ERP Application URL (container id: bp-erp). */
+  readonly bpErpApplicationUrl: string;
+  /** DSP Architecture: BP-Planning Application URL (container id: bp-planning). */
+  readonly bpPlanningApplicationUrl: string;
+  /** DSP Architecture: BP-MES Application URL (container id: bp-mes). */
+  readonly bpMesApplicationUrl: string;
+  /** DSP Architecture: BP-EWM Application URL (container id: bp-ewm). */
+  readonly bpEwmApplicationUrl: string;
+  /** DSP Architecture: BP-Analytics Application URL (container id: bp-analytics). */
+  readonly bpAnalyticsApplicationUrl: string;
+  /** DSP Architecture: BP-Data Lake URL (container id: bp-data-lake). */
+  readonly bpDataLakeApplicationUrl: string;
 }
 
 const DEFAULT_SETTINGS: ExternalLinksSettings = {
@@ -23,6 +37,12 @@ const DEFAULT_SETTINGS: ExternalLinksSettings = {
   erpSystemUrl: 'process', // Default: internal Process-Tab, can be changed to external ERP/SAP URL
   mesSystemUrl: '',
   ewmSystemUrl: '',
+  bpErpApplicationUrl: 'process',
+  bpPlanningApplicationUrl: '',
+  bpMesApplicationUrl: '',
+  bpEwmApplicationUrl: '',
+  bpAnalyticsApplicationUrl: 'http://192.168.0.201:3000/dashboards',
+  bpDataLakeApplicationUrl: '',
 };
 
 @Injectable({ providedIn: 'root' })
@@ -45,6 +65,30 @@ export class ExternalLinksService {
 
   updateSettings(settings: ExternalLinksSettings): void {
     this.settingsSubject.next({ ...settings });
+  }
+
+  resolveBpApplicationUrl(bpContainerId: string): string | undefined {
+    const links = this.current;
+    const clean = (value: string | undefined): string | undefined => {
+      const trimmed = value?.trim();
+      return trimmed ? trimmed : undefined;
+    };
+    switch (bpContainerId) {
+      case 'bp-erp':
+        return clean(links.bpErpApplicationUrl) ?? clean(links.erpSystemUrl) ?? 'process';
+      case 'bp-planning':
+        return clean(links.bpPlanningApplicationUrl);
+      case 'bp-mes':
+        return clean(links.bpMesApplicationUrl) ?? clean(links.mesSystemUrl);
+      case 'bp-ewm':
+        return clean(links.bpEwmApplicationUrl) ?? clean(links.ewmSystemUrl);
+      case 'bp-analytics':
+        return clean(links.bpAnalyticsApplicationUrl) ?? clean(links.grafanaDashboardUrl);
+      case 'bp-data-lake':
+        return clean(links.bpDataLakeApplicationUrl);
+      default:
+        return undefined;
+    }
   }
 
   private loadFromRepoConfig(): void {

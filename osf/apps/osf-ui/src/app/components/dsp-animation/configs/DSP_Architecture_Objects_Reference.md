@@ -59,6 +59,7 @@ Die folgenden Business Process Applications sind verfügbar:
 | `bp-data-lake` | Data Lake | `bp-data-lake` | `data-lake-application.svg` | `aws-logo` (optional) |
 | `bp-scm` | SCM Applications | `scm-application` | `scm-application.svg` | - |
 | `bp-crm` | CRM Applications | `crm-application` | `crm-application.svg` | - |
+| `bp-planning` | Planning Application | `planning-application` | `planning-application.svg` | `logo-orbis` (top-left) |
 
 **Verfügbare Business Process Application Icons:**
 
@@ -104,6 +105,12 @@ Die folgenden Business Process Applications sind verfügbar:
 <img src="../../../../assets/svg/business/crm-application.svg" alt="CRM Application" width="64" height="64" />
 <div style="font-weight: 600; margin-top: 8px;">`bp-crm`</div>
 <div style="font-size: 0.9em; color: #666;">crm-application.svg</div>
+</div>
+
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../../../assets/svg/business/planning-application.svg" alt="Planning Application" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`planning-application`</div>
+<div style="font-size: 0.9em; color: #666;">planning-application.svg</div>
 </div>
 
 </div>

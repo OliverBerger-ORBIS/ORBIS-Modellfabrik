@@ -26,9 +26,9 @@
 
 ### OSF-UI – DSP Architecture & Links
 
-- [ ] **Business-Layer Box „Bp-Planning“** zwischen ERP Apps und MES Apps (ORBIS Branding, Planungs-Icon, klickbar)
-- [ ] **Settings:** URL-Konfiguration für Bp-Planning Link (Pattern wie MES/EWM)
-- [ ] **Animation-Variante:** Hannover-Messe-Animation vs. LogiMAT-Variante sauber als benannte Variante (Entscheidung + Umsetzung)
+- [x] **Business-Layer Box „Bp-Planning“** zwischen ERP Apps und MES Apps (ORBIS Branding, Planungs-Icon, klickbar)
+- [x] **Settings:** URL-Konfiguration für Bp-Planning Link (Pattern wie MES/EWM)
+- [x] **Animation-Variante:** Hannover-Messe-Animation vs. LogiMAT-Variante sauber als benannte Variante (Entscheidung + Umsetzung)
 
 ### OSF-UI – Bugs / UX
 

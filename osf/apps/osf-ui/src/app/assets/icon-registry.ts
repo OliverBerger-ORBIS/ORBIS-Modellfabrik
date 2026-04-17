@@ -75,6 +75,7 @@ export type IconKey =
   | 'bp-business-process'
   | 'mes-application'
   | 'ewm-application'
+  | 'planning-application'
   | 'aws-logo'
   | 'google-cloud-logo'
   | 'logo-edge'
@@ -187,6 +188,7 @@ export const ICON_MAP: Record<IconKey, string> = {
   'bp-business-process': ICONS.dsp.functions.workflow,
   'mes-application': ICONS.business.mes,
   'ewm-application': ICONS.business.ewm,
+  'planning-application': 'assets/svg/business/planning-application.svg',
   'aws-logo': 'assets/svg/brand/aws-logo.svg',
   'google-cloud-logo': 'assets/svg/brand/google-cloud-logo.svg',
   'logo-edge': 'assets/svg/dsp/architecture/dsp-edge-box.svg',

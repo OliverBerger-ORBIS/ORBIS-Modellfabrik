@@ -20,6 +20,15 @@ export const LOGIMAT_CONFIG: CustomerDspConfig = {
       brandLogoKey: 'sap',
     },
     {
+      id: 'bp-planning',
+      label: $localize`:@@dspArchLabelPlanningApp:Planning Application`,
+      iconKey: 'cloud',
+      brandLogoKey: 'sap',
+      customIconPath: 'planning-application',
+      customBrandLogoPath: 'logo-orbis',
+      secondaryLogoPosition: 'top-left',
+    },
+    {
       id: 'bp-mes',
       label: $localize`:@@dspArchLabelSapMesApp:MES Application`,
       iconKey: 'mes',

@@ -148,6 +148,12 @@ describe('ConfigurationTabComponent', () => {
         erpSystemUrl: '',
         mesSystemUrl: '',
         ewmSystemUrl: '',
+        bpErpApplicationUrl: '',
+        bpPlanningApplicationUrl: '',
+        bpMesApplicationUrl: '',
+        bpEwmApplicationUrl: '',
+        bpAnalyticsApplicationUrl: '',
+        bpDataLakeApplicationUrl: '',
       }),
     };
 

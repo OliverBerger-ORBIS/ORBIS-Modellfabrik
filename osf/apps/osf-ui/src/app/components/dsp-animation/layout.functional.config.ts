@@ -597,8 +597,63 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
   ];
 }
 
+export function createSlimSteps(customerConfig?: CustomerDspConfig): StepConfig[] {
+  // Keep the full (long) story flow incl. BP boxes, MC and OSF dashboard,
+  // but compress the DSP function focus into two steps:
+  // 1) Interoperability only, 2) all remaining functions at once.
+  const steps = createDefaultSteps(customerConfig).map((s) => ({ ...s }));
+
+  const remainingFunctions: Array<
+    | 'edge-network'
+    | 'edge-event-driven'
+    | 'edge-choreography'
+    | 'edge-digital-twin'
+    | 'edge-best-of-breed'
+    | 'edge-analytics'
+    | 'edge-ai-enablement'
+    | 'edge-autonomous-enterprise'
+  > = [
+    'edge-network',
+    'edge-event-driven',
+    'edge-choreography',
+    'edge-digital-twin',
+    'edge-best-of-breed',
+    'edge-analytics',
+    'edge-ai-enablement',
+    'edge-autonomous-enterprise',
+  ];
+
+  for (const step of steps) {
+    if (!('highlightedFunctionIcons' in step)) {
+      continue;
+    }
+    // Clear all per-function highlight steps by default; we re-enable for step-4/5 below.
+    step.highlightedFunctionIcons = [];
+  }
+
+  const stepInterop = steps.find((s) => s.id === 'step-4');
+  if (stepInterop) {
+    stepInterop.showFunctionIcons = true;
+    stepInterop.highlightedFunctionIcons = ['edge-interoperability'];
+  }
+
+  const stepAllFunctions = steps.find((s) => s.id === 'step-5');
+  if (stepAllFunctions) {
+    stepAllFunctions.label = $localize`:@@dspArchStepFunctions:DSP Functions`;
+    stepAllFunctions.description = $localize`:@@dspArchStepFunctionsDesc:All DSP functions are available on the Edge; interoperability is highlighted first, then the remaining functions appear together.`;
+    stepAllFunctions.showFunctionIcons = true;
+    stepAllFunctions.highlightedFunctionIcons = remainingFunctions;
+  }
+
+  return steps;
+}
+
+function shouldUseSlimSteps(customerConfig?: CustomerDspConfig): boolean {
+  const key = customerConfig?.customerKey ?? '';
+  return key === 'osf' || key.includes('hannover');
+}
+
 export function createFunctionalView(customerConfig?: import('./configs/types').CustomerDspConfig): DiagramConfig {
-  return new DiagramConfigBuilder(customerConfig)
-    .withFunctionalSteps(createDefaultSteps(customerConfig))
-    .build();
+  const steps = shouldUseSlimSteps(customerConfig) ? createSlimSteps(customerConfig) : createDefaultSteps(customerConfig);
+  return new DiagramConfigBuilder(customerConfig).withFunctionalSteps(steps).build();
 }

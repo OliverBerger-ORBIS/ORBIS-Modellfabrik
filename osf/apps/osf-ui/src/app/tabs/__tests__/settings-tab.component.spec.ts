@@ -60,6 +60,12 @@ describe('SettingsTabComponent', () => {
     erpSystemUrl: 'https://erp.example.com',
     mesSystemUrl: '',
     ewmSystemUrl: '',
+    bpErpApplicationUrl: 'https://erp.example.com',
+    bpPlanningApplicationUrl: '',
+    bpMesApplicationUrl: '',
+    bpEwmApplicationUrl: '',
+    bpAnalyticsApplicationUrl: 'https://grafana.example.com',
+    bpDataLakeApplicationUrl: '',
   };
 
   beforeEach(async () => {
@@ -230,7 +236,7 @@ describe('SettingsTabComponent', () => {
 
   it('should save external links', () => {
     component.linksForm.patchValue({
-      grafanaDashboardUrl: 'https://new.grafana.example.com',
+      bpAnalyticsApplicationUrl: 'https://new.grafana.example.com',
     });
     component.saveExternalLinks();
     expect(externalLinksService.updateSettings).toHaveBeenCalled();
@@ -239,7 +245,7 @@ describe('SettingsTabComponent', () => {
 
   it('should not save invalid links form', () => {
     component.linksForm.patchValue({
-      grafanaDashboardUrl: '', // Invalid: required field
+      bpAnalyticsApplicationUrl: '', // Invalid: required field
     });
     component.saveExternalLinks();
     expect(externalLinksService.updateSettings).not.toHaveBeenCalled();

@@ -59,6 +59,12 @@ describe('ExternalLinksService', () => {
         erpSystemUrl: 'process',
         mesSystemUrl: '',
         ewmSystemUrl: '',
+        bpErpApplicationUrl: 'process',
+        bpPlanningApplicationUrl: '',
+        bpMesApplicationUrl: '',
+        bpEwmApplicationUrl: '',
+        bpAnalyticsApplicationUrl: 'https://test.grafana.com',
+        bpDataLakeApplicationUrl: '',
       };
 
       service.updateSettings(newSettings);
@@ -84,6 +90,12 @@ describe('ExternalLinksService', () => {
             erpSystemUrl: 'process',
             mesSystemUrl: '',
             ewmSystemUrl: '',
+            bpErpApplicationUrl: 'process',
+            bpPlanningApplicationUrl: '',
+            bpMesApplicationUrl: '',
+            bpEwmApplicationUrl: '',
+            bpAnalyticsApplicationUrl: 'https://test.grafana.com',
+            bpDataLakeApplicationUrl: '',
           };
           service.updateSettings(newSettings);
         } else if (callCount === 2) {
@@ -121,6 +133,12 @@ describe('ExternalLinksService', () => {
         erpSystemUrl: '',
         mesSystemUrl: '',
         ewmSystemUrl: '',
+        bpErpApplicationUrl: '',
+        bpPlanningApplicationUrl: '',
+        bpMesApplicationUrl: '',
+        bpEwmApplicationUrl: '',
+        bpAnalyticsApplicationUrl: '',
+        bpDataLakeApplicationUrl: '',
       };
 
       service.updateSettings(emptySettings);
@@ -140,6 +158,12 @@ describe('ExternalLinksService', () => {
         erpSystemUrl: 'process',
         mesSystemUrl: '',
         ewmSystemUrl: '',
+        bpErpApplicationUrl: 'process',
+        bpPlanningApplicationUrl: '',
+        bpMesApplicationUrl: '',
+        bpEwmApplicationUrl: '',
+        bpAnalyticsApplicationUrl: longUrl,
+        bpDataLakeApplicationUrl: '',
       };
 
       service.updateSettings(longSettings);
@@ -157,6 +181,12 @@ describe('ExternalLinksService', () => {
         erpSystemUrl: 'process',
         mesSystemUrl: '',
         ewmSystemUrl: '',
+        bpErpApplicationUrl: 'process',
+        bpPlanningApplicationUrl: '',
+        bpMesApplicationUrl: '',
+        bpEwmApplicationUrl: '',
+        bpAnalyticsApplicationUrl: 'https://test1.grafana.com',
+        bpDataLakeApplicationUrl: '',
       };
 
       const settings2: ExternalLinksSettings = {
@@ -167,6 +197,12 @@ describe('ExternalLinksService', () => {
         erpSystemUrl: 'process',
         mesSystemUrl: '',
         ewmSystemUrl: '',
+        bpErpApplicationUrl: 'process',
+        bpPlanningApplicationUrl: '',
+        bpMesApplicationUrl: '',
+        bpEwmApplicationUrl: '',
+        bpAnalyticsApplicationUrl: 'https://test2.grafana.com',
+        bpDataLakeApplicationUrl: '',
       };
 
       service.updateSettings(settings1);
@@ -184,6 +220,12 @@ describe('ExternalLinksService', () => {
         erpSystemUrl: 'process',
         mesSystemUrl: '',
         ewmSystemUrl: '',
+        bpErpApplicationUrl: 'process',
+        bpPlanningApplicationUrl: '',
+        bpMesApplicationUrl: '',
+        bpEwmApplicationUrl: '',
+        bpAnalyticsApplicationUrl: 'https://test.com/path?param=value&other=123',
+        bpDataLakeApplicationUrl: '',
       };
 
       service.updateSettings(specialSettings);
@@ -201,6 +243,12 @@ describe('ExternalLinksService', () => {
         erpSystemUrl: 'process',
         mesSystemUrl: '',
         ewmSystemUrl: '',
+        bpErpApplicationUrl: 'process',
+        bpPlanningApplicationUrl: '',
+        bpMesApplicationUrl: '',
+        bpEwmApplicationUrl: '',
+        bpAnalyticsApplicationUrl: '/grafana',
+        bpDataLakeApplicationUrl: '',
       };
 
       service.updateSettings(relativeSettings);

@@ -6,6 +6,8 @@ import { ECME_CONFIG } from '../../../components/dsp-animation/configs/ecme/ecme
 import { FMF_CONFIG } from '../../../components/dsp-animation/configs/fmf/fmf-config';
 import { LOGIMAT_CONFIG } from '../../../components/dsp-animation/configs/logimat/logimat-config';
 import { OSF_CONFIG } from '../../../components/dsp-animation/configs/osf/osf-config';
+import { OSF_CUSTOMER_CONNECT_2026_CONFIG } from '../../../components/dsp-animation/configs/osf/osf-customer-connect-2026-config';
+import { OSF_HANNOVER_2026_CONFIG } from '../../../components/dsp-animation/configs/osf/osf-hannover-2026-config';
 import type { CustomerDspConfig } from '../../../components/dsp-animation/configs/types';
 
 interface CustomerOption {
@@ -198,6 +200,14 @@ export class CustomerSelectorPageComponent {
     {
       config: OSF_CONFIG,
       route: '/dsp/customer/osf',
+    },
+    {
+      config: OSF_HANNOVER_2026_CONFIG,
+      route: '/dsp/customer/osf-hannover-2026',
+    },
+    {
+      config: OSF_CUSTOMER_CONNECT_2026_CONFIG,
+      route: '/dsp/customer/osf-customer-connect-2026',
     },
     {
       config: FMF_CONFIG,

@@ -149,16 +149,11 @@ import { ShopfloorRotationService, type ShopfloorRotation } from '../services/sh
         <header>
           <h3 i18n="@@settingsLinksHeadline">External links</h3>
           <p i18n="@@settingsLinksDescription">
-            Configure the URLs used for ORBIS and DSP detail views in the configuration tab.
+            Configure the URLs used by the DSP architecture boxes and detail views.
           </p>
         </header>
 
         <form [formGroup]="linksForm" (ngSubmit)="saveExternalLinks()" class="links-form">
-          <label>
-            <span i18n="@@settingsGrafanaLinkLabel">BP Analytical Application URL</span>
-            <input type="url" formControlName="grafanaDashboardUrl" placeholder="https://grafana.example.com" />
-          </label>
-
           <label>
             <span i18n="@@settingsSmartFactoryLinkLabel">DSP SmartFactory Dashboard URL</span>
             <input type="text" formControlName="smartfactoryDashboardUrl" placeholder="/dsp-action" />
@@ -175,25 +170,38 @@ import { ShopfloorRotationService, type ShopfloorRotation } from '../services/sh
           </label>
 
           <label>
-            <span i18n="@@settingsErpSystemLinkLabel">ERP/SAP System URL</span>
-            <input type="text" formControlName="erpSystemUrl" placeholder="process" />
-            <small i18n="@@settingsErpSystemLinkHint">Internal route (e.g., 'process') or external ERP/SAP URL for future integration.</small>
+            <span i18n="@@settingsBpErpSystemLinkLabel">BP-ERP Application URL</span>
+            <input type="text" formControlName="bpErpApplicationUrl" placeholder="process" />
+            <small i18n="@@settingsBpErpSystemLinkHint">Internal route (e.g., 'process') or external ERP/SAP URL.</small>
           </label>
 
           <label>
-            <span i18n="@@settingsMesSystemLinkLabel">MES system URL (ORBIS MES)</span>
-            <input type="url" formControlName="mesSystemUrl" placeholder="https://" />
-            <small i18n="@@settingsMesSystemLinkHint"
-              >Opens in a new tab when the MES box is clicked in the DSP architecture animation. Leave empty to disable.</small
-            >
+            <span i18n="@@settingsBpPlanningLinkLabel">BP-Planning Application URL</span>
+            <input type="url" formControlName="bpPlanningApplicationUrl" placeholder="https://" />
+            <small i18n="@@settingsBpPlanningLinkHint">Opens in a new tab when the BP-Planning box is clicked. Leave empty to disable.</small>
           </label>
 
           <label>
-            <span i18n="@@settingsEwmSystemLinkLabel">EWM system URL (SAP EWM)</span>
-            <input type="url" formControlName="ewmSystemUrl" placeholder="https://" />
-            <small i18n="@@settingsEwmSystemLinkHint"
-              >Opens in a new tab when the EWM Application box is clicked in the DSP architecture animation. Leave empty to disable.</small
-            >
+            <span i18n="@@settingsBpMesSystemLinkLabel">BP-MES Application URL (ORBIS MES)</span>
+            <input type="url" formControlName="bpMesApplicationUrl" placeholder="https://" />
+            <small i18n="@@settingsBpMesSystemLinkHint">Opens in a new tab when the BP-MES box is clicked. Leave empty to disable.</small>
+          </label>
+
+          <label>
+            <span i18n="@@settingsBpEwmSystemLinkLabel">BP-EWM Application URL (SAP EWM)</span>
+            <input type="url" formControlName="bpEwmApplicationUrl" placeholder="https://" />
+            <small i18n="@@settingsBpEwmSystemLinkHint">Opens in a new tab when the BP-EWM box is clicked. Leave empty to disable.</small>
+          </label>
+
+          <label>
+            <span i18n="@@settingsBpAnalyticsLinkLabel">BP-Analytics Application URL</span>
+            <input type="url" formControlName="bpAnalyticsApplicationUrl" placeholder="https://grafana.example.com" />
+          </label>
+
+          <label>
+            <span i18n="@@settingsBpDataLakeLinkLabel">BP-Data Lake URL</span>
+            <input type="url" formControlName="bpDataLakeApplicationUrl" placeholder="https://" />
+            <small i18n="@@settingsBpDataLakeLinkHint">Optional: open a Data Lake page from the BP-Data-Lake box.</small>
           </label>
 
           <footer>
@@ -415,10 +423,19 @@ export class SettingsTabComponent implements OnInit {
 
     const linkSettings = this.externalLinksService.current;
     this.linksForm = this.fb.group({
-      grafanaDashboardUrl: [linkSettings.grafanaDashboardUrl, [Validators.required]],
+      // DSP Architecture BP boxes
+      bpErpApplicationUrl: [linkSettings.bpErpApplicationUrl ?? linkSettings.erpSystemUrl],
+      bpPlanningApplicationUrl: [linkSettings.bpPlanningApplicationUrl],
+      bpMesApplicationUrl: [linkSettings.bpMesApplicationUrl ?? linkSettings.mesSystemUrl],
+      bpEwmApplicationUrl: [linkSettings.bpEwmApplicationUrl ?? linkSettings.ewmSystemUrl],
+      bpAnalyticsApplicationUrl: [linkSettings.bpAnalyticsApplicationUrl ?? linkSettings.grafanaDashboardUrl, [Validators.required]],
+      bpDataLakeApplicationUrl: [linkSettings.bpDataLakeApplicationUrl],
+
       smartfactoryDashboardUrl: [linkSettings.smartfactoryDashboardUrl],
       dspControlUrl: [linkSettings.dspControlUrl, [Validators.required]],
       managementCockpitUrl: [linkSettings.managementCockpitUrl, [Validators.required]],
+      // Legacy fields kept for backward-compat consumers and repo config
+      grafanaDashboardUrl: [linkSettings.grafanaDashboardUrl],
       erpSystemUrl: [linkSettings.erpSystemUrl],
       mesSystemUrl: [linkSettings.mesSystemUrl],
       ewmSystemUrl: [linkSettings.ewmSystemUrl],
@@ -455,7 +472,15 @@ export class SettingsTabComponent implements OnInit {
     if (!this.linksForm || this.linksForm.invalid) {
       return;
     }
-    const value = this.linksForm.value as ExternalLinksSettings;
+    const raw = this.linksForm.value as ExternalLinksSettings;
+    // Keep legacy fields in sync so other parts of the UI keep working.
+    const value: ExternalLinksSettings = {
+      ...raw,
+      grafanaDashboardUrl: raw.bpAnalyticsApplicationUrl || raw.grafanaDashboardUrl,
+      erpSystemUrl: raw.bpErpApplicationUrl || raw.erpSystemUrl,
+      mesSystemUrl: raw.bpMesApplicationUrl || raw.mesSystemUrl,
+      ewmSystemUrl: raw.bpEwmApplicationUrl || raw.ewmSystemUrl,
+    };
     this.externalLinksService.updateSettings(value);
     this.linksForm.markAsPristine();
   }

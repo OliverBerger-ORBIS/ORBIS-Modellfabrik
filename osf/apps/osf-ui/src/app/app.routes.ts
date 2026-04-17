@@ -169,6 +169,20 @@ export const appRoutes: Routes = [
           import('./pages/dsp/customer/logimat/logimat-dsp-page.component').then((m) => m.LogimatDspPageComponent),
       },
       {
+        path: 'dsp/customer/osf-hannover-2026',
+        loadComponent: () =>
+          import('./pages/dsp/customer/osf-hannover-2026/osf-hannover-2026-dsp-page.component').then(
+            (m) => m.OsfHannover2026DspPageComponent
+          ),
+      },
+      {
+        path: 'dsp/customer/osf-customer-connect-2026',
+        loadComponent: () =>
+          import('./pages/dsp/customer/osf-customer-connect-2026/osf-customer-connect-2026-dsp-page.component').then(
+            (m) => m.OsfCustomerConnect2026DspPageComponent
+          ),
+      },
+      {
         path: 'dsp/customer/osf',
         loadComponent: () =>
           import('./pages/dsp/customer/osf/osf-dsp-page.component').then((m) => m.OsfDspPageComponent),

@@ -28,6 +28,12 @@ describe('DspAnimationComponent - Label Wrapping', () => {
         erpSystemUrl: 'process',
         mesSystemUrl: '',
         ewmSystemUrl: '',
+        bpErpApplicationUrl: 'process',
+        bpPlanningApplicationUrl: '',
+        bpMesApplicationUrl: '',
+        bpEwmApplicationUrl: '',
+        bpAnalyticsApplicationUrl: '',
+        bpDataLakeApplicationUrl: '',
       }),
       get current() {
         return {
@@ -38,6 +44,12 @@ describe('DspAnimationComponent - Label Wrapping', () => {
           erpSystemUrl: 'process',
           mesSystemUrl: '',
           ewmSystemUrl: '',
+          bpErpApplicationUrl: 'process',
+          bpPlanningApplicationUrl: '',
+          bpMesApplicationUrl: '',
+          bpEwmApplicationUrl: '',
+          bpAnalyticsApplicationUrl: '',
+          bpDataLakeApplicationUrl: '',
         };
       },
     };
