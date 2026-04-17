@@ -1,6 +1,6 @@
 # Sprint 19 – Sensor-Station, Backend/Grafana & Hannover-Vorbereitung
 
-**Zeitraum:** 02.04.2026 – 15.04.2026 (2 Wochen) · **Status:** Laufend · **Vorheriger Sprint:** [Sprint 18](./sprint_18.md)
+**Zeitraum:** 02.04.2026 – 17.04.2026 (2 Wochen) · **Status:** Abgeschlossen · **Vorheriger Sprint:** [Sprint 18](./sprint_18.md)
 
 **Kurz:** Sensor-Station (Hardware + OSF), Backend/Grafana, Blog; **Hannover** (Kamera, OBS, Konftel).
 
@@ -32,7 +32,7 @@
 
 ---
 
-## Erledigt (Stand 13.04.2026)
+## Erledigt (Stand 17.04.2026)
 
 - [x] **DSP / OSF-Story:** Default-Kunde OSF, **Sensor Station** in Animation, **MES/EWM**-URLs (Settings), Klick → Sensor-Tab bzw. extern; Route `dsp/customer/osf` — [dsp-osf-customer-integration-plan.md](../04-howto/dsp-osf-customer-integration-plan.md), Reference `sf-system-sensor`.
 - [x] **Doku:** [dsp-svg-inventory.md](../02-architecture/dsp-svg-inventory.md) Verifikation osf-ui (09.04.2026).
@@ -48,6 +48,8 @@
 - [x] **OSF-UI / Track & Trace Dedup:** Dedup-Key + TTL/LRU im `WorkpieceHistoryService`, um doppelte Events (Reconnect/Replay) zu unterdrücken; Verifikation 2026-04-13: `nx test osf-ui`.
 - [x] **OSF-UI / Process-Tab Refresh (ohne Locale-Wechsel):** Live/Replay: Dashboard-Mock-Streams überschreiben keine retained MQTT-Daten mehr; Header-Refresh + Process-Refresh triggern Soft-Resync; Zentrale View-Scale (DSP + Use-Cases) via `ViewScaleService`; Verifikation 2026-04-13: `nx test osf-ui`.
 - [x] **OSF-UI / Shopfloor-Preview-Zoom:** Getrennte Persistenz pro Kontext (`scaleStorageScope`: configuration, shopfloor, agv, presentation); einmalige Migration aus `shopfloor-config-scale`; Grid-Mitte an Vorschau-Breite (Configuration / Shopfloor / AGV); Verifikation 2026-04-13: `nx test osf-ui`.
+- [x] **OSF-UI / Shopfloor-Rotation (Settings):** Globaler Rotations-Schalter (±90°) für alle Shopfloor-Previews inkl. Presentation; Clickability erhalten; Compound-Zellen (HBW/DPS) intern korrekt; Logos (ORBIS/DSP) rotieren bewusst mit. Deploy & Verifikation 2026-04-17: RPi + Localhost.
+- [x] **Release:** OSF-UI Deploy RPi: **v1.0.12** (Rotation + Fixes) erfolgreich (2026-04-17).
 
 ---
 
@@ -77,15 +79,15 @@ Fokus: schlanker **Replay + Session Recorder**; Randfunktionen entlasten oder en
 
 ### Hannover Messe
 
-- [ ] Kamera: Halterung, Vogelperspektive, Tests OSF/OBS
-- [ ] **Layout:** Windows + **FancyZones** für Messe-Setup (vgl. **Präsentation / Demo-Setup** — Hero+2)
+- [x] Kamera: Halterung, Vogelperspektive, Tests OSF/OBS
+- [x] **Layout:** Windows + **FancyZones** für Messe-Setup (vgl. **Präsentation / Demo-Setup** — Hero+2)
 - [ ] OBS-Szenen Hannover — [obs-video-presentation-setup.md](../04-howto/presentation/obs-video-presentation-setup.md) (OBS bleibt fragil; Alternative siehe oben)
 - [x] Shopfloor-Rotation vs. OBS/Konftel — Optionen kurz dokumentieren (gleicher How-to)
 - [ ] Konftel-20: Remote/Szenen ohne Demo-Pipeline zu blockieren
 
 ### Arduino & Sensor-Station
 
-- [ ] **24 V:** XL4005, Mini-Fit Tap, 2 A, 12 V Ampel + R4 — [sensor-station-24v-bom-wiring.md](../05-hardware/sensor-station-24v-bom-wiring.md)
+- [x] **24 V:** XL4005, Mini-Fit Tap, 2 A, 12 V Ampel + R4 — [sensor-station-24v-bom-wiring.md](../05-hardware/sensor-station-24v-bom-wiring.md)
 - [x] **Transportbox:** 25×15 Deckel, Seiten 28 cm, Winkel
 - [ ] **Sensor-Tab:** UX/Demo (Rest; DSP-Anbindung liegt)
 - [ ] **Schwellen:** MQTT/API + OSF (Config); DAHEIM/ORBIS ohne Flash (Sprint-18-Thema)
@@ -114,9 +116,9 @@ Fokus: schlanker **Replay + Session Recorder**; Randfunktionen entlasten oder en
 
 ### Sprint-Abschluss
 
-- [ ] Sprint 19 abschließen (Datum)
-- [ ] Sprint 20 aus [sprint_template.md](./sprint_template.md); offene `[ ]` übernehmen
-- [ ] PROJECT_STATUS / Roadmap kurz
+- [x] Sprint 19 abschließen (Datum: 2026-04-17)
+- [x] Sprint 20 aus [sprint_template.md](./sprint_template.md); offene `[ ]` übernehmen
+- [x] PROJECT_STATUS / Roadmap kurz
 
 ---
 
@@ -137,4 +139,4 @@ Fokus: schlanker **Replay + Session Recorder**; Randfunktionen entlasten oder en
 
 ---
 
-*Stand: 13.04.2026* · [sprints_README.md](sprints_README.md)
+*Stand: 17.04.2026* · [sprints_README.md](sprints_README.md)

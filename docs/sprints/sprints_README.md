@@ -1,7 +1,7 @@
 # Sprint Documentation Index
 
 Version: 0.5  
-Letzte Aktualisierung: 2026-03-25  
+Letzte Aktualisierung: 2026-04-17  
 
 ---
 
@@ -74,7 +74,8 @@ Template: [sprint_template.md](sprint_template.md) · Beispiele: [sprint_18.md](
 - [Sprint 16](sprint_16.md) – Vibration-Sensor, Doku-Check, Marketing-Konsistenz (19.02 - 04.03.2026) ✅
 - [Sprint 17](sprint_17.md) – MES/Integration & LogiMAT Vorbereitung (05.03 - 18.03.2026) ✅
 - [Sprint 18](sprint_18.md) – LogiMAT-Messe Durchführung (19.03 - 01.04.2026) ✅
-- [Sprint 19](sprint_19.md) – Sensor-Station, Backend/Grafana & Hannover-Vorbereitung (02.04 - 15.04.2026) ⏳ **AKTUELL**
+- [Sprint 19](sprint_19.md) – Sensor-Station, Backend/Grafana & Hannover-Vorbereitung (02.04 - 17.04.2026) ✅
+- [Sprint 20](sprint_20.md) – Hannover Messe & Customer Connect (v1.1.x) (16.04 - 29.04.2026) ⏳ **AKTUELL**
 
 ## 📊 Berichte
 - [ORBIS-Projekt-Abschlussbericht Sprints 1-12](ORBIS-Projekt-Abschlussbericht_sprints_01-12.md) – Erstes ORBIS-Projekt (ORBIS-Modellfabrik)
