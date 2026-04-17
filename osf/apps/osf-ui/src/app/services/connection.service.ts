@@ -158,6 +158,32 @@ export class ConnectionService {
       });
   }
 
+  /**
+   * Re-subscribe to MQTT topics to force retained messages to be re-delivered.
+   *
+   * MQTT retained payloads are sent on (re-)subscribe. This is useful for "soft refresh"
+   * actions in the UI when tabs rely on last-known snapshots (e.g. stock/inventory).
+   */
+  resubscribe(topics: string[]): void {
+    if (!this._mqttClient || this.currentState !== 'connected') {
+      return;
+    }
+    Promise.all(
+      topics.map((topic) =>
+        this._mqttClient!.subscribe(topic, { qos: 0 }).then(() => {
+          console.log(`[connection] Re-subscribed to: ${topic}`);
+        })
+      )
+    ).catch((error) => {
+      console.error('[connection] Failed to re-subscribe to topics:', error);
+    });
+  }
+
+  /** Re-subscribe to the app's required topics (forces retained snapshots). */
+  resubscribeRequiredTopics(): void {
+    this.subscribeToRequiredTopics();
+  }
+
   disconnect(): void {
     this.clearRetry();
     if (this.connectionStateSub) {

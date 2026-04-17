@@ -338,11 +338,12 @@ export class AppComponent implements OnDestroy {
 
   refresh(): void {
     // Trigger a soft refresh without locale reload:
-    // - clear message monitor buffers
-    // - clear Track & Trace history
+    // - clear local caches (MessageMonitor + Track & Trace derived history)
+    // - re-subscribe to MQTT topics to force retained snapshots to be re-delivered
     // Tabs will repopulate from retained MQTT messages / new incoming messages.
     this.messageMonitor.clearAll();
     this.workpieceHistoryService.clear(this.environmentService.current.key);
+    this.connectionService.resubscribeRequiredTopics();
   }
 
   manualDisconnect(): void {

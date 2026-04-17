@@ -279,7 +279,11 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
 
   refreshProcessData(): void {
     // Force a resync from retained messages / recent MessageMonitor history without relying on locale reloads.
-    this.resetInventoryTracking();
+    // Re-subscribe to stock topics to force retained snapshots to be re-delivered by the broker.
+    this.connectionService.resubscribe(STOCK_TOPICS);
+    // IMPORTANT: Do not clear MessageMonitor topics here. We want to re-evaluate the latest known
+    // retained/history snapshot immediately, even if no new MQTT message arrives.
+    this.resetInventoryStoreOnly();
     this.bindInventoryOutputs();
     this.setupInventoryStreamSubscription();
     this.initializeFlowsStream();
@@ -549,6 +553,12 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
   private resetInventoryTracking(): void {
     this.inventoryState.clear(this.currentEnvironmentKey);
     STOCK_TOPICS.forEach((topic) => this.messageMonitor.clearTopic(topic));
+    this.inventoryStreamSub?.unsubscribe();
+    this.inventoryStreamSub = undefined;
+  }
+
+  private resetInventoryStoreOnly(): void {
+    this.inventoryState.clear(this.currentEnvironmentKey);
     this.inventoryStreamSub?.unsubscribe();
     this.inventoryStreamSub = undefined;
   }

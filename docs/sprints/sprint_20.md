@@ -32,7 +32,7 @@
 
 ### OSF-UI – Bugs / UX
 
-- [ ] **Process/Order Refresh:** Refresh aktualisiert Stock/Bestände sichtbar ohne Locale-Wechsel (Root cause + Fix)
+- [x] **Process/Order Refresh:** Refresh aktualisiert Stock/Bestände sichtbar ohne Locale-Wechsel (Root cause + Fix)
 - [ ] **DSP Architecture Scrollbars:** keine Scrollbars bei ausreichend Platz; kein „grauer Leerraum“
 - [ ] **Use-Case Diagramme Scrollbars:** Fix möglichst generisch (shared Container / Zoom Wrapper)
 - [ ] **DSP Akkordeon State:** Kontext beim Zurücknavigieren erhalten (Section + optional Scrollpos)

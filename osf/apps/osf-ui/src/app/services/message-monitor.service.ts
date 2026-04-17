@@ -300,6 +300,11 @@ export class MessageMonitorService implements OnDestroy {
 
   private setupBroadcastChannel(): void {
     try {
+      // In tests / non-browser runtimes, BroadcastChannel may be undefined.
+      // Multi-tab sync is an optional enhancement; skip silently when unavailable.
+      if (typeof BroadcastChannel === 'undefined') {
+        return;
+      }
       // BroadcastChannel for multi-tab sync
       this.broadcastChannel = new BroadcastChannel('OSF-message-monitor');
       
