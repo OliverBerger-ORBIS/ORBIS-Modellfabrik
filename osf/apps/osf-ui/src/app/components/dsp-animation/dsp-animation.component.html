@@ -2,9 +2,6 @@
   <!-- Header with title, navigation controls, step navigation, and zoom controls -->
   <header
     class="dsp-architecture__header"
-    [style.maxWidth.px]="scaledViewportWidthPx"
-    [style.marginLeft]="'auto'"
-    [style.marginRight]="'auto'"
   >
     <div class="header__title">
       <h2>{{ title }}</h2>
@@ -115,22 +112,17 @@
   <!-- SVG Diagram - wrapped in scrollable container -->
   <div
     class="dsp-architecture__diagram-wrapper"
-    [style.width.px]="scaledViewportWidthPx"
-    [style.height.px]="scaledViewportHeightPx"
-    [style.marginLeft]="'auto'"
-    [style.marginRight]="'auto'"
   >
     <div
       class="dsp-architecture__diagram"
-      [style.width.px]="baseViewportWidthPx"
-      [style.height.px]="baseViewportHeightPx"
-      [style.transform]="'scale(' + zoom + ')'"
+      [style.width.px]="scaledViewportWidthPx"
+      [style.height.px]="scaledViewportHeightPx"
     >
     <svg
       [attr.viewBox]="'0 0 ' + viewBoxWidth + ' ' + viewBoxHeight"
-      [attr.width]="baseViewportWidthPx"
-      [attr.height]="baseViewportHeightPx"
-      preserveAspectRatio="xMidYMid meet"
+      [attr.width]="scaledViewportWidthPx"
+      [attr.height]="scaledViewportHeightPx"
+      preserveAspectRatio="xMinYMin meet"
       class="diagram-svg"
       role="img"
       [attr.aria-label]="title"
