@@ -1,9 +1,6 @@
 <section class="closed-loop-quality-use-case">
   <header
     class="closed-loop-quality-use-case__header"
-    [style.maxWidth.px]="scaledViewportWidthPx"
-    [style.marginLeft]="'auto'"
-    [style.marginRight]="'auto'"
   >
     <app-use-case-controls
       useCaseCode="UC-04"
@@ -33,29 +30,20 @@
 
   <div
     class="closed-loop-quality-use-case__content"
-    [style.maxWidth.px]="scaledViewportWidthPx"
-    [style.marginLeft]="'auto'"
-    [style.marginRight]="'auto'"
   >
     <div
       class="closed-loop-quality-use-case__diagram-wrapper"
-      [style.width.px]="scaledViewportWidthPx"
-      [style.height.px]="scaledViewportHeightPx"
-      [style.marginLeft]="'auto'"
-      [style.marginRight]="'auto'"
     >
       <div
         class="closed-loop-quality-use-case__diagram"
-        [style.width.px]="baseViewportWidthPx"
-        [style.height.px]="baseViewportHeightPx"
-        [style.transform]="'scale(' + zoom + ')'"
+        [style.width.px]="scaledViewportWidthPx"
+        [style.height.px]="scaledViewportHeightPx"
       >
         <div *ngIf="isLoading" class="closed-loop-quality-use-case__loading" i18n="@@loadingSvg">Loading SVG...</div>
         <div
           #svgContainer
           *ngIf="!isLoading && svgContent"
           class="closed-loop-quality-use-case__svg-wrapper"
-          [style.width.px]="baseViewportWidthPx"
           [innerHTML]="svgContent"
         ></div>
         <div *ngIf="!isLoading && !svgContent" class="closed-loop-quality-use-case__loading" i18n="@@svgLoadError">Failed to load SVG.</div>

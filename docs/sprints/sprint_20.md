@@ -34,7 +34,7 @@
 
 - [x] **Process/Order Refresh:** Refresh aktualisiert Stock/Bestände sichtbar ohne Locale-Wechsel (Root cause + Fix)
 - [x] **DSP Architecture Scrollbars:** keine Scrollbars bei ausreichend Platz; kein „grauer Leerraum“ (2026-04-19: visuell verifiziert)
-- [ ] **Use-Case Diagramme Scrollbars:** Fix möglichst generisch (shared Container / Zoom Wrapper)
+- [x] **Use-Case Diagramme Scrollbars:** Fix generisch (DSP-Muster: skalierte px-Größe am Diagramm, kein `transform: scale`; Wrapper `overflow:auto`, volle Breite; SVG ohne erzwungenes `min-width`) — 2026-04-19: verifiziert, Zoom-Verhalten vs. DSP bewusst akzeptiert
 - [ ] **DSP Akkordeon State:** Kontext beim Zurücknavigieren erhalten (Section + optional Scrollpos)
 - [ ] **Shopfloor Overlay (RPi):** Z-Index/Stacking robust (RPi == localhost), systematischer Vergleich falls Regression
 

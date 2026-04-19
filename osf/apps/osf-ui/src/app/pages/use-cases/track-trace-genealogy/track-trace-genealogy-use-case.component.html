@@ -1,9 +1,6 @@
 <section class="track-trace-genealogy-use-case">
   <header
     class="track-trace-genealogy-use-case__header"
-    [style.maxWidth.px]="scaledViewportWidthPx"
-    [style.marginLeft]="'auto'"
-    [style.marginRight]="'auto'"
   >
     <app-use-case-controls
       useCaseCode="UC-01"
@@ -33,29 +30,20 @@
 
   <div
     class="track-trace-genealogy-use-case__content"
-    [style.maxWidth.px]="scaledViewportWidthPx"
-    [style.marginLeft]="'auto'"
-    [style.marginRight]="'auto'"
   >
     <div
       class="track-trace-genealogy-use-case__diagram-wrapper"
-      [style.width.px]="scaledViewportWidthPx"
-      [style.height.px]="scaledViewportHeightPx"
-      [style.marginLeft]="'auto'"
-      [style.marginRight]="'auto'"
     >
       <div
         class="track-trace-genealogy-use-case__diagram"
-        [style.width.px]="baseViewportWidthPx"
-        [style.height.px]="baseViewportHeightPx"
-        [style.transform]="'scale(' + zoom + ')'"
+        [style.width.px]="scaledViewportWidthPx"
+        [style.height.px]="scaledViewportHeightPx"
       >
         <div *ngIf="isLoading" class="track-trace-genealogy-use-case__loading" i18n="@@loadingSvg">Loading SVG...</div>
         <div
           #svgContainer
           *ngIf="!isLoading && svgContent"
           class="track-trace-genealogy-use-case__svg-wrapper"
-          [style.width.px]="baseViewportWidthPx"
           [innerHTML]="svgContent"
         ></div>
         <div *ngIf="!isLoading && !svgContent" class="track-trace-genealogy-use-case__loading" i18n="@@svgLoadError">Failed to load SVG.</div>

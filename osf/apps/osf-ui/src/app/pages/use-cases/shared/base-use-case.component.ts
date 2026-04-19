@@ -143,8 +143,8 @@ export abstract class BaseUseCaseComponent implements OnInit, AfterViewInit, OnD
   }
 
   /**
-   * Effective diagram width in px after applying zoom.
-   * Used to keep controls aligned with the visible diagram footprint (avoid empty layout space).
+   * Diagram width in px at the current zoom (base SVG size × zoom).
+   * Templates bind this to the diagram box / SVG host so scroll extent matches visible content (no transform-scale mismatch).
    */
   get scaledViewportWidthPx(): number | null {
     if (!this.svgBaseWidth) {

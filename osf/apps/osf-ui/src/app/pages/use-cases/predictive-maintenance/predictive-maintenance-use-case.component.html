@@ -27,9 +27,6 @@
   <header
     class="predictive-maintenance-use-case__header"
     *ngIf="activeTab === 'concept'"
-    [style.maxWidth.px]="scaledViewportWidthPx"
-    [style.marginLeft]="'auto'"
-    [style.marginRight]="'auto'"
   >
     <app-use-case-controls
       useCaseCode="UC-05"
@@ -60,29 +57,20 @@
   <div
     class="predictive-maintenance-use-case__content"
     *ngIf="activeTab === 'concept'"
-    [style.maxWidth.px]="scaledViewportWidthPx"
-    [style.marginLeft]="'auto'"
-    [style.marginRight]="'auto'"
   >
     <div
       class="predictive-maintenance-use-case__diagram-wrapper"
-      [style.width.px]="scaledViewportWidthPx"
-      [style.height.px]="scaledViewportHeightPx"
-      [style.marginLeft]="'auto'"
-      [style.marginRight]="'auto'"
     >
       <div
         class="predictive-maintenance-use-case__diagram"
-        [style.width.px]="baseViewportWidthPx"
-        [style.height.px]="baseViewportHeightPx"
-        [style.transform]="'scale(' + zoom + ')'"
+        [style.width.px]="scaledViewportWidthPx"
+        [style.height.px]="scaledViewportHeightPx"
       >
         <div *ngIf="isLoading" class="predictive-maintenance-use-case__loading" i18n="@@loadingSvg">Loading SVG...</div>
         <div
           #svgContainer
           *ngIf="!isLoading && svgContent"
           class="predictive-maintenance-use-case__svg-wrapper"
-          [style.width.px]="baseViewportWidthPx"
           [innerHTML]="svgContent"
         ></div>
         <div *ngIf="!isLoading && !svgContent" class="predictive-maintenance-use-case__loading" i18n="@@svgLoadError">Failed to load SVG.</div>
