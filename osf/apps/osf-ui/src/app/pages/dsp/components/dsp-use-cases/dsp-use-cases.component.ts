@@ -2,6 +2,10 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { LanguageService } from '../../../../services/language.service';
+import {
+  DSP_RETURN_SECTION_SESSION_KEY,
+  isDspAccordionSectionId,
+} from '../../dsp-accordion-sections';
 
 interface UseCase {
   id: string; // Route id (e.g. 'interoperability')
@@ -48,6 +52,13 @@ const USE_CASE_LABEL = $localize`:@@dspUseCaseLabel:Use Case`;
 })
 export class DspUseCasesComponent {
   @Input() enableNavigation = false; // Enable double-click navigation and Concept / Live Demo buttons
+
+  /**
+   * When set (e.g. `use-cases` on the main DSP page), opening a concept/live route records
+   * this accordion section so Back returns to `/{locale}/dsp?section=…`.
+   * Omit on standalone pages (e.g. use-case selector) so Back keeps the previous behaviour.
+   */
+  @Input() recordDspReturnSection: string | null = null;
 
   readonly sectionTitle = $localize`:@@dspUseCasesTitle:DSP Use Cases`;
   readonly sectionSubtitle = $localize`:@@dspUseCasesSubtitle:Practical applications of DSP in smart manufacturing environments.`;
@@ -229,6 +240,7 @@ export class DspUseCasesComponent {
     if (!path) {
       return;
     }
+    this.persistDspReturnSectionForBack();
     const locale = this.languageService.current;
     const routeParts = path.split('/').filter(Boolean);
     const extras =
@@ -243,9 +255,25 @@ export class DspUseCasesComponent {
     if (!path) {
       return;
     }
+    this.persistDspReturnSectionForBack();
     const locale = this.languageService.current;
     const routeParts = path.split('/').filter(Boolean);
     void this.router.navigate([locale, ...routeParts], { queryParams: { tab: 'live' } });
+  }
+
+  private persistDspReturnSectionForBack(): void {
+    try {
+      if (typeof sessionStorage === 'undefined') {
+        return;
+      }
+      if (this.recordDspReturnSection && isDspAccordionSectionId(this.recordDspReturnSection)) {
+        sessionStorage.setItem(DSP_RETURN_SECTION_SESSION_KEY, this.recordDspReturnSection);
+      } else {
+        sessionStorage.removeItem(DSP_RETURN_SECTION_SESSION_KEY);
+      }
+    } catch {
+      // ignore quota / private mode
+    }
   }
 
   /**

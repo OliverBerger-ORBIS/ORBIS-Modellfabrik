@@ -8,7 +8,7 @@
     <!-- Accordion Sections -->
     <div class="dsp-page__accordion">
       <!-- Section 1: Overview -->
-      <article class="accordion-item" [class.is-open]="isSectionExpanded('overview')">
+      <article id="dsp-accordion-overview" class="accordion-item" [class.is-open]="isSectionExpanded('overview')">
         <button
           type="button"
           class="accordion-trigger"
@@ -24,7 +24,11 @@
       </article>
 
       <!-- Section 2: Architecture (Functional View) -->
-      <article class="accordion-item" [class.is-open]="isSectionExpanded('architecture-functional')">
+      <article
+        id="dsp-accordion-architecture-functional"
+        class="accordion-item"
+        [class.is-open]="isSectionExpanded('architecture-functional')"
+      >
         <button
           type="button"
           class="accordion-trigger"
@@ -40,7 +44,7 @@
       </article>
 
       <!-- Section 3: Components -->
-      <article class="accordion-item" [class.is-open]="isSectionExpanded('components')">
+      <article id="dsp-accordion-components" class="accordion-item" [class.is-open]="isSectionExpanded('components')">
         <button
           type="button"
           class="accordion-trigger"
@@ -56,7 +60,7 @@
       </article>
 
       <!-- Section 4: Deployment -->
-      <article class="accordion-item" [class.is-open]="isSectionExpanded('deployment')">
+      <article id="dsp-accordion-deployment" class="accordion-item" [class.is-open]="isSectionExpanded('deployment')">
         <button
           type="button"
           class="accordion-trigger"
@@ -72,7 +76,7 @@
       </article>
 
       <!-- Section 5: Use Cases -->
-      <article class="accordion-item" [class.is-open]="isSectionExpanded('use-cases')">
+      <article id="dsp-accordion-use-cases" class="accordion-item" [class.is-open]="isSectionExpanded('use-cases')">
         <button
           type="button"
           class="accordion-trigger"
@@ -88,7 +92,7 @@
       </article>
 
       <!-- Section 6: Methodology -->
-      <article class="accordion-item" [class.is-open]="isSectionExpanded('methodology')">
+      <article id="dsp-accordion-methodology" class="accordion-item" [class.is-open]="isSectionExpanded('methodology')">
         <button
           type="button"
           class="accordion-trigger"
