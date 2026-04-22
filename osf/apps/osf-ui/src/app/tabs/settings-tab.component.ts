@@ -140,6 +140,7 @@ import { ShopfloorRotationService, type ShopfloorRotation } from '../services/sh
               <option value="none" i18n="@@settingsShopfloorRotationNone">No rotation</option>
               <option value="cw90" i18n="@@settingsShopfloorRotationCw90">90° clockwise</option>
               <option value="ccw90" i18n="@@settingsShopfloorRotationCcw90">90° counter-clockwise</option>
+              <option value="rot180" i18n="@@settingsShopfloorRotationRot180">180°</option>
             </select>
           </label>
         </form>
@@ -149,26 +150,12 @@ import { ShopfloorRotationService, type ShopfloorRotation } from '../services/sh
         <header>
           <h3 i18n="@@settingsLinksHeadline">External links</h3>
           <p i18n="@@settingsLinksDescription">
-            Configure the URLs used by the DSP architecture boxes and detail views.
+            Configure the URLs used by the DSP architecture boxes and detail views. Field order matches the diagram:
+            business process row (top), then DSP row (SmartFactory, Edge, Management Cockpit).
           </p>
         </header>
 
         <form [formGroup]="linksForm" (ngSubmit)="saveExternalLinks()" class="links-form">
-          <label>
-            <span i18n="@@settingsSmartFactoryLinkLabel">DSP SmartFactory Dashboard URL</span>
-            <input type="text" formControlName="smartfactoryDashboardUrl" placeholder="/dsp-action" />
-          </label>
-
-          <label>
-            <span i18n="@@settingsDspLinkLabel">DSP Edge URL</span>
-            <input type="url" formControlName="dspControlUrl" placeholder="https://dsp.example.com" />
-          </label>
-
-          <label>
-            <span i18n="@@settingsManagementLinkLabel">DSP Management Cockpit URL</span>
-            <input type="url" formControlName="managementCockpitUrl" placeholder="https://management.example.com" />
-          </label>
-
           <label>
             <span i18n="@@settingsBpErpSystemLinkLabel">BP-ERP Application URL</span>
             <input type="text" formControlName="bpErpApplicationUrl" placeholder="process" />
@@ -177,13 +164,13 @@ import { ShopfloorRotationService, type ShopfloorRotation } from '../services/sh
 
           <label>
             <span i18n="@@settingsBpPlanningLinkLabel">BP-Planning Application URL</span>
-            <input type="url" formControlName="bpPlanningApplicationUrl" placeholder="https://" />
+            <input type="text" formControlName="bpPlanningApplicationUrl" placeholder="https://" />
             <small i18n="@@settingsBpPlanningLinkHint">Opens in a new tab when the BP-Planning box is clicked. Leave empty to disable.</small>
           </label>
 
           <label>
             <span i18n="@@settingsBpMesSystemLinkLabel">BP-MES Application URL (ORBIS MES)</span>
-            <input type="url" formControlName="bpMesApplicationUrl" placeholder="https://" />
+            <input type="text" formControlName="bpMesApplicationUrl" placeholder="https://" />
             <small i18n="@@settingsBpMesSystemLinkHint">Opens in a new tab when the BP-MES box is clicked. Leave empty to disable.</small>
           </label>
 
@@ -202,6 +189,21 @@ import { ShopfloorRotationService, type ShopfloorRotation } from '../services/sh
             <span i18n="@@settingsBpDataLakeLinkLabel">BP-Data Lake URL</span>
             <input type="url" formControlName="bpDataLakeApplicationUrl" placeholder="https://" />
             <small i18n="@@settingsBpDataLakeLinkHint">Optional: open a Data Lake page from the BP-Data-Lake box.</small>
+          </label>
+
+          <label>
+            <span i18n="@@settingsSmartFactoryLinkLabel">DSP SmartFactory Dashboard URL</span>
+            <input type="text" formControlName="dspSmartfactoryDashboardUrl" placeholder="/dsp-action" />
+          </label>
+
+          <label>
+            <span i18n="@@settingsDspLinkLabel">DSP Edge URL</span>
+            <input type="url" formControlName="dspEdgeUrl" placeholder="https://dsp.example.com" />
+          </label>
+
+          <label>
+            <span i18n="@@settingsManagementLinkLabel">DSP Management Cockpit URL</span>
+            <input type="url" formControlName="dspManagementCockpitUrl" placeholder="https://management.example.com" />
           </label>
 
           <footer>
@@ -423,22 +425,16 @@ export class SettingsTabComponent implements OnInit {
 
     const linkSettings = this.externalLinksService.current;
     this.linksForm = this.fb.group({
-      // DSP Architecture BP boxes
-      bpErpApplicationUrl: [linkSettings.bpErpApplicationUrl ?? linkSettings.erpSystemUrl],
+      bpErpApplicationUrl: [linkSettings.bpErpApplicationUrl],
       bpPlanningApplicationUrl: [linkSettings.bpPlanningApplicationUrl],
-      bpMesApplicationUrl: [linkSettings.bpMesApplicationUrl ?? linkSettings.mesSystemUrl],
-      bpEwmApplicationUrl: [linkSettings.bpEwmApplicationUrl ?? linkSettings.ewmSystemUrl],
-      bpAnalyticsApplicationUrl: [linkSettings.bpAnalyticsApplicationUrl ?? linkSettings.grafanaDashboardUrl, [Validators.required]],
+      bpMesApplicationUrl: [linkSettings.bpMesApplicationUrl],
+      bpEwmApplicationUrl: [linkSettings.bpEwmApplicationUrl],
+      bpAnalyticsApplicationUrl: [linkSettings.bpAnalyticsApplicationUrl, [Validators.required]],
       bpDataLakeApplicationUrl: [linkSettings.bpDataLakeApplicationUrl],
 
-      smartfactoryDashboardUrl: [linkSettings.smartfactoryDashboardUrl],
-      dspControlUrl: [linkSettings.dspControlUrl, [Validators.required]],
-      managementCockpitUrl: [linkSettings.managementCockpitUrl, [Validators.required]],
-      // Legacy fields kept for backward-compat consumers and repo config
-      grafanaDashboardUrl: [linkSettings.grafanaDashboardUrl],
-      erpSystemUrl: [linkSettings.erpSystemUrl],
-      mesSystemUrl: [linkSettings.mesSystemUrl],
-      ewmSystemUrl: [linkSettings.ewmSystemUrl],
+      dspSmartfactoryDashboardUrl: [linkSettings.dspSmartfactoryDashboardUrl],
+      dspEdgeUrl: [linkSettings.dspEdgeUrl, [Validators.required]],
+      dspManagementCockpitUrl: [linkSettings.dspManagementCockpitUrl, [Validators.required]],
     });
   }
 
@@ -472,15 +468,7 @@ export class SettingsTabComponent implements OnInit {
     if (!this.linksForm || this.linksForm.invalid) {
       return;
     }
-    const raw = this.linksForm.value as ExternalLinksSettings;
-    // Keep legacy fields in sync so other parts of the UI keep working.
-    const value: ExternalLinksSettings = {
-      ...raw,
-      grafanaDashboardUrl: raw.bpAnalyticsApplicationUrl || raw.grafanaDashboardUrl,
-      erpSystemUrl: raw.bpErpApplicationUrl || raw.erpSystemUrl,
-      mesSystemUrl: raw.bpMesApplicationUrl || raw.mesSystemUrl,
-      ewmSystemUrl: raw.bpEwmApplicationUrl || raw.ewmSystemUrl,
-    };
+    const value = this.linksForm.value as ExternalLinksSettings;
     this.externalLinksService.updateSettings(value);
     this.linksForm.markAsPristine();
   }

@@ -35,7 +35,7 @@ export class DspArchitectureFunctionalSectionComponent {
 
   private getErpUrl(): string {
     // Task 12: Use ERP URL from settings, fallback to 'process' for internal route
-    return this.externalLinksService.current.erpSystemUrl || 'process';
+    return this.externalLinksService.current.bpErpApplicationUrl;
   }
 
   onActionTriggered(event: { id: string; url: string }): void {

@@ -74,6 +74,8 @@ interface RenderFixed {
   background?: string;
   icon?: string;
   iconRotationDeg?: number;
+  /** When set, rotates the entire fixed cell (icon + label layout) in CSS (used for ORBIS/DSP at rot180). */
+  cellRotationDeg?: number;
   iconWidth?: number; // Optional explicit icon width (for DSP logo with specific sizing)
   iconHeight?: number; // Optional explicit icon height (for DSP logo with specific sizing)
   highlighted: boolean;
@@ -165,6 +167,10 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
   private static readonly LEGACY_ORDER_KEY = 'shopfloor-preview-scale';
   private static readonly LEGACY_CONFIG_KEY = 'shopfloor-config-scale';
   private static readonly SCOPED_KEY_PREFIX = 'OSF.shopfloorScale.';
+  // After rot180, compound HBW/DPS attachments can sit too close to the (often 2-line) bottom label.
+  // Keep this conservative: a bit above the user's "min 20px" request to cover font metrics/padding.
+  private static readonly HBW_DPS_ROT180_ATTACHMENT_NUDGE_PX = 30;
+  private static readonly HBW_DPS_ROT180_MAIN_ICON_NUDGE_PX = 6;
 
   @Input({ required: true }) order: OrderActive | null | undefined;
   @Input() activeStep?: ProductionStep | null;
@@ -393,6 +399,16 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
 
   get resetZoomLabel(): string {
     return $localize`:@@shopfloorPreviewResetZoom:Reset zoom`;
+  }
+
+  getFixedCellTransform(fixed: RenderFixed): string | null {
+    const rotate = fixed.cellRotationDeg ? `rotate(${fixed.cellRotationDeg}deg)` : '';
+    // NOTE: highlight/active-step styles also apply `transform: scale(1.02)` in SCSS.
+    // Inline transforms win over non-!important CSS transforms, so we must preserve scaling here
+    // whenever the highlight classes are active (especially for rot180 brand cells).
+    const scale = fixed.highlighted ? 'scale(1.02)' : '';
+    const combined = `${rotate} ${scale}`.trim();
+    return combined.length ? combined : null;
   }
 
   get infoLabel(): string {
@@ -730,6 +746,14 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
     const oldH = view.height;
 
     const rotateRect = (r: { left: number; top: number; width: number; height: number }) => {
+      if (rotation === 'rot180') {
+        return {
+          left: oldW - (r.left + r.width),
+          top: oldH - (r.top + r.height),
+          width: r.width,
+          height: r.height,
+        };
+      }
       if (rotation === 'cw90') {
         return {
           left: oldH - (r.top + r.height),
@@ -747,14 +771,17 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     const rotatePoint = (p: ShopfloorPoint): ShopfloorPoint => {
+      if (rotation === 'rot180') {
+        return { x: oldW - p.x, y: oldH - p.y };
+      }
       if (rotation === 'cw90') {
         return { x: oldH - p.y, y: p.x };
       }
       return { x: p.y, y: oldW - p.x };
     };
 
-    const width = oldH;
-    const height = oldW;
+    const width = rotation === 'rot180' ? oldW : oldH;
+    const height = rotation === 'rot180' ? oldH : oldW;
 
     const modules = view.modules.map((m) => {
       const r = rotateRect({ left: m.left, top: m.top, width: m.width, height: m.height });
@@ -767,9 +794,22 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
 
     const fixedPositions = view.fixedPositions.map((f) => {
       const r = rotateRect({ left: f.left, top: f.top, width: f.width, height: f.height });
-      const rotateIcon = this.shouldRotateFixedIconWithWorld(f.id, f.label);
+      const isBrandFixed = this.isOrbisBrandFixedCell(f.id, f.label);
+
+      // For rot180: keep ORBIS/DSP brand cells upright (same readability as other labels).
+      // For cw90/ccw90: rotate only the icon with the world (legacy behaviour).
+      const rotateIcon = isBrandFixed && (rotation === 'cw90' || rotation === 'ccw90');
       const iconRotationDeg = rotateIcon ? (rotation === 'cw90' ? 90 : -90) : 0;
-      return { ...f, left: r.left, top: r.top, width: r.width, height: r.height, iconRotationDeg };
+
+      return {
+        ...f,
+        left: r.left,
+        top: r.top,
+        width: r.width,
+        height: r.height,
+        iconRotationDeg,
+        cellRotationDeg: undefined,
+      };
     });
 
     const intersections = view.intersections.map((i) => {
@@ -794,8 +834,15 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
     const rotateOverlay = (o: RouteOverlay): RouteOverlay => {
       const w = o.width ?? 48;
       const h = o.height ?? 48;
-      const r = rotateRect({ left: o.x, top: o.y, width: w, height: h });
-      return { ...o, x: r.left, y: r.top, width: r.width, height: r.height };
+      // `.preview__fts` uses `transform: translate(-50%, -50%)`, so overlay `x`/`y` are the **center** of the
+      // icon in the unrotated padded canvas — not the top-left of the box. Rotating with `rotateRect` here
+      // treats (x,y) as a corner and shifts the visible center by (-w/2, -h/2) for rot180 (too far up/left).
+      const c = rotatePoint({ x: o.x, y: o.y });
+      if (rotation === 'rot180') {
+        return { ...o, x: c.x, y: c.y, width: w, height: h };
+      }
+      // 90° rotations: same center transform as lines; swap bbox dimensions like `rotateRect` on a box.
+      return { ...o, x: c.x, y: c.y, width: h, height: w };
     };
 
     const routeOverlay = view.routeOverlay ? rotateOverlay(view.routeOverlay) : undefined;
@@ -815,7 +862,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
     };
   }
 
-  private shouldRotateFixedIconWithWorld(id: string, label: string): boolean {
+  private isOrbisBrandFixedCell(id: string, label: string): boolean {
     const key = `${id} ${label}`.toUpperCase();
     // ORBIS + DSP logo cells: rotate icon with the world (text may be upside down / sideways by design).
     return key.includes('ORBIS') || key.includes('DSP');
@@ -829,6 +876,9 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
   ): RenderModule {
     const rotateWithin = (p: { x: number; y: number }): { x: number; y: number } => {
       // Rotate *layout* inside the module, but keep icons upright.
+      if (rotation === 'rot180') {
+        return { x: oldModuleWidth - p.x, y: oldModuleHeight - p.y };
+      }
       if (rotation === 'cw90') {
         return { x: oldModuleHeight - p.y, y: p.x };
       }
@@ -858,11 +908,22 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
       return { ...att, left: r.left, top: r.top };
     });
 
+    const nudged =
+      rotation === 'rot180' && (module.compoundType === 'HBW' || module.compoundType === 'DPS')
+        ? {
+            iconTop: Math.max(0, iconBox.top - ShopfloorPreviewComponent.HBW_DPS_ROT180_MAIN_ICON_NUDGE_PX),
+            attachments: attachments.map((att) => ({
+              ...att,
+              top: Math.max(0, att.top - ShopfloorPreviewComponent.HBW_DPS_ROT180_ATTACHMENT_NUDGE_PX),
+            })),
+          }
+        : { iconTop: iconBox.top, attachments };
+
     return {
       ...module,
       iconLeft: iconBox.left,
-      iconTop: iconBox.top,
-      attachments,
+      iconTop: nudged.iconTop,
+      attachments: nudged.attachments,
     };
   }
 

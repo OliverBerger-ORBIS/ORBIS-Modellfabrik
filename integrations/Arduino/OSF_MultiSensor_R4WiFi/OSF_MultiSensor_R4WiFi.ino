@@ -51,7 +51,7 @@
   const char* MQTT_BROKER = "192.168.178.65";     // Mac mit Mosquitto
 #else
   // WLAN ORBIS – RPi/APS-Betrieb (credentials.md)
-  const char* WIFI_SSID = "ORBIS-4C57";
+  const char* WIFI_SSID = "ORBIS_H15_F05";
   const char* WIFI_PASS = "49117837";
   IPAddress arduinoIP(192, 168, 0, 95);
   IPAddress gatewayIP(192, 168, 0, 1);

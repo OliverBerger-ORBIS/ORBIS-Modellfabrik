@@ -14,6 +14,23 @@ All notable changes to OSF Dashboard will be documented here.
 
 - **`OSF_MultiSensor_R4WiFi` v1.1.7:** In **`WIFI_MODE_ORBIS`**, NTP sync tries **Shopfloor RPi** (`192.168.0.100`, **chrony** on host) **first**, then gateway and public pools. **MQTT payload** (`timestamp` ISO-8601 UTC with ms) **unchanged** since v1.1.6. **Docs:** [rpi-chrony-ntp-server.md](docs/04-howto/rpi-chrony-ntp-server.md), [arduino-r4-multisensor.md](docs/05-hardware/arduino-r4-multisensor.md) § MQTT-Topics.
 
+## [1.1.2] - 2026-04-22
+
+**Shopfloor rotation 180°, AGV/FTS overlay alignment under rotation, external links cleanup (DSP naming + md1 defaults).**
+
+### Added
+
+- **Shopfloor layout:** Settings option **180°** rotation (`rot180`) with preview geometry and i18n (DE/FR).
+
+### Fixed
+
+- **Shopfloor preview:** FTS position under **rotation** (overlay coordinates use icon **center** with `translate(-50%,-50%)`, not a mistaken top-left `rotateRect` shift).
+- **AGV marker:** Layout-space coordinates for `getAgvMarkerCenter` (no double rotation with preview).
+
+### Changed
+
+- **External links:** DSP fields renamed to **`dspSmartfactoryDashboardUrl`**, **`dspEdgeUrl`**, **`dspManagementCockpitUrl`**; legacy duplicates removed; Settings + `external-links.json` field order matches DSP architecture (business row, then DSP row). Repo defaults: **md1.orbis.de** MES and Planning URLs.
+
 ## [1.0.12] - 2026-04-14
 
 **Patch: Shopfloor rotation setting for presentation & camera alignment.**

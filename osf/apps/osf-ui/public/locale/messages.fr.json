@@ -1268,7 +1268,7 @@
     "settingsDescription": " Manage Environnement specific Connexion parameters for replay and live gateways. ",
     "settingsHeadline": "System Paramètres",
     "settingsHostLabel": "MQTT Host",
-    "settingsLinksDescription": " Configure the URLs used for ORBIS and DSP detail views in the Configuration tab. ",
+    "settingsLinksDescription": "Configurez les URL utilisées pour les blocs d'architecture DSP et les vues détaillées. L'ordre des champs correspond au diagramme : ligne des processus métier (en haut), puis ligne DSP (SmartFactory, Edge, cockpit de gestion).",
     "settingsLinksHeadline": "External links",
     "settingsMockHint": " Configuration is managed automatically for mock fixtures. ",
     "settingsPasswordLabel": "Password",

@@ -924,25 +924,25 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         id: 'analytics',
         label: $localize`:@@dspActionAnalytics:Open BP Analytical Application`,
         description: $localize`:@@dspActionAnalyticsDescription:Switch to the analytics dashboard (BP Analytical Application) in a new window.`,
-        url: links.grafanaDashboardUrl,
+        url: links.bpAnalyticsApplicationUrl,
       },
       {
         id: 'smartfactory',
         label: $localize`:@@dspActionSmartfactory:Open DSP SmartFactory Dashboard`,
         description: $localize`:@@dspActionSmartfactoryDescription:Navigate to the SmartFactory Dashboard in a new tab.`,
-        url: links.smartfactoryDashboardUrl,
+        url: links.dspSmartfactoryDashboardUrl,
       },
       {
         id: 'edge',
         label: $localize`:@@dspActionEdge:Open DSP Edge`,
         description: $localize`:@@dspActionEdgeDescription:Launch the configured DSP Edge endpoint in a new tab.`,
-        url: links.dspControlUrl,
+        url: links.dspEdgeUrl,
       },
       {
         id: 'management',
         label: $localize`:@@dspActionManagement:Open DSP Management Cockpit`,
         description: $localize`:@@dspActionManagementDescription:Navigate to the DSP Management Cockpit for KPI and workflow management.`,
-        url: links.managementCockpitUrl,
+        url: links.dspManagementCockpitUrl,
       },
     ];
 
@@ -1023,10 +1023,10 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
       businessProcesses,
       shopfloorPlatforms,
       shopfloorSystems,
-      analyticsUrl: links.grafanaDashboardUrl,
-      smartfactoryDashboardUrl: links.smartfactoryDashboardUrl,
-      edgeUrl: links.dspControlUrl,
-      managementUrl: links.managementCockpitUrl,
+      analyticsUrl: links.bpAnalyticsApplicationUrl,
+      smartfactoryDashboardUrl: links.dspSmartfactoryDashboardUrl,
+      edgeUrl: links.dspEdgeUrl,
+      managementUrl: links.dspManagementCockpitUrl,
     };
   }
 

@@ -927,13 +927,13 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     this.containers.forEach((container) => {
       switch (container.id) {
         case 'dsp-ux':
-          container.url = links.smartfactoryDashboardUrl;
+          container.url = links.dspSmartfactoryDashboardUrl;
           break;
         case 'dsp-edge':
-          container.url = links.dspControlUrl;
+          container.url = links.dspEdgeUrl;
           break;
         case 'dsp-mc':
-          container.url = links.managementCockpitUrl;
+          container.url = links.dspManagementCockpitUrl;
           break;
         default:
           if (container.id.startsWith('bp-')) {

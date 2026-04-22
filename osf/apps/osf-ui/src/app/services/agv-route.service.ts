@@ -22,6 +22,8 @@ export interface RouteSegment {
 @Injectable({ providedIn: 'root' })
 export class AgvRouteService {
   private readonly mappingService = inject(ShopfloorMappingService);
+  /** Size of AGV marker icon used by shopfloor preview (px). */
+  private static readonly DEFAULT_AGV_MARKER_SIZE_PX = 62;
   private parsedRoads: ParsedRoad[] = [];
   private cellById = new Map<string, ShopfloorCellConfig>();
   private cellByRouteRef = new Map<string, ShopfloorCellConfig>();
@@ -213,6 +215,99 @@ export class AgvRouteService {
   getNodePosition(nodeId: string): ShopfloorPoint | null {
     const resolvedId = this.resolveNodeRef(nodeId) ?? nodeId;
     return this.nodePoints.get(resolvedId) ?? this.nodePoints.get(nodeId) ?? null;
+  }
+
+  /**
+   * Resolve node id to the visual AGV marker center.
+   *
+   * - For intersections: returns the intersection center.
+   * - For station/modules: returns a point on the module edge, shifted by half the marker size towards the
+   *   (single) connected intersection so the marker overlaps 50/50 between both cells.
+   *
+   * Coordinates are in the same **unrotated layout space** as roads/node positions. `ShopfloorPreviewComponent`
+   * applies shopfloor rotation (and padding) to FTS overlays — do not pre-rotate here.
+   */
+  getAgvMarkerCenter(nodeId: string, markerSizePx: number = AgvRouteService.DEFAULT_AGV_MARKER_SIZE_PX): ShopfloorPoint | null {
+    const resolvedId = this.resolveNodeRef(nodeId) ?? nodeId;
+    const center = this.getNodePosition(resolvedId);
+    if (!center) {
+      return null;
+    }
+
+    const cell = this.cellByRouteRef.get(resolvedId) ?? this.cellByRouteRef.get(nodeId);
+    if (!cell) {
+      return { ...center };
+    }
+    if (cell.role !== 'module') {
+      return { ...center };
+    }
+
+    // Per requirement: modules have exactly one connected intersection.
+    const road = this.findRoadConnectedToModule(resolvedId);
+    if (!road) {
+      return { ...center };
+    }
+
+    const fromRef = this.resolveNodeRef(road.from.ref) ?? road.from.ref;
+    const toRef = this.resolveNodeRef(road.to.ref) ?? road.to.ref;
+    const moduleIsFrom = fromRef === resolvedId;
+    const otherEndpoint = moduleIsFrom ? road.to : road.from;
+
+    const otherCenter = this.resolveRoutePoint(otherEndpoint);
+    const edge = this.pointOnCellEdgeTowards(resolvedId, center, otherCenter);
+    if (!edge) {
+      return { ...center };
+    }
+
+    const dx = otherCenter.x - center.x;
+    const dy = otherCenter.y - center.y;
+    const len = Math.hypot(dx, dy);
+    if (len === 0) {
+      return { ...edge };
+    }
+    const ux = dx / len;
+    const uy = dy / len;
+    const offset = markerSizePx / 2;
+    return { x: edge.x + ux * offset, y: edge.y + uy * offset };
+  }
+
+  private findRoadConnectedToModule(moduleRef: string): ParsedRoad | null {
+    for (const road of this.parsedRoads) {
+      const fromRef = this.resolveNodeRef(road.from.ref) ?? road.from.ref;
+      const toRef = this.resolveNodeRef(road.to.ref) ?? road.to.ref;
+      if (fromRef !== moduleRef && toRef !== moduleRef) {
+        continue;
+      }
+      const otherRef = fromRef === moduleRef ? toRef : fromRef;
+      const otherCell = this.cellByRouteRef.get(otherRef) ?? this.cellByRouteRef.get(road.from.ref) ?? this.cellByRouteRef.get(road.to.ref);
+      if (otherCell?.role === 'intersection' || String(otherRef).startsWith('intersection:')) {
+        return road;
+      }
+    }
+    return null;
+  }
+
+  private pointOnCellEdgeTowards(ref: string, point: ShopfloorPoint, target: ShopfloorPoint): ShopfloorPoint | null {
+    const cell = this.cellByRouteRef.get(ref);
+    if (!cell) {
+      return null;
+    }
+    const direction = { x: target.x - point.x, y: target.y - point.y };
+    const length = Math.hypot(direction.x, direction.y);
+    if (length === 0) {
+      return { ...point };
+    }
+    const bounds = this.getCellBounds(cell);
+    const distanceToEdge = this.distanceToBounds(point, direction, bounds);
+    if (distanceToEdge <= 0) {
+      return { ...point };
+    }
+    const ux = direction.x / length;
+    const uy = direction.y / length;
+    return {
+      x: point.x + ux * distanceToEdge,
+      y: point.y + uy * distanceToEdge,
+    };
   }
 
   /**

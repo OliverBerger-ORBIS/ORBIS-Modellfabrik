@@ -1,6 +1,13 @@
 {
   "locale": "de",
   "translations": {
+    "settingsShopfloorHeadline": "Shopfloor-Layout",
+    "settingsShopfloorDescription": "Die Rotation wird auf alle Shopfloor-Vorschauen angewendet (auch im Präsentationsmodus). Beschriftungen bleiben lesbar.",
+    "settingsShopfloorRotationLabel": "Rotation",
+    "settingsShopfloorRotationNone": "Keine Rotation",
+    "settingsShopfloorRotationCw90": "90° im Uhrzeigersinn",
+    "settingsShopfloorRotationCcw90": "90° gegen den Uhrzeigersinn",
+    "settingsShopfloorRotationRot180": "180°",
     "appHeaderEyebrow": "OMF3 Leitstand",
     "appHeaderTitle": "CCU Mock-Dashboard",
     "appNavAriaLabel": "Hauptnavigation",
@@ -369,7 +376,7 @@
     "settingsRetryHint": "Automatisch erneut verbinden, wenn das Gateway die Verbindung trennt",
     "settingsRetryIntervalLabel": "Wiederholungsintervall (ms)",
     "settingsLinksHeadline": "Externe Links",
-    "settingsLinksDescription": "Konfigurieren Sie die URLs, die für ORBIS- und DSP-Detailansichten im Konfigurations-Tab verwendet werden.",
+    "settingsLinksDescription": "Legen Sie die URLs für die DSP-Architektur-Kästen und Detailansichten fest. Die Reihenfolge der Felder entspricht dem Diagramm: oben die Business-Process-Zeile (ERP bis Data Lake), darunter die DSP-Zeile (SmartFactory, Edge, Management Cockpit).",
     "settingsOrbisLinkLabel": "ORBIS-Website-URL",
     "settingsGrafanaLinkLabel": "BP Analytical Application URL",
     "settingsSmartFactoryLinkLabel": "DSP SmartFactory Dashboard URL",

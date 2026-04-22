@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
  
-export type ShopfloorRotation = 'none' | 'cw90' | 'ccw90';
+export type ShopfloorRotation = 'none' | 'cw90' | 'ccw90' | 'rot180';
  
 const STORAGE_KEY = 'OSF.shopfloorRotation';
  
@@ -29,7 +29,7 @@ export class ShopfloorRotationService {
   private loadInitial(): ShopfloorRotation {
     try {
       const raw = localStorage?.getItem(STORAGE_KEY);
-      if (raw === 'cw90' || raw === 'ccw90' || raw === 'none') {
+      if (raw === 'cw90' || raw === 'ccw90' || raw === 'rot180' || raw === 'none') {
         return raw;
       }
       return 'none';

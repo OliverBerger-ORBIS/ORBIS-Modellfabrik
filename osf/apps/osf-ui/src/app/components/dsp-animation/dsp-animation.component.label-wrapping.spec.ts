@@ -21,35 +21,27 @@ describe('DspAnimationComponent - Label Wrapping', () => {
 
     const externalLinksServiceMock = {
       settings$: of({
-        grafanaDashboardUrl: '',
-        smartfactoryDashboardUrl: '',
-        dspControlUrl: '',
-        managementCockpitUrl: '',
-        erpSystemUrl: 'process',
-        mesSystemUrl: '',
-        ewmSystemUrl: '',
         bpErpApplicationUrl: 'process',
         bpPlanningApplicationUrl: '',
         bpMesApplicationUrl: '',
         bpEwmApplicationUrl: '',
         bpAnalyticsApplicationUrl: '',
         bpDataLakeApplicationUrl: '',
+        dspSmartfactoryDashboardUrl: '',
+        dspEdgeUrl: '',
+        dspManagementCockpitUrl: '',
       }),
       get current() {
         return {
-          grafanaDashboardUrl: '',
-          smartfactoryDashboardUrl: '',
-          dspControlUrl: '',
-          managementCockpitUrl: '',
-          erpSystemUrl: 'process',
-          mesSystemUrl: '',
-          ewmSystemUrl: '',
           bpErpApplicationUrl: 'process',
           bpPlanningApplicationUrl: '',
           bpMesApplicationUrl: '',
           bpEwmApplicationUrl: '',
           bpAnalyticsApplicationUrl: '',
           bpDataLakeApplicationUrl: '',
+          dspSmartfactoryDashboardUrl: '',
+          dspEdgeUrl: '',
+          dspManagementCockpitUrl: '',
         };
       },
     };

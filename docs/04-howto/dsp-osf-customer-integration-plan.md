@@ -9,7 +9,7 @@
 2. **Sensor station (OSF only):** Replace generic `sf-system-any` with **`sf-system-sensor`** only in **`OSF_CONFIG`**. FMF / LogiMAT keep **`sf-system-any`** unchanged.
 3. **Label:** Animation shows **“Sensor Station”** (not BME680).
 4. **Icon:** `heading-sensors.svg` copied to `assets/svg/shopfloor/systems/sensor-station-system.svg`, registered as IconKey **`sensor-station-system`**.
-5. **MES / EWM:** Primarily **external** — no dedicated tabs. Settings: **MES system URL (ORBIS MES)** → `mesSystemUrl`, **EWM system URL (SAP EWM)** → `ewmSystemUrl`; DSP animation **`bp-mes`** / **`bp-ewm`** are clickable when the respective URL is set.
+5. **MES / EWM:** Primarily **external** — no dedicated tabs. Settings → External links: **`bpMesApplicationUrl`** (ORBIS MES), **`bpEwmApplicationUrl`** (SAP EWM); DSP animation **`bp-mes`** / **`bp-ewm`** are clickable when the respective URL is set.
 6. **Navigation:** Click **Sensor Station** → **Sensor** tab (`/sensor`); click **MES** → external URL (new tab).
 7. **DSP page subtitle:** Mentions **ORBIS MES** with DSP and smart manufacturing.
 
@@ -21,7 +21,7 @@
 | Route | `/:locale/dsp/customer/osf` → `OsfDspPageComponent`. |
 | Customer selector | OSF listed first; FMF, ECME, LogiMAT unchanged. |
 | DSP sections default | `OSF_CONFIG` in functional / component / deployment section components. |
-| `mesSystemUrl` / `ewmSystemUrl` | `ExternalLinksSettings`, defaults, Settings → External links form. |
+| `bpMesApplicationUrl` / `bpEwmApplicationUrl` | `ExternalLinksSettings`, `public/assets/config/external-links.json`, Settings → External links. |
 | `updateContainerUrls` | `bp-mes` / `bp-ewm` use the respective URL when non-empty. |
 | SVG asset | `sensor-station-system.svg` (copy of UI heading-sensors). |
 | Docs | `DSP_Architecture_Objects_Reference.md` lists `sf-system-sensor` / `sensor-station-system`; `dsp-svg-inventory.md` links verification (no duplicate tile — asset is in the reference). |
@@ -37,7 +37,7 @@
 ## Verification checklist
 
 - [x] DSP tab: architecture shows **Sensor Station** + FTS; **any system** not shown for OSF.
-- [x] Settings: set **MES system URL**, open DSP animation, click **MES** → opens new tab.
+- [x] Settings: set **BP-MES Application URL** (`bpMesApplicationUrl`), open DSP animation, click **MES** → opens new tab.
 - [x] Click **Sensor Station** → Sensor tab.
 - [x] `/:locale/dsp/customer/fmf` and `/logimat` still show **any system** as before.
 

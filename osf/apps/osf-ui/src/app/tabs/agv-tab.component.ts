@@ -1030,19 +1030,24 @@ export class AgvTabComponent implements OnInit, OnDestroy {
 
   /** Helper: resolve lastNodeId to shopfloor coordinates */
   private getPositionFromNodeId(nodeId: string): { x: number; y: number } | null {
-    let nodePos = this.agvRouteService.getNodePosition(nodeId);
+    // For modules: place marker at the module edge (half overlap into the connected intersection).
+    let nodePos = this.agvRouteService.getAgvMarkerCenter(nodeId);
     if (!nodePos) {
       const canonical = this.resolveNodeRef(nodeId);
-      if (canonical) nodePos = this.agvRouteService.getNodePosition(canonical);
+      if (canonical) nodePos = this.agvRouteService.getAgvMarkerCenter(canonical);
     }
     if (!nodePos) {
       const moduleType = SERIAL_TO_MODULE_TYPE[nodeId];
       if (moduleType) {
-        nodePos = this.agvRouteService.getNodePosition(moduleType) ?? this.agvRouteService.getNodePosition(`serial:${moduleType}`);
+        nodePos =
+          this.agvRouteService.getAgvMarkerCenter(moduleType) ??
+          this.agvRouteService.getAgvMarkerCenter(`serial:${moduleType}`);
       }
     }
     if (!nodePos && nodeId.match(/^\d+$/)) {
-      nodePos = this.agvRouteService.getNodePosition(`intersection:${nodeId}`) ?? this.agvRouteService.getNodePosition(nodeId);
+      nodePos =
+        this.agvRouteService.getAgvMarkerCenter(`intersection:${nodeId}`) ??
+        this.agvRouteService.getAgvMarkerCenter(nodeId);
     }
     return nodePos ? { x: nodePos.x, y: nodePos.y } : null;
   }

@@ -1,6 +1,13 @@
 {
   "locale": "fr",
   "translations": {
+    "settingsShopfloorHeadline": "Disposition du shopfloor",
+    "settingsShopfloorDescription": "La rotation s’applique à tous les aperçus du shopfloor (y compris le mode présentation). Les libellés restent lisibles.",
+    "settingsShopfloorRotationLabel": "Rotation",
+    "settingsShopfloorRotationNone": "Aucune rotation",
+    "settingsShopfloorRotationCw90": "90° dans le sens horaire",
+    "settingsShopfloorRotationCcw90": "90° dans le sens antihoraire",
+    "settingsShopfloorRotationRot180": "180°",
     "dspArchStepInterop": "Interopérabilité",
     "dspArchStepInteropDesc": "DSP permet une communication événementielle et indépendante du fabricant entre machines, systèmes du shopfloor et plateformes IT.",
     "dspArchStepConnectivity": "Connectivité shopfloor",
@@ -1268,7 +1275,7 @@
     "settingsDescription": " Manage Environnement specific Connexion parameters for replay and live gateways. ",
     "settingsHeadline": "System Paramètres",
     "settingsHostLabel": "MQTT Host",
-    "settingsLinksDescription": " Configure the URLs used for ORBIS and DSP detail views in the Configuration tab. ",
+    "settingsLinksDescription": "Configurez les URL utilisées pour les blocs d'architecture DSP et les vues détaillées. L'ordre des champs correspond au diagramme : ligne des processus métier (en haut), puis ligne DSP (SmartFactory, Edge, cockpit de gestion).",
     "settingsLinksHeadline": "External links",
     "settingsMockHint": " Configuration is managed automatically for mock fixtures. ",
     "settingsPasswordLabel": "Password",

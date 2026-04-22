@@ -3,46 +3,47 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 import { getAssetPath } from '../assets/detail-asset-map';
 
+/**
+ * External link targets for DSP UI (Settings + `public/assets/config/external-links.json`).
+ *
+ * Property order matches the **DSP architecture diagram** (top → bottom, left → right):
+ * 1. Business process layer: ERP → Planning → MES → EWM → Analytics → Data Lake
+ * 2. DSP layer: SmartFactory dashboard → Edge → Management Cockpit
+ */
 export interface ExternalLinksSettings {
-  readonly grafanaDashboardUrl: string;
-  readonly smartfactoryDashboardUrl: string;
-  readonly dspControlUrl: string;
-  readonly managementCockpitUrl: string;
-  /** Legacy: ERP/SAP URL (used outside DSP animation). Prefer `bpErpApplicationUrl` for BP box mapping. */
-  readonly erpSystemUrl: string;
-  /** Legacy: ORBIS MES URL. Prefer `bpMesApplicationUrl` for BP box mapping. */
-  readonly mesSystemUrl: string;
-  /** Legacy: SAP EWM URL. Prefer `bpEwmApplicationUrl` for BP box mapping. */
-  readonly ewmSystemUrl: string;
-
-  /** DSP Architecture: BP-ERP Application URL (container id: bp-erp). */
+  /** BP box `bp-erp` (leftmost in business row). */
   readonly bpErpApplicationUrl: string;
-  /** DSP Architecture: BP-Planning Application URL (container id: bp-planning). */
+  /** BP box `bp-planning`. */
   readonly bpPlanningApplicationUrl: string;
-  /** DSP Architecture: BP-MES Application URL (container id: bp-mes). */
+  /** BP box `bp-mes`. */
   readonly bpMesApplicationUrl: string;
-  /** DSP Architecture: BP-EWM Application URL (container id: bp-ewm). */
+  /** BP box `bp-ewm`. */
   readonly bpEwmApplicationUrl: string;
-  /** DSP Architecture: BP-Analytics Application URL (container id: bp-analytics). */
+  /** BP box `bp-analytics`. */
   readonly bpAnalyticsApplicationUrl: string;
-  /** DSP Architecture: BP-Data Lake URL (container id: bp-data-lake). */
+  /** BP box `bp-data-lake`. */
   readonly bpDataLakeApplicationUrl: string;
+
+  /** DSP layer: SmartFactory / UX box (`dsp-ux`). */
+  readonly dspSmartfactoryDashboardUrl: string;
+  /** DSP layer: Edge box (`dsp-edge`). */
+  readonly dspEdgeUrl: string;
+  /** DSP layer: Management Cockpit (`dsp-mc`). */
+  readonly dspManagementCockpitUrl: string;
 }
 
 const DEFAULT_SETTINGS: ExternalLinksSettings = {
-  grafanaDashboardUrl: 'http://192.168.0.201:3000/dashboards',
-  smartfactoryDashboardUrl: '/dsp-action',
-  dspControlUrl: 'https://www.orbis-group.com/de-de/sap-orbis-loesungen/distributed-shopfloor-processing.html',
-  managementCockpitUrl: 'https://dspmcorbisprd.powerappsportals.com',
-  erpSystemUrl: 'process', // Default: internal Process-Tab, can be changed to external ERP/SAP URL
-  mesSystemUrl: '',
-  ewmSystemUrl: '',
   bpErpApplicationUrl: 'process',
-  bpPlanningApplicationUrl: '',
-  bpMesApplicationUrl: '',
-  bpEwmApplicationUrl: '',
+  bpPlanningApplicationUrl:
+    'https://md1.orbis.de/sap/bc/ui5_ui5/omes/pt/index.html?sap-client=100&sap-ui-language=DE&sap-ui-xx-devmode=true#/OrderManagement/1010/SMARTFACTORY',
+  bpMesApplicationUrl:
+    'https://md1.orbis.de/orbis/web_mes/webviewer/index.htm#mppservice=orbis/mes&mpptimeout=60000&defaultlang=EN&maskid=ffb6098113c549bda9192b793dbb75ab&viewermenue=true&extensions=[%22controlinfo%22]&LAYOUT=LIGHT&Werk=1010',
+  bpEwmApplicationUrl: 'https://www.orbis-group.com/de-de/sap-orbis-loesungen/logistics/apps.html',
   bpAnalyticsApplicationUrl: 'http://192.168.0.201:3000/dashboards',
   bpDataLakeApplicationUrl: '',
+  dspSmartfactoryDashboardUrl: '/dsp-action',
+  dspEdgeUrl: 'https://www.orbis-group.com/de-de/sap-orbis-loesungen/distributed-shopfloor-processing.html',
+  dspManagementCockpitUrl: 'https://dspmcorbisprd.powerappsportals.com',
 };
 
 @Injectable({ providedIn: 'root' })
@@ -75,15 +76,15 @@ export class ExternalLinksService {
     };
     switch (bpContainerId) {
       case 'bp-erp':
-        return clean(links.bpErpApplicationUrl) ?? clean(links.erpSystemUrl) ?? 'process';
+        return clean(links.bpErpApplicationUrl);
       case 'bp-planning':
         return clean(links.bpPlanningApplicationUrl);
       case 'bp-mes':
-        return clean(links.bpMesApplicationUrl) ?? clean(links.mesSystemUrl);
+        return clean(links.bpMesApplicationUrl);
       case 'bp-ewm':
-        return clean(links.bpEwmApplicationUrl) ?? clean(links.ewmSystemUrl);
+        return clean(links.bpEwmApplicationUrl);
       case 'bp-analytics':
-        return clean(links.bpAnalyticsApplicationUrl) ?? clean(links.grafanaDashboardUrl);
+        return clean(links.bpAnalyticsApplicationUrl);
       case 'bp-data-lake':
         return clean(links.bpDataLakeApplicationUrl);
       default:
@@ -106,4 +107,3 @@ export class ExternalLinksService {
     });
   }
 }
-

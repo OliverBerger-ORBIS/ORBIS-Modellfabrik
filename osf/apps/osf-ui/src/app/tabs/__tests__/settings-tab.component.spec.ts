@@ -53,19 +53,15 @@ describe('SettingsTabComponent', () => {
   };
 
   const mockExternalLinks: ExternalLinksSettings = {
-    grafanaDashboardUrl: 'https://grafana.example.com',
-    smartfactoryDashboardUrl: '/dsp-action',
-    dspControlUrl: 'https://dsp.example.com',
-    managementCockpitUrl: 'https://management.example.com',
-    erpSystemUrl: 'https://erp.example.com',
-    mesSystemUrl: '',
-    ewmSystemUrl: '',
     bpErpApplicationUrl: 'https://erp.example.com',
     bpPlanningApplicationUrl: '',
     bpMesApplicationUrl: '',
     bpEwmApplicationUrl: '',
     bpAnalyticsApplicationUrl: 'https://grafana.example.com',
     bpDataLakeApplicationUrl: '',
+    dspSmartfactoryDashboardUrl: '/dsp-action',
+    dspEdgeUrl: 'https://dsp.example.com',
+    dspManagementCockpitUrl: 'https://management.example.com',
   };
 
   beforeEach(async () => {
@@ -177,10 +173,11 @@ describe('SettingsTabComponent', () => {
 
   it('should initialize links form', () => {
     expect(component.linksForm).toBeDefined();
-    expect(component.linksForm.get('grafanaDashboardUrl')?.value).toBe('https://grafana.example.com');
-    expect(component.linksForm.get('smartfactoryDashboardUrl')?.value).toBe('/dsp-action');
-    expect(component.linksForm.get('dspControlUrl')?.value).toBe('https://dsp.example.com');
-    expect(component.linksForm.get('managementCockpitUrl')?.value).toBe('https://management.example.com');
+    expect(component.linksForm.get('bpErpApplicationUrl')?.value).toBe('https://erp.example.com');
+    expect(component.linksForm.get('bpAnalyticsApplicationUrl')?.value).toBe('https://grafana.example.com');
+    expect(component.linksForm.get('dspSmartfactoryDashboardUrl')?.value).toBe('/dsp-action');
+    expect(component.linksForm.get('dspEdgeUrl')?.value).toBe('https://dsp.example.com');
+    expect(component.linksForm.get('dspManagementCockpitUrl')?.value).toBe('https://management.example.com');
   });
 
   it('should save environment connection settings', () => {

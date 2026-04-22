@@ -334,6 +334,11 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     this.initializeStreams();
   }
 
+  private getPositionFromNodeId(nodeId: string): { x: number; y: number } | null {
+    const pos = this.agvRouteService.getAgvMarkerCenter(nodeId);
+    return pos ? { x: pos.x, y: pos.y } : null;
+  }
+
   onShopfloorViewportChanged(viewport: { widthPx: number; heightPx: number; scale: number }): void {
     // Keep the split layout responsive to the actual (scaled) shopfloor canvas size.
     // The preview wrapper adds padding; add a small buffer so scrollbars don't appear prematurely.
@@ -913,18 +918,6 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
 
     // Note: DPS/AIQS streams are subscribed in updateSelectedMeta when module is selected
     
-  }
-
-  private getPositionFromNodeId(nodeId: string): { x: number; y: number } | null {
-    let pos = this.agvRouteService.getNodePosition(nodeId);
-    if (!pos) {
-      const canonical = this.agvRouteService.resolveNodeRef(nodeId);
-      if (canonical) pos = this.agvRouteService.getNodePosition(canonical);
-    }
-    if (!pos && nodeId.match(/^\d+$/)) {
-      pos = this.agvRouteService.getNodePosition(`intersection:${nodeId}`) ?? this.agvRouteService.getNodePosition(nodeId);
-    }
-    return pos ? { x: pos.x, y: pos.y } : null;
   }
 
   private bindModuleOverviewStream(source: Observable<ModuleOverviewState>): void {

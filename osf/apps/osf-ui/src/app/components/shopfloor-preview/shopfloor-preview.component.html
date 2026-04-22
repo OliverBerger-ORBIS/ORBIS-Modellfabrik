@@ -67,6 +67,8 @@
           [style.width.px]="fixed.width"
           [style.height.px]="fixed.height"
           [style.background]="fixed.background"
+          [style.transform]="getFixedCellTransform(fixed)"
+          [style.transform-origin]="fixed.cellRotationDeg ? 'center center' : null"
           role="button"
           tabindex="0"
           (click)="onFixedActivate(fixed, $event)"

@@ -141,19 +141,15 @@ describe('ConfigurationTabComponent', () => {
 
     const externalLinksServiceMock = {
       settings$: new BehaviorSubject<ExternalLinksSettings>({
-        dspControlUrl: '',
-        managementCockpitUrl: '',
-        grafanaDashboardUrl: '',
-        smartfactoryDashboardUrl: '',
-        erpSystemUrl: '',
-        mesSystemUrl: '',
-        ewmSystemUrl: '',
         bpErpApplicationUrl: '',
         bpPlanningApplicationUrl: '',
         bpMesApplicationUrl: '',
         bpEwmApplicationUrl: '',
         bpAnalyticsApplicationUrl: '',
         bpDataLakeApplicationUrl: '',
+        dspSmartfactoryDashboardUrl: '',
+        dspEdgeUrl: '',
+        dspManagementCockpitUrl: '',
       }),
     };
 

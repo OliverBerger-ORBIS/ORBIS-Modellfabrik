@@ -92,15 +92,15 @@ export class OrderTabComponent implements OnInit, OnDestroy {
   }
 
   private getOrderTabNodePosition(nodeId: string): { x: number; y: number } | null {
-    let pos = this.agvRouteService.getNodePosition(nodeId);
+    let pos = this.agvRouteService.getAgvMarkerCenter(nodeId);
     if (!pos) {
       const canonical = this.agvRouteService.resolveNodeRef(nodeId);
-      if (canonical) pos = this.agvRouteService.getNodePosition(canonical);
+      if (canonical) pos = this.agvRouteService.getAgvMarkerCenter(canonical);
     }
     if (!pos && nodeId.match(/^\d+$/)) {
       pos =
-        this.agvRouteService.getNodePosition(`intersection:${nodeId}`) ??
-        this.agvRouteService.getNodePosition(nodeId);
+        this.agvRouteService.getAgvMarkerCenter(`intersection:${nodeId}`) ??
+        this.agvRouteService.getAgvMarkerCenter(nodeId);
     }
     return pos ? { x: pos.x, y: pos.y } : null;
   }

@@ -3,6 +3,19 @@ import { TestBed } from '@angular/core/testing';
 import { ExternalLinksService, ExternalLinksSettings } from '../external-links.service';
 import { firstValueFrom } from 'rxjs';
 
+const fullSettings = (over: Partial<ExternalLinksSettings> = {}): ExternalLinksSettings => ({
+  bpErpApplicationUrl: 'process',
+  bpPlanningApplicationUrl: '',
+  bpMesApplicationUrl: '',
+  bpEwmApplicationUrl: '',
+  bpAnalyticsApplicationUrl: 'https://grafana.example.com',
+  bpDataLakeApplicationUrl: '',
+  dspSmartfactoryDashboardUrl: '/dsp-action',
+  dspEdgeUrl: 'https://edge.example.com',
+  dspManagementCockpitUrl: 'https://mc.example.com',
+  ...over,
+});
+
 describe('ExternalLinksService', () => {
   let service: ExternalLinksService;
   let httpMock: HttpTestingController;
@@ -14,8 +27,6 @@ describe('ExternalLinksService', () => {
     });
     service = TestBed.inject(ExternalLinksService);
     httpMock = TestBed.inject(HttpTestingController);
-    // ExternalLinksService loads repo config once on construction.
-    // Most tests don't care about its content; flush an empty object to avoid pending requests.
     const req = httpMock.expectOne((r) => r.url.includes('assets/config/external-links.json'));
     req.flush({});
   });
@@ -31,84 +42,63 @@ describe('ExternalLinksService', () => {
 
     it('should provide default settings', () => {
       const settings = service.current;
-      expect(settings).toBeDefined();
-      expect(settings.grafanaDashboardUrl).toBeDefined();
-      expect(settings.smartfactoryDashboardUrl).toBeDefined();
-      expect(settings.dspControlUrl).toBeDefined();
-      expect(settings.managementCockpitUrl).toBeDefined();
-      expect(settings.erpSystemUrl).toBeDefined();
-      expect(settings.mesSystemUrl).toBeDefined();
-      expect(settings.ewmSystemUrl).toBeDefined();
+      expect(settings.dspSmartfactoryDashboardUrl).toBeDefined();
+      expect(settings.dspEdgeUrl).toBeDefined();
+      expect(settings.dspManagementCockpitUrl).toBeDefined();
+      expect(settings.bpAnalyticsApplicationUrl).toBeDefined();
     });
 
     it('should emit current settings on subscription', async () => {
-      const settings$ = service.settings$;
-      const value = await firstValueFrom(settings$);
-      expect(value).toBeDefined();
-      expect(value.grafanaDashboardUrl).toBeDefined();
+      const value = await firstValueFrom(service.settings$);
+      expect(value.dspEdgeUrl).toBeDefined();
     });
   });
 
   describe('Settings Management', () => {
     it('should update settings', () => {
-      const newSettings: ExternalLinksSettings = {
-        grafanaDashboardUrl: 'https://test.grafana.com',
-        smartfactoryDashboardUrl: '/test-dsp',
-        dspControlUrl: 'https://test.dsp.com',
-        managementCockpitUrl: 'https://test.cockpit.com',
-        erpSystemUrl: 'process',
-        mesSystemUrl: '',
-        ewmSystemUrl: '',
-        bpErpApplicationUrl: 'process',
-        bpPlanningApplicationUrl: '',
-        bpMesApplicationUrl: '',
-        bpEwmApplicationUrl: '',
+      const newSettings = fullSettings({
+        dspEdgeUrl: 'https://test.dsp.com',
         bpAnalyticsApplicationUrl: 'https://test.grafana.com',
-        bpDataLakeApplicationUrl: '',
-      };
+      });
 
       service.updateSettings(newSettings);
       const current = service.current;
 
-      expect(current.grafanaDashboardUrl).toBe('https://test.grafana.com');
-      expect(current.dspControlUrl).toBe('https://test.dsp.com');
+      expect(current.bpAnalyticsApplicationUrl).toBe('https://test.grafana.com');
+      expect(current.dspEdgeUrl).toBe('https://test.dsp.com');
     });
 
     it('should emit settings changes', (done) => {
-      const settings$ = service.settings$;
       let callCount = 0;
-
-      settings$.subscribe((settings) => {
+      service.settings$.subscribe((settings) => {
         callCount++;
         if (callCount === 1) {
-          // Initial value
-          const newSettings: ExternalLinksSettings = {
-            grafanaDashboardUrl: 'https://test.grafana.com',
-            smartfactoryDashboardUrl: '/test-dsp',
-            dspControlUrl: 'https://test.dsp.com',
-            managementCockpitUrl: 'https://test.cockpit.com',
-            erpSystemUrl: 'process',
-            mesSystemUrl: '',
-            ewmSystemUrl: '',
-            bpErpApplicationUrl: 'process',
-            bpPlanningApplicationUrl: '',
-            bpMesApplicationUrl: '',
-            bpEwmApplicationUrl: '',
-            bpAnalyticsApplicationUrl: 'https://test.grafana.com',
-            bpDataLakeApplicationUrl: '',
-          };
-          service.updateSettings(newSettings);
+          service.updateSettings(
+            fullSettings({ dspEdgeUrl: 'https://x.com', bpAnalyticsApplicationUrl: 'https://g.com' })
+          );
         } else if (callCount === 2) {
-          expect(settings.grafanaDashboardUrl).toBe('https://test.grafana.com');
+          expect(settings.bpAnalyticsApplicationUrl).toBe('https://g.com');
           done();
         }
       });
     });
   });
 
+  describe('resolveBpApplicationUrl', () => {
+    it('returns only bp field without legacy fallback', () => {
+      service.updateSettings(
+        fullSettings({
+          bpErpApplicationUrl: '',
+          bpMesApplicationUrl: 'https://mes.example',
+        })
+      );
+      expect(service.resolveBpApplicationUrl('bp-erp')).toBeUndefined();
+      expect(service.resolveBpApplicationUrl('bp-mes')).toBe('https://mes.example');
+    });
+  });
+
   describe('Edge Cases', () => {
     it('should handle repo config load errors gracefully', () => {
-      // Create a new service instance to simulate load failure.
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         imports: [HttpClientTestingModule],
@@ -120,142 +110,49 @@ describe('ExternalLinksService', () => {
       req.error(new ProgressEvent('error'));
       newHttpMock.verify();
 
-      // Falls back to defaults
-      expect(newService.current.grafanaDashboardUrl).toBeTruthy();
+      expect(newService.current.bpAnalyticsApplicationUrl).toBeTruthy();
     });
 
     it('should handle empty string URLs', () => {
-      const emptySettings: ExternalLinksSettings = {
-        grafanaDashboardUrl: '',
-        smartfactoryDashboardUrl: '',
-        dspControlUrl: '',
-        managementCockpitUrl: '',
-        erpSystemUrl: '',
-        mesSystemUrl: '',
-        ewmSystemUrl: '',
-        bpErpApplicationUrl: '',
-        bpPlanningApplicationUrl: '',
-        bpMesApplicationUrl: '',
-        bpEwmApplicationUrl: '',
-        bpAnalyticsApplicationUrl: '',
-        bpDataLakeApplicationUrl: '',
-      };
-
-      service.updateSettings(emptySettings);
+      service.updateSettings(
+        fullSettings({
+          dspEdgeUrl: '',
+          dspManagementCockpitUrl: '',
+          bpAnalyticsApplicationUrl: '',
+        })
+      );
       const current = service.current;
-
-      expect(current.grafanaDashboardUrl).toBe('');
-      expect(current.dspControlUrl).toBe('');
+      expect(current.dspEdgeUrl).toBe('');
+      expect(current.bpAnalyticsApplicationUrl).toBe('');
     });
 
     it('should handle very long URLs', () => {
       const longUrl = 'https://' + 'a'.repeat(2000) + '.com';
-      const longSettings: ExternalLinksSettings = {
-        grafanaDashboardUrl: longUrl,
-        smartfactoryDashboardUrl: '/test-dsp',
-        dspControlUrl: 'https://test.dsp.com',
-        managementCockpitUrl: 'https://test.cockpit.com',
-        erpSystemUrl: 'process',
-        mesSystemUrl: '',
-        ewmSystemUrl: '',
-        bpErpApplicationUrl: 'process',
-        bpPlanningApplicationUrl: '',
-        bpMesApplicationUrl: '',
-        bpEwmApplicationUrl: '',
-        bpAnalyticsApplicationUrl: longUrl,
-        bpDataLakeApplicationUrl: '',
-      };
-
-      service.updateSettings(longSettings);
-      const current = service.current;
-
-      expect(current.grafanaDashboardUrl).toBe(longUrl);
+      service.updateSettings(fullSettings({ bpAnalyticsApplicationUrl: longUrl }));
+      expect(service.current.bpAnalyticsApplicationUrl).toBe(longUrl);
     });
 
     it('should handle rapid settings updates', () => {
-      const settings1: ExternalLinksSettings = {
-        grafanaDashboardUrl: 'https://test1.grafana.com',
-        smartfactoryDashboardUrl: '/test-dsp',
-        dspControlUrl: 'https://test.dsp.com',
-        managementCockpitUrl: 'https://test.cockpit.com',
-        erpSystemUrl: 'process',
-        mesSystemUrl: '',
-        ewmSystemUrl: '',
-        bpErpApplicationUrl: 'process',
-        bpPlanningApplicationUrl: '',
-        bpMesApplicationUrl: '',
-        bpEwmApplicationUrl: '',
-        bpAnalyticsApplicationUrl: 'https://test1.grafana.com',
-        bpDataLakeApplicationUrl: '',
-      };
-
-      const settings2: ExternalLinksSettings = {
-        grafanaDashboardUrl: 'https://test2.grafana.com',
-        smartfactoryDashboardUrl: '/test-dsp',
-        dspControlUrl: 'https://test.dsp.com',
-        managementCockpitUrl: 'https://test.cockpit.com',
-        erpSystemUrl: 'process',
-        mesSystemUrl: '',
-        ewmSystemUrl: '',
-        bpErpApplicationUrl: 'process',
-        bpPlanningApplicationUrl: '',
-        bpMesApplicationUrl: '',
-        bpEwmApplicationUrl: '',
-        bpAnalyticsApplicationUrl: 'https://test2.grafana.com',
-        bpDataLakeApplicationUrl: '',
-      };
-
-      service.updateSettings(settings1);
-      service.updateSettings(settings2);
-
-      expect(service.current.grafanaDashboardUrl).toBe('https://test2.grafana.com');
+      service.updateSettings(fullSettings({ bpAnalyticsApplicationUrl: 'https://test1.grafana.com' }));
+      service.updateSettings(fullSettings({ bpAnalyticsApplicationUrl: 'https://test2.grafana.com' }));
+      expect(service.current.bpAnalyticsApplicationUrl).toBe('https://test2.grafana.com');
     });
 
     it('should handle special characters in URLs', () => {
-      const specialSettings: ExternalLinksSettings = {
-        grafanaDashboardUrl: 'https://test.com/path?param=value&other=123',
-        smartfactoryDashboardUrl: '/test-dsp',
-        dspControlUrl: 'https://test.dsp.com',
-        managementCockpitUrl: 'https://test.cockpit.com',
-        erpSystemUrl: 'process',
-        mesSystemUrl: '',
-        ewmSystemUrl: '',
-        bpErpApplicationUrl: 'process',
-        bpPlanningApplicationUrl: '',
-        bpMesApplicationUrl: '',
-        bpEwmApplicationUrl: '',
-        bpAnalyticsApplicationUrl: 'https://test.com/path?param=value&other=123',
-        bpDataLakeApplicationUrl: '',
-      };
-
-      service.updateSettings(specialSettings);
-      const current = service.current;
-
-      expect(current.grafanaDashboardUrl).toBe('https://test.com/path?param=value&other=123');
+      const u = 'https://test.com/path?param=value&other=123';
+      service.updateSettings(fullSettings({ bpAnalyticsApplicationUrl: u }));
+      expect(service.current.bpAnalyticsApplicationUrl).toBe(u);
     });
 
     it('should handle relative URLs', () => {
-      const relativeSettings: ExternalLinksSettings = {
-        grafanaDashboardUrl: '/grafana',
-        smartfactoryDashboardUrl: '/dsp-action',
-        dspControlUrl: '/dsp',
-        managementCockpitUrl: '/cockpit',
-        erpSystemUrl: 'process',
-        mesSystemUrl: '',
-        ewmSystemUrl: '',
-        bpErpApplicationUrl: 'process',
-        bpPlanningApplicationUrl: '',
-        bpMesApplicationUrl: '',
-        bpEwmApplicationUrl: '',
-        bpAnalyticsApplicationUrl: '/grafana',
-        bpDataLakeApplicationUrl: '',
-      };
-
-      service.updateSettings(relativeSettings);
-      const current = service.current;
-
-      expect(current.grafanaDashboardUrl).toBe('/grafana');
+      service.updateSettings(
+        fullSettings({
+          bpAnalyticsApplicationUrl: '/grafana',
+          dspEdgeUrl: '/dsp',
+          dspManagementCockpitUrl: '/cockpit',
+        })
+      );
+      expect(service.current.bpAnalyticsApplicationUrl).toBe('/grafana');
     });
   });
 });
-
