@@ -150,6 +150,16 @@
           <span>{{ shopfloorAgvLegendLabel(p.serial) }}</span>
         </span>
       </ng-container>
+
+      <label class="shopfloor-tab__follow-active">
+        <input
+          type="checkbox"
+          class="shopfloor-tab__follow-active-input"
+          [checked]="followActiveStation"
+          (change)="onFollowActiveStationChange($event)"
+        />
+        <span i18n="@@moduleTabFollowActiveStation">Follow active station</span>
+      </label>
     </div>
 
     <div class="shopfloor-tab__shopfloor-grid" [style.--shopfloor-grid-cols]="shopfloorGridColsVar">
@@ -158,6 +168,7 @@
           [order]="null"
           scaleStorageScope="shopfloor"
           [scale]="0.6"
+          [followActiveStation]="followActiveStation"
           [highlightModulesOverride]="selectedModuleSerialNumber ? [selectedModuleSerialNumber] : null"
           [highlightFixedOverride]="null"
           [selectionEnabled]="true"

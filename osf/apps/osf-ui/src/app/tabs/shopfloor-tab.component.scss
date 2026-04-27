@@ -372,6 +372,22 @@
   color: var(--orbis-grey-strong);
 }
 
+.shopfloor-tab__follow-active {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: auto;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}
+
+.shopfloor-tab__follow-active-input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--orbis-blue-medium);
+}
+
 .legend__item {
   display: inline-flex;
   gap: 0.35rem;

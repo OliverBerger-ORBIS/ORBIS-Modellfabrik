@@ -267,6 +267,9 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   private readonly subscriptions = new Subscription();
 
   shopfloorGridColsVar: string | null = null;
+
+  /** When true, shopfloor layout scrolls to the first BUSY station when it changes (see app-shopfloor-preview) */
+  followActiveStation = false;
   private fixtureSubscriptions = new Subscription();
   private moduleOverviewSub?: Subscription;
   private dpsStateSub?: Subscription;
@@ -286,6 +289,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   // Shopfloor preview state
   shopfloorPreviewExpanded = false;
   private readonly shopfloorPreviewStorageKey = 'shopfloor-tab-shopfloor-preview-expanded';
+  private readonly followActiveStationStorageKey = 'OSF.shopfloor.followActiveStation';
   
   // Module selection persistence
   private readonly moduleSelectionStorageKey = 'shopfloor-tab-selected-module-serial-number';
@@ -337,6 +341,18 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   private getPositionFromNodeId(nodeId: string): { x: number; y: number } | null {
     const pos = this.agvRouteService.getAgvMarkerCenter(nodeId);
     return pos ? { x: pos.x, y: pos.y } : null;
+  }
+
+  onFollowActiveStationChange(event: Event): void {
+    const t = event.target;
+    const checked = t instanceof HTMLInputElement ? t.checked : false;
+    this.followActiveStation = checked;
+    try {
+      localStorage.setItem(this.followActiveStationStorageKey, String(checked));
+    } catch (error) {
+      // Ignore localStorage errors
+    }
+    this.cdr.markForCheck();
   }
 
   onShopfloorViewportChanged(viewport: { widthPx: number; heightPx: number; scale: number }): void {
@@ -1505,6 +1521,10 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       const saved = localStorage.getItem(this.shopfloorPreviewStorageKey);
       if (saved !== null) {
         this.shopfloorPreviewExpanded = saved === 'true';
+      }
+      const follow = localStorage.getItem(this.followActiveStationStorageKey);
+      if (follow === 'true') {
+        this.followActiveStation = true;
       }
     } catch (error) {
       // Ignore localStorage errors
