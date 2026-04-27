@@ -147,7 +147,7 @@ Ohne Common Ground kann die Relais-Logik fehlschlagen.
 
 ## 4. MQTT & Publish-Verhalten
 
-**Publish-Logik:** Publish-on-change (State-Topics nur bei Zustandswechsel) – Ampel/Sirene zeigen laufenden Alarm physisch. OSF-UI erhält beim (Re)Connect den letzten retained Zustand. *(Stand: Sketch v1.1.10)*.
+**Publish-Logik:** Publish-on-change (State-Topics nur bei Zustandswechsel) – Ampel/Sirene zeigen laufenden Alarm physisch. OSF-UI erhält beim (Re)Connect den letzten retained Zustand. *(Stand: Sketch v1.1.11)*.
 
 **Sketch-Versionierung:** SemVer im Header (`#define SKETCH_VERSION "1.1.x"`). Bei jedem Deployment Version anpassen. Serial Monitor zeigt „Sketch v1.1.x“ beim Start. Gängige Praxis: Version im Code, ggf. Git-Tag für Releases.
 
@@ -159,6 +159,7 @@ Ohne Common Ground kann die Relais-Logik fehlschlagen.
 
 **Upgrade Notes v1.1.9:** State-Topics publish-on-change (keine periodischen 2s Re-Publishes mehr bei Warnung/Alarm).
 **Upgrade Notes v1.1.10:** SW-420 triggert nur **Gelb** (nicht Rot); zusätzlich moderate Entprellung + Print-Drossel im Serial Monitor. MPU-Schwellen: Gelb=18000, Rot=36000.
+**Upgrade Notes v1.1.11:** Fix: `lastPublishedGasLevel` korrekt initialisiert (kein doppeltes Gas-State Publish direkt nach Boot). Debug-Print nutzt eigenes Tracking und funktioniert damit auch im Serial-only Modus (`USE_MQTT=0`).
 
 ---
 
