@@ -1,3 +1,40 @@
+.hbw-stock-grid-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+.hbw-stock-grid__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.hbw-stock-grid__mirror-toggle {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--orbis-grey-strong, #374151);
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    border-color: var(--orbis-blue-medium, #163494);
+    color: var(--orbis-blue-strong, #154194);
+  }
+
+  &--active {
+    border-color: var(--orbis-blue-medium, #163494);
+    background: rgba(22, 52, 148, 0.08);
+    color: var(--orbis-blue-strong, #154194);
+  }
+}
+
 .hbw-stock-grid {
   display: grid;
   grid-template-columns: 32px repeat(3, minmax(120px, 1fr));

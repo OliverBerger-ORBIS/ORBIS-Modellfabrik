@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  inject,
+  OnDestroy,
+  OnInit,
+  PLATFORM_ID,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable, Subscription, merge, timer } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, startWith, take } from 'rxjs/operators';
@@ -33,6 +42,8 @@ const RESERVED_ICON_MAP: Record<(typeof WORKPIECE_TYPES)[number], string> = {
 
 const EMPTY_SLOT_ICON = ICONS.shopfloor.workpieces.slotEmpty;
 
+const HBW_STOCK_MIRROR_STORAGE_KEY = 'OSF.hbwStockGrid.mirrorHorizontal';
+
 /**
  * HBW Stock Grid Component
  * 
@@ -59,10 +70,18 @@ export class HbwStockGridComponent implements OnInit, OnDestroy {
   private readonly environmentService = inject(EnvironmentService);
   private readonly messageMonitor = inject(MessageMonitorService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly subscriptions = new Subscription();
 
   inventorySlots$!: Observable<InventorySlotState[]>;
   private currentEnvironmentKey: string;
+
+  /** When true, columns 1–3 are shown right-to-left (physical / camera mirror). */
+  mirrorHorizontal = false;
+  /** Column header numbers left-to-right in the grid. */
+  columnLabels: number[] = [1, 2, 3];
+  /** Slot column indices (0-based within row) left-to-right. */
+  columnIndices: number[] = [0, 1, 2];
 
   readonly productIcons = PRODUCT_ICON_MAP;
   readonly rawIcons = RAW_ICON_MAP;
@@ -74,6 +93,8 @@ export class HbwStockGridComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.loadMirrorPreference();
+    this.applyMirrorColumns();
     this.bindInventoryOutputs();
 
     // Update when environment changes
@@ -90,6 +111,46 @@ export class HbwStockGridComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  toggleMirrorHorizontal(): void {
+    this.mirrorHorizontal = !this.mirrorHorizontal;
+    this.persistMirrorPreference();
+    this.applyMirrorColumns();
+    this.cdr.markForCheck();
+  }
+
+  private loadMirrorPreference(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+    try {
+      const raw = localStorage.getItem(HBW_STOCK_MIRROR_STORAGE_KEY);
+      this.mirrorHorizontal = raw === '1' || raw === 'true';
+    } catch {
+      this.mirrorHorizontal = false;
+    }
+  }
+
+  private persistMirrorPreference(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+    try {
+      localStorage.setItem(HBW_STOCK_MIRROR_STORAGE_KEY, this.mirrorHorizontal ? '1' : '0');
+    } catch {
+      /* ignore quota / private mode */
+    }
+  }
+
+  private applyMirrorColumns(): void {
+    if (this.mirrorHorizontal) {
+      this.columnLabels = [3, 2, 1];
+      this.columnIndices = [2, 1, 0];
+    } else {
+      this.columnLabels = [1, 2, 3];
+      this.columnIndices = [0, 1, 2];
+    }
   }
 
   private bindInventoryOutputs(): void {

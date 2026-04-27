@@ -47,6 +47,8 @@ describe('HbwStockGridComponent', () => {
   });
 
   beforeEach(async () => {
+    localStorage.removeItem('OSF.hbwStockGrid.mirrorHorizontal');
+
     const inventoryStateMock = {
       getState$: jest.fn(() => new BehaviorSubject<InventoryOverviewState | null>(createEmptyInventoryState())),
       getSnapshot: jest.fn(() => null),
@@ -185,6 +187,28 @@ describe('HbwStockGridComponent', () => {
       const grid = compiled.querySelector('.hbw-stock-grid');
       
       expect(grid).toBeTruthy();
+    });
+
+    it('should mirror first row slot order when toggle is used', () => {
+      fixture.detectChanges();
+      const compiled = fixture.nativeElement as HTMLElement;
+      const labels = () =>
+        Array.from(compiled.querySelectorAll('.hbw-stock-grid__slot-label')).map((el) => el.textContent?.trim());
+
+      expect(labels()[0]).toBe('A1');
+
+      const btn = compiled.querySelector('.hbw-stock-grid__mirror-toggle') as HTMLButtonElement;
+      expect(btn).toBeTruthy();
+      btn.click();
+      fixture.detectChanges();
+
+      expect(labels()[0]).toBe('A3');
+      expect(localStorage.getItem('OSF.hbwStockGrid.mirrorHorizontal')).toBe('1');
+
+      btn.click();
+      fixture.detectChanges();
+      expect(labels()[0]).toBe('A1');
+      expect(localStorage.getItem('OSF.hbwStockGrid.mirrorHorizontal')).toBe('0');
     });
   });
 });
