@@ -707,7 +707,8 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
     try {
       const payload = buildArduinoConfigPayload(this.arduinoDraft);
-      await this.connectionService.publish(OSF_ARDUINO_STATION_CONFIG_TOPIC, payload, { qos: 0 });
+      // Retain + QoS1 so the Arduino reliably receives new thresholds even across brief reconnects.
+      await this.connectionService.publish(OSF_ARDUINO_STATION_CONFIG_TOPIC, payload, { qos: 1, retain: true });
       this.arduinoApplySuccess = true;
     } catch (err) {
       this.arduinoApplyError = err instanceof Error ? err.message : 'Publish failed';
