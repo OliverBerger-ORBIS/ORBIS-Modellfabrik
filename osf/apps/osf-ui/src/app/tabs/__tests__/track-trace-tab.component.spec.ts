@@ -5,6 +5,7 @@ import { TrackTraceTabComponent } from '../track-trace-tab.component';
 import { EnvironmentService } from '../../services/environment.service';
 import { WorkpieceHistoryService } from '../../services/workpiece-history.service';
 import { ModuleNameService } from '../../services/module-name.service';
+import { TrackTraceEnvironmentService } from '../../services/track-trace-environment.service';
 import * as mockDashboard from '../../mock-dashboard';
 
 // Mock getDashboardController
@@ -37,11 +38,20 @@ describe('TrackTraceTabComponent', () => {
       getHistory$: jest.fn(() => new BehaviorSubject(new Map())),
     };
 
+    const trackTraceEnvironmentMock = {
+      snapshot$: of({
+        rows: [{ id: 'empty', label: '', value: '', variant: 'normal' as const }],
+        hasAlarm: false,
+        updatedAt: '2020-01-01T00:00:00.000Z',
+      }),
+    };
+
     await TestBed.configureTestingModule({
       imports: [TrackTraceTabComponent, HttpClientTestingModule],
       providers: [
         { provide: EnvironmentService, useValue: environmentServiceMock },
         { provide: WorkpieceHistoryService, useValue: workpieceHistoryServiceMock },
+        { provide: TrackTraceEnvironmentService, useValue: trackTraceEnvironmentMock },
       ],
     }).compileComponents();
 

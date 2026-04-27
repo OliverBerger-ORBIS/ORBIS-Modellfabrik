@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { TrackTraceComponent } from '../track-trace.component';
 import { WorkpieceHistoryService } from '../../../services/workpiece-history.service';
 import { ModuleNameService } from '../../../services/module-name.service';
 import { EnvironmentService } from '../../../services/environment.service';
+import { TrackTraceEnvironmentService } from '../../../services/track-trace-environment.service';
 import type { WorkpieceHistory, OrderContext } from '../../../services/workpiece-history.service';
 
 describe('TrackTraceComponent', () => {
@@ -44,12 +45,21 @@ describe('TrackTraceComponent', () => {
       environment$: new BehaviorSubject({ key: 'mock' as const, label: 'Mock', description: '', connection: { mqttHost: 'localhost', mqttPort: 1883 } }),
     };
 
+    const trackTraceEnvironmentMock = {
+      snapshot$: of({
+        rows: [{ id: 'empty', label: '', value: '', variant: 'normal' as const }],
+        hasAlarm: false,
+        updatedAt: '2020-01-01T00:00:00.000Z',
+      }),
+    };
+
     await TestBed.configureTestingModule({
       imports: [TrackTraceComponent, FormsModule, HttpClientTestingModule],
       providers: [
         ModuleNameService,
         { provide: WorkpieceHistoryService, useValue: workpieceHistoryServiceMock },
         { provide: EnvironmentService, useValue: environmentServiceMock },
+        { provide: TrackTraceEnvironmentService, useValue: trackTraceEnvironmentMock },
       ],
     }).compileComponents();
 

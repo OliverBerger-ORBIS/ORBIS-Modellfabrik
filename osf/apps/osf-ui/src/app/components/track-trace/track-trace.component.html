@@ -4,56 +4,118 @@
     <span i18n="@@trackTraceTitle">Track & Trace</span>
   </h3>
 
-  <div class="search-section">
+  <div class="search-section" *ngIf="(selectedColor$ | async) !== null">
     <div class="search-input">
       <input
         type="text"
-        [(ngModel)]="searchTerm"
+        [ngModel]="searchTerm"
+        (ngModelChange)="onSearchFilterChange($event)"
         placeholder=""
         i18n-placeholder="@@trackTraceSearchPlaceholder"
         class="search-field"
       />
-      <button class="clear-btn" *ngIf="searchTerm" (click)="clearSelection()">✕</button>
+      <button type="button" class="clear-btn" *ngIf="searchTerm" (click)="clearSearchFilter()" i18n-title="@@trackTraceClearSearchTitle" title="Clear filter">✕</button>
     </div>
   </div>
 
-  <div class="workpieces-list" *ngIf="(workpieces$ | async) as workpieces">
-    <div class="section-title">
-      <span i18n="@@trackTraceWorkpiecesTitle">Tracked Workpieces ({{ workpieces.length }})</span>
-    </div>
-
-    <div class="workpiece-items" *ngIf="workpieces.length > 0">
-      <div
-        *ngFor="let wp of workpieces; trackBy: trackByWorkpieceId"
-        class="workpiece-item"
-        [class.selected]="selectedWorkpieceId === wp.workpieceId"
-        [class]="getTypeClass(wp.workpieceType)"
-        (click)="selectWorkpiece(wp.workpieceId)"
-        (keyup.enter)="selectWorkpiece(wp.workpieceId)"
-        tabindex="0"
-        role="button"
+  <div class="cascade-section" *ngIf="(cascadeVm$ | async) as vm">
+    <div class="section-title cascade-color-title">
+      <span i18n="@@trackTraceCascadeColorSection">Workpiece color</span>
+      <button
+        type="button"
+        class="link-btn"
+        *ngIf="vm.color !== null"
+        (click)="clearColorSelection()"
+        i18n="@@trackTraceCascadeClearColor"
       >
-        <img [src]="getWorkpieceIcon(wp.workpieceType)" alt="" width="24" height="24" class="workpiece-icon" />
-
-        <div class="workpiece-info">
-          <span class="workpiece-id">{{ wp.workpieceId }}</span>
-          <span class="workpiece-location">{{ getLocationLabel(wp.currentLocation || '') }}</span>
-        </div>
-
-        <div class="workpiece-events">{{ wp.events.length }} events</div>
-      </div>
+        Clear color
+      </button>
     </div>
 
-    <div class="empty-state" *ngIf="workpieces.length === 0">
+    <div class="color-chips" role="group" i18n-aria-label="@@trackTraceColorGroupLabel">
+      <button
+        type="button"
+        class="color-chip color-chip-white"
+        [class.active]="vm.color === 'WHITE'"
+        (click)="selectColor('WHITE')"
+      >
+        <span i18n="@@trackTraceColorWhite">White</span>
+        <span class="chip-count" *ngIf="vm.stats.WHITE > 0">({{ vm.stats.WHITE }})</span>
+      </button>
+      <button
+        type="button"
+        class="color-chip color-chip-blue"
+        [class.active]="vm.color === 'BLUE'"
+        (click)="selectColor('BLUE')"
+      >
+        <span i18n="@@trackTraceColorBlue">Blue</span>
+        <span class="chip-count" *ngIf="vm.stats.BLUE > 0">({{ vm.stats.BLUE }})</span>
+      </button>
+      <button
+        type="button"
+        class="color-chip color-chip-red"
+        [class.active]="vm.color === 'RED'"
+        (click)="selectColor('RED')"
+      >
+        <span i18n="@@trackTraceColorRed">Red</span>
+        <span class="chip-count" *ngIf="vm.stats.RED > 0">({{ vm.stats.RED }})</span>
+      </button>
+    </div>
+
+    <p class="cascade-hint" *ngIf="vm.color === null && vm.stats.total > 0" i18n="@@trackTraceSelectColorHint">
+      Select a color to list NFC tags for that workpiece family.
+    </p>
+
+    <div class="empty-state global-empty" *ngIf="vm.stats.total === 0">
       <p i18n="@@trackTraceNoWorkpieces">No workpieces tracked yet.</p>
       <p class="hint" i18n="@@trackTraceNoWorkpiecesHint">Workpieces will appear here as they are loaded on the AGV.</p>
+    </div>
+
+    <div class="nfc-section" *ngIf="vm.color !== null">
+      <div class="section-title">
+        <span i18n="@@trackTraceNfcTagsTitle">NFC tags</span>
+        <span class="title-count">({{ vm.tags.length }})</span>
+      </div>
+
+      <div class="workpiece-items" *ngIf="vm.tags.length > 0">
+        <div
+          *ngFor="let wp of vm.tags; trackBy: trackByWorkpieceId"
+          class="workpiece-item"
+          [class.selected]="selectedWorkpieceId === wp.workpieceId"
+          [ngClass]="getTypeClass(wp.workpieceType)"
+          (click)="selectWorkpiece(wp.workpieceId)"
+          (keyup.enter)="selectWorkpiece(wp.workpieceId)"
+          tabindex="0"
+          role="button"
+        >
+          <img [src]="getWorkpieceIcon(wp.workpieceType)" alt="" width="24" height="24" class="workpiece-icon" />
+
+          <div class="workpiece-info">
+            <span class="workpiece-id" i18n-title="@@trackTraceNfcTagIdTitle" title="NFC tag ID">{{ wp.workpieceId }}</span>
+            <span class="nfc-first-seen" *ngIf="firstSeenTimestamp(wp) as seen">
+              <span i18n="@@trackTraceNfcFirstSeenPrefix">First seen:</span>
+              {{ seen }}
+            </span>
+            <span class="workpiece-location">{{ getLocationLabel(wp.currentLocation || '') }}</span>
+          </div>
+
+          <div class="workpiece-events">{{ wp.events.length }} events</div>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="vm.tags.length === 0">
+        <p *ngIf="hasActiveSearchFilter(); else noTagsForFilter" i18n="@@trackTraceNoNfcMatchFilter">No NFC tags match this filter.</p>
+        <ng-template #noTagsForFilter>
+          <p i18n="@@trackTraceNoNfcForColor">No NFC tags for this color yet.</p>
+        </ng-template>
+      </div>
     </div>
   </div>
 
   <div class="history-section" *ngIf="selectedWorkpieceId && (selectedHistory$ | async) as history">
     <div class="section-title">
       <span i18n="@@trackTraceEventHistory">Event History</span>
-      <button class="close-btn" (click)="clearSelection()" i18n="@@trackTraceClose">✕ Close</button>
+      <button type="button" class="close-btn" (click)="clearHistorySelection()" i18n="@@trackTraceClose">✕ Close</button>
     </div>
 
     <div class="history-header">
@@ -64,9 +126,97 @@
       </div>
     </div>
 
-    <!-- Two-column layout: Shopfloor Events | Order Context -->
+    <!-- Three-column layout: Order Context | Shopfloor Events | Environment / sensors -->
     <div class="history-content">
-      <!-- Column 1: Shopfloor Events -->
+      <!-- Column 1: Order Context (Business) -->
+      <div class="order-context-column">
+        <div class="column-title" i18n="@@trackTraceOrderContext">Order Context</div>
+        <div class="order-context" *ngIf="history.orders && history.orders.length > 0">
+          <div class="orders-list">
+            <div
+              *ngFor="let order of history.orders"
+              class="order-card"
+              [class.storage]="order.orderType === 'STORAGE'"
+              [class.production]="order.orderType === 'PRODUCTION'"
+            >
+              <div class="order-header">
+                <img [src]="getOrderTypeIcon(order.orderType)" alt="" width="16" height="16" />
+                <span class="order-type-label">{{ getOrderTypeLabel(order.orderType) }}</span>
+              </div>
+              <div class="order-details">
+                <!-- Order Status -->
+                <div class="order-field" *ngIf="order.status">
+                  <span class="field-label" i18n="@@trackTraceOrderStatus">Status:</span>
+                  <span
+                    class="field-value"
+                    [class.status-active]="order.status === 'ACTIVE'"
+                    [class.status-completed]="order.status === 'COMPLETED'"
+                    [class.status-failed]="order.status === 'FAILED' || order.status === 'ERROR'"
+                  >
+                    <ng-container *ngIf="order.status === 'ACTIVE'" i18n="@@trackTraceOrderStatusActive">Active</ng-container>
+                    <ng-container *ngIf="order.status === 'COMPLETED'" i18n="@@trackTraceOrderStatusCompleted">Completed</ng-container>
+                    <ng-container *ngIf="order.status === 'FAILED' || order.status === 'ERROR'" i18n="@@trackTraceOrderStatusFailed">Failed</ng-container>
+                  </span>
+                </div>
+                
+                <!-- Storage Order Details -->
+                <div *ngIf="order.orderType === 'STORAGE'">
+                  <div class="order-field" *ngIf="order.purchaseOrderId">
+                    <span class="field-label" i18n="@@trackTracePurchaseOrder">Purchase Order:</span>
+                    <span class="field-value erp-id">{{ order.purchaseOrderId }}</span>
+                  </div>
+                  <div class="order-field" *ngIf="order.supplierId">
+                    <span class="field-label" i18n="@@trackTraceSupplierId">Supplier ID:</span>
+                    <span class="field-value erp-id">{{ order.supplierId }}</span>
+                  </div>
+                  <div class="order-field" *ngIf="order.rawMaterialOrderDate">
+                    <span class="field-label" i18n="@@trackTraceRawMaterialOrderDate">Raw Material Order Date:</span>
+                    <span class="field-value">{{ formatTimestamp(order.rawMaterialOrderDate) }}</span>
+                  </div>
+                  <div class="order-field" *ngIf="order.deliveryDate">
+                    <span class="field-label" i18n="@@trackTraceDeliveryDate">Delivery Date:</span>
+                    <span class="field-value">{{ formatTimestamp(order.deliveryDate) }}</span>
+                  </div>
+                  <div class="order-field" *ngIf="order.storageDate">
+                    <span class="field-label" i18n="@@trackTraceStorageDate">Storage Date:</span>
+                    <span class="field-value">{{ formatTimestamp(order.storageDate) }}</span>
+                  </div>
+                </div>
+                <!-- Production Order Details -->
+                <div *ngIf="order.orderType === 'PRODUCTION'">
+                  <div class="order-field" *ngIf="order.customerOrderId">
+                    <span class="field-label" i18n="@@trackTraceCustomerOrder">Customer Order:</span>
+                    <span class="field-value erp-id">{{ order.customerOrderId }}</span>
+                  </div>
+                  <div class="order-field" *ngIf="order.customerId">
+                    <span class="field-label" i18n="@@trackTraceCustomerId">Customer ID:</span>
+                    <span class="field-value erp-id">{{ order.customerId }}</span>
+                  </div>
+                  <div class="order-field" *ngIf="order.customerOrderDate">
+                    <span class="field-label" i18n="@@trackTraceCustomerOrderDate">Customer Order Date:</span>
+                    <span class="field-value">{{ formatTimestamp(order.customerOrderDate) }}</span>
+                  </div>
+                  <div class="order-field" *ngIf="order.productionStartDate">
+                    <span class="field-label" i18n="@@trackTraceProductionStartDate">Production Start:</span>
+                    <span class="field-value">{{ formatTimestamp(order.productionStartDate) }}</span>
+                  </div>
+                  <div class="order-field" *ngIf="order.deliveryEndDate">
+                    <span class="field-label" i18n="@@trackTraceDeliveryEndDate">Delivery Date:</span>
+                    <span class="field-value">{{ formatTimestamp(order.deliveryEndDate) }}</span>
+                  </div>
+                </div>
+                <div class="order-route" *ngIf="order.fromLocation || order.toLocation">
+                  <span class="route-from">{{ getLocationLabel(order.fromLocation || '') }}</span>
+                  <span class="route-arrow">→</span>
+                  <span class="route-to">{{ getLocationLabel(order.toLocation || '') }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 2: Shopfloor Events -->
       <div class="shopfloor-events-column">
         <div class="column-title" i18n="@@trackTraceShopfloorEvents">Shopfloor Events</div>
         
@@ -199,90 +349,31 @@
         </div>
       </div>
 
-      <!-- Column 2: Order Context -->
-      <div class="order-context-column">
-        <div class="column-title" i18n="@@trackTraceOrderContext">Order Context</div>
-        <div class="order-context" *ngIf="history.orders && history.orders.length > 0">
-          <div class="orders-list">
-            <div
-              *ngFor="let order of history.orders"
-              class="order-card"
-              [class.storage]="order.orderType === 'STORAGE'"
-              [class.production]="order.orderType === 'PRODUCTION'"
-            >
-              <div class="order-header">
-                <img [src]="getOrderTypeIcon(order.orderType)" alt="" width="16" height="16" />
-                <span class="order-type-label">{{ getOrderTypeLabel(order.orderType) }}</span>
-              </div>
-              <div class="order-details">
-                <!-- Order Status -->
-                <div class="order-field" *ngIf="order.status">
-                  <span class="field-label" i18n="@@trackTraceOrderStatus">Status:</span>
-                  <span
-                    class="field-value"
-                    [class.status-active]="order.status === 'ACTIVE'"
-                    [class.status-completed]="order.status === 'COMPLETED'"
-                    [class.status-failed]="order.status === 'FAILED' || order.status === 'ERROR'"
-                  >
-                    <ng-container *ngIf="order.status === 'ACTIVE'" i18n="@@trackTraceOrderStatusActive">Active</ng-container>
-                    <ng-container *ngIf="order.status === 'COMPLETED'" i18n="@@trackTraceOrderStatusCompleted">Completed</ng-container>
-                    <ng-container *ngIf="order.status === 'FAILED' || order.status === 'ERROR'" i18n="@@trackTraceOrderStatusFailed">Failed</ng-container>
-                  </span>
-                </div>
-                
-                <!-- Storage Order Details -->
-                <div *ngIf="order.orderType === 'STORAGE'">
-                  <div class="order-field" *ngIf="order.purchaseOrderId">
-                    <span class="field-label" i18n="@@trackTracePurchaseOrder">Purchase Order:</span>
-                    <span class="field-value erp-id">{{ order.purchaseOrderId }}</span>
-                  </div>
-                  <div class="order-field" *ngIf="order.supplierId">
-                    <span class="field-label" i18n="@@trackTraceSupplierId">Supplier ID:</span>
-                    <span class="field-value erp-id">{{ order.supplierId }}</span>
-                  </div>
-                  <div class="order-field" *ngIf="order.rawMaterialOrderDate">
-                    <span class="field-label" i18n="@@trackTraceRawMaterialOrderDate">Raw Material Order Date:</span>
-                    <span class="field-value">{{ formatTimestamp(order.rawMaterialOrderDate) }}</span>
-                  </div>
-                  <div class="order-field" *ngIf="order.deliveryDate">
-                    <span class="field-label" i18n="@@trackTraceDeliveryDate">Delivery Date:</span>
-                    <span class="field-value">{{ formatTimestamp(order.deliveryDate) }}</span>
-                  </div>
-                  <div class="order-field" *ngIf="order.storageDate">
-                    <span class="field-label" i18n="@@trackTraceStorageDate">Storage Date:</span>
-                    <span class="field-value">{{ formatTimestamp(order.storageDate) }}</span>
-                  </div>
-                </div>
-                <!-- Production Order Details -->
-                <div *ngIf="order.orderType === 'PRODUCTION'">
-                  <div class="order-field" *ngIf="order.customerOrderId">
-                    <span class="field-label" i18n="@@trackTraceCustomerOrder">Customer Order:</span>
-                    <span class="field-value erp-id">{{ order.customerOrderId }}</span>
-                  </div>
-                  <div class="order-field" *ngIf="order.customerId">
-                    <span class="field-label" i18n="@@trackTraceCustomerId">Customer ID:</span>
-                    <span class="field-value erp-id">{{ order.customerId }}</span>
-                  </div>
-                  <div class="order-field" *ngIf="order.customerOrderDate">
-                    <span class="field-label" i18n="@@trackTraceCustomerOrderDate">Customer Order Date:</span>
-                    <span class="field-value">{{ formatTimestamp(order.customerOrderDate) }}</span>
-                  </div>
-                  <div class="order-field" *ngIf="order.productionStartDate">
-                    <span class="field-label" i18n="@@trackTraceProductionStartDate">Production Start:</span>
-                    <span class="field-value">{{ formatTimestamp(order.productionStartDate) }}</span>
-                  </div>
-                  <div class="order-field" *ngIf="order.deliveryEndDate">
-                    <span class="field-label" i18n="@@trackTraceDeliveryEndDate">Delivery Date:</span>
-                    <span class="field-value">{{ formatTimestamp(order.deliveryEndDate) }}</span>
-                  </div>
-                </div>
-                <div class="order-route" *ngIf="order.fromLocation || order.toLocation">
-                  <span class="route-from">{{ getLocationLabel(order.fromLocation || '') }}</span>
-                  <span class="route-arrow">→</span>
-                  <span class="route-to">{{ getLocationLabel(order.toLocation || '') }}</span>
-                </div>
-              </div>
-            </div>
+      <!-- Column 3: Environment / sensors (MQTT) -->
+      <div class="environment-column" *ngIf="environmentSnapshot$ | async as env">
+        <div class="column-title environment-column-title">
+          <span i18n="@@trackTraceEnvironmentColumn">Environment & sensors</span>
+          <span *ngIf="env.hasAlarm" class="env-alarm-badge" i18n="@@trackTraceEnvironmentAlarm">Sensor alarm</span>
+        </div>
+        <p class="column-hint" i18n="@@trackTraceEnvironmentSampleHint">Refreshes every 30 s; alarms update immediately.</p>
+        <p class="env-updated">
+          <span class="env-updated-label" i18n="@@trackTraceEnvironmentUpdatedLabel">Updated:</span>
+          {{ formatTimestamp(env.updatedAt) }}
+        </p>
+        <div class="env-rows">
+          <div
+            *ngFor="let row of env.rows; trackBy: trackByEnvRow"
+            class="env-row"
+            [class.env-alarm]="row.variant === 'alarm'"
+            [class.env-warn]="row.variant === 'warn'"
+          >
+            <ng-container *ngIf="row.id === 'empty'; else envRowNormal">
+              <span class="env-empty" i18n="@@trackTraceEnvironmentNoData">No sensor data yet (MQTT).</span>
+            </ng-container>
+            <ng-template #envRowNormal>
+              <span class="env-label">{{ row.label }}</span>
+              <span class="env-value">{{ row.value }}</span>
+            </ng-template>
           </div>
         </div>
       </div>
@@ -295,8 +386,9 @@
       <strong i18n="@@trackTraceInfoTitle">Track & Trace</strong>
     </p>
     <p i18n="@@trackTraceInfoDescription">
-      Select a workpiece from the list to view its complete journey through the production process. Manufacturing
-      tasks are grouped by station (PICK → PROCESS → DROP) within Production Orders.
+      Choose a workpiece color, then select an NFC tag to view its journey. Order context, shopfloor events, and
+      environment data appear below. Manufacturing tasks are grouped by station (PICK → PROCESS → DROP) within Production
+      Orders.
     </p>
   </div>
 </div>

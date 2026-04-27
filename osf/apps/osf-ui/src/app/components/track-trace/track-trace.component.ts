@@ -6,10 +6,23 @@ import { shareReplay } from 'rxjs/operators';
 import { WorkpieceHistoryService, WorkpieceHistory, TrackTraceEvent, OrderContext, StationTaskGroup } from '../../services/workpiece-history.service';
 import { ModuleNameService } from '../../services/module-name.service';
 import { EnvironmentService } from '../../services/environment.service';
+import {
+  TrackTraceEnvironmentService,
+  type TrackTraceEnvironmentSnapshot,
+} from '../../services/track-trace-environment.service';
 import { ICONS } from '../../shared/icons/icon.registry';
 
 /** Manufacturing event types that should be grouped by station */
 const MANUFACTURING_EVENT_TYPES = ['PICK', 'PROCESS', 'DROP'] as const;
+
+/** Workpiece / NFC color family for cascade selection */
+export type TrackTraceWorkpieceColor = 'WHITE' | 'BLUE' | 'RED';
+
+export interface TrackTraceCascadeVm {
+  color: TrackTraceWorkpieceColor | null;
+  tags: WorkpieceHistory[];
+  stats: { WHITE: number; BLUE: number; RED: number; total: number };
+}
 
 /**
  * Track & Trace Component
@@ -29,6 +42,7 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
   private readonly workpieceHistoryService = inject(WorkpieceHistoryService);
   private readonly moduleNameService = inject(ModuleNameService);
   private readonly environmentService = inject(EnvironmentService);
+  private readonly trackTraceEnvironment = inject(TrackTraceEnvironmentService);
   private readonly cdr = inject(ChangeDetectorRef);
   private subscription?: Subscription;
 
@@ -36,11 +50,23 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
   selectedWorkpieceId: string | null = null;
   private readonly selectedWorkpieceId$ = new BehaviorSubject<string | null>(null);
 
+  /** Selected workpiece color for NFC cascade (step 1) */
+  readonly selectedColor$ = new BehaviorSubject<TrackTraceWorkpieceColor | null>(null);
+
+  /** Filter substring for NFC tag list (step 2) */
+  private readonly filterTerm$ = new BehaviorSubject<string>('');
+
   /** All tracked workpieces */
   workpieces$!: Observable<WorkpieceHistory[]>;
 
+  /** Cascade: counts per color + filtered NFC tags sorted by earliest event time */
+  cascadeVm$!: Observable<TrackTraceCascadeVm>;
+
   /** Currently selected workpiece history */
   selectedHistory$!: Observable<WorkpieceHistory | undefined>;
+
+  /** MQTT environment / sensor column (30 s refresh; immediate on alarm edges) */
+  environmentSnapshot$!: Observable<TrackTraceEnvironmentSnapshot | null>;
 
   ngOnInit(): void {
     const environmentKey = this.environmentService.current.key;
@@ -53,12 +79,33 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
       map((historyMap) => Array.from(historyMap.values()))
     );
 
+    this.cascadeVm$ = combineLatest([
+      this.workpieces$,
+      this.selectedColor$.asObservable(),
+      this.filterTerm$.asObservable(),
+    ]).pipe(
+      map(([wps, color, term]) => ({
+        color,
+        tags: color ? this.buildNfcTagList(wps, color, term) : [],
+        stats: this.buildColorStats(wps),
+      })),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+
     // Get selected workpiece history - reactive to selectedWorkpieceId changes
     this.selectedHistory$ = combineLatest([
       this.workpieceHistoryService.getHistory$(environmentKey),
       this.selectedWorkpieceId$.asObservable()
     ]).pipe(
       map(([historyMap, selectedId]) => (selectedId ? historyMap.get(selectedId) : undefined)),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+
+    this.environmentSnapshot$ = combineLatest([
+      this.selectedWorkpieceId$.asObservable(),
+      this.trackTraceEnvironment.snapshot$,
+    ]).pipe(
+      map(([id, snap]) => (id ? snap : null)),
       shareReplay({ bufferSize: 1, refCount: false })
     );
   }
@@ -72,10 +119,111 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     this.selectedWorkpieceId$.next(workpieceId);
   }
 
-  clearSelection(): void {
+  /** Step 1: choose White / Blue / Red — clears selected NFC tag */
+  selectColor(color: TrackTraceWorkpieceColor): void {
+    this.selectedColor$.next(color);
     this.selectedWorkpieceId = null;
-    this.searchTerm = '';
     this.selectedWorkpieceId$.next(null);
+  }
+
+  /** Clears chosen color (step 1) and NFC selection */
+  clearColorSelection(): void {
+    this.selectedColor$.next(null);
+    this.selectedWorkpieceId = null;
+    this.selectedWorkpieceId$.next(null);
+  }
+
+  /** Search / filter input for NFC tag IDs within the selected color */
+  onSearchFilterChange(value: string): void {
+    this.searchTerm = value;
+    this.filterTerm$.next(value);
+  }
+
+  /** Clears filter text only */
+  clearSearchFilter(): void {
+    this.searchTerm = '';
+    this.filterTerm$.next('');
+  }
+
+  /** Template: distinguish empty NFC list vs filter miss */
+  hasActiveSearchFilter(): boolean {
+    return this.searchTerm.trim().length > 0;
+  }
+
+  /** Close button on event history — NFC list stays visible */
+  clearHistorySelection(): void {
+    this.selectedWorkpieceId = null;
+    this.selectedWorkpieceId$.next(null);
+  }
+
+  /** Earliest shopfloor event timestamp label for NFC row (chronological ordering context) */
+  firstSeenTimestamp(wp: WorkpieceHistory): string | null {
+    const iso = this.earliestEventIso(wp);
+    return iso ? this.formatTimestamp(iso) : null;
+  }
+
+  private normalizeWorkpieceColor(type: string | undefined): string {
+    return (type || '').toUpperCase();
+  }
+
+  private buildColorStats(wps: WorkpieceHistory[]): { WHITE: number; BLUE: number; RED: number; total: number } {
+    let w = 0;
+    let b = 0;
+    let r = 0;
+    for (const wp of wps) {
+      switch (this.normalizeWorkpieceColor(wp.workpieceType)) {
+        case 'WHITE':
+          w++;
+          break;
+        case 'BLUE':
+          b++;
+          break;
+        case 'RED':
+          r++;
+          break;
+        default:
+          break;
+      }
+    }
+    return { WHITE: w, BLUE: b, RED: r, total: wps.length };
+  }
+
+  private buildNfcTagList(wps: WorkpieceHistory[], color: TrackTraceWorkpieceColor, termRaw: string): WorkpieceHistory[] {
+    const term = termRaw.trim().toLowerCase();
+    let list = wps.filter((wp) => this.normalizeWorkpieceColor(wp.workpieceType) === color);
+    if (term) {
+      list = list.filter((wp) => wp.workpieceId.toLowerCase().includes(term));
+    }
+    return [...list].sort((a, b) => {
+      const ta = this.earliestEventTimestampMs(a);
+      const tb = this.earliestEventTimestampMs(b);
+      if (ta !== tb) return ta - tb;
+      return a.workpieceId.localeCompare(b.workpieceId);
+    });
+  }
+
+  private earliestEventTimestampMs(wp: WorkpieceHistory): number {
+    if (!wp.events?.length) return Number.POSITIVE_INFINITY;
+    let min = Number.POSITIVE_INFINITY;
+    for (const e of wp.events) {
+      const t = Date.parse(e.timestamp);
+      if (!Number.isNaN(t) && t < min) min = t;
+    }
+    return min;
+  }
+
+  private earliestEventIso(wp: WorkpieceHistory): string | undefined {
+    if (!wp.events?.length) return undefined;
+    let minMs = Number.POSITIVE_INFINITY;
+    let best = wp.events[0].timestamp;
+    for (const e of wp.events) {
+      const t = Date.parse(e.timestamp);
+      if (!Number.isNaN(t) && t < minMs) {
+        minMs = t;
+        best = e.timestamp;
+      }
+    }
+    return best;
   }
 
   getTypeClass(type: string | undefined): string {
@@ -361,6 +509,10 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
 
   trackBySubOrderGroup(index: number, group: { subOrderId: string; moduleId?: string; moduleName?: string; events: TrackTraceEvent[] }): string {
     return group.subOrderId || `group-${index}`;
+  }
+
+  trackByEnvRow(_index: number, row: { id: string }): string {
+    return row.id;
   }
 
   /**
