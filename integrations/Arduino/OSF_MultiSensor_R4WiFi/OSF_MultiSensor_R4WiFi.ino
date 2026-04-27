@@ -104,6 +104,12 @@ const unsigned long NTP_UPDATE_INTERVAL = 2000;
 unsigned long gUtcEpochBase = 0;
 unsigned long gMillisAtUtcBase = 0;
 static unsigned long lastWifiTimeAttemptMs = 0;
+#endif
+
+// Used for Serial debug output independent of USE_MQTT.
+int lastDebugPrintedLevel = -1;
+
+#if USE_MQTT
 int lastPublishedLevel = -1;
 unsigned long lastPublishTime = 0;
 
@@ -708,6 +714,7 @@ void setup() {
     lastFlameDetected = false;
     lastGasPublish = millis();
     lastGasDetected = false;
+    lastPublishedGasLevel = 0;
   }
 #endif
 
@@ -897,7 +904,7 @@ void loop() {
   }
 
   // Debug: Always print the magnitude and thresholds that led to a level change (avoid spam).
-  if (currentLevel != lastPublishedLevel) {
+  if (currentLevel != lastDebugPrintedLevel) {
     Serial.print("[LEVEL] ");
     Serial.print(levelStr);
     Serial.print(" mag=");
@@ -916,6 +923,7 @@ void loop() {
     Serial.print(flameDetected ? "ALARM" : "ok");
     Serial.print(" gasLevel=");
     Serial.println(gasLevel);
+    lastDebugPrintedLevel = currentLevel;
   }
 
 #if USE_MQTT
