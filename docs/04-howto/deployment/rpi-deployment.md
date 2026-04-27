@@ -59,6 +59,42 @@ Das Skript macht: Build (update-version + Angular + Docker), Save, SCP, Load, se
 
 ---
 
+## OSF-UI – Release/Deployment Checkliste (kurz)
+
+- **Version bump**: Nur `package.json` (Repo-Root) ändern, dann:
+
+```bash
+npm run update-version
+```
+
+- **Unit Tests (schnell)**:
+
+```bash
+npx nx test osf-ui --testPathPattern="track-trace|shopfloor-tab"
+```
+
+- **Production Build (RPi)**:
+
+```bash
+npx nx run osf-ui:build:production
+```
+
+- **Deploy auf den Pi**:
+
+```bash
+npm run docker:osf-ui:deploy -- ff22@192.168.0.100
+```
+
+- **Verifikation**:
+  - **OSF-UI URL**: `http://192.168.0.100:8080`
+  - **Container läuft**:
+
+```bash
+ssh ff22@192.168.0.100 "docker ps | grep osf-ui"
+```
+
+---
+
 ## Vollständiger Deploy (CCU + OSF-UI)
 
 ```bash

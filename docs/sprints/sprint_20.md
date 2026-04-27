@@ -37,6 +37,9 @@
 - [x] **Use-Case Diagramme Scrollbars:** Fix generisch (DSP-Muster: skalierte px-Größe am Diagramm, kein `transform: scale`; Wrapper `overflow:auto`, volle Breite; SVG ohne erzwungenes `min-width`) — 2026-04-19: verifiziert, Zoom-Verhalten vs. DSP bewusst akzeptiert
 - [x] **DSP Akkordeon State:** Kontext beim Zurücknavigieren erhalten (Section + optional Scrollpos) — 2026-04-19: `sessionStorage` + `?section=` + `NavigationBackService` vor `history.back`; Scroll zu `#dsp-accordion-*`
 - [ ] **Shopfloor Overlay (RPi):** Z-Index/Stacking robust (RPi == localhost), systematischer Vergleich falls Regression
+- [x] **Track & Trace Live Demo:** 3 Säulen (Business / Shopfloor / Umwelt) + Umweltdaten-Spalte (30s Refresh, Alarm sofort) — 2026-04-27: `nx test osf-ui --testPathPattern=track-trace`
+- [x] **Track & Trace Auswahlkaskade:** Farbe → NFC-Tag (workpieceId) chronologisch → Events unten — 2026-04-27: `nx test osf-ui --testPathPattern=track-trace`
+- [x] **Shopfloor Preview UX:** „Aktiver Station folgen (Busy)“ (Auto-Scroll zur ersten BUSY-Station) — 2026-04-27: `nx test osf-ui --testPathPattern=shopfloor-tab`
 
 ### Arduino & Sensor-Station
 
