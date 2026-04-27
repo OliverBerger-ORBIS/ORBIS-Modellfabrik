@@ -147,7 +147,7 @@ Ohne Common Ground kann die Relais-Logik fehlschlagen.
 
 ## 4. MQTT & Publish-Verhalten
 
-**Publish-Logik:** Bei Zustandsänderung sofort; bei Idle alle **5 s** als Heartbeat (MQTT_HEARTBEAT_INTERVAL). Schnellere UI-Aktualisierung als bei 15 s, Overhead vernachlässigbar.
+**Publish-Logik:** Publish-on-change (State-Topics nur bei Zustandswechsel) – Ampel/Sirene zeigen laufenden Alarm physisch. OSF-UI erhält beim (Re)Connect den letzten retained Zustand. *(Stand: Sketch v1.1.10)*.
 
 **Sketch-Versionierung:** SemVer im Header (`#define SKETCH_VERSION "1.1.x"`). Bei jedem Deployment Version anpassen. Serial Monitor zeigt „Sketch v1.1.x“ beim Start. Gängige Praxis: Version im Code, ggf. Git-Tag für Releases.
 
@@ -156,6 +156,9 @@ Ohne Common Ground kann die Relais-Logik fehlschlagen.
 2. Arduino IDE: Sketch öffnen, Board „Arduino Uno R4 WiFi“, Port wählen
 3. Upload, Serial Monitor (9600): „Sketch v1.1.x“ prüfen
 4. MQTT: `mosquitto_sub -h <broker> -t "osf/arduino/#" -v` – alle Sensoren melden?
+
+**Upgrade Notes v1.1.9:** State-Topics publish-on-change (keine periodischen 2s Re-Publishes mehr bei Warnung/Alarm).
+**Upgrade Notes v1.1.10:** SW-420 triggert nur **Gelb** (nicht Rot); zusätzlich moderate Entprellung + Print-Drossel im Serial Monitor. MPU-Schwellen: Gelb=18000, Rot=36000.
 
 ---
 
@@ -187,7 +190,11 @@ mosquitto_pub -h 192.168.178.65 -t "osf/arduino/alarm/enabled" -m "true"
 mosquitto_sub -h 192.168.178.65 -t "osf/arduino/#" -v
 ```
 
-**Warnung/Alarm — kontinuierliche Telemetrie (Sketch v1.1.3+):** Während die **Gesamtampel** gelb oder rot ist, wird der **MPU-State** zusätzlich alle **2 s** gesendet (aktualisierte `magnitude`/`vibrationLevel`). **DHT-, SW-420-, Flammen- und Gas-Topics** ebenfalls alle **2 s**, solange der jeweilige Sensor im **eigenen** Warn- oder Alarmband ist (`dhtLevel` / Vibration / `flameDetected` / `gasDetected`). Im reinen **Grün**-Betrieb bleibt der **5 s**-Heartbeat pro Topic. Hintergrund: Nur „Publish bei Level-Wechsel“ ließ Rohwerte in der OSF-UI im gleichen Warnband stehen (z. B. steigende Luftfeuchte bei konstantem Gelb).
+**Warnung/Alarm — Publish-on-change (Sketch v1.1.9+):** State-Topics werden nur bei Zustandswechsel publiziert (z. B. Ampel `green→red→yellow→green`). Es gibt keine periodischen 2‑Sekunden Re-Publishes mehr; dadurch werden doppelte Alarm-Messages vermieden.
+
+**Vibration (MPU vs. SW-420):**
+- **MPU-6050** bestimmt Gelb/Rot über `mpuMagnitudeYellow` / `mpuMagnitudeRed`.
+- **SW-420** ist ein binärer Vibrationsschalter und wird als **Gelb-Warnung** verwendet (kein Rot-Alarm); Signal wird moderat entprellt (ca. 50 ms Confirm + kurzer Hold).
 
 **`timestamp` in State-Payloads (Sketch v1.1.4+):** ISO-8601 **UTC**. **v1.1.6:** mit **Millisekunden** (`YYYY-MM-DDThh:mm:ss.sssZ`), aus **Sync-Zeit (Sekunden)** plus **Offset aus `millis()`** seit letztem Sync. Ohne UTC bleibt der Wert `""`. **v1.1.7:** In **`WIFI_MODE_ORBIS`** wird **NTP** zuerst gegen den **Shopfloor-RPi** (`192.168.0.100`, **chrony**) versucht, danach Gateway und öffentliche Pools — siehe [rpi-chrony-ntp-server.md](../04-howto/rpi-chrony-ntp-server.md). **v1.1.5+:** Kein **NTPClient**; Zeit über **`WiFi.getTime()`** + **rohes UDP-NTP** zu Gateway/Öffentlich; **`gUtcEpochBase` + `millis()`** zwischen Syncs; alle 2 s **`WiFi.getTime()`** zur Driftkorrektur. **UDP-Port 123** ausgehend zur NTP-Ziel-IP beachten.
 

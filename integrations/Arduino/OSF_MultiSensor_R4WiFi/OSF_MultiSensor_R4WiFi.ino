@@ -1,14 +1,19 @@
 /*
  * Projekt: OSF Multi-Sensor – Arduino R4 WiFi
  * Sketch: OSF_MultiSensor_R4WiFi
- * Version: 1.1.8  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
+ * Version: 1.1.10  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
  * Hardware: Arduino Uno R4 WiFi, MPU-6050 (I2C), SW-420 (D11), DHT11 (D12), Flamme (A1), MQ-2 Gas (A0), 4-Ch Relais, 12V Ampel
  * Quelle: docs/05-hardware/arduino-r4-multisensor.md
+ *
+ * Release notes (v1.1.9):
+ * - MQTT State-Topics publish-on-change (no periodic 2s re-publish while warning/alarm persists).
+ * Release notes (v1.1.10):
+ * - Serial debug: log magnitude + thresholds on amp light level transitions.
  *
  * Sensoren: MPU-6050 + SW-420 + DHT11 + Flammensensor + MQ-2 Gas. Gemeinsame Ampel (OR-Logik).
  * USE_MQTT: 0 = nur Serial, 1 = MQTT über WiFi
  */
-#define SKETCH_VERSION "1.1.8"
+#define SKETCH_VERSION "1.1.10"
 #define USE_MQTT 1
 
 /** Relais-Logik: 1 = aktiv-niedrig (LOW=ein, typisch). 0 = aktiv-hoch (HIGH=ein, manche Module). */
@@ -78,10 +83,14 @@ const char* TOPIC_STATION_FACTSHEET = "osf/arduino/station/factsheet";
 /** Runtime threshold overrides (RAM); not written to flash — pair with OSF Configuration tab */
 const char* TOPIC_STATION_CONFIG = "osf/arduino/station/config";
 
-/** MQTT Publish-Interval: Jedes Topic wird bei Zustandsänderung sofort gesendet; bei Idle alle 5s als Heartbeat. */
-const unsigned long MQTT_HEARTBEAT_INTERVAL = 5000;
-/** Bei Warnung/Alarm: mindestens alle 2s erneut publizieren (OSF UI „friert“ sonst bei gleicher Ampelstufe ein; passt zu GELB_MIN_DURATION). */
-const unsigned long MQTT_WARN_ALARM_TELEMETRY_INTERVAL = 2000;
+/**
+ * MQTT Publish policy (2026-04): publish-on-change for sensor state topics.
+ *
+ * Rationale:
+ * - Avoid repeated retained messages every N seconds while an alarm persists.
+ * - Physical feedback (lights/siren) already indicates ongoing alarm.
+ * - MQTT retained delivers latest state on (re)connect in our setup.
+ */
 const float DHT_TEMP_WARN = 30.0;   // °C – Gelb
 const float DHT_TEMP_DANGER = 35.0; // °C – Rot
 const float DHT_HUM_WARN = 60.0;    // % – Gelb (Orange)
@@ -125,8 +134,13 @@ const unsigned long DEBUG_INTERVAL = 500;
 const unsigned long ROT_MIN_DURATION = 2500;
 const unsigned long GELB_MIN_DURATION = 2000;
 
-const long MAG_THRESHOLD_GELB = 18500;
-const long MAG_THRESHOLD_ROT = 26500;
+// SW-420: moderate debounce + print throttling (prevents noisy TRIG storms).
+const int SW420_DEBOUNCE_SAMPLES = 5;               // 5 * 10ms = 50ms confirm
+const unsigned long SW420_HOLD_MS = 250;            // keep warning a bit to avoid flicker
+const unsigned long SW420_PRINT_THROTTLE_MS = 1000; // at most 1 print per second
+
+const long MAG_THRESHOLD_GELB = 18000;
+const long MAG_THRESHOLD_ROT = 36000;
 
 /** Mutable copies (factsheet + loop); config MQTT updates RAM only */
 float runtimeDhtTempWarn = DHT_TEMP_WARN;
@@ -146,6 +160,9 @@ unsigned long lastSw420PublishTime = 0;
 int lastSw420Level = -1;
 int lastPublishedSw420Level = -1;
 bool lastSw420Triggered = false;
+int sw420ConfirmCount = 0;
+unsigned long sw420HoldUntil = 0;
+unsigned long lastSw420PrintMs = 0;
 unsigned long lastDhtRead = 0;
 const unsigned long DHT_READ_INTERVAL = 2000;
 const unsigned long DHT_BACKOFF_AFTER_FAILS = 30000;  // 30 s Pause nach Fehlern
@@ -162,6 +179,7 @@ bool lastFlameDetected = false;
 int flameConfirmCount = 0;  // Debounce: nur Alarm nach N aufeinanderfolgenden Low-Werten
 unsigned long lastGasPublish = 0;
 bool lastGasDetected = false;
+int lastPublishedGasLevel = -1;
 bool alarmEnabled = false;  // Sirene nur wenn true – von osf/arduino/alarm/enabled
 unsigned long lastDebugPrint = 0;
 unsigned long redStartedAt = 0;
@@ -730,7 +748,17 @@ void loop() {
   lastSample = now;
 
   long mag = getAccelMagnitude();
-  bool sw420Triggered = (digitalRead(SW420_PIN) == (SENSOR_ACTIVE_HIGH ? HIGH : LOW));
+  const bool sw420RawTriggered = (digitalRead(SW420_PIN) == (SENSOR_ACTIVE_HIGH ? HIGH : LOW));
+  if (sw420RawTriggered) {
+    if (sw420ConfirmCount < SW420_DEBOUNCE_SAMPLES) sw420ConfirmCount++;
+  } else {
+    sw420ConfirmCount = 0;
+  }
+  const bool sw420Confirmed = (sw420ConfirmCount >= SW420_DEBOUNCE_SAMPLES);
+  if (sw420Confirmed) {
+    sw420HoldUntil = now + SW420_HOLD_MS;
+  }
+  const bool sw420Triggered = sw420Confirmed || (now < sw420HoldUntil);
 
   int flameRaw = analogRead(FLAME_PIN);
   bool rawBelowThreshold = FLAME_INVERTED ? (flameRaw < runtimeFlameThreshold) : (flameRaw > runtimeFlameThreshold);
@@ -783,7 +811,10 @@ void loop() {
   if (sw420Triggered) {
     if (!lastSw420Triggered) {
       sw420ImpulseCount++;
-      Serial.println("!!! SW-420 VIBRATION !!!");
+      if (now - lastSw420PrintMs >= SW420_PRINT_THROTTLE_MS) {
+        lastSw420PrintMs = now;
+        Serial.println("!!! SW-420 VIBRATION !!!");
+      }
     }
     lastSw420Triggered = true;
     lastSw420Level = 1;
@@ -818,7 +849,9 @@ void loop() {
   int mpuLevel = 0;
   if (mag >= runtimeMagRot) mpuLevel = 2;
   else if (mag >= runtimeMagGelb) mpuLevel = 1;
-  int sw420Level = sw420Triggered ? 2 : 0;
+  // SW-420 should only raise WARNING (yellow), not ALARM (red).
+  // It is a simple binary vibration switch and can be noisy; we use MPU magnitude for red.
+  int sw420Level = sw420Triggered ? 1 : 0;
   int combinedLevel = mpuLevel;
   if (sw420Level > combinedLevel) combinedLevel = sw420Level;
   if (dhtLevel > combinedLevel) combinedLevel = dhtLevel;
@@ -863,46 +896,64 @@ void loop() {
     levelStr = "green";
   }
 
+  // Debug: Always print the magnitude and thresholds that led to a level change (avoid spam).
+  if (currentLevel != lastPublishedLevel) {
+    Serial.print("[LEVEL] ");
+    Serial.print(levelStr);
+    Serial.print(" mag=");
+    Serial.print(mag);
+    Serial.print(" mpu(y=");
+    Serial.print(runtimeMagGelb);
+    Serial.print(",r=");
+    Serial.print(runtimeMagRot);
+    Serial.print(") mpuLevel=");
+    Serial.print(mpuLevel);
+    Serial.print(" sw420=");
+    Serial.print(sw420Triggered ? "TRIG" : "ok");
+    Serial.print(" dhtLevel=");
+    Serial.print(dhtLevel);
+    Serial.print(" flame=");
+    Serial.print(flameDetected ? "ALARM" : "ok");
+    Serial.print(" gasLevel=");
+    Serial.println(gasLevel);
+  }
+
 #if USE_MQTT
   if (WiFi.status() == WL_CONNECTED) {
-    bool shouldPublishMpu = (currentLevel != lastPublishedLevel) ||
-        (currentLevel == 0 && (now - lastPublishTime) >= MQTT_HEARTBEAT_INTERVAL) ||
-        (currentLevel >= 1 && (now - lastPublishTime) >= MQTT_WARN_ALARM_TELEMETRY_INTERVAL);
+    // Publish-on-change: only publish when level changes (green/yellow/red).
+    bool shouldPublishMpu = (currentLevel != lastPublishedLevel);
     if (shouldPublishMpu) {
       publishMpuState(levelStr, mag);
       lastPublishedLevel = currentLevel;
       lastPublishTime = now;
     }
-    bool shouldPublishSw420 = (lastSw420Level != lastPublishedSw420Level) ||
-        (lastSw420Level == 0 && (now - lastSw420PublishTime) >= MQTT_HEARTBEAT_INTERVAL) ||
-        (lastSw420Level >= 1 && (now - lastSw420PublishTime) >= MQTT_WARN_ALARM_TELEMETRY_INTERVAL);
+    // Publish-on-change: SW-420 binary trigger changes.
+    bool shouldPublishSw420 = (lastSw420Level != lastPublishedSw420Level);
     if (shouldPublishSw420) {
       publishSw420State(sw420Triggered);
       lastPublishedSw420Level = lastSw420Level;
       lastSw420PublishTime = now;
     }
-    bool shouldPublishDht = (dhtLevel != lastPublishedDhtLevel) ||
-        (dhtLevel == 0 && (now - lastDhtPublish) >= MQTT_HEARTBEAT_INTERVAL) ||
-        (dhtLevel >= 1 && (now - lastDhtPublish) >= MQTT_WARN_ALARM_TELEMETRY_INTERVAL);
+    // Publish-on-change: DHT warn/alarm level changes (derived from lastTemp/lastHum).
+    bool shouldPublishDht = (dhtLevel != lastPublishedDhtLevel);
     if (shouldPublishDht) {
       publishDht11State(lastTemp, lastHum);
       lastPublishedDhtLevel = dhtLevel;
       lastDhtPublish = now;
     }
-    bool shouldPublishFlame = (flameDetected != lastFlameDetected) ||
-        (!flameDetected && (now - lastFlamePublish) >= MQTT_HEARTBEAT_INTERVAL) ||
-        (flameDetected && (now - lastFlamePublish) >= MQTT_WARN_ALARM_TELEMETRY_INTERVAL);
+    // Publish-on-change: flame detected toggle.
+    bool shouldPublishFlame = (flameDetected != lastFlameDetected);
     if (shouldPublishFlame) {
       publishFlameState(flameRaw, flameDetected);
       lastFlameDetected = flameDetected;
       lastFlamePublish = now;
     }
-    bool shouldPublishGas = (gasDetected != lastGasDetected) ||
-        (!gasDetected && (now - lastGasPublish) >= MQTT_HEARTBEAT_INTERVAL) ||
-        (gasDetected && (now - lastGasPublish) >= MQTT_WARN_ALARM_TELEMETRY_INTERVAL);
+    // Publish-on-change: gas detect toggle OR level change (0/1/2).
+    bool shouldPublishGas = (gasDetected != lastGasDetected) || (gasLevel != lastPublishedGasLevel);
     if (shouldPublishGas) {
       publishGasState(gasRaw, gasDetected, gasLevel);
       lastGasDetected = gasDetected;
+      lastPublishedGasLevel = gasLevel;
       lastGasPublish = now;
     }
   }
