@@ -147,7 +147,7 @@ Ohne Common Ground kann die Relais-Logik fehlschlagen.
 
 ## 4. MQTT & Publish-Verhalten
 
-**Publish-Logik:** Publish-on-change (State-Topics nur bei Zustandswechsel) – Ampel/Sirene zeigen laufenden Alarm physisch. OSF-UI erhält beim (Re)Connect den letzten retained Zustand. *(Stand: Sketch v1.1.11)*.
+**Publish-Logik:** Kombiniert: **sofort** bei Zustands-/Level-Wechseln (Alarm-Reaktion) **und zusätzlich periodische Telemetrie** für Korrelation mit Shopfloor-Events (Zeitreihe der Rohwerte). *(Stand: Sketch v1.1.12)*.
 
 **Sketch-Versionierung:** SemVer im Header (`#define SKETCH_VERSION "1.1.x"`). Bei jedem Deployment Version anpassen. Serial Monitor zeigt „Sketch v1.1.x“ beim Start. Gängige Praxis: Version im Code, ggf. Git-Tag für Releases.
 
@@ -160,6 +160,7 @@ Ohne Common Ground kann die Relais-Logik fehlschlagen.
 **Upgrade Notes v1.1.9:** State-Topics publish-on-change (keine periodischen 2s Re-Publishes mehr bei Warnung/Alarm).
 **Upgrade Notes v1.1.10:** SW-420 triggert nur **Gelb** (nicht Rot); zusätzlich moderate Entprellung + Print-Drossel im Serial Monitor. MPU-Schwellen: Gelb=18000, Rot=36000.
 **Upgrade Notes v1.1.11:** Fix: `lastPublishedGasLevel` korrekt initialisiert (kein doppeltes Gas-State Publish direkt nach Boot). Debug-Print nutzt eigenes Tracking und funktioniert damit auch im Serial-only Modus (`USE_MQTT=0`).
+**Upgrade Notes v1.1.12:** Periodische Telemetrie-Publishes wieder aktiv (MPU ~1s, DHT ~5s, Flame/Gas ~2s) zusätzlich zu sofortigen Zustandswechsel-Events – wichtig für Event-Korrelation.
 
 ---
 
@@ -191,7 +192,7 @@ mosquitto_pub -h 192.168.178.65 -t "osf/arduino/alarm/enabled" -m "true"
 mosquitto_sub -h 192.168.178.65 -t "osf/arduino/#" -v
 ```
 
-**Warnung/Alarm — Publish-on-change (Sketch v1.1.9+):** State-Topics werden nur bei Zustandswechsel publiziert (z. B. Ampel `green→red→yellow→green`). Es gibt keine periodischen 2‑Sekunden Re-Publishes mehr; dadurch werden doppelte Alarm-Messages vermieden.
+**Warnung/Alarm — Event + Telemetrie (Sketch v1.1.12+):** State-Topics werden **sofort** bei Zustandswechsel publiziert (z. B. Ampel `green→red→yellow→green`) und zusätzlich **periodisch** als Telemetrie (Rohwerte), damit sich Sensorwerte mit Shopfloor-Events korrelieren lassen.
 
 **Vibration (MPU vs. SW-420):**
 - **MPU-6050** bestimmt Gelb/Rot über `mpuMagnitudeYellow` / `mpuMagnitudeRed`.

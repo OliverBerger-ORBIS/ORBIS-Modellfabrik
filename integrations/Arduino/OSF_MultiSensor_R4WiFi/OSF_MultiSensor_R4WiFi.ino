@@ -1,7 +1,7 @@
 /*
  * Projekt: OSF Multi-Sensor – Arduino R4 WiFi
  * Sketch: OSF_MultiSensor_R4WiFi
- * Version: 1.1.10  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
+ * Version: 1.1.12  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
  * Hardware: Arduino Uno R4 WiFi, MPU-6050 (I2C), SW-420 (D11), DHT11 (D12), Flamme (A1), MQ-2 Gas (A0), 4-Ch Relais, 12V Ampel
  * Quelle: docs/05-hardware/arduino-r4-multisensor.md
  *
@@ -9,11 +9,13 @@
  * - MQTT State-Topics publish-on-change (no periodic 2s re-publish while warning/alarm persists).
  * Release notes (v1.1.10):
  * - Serial debug: log magnitude + thresholds on amp light level transitions.
+ * Release notes (v1.1.12):
+ * - Periodic telemetry publishes for correlation with shopfloor events (keep immediate state changes).
  *
  * Sensoren: MPU-6050 + SW-420 + DHT11 + Flammensensor + MQ-2 Gas. Gemeinsame Ampel (OR-Logik).
  * USE_MQTT: 0 = nur Serial, 1 = MQTT über WiFi
  */
-#define SKETCH_VERSION "1.1.11"
+#define SKETCH_VERSION "1.1.12"
 #define USE_MQTT 1
 
 /** Relais-Logik: 1 = aktiv-niedrig (LOW=ein, typisch). 0 = aktiv-hoch (HIGH=ein, manche Module). */
@@ -84,13 +86,15 @@ const char* TOPIC_STATION_FACTSHEET = "osf/arduino/station/factsheet";
 const char* TOPIC_STATION_CONFIG = "osf/arduino/station/config";
 
 /**
- * MQTT Publish policy (2026-04): publish-on-change for sensor state topics.
- *
- * Rationale:
- * - Avoid repeated retained messages every N seconds while an alarm persists.
- * - Physical feedback (lights/siren) already indicates ongoing alarm.
- * - MQTT retained delivers latest state on (re)connect in our setup.
+ * MQTT publish policy:
+ * - Immediate publish on state/level changes (responsive alarm indication)
+ * - Periodic telemetry publish (correlation with shopfloor events)
  */
+const unsigned long MQTT_HEARTBEAT_INTERVAL = 5000;        // stable UI updates
+const unsigned long MQTT_MPU_TELEMETRY_INTERVAL = 1000;    // magnitude time series
+const unsigned long MQTT_DHT_TELEMETRY_INTERVAL = 5000;    // temp/humidity time series
+const unsigned long MQTT_FLAME_TELEMETRY_INTERVAL = 2000;  // raw time series
+const unsigned long MQTT_GAS_TELEMETRY_INTERVAL = 2000;    // raw + level time series
 const float DHT_TEMP_WARN = 30.0;   // °C – Gelb
 const float DHT_TEMP_DANGER = 35.0; // °C – Rot
 const float DHT_HUM_WARN = 60.0;    // % – Gelb (Orange)
@@ -104,18 +108,15 @@ const unsigned long NTP_UPDATE_INTERVAL = 2000;
 unsigned long gUtcEpochBase = 0;
 unsigned long gMillisAtUtcBase = 0;
 static unsigned long lastWifiTimeAttemptMs = 0;
-#endif
-
-// Used for Serial debug output independent of USE_MQTT.
-int lastDebugPrintedLevel = -1;
-
-#if USE_MQTT
 int lastPublishedLevel = -1;
 unsigned long lastPublishTime = 0;
 
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
 #endif
+
+// Used for Serial debug output independent of USE_MQTT.
+int lastDebugPrintedLevel = -1;
 
 const int SW420_PIN = 11;
 const int DHT_PIN = 12;  // DHT11 Data. Sensor links→rechts: − GND, Mitte VCC, S Data
@@ -698,23 +699,50 @@ void setup() {
   mqttClient.setCallback(mqttCallback);
   if (WiFi.status() == WL_CONNECTED) {
     mqttReconnect();
-    publishMpuState("green", 0);
-    publishSw420State(false);
-    publishDht11State(0, 0);
-    publishFlameState(1023, false);
-    publishGasState(0, false, 0);
+    // Initial retained publishes with current readings (so OSF-UI has values immediately).
+    const unsigned long now = millis();
+
+    const long mag = getAccelMagnitude();
+    int mpuLevel = 0;
+    if (mag >= runtimeMagRot) mpuLevel = 2;
+    else if (mag >= runtimeMagGelb) mpuLevel = 1;
+    const char* mpuLevelStr = (mpuLevel >= 2) ? "red" : ((mpuLevel >= 1) ? "yellow" : "green");
+    publishMpuState(mpuLevelStr, mag);
+
+    const bool sw420Triggered = (digitalRead(SW420_PIN) == (SENSOR_ACTIVE_HIGH ? HIGH : LOW));
+    publishSw420State(sw420Triggered);
+
+    float temp = dht.readTemperature();
+    float hum = dht.readHumidity();
+    if (!isnan(temp) && !isnan(hum)) {
+      lastTemp = temp;
+      lastHum = hum;
+      publishDht11State(temp, hum);
+    }
+
+    const int flameRaw = analogRead(FLAME_PIN);
+    const bool rawBelowThreshold = FLAME_INVERTED ? (flameRaw < runtimeFlameThreshold) : (flameRaw > runtimeFlameThreshold);
+    publishFlameState(flameRaw, rawBelowThreshold);
+
+    const int gasRaw = analogRead(GAS_PIN);
+    int gasLevel = 0;
+    if (gasRaw > runtimeGasDanger) gasLevel = 2;
+    else if (gasRaw > runtimeGasWarn) gasLevel = 1;
+    const bool gasDetected = (gasLevel >= 1);
+    publishGasState(gasRaw, gasDetected, gasLevel);
+
     lastPublishedLevel = 0;
-    lastPublishTime = millis();
+    lastPublishTime = now;
     lastSw420Level = 0;
-    lastSw420PublishTime = millis();
+    lastSw420PublishTime = now;
     lastPublishedSw420Level = 0;
-    lastDhtPublish = millis();
+    lastDhtPublish = now;
     lastPublishedDhtLevel = 0;
-    lastFlamePublish = millis();
+    lastFlamePublish = now;
     lastFlameDetected = false;
-    lastGasPublish = millis();
-    lastGasDetected = false;
-    lastPublishedGasLevel = 0;
+    lastGasPublish = now;
+    lastGasDetected = gasDetected;
+    lastPublishedGasLevel = gasLevel;
   }
 #endif
 
@@ -928,36 +956,42 @@ void loop() {
 
 #if USE_MQTT
   if (WiFi.status() == WL_CONNECTED) {
-    // Publish-on-change: only publish when level changes (green/yellow/red).
-    bool shouldPublishMpu = (currentLevel != lastPublishedLevel);
+    // MPU: publish on amp level change OR periodically for correlation.
+    bool shouldPublishMpu = (currentLevel != lastPublishedLevel) ||
+        (now - lastPublishTime) >= MQTT_MPU_TELEMETRY_INTERVAL;
     if (shouldPublishMpu) {
       publishMpuState(levelStr, mag);
       lastPublishedLevel = currentLevel;
       lastPublishTime = now;
     }
-    // Publish-on-change: SW-420 binary trigger changes.
-    bool shouldPublishSw420 = (lastSw420Level != lastPublishedSw420Level);
+    // SW-420: publish on trigger changes OR heartbeat (impulseCount is useful for correlation).
+    bool shouldPublishSw420 = (lastSw420Level != lastPublishedSw420Level) ||
+        (now - lastSw420PublishTime) >= MQTT_HEARTBEAT_INTERVAL;
     if (shouldPublishSw420) {
       publishSw420State(sw420Triggered);
       lastPublishedSw420Level = lastSw420Level;
       lastSw420PublishTime = now;
     }
-    // Publish-on-change: DHT warn/alarm level changes (derived from lastTemp/lastHum).
-    bool shouldPublishDht = (dhtLevel != lastPublishedDhtLevel);
+    // DHT: publish on level change OR periodically for time series.
+    bool shouldPublishDht = (dhtLevel != lastPublishedDhtLevel) ||
+        (now - lastDhtPublish) >= MQTT_DHT_TELEMETRY_INTERVAL;
     if (shouldPublishDht) {
       publishDht11State(lastTemp, lastHum);
       lastPublishedDhtLevel = dhtLevel;
       lastDhtPublish = now;
     }
-    // Publish-on-change: flame detected toggle.
-    bool shouldPublishFlame = (flameDetected != lastFlameDetected);
+    // Flame: publish on detected toggle OR periodically for raw time series.
+    bool shouldPublishFlame = (flameDetected != lastFlameDetected) ||
+        (now - lastFlamePublish) >= MQTT_FLAME_TELEMETRY_INTERVAL;
     if (shouldPublishFlame) {
       publishFlameState(flameRaw, flameDetected);
       lastFlameDetected = flameDetected;
       lastFlamePublish = now;
     }
-    // Publish-on-change: gas detect toggle OR level change (0/1/2).
-    bool shouldPublishGas = (gasDetected != lastGasDetected) || (gasLevel != lastPublishedGasLevel);
+    // Gas: publish on detected toggle/level change OR periodically for raw time series.
+    bool shouldPublishGas = (gasDetected != lastGasDetected) ||
+        (gasLevel != lastPublishedGasLevel) ||
+        (now - lastGasPublish) >= MQTT_GAS_TELEMETRY_INTERVAL;
     if (shouldPublishGas) {
       publishGasState(gasRaw, gasDetected, gasLevel);
       lastGasDetected = gasDetected;
