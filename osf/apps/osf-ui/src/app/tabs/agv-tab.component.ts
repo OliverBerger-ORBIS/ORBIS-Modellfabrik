@@ -76,6 +76,28 @@ interface FtsState {
 
 // Fallback serial when layout has no FTS config (Phase A: AGV selection via dropdown)
 const FTS_SERIAL_FALLBACK = '5iO4';
+
+/**
+ * Planned route stroke-dasharray in **layout pixel units** (same as segment x/y).
+ * Very small numbers (e.g. `1 12`) are ~1px on screen and look like a solid line — use ≥2 for the dash.
+ * Tweak here; the shopfloor template `??` fallback only applies if this property is omitted.
+ */
+const AGV_ROUTE_PLANNED_DASH = '3 14';
+
+/** Drawable AGV route segment (shopfloor preview + legend). */
+export interface AgvMapRouteSegment {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  stroke?: string;
+  strokeDasharray?: string;
+}
+
+export interface AgvRouteOverlayLayers {
+  planned: AgvMapRouteSegment[];
+  traveled: AgvMapRouteSegment[];
+}
 const CCU_SET_CHARGE_TOPIC = 'ccu/set/charge';
 const ftsStateTopic = (serial: string) => `fts/v1/ff/${serial}/state`;
 const ftsOrderTopic = (serial: string) => `fts/v1/ff/${serial}/order`;
@@ -256,8 +278,11 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   /** Last validated FTS state per AGV topic in MessageMonitor (ensures both markers when `ftsStates$` is incomplete). */
   allAgvMonitorFtsStates$!: Observable<Record<string, FtsState | null>>;
 
-  /** Merged map segments: order-based routes per AGV in AGV colors; selected AGV uses animation path while animating. */
-  combinedAgvRouteSegments$!: Observable<Array<{ x1: number; y1: number; x2: number; y2: number; stroke?: string }>>;
+  /**
+   * Route overlay layers: planned order path (dashed, per-AGV stroke) under traveled path
+   * (solid). Selected AGV while animating uses animation segments as traveled.
+   */
+  combinedAgvRouteLayers$!: Observable<AgvRouteOverlayLayers>;
 
   /** CCU snapshot filtered to orders likely involving the selected AGV (see {@link filterCcuActiveOrdersForAgv}). */
   supervisorCcuOrdersForAgv$!: Observable<OrderActive[]>;
@@ -401,6 +426,123 @@ export class AgvTabComponent implements OnInit, OnDestroy {
       }
     }
     return all;
+  }
+
+  /**
+   * Concatenated graph node sequence for the full FTS order (BFS legs), for progress along the route.
+   */
+  private flattenOrderGraphPath(order: unknown): string[] | null {
+    if (!order || typeof order !== 'object') {
+      return null;
+    }
+    const nodes = (order as { nodes?: Array<{ id?: string }> }).nodes;
+    if (!Array.isArray(nodes) || nodes.length < 2) {
+      return null;
+    }
+    const ids = nodes.map((n) => n?.id).filter((id): id is string => Boolean(id));
+    if (ids.length < 2) {
+      return null;
+    }
+    const flat: string[] = [];
+    for (let i = 0; i < ids.length - 1; i += 1) {
+      const path = this.agvRouteService.findRoutePath(ids[i], ids[i + 1]);
+      if (!path || path.length < 2) {
+        continue;
+      }
+      if (flat.length === 0) {
+        flat.push(...path);
+      } else {
+        const join = this.canonicalNodeIdForRouteCompare(path[0]);
+        const tail = this.canonicalNodeIdForRouteCompare(flat[flat.length - 1]);
+        if (join === tail) {
+          flat.push(...path.slice(1));
+        } else {
+          flat.push(...path);
+        }
+      }
+    }
+    return flat.length >= 2 ? flat : null;
+  }
+
+  private firstFlatIndexOnOrderPath(flat: string[], nodeId: string): number {
+    const target = this.canonicalNodeIdForRouteCompare(nodeId);
+    if (!target) {
+      return -1;
+    }
+    for (let i = 0; i < flat.length; i += 1) {
+      if (this.canonicalNodeIdForRouteCompare(flat[i]) === target) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * Road segments already covered when the vehicle has reached {@link lastNodeId} on the order path.
+   */
+  private buildTraveledSegmentsFromFtsOrder(
+    order: unknown,
+    lastNodeId: string | undefined | null
+  ): Array<{ x1: number; y1: number; x2: number; y2: number }> {
+    if (!lastNodeId) {
+      return [];
+    }
+    const flat = this.flattenOrderGraphPath(order);
+    if (!flat) {
+      return [];
+    }
+    const progIdx = this.firstFlatIndexOnOrderPath(flat, lastNodeId);
+    if (progIdx < 0) {
+      return [];
+    }
+    const nodes = (order as { nodes?: Array<{ id?: string }> }).nodes;
+    if (!Array.isArray(nodes) || nodes.length < 2) {
+      return [];
+    }
+    const ids = nodes.map((n) => n?.id).filter((id): id is string => Boolean(id));
+    if (ids.length < 2) {
+      return [];
+    }
+    const out: Array<{ x1: number; y1: number; x2: number; y2: number }> = [];
+    for (let i = 0; i < ids.length - 1; i += 1) {
+      const path = this.agvRouteService.findRoutePath(ids[i], ids[i + 1]);
+      if (!path || path.length < 2) {
+        continue;
+      }
+      for (let k = 0; k < path.length - 1; k += 1) {
+        const endIdx = this.firstFlatIndexOnOrderPath(flat, path[k + 1]);
+        if (endIdx >= 0 && progIdx >= endIdx) {
+          const piece = this.agvRouteService.pathToRouteSegments([path[k], path[k + 1]]);
+          out.push(...piece);
+        }
+      }
+    }
+    return out;
+  }
+
+  private sameAgvRouteLayers(a: AgvRouteOverlayLayers, b: AgvRouteOverlayLayers): boolean {
+    return this.sameStyledSegmentList(a.planned, b.planned) && this.sameStyledSegmentList(a.traveled, b.traveled);
+  }
+
+  private sameStyledSegmentList(
+    a: AgvMapRouteSegment[],
+    b: AgvMapRouteSegment[]
+  ): boolean {
+    if (a.length !== b.length) {
+      return false;
+    }
+    return a.every((item, i) => {
+      const o = b[i];
+      return (
+        o &&
+        item.stroke === o.stroke &&
+        item.strokeDasharray === o.strokeDasharray &&
+        Math.abs(item.x1 - o.x1) < 0.5 &&
+        Math.abs(item.y1 - o.y1) < 0.5 &&
+        Math.abs(item.x2 - o.x2) < 0.5 &&
+        Math.abs(item.y2 - o.y2) < 0.5
+      );
+    });
   }
 
   /**
@@ -874,55 +1016,47 @@ export class AgvTabComponent implements OnInit, OnDestroy {
       shareReplay({ bufferSize: 1, refCount: false })
     );
 
-    this.combinedAgvRouteSegments$ = combineLatest([
+    this.combinedAgvRouteLayers$ = combineLatest([
       this.animationState$,
       this.allAgvOrders$,
       this.allAgvMonitorFtsStates$,
       this.selectedAgvSerial$.pipe(distinctUntilChanged()),
     ]).pipe(
-    map(([anim, orders, monitorStates]) => {
-      const selected = this.selectedAgvSerial$.value;
-      const animSegs = anim?.activeRouteSegments ?? [];
-      const useAnimForSelected = Boolean(anim?.isAnimating && animSegs.length > 0);
-      const out: Array<{ x1: number; y1: number; x2: number; y2: number; stroke?: string }> = [];
+      map(([anim, orders, monitorStates]) => {
+        const selected = this.selectedAgvSerial$.value;
+        const animSegs = anim?.activeRouteSegments ?? [];
+        const useAnimForSelected = Boolean(anim?.isAnimating && animSegs.length > 0);
+        const planned: AgvMapRouteSegment[] = [];
+        const traveled: AgvMapRouteSegment[] = [];
 
-      for (const { serial, order } of orders) {
-        const stroke = this.mappingService.getAgvColor(serial);
-        if (useAnimForSelected && serial === selected) {
-          for (const s of animSegs) {
-            out.push({ ...s, stroke });
+        for (const { serial, order } of orders) {
+          const stroke = this.mappingService.getAgvColor(serial);
+          const ftsState = monitorStates[serial] ?? null;
+          if (!this.shouldShowPlannedRouteOverlay(ftsState, order)) {
+            continue;
           }
-          continue;
+          const fromOrder = this.buildRouteSegmentsFromFtsOrder(order);
+          for (const s of fromOrder) {
+            planned.push({ ...s, stroke, strokeDasharray: AGV_ROUTE_PLANNED_DASH });
+          }
+
+          const useAnimThis = useAnimForSelected && serial === selected;
+          if (useAnimThis) {
+            for (const s of animSegs) {
+              traveled.push({ ...s, stroke, strokeDasharray: 'none' });
+            }
+          } else {
+            const traveledSegs = this.buildTraveledSegmentsFromFtsOrder(order, ftsState?.lastNodeId);
+            for (const s of traveledSegs) {
+              traveled.push({ ...s, stroke, strokeDasharray: 'none' });
+            }
+          }
         }
-        const ftsState = monitorStates[serial] ?? null;
-        if (!this.shouldShowPlannedRouteOverlay(ftsState, order)) {
-          continue;
-        }
-        const fromOrder = this.buildRouteSegmentsFromFtsOrder(order);
-        for (const s of fromOrder) {
-          out.push({ ...s, stroke });
-        }
-      }
-      return out;
-    }),
-    distinctUntilChanged((a, b) => {
-      if (a.length !== b.length) {
-        return false;
-      }
-      return a.every((item, i) => {
-        const o = b[i];
-        return (
-          o &&
-          item.stroke === o.stroke &&
-          Math.abs(item.x1 - o.x1) < 0.5 &&
-          Math.abs(item.y1 - o.y1) < 0.5 &&
-          Math.abs(item.x2 - o.x2) < 0.5 &&
-          Math.abs(item.y2 - o.y2) < 0.5
-        );
-      });
-    }),
-    shareReplay({ bufferSize: 1, refCount: false })
-  );
+        return { planned, traveled };
+      }),
+      distinctUntilChanged((a, b) => this.sameAgvRouteLayers(a, b)),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
 
   // Observable for current position node (for highlighting current position)
   this.currentPositionNode$ = this.ftsState$.pipe(

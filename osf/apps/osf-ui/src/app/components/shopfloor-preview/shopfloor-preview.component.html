@@ -57,6 +57,7 @@
       <ng-container *ngFor="let fixed of vm.fixedPositions">
         <div
           class="preview__fixed"
+          [attr.data-shopfloor-cell-id]="fixed.id"
           [class.preview__element--highlight]="fixed.highlighted && highlightStyle !== 'active-step'"
           [class.preview__element--active-step]="fixed.highlighted && highlightStyle === 'active-step'"
           [class.preview__element--selectable]="selectionEnabled"
@@ -91,6 +92,7 @@
       <ng-container *ngFor="let module of vm.modules">
         <div
           class="preview__module"
+          [attr.data-shopfloor-cell-id]="module.id"
           [class.preview__element--highlight]="module.highlighted && highlightStyle !== 'active-step'"
           [class.preview__element--active-step]="module.highlighted && highlightStyle === 'active-step'"
           [class.preview__element--current-position]="module.isCurrentPosition"
@@ -169,22 +171,59 @@
         <span *ngIf="!node.icon" class="preview__intersection-dot"></span>
       </div>
 
-      <!-- Active route segments (orange - currently driving) -->
+      <!-- FTS / AGV: planned (dashed) under traveled (solid); Order tab: single active route -->
       <svg
-        *ngIf="vm.activeRouteSegments?.length"
+        *ngIf="vm.ftsPlannedRouteSegments?.length || vm.ftsTraveledRouteSegments?.length || vm.activeRouteSegments?.length"
         class="preview__route-overlay preview__route-overlay--active"
         [attr.width]="vm.width"
         [attr.height]="vm.height"
       >
-        <line
-          *ngFor="let segment of vm.activeRouteSegments"
-          [attr.x1]="segment.x1"
-          [attr.y1]="segment.y1"
-          [attr.x2]="segment.x2"
-          [attr.y2]="segment.y2"
-          [style.stroke]="segment.stroke ?? defaultFtsRouteStroke"
-          [style.stroke-width.px]="8"
-        />
+        <g
+          *ngIf="vm.ftsPlannedRouteSegments?.length"
+          class="preview__route-overlay__planned"
+          [attr.opacity]="ftsPlannedRouteGroupOpacity"
+        >
+          <line
+            *ngFor="let segment of vm.ftsPlannedRouteSegments"
+            [attr.x1]="segment.x1"
+            [attr.y1]="segment.y1"
+            [attr.x2]="segment.x2"
+            [attr.y2]="segment.y2"
+            [style.stroke]="segment.stroke ?? defaultFtsRouteStroke"
+            [style.stroke-width.px]="ftsRouteStrokeWidthPx"
+            stroke-linecap="round"
+            [attr.stroke-dasharray]="segment.strokeDasharray ?? '3 14'"
+          />
+        </g>
+        <g *ngIf="vm.ftsTraveledRouteSegments?.length" class="preview__route-overlay__traveled">
+          <line
+            *ngFor="let segment of vm.ftsTraveledRouteSegments"
+            [attr.x1]="segment.x1"
+            [attr.y1]="segment.y1"
+            [attr.x2]="segment.x2"
+            [attr.y2]="segment.y2"
+            [style.stroke]="segment.stroke ?? defaultFtsRouteStroke"
+            [style.stroke-width.px]="ftsRouteStrokeWidthPx"
+            stroke-linecap="round"
+            [attr.stroke-dasharray]="segment.strokeDasharray ?? 'none'"
+          />
+        </g>
+        <g
+          *ngIf="!vm.ftsPlannedRouteSegments?.length && !vm.ftsTraveledRouteSegments?.length && vm.activeRouteSegments?.length"
+          class="preview__route-overlay__order-step"
+        >
+          <line
+            *ngFor="let segment of vm.activeRouteSegments"
+            [attr.x1]="segment.x1"
+            [attr.y1]="segment.y1"
+            [attr.x2]="segment.x2"
+            [attr.y2]="segment.y2"
+            [style.stroke]="segment.stroke ?? defaultFtsRouteStroke"
+            [style.stroke-width.px]="ftsRouteStrokeWidthPx"
+            stroke-linecap="round"
+            [attr.stroke-dasharray]="segment.strokeDasharray ?? 'none'"
+          />
+        </g>
       </svg>
 
       <!-- FTS overlay layer: guaranteed above modules/intersections (z-index regression fix) -->

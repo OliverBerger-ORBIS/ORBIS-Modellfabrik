@@ -178,6 +178,30 @@
     gap: 0.35rem;
   }
 
+  .legend__route-swatch {
+    width: 22px;
+    flex-shrink: 0;
+    border-radius: 1px;
+    display: inline-block;
+    box-sizing: border-box;
+
+    &--planned {
+      height: 3px;
+      opacity: 0.45;
+      /* ~3px dash + 14px gap (matches AGV_ROUTE_PLANNED_DASH layout units) */
+      background: repeating-linear-gradient(
+        90deg,
+        #f97316 0 3px,
+        transparent 3px 17px
+      );
+    }
+
+    &--traveled {
+      height: 0;
+      border-top: 3px solid #f97316;
+    }
+  }
+
   .legend__dot {
     width: 14px;
     height: 14px;

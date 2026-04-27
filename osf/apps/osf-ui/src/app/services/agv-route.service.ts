@@ -221,13 +221,20 @@ export class AgvRouteService {
    * Resolve node id to the visual AGV marker center.
    *
    * - For intersections: returns the intersection center.
-   * - For station/modules: returns a point on the module edge, shifted by half the marker size towards the
-   *   (single) connected intersection so the marker overlaps 50/50 between both cells.
+   * - For station/modules: returns the point where the ray from module center toward the (single) connected
+   *   intersection meets the **module cell boundary** — i.e. the shared border between module and path cell,
+   *   so the marker SVG center sits on that edge (not shifted into the intersection).
    *
    * Coordinates are in the same **unrotated layout space** as roads/node positions. `ShopfloorPreviewComponent`
    * applies shopfloor rotation (and padding) to FTS overlays — do not pre-rotate here.
+   *
+   * @param markerSizePx reserved for API compatibility; module placement uses the cell border only.
    */
-  getAgvMarkerCenter(nodeId: string, markerSizePx: number = AgvRouteService.DEFAULT_AGV_MARKER_SIZE_PX): ShopfloorPoint | null {
+  getAgvMarkerCenter(
+    nodeId: string,
+    markerSizePx: number = AgvRouteService.DEFAULT_AGV_MARKER_SIZE_PX
+  ): ShopfloorPoint | null {
+    void markerSizePx;
     const resolvedId = this.resolveNodeRef(nodeId) ?? nodeId;
     const center = this.getNodePosition(resolvedId);
     if (!center) {
@@ -259,16 +266,7 @@ export class AgvRouteService {
       return { ...center };
     }
 
-    const dx = otherCenter.x - center.x;
-    const dy = otherCenter.y - center.y;
-    const len = Math.hypot(dx, dy);
-    if (len === 0) {
-      return { ...edge };
-    }
-    const ux = dx / len;
-    const uy = dy / len;
-    const offset = markerSizePx / 2;
-    return { x: edge.x + ux * offset, y: edge.y + uy * offset };
+    return { x: edge.x, y: edge.y };
   }
 
   private findRoadConnectedToModule(moduleRef: string): ParsedRoad | null {

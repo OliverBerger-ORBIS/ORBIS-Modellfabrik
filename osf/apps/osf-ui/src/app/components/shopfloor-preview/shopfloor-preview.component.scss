@@ -67,9 +67,9 @@
   line {
     stroke-linecap: round;
     stroke-linejoin: round;
-    stroke-dasharray: none;
-    // stroke / stroke-width: set per line in template (multi-AGV AGV tab uses segment.stroke)
+    // stroke-dasharray: per-line via template (planned dashed, traveled solid)
   }
+
 }
 
 // FTS overlay layer: AGV icons above modules (z-index); route lines stay in .preview__route-overlay below

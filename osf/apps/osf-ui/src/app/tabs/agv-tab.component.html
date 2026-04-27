@@ -14,12 +14,12 @@
                 <span i18n="@@ftsLegendAgv2">AGV-2</span>
               </span>
               <span class="legend__item">
-                <span class="legend__dot legend__dot--route-agv1"></span>
-                <span i18n="@@ftsLegendRouteAgv1">Route (AGV-1)</span>
+                <span class="legend__route-swatch legend__route-swatch--planned" aria-hidden="true"></span>
+                <span i18n="@@ftsLegendPlannedRoute">Planned route (dashed, AGV color)</span>
               </span>
               <span class="legend__item">
-                <span class="legend__dot legend__dot--route-agv2"></span>
-                <span i18n="@@ftsLegendRouteAgv2">Route (AGV-2)</span>
+                <span class="legend__route-swatch legend__route-swatch--traveled" aria-hidden="true"></span>
+                <span i18n="@@ftsLegendTraveledRoute">Traveled route (solid, AGV color)</span>
               </span>
               <span class="legend__item">
                 <span class="legend__dot legend__dot--motion"></span>
@@ -31,22 +31,25 @@
               </span>
             </div>
             <div class="shopfloor-wrapper">
-              <app-shopfloor-preview
-                [order]="null"
-                scaleStorageScope="presentation"
-                [scale]="0.9"
-                [badgeText]="badgeTextVehiclePosition"
-                [infoText]="getLocationName((ftsState$ | async)?.lastNodeId || '')"
-                [highlightModulesOverride]="null"
-                [highlightFixedOverride]="null"
-                [currentPositionModulesOverride]="currentPositionNode$ | async"
-                [selectionEnabled]="false"
-                [showBaseRoads]="true"
-                [showZoomControls]="true"
-                [ftsPositions]="ftsPositions$ | async"
-                [ftsRouteSegments]="combinedAgvRouteSegments$ | async"
-                (viewportChanged)="onShopfloorViewportChanged($event)"
-              ></app-shopfloor-preview>
+              <ng-container *ngIf="combinedAgvRouteLayers$ | async as routeLayers">
+                <app-shopfloor-preview
+                  [order]="null"
+                  scaleStorageScope="presentation"
+                  [scale]="0.9"
+                  [badgeText]="badgeTextVehiclePosition"
+                  [infoText]="getLocationName((ftsState$ | async)?.lastNodeId || '')"
+                  [highlightModulesOverride]="null"
+                  [highlightFixedOverride]="null"
+                  [currentPositionModulesOverride]="currentPositionNode$ | async"
+                  [selectionEnabled]="false"
+                  [showBaseRoads]="true"
+                  [showZoomControls]="true"
+                  [ftsPositions]="ftsPositions$ | async"
+                  [ftsRoutePlannedSegments]="routeLayers.planned"
+                  [ftsRouteTraveledSegments]="routeLayers.traveled"
+                  (viewportChanged)="onShopfloorViewportChanged($event)"
+                ></app-shopfloor-preview>
+              </ng-container>
             </div>
           </section>
         </div>
@@ -238,12 +241,12 @@
 
           <div class="fts-legend">
             <span class="legend__item">
-              <span class="legend__dot legend__dot--route-agv1"></span>
-              <span i18n="@@ftsLegendRouteAgv1">Route (AGV-1)</span>
+              <span class="legend__route-swatch legend__route-swatch--planned" aria-hidden="true"></span>
+              <span i18n="@@ftsLegendPlannedRoute">Planned route (dashed, AGV color)</span>
             </span>
             <span class="legend__item">
-              <span class="legend__dot legend__dot--route-agv2"></span>
-              <span i18n="@@ftsLegendRouteAgv2">Route (AGV-2)</span>
+              <span class="legend__route-swatch legend__route-swatch--traveled" aria-hidden="true"></span>
+              <span i18n="@@ftsLegendTraveledRoute">Traveled route (solid, AGV color)</span>
             </span>
             <span class="legend__item">
               <span class="legend__dot legend__dot--motion"></span>
@@ -254,24 +257,27 @@
               <span i18n="@@ftsLegendCurrentPosition">Current Position</span>
             </span>
           </div>
-          
+
           <div class="shopfloor-wrapper">
-            <app-shopfloor-preview
-              [order]="null"
-              scaleStorageScope="agv"
-              [scale]="0.8"
-              [badgeText]="badgeTextVehiclePosition"
-              [infoText]="getLocationName(ftsState.lastNodeId)"
-              [highlightModulesOverride]="null"
-              [highlightFixedOverride]="null"
-              [currentPositionModulesOverride]="currentPositionNode$ | async"
-              [selectionEnabled]="false"
-              [showBaseRoads]="true"
-              [showZoomControls]="true"
-              [ftsPositions]="ftsPositions$ | async"
-              [ftsRouteSegments]="combinedAgvRouteSegments$ | async"
-              (viewportChanged)="onShopfloorViewportChanged($event)"
-            ></app-shopfloor-preview>
+            <ng-container *ngIf="combinedAgvRouteLayers$ | async as routeLayers">
+              <app-shopfloor-preview
+                [order]="null"
+                scaleStorageScope="agv"
+                [scale]="0.8"
+                [badgeText]="badgeTextVehiclePosition"
+                [infoText]="getLocationName(ftsState.lastNodeId)"
+                [highlightModulesOverride]="null"
+                [highlightFixedOverride]="null"
+                [currentPositionModulesOverride]="currentPositionNode$ | async"
+                [selectionEnabled]="false"
+                [showBaseRoads]="true"
+                [showZoomControls]="true"
+                [ftsPositions]="ftsPositions$ | async"
+                [ftsRoutePlannedSegments]="routeLayers.planned"
+                [ftsRouteTraveledSegments]="routeLayers.traveled"
+                (viewportChanged)="onShopfloorViewportChanged($event)"
+              ></app-shopfloor-preview>
+            </ng-container>
           </div>
 
           <!-- Route Status Info -->

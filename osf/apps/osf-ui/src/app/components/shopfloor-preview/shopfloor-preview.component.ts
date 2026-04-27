@@ -3,7 +3,9 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   EventEmitter,
+  inject,
   Input,
   OnChanges,
   OnDestroy,
@@ -108,6 +110,8 @@ interface RouteSegment {
   y2: number;
   /** When set, overrides default orange route stroke (multi-AGV AGV tab). */
   stroke?: string;
+  /** SVG stroke-dasharray in layout px (same coords as x/y), e.g. planned `3 14`, traveled `none`. */
+  strokeDasharray?: string;
 }
 
 export interface FtsPositionItem {
@@ -145,6 +149,10 @@ interface ShopfloorView {
   intersections: RenderIntersection[];
   roads: RenderRoad[];
   activeRouteSegments?: RouteSegment[];
+  /** AGV tab: full planned path (dashed), drawn under {@link ftsTraveledRouteSegments}. */
+  ftsPlannedRouteSegments?: RouteSegment[];
+  /** AGV tab: completed / driven path (solid), on top of planned. */
+  ftsTraveledRouteSegments?: RouteSegment[];
   routeEndpoints?: ShopfloorPoint[];
   routeOverlay?: RouteOverlay;
   ftsOverlays: RouteOverlay[]; // FTS position overlays (one per AGV, with colors)
@@ -164,6 +172,7 @@ interface RouteGraphEdge {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
+  private readonly hostEl = inject(ElementRef<HTMLElement>);
   private static readonly LEGACY_ORDER_KEY = 'shopfloor-preview-scale';
   private static readonly LEGACY_CONFIG_KEY = 'shopfloor-config-scale';
   private static readonly SCOPED_KEY_PREFIX = 'OSF.shopfloorScale.';
@@ -185,10 +194,15 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
   @Input() showBaseRoads = true;
   @Input() showZoomControls = false;
   @Input() moduleStatusMap: Map<string, ModuleStatus> | null = null; // Module status data for overlays
+  /** Shopfloor tab: scroll layout so the first BUSY station stays in view when it changes */
+  @Input() followActiveStation = false;
   @Input() ftsPosition: { x: number; y: number } | null = null; // Single FTS position (backward compat)
   @Input() ftsPositions: FtsPositionItem[] | null = null; // Multiple AGVs with positions and colors
   @Input() showFtsOverlay = true; // If false, hide FTS overlays (e.g. Shopfloor-Tab layout)
-  @Input() ftsRouteSegments: RouteSegment[] | null = null; // FTS route segments for display (when driving - orange)
+  /** AGV tab: planned route (typically dashed); use with {@link ftsRouteTraveledSegments}. */
+  @Input() ftsRoutePlannedSegments: RouteSegment[] | null = null;
+  /** AGV tab: traveled / active driven segments (typically solid). */
+  @Input() ftsRouteTraveledSegments: RouteSegment[] | null = null;
   /** 'active-step' = green highlight for Order-Tab (matches FTS); 'selection' = blue for Configuration/Shopfloor */
   @Input() highlightStyle: 'selection' | 'active-step' = 'selection';
   @Output() cellSelected = new EventEmitter<{ id: string; kind: 'module' | 'fixed' }>();
@@ -202,6 +216,10 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
   readonly scaleStep = 0.1;
   /** Default route stroke when segment.stroke is not set (Order tab, single-AGV). */
   readonly defaultFtsRouteStroke = 'rgba(249, 115, 22, 0.95)';
+  /** Route overlay stroke width (AGV + Order tab shopfloor route lines). */
+  readonly ftsRouteStrokeWidthPx = 6;
+  /** Opacity for planned-route group (SVG `<g opacity>` — applies reliably vs. CSS stroke-opacity). */
+  readonly ftsPlannedRouteGroupOpacity = 0.45;
 
   private layoutConfig?: ShopfloorLayoutConfig;
   private parsedRoads: ParsedRoad[] = [];
@@ -212,6 +230,8 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
   private iconSizing = new Map<string, number>();
   private rotation: ShopfloorRotation = 'none';
   private readonly subscriptions = new Subscription();
+
+  private lastFollowScrollSerial: string | null = null;
 
   constructor(
     private readonly http: HttpClient,
@@ -279,9 +299,28 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
         this.currentScale = this.scale;
       }
     }
-    if (changes['activeStep'] || changes['order'] || changes['highlightModulesOverride'] || changes['highlightFixedOverride'] || changes['currentPositionModulesOverride'] || changes['moduleStatusMap'] || changes['ftsPosition'] || changes['ftsPositions'] || changes['showFtsOverlay'] || changes['ftsRouteSegments']) {
+    if (
+      changes['activeStep'] ||
+      changes['order'] ||
+      changes['highlightModulesOverride'] ||
+      changes['highlightFixedOverride'] ||
+      changes['currentPositionModulesOverride'] ||
+      changes['moduleStatusMap'] ||
+      changes['ftsPosition'] ||
+      changes['ftsPositions'] ||
+      changes['showFtsOverlay'] ||
+      changes['ftsRoutePlannedSegments'] ||
+      changes['ftsRouteTraveledSegments']
+    ) {
       this.updateViewModel();
       this.emitViewport();
+    }
+
+    if (changes['followActiveStation']) {
+      this.lastFollowScrollSerial = null;
+      if (this.followActiveStation) {
+        this.scheduleFollowActiveStationScroll();
+      }
     }
   }
 
@@ -646,24 +685,29 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
       : [];
 
     const route = this.computeActiveRoute();
-    
-    // Use FTS route segments if provided (for FTS tab), otherwise use order route
-    // Offset route segments and endpoints by padding to match module positions
-    const activeRouteSegments = this.ftsRouteSegments 
-      ? this.ftsRouteSegments.map(seg => ({
-          ...seg,
-          x1: seg.x1 + PADDING,
-          y1: seg.y1 + PADDING,
-          x2: seg.x2 + PADDING,
-          y2: seg.y2 + PADDING,
-        }))
-      : route?.segments.map(seg => ({
-          ...seg,
-          x1: seg.x1 + PADDING,
-          y1: seg.y1 + PADDING,
-          x2: seg.x2 + PADDING,
-          y2: seg.y2 + PADDING,
-        }));
+
+    const padSeg = (seg: RouteSegment) => ({
+      ...seg,
+      x1: seg.x1 + PADDING,
+      y1: seg.y1 + PADDING,
+      x2: seg.x2 + PADDING,
+      y2: seg.y2 + PADDING,
+    });
+
+    const hasFtsRouteLayers =
+      (this.ftsRoutePlannedSegments?.length ?? 0) > 0 || (this.ftsRouteTraveledSegments?.length ?? 0) > 0;
+
+    const ftsPlannedRouteSegments = hasFtsRouteLayers
+      ? (this.ftsRoutePlannedSegments ?? []).map(padSeg)
+      : undefined;
+    const ftsTraveledRouteSegments = hasFtsRouteLayers
+      ? (this.ftsRouteTraveledSegments ?? []).map(padSeg)
+      : undefined;
+
+    // AGV tab: dual FTS layers; Order tab: single route from active production step
+    const activeRouteSegments = hasFtsRouteLayers
+      ? undefined
+      : route?.segments.map(padSeg);
     
     // Offset route endpoints and overlay by padding
     const routeEndpoints = route?.endpoints.map(ep => ({
@@ -729,12 +773,67 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
       intersections,
       roads,
       activeRouteSegments,
+      ftsPlannedRouteSegments,
+      ftsTraveledRouteSegments,
       routeEndpoints,
       routeOverlay,
       ftsOverlays,
     };
 
     this.viewModel = this.applyRotation(unrotated, this.rotation);
+    this.scheduleFollowActiveStationScroll();
+  }
+
+  private scheduleFollowActiveStationScroll(): void {
+    if (!this.followActiveStation) {
+      return;
+    }
+    queueMicrotask(() => {
+      requestAnimationFrame(() => this.performFollowActiveStationScroll());
+    });
+  }
+
+  /**
+   * First matching cell in layout order (modules, then fixed) whose status map entry is BUSY.
+   */
+  private pickFirstBusyStationSerial(vm: ShopfloorView): string | null {
+    const map = this.moduleStatusMap;
+    if (!map?.size) {
+      return null;
+    }
+    const isBusy = (id: string) => map.get(id)?.availability === 'BUSY';
+    for (const m of vm.modules) {
+      if (isBusy(m.id)) {
+        return m.id;
+      }
+    }
+    for (const f of vm.fixedPositions) {
+      if (isBusy(f.id)) {
+        return f.id;
+      }
+    }
+    return null;
+  }
+
+  private performFollowActiveStationScroll(): void {
+    if (!this.followActiveStation || !this.viewModel) {
+      return;
+    }
+    const serial = this.pickFirstBusyStationSerial(this.viewModel);
+    if (!serial) {
+      this.lastFollowScrollSerial = null;
+      return;
+    }
+    if (serial === this.lastFollowScrollSerial) {
+      return;
+    }
+    const root = this.hostEl.nativeElement;
+    const escaped = typeof CSS !== 'undefined' && typeof CSS.escape === 'function' ? CSS.escape(serial) : serial.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    const el = root.querySelector(`[data-shopfloor-cell-id="${escaped}"]`);
+    if (el instanceof HTMLElement) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+      this.lastFollowScrollSerial = serial;
+    }
   }
 
   private applyRotation(view: ShopfloorView, rotation: ShopfloorRotation): ShopfloorView {
@@ -829,6 +928,18 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
       return { ...seg, x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y };
     });
 
+    const ftsPlannedRouteSegments = view.ftsPlannedRouteSegments?.map((seg) => {
+      const p1 = rotatePoint({ x: seg.x1, y: seg.y1 });
+      const p2 = rotatePoint({ x: seg.x2, y: seg.y2 });
+      return { ...seg, x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y };
+    });
+
+    const ftsTraveledRouteSegments = view.ftsTraveledRouteSegments?.map((seg) => {
+      const p1 = rotatePoint({ x: seg.x1, y: seg.y1 });
+      const p2 = rotatePoint({ x: seg.x2, y: seg.y2 });
+      return { ...seg, x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y };
+    });
+
     const routeEndpoints = view.routeEndpoints?.map(rotatePoint);
 
     const rotateOverlay = (o: RouteOverlay): RouteOverlay => {
@@ -856,6 +967,8 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
       intersections,
       roads,
       activeRouteSegments,
+      ftsPlannedRouteSegments,
+      ftsTraveledRouteSegments,
       routeEndpoints,
       routeOverlay,
       ftsOverlays,

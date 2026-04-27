@@ -213,7 +213,7 @@ describe('AgvTabComponent', () => {
     expect(component.ftsOrder$).toBeDefined();
     expect(component.ftsPosition$).toBeDefined();
     expect(component.activeRouteSegments$).toBeDefined();
-    expect(component.combinedAgvRouteSegments$).toBeDefined();
+    expect(component.combinedAgvRouteLayers$).toBeDefined();
     expect(component.currentPositionNode$).toBeDefined();
     expect(component.animationState$).toBeDefined();
   });

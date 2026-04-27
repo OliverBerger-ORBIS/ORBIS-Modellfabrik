@@ -188,13 +188,12 @@ describe('AgvRouteService', () => {
       expect(pos).toEqual({ x: 220, y: 120 });
     });
 
-    it('should place module marker on edge towards connected intersection', () => {
+    it('should place module marker center on module boundary toward connected intersection', () => {
       const pos = service.getAgvMarkerCenter('SVR3QA0022', 62);
       expect(pos).toBeDefined();
-      // Computed: module center (140,140) -> intersection (220,120)
-      // Edge hit near (180,130), then +31px towards intersection ≈ (210.1, 122.5)
-      expect(pos!.x).toBeCloseTo(210.1, 0);
-      expect(pos!.y).toBeCloseTo(122.5, 0);
+      // Module center (140,140) → intersection (220,120): boundary point on HBW cell (east edge ≈ x=180)
+      expect(pos!.x).toBeCloseTo(180, 5);
+      expect(pos!.y).toBeCloseTo(130, 5);
     });
   });
 
