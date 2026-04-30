@@ -1,6 +1,6 @@
 # ORBIS SmartFactory – Projektstatus
 
-**Letzte Aktualisierung:** 2026-04-17
+**Letzte Aktualisierung:** 2026-04-30
 
 > **Workflow:** Die Sprint-Tabelle wird bei jedem Sprint-Abschluss aktualisiert (neue Zeile, Events).  
 > Details: [sprints_README.md – Dokumenten-Workflow](sprints/sprints_README.md#-dokumenten-workflow-aktualität-sicherstellen)
@@ -9,13 +9,13 @@
 - OSF (vormals OMF3) produktionsreif für Kunden-Demos; **LogiMAT 2026 durchgeführt** (Demo mit zwei AGVs erfolgreich).
 - **Messe-WLAN:** Nur **2,4 GHz** am Stand → **bekanntes Risiko** für Instabilität; angesichts der **ortsbedingten Einschränkung** keine zuverlässige technische „Lösung“ zu erwarten — **Lessons Learned** für weitere Events (Erwartungsmanagement). Siehe [sprint_18.md – Messe-Ergebnis](sprints/sprint_18.md).
 - OMF2 als Legacy eingefroren.
-- Aktuelle Entwicklung: **Phase 5** — **Sprint 20** (Hannover Messe, Customer Connect, OSF-UI Demo-Readiness, Sensor-Station UX, Bugfixes; Release-Ziel **v1.1.x**).
+- Aktuelle Entwicklung: **Phase 5** — **Sprint 21** (OCC-Feedback: Functional View/Animation/UX-Flows; Track&Trace Korrelation; offene Sprint-20 Punkte).
 - **ORBIS-SmartFactory** ab Sprint 13 (Genehmigung ausstehend, Arbeit wird fortgeführt).
 
 ## 🔥 Aktuelle Schwerpunkte
-- **Sprint 20:** **Hannover Messe** (Kamera/OBS/Konftel, Rotation-Setup, Präsentations-Stabilität) + **Customer Connect (München)**. OSF-UI: DSP-Architecture Erweiterung (Bp-Planning), Refresh/Stock, Scrollbar/Overflow-Fixes, Sensor-Station Schwellenwerte. Details: [sprint_20.md](sprints/sprint_20.md).
+- **Sprint 21:** OCC-Feedback umsetzen (Functional View Default OCC inkl. CRM, Animation, UX-Flows Process→Order→Shopfloor) und Track&Trace Korrelation/Qualität. Details: [sprint_21.md](sprints/sprint_21.md).
 - **02.04.2026:** ORBIS-internes **Vertriebsmeeting** — **OSF-Präsentation** für Vertrieb durchgeführt (Start Sprint 19).
-- Nächster großer Außenauftritt v. a. **Hannover Messe** (siehe Roadmap).
+- Letzter großer Außenauftritt: **Hannover Messe** + **ORBIS Customer-Connect** (siehe Roadmap).
 - **Phase 5 – MES/DSP-Integration:** ORBIS MES und DSP übernehmen zunehmend die Steuerung (QM-Check, Order-Entscheidungen). APS-CCU als Interim-Layer; Modifikationen: [integrations/APS-CCU/OSF-MODIFICATIONS.md](../integrations/APS-CCU/OSF-MODIFICATIONS.md).
 - MES-Integration: Prozessanpassungen (z.B. "2-mal Bohren").
 - Azure DevOps Migration.
@@ -26,7 +26,8 @@
 
 | Sprint | Zeitraum | Ereignis / Fokus | Status |
 |--------|----------|------------------|--------|
-| **20** | **16.04.26 - 30.04.26** | Hannover Messe + Customer Connect; OSF-UI Demo-Readiness (v1.1.x) ([sprint_20](sprints/sprint_20.md)) | **Laufend** |
+| **21** | **01.05.26 - 15.05.26** | OCC-Feedback & Stabilisierung; Functional View Default OCC; Track&Trace Korrelation ([sprint_21](sprints/sprint_21.md)) | **Laufend** |
+| **20** | **16.04.26 - 30.04.26** | Hannover Messe + Customer Connect; OSF-UI Demo-Readiness (v1.1.x) ([sprint_20](sprints/sprint_20.md)) | **Abgeschlossen** |
 | **19** | **02.04.26 - 17.04.26** | Sensor-Station, Backend/Grafana, Blog, Hannover-Vorb. ([sprint_19](sprints/sprint_19.md)) | **Abgeschlossen** |
 | **18** | **19.03.26 - 01.04.26** | **LogiMAT** (Demo **erfolgreich**, 2 AGVs); WLAN **2,4 GHz** Risiko; **Vertrieb** OSF **02.04.** ([sprint_18](sprints/sprint_18.md)) | **Abgeschlossen** |
 | 17 | 05.03.26 - 18.03.26 | MES/Integration & LogiMAT Vorbereitung | Abgeschlossen |
@@ -56,7 +57,8 @@
 | 17 | 05.03 - 18.03.2026 | ORBIS-SmartFactory | Phase 5 | LogiMAT Vorbereitung |
 | 18 | 19.03 - 01.04.2026 | ORBIS-SmartFactory | Phase 5 | LogiMAT Durchführung (Demo OK, 2 AGVs; Messe-WLAN 2,4 GHz); Vertrieb OSF 02.04. |
 | 19 | 02.04 - 17.04.2026 | ORBIS-SmartFactory | Phase 5 | Hannover Messe Vorb.; Sensor-Station / Backend / Blog |
-| 20 | 16.04 - 29.04.2026 | ORBIS-SmartFactory | Phase 5 | Hannover Messe (20–24.04.); Customer Connect (29–30.04.) |
+| 20 | 16.04 - 30.04.2026 | ORBIS-SmartFactory | Phase 5 | Hannover Messe (20–24.04.); Customer Connect (29–30.04.) |
+| 21 | 01.05 - 15.05.2026 | ORBIS-SmartFactory | Phase 5 | OCC Follow-ups (Functional View Default OCC, UX-Flows, Track&Trace Korrelation) |
 
 > **Spalten-Erläuterung:**  
 > - **ORBIS-Projekt:** Interne Projektzuordnung für Abrechnung (ORBIS-Modellfabrik bzw. ORBIS-SmartFactory).  
@@ -74,7 +76,7 @@
 
 ## 📚 Weitere Dokumentation
 - [Roadmap & Entwicklungsphasen](01-strategy/roadmap.md)
-- [Sprint-Dokumentation](sprints/) – [sprint_20.md](sprints/sprint_20.md) (aktuell)
+- [Sprint-Dokumentation](sprints/) – [sprint_21.md](sprints/sprint_21.md) (aktuell)
 - [Decision Records](03-decision-records/)
 - [Architektur](02-architecture/)
 - [HowTos & Guides](04-howto/)
