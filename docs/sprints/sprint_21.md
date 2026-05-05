@@ -18,8 +18,8 @@
 
 ### OCC Feedback – Verbesserungen
 
-- [ ] **Functional View (Default OCC):** Business-Process Lane Reihenfolge anpassen: **ERP → MES → EWM → CRM → Analytical → Data-Lake** (CRM ersetzt Planning)
-- [ ] **Functional View (Default OCC):** neuen Customer „OCC“ / Default-Konfiguration anlegen (neue Lane-Reihenfolge + Links/Defaults)
+- [x] **Functional View (Default OCC):** Business-Process Lane Reihenfolge anpassen: **ERP → MES → EWM → CRM → Analytical → Data-Lake** (CRM ersetzt Planning) — umgesetzt in `OSF_OCC_2026_CONFIG.bpProcesses` (05.05.2026)
+- [x] **Functional View (Default OCC):** neuen Customer „OCC“ / Default-Konfiguration anlegen (neue Lane-Reihenfolge + Links/Defaults) — `OSF_CONFIG` zeigt jetzt auf OCC-Default (Evolution FMF→LogiMAT→Hannover/CC→OCC bleibt verfügbar) (05.05.2026)
 - [ ] **Functional View Animation:** 7 Functional DSP Icons wieder einzeln einbauen (LogiMAT-ähnliche Variante als Default für OCC)
 - [ ] **Functional View Animation:** Interoperability SVG/Icon in Animation deutlich größer darstellen; ggf. zentral positionieren und DSP-Edge-Icon überdecken
 - [ ] **Use-Case „Anomaly Detection“:** CRM Integration (Vibration löst Alarm aus → DSP-Edge sendet an MS-CRM → CRM „Prozess gestartet“/Techniker-Einsatz)

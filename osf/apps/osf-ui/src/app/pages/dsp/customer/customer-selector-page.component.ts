@@ -198,8 +198,12 @@ export class CustomerSelectorPageComponent {
    */
   readonly availableCustomers: CustomerOption[] = [
     {
-      config: OSF_CONFIG,
-      route: '/dsp/customer/osf',
+      config: FMF_CONFIG,
+      route: '/dsp/customer/fmf',
+    },
+    {
+      config: LOGIMAT_CONFIG,
+      route: '/dsp/customer/logimat',
     },
     {
       config: OSF_HANNOVER_2026_CONFIG,
@@ -210,16 +214,12 @@ export class CustomerSelectorPageComponent {
       route: '/dsp/customer/osf-customer-connect-2026',
     },
     {
-      config: FMF_CONFIG,
-      route: '/dsp/customer/fmf',
+      config: OSF_CONFIG,
+      route: '/dsp/customer/osf',
     },
     {
       config: ECME_CONFIG,
       route: '/dsp/customer/ecme',
-    },
-    {
-      config: LOGIMAT_CONFIG,
-      route: '/dsp/customer/logimat',
     },
   ];
 

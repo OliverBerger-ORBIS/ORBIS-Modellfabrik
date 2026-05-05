@@ -34,6 +34,26 @@ Die DSP-Animation ist in drei horizontale Layer unterteilt:
 
 ## Business Process Layer (`layer-bp`)
 
+### OCC Default Lane (kanonisch)
+
+Der aktuelle OSF-Default (OCC) verwendet im Business-Process-Layer die Reihenfolge:
+
+1. `bp-erp` (SAP)
+2. `bp-mes` (ORBIS MES, ggf. mit SAP-Backend-Kontext)
+3. `bp-ewm` (SAP EWM)
+4. `bp-crm` (Microsoft CRM)
+5. `bp-analytics` (Grafana)
+6. `bp-data-lake` (AWS)
+
+**Wichtig:** `bp-planning` und `bp-cloud` bleiben als historische/optionale Bausteine verfügbar, sind aber nicht Teil des OCC-Defaults.
+
+### Evolution (für Nachvollziehbarkeit)
+
+- FMF (historischer Ausgangspunkt)
+- LogiMAT (Messe-Variante mit EWM-Cluster)
+- Hannover / Customer-Connect (Event-Varianten)
+- OCC (dauerhafter Default als End-to-End Integrationsmetapher mit AI-Unterstützung)
+
 ### Functional View - Vollständige Architektur
 
 Das folgende Diagramm zeigt die komplette Functional View mit allen Layern, Containern und Connections:
@@ -54,11 +74,12 @@ Die folgenden Business Process Applications sind verfügbar:
 |--------------|-------|----------|-----------|------------|
 | `bp-erp` | ERP Applications | `erp-application` | `erp-application.svg` | `logo-sap` (top-right) |
 | `bp-mes` | MES Applications | `mes-application` | `mes-application.svg` | `logo-orbis` (top-left) |
+| `bp-ewm` | EWM Application | `ewm-application` | `ewm-application.svg` | `logo-sap` |
 | `bp-cloud` | Cloud Applications | `bp-cloud-apps` | `cloud-application.svg` | `aws-logo`, `google-cloud-logo` (multiple) |
 | `bp-analytics` | Analytics Applications | `bp-analytics` | `analytics-application.svg` | `logo-grafana` (top-right) |
 | `bp-data-lake` | Data Lake | `bp-data-lake` | `data-lake-application.svg` | `aws-logo` (optional) |
 | `bp-scm` | SCM Applications | `scm-application` | `scm-application.svg` | - |
-| `bp-crm` | CRM Applications | `crm-application` | `crm-application.svg` | - |
+| `bp-crm` | CRM Applications | `crm-application` | `crm-application.svg` | `logo-microsoft` |
 | `bp-planning` | Planning Application | `planning-application` | `planning-application.svg` | `logo-orbis` (top-left) |
 
 **Verfügbare Business Process Application Icons:**
@@ -128,7 +149,7 @@ Alle Business Process Container haben Connections zum DSP Edge. Die Connection-I
   - **Bidirectional:** Ja
   - **Arrow:** Ja
 
-**Weitere Business Process Connections:** `conn_bp-mes_dsp-edge`, `conn_bp-cloud_dsp-edge`, `conn_bp-analytics_dsp-edge`, `conn_bp-data-lake_dsp-edge` (alle mit identischen Eigenschaften)
+**Weitere Business Process Connections (beispielhaft):** `conn_bp-mes_dsp-edge`, `conn_bp-ewm_dsp-edge`, `conn_bp-crm_dsp-edge`, `conn_bp-analytics_dsp-edge`, `conn_bp-data-lake_dsp-edge` (alle mit identischen Eigenschaften)
 
 ---
 

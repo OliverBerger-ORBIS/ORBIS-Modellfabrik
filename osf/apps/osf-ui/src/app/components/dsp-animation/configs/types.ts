@@ -21,7 +21,7 @@ export type GenericIconKey =
   | 'scada-system' | 'industrial-process-system' | 'cargo-system' | 'pump-system'
   | 'any-system' | 'agv-system' | 'sensor-station-system'
   // Brands
-  | 'sap' | 'alpha-x' | 'aws' | 'azure' | 'powerbi' | 'grafana';
+  | 'sap' | 'alpha-x' | 'aws' | 'azure' | 'powerbi' | 'grafana' | 'microsoft';
 
 /**
  * Mapping configuration for a shopfloor device

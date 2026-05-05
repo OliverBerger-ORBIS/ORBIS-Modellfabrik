@@ -8,6 +8,7 @@ export type IconKey =
   | 'logo-orbis'
   | 'logo-sap'
   | 'logo-azure'
+  | 'logo-microsoft'
   | 'logo-dsp'
   | 'logo-grafana'
   | 'logo-distributed'
@@ -75,6 +76,7 @@ export type IconKey =
   | 'bp-business-process'
   | 'mes-application'
   | 'ewm-application'
+  | 'crm-application'
   | 'planning-application'
   | 'aws-logo'
   | 'google-cloud-logo'
@@ -93,7 +95,7 @@ export type IconKey =
   | 'generic-system-cloud' | 'generic-system-analytics'
   // Generic brand icons
   | 'generic-brand-sap' | 'generic-brand-alpha-x' | 'generic-brand-aws'
-  | 'generic-brand-azure' | 'generic-brand-powerbi' | 'generic-brand-grafana'
+  | 'generic-brand-azure' | 'generic-brand-powerbi' | 'generic-brand-grafana' | 'generic-brand-microsoft'
   // New semantic keys with -station suffix (devices)
   | 'cnc-station' | 'hydraulic-station' | 'printer-3d-station' | 'weight-station' | 'laser-station'
   // New semantic keys with -system suffix (systems)
@@ -115,6 +117,7 @@ export const ICON_MAP: Record<IconKey, string> = {
   'logo-orbis': ICONS.brand.orbis,
   'logo-sap': ICONS.brand.sap,
   'logo-azure': ICONS.brand.azure,
+  'logo-microsoft': ICONS.brand.microsoft,
   'logo-dsp': ICONS.brand.dsp,
   'logo-grafana': ICONS.brand.grafana,
   'logo-distributed': ICONS.dsp.architecture.edgeBox,
@@ -188,6 +191,7 @@ export const ICON_MAP: Record<IconKey, string> = {
   'bp-business-process': ICONS.dsp.functions.workflow,
   'mes-application': ICONS.business.mes,
   'ewm-application': ICONS.business.ewm,
+  'crm-application': ICONS.business.crm,
   'planning-application': 'assets/svg/business/planning-application.svg',
   'aws-logo': 'assets/svg/brand/aws-logo.svg',
   'google-cloud-logo': 'assets/svg/brand/google-cloud-logo.svg',
@@ -227,6 +231,7 @@ export const ICON_MAP: Record<IconKey, string> = {
   'generic-brand-azure': 'assets/svg/brand/azure-logo.svg',
   'generic-brand-powerbi': 'assets/svg/brand/azure-logo.svg', // Using Azure as fallback for PowerBI (not available)
   'generic-brand-grafana': 'assets/svg/brand/grafana-logo.svg',
+  'generic-brand-microsoft': 'assets/svg/brand/microsoft-logo.svg',
   
   // New semantic keys with -station suffix (devices) - direct mapping to SVG files
   'cnc-station': 'assets/svg/shopfloor/stations/cnc-station.svg',

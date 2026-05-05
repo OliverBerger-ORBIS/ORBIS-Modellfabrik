@@ -12,7 +12,9 @@
 
 Die DSP-Architektur-Diagramme werden zur Laufzeit generiert. Export per `node scripts/export-dsp-architecture-svgs.js`.
 
-Verwendet FMF (Fischertechnik Modellfabrik) als Standard-Kundenkonfiguration. Alle Elemente (inkl. Functional Elements in der DSP Edge Box) werden im letzten Step angezeigt (`step=-1`).
+Verwendet OCC (ORBIS Customer Connect Konzept) als Standard-Kundenkonfiguration. Alle Elemente (inkl. Functional Elements in der DSP Edge Box) werden im letzten Step angezeigt (`step=-1`).
+
+**Evolutionskontext:** FMF (historisch) → LogiMAT → Hannover/Customer-Connect (Event-Varianten) → OCC (dauerhafter Default als End-to-End Integration mit AI-Unterstützung). Kundenspezifische Abweichungen bleiben über Customer-Configs möglich.
 
 <table>
 <tr>
@@ -38,7 +40,7 @@ Verwendet FMF (Fischertechnik Modellfabrik) als Standard-Kundenkonfiguration. Al
 </tr>
 </table>
 
-**Export:** `node scripts/export-dsp-architecture-svgs.js` – baut osf-ui, startet Server (Port 4211), navigiert zur FMF-Seite mit `?viewMode=functional|component|deployment&step=-1`, exportiert SVGs nach `docs/assets/architecture/`.
+**Export:** `node scripts/export-dsp-architecture-svgs.js` – baut osf-ui, startet Server (Port 4211), navigiert zur OSF/OCC-Default-Seite mit `?viewMode=functional|component|deployment&step=-1`, exportiert SVGs nach `docs/assets/architecture/`.
 
 **Voraussetzung:** Puppeteer benötigt Chrome. Falls Fehler „Could not find Chrome“:
 ```bash
@@ -49,11 +51,11 @@ npx puppeteer browsers install chrome
 
 ## Übersichtstabelle
 
-| View | Route (FMF) | Steps | Beschreibung |
+| View | Route (OCC Default) | Steps | Beschreibung |
 |------|-------------|-------|--------------|
-| **Functional** | `dsp/customer/fmf?viewMode=functional&step=-1` | 20 | Architektur mit Edge Functions, MC Functions, Shopfloor |
-| **Component** | `dsp/customer/fmf?viewMode=component&step=-1` | 8 | DSP Edge 3×3 Grid (8 Komponenten) + Full-Overview |
-| **Deployment** | `dsp/customer/fmf?viewMode=deployment&step=-1` | 6 | Deployment-Pipeline im Edge + Full-Overview |
+| **Functional** | `dsp/customer/osf?viewMode=functional&step=-1` | 20 | Architektur mit Edge Functions, MC Functions, Shopfloor |
+| **Component** | `dsp/customer/osf?viewMode=component&step=-1` | 8 | DSP Edge 3×3 Grid (8 Komponenten) + Full-Overview |
+| **Deployment** | `dsp/customer/osf?viewMode=deployment&step=-1` | 6 | Deployment-Pipeline im Edge + Full-Overview |
 
 ---
 

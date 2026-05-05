@@ -10,7 +10,8 @@ import type { ViewMode } from '../../../../components/dsp-animation/types';
 const VALID_VIEW_MODES: ViewMode[] = ['functional', 'component', 'deployment'];
 
 /**
- * OSF customer DSP architecture page (ORBIS MES + Sensor Station + EWM cluster).
+ * OSF customer DSP architecture page.
+ * Default profile is OCC (end-to-end best-of-breed integration baseline).
  */
 @Component({
   standalone: true,

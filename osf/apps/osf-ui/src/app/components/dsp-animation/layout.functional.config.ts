@@ -8,7 +8,6 @@ import {
   getDspContainerIds,
   getBusinessContainerIds,
   getBpProcessContainerIds,
-  withMesEwmCluster,
 } from './layout.shared.config';
 
 export { VIEWBOX_WIDTH, VIEWBOX_HEIGHT, LAYOUT } from './layout.shared.config';
@@ -41,13 +40,16 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
   const baseShopfloorConnections = getShopfloorConnectionIds(customerConfig);
   const bpConnections = getBpConnections(customerConfig);
 
-  /** Step 10: highlight analytics + cloud box (FMF) or analytics + EWM (LogiMAT). */
+  /** Step 10: highlight analytics plus the integration emphasis for the active customer profile. */
   const analyticsIntegrationHighlights = (): string[] => {
-    if (customerConfig?.bpProcesses.some((bp) => bp.id === 'bp-cloud')) {
-      return ['bp-analytics', 'bp-cloud'];
-    }
     if (customerConfig?.bpProcesses.some((bp) => bp.id === 'bp-ewm')) {
       return ['bp-analytics', 'bp-ewm'];
+    }
+    if (customerConfig?.bpProcesses.some((bp) => bp.id === 'bp-crm')) {
+      return ['bp-analytics', 'bp-crm'];
+    }
+    if (customerConfig?.bpProcesses.some((bp) => bp.id === 'bp-cloud')) {
+      return ['bp-analytics', 'bp-cloud'];
     }
     return ['bp-analytics'];
   };
@@ -263,7 +265,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     {
       id: 'step-9',
       label: $localize`:@@dspArchStepBestBreed:Plattformunabhängigkeit & Best-of-Breed-Integration`,
-      description: $localize`:@@dspArchStepBestBreedDesc:DSP integriert heterogene ERP-, MES-, Cloud- und Analytics-Systeme und bleibt dabei unabhängig von Herstellern, Plattformen und Hyperscalern.`,
+      description: $localize`:@@dspArchStepBestBreedDesc:DSP integriert heterogene ERP-, MES-, EWM-, CRM-, Analytics- und Data-Lake-Systeme und bleibt dabei unabhängig von Herstellern und Plattformen.`,
       visibleContainerIds: [
         'layer-bp',
         ...getBpProcessContainerIds(customerConfig),
@@ -298,7 +300,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         ...bpConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: [conn('bp-analytics', 'dsp-edge')], // Kein highlight von conn_bp-cloud_dsp-edge
+      highlightedConnectionIds: [conn('bp-analytics', 'dsp-edge')],
       showFunctionIcons: true,
       highlightedFunctionIcons: ['edge-analytics'],
     },
@@ -336,7 +338,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         'dsp-edge',
         ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: withMesEwmCluster([
+      highlightedContainerIds: [
         'layer-bp',
         'layer-dsp',
         'dsp-edge',
@@ -347,7 +349,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
           : ['bp-cloud', 'bp-analytics', 'bp-data-lake']),
         ...(customerConfig ? customerConfig.sfSystems.map((s) => s.id) : ['sf-system-any', 'sf-system-fts']),
         ...getShopfloorDeviceIds(customerConfig),
-      ]),
+      ],
       visibleConnectionIds: [
         ...bpConnections,
         ...baseShopfloorConnections,
@@ -650,7 +652,8 @@ export function createSlimSteps(customerConfig?: CustomerDspConfig): StepConfig[
 
 function shouldUseSlimSteps(customerConfig?: CustomerDspConfig): boolean {
   const key = customerConfig?.customerKey ?? '';
-  return key === 'osf' || key.includes('hannover');
+  // OCC is the long-term default story. Keep slim steps only for the Hannover booth variant.
+  return key.includes('hannover');
 }
 
 export function createFunctionalView(customerConfig?: import('./configs/types').CustomerDspConfig): DiagramConfig {

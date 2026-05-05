@@ -9,6 +9,7 @@ The customer configuration system enables:
 - **Generic icon library**: Reusable SVG icons that can be shared across customers
 - **Brand flexibility**: Support for different ERP, MES, and cloud providers
 - **No code duplication**: Single animation component supports multiple customers
+- **Evolution + variation**: historical baseline variants (FMF/LogiMAT/Hannover/CC) and OCC default can coexist with fully custom customer architectures
 
 ## Directory Structure
 
@@ -16,15 +17,15 @@ The customer configuration system enables:
 configs/
 ├── README.md              # This file
 ├── types.ts              # TypeScript type definitions
-├── fmf/
-│   └── fmf-config.ts     # FMF (Fischertechnik) customer config
-└── ecme/
-    └── ecme-config.ts    # ECME (European Company Manufacturing Everything) customer config
+├── fmf/                   # historical baseline
+├── logimat/               # trade-fair evolution variant
+├── osf/                   # OSF defaults + event variants (incl. OCC default)
+└── ecme/                  # example custom customer
 ```
 
 ## Generic Icon Library
 
-Generic icons are stored in `omf3/apps/ccu-ui/src/assets/svg/` and organized by category:
+Generic icons are stored in `osf/apps/osf-ui/src/assets/svg/` and organized by category:
 
 - **shopfloor/stations/**: Generic device icons (drill, mill, laser, cnc, etc.)
 - **shopfloor/systems/**: Generic system icons (agv-system, any-system, warehouse-system, etc.)
@@ -137,7 +138,7 @@ The system reuses existing container IDs to avoid breaking changes:
 |---------------|---------------|-------|
 | Devices | `sf-device-mill`, `sf-device-drill`, `sf-device-aiqs`, `sf-device-hbw`, `sf-device-dps`, `sf-device-chrg`, `sf-device-conveyor`, `sf-device-stone-oven` | 8 device slots |
 | Systems | `sf-system-any`, `sf-system-fts`, `sf-system-warehouse`, `sf-system-factory` | 4 system slots |
-| Business Processes | `bp-erp`, `bp-mes`, `bp-cloud`, `bp-analytics`, `bp-data-lake` | 5 BP slots |
+| Business Processes (canonical) | `bp-erp`, `bp-mes`, `bp-ewm`, `bp-crm`, `bp-analytics`, `bp-data-lake` | OCC default lane; legacy: `bp-planning`, `bp-cloud` |
 
 ## Examples
 

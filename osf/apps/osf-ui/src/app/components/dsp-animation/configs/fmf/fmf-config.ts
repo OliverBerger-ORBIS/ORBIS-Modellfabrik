@@ -12,34 +12,34 @@ export const FMF_CONFIG: CustomerDspConfig = {
   sfDevices: [
     {
       id: 'sf-device-mill',
-      label: $localize`:@@deviceMILL:Fräs / station`,
+      label: $localize`:@@deviceMILL:Mill / station`,
       iconKey: 'mill',
     },
     {
       id: 'sf-device-drill',
-      label: $localize`:@@deviceDRILL:Bohr / station`,
+      label: $localize`:@@deviceDRILL:Drill / station`,
       iconKey: 'drill',
     },
     {
       id: 'sf-device-aiqs',
-      label: $localize`:@@deviceAIQS:KI- / Qualitäts / station`,
+      label: $localize`:@@deviceAIQS:AI / Quality / station`,
       iconKey: 'robot-arm', // Not used, customIconPath takes precedence
       customIconPath: 'device-aiqs', // Use correct AIQS icon
     },
     {
       id: 'sf-device-hbw',
-      label: $localize`:@@deviceHBW:Hochregal / lager`,
+      label: $localize`:@@deviceHBW:High-bay / warehouse`,
       iconKey: 'hbw',
     },
     {
       id: 'sf-device-dps',
-      label: $localize`:@@deviceDPS:Waren Ein- / und Ausgang`,
+      label: $localize`:@@deviceDPS:Goods In- / and Outbound`,
       iconKey: 'conveyor', // Not used, customIconPath takes precedence
       customIconPath: 'device-dps', // Use correct DPS icon
     },
     {
       id: 'sf-device-chrg',
-      label: $localize`:@@deviceCHRG:Lade- / station`,
+      label: $localize`:@@deviceCHRG:Charging / station`,
       iconKey: 'robot-arm', // CHRG is a loading/robot station
     },
   ],

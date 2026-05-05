@@ -28,6 +28,9 @@ jobs:
     
     - name: Install dependencies
       run: npm ci
+
+    - name: Check OSF icon mappings
+      run: npm run check:osf-ui-icons
     
     - name: Run affected tests (OMF3)
       run: npx nx affected -t test --base=origin/${{ github.base_ref }} --exclude=ff-central-control-unit

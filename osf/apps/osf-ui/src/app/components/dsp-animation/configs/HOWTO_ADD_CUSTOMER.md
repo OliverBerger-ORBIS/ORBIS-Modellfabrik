@@ -12,6 +12,15 @@ Eine Kundenkonfiguration besteht aus:
 - **Business Processes (bp-processes)**: Geschäftsprozesse (z.B. ERP, MES, Analytics)
 - **Customer Logo**: Optionales Kundenlogo
 
+### Architektur-Strategie (wichtig)
+
+- **OCC ist der aktuelle Default** (End-to-End Integration mit AI-Unterstützung).
+- **FMF bleibt historisch** als Evolutions-Startpunkt.
+- **Messe-Varianten** (LogiMAT / Hannover / Customer Connect) bleiben erhalten.
+- **Kundenspezifische Architekturen** bleiben möglich: BP-Layer und Shopfloor-Sicht können pro Customer gezielt abweichen.
+
+Empfehlung: Verwenden Sie die **kanonischen BP-IDs** und variieren Sie primär Reihenfolge, Branding und Sichtbarkeit.
+
 ## Schritt 1: Verzeichnisstruktur erstellen
 
 Erstellen Sie ein neues Verzeichnis für den Kunden:
@@ -81,7 +90,7 @@ export const ACME_CONFIG: CustomerDspConfig = {
   // Business processes - Liste der Geschäftsprozesse
   bpProcesses: [
     {
-      id: 'bp-erp',  // Konkrete ID (bp-erp, bp-mes, bp-analytics, bp-data-lake)
+      id: 'bp-erp',  // Kanonische IDs: bp-erp, bp-mes, bp-ewm, bp-crm, bp-analytics, bp-data-lake
       label: $localize`:@@dspArchLabelERP:ERP Applications`,
       iconKey: 'erp',
       brandLogoKey: 'sap',  // Brand Logo (sap, alpha-x, aws, azure, powerbi, grafana)
@@ -163,11 +172,24 @@ export const ACME_CONFIG: CustomerDspConfig = {
 - `scm` - SCM Applications (Supply Chain Management)
 - `crm` - CRM Applications (Customer Relationship Management)
 
+**Kanonische BP-Container-IDs (empfohlen):**
+- `bp-erp`
+- `bp-mes`
+- `bp-ewm`
+- `bp-crm`
+- `bp-analytics`
+- `bp-data-lake`
+
+**Historisch/optional:**
+- `bp-planning` (als MES-Untermodul in einigen Messevarianten)
+- `bp-cloud` (generischer Fallback, nicht Teil des OCC-Defaults)
+
 **Brand Logos:**
 - `sap` - SAP Logo
 - `alpha-x` - Alpha-X Logo
 - `aws` - AWS Logo
 - `azure` - Azure Logo
+- `microsoft` - Microsoft Logo
 - `powerbi` - PowerBI Logo
 - `grafana` - Grafana Logo
 - `googlecloud` - Google Cloud Logo

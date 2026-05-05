@@ -48,6 +48,9 @@ jobs:
     - name: Run OSF tests
       run: |
         npm test
+
+    - name: Check OSF icon mappings
+      run: npm run check:osf-ui-icons
     
     - name: Test Coverage Check
       run: npm run test:coverage:check
