@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { utcIsoTimestampMs, type OrderActive, type ProductionFlowMap, type InventoryOverviewState, type StockSnapshot } from '@osf/entities';
 import { getDashboardController, type DashboardStreamSet } from '../mock-dashboard';
 import { MessageMonitorService } from '../services/message-monitor.service';
@@ -14,6 +15,7 @@ import { EMPTY, merge, Subscription, combineLatest, timer } from 'rxjs';
 import { ICONS } from '../shared/icons/icon.registry';
 import { ErpInfoBoxComponent, type PurchaseOrderData, type CustomerOrderData, type ErpOrderType } from '../components/erp-info-box/erp-info-box.component';
 import { ErpOrderDataService } from '../services/erp-order-data.service';
+import { LanguageService } from '../services/language.service';
 
 const INVENTORY_LOCATIONS = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
 const STOCK_TOPICS = ['ccu/state/stock', '/j1/txt/1/f/i/stock'];
@@ -200,7 +202,9 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
     private readonly connectionService: ConnectionService,
     private readonly inventoryState: InventoryStateService,
     private readonly cdr: ChangeDetectorRef,
-    private readonly erpOrderDataService: ErpOrderDataService
+    private readonly erpOrderDataService: ErpOrderDataService,
+    private readonly router: Router,
+    private readonly languageService: LanguageService
   ) {
     this.currentEnvironmentKey = this.environmentService.current.key;
     this.bindInventoryOutputs();
@@ -241,9 +245,8 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
 
     this.setupInventoryStreamSubscription();
 
-    if (this.isMockMode) {
-      void this.loadFixture(this.activeFixture);
-    }
+    // Full refresh when entering the tab (same as the Refresh control); includes mock fixture load.
+    this.refreshProcessData();
   }
 
   ngOnDestroy(): void {
@@ -275,6 +278,14 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.warn('Failed to load process fixture', fixture, error);
     }
+  }
+
+  /**
+   * Navigate to the Order tab, optionally highlighting the product context (Blue/White/Red).
+   */
+  openOrderTab(type: (typeof WORKPIECE_TYPES)[number]): void {
+    const locale = this.languageService.current;
+    void this.router.navigate([locale, 'order'], { queryParams: { product: type } });
   }
 
   refreshProcessData(): void {
@@ -384,6 +395,16 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
       this.cdr.markForCheck();
     } catch (error) {
       console.error('[process-tab] Failed to send customer order', type, error);
+    }
+  }
+
+  /**
+   * Navigate to Order tab from Production Flow (product column); keeps Customer Orders usable for multiple sequential orders.
+   */
+  openOrderTabFromProductionFlow(product: ProcessProductView): void {
+    const t = product.type.toUpperCase();
+    if (t === 'BLUE' || t === 'WHITE' || t === 'RED') {
+      this.openOrderTab(t);
     }
   }
 

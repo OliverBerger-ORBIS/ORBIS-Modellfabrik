@@ -246,7 +246,16 @@
                 <div class="arrow" aria-hidden="true">⬇️</div>
 
                 <div class="product-grid">
-                  <article *ngFor="let product of products" class="product-card" [ngClass]="product.backgroundClass">
+                  <article
+                    *ngFor="let product of products"
+                    class="product-card product-card--navigate-to-orders"
+                    [ngClass]="product.backgroundClass"
+                    (click)="openOrderTabFromProductionFlow(product)"
+                    role="button"
+                    tabindex="0"
+                    (keydown.enter)="openOrderTabFromProductionFlow(product)"
+                    (keydown.space)="$event.preventDefault(); openOrderTabFromProductionFlow(product)"
+                  >
                     <header>
                       <div class="icons">
                         <img [src]="product.product3dIcon" [alt]="product.label" width="110" height="110" />
