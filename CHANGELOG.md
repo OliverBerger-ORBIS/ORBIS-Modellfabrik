@@ -10,6 +10,14 @@ All notable changes to OSF Dashboard will be documented here.
 
 - **Sprint 18** closed (LogiMAT, ORBIS Vertrieb OSF **02.04.2026**). **Sprint 19** opened — focus: Arduino sensor station (OSF, 24 V, box), backend/Grafana, blog, Hannover Messe prep (bird’s-eye camera, Konftel-20, OBS). See [sprint_19.md](docs/sprints/sprint_19.md), [PROJECT_STATUS.md](docs/PROJECT_STATUS.md).
 
+## [1.1.5] - 2026-05-05
+
+### OSF-UI
+
+- **Process tab:** auto-refresh inventory/flows on tab enter.
+- **Navigation:** keep ordering in Process tab; jump to Orders from production-flow product cards.
+- **Order cards:** click a module in the embedded shopfloor preview to open Shopfloor focused on that station.
+
 ### Hardware / Arduino firmware
 
 - **`OSF_MultiSensor_R4WiFi` v1.1.7:** In **`WIFI_MODE_ORBIS`**, NTP sync tries **Shopfloor RPi** (`192.168.0.100`, **chrony** on host) **first**, then gateway and public pools. **MQTT payload** (`timestamp` ISO-8601 UTC with ms) **unchanged** since v1.1.6. **Docs:** [rpi-chrony-ntp-server.md](docs/04-howto/rpi-chrony-ntp-server.md), [arduino-r4-multisensor.md](docs/05-hardware/arduino-r4-multisensor.md) § MQTT-Topics.
