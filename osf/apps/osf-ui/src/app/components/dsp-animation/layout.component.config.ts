@@ -1,12 +1,19 @@
 import type { ContainerConfig, ConnectionConfig, StepConfig, DiagramConfig } from './types';
 import { DiagramConfigBuilder } from './layout.builder';
-import { getEdgeComponentIds, getShopfloorContainerIds, getShopfloorDeviceIds, getShopfloorSystemIds } from './layout.shared.config';
+import { getBpProcessContainerIds, getEdgeComponentIds, getShopfloorContainerIds, getShopfloorDeviceIds, getShopfloorSystemIds } from './layout.shared.config';
+
+function conn(fromId: string, toId: string): string {
+  return `conn_${fromId}_${toId}`;
+}
 
 export function createComponentView(customerConfig?: import('./configs/types').CustomerDspConfig): DiagramConfig {
   // Get customer-specific or default shopfloor container IDs
   const baseShopfloorContainers = getShopfloorContainerIds(customerConfig);
   const shopfloorSystemIds = getShopfloorSystemIds(customerConfig);
   const shopfloorDeviceIds = getShopfloorDeviceIds(customerConfig);
+  const bpContainerIds = getBpProcessContainerIds(customerConfig);
+  const bpConnectionIds = bpContainerIds.map((bpId) => conn(bpId, 'dsp-edge'));
+  const highlightedBpContainerIds = bpContainerIds.filter((id) => id === 'bp-erp' || id === 'bp-mes');
   
   // Add bidirectional connections between edge components
   // All components connect to Router as the central hub
@@ -125,8 +132,7 @@ export function createComponentView(customerConfig?: import('./configs/types').C
       description: $localize`:@@componentStep4Desc:Business Process Layer (ERP and MES) connects to DSP Edge Box for data synchronization.`,
       visibleContainerIds: [
         'layer-bp',
-        'bp-mes',
-        'bp-erp',
+        ...bpContainerIds,
         'layer-dsp',
         'dsp-edge',
         'edge-comp-disc',
@@ -138,13 +144,12 @@ export function createComponentView(customerConfig?: import('./configs/types').C
         'edge-comp-disi',
         'edge-comp-database',
       ],
-      highlightedContainerIds: ['dsp-edge', 'bp-mes', 'bp-erp'],
+      highlightedContainerIds: ['dsp-edge', ...highlightedBpContainerIds],
       visibleConnectionIds: [
         ...allEdgeComponentConnections,
-        'conn_bp-mes_dsp-edge',
-        'conn_bp-erp_dsp-edge',
+        ...bpConnectionIds,
       ],
-      highlightedConnectionIds: ['conn_bp-mes_dsp-edge', 'conn_bp-erp_dsp-edge'],
+      highlightedConnectionIds: bpConnectionIds.filter((id) => id === 'conn_bp-mes_dsp-edge' || id === 'conn_bp-erp_dsp-edge'),
       showFunctionIcons: false,
     },
     
@@ -155,8 +160,7 @@ export function createComponentView(customerConfig?: import('./configs/types').C
       description: $localize`:@@componentStep5Desc:App Server connects to SmartFactory Dashboard for UI services.`,
       visibleContainerIds: [
         'layer-bp',
-        'bp-mes',
-        'bp-erp',
+        ...bpContainerIds,
         'layer-dsp',
         'dsp-ux',
         'dsp-edge',
@@ -172,6 +176,7 @@ export function createComponentView(customerConfig?: import('./configs/types').C
       highlightedContainerIds: ['edge-comp-app-server', 'dsp-ux'],
       visibleConnectionIds: [
         ...allEdgeComponentConnections,
+        ...bpConnectionIds,
         'conn-ec-disc-bp-mes',
         'conn-ec-disc-bp-erp',
         'conn-ux-ec-appserver',
@@ -187,8 +192,7 @@ export function createComponentView(customerConfig?: import('./configs/types').C
       description: $localize`:@@componentStep6Desc:Agent connects to Management Cockpit for monitoring and control.`,
       visibleContainerIds: [
         'layer-bp',
-        'bp-mes',
-        'bp-erp',
+        ...bpContainerIds,
         'layer-dsp',
         'dsp-ux',
         'dsp-edge',
@@ -205,6 +209,7 @@ export function createComponentView(customerConfig?: import('./configs/types').C
       highlightedContainerIds: ['edge-comp-agent', 'dsp-mc'],
       visibleConnectionIds: [
         ...allEdgeComponentConnections,
+        ...bpConnectionIds,
         'conn-ec-disc-bp-mes',
         'conn-ec-disc-bp-erp',
         'conn-ux-ec-appserver',
@@ -221,8 +226,7 @@ export function createComponentView(customerConfig?: import('./configs/types').C
       description: $localize`:@@componentStep7Desc:DISI connects to all shopfloor devices and systems for data collection.`,
       visibleContainerIds: [
         'layer-bp',
-        'bp-mes',
-        'bp-erp',
+        ...bpContainerIds,
         'layer-dsp',
         'dsp-ux',
         'dsp-edge',
@@ -234,6 +238,7 @@ export function createComponentView(customerConfig?: import('./configs/types').C
       highlightedContainerIds: ['edge-comp-disi'],
       visibleConnectionIds: [
         ...allEdgeComponentConnections,
+        ...bpConnectionIds,
         'conn-ec-disc-bp-mes',
         'conn-ec-disc-bp-erp',
         'conn-ux-ec-appserver',
@@ -251,8 +256,7 @@ export function createComponentView(customerConfig?: import('./configs/types').C
       description: $localize`:@@componentStep8Desc:Complete DSP Edge component view with all connections.`,
       visibleContainerIds: [
         'layer-bp',
-        'bp-mes',
-        'bp-erp',
+        ...bpContainerIds,
         'layer-dsp',
         'dsp-ux',
         'dsp-edge',
@@ -264,6 +268,7 @@ export function createComponentView(customerConfig?: import('./configs/types').C
       highlightedContainerIds: [],
       visibleConnectionIds: [
         ...allEdgeComponentConnections,
+        ...bpConnectionIds,
         'conn-ec-disc-bp-mes',
         'conn-ec-disc-bp-erp',
         'conn-ux-ec-appserver',

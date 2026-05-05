@@ -39,7 +39,7 @@ mkdir -p osf/apps/osf-ui/src/app/pages/dsp/customer/acme
 ## Schritt 2: Konfigurationsdatei erstellen
 
 **WICHTIG - Template verwenden:**
-- Verwenden Sie **FMF_CONFIG** (`fmf-config.ts`) als Template für neue Customer-Configs
+- Verwenden Sie **OSF_BASE_CONFIG** (`osf/osf-config.base.ts`) oder **OSF_OCC_2026_CONFIG** (`osf/osf-occ-2026-config.ts`) als Template für neue Customer-Configs
 - Die Default-Config ist nur ein Fallback für Tests/Entwicklung, nicht für neue Customers
 
 Erstellen Sie die Konfigurationsdatei `osf/apps/osf-ui/src/app/components/dsp-animation/configs/<customer-id>/<customer-id>-config.ts`:
@@ -103,7 +103,7 @@ export const ACME_CONFIG: CustomerDspConfig = {
     },
     {
       id: 'bp-analytics',
-      label: $localize`:@@dspArchLabelAnalytics:Analytical\nApplications`,
+      label: $localize`:@@dspArchLabelAnalytics:Analytical Apps`,
       iconKey: 'analytics',
       brandLogoKey: 'powerbi',
     },
@@ -381,7 +381,7 @@ Für Business Processes verwenden Sie konkrete IDs:
 3. **Tests**: Erstellen Sie Tests für die Config und die Component
 4. **Dokumentation**: Aktualisieren Sie `README.md` mit dem neuen Kunden
 5. **Konsistenz**: Folgen Sie den bestehenden Beispielen (FMF, ECME)
-6. **Template**: Verwenden Sie FMF_CONFIG als Template (nicht die Default-Config)
+6. **Template**: Verwenden Sie OSF_BASE_CONFIG/OSF_OCC_2026_CONFIG als Template (nicht die Default-Config)
 
 ## Troubleshooting
 

@@ -168,7 +168,7 @@ function main() {
   }
 
   const truncatedKeys = [
-    ['dspArchLabelAnalytics', 'Analytical\nApplications'],
+    ['dspArchLabelAnalytics', 'Analytical Apps'],
     ['dspArchLabelCloudApps', 'Cloud\nApplications'],
     ['dspArchLabelFTS', 'AGV\nSystem'],
     ['dspArchLabelManagement', 'Management\nCockpit'],

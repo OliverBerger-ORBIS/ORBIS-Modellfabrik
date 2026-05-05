@@ -126,7 +126,7 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
     $localize`:@@dspArchStep9:Management Cockpit`,
     $localize`:@@dspArchStep10:Business Integration`,
     $localize`:@@dspArchStep11:SmartFactory Dashboard`,
-    $localize`:@@dspArchStep12:Autonomous & Adaptive Enterprise`,
+    $localize`:@@dspArchStep20:Bridge between IT and OT: ORBIS DSP as an enabler`,
     $localize`:@@dspArchStep13:Complete DSP Architecture`,
   ];
 

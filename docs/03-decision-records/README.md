@@ -94,6 +94,10 @@ Konfigurierbare Topic-Filter beim Session-Record; Reduktion von Noise (Sensoren/
 **Status:** Accepted | **Datum:** 2026-03-31  
 Kanonisches Format `YYYY-MM-DDThh:mm:ss.sssZ`; `utcIsoTimestampMs` (`@osf/entities`) bzw. `utc_iso_timestamp_ms()` (Python). CCU/TXT-Publisher unverändert.
 
+### 27. [DSP Functional Story und Customer-Defaults (OCC)](27-dsp-functional-story-and-customer-defaults.md)
+**Status:** Accepted | **Datum:** 2026-05-05  
+OCC als kanonischer Default, 9 Edge-Function-Icons in der Functional Story, Management Cockpit als Design-/Deployment-Ebene, Edge-Runtime autonom.
+
 ---
 
 ## Template
@@ -102,4 +106,4 @@ Für neue Decision Records: [decision_template.md](decision_template.md)
 
 ---
 
-*Letzte Aktualisierung: 2026-03-31*
+*Letzte Aktualisierung: 2026-05-05*

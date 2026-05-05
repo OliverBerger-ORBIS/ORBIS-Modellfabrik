@@ -35,6 +35,8 @@ const ICON_TO_SVG_FILE: Record<string, string> = {
   // Business Process
   'erp-application': 'erp-application',
   'mes-application': 'mes-application',
+  'ewm-application': 'ewm-application',
+  'crm-application': 'crm-application',
   'bp-cloud-apps': 'cloud-application',
   'bp-analytics': 'analytics-application',
   'bp-data-lake': 'data-lake-application',
@@ -72,6 +74,8 @@ function getSvgFilename(containerId: string, iconKey?: string): string | null {
     const suffix = containerId.replace('bp-', '');
     if (suffix === 'erp') return 'erp-application';
     if (suffix === 'mes') return 'mes-application';
+    if (suffix === 'ewm') return 'ewm-application';
+    if (suffix === 'crm') return 'crm-application';
     if (suffix === 'cloud') return 'cloud-application';
     if (suffix === 'analytics') return 'analytics-application';
     if (suffix === 'data-lake') return 'data-lake-application';
@@ -896,11 +900,12 @@ async function main() {
     // This matches the structure from layout.shared.config.ts
     const containers = [
       // Business Process containers
-      { id: 'bp-erp', x: 100, y: 145, width: 190, height: 140, type: 'business', logoIconKey: 'erp-application' },
-      { id: 'bp-mes', x: 320, y: 145, width: 190, height: 140, type: 'business', logoIconKey: 'mes-application' },
-      { id: 'bp-cloud', x: 540, y: 145, width: 190, height: 140, type: 'business', logoIconKey: 'bp-cloud-apps' },
-      { id: 'bp-analytics', x: 760, y: 145, width: 190, height: 140, type: 'business', logoIconKey: 'bp-analytics' },
-      { id: 'bp-data-lake', x: 980, y: 145, width: 190, height: 140, type: 'business', logoIconKey: 'bp-data-lake' },
+      { id: 'bp-erp', x: 100, y: 145, width: 156, height: 140, type: 'business', logoIconKey: 'erp-application' },
+      { id: 'bp-mes', x: 286, y: 145, width: 156, height: 140, type: 'business', logoIconKey: 'mes-application' },
+      { id: 'bp-ewm', x: 472, y: 145, width: 156, height: 140, type: 'business', logoIconKey: 'ewm-application' },
+      { id: 'bp-crm', x: 658, y: 145, width: 156, height: 140, type: 'business', logoIconKey: 'crm-application' },
+      { id: 'bp-analytics', x: 844, y: 145, width: 156, height: 140, type: 'business', logoIconKey: 'bp-analytics' },
+      { id: 'bp-data-lake', x: 1030, y: 145, width: 156, height: 140, type: 'business', logoIconKey: 'bp-data-lake' },
   // DSP containers
   { id: 'dsp-ux', x: 100, y: 480, width: 175, height: 260, type: 'dsp', centerIconKey: 'ux-box' },
   { id: 'dsp-edge', x: 325, y: 410, width: 480, height: 400, type: 'dsp-edge', centerIconKey: 'logo-edge' },
@@ -927,7 +932,8 @@ async function main() {
     const connections = [
       { id: 'conn_bp-erp_dsp-edge', fromId: 'bp-erp', toId: 'dsp-edge', fromSide: 'bottom', toSide: 'top' },
       { id: 'conn_bp-mes_dsp-edge', fromId: 'bp-mes', toId: 'dsp-edge', fromSide: 'bottom', toSide: 'top' },
-      { id: 'conn_bp-cloud_dsp-edge', fromId: 'bp-cloud', toId: 'dsp-edge', fromSide: 'bottom', toSide: 'top' },
+      { id: 'conn_bp-ewm_dsp-edge', fromId: 'bp-ewm', toId: 'dsp-edge', fromSide: 'bottom', toSide: 'top' },
+      { id: 'conn_bp-crm_dsp-edge', fromId: 'bp-crm', toId: 'dsp-edge', fromSide: 'bottom', toSide: 'top' },
       { id: 'conn_bp-analytics_dsp-edge', fromId: 'bp-analytics', toId: 'dsp-edge', fromSide: 'bottom', toSide: 'top' },
       { id: 'conn_bp-data-lake_dsp-edge', fromId: 'bp-data-lake', toId: 'dsp-edge', fromSide: 'bottom', toSide: 'top' },
       { id: 'conn_dsp-ux_dsp-edge', fromId: 'dsp-ux', toId: 'dsp-edge', fromSide: 'right', toSide: 'left' },

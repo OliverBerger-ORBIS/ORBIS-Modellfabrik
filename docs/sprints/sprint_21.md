@@ -20,8 +20,8 @@
 
 - [x] **Functional View (Default OCC):** Business-Process Lane Reihenfolge anpassen: **ERP → MES → EWM → CRM → Analytical → Data-Lake** (CRM ersetzt Planning) — umgesetzt in `OSF_OCC_2026_CONFIG.bpProcesses` (05.05.2026)
 - [x] **Functional View (Default OCC):** neuen Customer „OCC“ / Default-Konfiguration anlegen (neue Lane-Reihenfolge + Links/Defaults) — `OSF_CONFIG` zeigt jetzt auf OCC-Default (Evolution FMF→LogiMAT→Hannover/CC→OCC bleibt verfügbar) (05.05.2026)
-- [ ] **Functional View Animation:** 7 Functional DSP Icons wieder einzeln einbauen (LogiMAT-ähnliche Variante als Default für OCC)
-- [ ] **Functional View Animation:** Interoperability SVG/Icon in Animation deutlich größer darstellen; ggf. zentral positionieren und DSP-Edge-Icon überdecken
+- [x] **Functional View Animation:** 9 Functional DSP Icons wieder einzeln einbauen (LogiMAT-ähnliche Variante als Default für OCC) — umgesetzt mit schrittweiser Einzel-Einblendung in der Functional Story (05.05.2026, `npx nx test osf-ui --testPathPattern=layout\.functional\.story-order\.spec\.ts`)
+- [x] **Functional View Animation:** Interoperability SVG/Icon in Animation deutlich größer darstellen; zentral positioniert und DSP-Edge-Icon im Summary-Step ausgeblendet (05.05.2026, `npx nx test osf-ui --testPathPattern=layout\.functional\.story-order\.spec\.ts`)
 - [ ] **Use-Case „Anomaly Detection“:** CRM Integration (Vibration löst Alarm aus → DSP-Edge sendet an MS-CRM → CRM „Prozess gestartet“/Techniker-Einsatz)
 - [x] **Process-Tab:** beim Wechsel in den Tab automatisch Refresh ausführen (Inventory/Lagerinfo ohne Button-Drücken) — `ProcessTabComponent.ngOnInit` ruft `refreshProcessData()` auf (05.05.2026, `nx test osf-ui --testPathPattern=process-tab.component.spec`)
 - [x] **Process → Order:** nach Auslösen einer Order (`ccu/order/request`) **ohne** Tab-Wechsel (mehrere Aufträge möglich); Sprung in den Order-Tab nur per Klick auf eine **Production-Flow-Produktkarte** (Blue/White/Red) rechts → `openOrderTabFromProductionFlow` / `/:locale/order?product=…` (05.05.2026, Unit-Tests `openOrderTab`, `openOrderTabFromProductionFlow`)

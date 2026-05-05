@@ -55,7 +55,7 @@ export interface SystemMapping {
  * Mapping configuration for a business process
  */
 export interface BusinessProcessMapping {
-  /** Container ID (e.g., 'bp-erp', 'bp-mes', 'bp-cloud') */
+  /** Container ID (e.g., 'bp-erp', 'bp-mes', 'bp-ewm', 'bp-crm', 'bp-analytics', 'bp-data-lake') */
   id: string;
   /** Customer-specific label for the process */
   label: string;

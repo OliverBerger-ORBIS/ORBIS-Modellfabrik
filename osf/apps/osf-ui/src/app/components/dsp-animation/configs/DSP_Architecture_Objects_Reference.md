@@ -75,14 +75,14 @@ Die folgenden Business Process Applications sind verfügbar:
 | `bp-erp` | ERP Applications | `erp-application` | `erp-application.svg` | `logo-sap` (top-right) |
 | `bp-mes` | MES Applications | `mes-application` | `mes-application.svg` | `logo-orbis` (top-left) |
 | `bp-ewm` | EWM Application | `ewm-application` | `ewm-application.svg` | `logo-sap` |
-| `bp-cloud` | Cloud Applications | `bp-cloud-apps` | `cloud-application.svg` | `aws-logo`, `google-cloud-logo` (multiple) |
+| `bp-crm` | CRM Applications | `crm-application` | `crm-application.svg` | `logo-microsoft` |
 | `bp-analytics` | Analytics Applications | `bp-analytics` | `analytics-application.svg` | `logo-grafana` (top-right) |
 | `bp-data-lake` | Data Lake | `bp-data-lake` | `data-lake-application.svg` | `aws-logo` (optional) |
-| `bp-scm` | SCM Applications | `scm-application` | `scm-application.svg` | - |
-| `bp-crm` | CRM Applications | `crm-application` | `crm-application.svg` | `logo-microsoft` |
-| `bp-planning` | Planning Application | `planning-application` | `planning-application.svg` | `logo-orbis` (top-left) |
+| `bp-cloud` | Cloud Applications (Legacy/optional) | `bp-cloud-apps` | `cloud-application.svg` | `aws-logo`, `google-cloud-logo` (multiple) |
+| `bp-planning` | Planning Application (Legacy/optional) | `planning-application` | `planning-application.svg` | `logo-orbis` (top-left) |
+| `bp-scm` | SCM Applications (Optional extension) | `scm-application` | `scm-application.svg` | - |
 
-**Verfügbare Business Process Application Icons:**
+**Verfügbare Business Process Application Icons (OCC + optional legacy):**
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; margin: 16px 0;">
 
@@ -304,7 +304,7 @@ Diese Icons werden innerhalb des `dsp-edge` Containers angezeigt (nur in Functio
    - **Size:** 48px
    - **Beschreibung:** Autonome und adaptive Fertigungsprozesse
 
-**Hinweis:** Im letzten Step des Functional View sind diese Function Icons **nicht sichtbar** (`showFunctionIcons: false`). Sie werden in früheren Steps (Step 3-12) schrittweise eingeblendet.
+**Hinweis:** Die Edge-Function-Icons werden im Functional View schrittweise eingeblendet. Im letzten Step bleiben sie sichtbar (ohne Highlighting), um das Gesamtzielbild zu zeigen.
 
 ### Management Cockpit (MC) Function Icons
 
@@ -356,7 +356,7 @@ Diese Icons werden innerhalb des `dsp-mc` Containers angezeigt (nur in Functiona
 
 ### Edge Instance Icons (MC Visualization)
 
-Diese Icons werden im Management Cockpit zur Visualisierung verteilter DSP Edge-Komponenten verwendet (nur in Functional View Step 18, wenn `showFunctionIcons: true`):
+Diese Icons werden im Management Cockpit zur Visualisierung verteilter DSP-Edge-Komponenten verwendet (Functional View, Schwerpunkt Step 17/18):
 
 **Verfügbare Edge Instance Icons:**
 
@@ -383,10 +383,10 @@ Diese Icons werden im Management Cockpit zur Visualisierung verteilter DSP Edge-
 </div>
 
 **Hinweis:** 
-- In Step 18 werden nur die `logo-edge-*` Icons angezeigt (3 Edge-Instanzen zur Visualisierung)
-- In anderen Steps werden nur die MC-Funktions-Icons (`mc-hierarchical-structure`, `mc-orchestration`, `mc-governance`) angezeigt
-- Im letzten Step des Functional View sind alle Function Icons **nicht sichtbar** (`showFunctionIcons: false`)
-- Die Edge Instance Icons sind **keine Function Icons**, sondern dienen der Visualisierung verteilter DSP Edge-Komponenten durch das Management Cockpit
+- In Step 17 wird `logo-edge-b` gemeinsam mit den MC-Funktions-Icons angezeigt.
+- In Step 18 werden die drei `logo-edge-*` Instanzen gemeinsam mit den MC-Funktions-Icons angezeigt.
+- Die `logo-edge-*` Instanzen sind Visualisierungselemente fuer verwaltete Edge-Landschaften im Management-Cockpit-Kontext.
+- Im letzten Step des Functional View bleiben Function-Icons sichtbar, werden jedoch nicht hervorgehoben.
 
 ### Edge Components (nur in Component View sichtbar)
 
@@ -831,7 +831,7 @@ conn_<from-id>_<to-id>
 **Der letzte Step des Functional View enthält:**
 
 - **3 Layer:** Business Process, DSP, Shopfloor
-- **7 Business Process Container:** ERP, MES, Cloud, Analytics, Data Lake, SCM, CRM
+- **6 Business Process Container (OCC Default):** ERP, MES, EWM, CRM, Analytics, Data Lake
 - **3 DSP Container:** UX, Edge, Management Cockpit
 - **9 Edge Function Icons:** Interoperability, Network, Event-Driven, Choreography, Digital Twin, Best-of-Breed, Analytics, AI Enablement, Autonomous Enterprise
 - **3 MC Function Icons:** Hierarchical Structure, Orchestration, Governance
@@ -843,8 +843,8 @@ conn_<from-id>_<to-id>
 
 **Hinweis zu Default Systems/Devices:**
 - Die "Default Systems/Devices" werden nur als **Fallback** verwendet, wenn keine Customer-Config übergeben wird
-- Im DSP-Tab wird immer **FMF_CONFIG** verwendet (siehe `dsp-architecture-functional-section.component.ts`)
-- Für neue Customer-Configs sollte **FMF_CONFIG als Template** verwendet werden (nicht die Default-Config)
+- Die DSP-Abschnitte auf der DSP-Seite verwenden **OSF_CONFIG** (OCC-Default), z. B. in `dsp-architecture-functional-section.component.ts`, `dsp-architecture-component-section.component.ts` und `dsp-architecture-deployment-section.component.ts`
+- Für neue Customer-Configs sollte **OSF_BASE_CONFIG** / **OSF_OCC_2026_CONFIG** als Template verwendet werden; `FMF_CONFIG` bleibt primär historischer Referenzpunkt
 - Edge Functions, MC Functions und Edge Components sind **nicht** in Customer-Configs definiert, sondern zentral in `layout.shared.config.ts` (bei Änderungen muss nur eine Datei angepasst werden)
 
 **Total:** ~20 Container + ~15 Connections + 12 Function/Instance Icons + 8 Components

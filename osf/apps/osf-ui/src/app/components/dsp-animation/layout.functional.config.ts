@@ -35,26 +35,70 @@ function getBpConnections(customerConfig?: CustomerDspConfig): string[] {
   ];
 }
 
+function moveInteroperabilitySummaryToStep12(steps: StepConfig[]): StepConfig[] {
+  const orderedIds = ['step-4', 'step-5', 'step-6', 'step-7', 'step-8', 'step-9', 'step-10', 'step-11', 'step-12'];
+  const originals = orderedIds
+    .map((id) => steps.find((step) => step.id === id))
+    .filter((step): step is StepConfig => Boolean(step))
+    .map((step) => ({ ...step }));
+
+  if (originals.length !== orderedIds.length) {
+    return steps;
+  }
+
+  const rotated = originals.slice(1).concat(originals[0]);
+  const stepById = new Map(steps.map((step) => [step.id, step]));
+
+  for (let i = 0; i < orderedIds.length; i += 1) {
+    const targetId = orderedIds[i];
+    const target = stepById.get(targetId);
+    const source = rotated[i];
+    if (!target || !source) {
+      continue;
+    }
+    target.label = source.label;
+    target.description = source.description;
+    target.visibleContainerIds = source.visibleContainerIds;
+    target.highlightedContainerIds = source.highlightedContainerIds;
+    target.visibleConnectionIds = source.visibleConnectionIds;
+    target.highlightedConnectionIds = source.highlightedConnectionIds;
+    target.showFunctionIcons = source.showFunctionIcons;
+    target.highlightedFunctionIcons = source.highlightedFunctionIcons;
+  }
+
+  return steps;
+}
+
 export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConfig[] {
   const baseShopfloorContainers = getShopfloorContainerIds(customerConfig);
   const baseShopfloorConnections = getShopfloorConnectionIds(customerConfig);
   const bpConnections = getBpConnections(customerConfig);
+  const bpProcessIds = getBpProcessContainerIds(customerConfig);
+  const bpFocusIds = ['bp-erp', 'bp-mes', 'bp-ewm', 'bp-crm'];
+  const bpFocusConnections = bpFocusIds.map((id) => conn(id, 'dsp-edge'));
+  const bpStep7VisibleIds = ['bp-erp', 'bp-mes', 'bp-ewm'].filter((id) => bpProcessIds.includes(id));
+  const bpStep7VisibleConnections = bpStep7VisibleIds.map((id) => conn(id, 'dsp-edge')).filter((id) => bpConnections.includes(id));
+  const bpWithoutAnalyticsAndDataLake = bpProcessIds.filter((id) => id !== 'bp-analytics' && id !== 'bp-data-lake');
+  const bpWithoutAnalyticsAndDataLakeConnections = bpWithoutAnalyticsAndDataLake
+    .map((id) => conn(id, 'dsp-edge'))
+    .filter((id) => bpConnections.includes(id));
+  const bpWithoutDataLake = bpProcessIds.filter((id) => id !== 'bp-data-lake');
+  const bpWithoutDataLakeConnections = bpWithoutDataLake
+    .map((id) => conn(id, 'dsp-edge'))
+    .filter((id) => bpConnections.includes(id));
+  const step14Highlights = ['dsp-mc', 'sf-devices-group'];
+  if (bpProcessIds.includes('bp-erp')) {
+    step14Highlights.push('bp-erp');
+  }
+  const step15Highlights = ['dsp-mc'];
+  if (bpProcessIds.includes('bp-mes')) {
+    step15Highlights.push('bp-mes');
+  }
+  if (baseShopfloorContainers.includes('sf-system-fts')) {
+    step15Highlights.push('sf-system-fts');
+  }
 
-  /** Step 10: highlight analytics plus the integration emphasis for the active customer profile. */
-  const analyticsIntegrationHighlights = (): string[] => {
-    if (customerConfig?.bpProcesses.some((bp) => bp.id === 'bp-ewm')) {
-      return ['bp-analytics', 'bp-ewm'];
-    }
-    if (customerConfig?.bpProcesses.some((bp) => bp.id === 'bp-crm')) {
-      return ['bp-analytics', 'bp-crm'];
-    }
-    if (customerConfig?.bpProcesses.some((bp) => bp.id === 'bp-cloud')) {
-      return ['bp-analytics', 'bp-cloud'];
-    }
-    return ['bp-analytics'];
-  };
-
-  return [
+  const steps: StepConfig[] = [
     // Step 1: Shopfloor Devices
     {
       id: 'step-1',
@@ -103,10 +147,30 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       id: 'step-4',
       label: $localize`:@@dspArchStepInterop:Interoperabilität`,
       description: $localize`:@@dspArchStepInteropDesc:DSP ermöglicht herstellerunabhängige, ereignisgesteuerte Kommunikation zwischen Maschinen, Shopfloor-Systemen und IT-Plattformen.`,
-      visibleContainerIds: ['layer-dsp', 'dsp-edge', ...baseShopfloorContainers],
-      highlightedContainerIds: ['dsp-edge'],
-      visibleConnectionIds: [], // Keine Connections anzeigen
-      highlightedConnectionIds: [], // Keine Connections highlighted
+      visibleContainerIds: [
+        'layer-bp',
+        'layer-dsp',
+        ...getBpProcessContainerIds(customerConfig),
+        'dsp-edge',
+        ...baseShopfloorContainers,
+      ],
+      highlightedContainerIds: [
+        'dsp-edge',
+        ...(customerConfig ? ['bp-mes', 'bp-ewm', 'bp-crm'] : ['bp-mes']),
+        ...(customerConfig ? ['sf-system-fts', 'sf-device-aiqs', 'sf-device-hbw'] : ['sf-system-fts', 'sf-device-aiqs', 'sf-device-hbw']),
+      ],
+      visibleConnectionIds: [
+        ...bpConnections,
+        ...baseShopfloorConnections,
+      ],
+      highlightedConnectionIds: [
+        conn('bp-mes', 'dsp-edge'),
+        conn('bp-ewm', 'dsp-edge'),
+        conn('bp-crm', 'dsp-edge'),
+        conn('dsp-edge', 'sf-system-fts'),
+        conn('dsp-edge', 'sf-device-aiqs'),
+        conn('dsp-edge', 'sf-device-hbw'),
+      ].filter((id) => [...bpConnections, ...baseShopfloorConnections].includes(id)),
       showFunctionIcons: true,
       highlightedFunctionIcons: ['edge-interoperability'], // Nur func-SVG highlight
     },
@@ -212,51 +276,24 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       description: $localize`:@@dspArchStepDigitalTwinDesc:DSP erzeugt ein digitales Echtzeit-Abbild von Maschinen, Prozessen und Werkstücken durch die Zusammenführung von Daten aus verschiedenen Systemen.`,
       visibleContainerIds: [
         'layer-bp',
-        'bp-erp',
+        ...bpStep7VisibleIds,
         'layer-dsp',
         'dsp-edge',
         ...baseShopfloorContainers,
       ],
       highlightedContainerIds: [
         'dsp-edge',
-        'bp-erp',
-        ...(customerConfig ? customerConfig.sfSystems.map(s => s.id) : ['sf-system-any', 'sf-system-fts']),
-        ...getShopfloorDeviceIds(customerConfig),
-      ], // Highlight bp-erp, sf-systems, sf-devices
-      visibleConnectionIds: customerConfig
-        ? [
-            ...customerConfig.bpProcesses.filter(bp => bp.id === 'bp-erp').map(bp => `conn_${bp.id}_dsp-edge`),
-            ...customerConfig.sfSystems.map(s => `conn_dsp-edge_${s.id}`),
-            ...customerConfig.sfDevices.map(d => `conn_dsp-edge_${d.id}`),
-          ]
-        : [
-            'conn_bp-erp_dsp-edge',
-            'conn_dsp-edge_sf-system-any',
-            'conn_dsp-edge_sf-system-fts',
-            'conn_dsp-edge_sf-device-mill',
-            'conn_dsp-edge_sf-device-drill',
-            'conn_dsp-edge_sf-device-aiqs',
-            'conn_dsp-edge_sf-device-hbw',
-            'conn_dsp-edge_sf-device-dps',
-            'conn_dsp-edge_sf-device-chrg',
-          ],
-      highlightedConnectionIds: customerConfig
-        ? [
-            ...customerConfig.bpProcesses.filter(bp => bp.id === 'bp-erp').map(bp => `conn_${bp.id}_dsp-edge`),
-            ...customerConfig.sfSystems.map(s => `conn_dsp-edge_${s.id}`),
-            ...customerConfig.sfDevices.map(d => `conn_dsp-edge_${d.id}`),
-          ]
-        : [
-            'conn_bp-erp_dsp-edge',
-            'conn_dsp-edge_sf-system-any',
-            'conn_dsp-edge_sf-system-fts',
-            'conn_dsp-edge_sf-device-mill',
-            'conn_dsp-edge_sf-device-drill',
-            'conn_dsp-edge_sf-device-aiqs',
-            'conn_dsp-edge_sf-device-hbw',
-            'conn_dsp-edge_sf-device-dps',
-            'conn_dsp-edge_sf-device-chrg',
-          ], // Alle Connections highlighted
+        'bp-mes',
+        'bp-ewm',
+      ],
+      visibleConnectionIds: [
+        ...bpStep7VisibleConnections,
+        ...baseShopfloorConnections,
+      ],
+      highlightedConnectionIds: [
+        conn('bp-mes', 'dsp-edge'),
+        conn('bp-ewm', 'dsp-edge'),
+      ].filter((id) => bpConnections.includes(id)),
       showFunctionIcons: true,
       highlightedFunctionIcons: ['edge-digital-twin'],
     },
@@ -268,17 +305,17 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       description: $localize`:@@dspArchStepBestBreedDesc:DSP integriert heterogene ERP-, MES-, EWM-, CRM-, Analytics- und Data-Lake-Systeme und bleibt dabei unabhängig von Herstellern und Plattformen.`,
       visibleContainerIds: [
         'layer-bp',
-        ...getBpProcessContainerIds(customerConfig),
+        ...bpWithoutAnalyticsAndDataLake,
         'layer-dsp',
         'dsp-edge',
         ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: ['dsp-edge'],
+      highlightedContainerIds: ['dsp-edge', ...bpFocusIds.filter((id) => bpWithoutAnalyticsAndDataLake.includes(id))],
       visibleConnectionIds: [
-        ...bpConnections,
+        ...bpWithoutAnalyticsAndDataLakeConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: [conn('bp-erp', 'dsp-edge')], // Highlight conn_bp-erp_dsp-edge
+      highlightedConnectionIds: bpFocusConnections.filter((id) => bpWithoutAnalyticsAndDataLakeConnections.includes(id)),
       showFunctionIcons: true,
       highlightedFunctionIcons: ['edge-best-of-breed'],
     },
@@ -291,16 +328,16 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
-        ...getBpProcessContainerIds(customerConfig),
+        ...bpWithoutDataLake,
         'dsp-edge',
         ...baseShopfloorContainers,
       ],
-      highlightedContainerIds: analyticsIntegrationHighlights(),
+      highlightedContainerIds: bpWithoutDataLake.includes('bp-analytics') ? ['bp-analytics'] : [],
       visibleConnectionIds: [
-        ...bpConnections,
+        ...bpWithoutDataLakeConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: [conn('bp-analytics', 'dsp-edge')],
+      highlightedConnectionIds: [conn('bp-analytics', 'dsp-edge')].filter((id) => bpWithoutDataLakeConnections.includes(id)),
       showFunctionIcons: true,
       highlightedFunctionIcons: ['edge-analytics'],
     },
@@ -384,7 +421,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     {
       id: 'step-13',
       label: $localize`:@@dspArchStep9:Management Cockpit`,
-      description: $localize`:@@dspArchStep9Desc:Model processes, manage organization, and orchestrate all Edge nodes from the cloud.`,
+      description: $localize`:@@dspArchStep9Desc:Cloud-based design and deployment workspace for asset modeling, organization management, and controlled Edge rollouts.`,
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
@@ -402,7 +439,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         ...baseShopfloorConnections,
       ],
       highlightedConnectionIds: [conn('dsp-edge', 'dsp-mc')],
-      showFunctionIcons: true,
+      showFunctionIcons: false,
     },
 
     // Step 14: Organization & Asset Modeling (MC) - moved from Step 15
@@ -410,7 +447,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     {
       id: 'step-14',
       label: $localize`:@@dspMcStepOrg:Organization & Asset Modeling`,
-      description: $localize`:@@dspMcStepOrgDesc:The Management Cockpit centrally models shopfloor structures, assets and connected systems across all sites.`,
+      description: $localize`:@@dspMcStepOrgDesc:Central digital model of shopfloor structures, assets, and connected back-end systems across sites.`,
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
@@ -420,7 +457,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         ...baseShopfloorContainers,
         // Explicitly exclude dsp-ux to ensure it's hidden
       ],
-      highlightedContainerIds: ['dsp-mc'],
+      highlightedContainerIds: step14Highlights,
       visibleConnectionIds: [
         conn('dsp-edge', 'dsp-mc'),
         // Explicitly exclude conn('dsp-ux', 'dsp-edge') to ensure dsp-ux is hidden
@@ -437,7 +474,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     {
       id: 'step-15',
       label: $localize`:@@dspMcStepFlow:Process & Data Flow Configuration`,
-      description: $localize`:@@dspMcStepFlowDesc:The Management Cockpit defines process models and controls how events and data are routed between shopfloor, business and cloud systems.`,
+      description: $localize`:@@dspMcStepFlowDesc:Process and integration models are configured centrally and deployed to Edge nodes.`,
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
@@ -447,14 +484,18 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         ...baseShopfloorContainers,
         // Explicitly exclude dsp-ux to ensure it's hidden
       ],
-      highlightedContainerIds: ['dsp-mc'],
+      highlightedContainerIds: step15Highlights,
       visibleConnectionIds: [
         conn('dsp-edge', 'dsp-mc'),
         // Explicitly exclude conn('dsp-ux', 'dsp-edge') to ensure dsp-ux is hidden
         ...bpConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: [conn('dsp-edge', 'dsp-mc')],
+      highlightedConnectionIds: [
+        conn('dsp-edge', 'dsp-mc'),
+        conn('bp-mes', 'dsp-edge'),
+        conn('dsp-edge', 'sf-system-fts'),
+      ].filter((id) => [conn('dsp-edge', 'dsp-mc'), ...bpConnections, ...baseShopfloorConnections].includes(id)),
       showFunctionIcons: true,
       highlightedFunctionIcons: ['mc-orchestration'],
     },
@@ -464,7 +505,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     {
       id: 'step-16',
       label: $localize`:@@dspMcStepGov:Central Governance & Orchestration`,
-      description: $localize`:@@dspMcStepGovDesc:The Management Cockpit centrally governs, configures and orchestrates all DSP Edge nodes across locations and environments.`,
+      description: $localize`:@@dspMcStepGovDesc:Governance covers roles, versions, and release policies; Edge runtime remains autonomous and does not require 24/7 cockpit availability.`,
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
@@ -481,7 +522,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
         ...bpConnections,
         ...baseShopfloorConnections,
       ],
-      highlightedConnectionIds: [conn('dsp-edge', 'dsp-mc')],
+      highlightedConnectionIds: [],
       showFunctionIcons: true,
       highlightedFunctionIcons: ['mc-governance'],
     },
@@ -492,8 +533,8 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     // DSP-UX wird NICHT dargestellt
     {
       id: 'step-17',
-      label: $localize`:@@dspMcStepEdge:Edge Node Visualization`,
-      description: $localize`:@@dspMcStepEdgeDesc:Management Cockpit displaying the central DSP Edge node connected to the Management Cockpit.`,
+      label: $localize`:@@dspMcStepEdge:Managed Edge Landscape`,
+      description: $localize`:@@dspMcStepEdgeDesc:Management Cockpit manages Edge landscapes through central models and deployments; direct shopfloor component access is handled via Edge.`,
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
@@ -522,8 +563,8 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     // Es wird kein dsp-ux dargestellt
     {
       id: 'step-18',
-      label: $localize`:@@dspMcStepEdgeComplete:Edge Node Visualization Complete`,
-      description: $localize`:@@dspMcStepEdgeCompleteDesc:Management Cockpit displaying three DSP Edge nodes within a 120° segment, all connected to the Management Cockpit and interconnected.`,
+      label: $localize`:@@dspMcStepEdgeComplete:Multi-Edge Management`,
+      description: $localize`:@@dspMcStepEdgeCompleteDesc:Management Cockpit manages multiple Edge nodes (similar or heterogeneous) with centralized deployment governance.`,
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
@@ -552,7 +593,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     {
       id: 'step-19',
       label: $localize`:@@dspArchStep11:SmartFactory Dashboard`,
-      description: $localize`:@@dspArchStep11Desc:Visualization of the digital twin, real-time processes, and track & trace in the shopfloor.`,
+      description: $localize`:@@dspArchStep11Desc:Operational runtime visibility of digital twin, real-time processes, and track & trace in the shopfloor via Edge-connected systems.`,
       visibleContainerIds: [
         ...getBusinessContainerIds(customerConfig),
         'layer-dsp',
@@ -564,7 +605,7 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       highlightedContainerIds: ['dsp-ux'], // Only highlight dsp-ux, not dsp-edge or dsp-mc
       visibleConnectionIds: [
         conn('dsp-ux', 'dsp-edge'),
-        // Explicitly exclude conn('dsp-edge', 'dsp-mc') - no connection from logo-edge to logo-mc
+        conn('dsp-edge', 'dsp-mc'),
         ...bpConnections,
         ...baseShopfloorConnections,
       ],
@@ -576,8 +617,8 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     // Step 20: Full overview (Zielbild) - Everything visible, nothing highlighted
     {
       id: 'step-20',
-      label: $localize`:@@dspArchStep12:Autonomous & Adaptive Enterprise`,
-      description: $localize`:@@dspArchStep12Desc:Data from shopfloor, Edge, ERP, analytics, and data lakes enable autonomous workflows, predictive decisions, and continuous process optimization.`,
+      label: $localize`:@@dspArchStep20:Bridge between IT and OT: ORBIS DSP as an enabler`,
+      description: $localize`:@@dspArchStep20Desc:ORBIS DSP connects shopfloor and business IT as an end-to-end enabler for interoperable processes.`,
       visibleContainerIds: [
         'layer-dsp',
         'layer-sf',
@@ -597,12 +638,14 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
       highlightedFunctionIcons: [], // None highlighted
     },
   ];
+
+  return moveInteroperabilitySummaryToStep12(steps);
 }
 
 export function createSlimSteps(customerConfig?: CustomerDspConfig): StepConfig[] {
   // Keep the full (long) story flow incl. BP boxes, MC and OSF dashboard,
-  // but compress the DSP function focus into two steps:
-  // 1) Interoperability only, 2) all remaining functions at once.
+  // but compress the DSP function focus into two summary steps near the end:
+  // 1) all remaining functions at once, 2) interoperability as final summary.
   const steps = createDefaultSteps(customerConfig).map((s) => ({ ...s }));
 
   const remainingFunctions: Array<
@@ -633,13 +676,13 @@ export function createSlimSteps(customerConfig?: CustomerDspConfig): StepConfig[
     step.highlightedFunctionIcons = [];
   }
 
-  const stepInterop = steps.find((s) => s.id === 'step-4');
+  const stepInterop = steps.find((s) => s.id === 'step-12');
   if (stepInterop) {
     stepInterop.showFunctionIcons = true;
     stepInterop.highlightedFunctionIcons = ['edge-interoperability'];
   }
 
-  const stepAllFunctions = steps.find((s) => s.id === 'step-5');
+  const stepAllFunctions = steps.find((s) => s.id === 'step-11');
   if (stepAllFunctions) {
     stepAllFunctions.label = $localize`:@@dspArchStepFunctions:DSP Functions`;
     stepAllFunctions.description = $localize`:@@dspArchStepFunctionsDesc:All DSP functions are available on the Edge; interoperability is highlighted first, then the remaining functions appear together.`;

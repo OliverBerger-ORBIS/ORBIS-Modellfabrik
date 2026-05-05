@@ -15,24 +15,28 @@
   <!-- Business Process Containers -->
   <g id="business-layer">
     <!-- bp-erp -->
-    <rect x="100" y="145" width="190" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="8"/>
-    <text x="195" y="215" font-family="Arial, sans-serif" font-size="22.400000000000002" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="195" dy="0">bp-erp</tspan><tspan x="195" dy="1.2em" font-size="13" fill="#666">(erp-application)</tspan></text>
+    <rect x="100" y="145" width="156" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="8"/>
+    <text x="178" y="215" font-family="Arial, sans-serif" font-size="22.400000000000002" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="178" dy="0">bp-erp</tspan><tspan x="178" dy="1.2em" font-size="13" fill="#666">(erp-application)</tspan></text>
     
     <!-- bp-mes -->
-    <rect x="320" y="145" width="190" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="8"/>
-    <text x="415" y="215" font-family="Arial, sans-serif" font-size="22.400000000000002" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="415" dy="0">bp-mes</tspan><tspan x="415" dy="1.2em" font-size="13" fill="#666">(mes-application)</tspan></text>
+    <rect x="286" y="145" width="156" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="8"/>
+    <text x="364" y="215" font-family="Arial, sans-serif" font-size="22.400000000000002" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="364" dy="0">bp-mes</tspan><tspan x="364" dy="1.2em" font-size="13" fill="#666">(mes-application)</tspan></text>
     
-    <!-- bp-cloud -->
-    <rect x="540" y="145" width="190" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="8"/>
-    <text x="635" y="215" font-family="Arial, sans-serif" font-size="22.400000000000002" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="635" dy="0">bp-cloud</tspan><tspan x="635" dy="1.2em" font-size="13" fill="#666">(cloud-application)</tspan></text>
+    <!-- bp-ewm -->
+    <rect x="472" y="145" width="156" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="8"/>
+    <text x="550" y="215" font-family="Arial, sans-serif" font-size="22.400000000000002" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="550" dy="0">bp-ewm</tspan><tspan x="550" dy="1.2em" font-size="13" fill="#666">(ewm-application)</tspan></text>
+    
+    <!-- bp-crm -->
+    <rect x="658" y="145" width="156" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="8"/>
+    <text x="736" y="215" font-family="Arial, sans-serif" font-size="22.400000000000002" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="736" dy="0">bp-crm</tspan><tspan x="736" dy="1.2em" font-size="13" fill="#666">(crm-application)</tspan></text>
     
     <!-- bp-analytics -->
-    <rect x="760" y="145" width="190" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="8"/>
-    <text x="855" y="215" font-family="Arial, sans-serif" font-size="22.400000000000002" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="855" dy="0">bp-analytics</tspan><tspan x="855" dy="1.2em" font-size="13" fill="#666">(analytics-application)</tspan></text>
+    <rect x="844" y="145" width="156" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="8"/>
+    <text x="922" y="215" font-family="Arial, sans-serif" font-size="22.400000000000002" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="922" dy="0">bp-analytics</tspan><tspan x="922" dy="1.2em" font-size="13" fill="#666">(analytics-application)</tspan></text>
     
     <!-- bp-data-lake -->
-    <rect x="980" y="145" width="190" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="8"/>
-    <text x="1075" y="215" font-family="Arial, sans-serif" font-size="22.400000000000002" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="1075" dy="0">bp-data-lake</tspan><tspan x="1075" dy="1.2em" font-size="13" fill="#666">(data-lake-application)</tspan></text>
+    <rect x="1030" y="145" width="156" height="140" fill="#ffffff" stroke="rgba(22, 65, 148, 0.25)" stroke-width="2" rx="8"/>
+    <text x="1108" y="215" font-family="Arial, sans-serif" font-size="22.400000000000002" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="600"><tspan x="1108" dy="0">bp-data-lake</tspan><tspan x="1108" dy="1.2em" font-size="13" fill="#666">(data-lake-application)</tspan></text>
     
   </g>
   
@@ -70,9 +74,9 @@
     <rect x="306.2" y="937.5" width="83.1" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
     <text x="347.75" y="997.5" font-family="Arial, sans-serif" font-size="16" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="347.75" dy="-0.6em">sf-system</tspan><tspan x="347.75" dy="1.2em">-warehouse</tspan><tspan x="347.75" dy="1.2em" font-size="10" fill="#666">(warehouse-system)</tspan></text>
     
-    <!-- sf-system-factory -->
+    <!-- sf-system-sensor -->
     <rect x="399.3" y="937.5" width="83.1" height="120" fill="url(#shopfloor-gradient)" stroke="rgba(0, 0, 0, 0.12)" stroke-width="1" rx="2"/>
-    <text x="440.85" y="997.5" font-family="Arial, sans-serif" font-size="16" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="440.85" dy="-0.6em">sf-system</tspan><tspan x="440.85" dy="1.2em">-factory</tspan><tspan x="440.85" dy="1.2em" font-size="10" fill="#666">(factory-system)</tspan></text>
+    <text x="440.85" y="997.5" font-family="Arial, sans-serif" font-size="16" fill="#163494" text-anchor="middle" dominant-baseline="middle" font-weight="500"><tspan x="440.85" dy="-0.6em">sf-system</tspan><tspan x="440.85" dy="1.2em">-sensor</tspan><tspan x="440.85" dy="1.2em" font-size="10" fill="#666">(sensor-station-system)</tspan></text>
     
     <!-- Devices Group -->
     <rect x="562.4" y="927.5" width="607.6" height="165" fill="#ffffff" stroke="rgba(0, 0, 0, 0.08)" stroke-width="1" rx="16"/>
@@ -107,19 +111,22 @@
   <!-- Connections from Business Process to Edge (L-form, bidirectional, no labels) -->
   <g id="connections-bp" stroke="#666" stroke-width="2" fill="none" marker-start="url(#arrowhead-reverse)" marker-end="url(#arrowhead)">
     <!-- conn_bp-erp_dsp-edge -->
-    <path d="M 195 285 L 195 347.5 L 565 347.5 L 565 410"/>
+    <path d="M 178 285 L 178 347.5 L 565 347.5 L 565 410"/>
     
     <!-- conn_bp-mes_dsp-edge -->
-    <path d="M 415 285 L 415 347.5 L 565 347.5 L 565 410"/>
+    <path d="M 364 285 L 364 347.5 L 565 347.5 L 565 410"/>
     
-    <!-- conn_bp-cloud_dsp-edge -->
-    <path d="M 635 285 L 635 347.5 L 565 347.5 L 565 410"/>
+    <!-- conn_bp-ewm_dsp-edge -->
+    <path d="M 550 285 L 550 347.5 L 565 347.5 L 565 410"/>
+    
+    <!-- conn_bp-crm_dsp-edge -->
+    <path d="M 736 285 L 736 347.5 L 565 347.5 L 565 410"/>
     
     <!-- conn_bp-analytics_dsp-edge -->
-    <path d="M 855 285 L 855 347.5 L 565 347.5 L 565 410"/>
+    <path d="M 922 285 L 922 347.5 L 565 347.5 L 565 410"/>
     
     <!-- conn_bp-data-lake_dsp-edge -->
-    <path d="M 1075 285 L 1075 347.5 L 565 347.5 L 565 410"/>
+    <path d="M 1108 285 L 1108 347.5 L 565 347.5 L 565 410"/>
     
   </g>
   

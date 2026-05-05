@@ -182,7 +182,7 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     'bp-mes': $localize`:@@dspArchLabelMESApp:MES Applications`,
     'bp-erp': $localize`:@@dspArchLabelERP:ERP Applications`,
     'bp-cloud': $localize`:@@dspArchLabelCloudApps:Cloud\nApplications`,
-    'bp-analytics': $localize`:@@dspArchLabelAnalytics:Analytical\nApplications`,
+    'bp-analytics': $localize`:@@dspArchLabelAnalytics:Analytical Apps`,
     'bp-data-lake': $localize`:@@dspArchLabelDataLake:Data Lake`,
     'bp-ewm': $localize`:@@dspArchLabelEWMApp:EWM Application`,
     'sf-system-any': $localize`:@@dspArchLabelAnySystem:any System`,
@@ -1135,6 +1135,13 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
   ): { x: number; y: number } {
     const currentStep = this.steps[this.currentStepIndex];
     const isMc = container.id === 'dsp-mc';
+
+    if (container.id === 'dsp-edge' && currentStep?.id === 'step-12' && icon.iconKey === 'edge-interoperability') {
+      return {
+        x: container.width / 2 - icon.size / 2,
+        y: container.height / 2 - icon.size / 2,
+      };
+    }
     
     if (isMc) {
       const isEdgeIcon = icon.iconKey.startsWith('logo-edge-');
@@ -1232,6 +1239,10 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
 
   protected getFunctionIconSize(iconKey: IconKey): number {
     const base = 48; // default size used in config (60 not needed here)
+    const currentStep = this.steps[this.currentStepIndex];
+    if (currentStep?.id === 'step-12' && iconKey === 'edge-interoperability') {
+      return base * 3.2;
+    }
     const factor = this.isFunctionIconHighlighted(iconKey) ? this.functionIconHighlightScale : this.functionIconScale;
     return base * factor;
   }
@@ -1254,6 +1265,12 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
       return container.functionIcons;
     }
     const step = this.steps[this.currentStepIndex];
+    if (container.id === 'dsp-edge' && ['step-13', 'step-14', 'step-15', 'step-16'].includes(step?.id ?? '')) {
+      return [];
+    }
+    if (container.id === 'dsp-edge' && step?.id === 'step-12') {
+      return container.functionIcons.filter((fi) => fi.iconKey === 'edge-interoperability');
+    }
     if (container.id === 'dsp-mc') {
       if (step?.id === 'step-17') {
         // Step 17: Show logo-edge-b and all MC function icons (mc-hierarchical-structure, mc-orchestration, mc-governance)
@@ -1286,6 +1303,9 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
 
   protected showCenterIcon(container: ContainerConfig): boolean {
     if (!container.centerIconKey) return false;
+    if (container.id === 'dsp-edge' && this.isCurrentStep('step-12')) {
+      return false;
+    }
     if (container.id === 'dsp-edge' && this.viewMode !== 'functional') {
       return this.currentStepIndex === 0;
     }

@@ -77,7 +77,7 @@ export const ECME_CONFIG: CustomerDspConfig = {
     },
     {
       id: 'bp-analytics',
-      label: $localize`:@@dspArchLabelAnalytics:Analytical\nApplications`,
+      label: $localize`:@@dspArchLabelAnalytics:Analytical Apps`,
       iconKey: 'analytics',
       brandLogoKey: 'powerbi',
     },

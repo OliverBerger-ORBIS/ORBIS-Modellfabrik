@@ -5,10 +5,15 @@ import {
   createCustomerContainers,
   getShopfloorContainerIds,
   getShopfloorConnectionIds,
+  getBpProcessContainerIds,
   VIEWBOX_WIDTH,
   VIEWBOX_HEIGHT,
 } from './layout.shared.config';
 import { getOrbisColor, ORBIS_COLORS } from '../../assets/color-palette';
+
+function conn(fromId: string, toId: string): string {
+  return `conn_${fromId}_${toId}`;
+}
 
 export function createDeploymentView(customerConfig?: import('./configs/types').CustomerDspConfig): DiagramConfig {
   // Use customer-specific containers if config provided, otherwise default
@@ -68,6 +73,8 @@ export function createDeploymentView(customerConfig?: import('./configs/types').
   // Deployment View Animation Steps - 5-step pipeline reveal
   const baseShopfloorContainers = getShopfloorContainerIds(customerConfig);
   const baseShopfloorConnections = getShopfloorConnectionIds(customerConfig);
+  const bpContainerIds = getBpProcessContainerIds(customerConfig);
+  const bpConnectionIds = bpContainerIds.map((bpId) => conn(bpId, 'dsp-edge'));
   
   const steps: StepConfig[] = [
     // Step 1: Edge Container (empty)
@@ -140,14 +147,10 @@ export function createDeploymentView(customerConfig?: import('./configs/types').
     {
       id: 'deployment-step-5',
       label: $localize`:@@dspDeployStepProvisioning:Provisioning`,
-      description: $localize`:@@dspDeployStepProvisioningDesc:Delivers prepared data and events to ERP, MES, cloud and analytics platforms.`,
+      description: $localize`:@@dspDeployStepProvisioningDesc:Delivers prepared data and events to business, analytics and data platforms.`,
       visibleContainerIds: [
         'layer-bp',
-        'bp-mes',
-        'bp-erp',
-        'bp-cloud',
-        'bp-analytics',
-        'bp-data-lake',
+        ...bpContainerIds,
         'layer-dsp',
         'dsp-ux',
         'dsp-edge',
@@ -163,11 +166,7 @@ export function createDeploymentView(customerConfig?: import('./configs/types').
       visibleConnectionIds: [
         'conn_dsp-ux_dsp-edge',
         'conn_dsp-edge_dsp-mc',
-        'conn_bp-mes_dsp-edge',
-        'conn_bp-erp_dsp-edge',
-        'conn_bp-cloud_dsp-edge',
-        'conn_bp-analytics_dsp-edge',
-        'conn_bp-data-lake_dsp-edge',
+        ...bpConnectionIds,
         ...baseShopfloorConnections,
       ],
       highlightedConnectionIds: [],
@@ -181,11 +180,7 @@ export function createDeploymentView(customerConfig?: import('./configs/types').
       description: $localize`:@@dspDeployStepFullDesc:Complete deployment flow from integration to provisioning.`,
       visibleContainerIds: [
         'layer-bp',
-        'bp-mes',
-        'bp-erp',
-        'bp-cloud',
-        'bp-analytics',
-        'bp-data-lake',
+        ...bpContainerIds,
         'layer-dsp',
         'dsp-ux',
         'dsp-edge',
@@ -201,11 +196,7 @@ export function createDeploymentView(customerConfig?: import('./configs/types').
       visibleConnectionIds: [
         'conn_dsp-ux_dsp-edge',
         'conn_dsp-edge_dsp-mc',
-        'conn_bp-mes_dsp-edge',
-        'conn_bp-erp_dsp-edge',
-        'conn_bp-cloud_dsp-edge',
-        'conn_bp-analytics_dsp-edge',
-        'conn_bp-data-lake_dsp-edge',
+        ...bpConnectionIds,
         ...baseShopfloorConnections,
       ],
       highlightedConnectionIds: [],
