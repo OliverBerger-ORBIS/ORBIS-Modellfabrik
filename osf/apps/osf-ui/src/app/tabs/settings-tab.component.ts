@@ -163,12 +163,6 @@ import { ShopfloorRotationService, type ShopfloorRotation } from '../services/sh
           </label>
 
           <label>
-            <span i18n="@@settingsBpPlanningLinkLabel">BP-Planning Application URL</span>
-            <input type="text" formControlName="bpPlanningApplicationUrl" placeholder="https://" />
-            <small i18n="@@settingsBpPlanningLinkHint">Opens in a new tab when the BP-Planning box is clicked. Leave empty to disable.</small>
-          </label>
-
-          <label>
             <span i18n="@@settingsBpMesSystemLinkLabel">BP-MES Application URL (ORBIS MES)</span>
             <input type="text" formControlName="bpMesApplicationUrl" placeholder="https://" />
             <small i18n="@@settingsBpMesSystemLinkHint">Opens in a new tab when the BP-MES box is clicked. Leave empty to disable.</small>
@@ -178,6 +172,12 @@ import { ShopfloorRotationService, type ShopfloorRotation } from '../services/sh
             <span i18n="@@settingsBpEwmSystemLinkLabel">BP-EWM Application URL (SAP EWM)</span>
             <input type="url" formControlName="bpEwmApplicationUrl" placeholder="https://" />
             <small i18n="@@settingsBpEwmSystemLinkHint">Opens in a new tab when the BP-EWM box is clicked. Leave empty to disable.</small>
+          </label>
+
+          <label>
+            <span i18n="@@settingsBpCrmSystemLinkLabel">BP-CRM Application URL</span>
+            <input type="url" formControlName="bpCrmApplicationUrl" placeholder="https://" />
+            <small i18n="@@settingsBpCrmSystemLinkHint">Opens in a new tab when the BP-CRM box is clicked. Leave empty to disable.</small>
           </label>
 
           <label>
@@ -266,6 +266,33 @@ import { ShopfloorRotationService, type ShopfloorRotation } from '../services/sh
           </li>
         </ul>
       </section>
+
+      <section class="link-settings">
+        <header>
+          <h3 i18n="@@settingsOptionalLinksHeadline">Optional presentation links</h3>
+          <p i18n="@@settingsOptionalLinksDescription">
+            Legacy/optional links are listed here for customer demos, but are not part of the core OCC external-link settings.
+          </p>
+        </header>
+        <form [formGroup]="linksForm" class="links-form">
+          <label>
+            <span i18n="@@settingsBpPlanningLinkLabel">BP-Planning Application URL</span>
+            <input type="text" formControlName="bpPlanningApplicationUrl" placeholder="https://" />
+            <small i18n="@@settingsBpPlanningLinkHint">Opens in a new tab when the BP-Planning box is clicked. Leave empty to disable.</small>
+          </label>
+          <footer>
+            <button
+              type="button"
+              class="secondary"
+              [disabled]="!linksForm.get('bpPlanningApplicationUrl')?.value"
+              (click)="openExternalLink(linksForm.get('bpPlanningApplicationUrl')?.value)"
+              i18n="@@settingsOpenBpPlanningButton"
+            >
+              Open BP-Planning Link
+            </button>
+          </footer>
+        </form>
+      </section>
     </section>
   `,
   styleUrl: './settings-tab.component.scss',
@@ -300,18 +327,6 @@ export class SettingsTabComponent implements OnInit {
       label: 'DSP Use Cases',
       path: '/#/en/dsp/use-case',
       description: 'Select and view use case demonstrations (Track & Trace, Interoperability, and more).',
-      available: true,
-    },
-    {
-      label: 'UC-01 Track & Trace (Concept)',
-      path: '/#/en/dsp/use-case/track-trace?tab=concept',
-      description: 'UC-01 genealogy diagram (Concept tab). Same page as Live Demo with different tab.',
-      available: true,
-    },
-    {
-      label: 'UC-01 Track & Trace (Live Demo)',
-      path: '/#/en/dsp/use-case/track-trace?tab=live',
-      description: 'UC-01 live Track & Trace dashboard (Live Demo tab).',
       available: true,
     },
     {
@@ -429,6 +444,7 @@ export class SettingsTabComponent implements OnInit {
       bpPlanningApplicationUrl: [linkSettings.bpPlanningApplicationUrl],
       bpMesApplicationUrl: [linkSettings.bpMesApplicationUrl],
       bpEwmApplicationUrl: [linkSettings.bpEwmApplicationUrl],
+      bpCrmApplicationUrl: [linkSettings.bpCrmApplicationUrl],
       bpAnalyticsApplicationUrl: [linkSettings.bpAnalyticsApplicationUrl, [Validators.required]],
       bpDataLakeApplicationUrl: [linkSettings.bpDataLakeApplicationUrl],
 
@@ -489,5 +505,13 @@ export class SettingsTabComponent implements OnInit {
     } finally {
       URL.revokeObjectURL(url);
     }
+  }
+
+  openExternalLink(url: string | null | undefined): void {
+    const safeUrl = (url ?? '').trim();
+    if (!safeUrl) {
+      return;
+    }
+    window.open(safeUrl, '_blank', 'noopener,noreferrer');
   }
 }

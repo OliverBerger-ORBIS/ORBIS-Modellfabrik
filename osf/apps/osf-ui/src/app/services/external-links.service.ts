@@ -7,7 +7,7 @@ import { getAssetPath } from '../assets/detail-asset-map';
  * External link targets for DSP UI (Settings + `public/assets/config/external-links.json`).
  *
  * Property order matches the **DSP architecture diagram** (top → bottom, left → right):
- * 1. Business process layer: ERP → Planning → MES → EWM → Analytics → Data Lake
+ * 1. Business process layer: ERP → Planning (legacy) → MES → EWM → CRM → Analytics → Data Lake
  * 2. DSP layer: SmartFactory dashboard → Edge → Management Cockpit
  */
 export interface ExternalLinksSettings {
@@ -19,6 +19,8 @@ export interface ExternalLinksSettings {
   readonly bpMesApplicationUrl: string;
   /** BP box `bp-ewm`. */
   readonly bpEwmApplicationUrl: string;
+  /** BP box `bp-crm`. */
+  readonly bpCrmApplicationUrl: string;
   /** BP box `bp-analytics`. */
   readonly bpAnalyticsApplicationUrl: string;
   /** BP box `bp-data-lake`. */
@@ -39,6 +41,7 @@ const DEFAULT_SETTINGS: ExternalLinksSettings = {
   bpMesApplicationUrl:
     'https://md1.orbis.de/orbis/web_mes/webviewer/index.htm#mppservice=orbis/mes&mpptimeout=60000&defaultlang=EN&maskid=ffb6098113c549bda9192b793dbb75ab&viewermenue=true&extensions=[%22controlinfo%22]&LAYOUT=LIGHT&Werk=1010',
   bpEwmApplicationUrl: 'https://www.orbis-group.com/de-de/sap-orbis-loesungen/logistics/apps.html',
+  bpCrmApplicationUrl: 'https://www.orbis-group.com/de-de/microsoft-orbis-loesungen/dynamics-365-crm-kundenservice.html',
   bpAnalyticsApplicationUrl: 'http://192.168.0.201:3000/dashboards',
   bpDataLakeApplicationUrl: '',
   dspSmartfactoryDashboardUrl: '/dsp-action',
@@ -83,6 +86,8 @@ export class ExternalLinksService {
         return clean(links.bpMesApplicationUrl);
       case 'bp-ewm':
         return clean(links.bpEwmApplicationUrl);
+      case 'bp-crm':
+        return clean(links.bpCrmApplicationUrl);
       case 'bp-analytics':
         return clean(links.bpAnalyticsApplicationUrl);
       case 'bp-data-lake':

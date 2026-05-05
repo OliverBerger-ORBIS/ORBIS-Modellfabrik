@@ -57,6 +57,7 @@ describe('SettingsTabComponent', () => {
     bpPlanningApplicationUrl: '',
     bpMesApplicationUrl: '',
     bpEwmApplicationUrl: '',
+    bpCrmApplicationUrl: '',
     bpAnalyticsApplicationUrl: 'https://grafana.example.com',
     bpDataLakeApplicationUrl: '',
     dspSmartfactoryDashboardUrl: '/dsp-action',
@@ -320,11 +321,11 @@ describe('SettingsTabComponent', () => {
       expect(useCasePage?.available).toBe(true);
     });
 
-    it('should have UC-01 Track & Trace Concept bookmark with tab=concept', () => {
-      const page = component.directPages.find(p => p.label === 'UC-01 Track & Trace (Concept)');
-      expect(page).toBeDefined();
-      expect(page?.path).toBe('/#/en/dsp/use-case/track-trace?tab=concept');
-      expect(page?.available).toBe(true);
+    it('should not have UC-01 direct bookmarks configured', () => {
+      const conceptPage = component.directPages.find(p => p.label === 'UC-01 Track & Trace (Concept)');
+      const livePage = component.directPages.find(p => p.label === 'UC-01 Track & Trace (Live Demo)');
+      expect(conceptPage).toBeUndefined();
+      expect(livePage).toBeUndefined();
     });
 
     it('should not have Overview page configured', () => {

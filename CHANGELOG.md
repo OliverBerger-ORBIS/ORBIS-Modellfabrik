@@ -6,6 +6,10 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
+### OSF-UI
+
+- **External links / Settings:** `bpCrmApplicationUrl` now defaults to the ORBIS Microsoft Dynamics 365 CRM service page (`.../dynamics-365-crm-kundenservice.html`); optional BP-Planning link section in Settings is i18n-enabled (DE/FR locale keys added in `src` + `public` locale files).
+
 ### Project / sprint documentation
 
 - **Sprint 18** closed (LogiMAT, ORBIS Vertrieb OSF **02.04.2026**). **Sprint 19** opened — focus: Arduino sensor station (OSF, 24 V, box), backend/Grafana, blog, Hannover Messe prep (bird’s-eye camera, Konftel-20, OBS). See [sprint_19.md](docs/sprints/sprint_19.md), [PROJECT_STATUS.md](docs/PROJECT_STATUS.md).

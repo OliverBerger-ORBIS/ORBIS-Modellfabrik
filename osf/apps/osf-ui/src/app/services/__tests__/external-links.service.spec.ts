@@ -8,6 +8,7 @@ const fullSettings = (over: Partial<ExternalLinksSettings> = {}): ExternalLinksS
   bpPlanningApplicationUrl: '',
   bpMesApplicationUrl: '',
   bpEwmApplicationUrl: '',
+  bpCrmApplicationUrl: '',
   bpAnalyticsApplicationUrl: 'https://grafana.example.com',
   bpDataLakeApplicationUrl: '',
   dspSmartfactoryDashboardUrl: '/dsp-action',

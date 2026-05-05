@@ -3,6 +3,7 @@
   "bpPlanningApplicationUrl": "https://md1.orbis.de/sap/bc/ui5_ui5/omes/pt/index.html?sap-client=100&sap-ui-language=DE&sap-ui-xx-devmode=true#/OrderManagement/1010/SMARTFACTORY",
   "bpMesApplicationUrl": "https://md1.orbis.de/orbis/web_mes/webviewer/index.htm#mppservice=orbis/mes&mpptimeout=60000&defaultlang=EN&maskid=ffb6098113c549bda9192b793dbb75ab&viewermenue=true&extensions=[%22controlinfo%22]&LAYOUT=LIGHT&Werk=1010",
   "bpEwmApplicationUrl": "https://www.orbis-group.com/de-de/sap-orbis-loesungen/logistics/apps.html",
+  "bpCrmApplicationUrl": "https://www.orbis-group.com/de-de/microsoft-orbis-loesungen/dynamics-365-crm-kundenservice.html",
   "bpAnalyticsApplicationUrl": "http://192.168.0.201:3000/dashboards",
   "bpDataLakeApplicationUrl": "",
   "dspSmartfactoryDashboardUrl": "/dsp-action",
