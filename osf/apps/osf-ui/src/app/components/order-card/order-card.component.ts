@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -10,6 +11,7 @@ import { ModuleNameService } from '../../services/module-name.service';
 import { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
 import { CorrelationInfoService, type CorrelationInfo } from '../../services/correlation-info.service';
 import { FtsOrderAssignmentService } from '../../services/fts-order-assignment.service';
+import { LanguageService } from '../../services/language.service';
 import { resolveLegacyShopfloorPath } from '../../shared/icons/legacy-shopfloor-map';
 import { ICONS } from '../../shared/icons/icon.registry';
 
@@ -81,7 +83,9 @@ export class OrderCardComponent implements OnInit, OnChanges, OnDestroy {
     private readonly mappingService: ShopfloorMappingService,
     private readonly correlationInfoService: CorrelationInfoService,
     private readonly ftsAssignmentService: FtsOrderAssignmentService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private readonly router: Router,
+    private readonly languageService: LanguageService
   ) {}
 
   ngOnInit(): void {
@@ -108,6 +112,22 @@ export class OrderCardComponent implements OnInit, OnChanges, OnDestroy {
     if (this.order && this.onRequestCorrelation) {
       await this.onRequestCorrelation(this.order);
     }
+  }
+
+  /**
+   * Click a module cell on the embedded shopfloor map → Shopfloor tab with that station focused (`?module=` matches layout cell name, e.g. HBW).
+   */
+  onShopfloorPreviewCellSelected(event: { id: string; kind: 'module' | 'fixed' }): void {
+    if (event.kind !== 'module') {
+      return;
+    }
+    const cell = this.mappingService.getCellById(event.id);
+    const moduleName = cell?.name?.trim();
+    if (!moduleName) {
+      return;
+    }
+    const locale = this.languageService.current;
+    void this.router.navigate([locale, 'shopfloor'], { queryParams: { module: moduleName } });
   }
 
   get requestCorrelationButtonLabel(): string {

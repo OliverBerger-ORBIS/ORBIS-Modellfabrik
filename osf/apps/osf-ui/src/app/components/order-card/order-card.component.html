@@ -39,7 +39,9 @@
           [showZoomControls]="true"
           [highlightStyle]="'active-step'"
           [ftsPositions]="ftsPositions"
+          [selectionEnabled]="true"
           (viewportChanged)="onShopfloorViewportChanged($event)"
+          (cellSelected)="onShopfloorPreviewCellSelected($event)"
         />
       </div>
 

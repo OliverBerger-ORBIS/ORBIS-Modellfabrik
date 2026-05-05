@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import { ProcessTabComponent } from '../process-tab.component';
 import { EnvironmentService } from '../../services/environment.service';
@@ -6,6 +7,7 @@ import { MessageMonitorService } from '../../services/message-monitor.service';
 import { ModuleNameService } from '../../services/module-name.service';
 import { ConnectionService } from '../../services/connection.service';
 import { InventoryStateService } from '../../services/inventory-state.service';
+import { LanguageService } from '../../services/language.service';
 import * as mockDashboard from '../../mock-dashboard';
 import type { ProductionFlowMap } from '@osf/entities';
 
@@ -45,6 +47,7 @@ describe('ProcessTabComponent', () => {
     const messageMonitorMock = {
       getLastMessage: jest.fn(() => of({ valid: false, payload: null })),
       getHistory: jest.fn(() => []),
+      clearTopic: jest.fn(),
     };
 
     const moduleNameServiceMock = {
@@ -53,6 +56,15 @@ describe('ProcessTabComponent', () => {
 
     const connectionServiceMock = {
       state$: new BehaviorSubject<'disconnected'>('disconnected'),
+      resubscribe: jest.fn(),
+    };
+
+    const routerMock = {
+      navigate: jest.fn(() => Promise.resolve(true)),
+    };
+
+    const languageServiceMock = {
+      current: 'en' as const,
     };
 
     const inventoryStateServiceMock = {
@@ -70,6 +82,8 @@ describe('ProcessTabComponent', () => {
         { provide: ModuleNameService, useValue: moduleNameServiceMock },
         { provide: ConnectionService, useValue: connectionServiceMock },
         { provide: InventoryStateService, useValue: inventoryStateServiceMock },
+        { provide: Router, useValue: routerMock },
+        { provide: LanguageService, useValue: languageServiceMock },
       ],
     }).compileComponents();
 
@@ -84,6 +98,33 @@ describe('ProcessTabComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should refresh process data on init (stock resubscribe)', () => {
+    const connection = TestBed.inject(ConnectionService) as unknown as { resubscribe: jest.Mock };
+    fixture.detectChanges();
+    expect(connection.resubscribe).toHaveBeenCalled();
+  });
+
+  it('should navigate to order tab with product query when opening order tab', () => {
+    const router = TestBed.inject(Router) as unknown as { navigate: jest.Mock };
+    component.openOrderTab('BLUE');
+    expect(router.navigate).toHaveBeenCalledWith(['en', 'order'], { queryParams: { product: 'BLUE' } });
+  });
+
+  it('should navigate to order tab from production flow product card', () => {
+    const router = TestBed.inject(Router) as unknown as { navigate: jest.Mock };
+    component.openOrderTabFromProductionFlow({
+      type: 'BLUE',
+      label: 'Blue',
+      dotClass: 'blue',
+      steps: [],
+      stepCount: 0,
+      productIcon: '',
+      product3dIcon: '',
+      backgroundClass: 'bg-blue',
+    });
+    expect(router.navigate).toHaveBeenCalledWith(['en', 'order'], { queryParams: { product: 'BLUE' } });
   });
 
   it('should initialize streams', () => {

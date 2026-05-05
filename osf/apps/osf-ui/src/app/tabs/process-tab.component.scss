@@ -573,6 +573,23 @@ button.secondary {
   background: rgba(255, 255, 255, 0.92);
   box-shadow: inset 0 0 0 1px rgba(19, 49, 92, 0.08), 0 18px 42px -30px rgba(19, 49, 92, 0.45);
 
+  &--navigate-to-orders {
+    cursor: pointer;
+    outline: none;
+    transition:
+      box-shadow 0.2s ease,
+      transform 0.15s ease;
+
+    &:hover {
+      box-shadow: inset 0 0 0 1px rgba(19, 49, 92, 0.12), 0 22px 48px -28px rgba(19, 49, 92, 0.55);
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 2px rgba(var(--orbis-blue-strong-rgb), 0.45), inset 0 0 0 1px rgba(19, 49, 92, 0.12),
+        0 18px 42px -30px rgba(19, 49, 92, 0.45);
+    }
+  }
+
   &.bg-blue {
     background: linear-gradient(145deg, rgba(210, 237, 255, 0.65), rgba(255, 255, 255, 0.95));
   }

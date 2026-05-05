@@ -23,9 +23,10 @@
 - [ ] **Functional View Animation:** 7 Functional DSP Icons wieder einzeln einbauen (LogiMAT-ähnliche Variante als Default für OCC)
 - [ ] **Functional View Animation:** Interoperability SVG/Icon in Animation deutlich größer darstellen; ggf. zentral positionieren und DSP-Edge-Icon überdecken
 - [ ] **Use-Case „Anomaly Detection“:** CRM Integration (Vibration löst Alarm aus → DSP-Edge sendet an MS-CRM → CRM „Prozess gestartet“/Techniker-Einsatz)
-- [ ] **Process-Tab:** beim Wechsel in den Tab automatisch Refresh ausführen (Inventory/Lagerinfo ohne Button-Drücken)
-- [ ] **Process → Order:** nach Auslösen einer Order (`ccu/order/request`) per Klick im Bereich „Kundenaufträge“ in den Order-Tab springen (Produkt Blue/White/Red)
-- [ ] **Order → Shopfloor:** aus dem Order-Tab per Klick in den Shopfloor-Tab wechseln
+- [x] **Process-Tab:** beim Wechsel in den Tab automatisch Refresh ausführen (Inventory/Lagerinfo ohne Button-Drücken) — `ProcessTabComponent.ngOnInit` ruft `refreshProcessData()` auf (05.05.2026, `nx test osf-ui --testPathPattern=process-tab.component.spec`)
+- [x] **Process → Order:** nach Auslösen einer Order (`ccu/order/request`) **ohne** Tab-Wechsel (mehrere Aufträge möglich); Sprung in den Order-Tab nur per Klick auf eine **Production-Flow-Produktkarte** (Blue/White/Red) rechts → `openOrderTabFromProductionFlow` / `/:locale/order?product=…` (05.05.2026, Unit-Tests `openOrderTab`, `openOrderTabFromProductionFlow`)
+- [x] **Order → Shopfloor:** aus dem Order-Tab in den Shopfloor-Tab — **Modul** auf der eingebetteten Shopfloor-Vorschau in der Order-Card anklicken → `/:locale/shopfloor?module=…` (z. B. HBW), Fokus wie Shopfloor-Tab `selectModuleByType` (05.05.2026, `order-card.component.spec`)
+- [ ] **UX/Navigation (Analyse):** Entscheidungsgrundlage: `BackButtonComponent` in den **Haupt-Tabs** (z. B. Process/Order/Shopfloor nach Deep-Link-Flows) einbauen **oder** bewusst nur **Sidebar-Navigation** + **Browser-Zurück**; Status quo: Use-Case-Seiten haben `app-back-button`, die Tab-Routen nicht — Empfehlung dokumentieren, danach ggf. umsetzen
 - [ ] **Track & Trace Use-Case:** Umwelt-/Sensor-Daten eventbasiert „samplen“/speichern (Snapshots zu Shopfloor-Events: HBW Pick/Drop, DPS Pick/Drop, DRILL/MILL/AIQS Prozessschritte)
 - [ ] **Analyse/Fix:** Track&Trace Live zeigt AIQS-Event-Sequenzen doppelt (Start+Ende) → Root cause + Fix (z. B. Produkt Blau: AIQS, DRILL, MILL, AIQS)
 - [ ] **Track&Trace Business-Kontext:** geplante Stationskette kurz anzeigen (z. B. Lagerauftrag: DPS→HBW; Produktion Blau: HBW→DRILL→MILL→AIQS→DPS)
@@ -78,5 +79,5 @@
 
 ---
 
-*Stand: 30.04.2026* · [sprints_README.md](sprints_README.md)
+*Stand: 05.05.2026* · [sprints_README.md](sprints_README.md)
 

@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Router } from '@angular/router';
 import { OrderCardComponent } from '../order-card.component';
 import { ModuleNameService } from '../../../services/module-name.service';
 import { ShopfloorMappingService } from '../../../services/shopfloor-mapping.service';
@@ -8,6 +9,7 @@ import { CorrelationInfoService } from '../../../services/correlation-info.servi
 import { MessageMonitorService } from '../../../services/message-monitor.service';
 import { MessageValidationService } from '../../../services/message-validation.service';
 import { MessagePersistenceService } from '../../../services/message-persistence.service';
+import { LanguageService } from '../../../services/language.service';
 import type { OrderActive, ProductionStep } from '@osf/entities';
 import { SimpleChange } from '@angular/core';
 import { of } from 'rxjs';
@@ -64,8 +66,15 @@ describe('OrderCardComponent', () => {
           provide: ShopfloorMappingService,
           useValue: {
             getAgvLabel: (serial: string) => (serial === '5iO4' ? 'AGV-1' : serial === 'leJ4' ? 'AGV-2' : null),
+            getCellById: (id: string) =>
+              id === 'cell-hbw-test' ? { id, name: 'HBW' } : null,
           },
         },
+        {
+          provide: Router,
+          useValue: { navigate: jest.fn(() => Promise.resolve(true)) },
+        },
+        { provide: LanguageService, useValue: { current: 'en' as const } },
         {
           provide: FtsOrderAssignmentService,
           useValue: {
@@ -85,8 +94,28 @@ describe('OrderCardComponent', () => {
     moduleNameService = TestBed.inject(ModuleNameService);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should navigate to shopfloor tab with module query when a module cell is selected on the preview', () => {
+    const router = TestBed.inject(Router) as unknown as { navigate: jest.Mock };
+    component.order = mockOrder;
+    fixture.detectChanges();
+    component.onShopfloorPreviewCellSelected({ id: 'cell-hbw-test', kind: 'module' });
+    expect(router.navigate).toHaveBeenCalledWith(['en', 'shopfloor'], {
+      queryParams: { module: 'HBW' },
+    });
+  });
+
+  it('should not navigate when a fixed layout cell is selected', () => {
+    const router = TestBed.inject(Router) as unknown as { navigate: jest.Mock };
+    component.onShopfloorPreviewCellSelected({ id: 'fixed-1', kind: 'fixed' });
+    expect(router.navigate).not.toHaveBeenCalled();
   });
 
   describe('Input Binding', () => {
