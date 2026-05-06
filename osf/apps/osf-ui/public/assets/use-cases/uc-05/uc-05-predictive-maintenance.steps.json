@@ -19,12 +19,12 @@
   {
     "id": "uc05-01-trigger-sensor",
     "title": {
-      "de": "Trigger & Sensor",
-      "en": "Trigger & Sensor"
+      "de": "Datenerfassung",
+      "en": "Data Collection"
     },
     "description": {
-      "de": "Trigger aktiv, Signal-Dreieck und Vibration-Sensor erfassen Daten. Signale gehen an DSP Edge. Detect-Schritt hervorgehoben.",
-      "en": "Trigger active, signal triangle and vibration sensor capture data. Signals go to DSP Edge. Detect step highlighted."
+      "de": "Trigger, Sensor-Station und Signale liefern den Rohdatenstrom als Grundlage fuer spaetere Prognosen.",
+      "en": "Trigger, sensor station and signal flow provide the raw data stream for later forecasting."
     },
     "highlightIds": [
       "uc05_sf_trigger",
@@ -38,12 +38,12 @@
   {
     "id": "uc05-02-dsp-evaluate",
     "title": {
-      "de": "DSP & Bewerten",
-      "en": "DSP & Evaluate"
+      "de": "Kontextualisierung",
+      "en": "Contextualization"
     },
     "description": {
-      "de": "DSP Edge wertet Schwellwerte und Regeln aus und erkennt Anomalien.",
-      "en": "DSP Edge evaluates thresholds and rules to detect anomalies."
+      "de": "DSP Edge verknuepft Zeitreihen mit Auftrags- und Stationskontext fuer analysierbare Datenprodukte.",
+      "en": "DSP Edge enriches time series with order and station context to build analyzable data products."
     },
     "highlightIds": [
       "uc05_mixed_dsp_edge",
@@ -55,12 +55,12 @@
   {
     "id": "uc05-03-alarm",
     "title": {
-      "de": "Alarm",
-      "en": "Alarm"
+      "de": "Modellierung",
+      "en": "Modeling"
     },
     "description": {
-      "de": "Bei Anomalie wird ein Alarm-Event emittiert. Alarm-Box und Alarm-Schritt – Connection als gepunktete Linie.",
-      "en": "On anomaly, an alarm event is emitted. Alarm box and Alarm step – connection as dotted line."
+      "de": "Modelle und Trendindikatoren werden aus historischen Daten aufgebaut (kein Fokus auf sofortige Alarmeskalation).",
+      "en": "Models and trend indicators are built from historical data (not focused on immediate alarm escalation)."
     },
     "highlightIds": [
       "uc05_proc_alarm",
@@ -73,12 +73,12 @@
   {
     "id": "uc05-04-act",
     "title": {
-      "de": "Aktion",
-      "en": "Act"
+      "de": "Prognose",
+      "en": "Forecast"
     },
     "description": {
-      "de": "Reaktion: Produktion pausieren. Act-Schritt, Alarm-Box und Connection zu Systems & Devices.",
-      "en": "Response: Production pause. Act step, Alarm box and connection to Systems & Devices."
+      "de": "Vorhersagen schaetzen Ausfallrisiken und Wartungsfenster, damit Eingriffe planbar werden.",
+      "en": "Forecasts estimate failure risk and service windows to make interventions plannable."
     },
     "highlightIds": [
       "uc05_proc_action",
@@ -91,12 +91,12 @@
   {
     "id": "uc05-05-alarm-event",
     "title": {
-      "de": "Alarm Event",
-      "en": "Alarm Event"
+      "de": "Datenbereitstellung",
+      "en": "Data Provisioning"
     },
     "description": {
-      "de": "Alarm-Event wird an Target-Systeme (MES/ERP/Analytics) weitergeleitet.",
-      "en": "Alarm event is forwarded to target systems (MES/ERP/Analytics)."
+      "de": "Aufbereitete Datenprodukte werden an Zielsysteme fuer Planung und Analyse weitergegeben.",
+      "en": "Prepared data products are delivered to target systems for planning and analysis."
     },
     "highlightIds": [
       "uc05_conn_alarm_target",
@@ -108,12 +108,12 @@
   {
     "id": "uc05-06-feedback",
     "title": {
-      "de": "Feedback",
-      "en": "Feedback"
+      "de": "Wartungsplanung",
+      "en": "Maintenance Planning"
     },
     "description": {
-      "de": "Rückmeldung an Zielsysteme für Wartungsplanung. Target-Box, Connection zu Feedback und Feedback-Schritt.",
-      "en": "Feedback to target systems for maintenance scheduling. Target box, connection to Feedback and Feedback step."
+      "de": "Zielsysteme uebernehmen die Prognosen in konkrete Wartungsplaene, Kapazitaetsplanung und Ersatzteilprozesse.",
+      "en": "Target systems turn forecasts into concrete maintenance plans, capacity planning and spare-parts processes."
     },
     "highlightIds": [
       "uc05_mixed_target",

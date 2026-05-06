@@ -33,7 +33,7 @@ export interface Uc05MixedBox {
   type: 'dsp-edge' | 'alarm' | 'target';
 }
 
-/** UC-05 Shopfloor left: Stimmgabel (trigger) + Vibrationssensor (detector) as separate boxes; right: Systems/Devices like UC-03 */
+/** UC-05 Shopfloor left: tuning-fork trigger + sensor-station detector; right: Systems/Devices like UC-03 */
 export const UC05_SHOPFLOOR_ICONS = {
   trigger: 'tuningFork' as const,
   detector: 'vibrationSensor' as const,

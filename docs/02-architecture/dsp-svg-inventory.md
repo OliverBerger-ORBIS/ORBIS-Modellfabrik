@@ -225,6 +225,38 @@ Diese Übersicht zeigt alle SVG-Assets, die **nicht** bereits in der [DSP Archit
 
 </div>
 
+### svg/dsp/use-cases
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; margin: 16px 0;">
+
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/dsp/use-cases/use-case-track-trace.svg" alt="use-case-track-trace.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`use-case-track-trace`</div>
+<div style="font-size: 0.9em; color: #666;">use-case-track-trace.svg</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/dsp/use-cases/use-case-data-aggregation.svg" alt="use-case-data-aggregation.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`use-case-data-aggregation`</div>
+<div style="font-size: 0.9em; color: #666;">use-case-data-aggregation.svg</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/dsp/use-cases/use-case-predictive-maintenance.svg" alt="use-case-predictive-maintenance.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`use-case-predictive-maintenance`</div>
+<div style="font-size: 0.9em; color: #666;">use-case-predictive-maintenance.svg</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/dsp/use-cases/use-case-process-optimization.svg" alt="use-case-process-optimization.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`use-case-process-optimization`</div>
+<div style="font-size: 0.9em; color: #666;">use-case-process-optimization.svg</div>
+</div>
+<div style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
+<img src="../../osf/apps/osf-ui/src/assets/svg/dsp/use-cases/use-case-anomaly-detection.svg" alt="use-case-anomaly-detection.svg" width="64" height="64" />
+<div style="font-weight: 600; margin-top: 8px;">`use-case-anomaly-detection`</div>
+<div style="font-size: 0.9em; color: #666;">use-case-anomaly-detection.svg</div>
+</div>
+
+</div>
+
 ### svg/shopfloor/intersections
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; margin: 16px 0;">

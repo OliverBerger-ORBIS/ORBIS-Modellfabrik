@@ -55,6 +55,13 @@ export const appRoutes: Routes = [
           ),
       },
       {
+        path: 'dsp/use-case/anomaly-detection',
+        loadComponent: () =>
+          import('./pages/use-cases/anomaly-detection/anomaly-detection-use-case.component').then(
+            (m) => m.AnomalyDetectionUseCaseComponent
+          ),
+      },
+      {
         path: 'dsp/use-case/closed-loop-quality',
         loadComponent: () =>
           import('./pages/use-cases/closed-loop-quality/closed-loop-quality-use-case.component').then(

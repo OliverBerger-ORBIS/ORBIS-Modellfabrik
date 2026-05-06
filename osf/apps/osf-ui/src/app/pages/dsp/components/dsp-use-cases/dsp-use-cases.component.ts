@@ -36,6 +36,7 @@ const USE_CASE_LABEL = $localize`:@@dspUseCaseLabel:Use Case`;
  * 5. UC-04 Closed Loop Quality
  * 6. UC-05 Predictive Maintenance
  * 7. UC-06 Process Optimization
+ * 8. UC-07 Anomaly Detection
  * 
  * Supports:
  * - Single click: Highlight and show details
@@ -174,21 +175,43 @@ export class DspUseCasesComponent {
     {
       id: 'predictive-maintenance',
       useCaseTitle: $localize`:@@dspUseCasePredictiveTitle:Predictive Maintenance`,
-      description: $localize`:@@dspUseCasePredictiveDesc:Condition monitoring, early warning systems for machine parameters, and AI/ML models for predictive maintenance.`,
+      description: $localize`:@@dspUseCasePredictiveDesc:Long-term condition data collection, trend analytics, and forecasting models to plan maintenance proactively.`,
       actions: [
-        $localize`:@@dspUseCasePredictiveH1:Real-time condition monitoring`,
-        $localize`:@@dspUseCasePredictiveH2:Early warning system for anomalies`,
-        $localize`:@@dspUseCasePredictiveH3:AI/ML prediction models`,
-        $localize`:@@dspUseCasePredictiveH4:Preventive maintenance scheduling`,
+        $localize`:@@dspUseCasePredictiveH1:Continuous condition-data capture across machines and sensors`,
+        $localize`:@@dspUseCasePredictiveH2:Historical trend analysis for wear and drift patterns`,
+        $localize`:@@dspUseCasePredictiveH3:Forecasting models for failure probability and service windows`,
+        $localize`:@@dspUseCasePredictiveH4:Maintenance planning based on predicted risk and lead times`,
       ],
       smartFactory: [
-        $localize`:@@orbisUseCasePredictiveDescription:AI-driven detection of anomalies, wear patterns, and optimal service windows.`,
-        $localize`:@@orbisUseCasePredictiveHighlight1:Pattern recognition on spindle load, vibration, cycle duration, and energy usage.`,
-        $localize`:@@orbisUseCasePredictiveHighlight2:Anomaly scoring with automated escalation to maintenance bots or SAP notifications.`,
-        $localize`:@@orbisUseCasePredictiveHighlight3:Predictive forecasts feeding SAP maintenance plans, spare-part logistics, and operator guidance.`,
+        $localize`:@@orbisUseCasePredictiveDescription:Predictive Maintenance focuses on data foundation, trends, and forecast quality rather than immediate alarm routing.`,
+        $localize`:@@orbisUseCasePredictiveHighlight1:Unifies spindle load, vibration, cycle duration, and energy data over time.`,
+        $localize`:@@orbisUseCasePredictiveHighlight2:Builds explainable degradation indicators and model features from historical context.`,
+        $localize`:@@orbisUseCasePredictiveHighlight3:Provides maintenance planning inputs for staffing, spare parts, and intervention windows.`,
       ],
       icon: 'assets/svg/dsp/use-cases/use-case-predictive-maintenance.svg',
       conceptRoute: '/dsp/use-case/predictive-maintenance',
+    },
+    {
+      id: 'anomaly-detection',
+      useCaseTitle: $localize`:@@dspUseCaseAnomalyTitle:Anomaly Detection`,
+      useCaseCode: 'UC-07',
+      reference: $localize`:@@dspUseCaseAnomalyRef:UC-07: Anomaly Detection`,
+      description: $localize`:@@dspUseCaseAnomalyDesc:Vibration alarm events are detected at the edge and forwarded to CRM, where the downstream workflow is configured customer-specific.`,
+      actions: [
+        $localize`:@@dspUseCaseAnomalyH1:Detect vibration alarm events from sensor station signals`,
+        $localize`:@@dspUseCaseAnomalyH2:DSP Edge validates and enriches the alarm with process context`,
+        $localize`:@@dspUseCaseAnomalyH3:Forward alarm event to Microsoft CRM as integration target`,
+        $localize`:@@dspUseCaseAnomalyH4:CRM starts follow-up workflow (automatic, semi-automatic, or manual)`,
+      ],
+      smartFactory: [
+        $localize`:@@orbisUseCaseAnomalyDescription:Anomaly Detection handles immediate event escalation; the post-event process starts in CRM.`,
+        $localize`:@@orbisUseCaseAnomalyHighlight1:Uses the same event-to-process foundation as other DSP use cases.`,
+        $localize`:@@orbisUseCaseAnomalyHighlight2:Separates real-time alarm routing from long-term predictive maintenance analytics.`,
+        $localize`:@@orbisUseCaseAnomalyHighlight3:Keeps CRM workflow behavior configurable per customer organization.`,
+      ],
+      icon: 'assets/svg/dsp/use-cases/use-case-anomaly-detection.svg',
+      conceptRoute: '/dsp/use-case/anomaly-detection',
+      liveDemoRoute: '/dsp/use-case/anomaly-detection',
     },
     {
       id: 'process-optimization',

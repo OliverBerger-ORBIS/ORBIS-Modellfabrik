@@ -79,12 +79,12 @@
   </div>
 
   <div class="predictive-maintenance-use-case__live-demo" *ngIf="activeTab === 'live-demo'">
-    <h3 class="predictive-maintenance-use-case__live-demo-title" i18n="@@uc05LiveDemoTitle">Danger Simulation</h3>
+    <h3 class="predictive-maintenance-use-case__live-demo-title" i18n="@@uc05LiveDemoTitle">Data-Basis Simulation</h3>
     <p class="predictive-maintenance-use-case__live-demo-desc" i18n="@@uc05LiveDemoDescAnySensor">
-      When enabled, any Arduino sensor alarm (vibration, flame, gas, temperature/humidity) triggers park + cancel of ENQUEUED orders automatically. Use the Park button in the header for manual park.
+      This demo focuses on collecting condition data streams (vibration, flame, gas, temperature/humidity) as predictive-maintenance input. Immediate anomaly escalation is covered in UC-07.
     </p>
     <p class="predictive-maintenance-use-case__live-demo-limitation" i18n="@@uc05LiveDemoLimitationInProgress">
-      <strong>CCU limitation:</strong> Only ENQUEUED orders are cancelled. Orders already IN_PROGRESS (e.g. at DRILL or AIQS) continue until completion. Manual factory reset may be required after alarm.
+      <strong>CCU limitation:</strong> Demo commands can affect only ENQUEUED orders. Running orders continue until completion.
     </p>
 
     <div class="predictive-maintenance-use-case__live-demo-toggles">
@@ -117,8 +117,8 @@
       <ol class="predictive-maintenance-use-case__steps-list">
         <li i18n="@@uc05LiveDemoStep1">Activate the toggle above</li>
         <li i18n="@@uc05LiveDemoStep2">Trigger order in Process tab</li>
-        <li i18n="@@uc05LiveDemoStep3">During order process, trigger any sensor alarm (vibration, flame, gas, or temp/hum)</li>
-        <li i18n="@@uc05LiveDemoStep4">Observe order flow in Orders tab</li>
+        <li i18n="@@uc05LiveDemoStep3">Generate sensor data events (vibration, flame, gas, or temp/hum)</li>
+        <li i18n="@@uc05LiveDemoStep4">Observe data flow and context correlation in Message Monitor</li>
       </ol>
     </div>
 

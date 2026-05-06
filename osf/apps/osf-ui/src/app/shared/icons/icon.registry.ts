@@ -42,6 +42,7 @@ export const ICONS = {
       agv: sfShared('agv-vehicle.svg'),
       fts: sfShared('agv-vehicle.svg'), // alias for MQTT terminology
       any: 'assets/svg/shopfloor/systems/any-system.svg',
+      sensorStation: 'assets/svg/shopfloor/systems/sensor-station-system.svg',
       factory: 'assets/svg/shopfloor/systems/factory-system.svg',
       warehouse: 'assets/svg/shopfloor/systems/warehouse-system.svg',
       scada: 'assets/svg/shopfloor/systems/scada-system.svg',

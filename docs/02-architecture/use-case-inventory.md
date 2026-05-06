@@ -55,14 +55,18 @@ Die Use-Case-Diagramme werden zur Laufzeit generiert. Export per `node scripts/e
 <img src="../assets/use-cases/uc-06/uc-06-process-optimization-EN.svg" alt="UC-06 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
 <small>Overview (Step 0), EN</small>
 </td>
-<td></td>
+<td style="vertical-align: top; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+<strong>UC-07: Anomaly Detection</strong><br/>
+<img src="../assets/use-cases/uc-07/uc-07-anomaly-detection-EN.svg" alt="UC-07 Overview" style="max-width: 640px; width: 100%; height: auto; margin-top: 8px; display: block;" /><br/>
+<small>Overview (Step 0), EN</small>
+</td>
 </tr>
 </table>
 
 **Export:** `node scripts/export-use-case-svgs.js` – baut bei Bedarf, startet Server, exportiert mit Puppeteer.
 Schreibt nach `osf/.../assets/svg/use-cases/` und kopiert nach `docs/assets/use-cases/uc-XX/` (Referenz für diese Übersicht).
 
-**Hinweis:** UC-00 und UC-06 erscheinen erst nach einem Export. Falls die Bilder nicht angezeigt werden: `node scripts/export-use-case-svgs.js` ausführen.
+**Hinweis:** UC-00, UC-06 und UC-07 erscheinen erst nach einem Export. Falls die Bilder nicht angezeigt werden: `node scripts/export-use-case-svgs.js` ausführen.
 
 **Voraussetzung:** Puppeteer benötigt Chrome. Falls Fehler „Could not find Chrome“:
 ```bash
@@ -82,6 +86,7 @@ npx puppeteer browsers install chrome
 | 04 | Closed Loop Quality | `closed-loop-quality` | 7 | Source: Order & AIQS | uc-04-structure.config |
 | 05 | Predictive Maintenance | `predictive-maintenance` | 7 | Trigger & Sensor | uc-05-structure.config |
 | 06 | Process Optimization | `process-optimization` | 7 | Observe | uc-06-structure.config |
+| 07 | Anomaly Detection | `anomaly-detection` | 6 | Trigger & Sensors | uc-07-structure.config |
 
 ---
 
@@ -226,6 +231,28 @@ npx puppeteer browsers install chrome
 
 - Prozess-Loop (Observe → Analyze → Recommend → Simulate → Execute → Feedback)
 - Referenziert in A3 (KPI-to-Action)
+
+---
+
+## UC-07: Anomaly Detection
+
+- **Route:** `dsp/use-case/anomaly-detection`
+- **Ordner:** `anomaly-detection/`
+- **Steps:** 6
+
+### Step 1: Trigger & Sensors
+
+| Feld | Wert |
+|------|------|
+| **ID** | `uc07-01-trigger-sensor` |
+| **Titel (EN)** | Trigger & Sensors |
+| **Beschreibung (EN)** | Vibration and tilt capture condition state. Signals are forwarded to DSP Edge. |
+| **Connection-IDs** | `UC07_CONNECTION_IDS` in structure.config |
+
+### Besonderheiten
+
+- **CRM als Zielsystem:** Alarm-Ereignis wird an Microsoft CRM weitergeleitet; Folgeschritt startet in CRM.
+- **Abgrenzung zu UC-05:** UC-05 fokussiert langfristige Datenbasis/Prognosen, UC-07 fokussiert unmittelbare Alarmeskalation.
 
 ---
 

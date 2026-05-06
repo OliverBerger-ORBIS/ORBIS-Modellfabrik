@@ -50,35 +50,35 @@ export class Uc05I18nService {
   private getEnglishTranslations(): Record<string, string> {
     return {
       'uc05.title': 'Predictive Maintenance',
-      'uc05.subtitle': 'Condition monitoring: Detect vibrations → Evaluate → Alarm → Act → Feedback',
-      'uc05.outcome': 'Outcome: Predictive Maintenance (MTTR)',
-      'uc05.lane.process': 'Process Data & Alarm Flow',
-      'uc05.lane.mixed': 'DSP Edge | Alarm | Target',
+      'uc05.subtitle': 'Condition intelligence: Collect → Contextualize → Model → Forecast → Plan',
+      'uc05.outcome': 'Outcome: Predictive Maintenance readiness (data foundation + forecast quality)',
+      'uc05.lane.process': 'Process Data & Forecast Flow',
+      'uc05.lane.mixed': 'DSP Edge | Model Service | Target',
       'uc05.lane.shopfloor': 'Shopfloor Trigger & Sensors',
 
-      'uc05.proc.detect': 'Detect',
-      'uc05.proc.detect.bullets': 'Vibration / sensor signals\nAnomaly detection',
+      'uc05.proc.detect': 'Collect',
+      'uc05.proc.detect.bullets': 'Machine and sensor signals\nTime-series capture',
 
-      'uc05.proc.evaluate': 'Evaluate',
-      'uc05.proc.evaluate.bullets': 'Thresholds & rules\nDSP Edge analytics',
+      'uc05.proc.evaluate': 'Contextualize',
+      'uc05.proc.evaluate.bullets': 'Order and station context\nQuality-ready datasets',
 
-      'uc05.proc.alarm': 'Alarm',
-      'uc05.proc.alarm.bullets': 'Event emission\nEscalation',
+      'uc05.proc.alarm': 'Model',
+      'uc05.proc.alarm.bullets': 'Features and trends\nDrift and wear indicators',
 
-      'uc05.proc.action': 'Act',
-      'uc05.proc.action.bullets': 'Stop / Safe-State\nOptional automation',
+      'uc05.proc.action': 'Forecast',
+      'uc05.proc.action.bullets': 'Failure probability\nService-window estimation',
 
-      'uc05.proc.feedback': 'Feedback',
-      'uc05.proc.feedback.bullets': 'MES / ERP / Analytics\nMaintenance scheduling',
+      'uc05.proc.feedback': 'Plan',
+      'uc05.proc.feedback.bullets': 'Maintenance planning\nCapacity and spare parts',
 
       'uc05.mixed.dspEdge': 'DSP Edge',
       'uc05.mixed.dspEdge.bullets': 'Rule & threshold evaluation\nReal-time analytics',
 
-      'uc05.mixed.alarm': 'ALARM',
-      'uc05.mixed.alarm.sub': 'Event emission',
+      'uc05.mixed.alarm': 'MODEL SERVICE',
+      'uc05.mixed.alarm.sub': 'Trend analytics',
 
       'uc05.mixed.target': 'Target',
-      'uc05.mixed.target.bullets': 'MES / ERP / Analytics\nBest-of-Breed',
+      'uc05.mixed.target.bullets': 'Planning / ERP / Analytics\nBest-of-Breed',
       'uc05.mixed.target.mes': 'MES',
       'uc05.mixed.target.erp': 'ERP',
       'uc05.mixed.target.analytics': 'Analytics',
@@ -88,13 +88,14 @@ export class Uc05I18nService {
       'uc05.sf.trigger': 'Trigger',
       'uc05.sf.detector': 'Detector',
       'uc05.sf.vibrationSensor': 'Vibration Sensor',
+      'uc05.sf.sensorStation': 'Sensor Station',
       'uc05.sf.sensorLabel': 'Sensors',
       'uc05.sf.systemsLabel': 'Systems',
       'uc05.sf.devicesLabel': 'Devices',
 
       'uc05.conn.signals': 'Signals',
-      'uc05.conn.alarmEvent': 'Alarm Event',
-      'uc05.conn.productionPause': 'Production pause',
+      'uc05.conn.alarmEvent': 'Data product',
+      'uc05.conn.productionPause': 'Planning input',
       'uc05.feedback': 'Feedback',
       'uc05.footer': 'OSF is a demonstrator showcasing integration principles; productive implementations depend on the customer\'s target landscape.',
     };

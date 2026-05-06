@@ -1,0 +1,85 @@
+<section class="anomaly-detection-use-case">
+  <nav class="anomaly-detection-use-case__tabs" role="tablist">
+    <button
+      type="button"
+      role="tab"
+      class="anomaly-detection-use-case__tab"
+      [attr.aria-selected]="activeTab === 'concept'"
+      [class.anomaly-detection-use-case__tab--active]="activeTab === 'concept'"
+      (click)="activeTab = 'concept'"
+      i18n="@@uc07TabConcept"
+    >
+      Concept
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="anomaly-detection-use-case__tab"
+      [attr.aria-selected]="activeTab === 'live-demo'"
+      [class.anomaly-detection-use-case__tab--active]="activeTab === 'live-demo'"
+      (click)="activeTab = 'live-demo'"
+      i18n="@@uc07TabLiveDemo"
+    >
+      Live Demo
+    </button>
+  </nav>
+
+  <header class="anomaly-detection-use-case__header" *ngIf="activeTab === 'concept'">
+    <app-use-case-controls
+      useCaseCode="UC-07"
+      [useCaseTitle]="useCaseTitle"
+      [showBack]="true"
+      backFallbackPath="dsp/use-case"
+      [steps]="steps"
+      [currentStepIndex]="currentStepIndex"
+      [zoom]="zoom"
+      [minZoom]="minZoom"
+      [maxZoom]="maxZoom"
+      [showDescription]="showDescription"
+      [loopToStart]="loopToStart"
+      [isAutoPlaying]="isAutoPlaying"
+      [getStepTitle]="getStepTitle.bind(this)"
+      (prevStep)="prevStep()"
+      (nextStep)="nextStep()"
+      (goToStep)="goToStep($event)"
+      (toggleAutoPlay)="toggleAutoPlay()"
+      (toggleLoop)="toggleLoop()"
+      (toggleDescription)="toggleDescription()"
+      (zoomIn)="zoomIn()"
+      (zoomOut)="zoomOut()"
+      (resetZoom)="resetZoom()"
+    />
+  </header>
+
+  <div class="anomaly-detection-use-case__content" *ngIf="activeTab === 'concept'">
+    <div class="anomaly-detection-use-case__diagram-wrapper">
+      <div
+        class="anomaly-detection-use-case__diagram"
+        [style.width.px]="scaledViewportWidthPx"
+        [style.height.px]="scaledViewportHeightPx"
+      >
+        <div *ngIf="isLoading" class="anomaly-detection-use-case__loading" i18n="@@loadingSvg">Loading SVG...</div>
+        <div
+          #svgContainer
+          *ngIf="!isLoading && svgContent"
+          class="anomaly-detection-use-case__svg-wrapper"
+          [innerHTML]="svgContent"
+        ></div>
+        <div *ngIf="!isLoading && !svgContent" class="anomaly-detection-use-case__loading" i18n="@@svgLoadError">Failed to load SVG.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="anomaly-detection-use-case__live-demo" *ngIf="activeTab === 'live-demo'">
+    <h3 class="anomaly-detection-use-case__live-demo-title" i18n="@@uc07LiveDemoTitle">Anomaly Demo Trigger</h3>
+    <p class="anomaly-detection-use-case__live-demo-desc" i18n="@@uc07LiveDemoDesc">
+      This live demo trigger prepares a vibration alarm flow: sensor event is published, DSP forwards to CRM, and the follow-up workflow is handled by CRM configuration.
+    </p>
+    <button type="button" class="anomaly-detection-use-case__demo-btn" disabled i18n="@@uc07LiveDemoButton">
+      Trigger vibration alarm (prepared)
+    </button>
+    <p class="anomaly-detection-use-case__live-demo-note" i18n="@@uc07LiveDemoNote">
+      CRM-side handling can be automatic, semi-automatic, or manual, depending on the customer setup.
+    </p>
+  </div>
+</section>

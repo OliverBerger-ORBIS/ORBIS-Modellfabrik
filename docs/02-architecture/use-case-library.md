@@ -33,6 +33,7 @@ Die **Use-Case Bibliothek** im OSF Dashboard präsentiert die DSP (Digital Shopf
 | `dsp/use-case/closed-loop-quality` | ClosedLoopQualityUseCaseComponent | UC-04 |
 | `dsp/use-case/predictive-maintenance` | PredictiveMaintenanceUseCaseComponent | UC-05 |
 | `dsp/use-case/process-optimization` | ProcessOptimizationUseCaseComponent | UC-06 |
+| `dsp/use-case/anomaly-detection` | AnomalyDetectionUseCaseComponent | UC-07 |
 
 ---
 
@@ -87,6 +88,17 @@ Die **Use-Case Bibliothek** im OSF Dashboard präsentiert die DSP (Digital Shopf
 - **Dateien:** Component, `uc-06-structure.config.ts`, `uc-06-svg-generator.service.ts`, `uc-06-i18n.service.ts`
 - **Steps:** `assets/use-cases/uc-06/uc-06-process-optimization.steps.json`
 - **Besonderheit:** `UC06_CONNECTION_IDS` in `uc-06-structure.config.ts` für `dim-conn`; Prozess-Loop (Observe→Analyze→Recommend→Simulate→Execute→Feedback)
+
+---
+
+### UC-07: Anomaly Detection
+
+- **Ordner:** `anomaly-detection/`
+- **Dateien:** Component, `uc-07-structure.config.ts`, `uc-07-svg-generator.service.ts`, `uc-07-i18n.service.ts`
+- **Steps:** `assets/use-cases/uc-07/uc-07-anomaly-detection.steps.json`
+- **Besonderheit:** `UC07_CONNECTION_IDS` in `uc-07-structure.config.ts` für `dim-conn`
+- **Scope:** unmittelbare Alarmeskalation (Vibration/Tilt) via DSP zu CRM; CRM steuert den Folgeworkflow.
+- **Abgrenzung zu UC-05:** Predictive Maintenance (UC-05) fokussiert Datenbasis und Prognosequalität, nicht den akuten Alarm-Flow.
 
 ---
 
@@ -180,8 +192,16 @@ Reihenfolge: Title → [View-Toggle] → Nav → Step-Info → Zoom
 |----------|--------------|---------|---------------|--------|
 | UC-00, 01, 02 | explizit | explizit | `[]` | `getConnectionIds()` in Component |
 | UC-03, 04, 05, 06 | explizit | explizit | aus `uc-0n-structure.config.ts` | `UC0n_CONNECTION_IDS` exportiert, Component importiert |
+| UC-07 | explizit | explizit | aus `uc-07-structure.config.ts` | `UC07_CONNECTION_IDS` exportiert, Component importiert |
 
 Shared: `applyStepToSvg()` in `shared/use-case-step-apply.ts`.
+
+### 4.3.1 UC-07 Hinweis (Lessons Learned)
+
+- **Symptom:** Step-Wechsel war sichtbar (Zähler änderte sich), aber der visuelle Fokus (`hl`/`dim`) wirkte zunächst zu schwach oder inkonsistent.
+- **Ursache:** Bei dynamisch injiziertem SVG kann die Klassenwirkung je nach Styling-Kontext weniger eindeutig greifen als erwartet.
+- **Bewährter Fix:** Die Klassen `.hl`, `.dim`, `.dim-conn`, `.hidden` zusätzlich direkt im UC-SVG-`<style>` absichern und die Werte am UC-05-Referenzverhalten ausrichten.
+- **Regel für neue UCs:** Bei Abweichungen zuerst gegen UC-05 prüfen (gleiche Step-Apply-Logik, ähnliche Dim/Highlight-Werte), erst danach gezielt abweichend tunen.
 
 ### 4.4 step-dots aria-label / SVG-Container-Lookup
 
@@ -217,7 +237,8 @@ DspUseCasesComponent (Übersicht)
                 ├── UC-03 AiLifecycleUseCaseComponent
                 ├── UC-04 ClosedLoopQualityUseCaseComponent
                 ├── UC-05 PredictiveMaintenanceUseCaseComponent
-                └── UC-06 ProcessOptimizationUseCaseComponent
+                ├── UC-06 ProcessOptimizationUseCaseComponent
+                └── UC-07 AnomalyDetectionUseCaseComponent
                         │
                         ├── [uc]-structure.config.ts
                         ├── [uc]-svg-generator.service.ts

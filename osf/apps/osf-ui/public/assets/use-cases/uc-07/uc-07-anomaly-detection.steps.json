@@ -1,0 +1,68 @@
+[
+  {
+    "id": "uc07-00-overview",
+    "title": { "de": "Uebersicht", "en": "Overview", "fr": "Vue d'ensemble" },
+    "description": {
+      "de": "Anomaly-Detection-Gesamtuebersicht: Shopfloor-Signal bis CRM-Workflowstart.",
+      "en": "Anomaly detection overview: shopfloor signal through CRM workflow start.",
+      "fr": "Vue d'ensemble de la detection d'anomalies : du signal shopfloor au demarrage du workflow CRM."
+    },
+    "highlightIds": ["uc07_col_process", "uc07_container_mixed", "uc07_col_shopfloor"],
+    "hideIds": []
+  },
+  {
+    "id": "uc07-01-trigger-sensor",
+    "title": { "de": "Trigger & Sensoren", "en": "Trigger & Sensors", "fr": "Declencheur & capteurs" },
+    "description": {
+      "de": "Vibration und Tilt erfassen den Zustand. Die Signale gehen an den DSP Edge.",
+      "en": "Vibration and tilt capture condition state. Signals are forwarded to DSP Edge.",
+      "fr": "La vibration et l'inclinaison detectent l'etat. Les signaux sont transmis au DSP Edge."
+    },
+    "highlightIds": ["uc07_sf_trigger", "uc07_sf_signal_triangle", "uc07_sf_detector", "uc07_conn_sensor_dsp", "uc07_proc_detect"],
+    "hideIds": []
+  },
+  {
+    "id": "uc07-02-validate",
+    "title": { "de": "Validierung", "en": "Validation", "fr": "Validation" },
+    "description": {
+      "de": "DSP Edge validiert das Ereignis per Regeln und reichert Kontext an.",
+      "en": "DSP Edge validates the event using rules and enriches context.",
+      "fr": "Le DSP Edge valide l'evenement via des regles et enrichit le contexte."
+    },
+    "highlightIds": ["uc07_mixed_dsp_edge", "uc07_proc_validate", "uc07_conn_sensor_dsp"],
+    "hideIds": []
+  },
+  {
+    "id": "uc07-03-alarm",
+    "title": { "de": "Alarm-Ereignis", "en": "Alarm Event", "fr": "Evenement d'alarme" },
+    "description": {
+      "de": "Ein validiertes Alarm-Ereignis wird erzeugt und als Prozessereignis markiert.",
+      "en": "A validated alarm event is emitted and marked as a process event.",
+      "fr": "Un evenement d'alarme valide est emis et marque comme evenement de processus."
+    },
+    "highlightIds": ["uc07_proc_alarm", "uc07_mixed_alarm", "uc07_conn_alarm_process", "uc07_conn_dsp_alarm", "uc07_conn_alarm_systems", "uc07_sf_systems_devices"],
+    "hideIds": []
+  },
+  {
+    "id": "uc07-04-route-crm",
+    "title": { "de": "Routing nach CRM", "en": "Route to CRM", "fr": "Routage vers CRM" },
+    "description": {
+      "de": "DSP leitet das Alarm-Ereignis an Microsoft CRM als Zielsystem weiter.",
+      "en": "DSP forwards the alarm event to Microsoft CRM as the target system.",
+      "fr": "DSP transmet l'evenement d'alarme vers Microsoft CRM comme systeme cible."
+    },
+    "highlightIds": ["uc07_proc_route", "uc07_conn_alarm_target", "uc07_mixed_target"],
+    "hideIds": []
+  },
+  {
+    "id": "uc07-05-crm-start",
+    "title": { "de": "CRM-Prozessstart", "en": "CRM Process Start", "fr": "Demarrage du processus CRM" },
+    "description": {
+      "de": "Ab hier steuert CRM den Folgeschritt (automatisch, halbautomatisch oder manuell).",
+      "en": "From this point, CRM controls follow-up handling (automatic, semi-automatic, or manual).",
+      "fr": "A partir d'ici, CRM pilote le traitement suivant (automatique, semi-automatique ou manuel)."
+    },
+    "highlightIds": ["uc07_proc_feedback", "uc07_feedback", "uc07_mixed_target", "uc07_sf_systems_devices"],
+    "hideIds": []
+  }
+]

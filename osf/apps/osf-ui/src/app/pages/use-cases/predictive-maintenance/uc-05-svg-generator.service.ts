@@ -21,12 +21,12 @@ export class Uc05SvgGeneratorService {
     const s = createUc05Structure();
     const t = (key: string): string => i18nTexts[key] || key;
     const D = ORBIS_COLORS.diagram;
-    const alarmFill = D.nodeParallel;
-    const alarmStroke = D.connectionAlert;
+    const modelFill = D.laneTraceFill;
+    const modelStroke = D.laneTraceStroke;
 
     let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${s.viewBox.width}" height="${s.viewBox.height}" viewBox="0 0 ${s.viewBox.width} ${s.viewBox.height}">`;
 
-    svg += this.defs(alarmStroke);
+    svg += this.defs(modelStroke);
     svg += '<g id="uc05_root">';
 
     svg += `<rect x="0" y="0" width="${s.viewBox.width}" height="${s.viewBox.height}" fill="url(#uc05_bgGrad)"/>`;
@@ -54,7 +54,7 @@ export class Uc05SvgGeneratorService {
     // Mixed boxes only (no lane rect – DSP Edge | ALARM | Target)
     svg += `<g id="uc05_container_mixed">`;
     for (const box of s.mixedBoxes) {
-      svg += this.mixedBox(box, t, D, alarmFill, alarmStroke);
+      svg += this.mixedBox(box, t, D, modelFill, modelStroke);
     }
     svg += '</g>';
 
@@ -63,7 +63,7 @@ export class Uc05SvgGeneratorService {
     svg += `<rect id="uc05_lanes_layer_shopfloor" x="${s.laneShopfloor.x}" y="${s.laneShopfloor.y}" width="${s.laneShopfloor.width}" height="${s.laneShopfloor.height}" rx="10" fill="url(#uc05_shopfloorGrad)" stroke="${D.laneShopfloorStroke}" stroke-width="2"/>`;
     svg += `<text x="${s.laneShopfloor.x + 16}" y="${s.laneShopfloor.y + 32}" text-anchor="start" class="uc05-lane-label">${this.esc(t('uc05.lane.shopfloor'))}</text>`;
     svg += this.shopfloorIconBox(s.shopfloorTriggerBox, t, D);
-    svg += this.signalTriangle(s.shopfloorSignalTriangle, D, alarmStroke);
+    svg += this.signalTriangle(s.shopfloorSignalTriangle, D, modelStroke);
     svg += this.shopfloorIconBox(s.shopfloorDetectorBox, t, D);
     svg += this.shopfloorSystemsDevicesBox(s.shopfloorSystemsDevicesBox, t, D);
     svg += '</g>';
@@ -83,7 +83,7 @@ export class Uc05SvgGeneratorService {
     return svg;
   }
 
-  private defs(alarmStroke: string): string {
+  private defs(modelStroke: string): string {
     const D = ORBIS_COLORS.diagram;
     const nightBlue = ORBIS_COLORS.orbisNightBlue;
 
@@ -120,7 +120,7 @@ export class Uc05SvgGeneratorService {
         .uc05-step-title { font: 700 22px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
         .uc05-step-bullet { font: 400 13px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
         .uc05-mixed-title { font: 700 16px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
-        .uc05-alarm-title { font: 700 18px "Segoe UI",Arial,sans-serif; fill: ${alarmStroke}; }
+        .uc05-alarm-title { font: 700 18px "Segoe UI",Arial,sans-serif; fill: ${modelStroke}; }
         .uc05-sf-title { font: 700 16px "Segoe UI",Arial,sans-serif; fill: ${nightBlue}; }
         .uc05-footer { font: 400 16px "Segoe UI",Arial,sans-serif; fill: ${ORBIS_COLORS.neutralDarkGrey}; }
       </style>
@@ -153,22 +153,18 @@ export class Uc05SvgGeneratorService {
     return out;
   }
 
-  private mixedBox(box: Uc05MixedBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram, alarmFill: string, alarmStroke: string): string {
+  private mixedBox(box: Uc05MixedBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram, modelFill: string, modelStroke: string): string {
     const cx = box.x + box.width / 2;
     const toAbs = (p: string) => p;
 
     if (box.type === 'alarm') {
-      const iconSize = Math.min(56, box.width / 3, box.height / 2);
-      const iconGap = 12;
-      const totalIconsW = iconSize * 2 + iconGap;
-      const iconStartX = cx - totalIconsW / 2;
+      const iconSize = Math.min(86, box.width - 24, box.height - 40);
       const iconY = box.y + (box.height - iconSize) / 2;
       let out = `<g id="uc05_${box.id}">`;
-      out += `<rect x="${box.x}" y="${box.y}" width="${box.width}" height="${box.height}" rx="10" fill="${alarmFill}" stroke="${alarmStroke}" stroke-width="2"/>`;
-      out += `<image href="${toAbs(ICONS.shopfloor.shared.alarm)}" x="${iconStartX}" y="${iconY}" width="${iconSize}" height="${iconSize}" preserveAspectRatio="xMidYMid meet"/>`;
-      out += `<image href="${toAbs(ICONS.shopfloor.shared.bellAlarm)}" x="${iconStartX + iconSize + iconGap}" y="${iconY}" width="${iconSize}" height="${iconSize}" preserveAspectRatio="xMidYMid meet"/>`;
+      out += `<rect x="${box.x}" y="${box.y}" width="${box.width}" height="${box.height}" rx="10" fill="${modelFill}" stroke="${modelStroke}" stroke-width="2"/>`;
+      out += `<image href="${toAbs(ICONS.dsp.functions.analytics)}" x="${cx - iconSize / 2}" y="${iconY}" width="${iconSize}" height="${iconSize}" preserveAspectRatio="xMidYMid meet"/>`;
       out += `<text x="${cx}" y="${box.y + 18}" text-anchor="middle" class="uc05-alarm-title">${this.esc(t(box.titleKey))}</text>`;
-      out += `<text x="${cx}" y="${box.y + box.height - 10}" text-anchor="middle" font-size="11" fill="${alarmStroke}">${this.esc(t('uc05.mixed.alarm.sub'))}</text>`;
+      out += `<text x="${cx}" y="${box.y + box.height - 10}" text-anchor="middle" font-size="11" fill="${modelStroke}">${this.esc(t('uc05.mixed.alarm.sub'))}</text>`;
       out += '</g>';
       return out;
     }
@@ -270,10 +266,10 @@ export class Uc05SvgGeneratorService {
     return out;
   }
 
-  /** Single icon box for Trigger; Detector shows vibration + tilt-sensor side by side */
+  /** Single icon box for Trigger; Detector shows sensor-station icon. */
   private shopfloorIconBox(box: Uc05ShopfloorIconBox, t: (k: string) => string, D: typeof ORBIS_COLORS.diagram): string {
     const toAbs = (p: string) => p;
-    const label = box.iconKey === 'trigger' ? t('uc05.sf.trigger') : t('uc05.sf.vibrationSensor');
+    const label = box.iconKey === 'trigger' ? t('uc05.sf.trigger') : t('uc05.sf.sensorStation');
     const figStroke = 'rgba(0,0,0,0.12)';
     let out = `<g id="uc05_${box.id}">`;
     out += `<rect x="${box.x}" y="${box.y}" width="${box.width}" height="${box.height}" rx="10" fill="rgba(255,255,255,0.7)" stroke="${figStroke}" stroke-width="1.5"/>`;
@@ -283,14 +279,9 @@ export class Uc05SvgGeneratorService {
       const iconSize = Math.min(64, box.width - 24, box.height - 44);
       out += `<image href="${path}" x="${box.x + (box.width - iconSize) / 2}" y="${box.y + 20}" width="${iconSize}" height="${iconSize}" preserveAspectRatio="xMidYMid meet"/>`;
     } else {
-      // Detector: zwei Icons nebeneinander (vibration, tilt-sensor)
-      const iconGap = 14;
-      const iconSize = Math.min(80, (box.width - iconGap - 24) / 2, box.height - 44);
-      const totalW = iconSize * 2 + iconGap;
-      const startX = box.x + (box.width - totalW) / 2;
+      const iconSize = Math.min(86, box.width - 24, box.height - 44);
       const iconY = box.y + (box.height - iconSize - 24) / 2;
-      out += `<image href="${toAbs(ICONS.shopfloor.shared.vibrationSensor)}" x="${startX}" y="${iconY}" width="${iconSize}" height="${iconSize}" preserveAspectRatio="xMidYMid meet"/>`;
-      out += `<image href="${toAbs(ICONS.shopfloor.shared.tiltSensor)}" x="${startX + iconSize + iconGap}" y="${iconY}" width="${iconSize}" height="${iconSize}" preserveAspectRatio="xMidYMid meet"/>`;
+      out += `<image href="${toAbs(ICONS.shopfloor.systems.sensorStation)}" x="${box.x + (box.width - iconSize) / 2}" y="${iconY}" width="${iconSize}" height="${iconSize}" preserveAspectRatio="xMidYMid meet"/>`;
     }
 
     out += `<text x="${box.x + box.width / 2}" y="${box.y + box.height - 14}" text-anchor="middle" font-size="12" font-weight="600" fill="${ORBIS_COLORS.orbisNightBlue}">${this.esc(label)}</text>`;

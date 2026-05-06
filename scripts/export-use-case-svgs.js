@@ -24,6 +24,7 @@ const { spawn } = require('child_process');
 const repoRoot = path.resolve(__dirname, '..');
 const distRoot = path.join(repoRoot, 'dist/apps/osf-ui/browser');
 const svgAssetsRoot = path.join(repoRoot, 'osf/apps/osf-ui/src/assets/svg');
+const publicSvgAssetsRoot = path.join(repoRoot, 'osf/apps/osf-ui/public/assets/svg');
 const outputDir = path.join(svgAssetsRoot, 'use-cases');
 const docsAssetsRoot = path.join(repoRoot, 'docs/assets/use-cases');
 const PORT = 4210;
@@ -37,6 +38,7 @@ const USE_CASE_DOCS_FOLDERS = {
   'uc-05-predictive-maintenance': 'uc-05',
   'uc-00-event-to-process-map': 'uc-00',
   'uc-06-process-optimization': 'uc-06',
+  'uc-07-anomaly-detection': 'uc-07',
 };
 
 /** Normalize image hrefs to ../path form (relative to use-cases/) */
@@ -48,16 +50,18 @@ function fixImageHrefs(html) {
 
 /** Inline referenced SVG files as base64 data URIs for standalone viewing (Markdown, file://) */
 function inlineSvgImages(html) {
-  const hrefRe = /href="\.\.\/([^"]+\.svg)"/g;
+  const hrefRe = /href="\.\.\/([^"?]+\.svg)(?:\?[^"]*)?"/g;
   const seen = new Map();
   return html.replace(hrefRe, (_, relPath) => {
     const cacheKey = relPath;
     if (seen.has(cacheKey)) {
       return `href="${seen.get(cacheKey)}"`;
     }
-    const fullPath = path.join(svgAssetsRoot, relPath);
+    const fullPathSrc = path.join(svgAssetsRoot, relPath);
+    const fullPathPublic = path.join(publicSvgAssetsRoot, relPath);
     let dataUri = `../${relPath}`;
     try {
+      const fullPath = fs.existsSync(fullPathSrc) ? fullPathSrc : fullPathPublic;
       if (fs.existsSync(fullPath)) {
         const content = fs.readFileSync(fullPath, 'utf8');
         const b64 = Buffer.from(content, 'utf8').toString('base64');
@@ -109,6 +113,7 @@ const USE_CASES = [
   { id: 'uc-05', route: 'predictive-maintenance', name: 'uc-05-predictive-maintenance' },
   { id: 'uc-00', route: 'interoperability', name: 'uc-00-event-to-process-map' },
   { id: 'uc-06', route: 'process-optimization', name: 'uc-06-process-optimization' },
+  { id: 'uc-07', route: 'anomaly-detection', name: 'uc-07-anomaly-detection' },
 ];
 
 function run(cmd, args, opts = {}) {
