@@ -64,7 +64,7 @@ OSF-UI ←→ APS-CCU ←→ APS-NodeRED ←→ ORBIS-DSP ←→ OPC-UA Module
   - DSP-Architecture + animierte Diagramme
   - DSP-Vorgehensweise
   - DSP Use-Cases, DSP Customer Architekturen
-  - OSF-Demo per OBS
+  - OSF-Demo per FancyZones + OBS-Kamera (stabile, reproduzierbare Praesentation vor Ort und remote)
   - Messe BE5.0 (November 2025), Use-Case-Bibliothek UC-01 bis UC-07
 
 ---

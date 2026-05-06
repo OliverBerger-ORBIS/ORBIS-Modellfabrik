@@ -1,213 +1,121 @@
 # OBS Setup: ORBIS SmartFactory (OSF) Präsentation
 
-Diese Anleitung beschreibt das standardisierte Setup für OSF-Präsentationen mittels OBS Studio. Ziel ist eine einheitliche, vereinfachte Struktur ohne Overengineering.
+Diese Anleitung beschreibt den **vereinfachten Zielstandard** fuer Messe- und Videokonferenz-Setups.
 
-## 🎯 Konzept & Layout
-Das Setup nutzt verschiedene Browser, um OBS die Unterscheidung der Fenster zu erleichtern. Die Hauptszene („Hero +2“) kombiniert die wichtigsten Ansichten.
+## Geltender Standard (ab 06.05.2026)
 
-- **Auflösung:** 
-  - Standard-Fenster (Edge, Firefox): **1920x1080**
-  - Hero-Fenster (Chrome): **1040x1080** (nutzen Sie die Resizer-Einstellung `S6_Hero`)
-- **Bedienung:** Der Präsentator steuert primär den **Chrome-Browser** (Hero).
-- **Multiview:** Die ersten 4 Szenen (S1-S4) sind für die Multiview-Übersicht optimiert.
-
----
-
-## 1. Szenen & Quellen (Scenes & Sources)
-
-### Die Basis-Quellen (Browser & Kamera)
-Bitte starten Sie diese Anwendungen **vor** OBS:
-
-| Anwendung | Browser-Wahl | Zweck | Tabs | OBS Source Name |
-| :--- | :--- | :--- | :--- | :--- |
-| **Hero + 2** | Chrome | Aktive Steuerung (Hero) | ~8 (Alle Demo-relevante) | `chrome_hero` |
-| **Digital Twin** | Firefox | Shopfloor/Ansicht | 1 (`de/presentation`) | `firefox_presentation` |
-| **OSF Secondary** | Edge (Standard) | Vollbild-Fallback / Übersicht | 8 | `msedge_osf` |
-| **OSF Orders** | Edge (InPrivate) | Auftragseingang/Logistik | 1+ | `msedge_priv_orders` |
-| **Kamera** | - | fabrik Video | - | `cam_usb` |
-
-> **Hinweis:** Durch die unterschiedlichen Browser/Profile kann OBS die Fenster eindeutig zuordnen.
+- **OBS wird nur fuer die Kamera-Quelle verwendet** (Kamera aktiv, Kamera-Rotation).
+- **Bildschirm-Layout wird nicht mehr in OBS gebaut**, sondern ueber **FancyZones**.
+- **Shopfloor-Rotation erfolgt ueber OSF-UI-Settings**.
+- **Konftel-20 Zoom-Szenen pro Station werden lokal gespeichert**.
+- Dasselbe Setup gilt fuer **Praesentation vor Ort** und **Videokonferenzen**.
 
 ---
 
-### Die Szenen-Struktur (Reihenfolge einhalten!)
+## Verworfen (nicht mehr verwenden)
 
-Legen Sie die Szenen exakt in dieser Reihenfolge an, damit der Multiview (Ansicht -> Multiview) logisch aufgebaut ist.
+Die frueheren OBS-Ansatze mit komplexer Szenen-Regie sind fuer den Regelbetrieb verworfen:
 
-#### 1) S1: OSF-Main
-- **Inhalt:** `msedge_osf` (Window Capture)
-- **Beschreibung:** Edge mit 8 Tabs. Dient als Backup oder Detailansicht.
+- Mehrere Browser-Captures als Hauptlogik in OBS (`S1..S7`, Hero+2 als OBS-Komposition)
+- OBS-Multiview als zentraler Navigationspfad
+- OBS als Orchestrator fuer gesamte Bildschirm-Layouts
 
-#### 2) S2: Digit-Twin
-- **Inhalt:** `firefox_presentation` (Window Capture)
-- **Beschreibung:** Firefox mit Digital Twin.
-
-#### 3) S3: OSF-Orders
-- **Inhalt:** `msedge_priv_orders` (Window Capture)
-- **Beschreibung:** Edge Private. Zeigt eingehende Bestellungen.
-
-#### 4) S4: Camera Vollbild
-- **Inhalt:** `cam_usb` (Video Capture Device)
-- **Beschreibung:** Vollbild-Kamera mit Abb der Fabrik.
+Diese Ansatze sind zu fragil und zu fehleranfaellig fuer den produktiven Demo-Betrieb.
 
 ---
 
-#### 5) S5: Hero +2 (Haupt-Präsentations-Szene)
-Dies ist die **Master-Szene**, die während der Präsentation hauptsächlich gezeigt wird. Sie komponiert Inhalte aus den anderen Szenen.
-- **Layout:**
-  - **Hintergrund:** Dezent/Branding.
-  - **Hauptbereich (Links):** Szene `S6: Hero OSF` (Zoom ca. 66%).
-  - **Seitenleiste (Rechts Oben):** Szene `S2: Digit-Twin`.
-  - **Seitenleiste (Rechts Unten):** Szene `S4: Camera`.
-- **Wichtig:** Das Hero-Element (`S6`) muss so skaliert werden, dass es optimal in das Layout passt.
+## 1) Zielarchitektur
 
-#### 6) S6: Hero-OSF (Container)
-- **Inhalt:** `chrome_hero` (Window Capture)
-- **Beschreibung:** Roh-Input des Chrome-Browsers.
-- **Funktion:** Dient als Quellexport für S5. Hier kann das Bild bei Bedarf zugeschnitten (Cropping) werden, ohne S5 zu zerstören.
+### 1.1 OBS (nur Kamera)
 
-#### 7) S7: Hold-Slate
-- **Inhalt:** Image Source (z.B. `holding-slate.png` oder Logo).
-- **Beschreibung:** "Gleich geht es los" / Pause-Screen.
+- Eine Kamera-Quelle (`cam_usb`) als Video-Capture-Device
+- Optional wenige Kamera-Szenen (z. B. `CAM_WIDE`, `CAM_STATION`, `CAM_DETAIL`) fuer schnelle Umschaltung
+- Keine Browser-Window-Captures als Pflichtbestandteil der Hauptpraesentation
+- Wichtig: **USB-Kamera immer anschliessen, bevor OBS geoeffnet wird** (sonst fehlerhafte oder fehlende Source-Zuordnung)
 
----
+### 1.2 Desktop-Layout (FancyZones)
 
-## 2. Vorbereitung & Ablauf (Checkliste)
+- **Desktop 1:** Fullscreen (Hauptansicht)
+- **Desktop 2:** Hero + 2 (fester Split fuer parallele Ansichten)
+- Fensterpositionierung und Groessen werden ueber FancyZones reproduzierbar gesetzt
+- Der **Hero+2-Schnitt orientiert sich an der Kamera-Projektion**, sodass moeglichst keine schwarzen Bereiche entstehen
+- Im Hero+2-Layout:
+  - **oberhalb der Kamera:** Digital Twin (`dsp/en/presentation`) in **Firefox**
+  - **restliche Flaeche:** Hero in **Chrome**
 
-### Vorbereitung (ca. 10 Min vor Termin)
-1. [ ] **Fenster anordnen:** 
-   - Edge & Firefox auf **1920x1080** skalieren.
-   - Chrome (Hero) über Resizer auf **`Se_Hero` (1040x1080)** einstellen.
-2. [ ] **Tabs & Szenen laden (Wichtig!):**
-   - Schalten Sie in OBS alle Szenen (S1-S6) einmal durch.
-   - Klicken Sie in den Browsern (besonders Chrome Hero) **alle** für die Demo geplanten Tabs einmal an.
-   - *Check:* Sidebar wegklicken, Umgebung auf "live" stellen, Logins prüfen.
-3. [ ] **OBS starten:** Prüfen, ob alle Window-Captures greifen.
-   - *Falls schwarz:* Eigenschaften der Source öffnen -> Fenstertitel neu auswählen.
-4. [ ] **Zoom-Check (S5):** Prüfen, ob die Chrome-Ansicht (Hero) in der "Hero +2" Szene korrekt eingepasst ist (ggf. Zoom-Faktor ~66% prüfen).
+### 1.3 Applikationsrotation
 
-### DSP-Architektur Check (wichtig für Hero 1040×1080)
+- **Shopfloor-Rotation:** ueber OSF-UI-Settings
+- **Kamera-Rotation:** ueber OBS-Szenen/Hotkeys
 
-Im DSP-Tab in Chrome-Hero (`1040x1080`) jeweils kurz prüfen:
+### 1.4 Konftel-20
 
-1. **Architecture / Functional View**
-2. **Architecture / Component View**
-3. **Architecture / Deployment View**
+- Zoom-Modus je Station als Szene/Presets auf dem Geraet speichern
+- Abrufbar ohne Eingriff in die Demo-Pipeline
 
-**Erwartung:**
-- Diagramm ist vollständig im sichtbaren Ausschnitt
-- **Kein interner Scroll-Balken** im Diagramm-Container
-- Keine abgeschnittenen Controls durch internes Scrolling
+### 1.5 Konftel Preset-Matrix (verbindlich)
 
-Wenn ein Scroll-Balken sichtbar ist: Browser-Zoom auf 100% prüfen, dann Szene/Window-Capture neu aktivieren.
+| Preset | Ziel |
+|---|---|
+| `0` | Gesamtansicht (moeglichst gross, ohne unnoetigen Rand) |
+| `1` | DRILL |
+| `2` | HBW |
+| `3` | MILL |
+| `4` | AIQS |
+| `5` | DPS |
+| `6` | CHRG |
 
-### Während der Präsentation
-1. **Start:** `S7 Hold-Slate` -> `S4 Camera Vollbild` (Intro).
-2. **Demo:** Wechsel auf `S5 Hero +2`.
-3. **Steuerung:** 
-   - Der Präsentator arbeitet fast ausschließlich im **Chrome-Browser**.
-   - OBS überträgt das komponierte Bild (S5), in dem der Zuschauer Chrome + Digital Twin + Fabrik sieht.
-4. **Spezialfälle:** Bei Bedarf via Multiview direkt auf `S2` (nur 3D) oder `S3` (Orders) schalten.
+Qualitaetskriterium fuer Preset `0`:
+- Fabrik moeglichst gross im Bild
+- keine unnoetigen schwarzen Randraeume
+- stabil nutzbar als Start-/Rueckfallansicht
 
 ---
 
-## 2a. Teams-Freigabe über OBS Projector
+## 2) Checkliste vor Termin
 
-Für Präsentationen in Microsoft Teams wird **nicht das OBS-Hauptfenster** geteilt, sondern ein separates **OBS-Projector-Fenster** oder alternativ ein dedizierter Monitor.
-
-### Grundprinzip
-- Das **OBS-Hauptfenster** bleibt auf dem Steuerungs-Monitor sichtbar.
-- Die eigentliche Präsentation wird über ein **OBS Projector-Fenster** ausgegeben.
-- In Teams wird dann **nur dieses Projector-Fenster** oder **der Ziel-Monitor** geteilt.
-
-Dadurch bleiben folgende Elemente für die Teilnehmer unsichtbar:
-- OBS Docks
-- Szenenliste
-- Audio-Mixer
-- Quellen
-- Steuer-UI
+1. [ ] FancyZones aktiv; Layouts `Desktop 1 = Fullscreen`, `Desktop 2 = Hero + 2` geladen
+2. [ ] USB-Kamera angeschlossen, **danach** OBS starten; Kamera-Quelle sichtbar (`cam_usb`)
+3. [ ] OSF-UI geoeffnet, Umgebung korrekt, noetige Tabs vorbereitet
+4. [ ] OBS-Kamera-Rotation getestet (Wide/Station/Detail)
+5. [ ] Shopfloor-Rotation ueber UI-Settings verifiziert
+6. [ ] Konftel-20 Szenen je Station abrufbar
+7. [ ] Bedienung geprueft: Desktop-Wechsel (`Win + Tab` oder schnell `Win + Ctrl + Left/Right`), Fenster-Wechsel (`Alt + Tab`)
+8. [ ] Freigabemodus geprueft (Messe = Duplizieren, Videokonferenz = Erweitern)
 
 ---
 
-### Variante A: Teams teilt ein OBS-Projector-Fenster
-Diese Variante ist oft die flexibelste.
+## 2a) Kurzanleitung Presets (Konftel Remote)
 
-#### Vorgehen
-1. Im OBS-Hauptfenster in die große Vorschau klicken.
-2. **Rechtsklick** auf die Vorschau.
-3. **Open Preview Projector** wählen.
-4. Danach entweder:
-   - **New Window**  
-     oder
-   - einen **Display/Monitor** auswählen.
+- **Preset speichern:** Kamera ausrichten -> `PRESET` -> Ziffer (`0-9`)
+- **Preset abrufen:** Ziffer (`0-9`) druecken
+- **Preset loeschen:** `RESET` + Ziffer (`0-9`)
+- **Mittelposition:** `HOME`
 
-#### Empfehlung
-Für Teams ist **New Window** oft die beste Wahl:
-- OBS öffnet ein separates Fenster, z. B. `Projector Preview`.
-- In Teams kann gezielt dieses Fenster über **Share → Window** ausgewählt werden.
-- Der Steuerungsbildschirm bleibt unabhängig nutzbar.
-
-#### Hinweis
-Wird in Teams das Fenster **Projector Preview** geteilt, sehen die Teilnehmer **nur das OBS-Projector-Fenster**.  
-Das ist für Standard-Präsentationen meist die sauberste Lösung.
+Empfehlung:
+- Presets `0-6` nach obiger Matrix belegen
+- nach jeder Aenderung kurz `0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 0` durchtesten
 
 ---
 
-### Variante B: Teams teilt einen ganzen Monitor
-Alternativ kann ein kompletter Monitor geteilt werden.
+## 3) Ablauf waehrend Praesentation
 
-#### Vorgehen
-1. Im OBS-Hauptfenster in die große Vorschau klicken.
-2. **Rechtsklick** auf die Vorschau.
-3. **Open Preview Projector** wählen.
-4. Einen **Display/Monitor** auswählen.
-5. In Teams über **Share → Monitor X** genau diesen Monitor teilen.
-
-#### Vorteil
-- Es kann flexibel entschieden werden, **welches Fenster** auf dem geteilten Monitor angezeigt wird.
-- Neben dem OBS-Projector können dort bei Bedarf auch andere Fenster oder Apps platziert werden.
-
-#### Wichtiger Hinweis
-Wenn in Teams ein ganzer Monitor geteilt wird, sieht das Publikum **alles**, was auf diesem Monitor geöffnet oder eingeblendet wird.  
-Daher sollte dieser Monitor als **reiner Präsentationsmonitor** behandelt werden.
+1. Start in Fullscreen (Desktop 1) fuer Einfuehrung
+2. Wechsel zu Hero + 2 (Desktop 2) fuer parallele Darstellung
+3. Shopfloor-Rotation ausschliesslich in OSF-UI steuern
+4. Kamerawechsel ausschliesslich in OBS steuern
+5. Bei Station-Fokus Konftel-20 Zoom-Preset nutzen
 
 ---
 
-### Unterschied zu Multiview
-Unter **View → Multiview → New Window** kann ein separates **Projector Multiview**-Fenster geöffnet werden.
+## 4) Videokonferenz-Nutzung
 
-Das ist nützlich für die **interne Regie-/Steuerungsansicht**, aber:
+Das gleiche Grund-Setup wird fuer remote Termine verwendet, mit angepasstem Monitor-Modus:
 
-- Multiview zeigt mehrere Szenen gleichzeitig
-- es ist **keine reine Präsentationsausgabe**
-- für Teams sollte Multiview **nur dann geteilt werden**, wenn bewusst eine Regie-/Übersichtsansicht gezeigt werden soll
+- **Messe-Betrieb:** Monitor **duplizieren**
+- **Videokonferenz-Betrieb:** Monitor **erweitern** und den grossen Praesentationsmonitor in Teams/Zoom teilen
+- Layout bleibt FancyZones-basiert
+- OBS liefert nur Kamera-/Bildausschnitt
+- Keine OBS-Kompositionslogik als Voraussetzung fuer die Demo
 
-Für normale Kundenpräsentationen ist daher in der Regel **Preview Projector** bzw. später **Program Projector** die bessere Wahl.
-
----
-
-### Empfehlung für OSF-Präsentationen
-Für Standard-Termine empfehlen wir:
-
-- **Steuerung:** OBS-Hauptfenster auf Monitor 1
-- **Freigabe:** `Projector Preview` als **New Window**
-- **Teams:** Teilen über **Share → Window → Projector Preview**
-
-Alternative bei 2 Monitoren:
-- OBS Projector auf Monitor 2 legen
-- in Teams **Monitor 2** teilen
-
----
-
-### Praktische Nutzung während der Präsentation
-- OBS bleibt auf dem Steuerungsmonitor offen.
-- Der Präsentator kann dort:
-  - Szenen wechseln
-  - Browser-Tabs umschalten
-  - Inhalte vorbereiten
-- Teams sieht nur den Projector-Inhalt.
-
-Damit ist eine klare Trennung zwischen:
-- **Steuerung**
-- und **Ausgabe an das Publikum**
-gewährleistet.
+Damit ist Vor-Ort- und Remote-Betrieb konsistent.

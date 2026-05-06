@@ -22,7 +22,7 @@
 - [x] **Functional View (Default OCC):** neuen Customer „OCC“ / Default-Konfiguration anlegen (neue Lane-Reihenfolge + Links/Defaults) — `OSF_CONFIG` zeigt jetzt auf OCC-Default (Evolution FMF→LogiMAT→Hannover/CC→OCC bleibt verfügbar) (05.05.2026)
 - [x] **Functional View Animation:** 9 Functional DSP Icons wieder einzeln einbauen (LogiMAT-ähnliche Variante als Default für OCC) — umgesetzt mit schrittweiser Einzel-Einblendung in der Functional Story (05.05.2026, `npx nx test osf-ui --testPathPattern=layout\.functional\.story-order\.spec\.ts`)
 - [x] **Functional View Animation:** Interoperability SVG/Icon in Animation deutlich größer darstellen; zentral positioniert und DSP-Edge-Icon im Summary-Step ausgeblendet (05.05.2026, `npx nx test osf-ui --testPathPattern=layout\.functional\.story-order\.spec\.ts`)
-- [x] **Use-Case „Anomaly Detection“:** CRM Integration (Vibration löst Alarm aus → DSP-Edge sendet an MS-CRM → CRM „Prozess gestartet“/Techniker-Einsatz) — als neuer UC-07 vorbereitet (Concept + Live-Demo-Button), UC-05 auf datenbasierte Predictive-Maintenance-Story ohne Anomaly-Fokus geschärft; Sensorik-Darstellung: UC-05 = Sensor-Station, UC-07 = Vibration + Tilt (05.05.2026, `npx nx test osf-ui --testPathPattern='predictive-maintenance|anomaly-detection|dsp-use-cases'`)
+- [x] **Use-Case „Anomaly Detection“:** CRM Integration (Vibration löst Alarm aus → DSP-Edge sendet an MS-CRM → CRM „Prozess gestartet“/Techniker-Einsatz) — als neuer UC-07 umgesetzt (Concept + Live-Demo-Button), UC-05 auf datenbasierte Predictive-Maintenance-Story ohne Anomaly-Fokus geschärft; Sensorik-Darstellung: UC-05 = Sensor-Station, UC-07 = Vibration + Tilt; Export/Inventory final verifiziert (06.05.2026, `npx nx test osf-ui --testPathPattern='predictive-maintenance|anomaly-detection|dsp-use-cases'`, `node scripts/export-use-case-svgs.js`)
 - [x] **Process-Tab:** beim Wechsel in den Tab automatisch Refresh ausführen (Inventory/Lagerinfo ohne Button-Drücken) — `ProcessTabComponent.ngOnInit` ruft `refreshProcessData()` auf (05.05.2026, `nx test osf-ui --testPathPattern=process-tab.component.spec`)
 - [x] **Process → Order:** nach Auslösen einer Order (`ccu/order/request`) **ohne** Tab-Wechsel (mehrere Aufträge möglich); Sprung in den Order-Tab nur per Klick auf eine **Production-Flow-Produktkarte** (Blue/White/Red) rechts → `openOrderTabFromProductionFlow` / `/:locale/order?product=…` (05.05.2026, Unit-Tests `openOrderTab`, `openOrderTabFromProductionFlow`)
 - [x] **Order → Shopfloor:** aus dem Order-Tab in den Shopfloor-Tab — **Modul** auf der eingebetteten Shopfloor-Vorschau in der Order-Card anklicken → `/:locale/shopfloor?module=…` (z. B. HBW), Fokus wie Shopfloor-Tab `selectModuleByType` (05.05.2026, `order-card.component.spec`)
@@ -33,9 +33,9 @@
 
 ### Hannover Messe / Presentation (Übernahme aus Sprint 20)
 
-- [ ] OBS-Szenen Hannover finalisieren — [obs-video-presentation-setup.md](../04-howto/presentation/obs-video-presentation-setup.md)
-- [ ] Konftel-20: Remote/Szenen ohne Demo-Pipeline zu blockieren
-- [ ] Shopfloor-Rotation: finaler Ablauf (Kamera-Quelle + OSF-UI Settings) als kurze Checkliste in How-to dokumentieren
+- [x] OBS-Setup Hannover finalisiert (vereinfacht): OBS nur fuer Kamera-Quelle/-Rotation; alte komplexe OBS-Szenenansaetze verworfen — dokumentiert in [obs-video-presentation-setup.md](../04-howto/presentation/obs-video-presentation-setup.md) (06.05.2026)
+- [x] Konftel-20: Stationen als Zoom-Szenen/Preset fuer Remote ohne Blockade der Demo-Pipeline festgelegt (06.05.2026)
+- [x] Shopfloor-Rotation: finaler Ablauf (Kamera ueber OBS, Shopfloor ueber OSF-UI-Settings, Layout ueber FancyZones) als Checkliste in How-to dokumentiert (06.05.2026)
 
 ### OSF-UI – Bugs / UX (Übernahme aus Sprint 20)
 
@@ -79,5 +79,5 @@
 
 ---
 
-*Stand: 05.05.2026* · [sprints_README.md](sprints_README.md)
+*Stand: 06.05.2026* · [sprints_README.md](sprints_README.md)
 
