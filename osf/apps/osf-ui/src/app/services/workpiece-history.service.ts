@@ -9,6 +9,10 @@ import { EnvironmentService } from './environment.service';
 import { AgvRouteService } from './agv-route.service';
 import { ErpOrderDataService } from './erp-order-data.service';
 import { CorrelationInfoService } from './correlation-info.service';
+import {
+  TrackTraceEnvironmentService,
+  type TrackTraceEnvironmentSnapshot,
+} from './track-trace-environment.service';
 
 /**
  * Track & Trace event for workpiece history
@@ -67,6 +71,7 @@ export interface OrderContext {
   customerOrderDate?: string; // Bestellung-Datum Customer-Order (wann erfolgte Kunden-Bestellung)
   productionStartDate?: string; // Produktions-Start (Auslagerung aus HBW)
   deliveryEndDate?: string; // Auslieferungs-Datum (Production-Ende im DPS)
+  plannedStationChain?: string[]; // Planned station sequence (business context)
 }
 
 /**
@@ -123,6 +128,17 @@ interface ModuleState {
   loads?: Array<{
     loadType?: 'BLUE' | 'WHITE' | 'RED' | null;
   }>;
+  actionStates?: Array<{
+    id?: string;
+    command?: string;
+    state?: string;
+    timestamp?: string;
+    metadata?: {
+      workpiece?: {
+        type?: 'BLUE' | 'WHITE' | 'RED' | string;
+      };
+    };
+  }>;
   _topic?: string; // Topic from MQTT message
   _moduleSerialId?: string; // Module serial ID extracted from topic
 }
@@ -169,8 +185,11 @@ export class WorkpieceHistoryService implements OnDestroy {
   private readonly ftsRouteService = inject(AgvRouteService);
   private readonly erpOrderDataService = inject(ErpOrderDataService);
   private readonly correlationInfoService = inject(CorrelationInfoService);
+  private readonly trackTraceEnvironmentService = inject(TrackTraceEnvironmentService);
   // TURN direction lookup (from order stream) - similar to FTS-Tab
   private readonly turnDirectionByActionId = new Map<string, 'LEFT' | 'RIGHT' | string>();
+  private latestEnvironmentSnapshot: TrackTraceEnvironmentSnapshot | null = null;
+  private environmentSnapshotSub?: Subscription;
   /**
    * Dedup cache to avoid duplicate events in Track & Trace history.
    * Keyed by environment -> workpieceId -> eventKey -> lastSeenEpochMs.
@@ -183,6 +202,8 @@ export class WorkpieceHistoryService implements OnDestroy {
     // Clean up all subscriptions
     this.subscriptions.forEach((sub) => sub.unsubscribe());
     this.subscriptions.clear();
+    this.environmentSnapshotSub?.unsubscribe();
+    this.environmentSnapshotSub = undefined;
   }
 
   /**
@@ -226,6 +247,11 @@ export class WorkpieceHistoryService implements OnDestroy {
   initialize(environmentKey: string): void {
     if (this.subscriptions.has(environmentKey)) {
       return; // Already initialized
+    }
+    if (!this.environmentSnapshotSub) {
+      this.environmentSnapshotSub = this.trackTraceEnvironmentService.snapshot$.subscribe((snapshot) => {
+        this.latestEnvironmentSnapshot = snapshot;
+      });
     }
 
     const historyMap = this.getStore(environmentKey);
@@ -602,7 +628,6 @@ export class WorkpieceHistoryService implements OnDestroy {
         const isManufacturingStation = MANUFACTURING_STATIONS.includes(
           state.lastNodeId as typeof MANUFACTURING_STATIONS[number]
         );
-        const processDuration = stationName ? PROCESS_DURATIONS[stationName] : undefined;
 
         // Check if location changed to generate proper station events
         // ALWAYS generate an event if location changed OR if this is the first event
@@ -655,23 +680,24 @@ export class WorkpieceHistoryService implements OnDestroy {
           // 3. The workpiece can actually be processed at this station
           if (isModuleStation && orderType === 'PRODUCTION' && canBeProcessed) {
             // Generate PICK -> PROCESS -> DROP sequence for manufacturing stations
-            // PICK event
-            this.tryAppendEvent(environmentKey, existingHistory, {
+            const pickEvent: TrackTraceEvent = {
               ...baseEvent,
               eventType: 'PICK',
               timestamp: state.timestamp,
               subOrderId,
               actionId,
               details: { actionState: 'FINISHED', loadPosition: loadItem.loadPosition },
-            } as TrackTraceEvent);
+            } as TrackTraceEvent;
+            this.attachEnvironmentSnapshotIfRelevant(pickEvent);
+            this.tryAppendEvent(environmentKey, existingHistory, pickEvent);
 
             // PROCESS event (drilling, milling, etc.)
             const processTime = new Date(new Date(state.timestamp).getTime() + 1000);
-            this.tryAppendEvent(environmentKey, existingHistory, {
+            const processEvent: TrackTraceEvent = {
               ...baseEvent,
               eventType: 'PROCESS',
               timestamp: utcIsoTimestampMs(processTime),
-              processDuration: processDuration,
+              processDuration: stationName ? PROCESS_DURATIONS[stationName] : undefined,
               subOrderId,
               actionId,
               details: {
@@ -679,18 +705,22 @@ export class WorkpieceHistoryService implements OnDestroy {
                 loadPosition: loadItem.loadPosition,
                 processType: stationName,
               },
-            } as TrackTraceEvent);
+            } as TrackTraceEvent;
+            this.attachEnvironmentSnapshotIfRelevant(processEvent);
+            this.tryAppendEvent(environmentKey, existingHistory, processEvent);
 
             // DROP event
-            const dropTime = new Date(processTime.getTime() + (processDuration || 10) * 1000);
-            this.tryAppendEvent(environmentKey, existingHistory, {
+            const dropTime = new Date(processTime.getTime() + ((stationName ? PROCESS_DURATIONS[stationName] : undefined) || 10) * 1000);
+            const dropEvent: TrackTraceEvent = {
               ...baseEvent,
               eventType: 'DROP',
               timestamp: utcIsoTimestampMs(dropTime),
               subOrderId,
               actionId,
               details: { actionState: 'FINISHED', loadPosition: loadItem.loadPosition },
-            } as TrackTraceEvent);
+            } as TrackTraceEvent;
+            this.attachEnvironmentSnapshotIfRelevant(dropEvent);
+            this.tryAppendEvent(environmentKey, existingHistory, dropEvent);
           } else {
             // Regular event for transport/storage
             // Also for cases where workpiece cannot be processed at this station (e.g., RED at DRILL)
@@ -707,18 +737,21 @@ export class WorkpieceHistoryService implements OnDestroy {
                 turnDirection = this.turnDirectionByActionId.get(state.actionState.id);
               }
             }
-            
-            this.tryAppendEvent(environmentKey, existingHistory, {
+
+            const details: Record<string, unknown> = {
+              actionState: state.actionState.state,
+              loadPosition: loadItem.loadPosition,
+              direction: turnDirection, // Store direction in details for TURN events
+            };
+            const event: TrackTraceEvent = {
               ...baseEvent,
               eventType: eventType,
               subOrderId,
               actionId,
-              details: {
-                actionState: state.actionState.state,
-                loadPosition: loadItem.loadPosition,
-                direction: turnDirection, // Store direction in details for TURN events
-              },
-            } as TrackTraceEvent);
+              details,
+            } as TrackTraceEvent;
+            this.attachEnvironmentSnapshotIfRelevant(event);
+            this.tryAppendEvent(environmentKey, existingHistory, event);
           }
           
           console.log('[WorkpieceHistoryService] Generated event for workpiece:', {
@@ -779,14 +812,13 @@ export class WorkpieceHistoryService implements OnDestroy {
     const moduleName = this.getModuleNameFromSerial(moduleSerialId);
     const stationName = this.getStationName(moduleSerialId);
 
-    // Skip if no actionState or no loads
-    if (!moduleState.actionState || !moduleState.loads || moduleState.loads.length === 0) {
+    const resolvedActionState = this.resolveModuleActionState(moduleState);
+    if (!resolvedActionState) {
       return;
     }
 
-    const actionState = moduleState.actionState;
-    const command = actionState.command.toUpperCase();
-    const actionStateValue = actionState.state.toUpperCase();
+    const command = resolvedActionState.command.toUpperCase();
+    const actionStateValue = resolvedActionState.state.toUpperCase();
 
     // Map CHECK_QUALITY to PROCESS for AIQS
     const mappedCommand = command === 'CHECK_QUALITY' ? 'PROCESS' : command;
@@ -796,9 +828,7 @@ export class WorkpieceHistoryService implements OnDestroy {
       return;
     }
 
-    // Get workpiece type from loads array
-    const loadItem = moduleState.loads[0];
-    const workpieceType = loadItem?.loadType;
+    const workpieceType = this.resolveModuleWorkpieceType(moduleState, resolvedActionState);
 
     if (!workpieceType) {
       return; // No workpiece type, skip
@@ -826,8 +856,18 @@ export class WorkpieceHistoryService implements OnDestroy {
       }
     }
 
-    // If no matching workpiece found, we might need to create one
-    // But for now, we'll skip if we can't find a match
+    // Fallback match: same orderId even when workpieceType lookup is ambiguous in fixtures.
+    if (!matchingWorkpieceId || !matchingHistory) {
+      for (const [workpieceId, history] of historyMap.entries()) {
+        const hasOrderMatch = history.events.some((event) => event.orderId === moduleState.orderId);
+        if (hasOrderMatch) {
+          matchingWorkpieceId = workpieceId;
+          matchingHistory = history;
+          break;
+        }
+      }
+    }
+
     if (!matchingWorkpieceId || !matchingHistory) {
       console.warn('[WorkpieceHistoryService] No matching workpiece found for module state:', {
         moduleSerialId,
@@ -844,9 +884,10 @@ export class WorkpieceHistoryService implements OnDestroy {
     // IMPORTANT: For module events, use stationName (DRILL, AIQS, etc.) as moduleName
     // This ensures that events in Level 3 show "DRILL PICK" instead of "FTS PICK"
     const eventModuleName = stationName || moduleName || 'UNKNOWN';
+    const eventOrderType = this.resolveModuleOrderType(matchingHistory, moduleState, moduleSerialId);
     
     const baseEvent: Partial<TrackTraceEvent> = {
-      timestamp: moduleState.timestamp,
+      timestamp: moduleState.timestamp || resolvedActionState.timestamp || utcIsoTimestampMs(),
       workpieceId: matchingWorkpieceId,
       workpieceType: workpieceType,
       location: moduleSerialId,
@@ -854,11 +895,11 @@ export class WorkpieceHistoryService implements OnDestroy {
       moduleName: eventModuleName, // Use stationName (DRILL, AIQS, etc.) for module events
       orderId: moduleState.orderId,
       orderUpdateId: moduleState.orderUpdateId,
-      orderType: 'PRODUCTION', // Module events are always production
+      orderType: eventOrderType,
       stationId: stationName || undefined,
       stationName: stationName ? this.getStationDisplayName(stationName) : undefined,
       eventType: mappedCommand, // Use mapped command (CHECK_QUALITY -> PROCESS)
-      actionId: actionState.id,
+      actionId: resolvedActionState.id,
       processDuration: mappedCommand === 'PROCESS' && stationName ? PROCESS_DURATIONS[stationName] : undefined,
       details: {
         actionState: actionStateValue,
@@ -896,6 +937,7 @@ export class WorkpieceHistoryService implements OnDestroy {
     }
     
     baseEvent.subOrderId = subOrderId;
+    this.attachEnvironmentSnapshotIfRelevant(baseEvent as TrackTraceEvent);
 
     // Add event to history
     this.tryAppendEvent(environmentKey, matchingHistory, baseEvent as TrackTraceEvent);
@@ -920,6 +962,100 @@ export class WorkpieceHistoryService implements OnDestroy {
 
     historyMap.set(matchingWorkpieceId, matchingHistory);
     this.getStore(environmentKey).next(historyMap);
+  }
+
+  private resolveModuleActionState(
+    moduleState: ModuleState
+  ): { id: string; command: string; state: string; timestamp: string; metadata?: Record<string, unknown> } | null {
+    const primary = moduleState.actionState;
+    if (
+      primary &&
+      typeof primary.id === 'string' &&
+      typeof primary.command === 'string' &&
+      typeof primary.state === 'string' &&
+      this.isTrackableModuleCommand(primary.command)
+    ) {
+      return {
+        id: primary.id,
+        command: primary.command,
+        state: primary.state,
+        timestamp: primary.timestamp || moduleState.timestamp,
+      };
+    }
+
+    const fallbackStates = Array.isArray(moduleState.actionStates) ? moduleState.actionStates : [];
+    const fallback = [...fallbackStates].reverse().find(
+      (state) =>
+        typeof state?.id === 'string' &&
+        typeof state?.command === 'string' &&
+        typeof state?.state === 'string' &&
+        this.isTrackableModuleCommand(state.command)
+    );
+    if (!fallback || !fallback.id || !fallback.command || !fallback.state) {
+      return null;
+    }
+
+    return {
+      id: fallback.id,
+      command: fallback.command,
+      state: fallback.state,
+      timestamp: fallback.timestamp || moduleState.timestamp,
+      metadata: fallback.metadata as Record<string, unknown> | undefined,
+    };
+  }
+
+  private isTrackableModuleCommand(command: string): boolean {
+    const normalized = command.toUpperCase();
+    return ['PICK', 'DROP', 'PROCESS', 'CHECK_QUALITY'].includes(normalized);
+  }
+
+  private resolveModuleWorkpieceType(
+    moduleState: ModuleState,
+    resolvedActionState: { metadata?: Record<string, unknown> }
+  ): 'BLUE' | 'WHITE' | 'RED' | null {
+    const loadType = moduleState.loads?.find((load) => !!load?.loadType)?.loadType;
+    if (loadType === 'BLUE' || loadType === 'WHITE' || loadType === 'RED') {
+      return loadType;
+    }
+
+    const fromActionState = this.extractWorkpieceTypeFromMetadata(resolvedActionState.metadata);
+    if (fromActionState) {
+      return fromActionState;
+    }
+
+    for (const state of moduleState.actionStates ?? []) {
+      const fromActionStates = this.extractWorkpieceTypeFromMetadata(state?.metadata as Record<string, unknown> | undefined);
+      if (fromActionStates) {
+        return fromActionStates;
+      }
+    }
+    return null;
+  }
+
+  private extractWorkpieceTypeFromMetadata(
+    metadata: Record<string, unknown> | undefined
+  ): 'BLUE' | 'WHITE' | 'RED' | null {
+    const workpiece = metadata?.['workpiece'];
+    if (!workpiece || typeof workpiece !== 'object') {
+      return null;
+    }
+    const type = (workpiece as Record<string, unknown>)['type'];
+    if (type === 'BLUE' || type === 'WHITE' || type === 'RED') {
+      return type;
+    }
+    return null;
+  }
+
+  private resolveModuleOrderType(
+    history: WorkpieceHistory,
+    moduleState: ModuleState,
+    moduleSerialId: string
+  ): 'STORAGE' | 'PRODUCTION' | string {
+    const fromOrderContext = history.orders?.find((order) => order.orderId === moduleState.orderId)?.orderType;
+    if (fromOrderContext) {
+      return fromOrderContext;
+    }
+    return this.determineOrderType(moduleSerialId, history.events);
   }
 
   private tryAppendEvent(environmentKey: string, history: WorkpieceHistory, event: TrackTraceEvent): void {
@@ -966,9 +1102,21 @@ export class WorkpieceHistoryService implements OnDestroy {
   }
 
   private buildDedupKey(event: TrackTraceEvent): string {
-    // Key must stay stable even if subOrderId generation changes (e.g. due to reprocessing).
-    // Prefer actionId + canonical fields over event array index.
+    // Prefer semantic, source-independent keys for station actions so equivalent
+    // events from FTS and module streams collapse to one history entry.
     const detailsDir = typeof event.details?.['direction'] === 'string' ? String(event.details['direction']) : '';
+    const hasSemanticStationKey =
+      !!event.stationId && event.orderUpdateId !== undefined && event.orderUpdateId !== null;
+    if (hasSemanticStationKey) {
+      return [
+        event.eventType ?? '',
+        event.workpieceId ?? '',
+        event.orderId ?? '',
+        String(event.orderUpdateId ?? ''),
+        event.stationId ?? '',
+        detailsDir,
+      ].join('|');
+    }
     return [
       event.eventType ?? '',
       event.timestamp ?? '',
@@ -977,7 +1125,6 @@ export class WorkpieceHistoryService implements OnDestroy {
       String(event.orderUpdateId ?? ''),
       event.actionId ?? '',
       event.location ?? '',
-      event.moduleId ?? '',
       event.stationId ?? '',
       detailsDir,
     ].join('|');
@@ -1005,6 +1152,56 @@ export class WorkpieceHistoryService implements OnDestroy {
     return 'TRANSPORT';
   }
 
+  private attachEnvironmentSnapshotIfRelevant(event: TrackTraceEvent): void {
+    if (!this.latestEnvironmentSnapshot || !this.shouldCaptureEnvironmentSnapshot(event)) {
+      return;
+    }
+    const details = event.details ? { ...event.details } : {};
+    details['environmentSnapshot'] = this.latestEnvironmentSnapshot;
+    event.details = details;
+  }
+
+  private shouldCaptureEnvironmentSnapshot(event: TrackTraceEvent): boolean {
+    const station = (event.stationId || '').toUpperCase();
+    const orderType = (event.orderType || '').toUpperCase();
+    const type = (event.eventType || '').toUpperCase();
+    if (!station || !orderType || !type) {
+      return false;
+    }
+    if (orderType === 'PRODUCTION') {
+      if (['DRILL', 'MILL', 'AIQS'].includes(station)) {
+        return type === 'PROCESS';
+      }
+      if (station === 'HBW') {
+        return type === 'PICK';
+      }
+      if (station === 'DPS') {
+        return type === 'DROP';
+      }
+      return false;
+    }
+    if (orderType === 'STORAGE') {
+      if (station === 'DPS') {
+        return type === 'PICK';
+      }
+      if (station === 'HBW') {
+        return type === 'DROP';
+      }
+    }
+    return false;
+  }
+
+  private getPlannedStationChain(
+    workpieceType: string,
+    orderType: 'STORAGE' | 'PRODUCTION'
+  ): string[] {
+    if (orderType === 'STORAGE') {
+      return ['DPS', 'HBW'];
+    }
+    const flow = PRODUCTION_WORKFLOWS[workpieceType.toUpperCase()] ?? [];
+    return ['HBW', ...flow, 'DPS'];
+  }
+
   /**
    * Get station name from node ID
    */
@@ -1029,14 +1226,7 @@ export class WorkpieceHistoryService implements OnDestroy {
    * Get human-readable station display name
    */
   private getStationDisplayName(stationId: string): string {
-    const names: Record<string, string> = {
-      'HBW': 'High Bay Warehouse',
-      'DRILL': 'Drilling Station',
-      'MILL': 'Milling Station',
-      'AIQS': 'Quality Inspection',
-      'DPS': 'Dispatch Station',
-    };
-    return names[stationId] || stationId;
+    return this.moduleNameService.getModuleFullName(stationId);
   }
 
   /**
@@ -1218,6 +1408,7 @@ export class WorkpieceHistoryService implements OnDestroy {
               startTime: 'startedAt' in order ? String(order.startedAt) : undefined,
               endTime: 'stoppedAt' in order ? String(order.stoppedAt) : undefined,
               status: orderStatus,
+              plannedStationChain: this.getPlannedStationChain(workpieceType, 'STORAGE'),
             });
           } else if (orderType === 'PRODUCTION') {
             // Primary: CorrelationInfoService (dsp/correlation/info from DSP)
@@ -1248,6 +1439,7 @@ export class WorkpieceHistoryService implements OnDestroy {
               startTime: 'startedAt' in order ? String(order.startedAt) : undefined,
               endTime: 'stoppedAt' in order ? String(order.stoppedAt) : undefined,
               status: orderStatus,
+              plannedStationChain: this.getPlannedStationChain(workpieceType, 'PRODUCTION'),
             });
           }
         }
@@ -1277,6 +1469,7 @@ export class WorkpieceHistoryService implements OnDestroy {
           supplierId: fromCorrStorage?.supplierId ?? erpPurchaseData?.supplierId ?? generateSupplierId(),
           orderDate: fromCorrStorage?.orderDate ?? erpPurchaseData?.orderDate ?? utcIsoTimestampMs(oneHourAgo),
           startTime: utcIsoTimestampMs(oneHourAgo),
+          plannedStationChain: this.getPlannedStationChain(workpieceType, 'STORAGE'),
         },
         {
           orderId: ftsOrderId,
@@ -1286,6 +1479,7 @@ export class WorkpieceHistoryService implements OnDestroy {
           customerId: fromCorrProduction?.customerId ?? erpCustomerData?.customerId ?? generateCustomerId(),
           orderDate: fromCorrProduction?.orderDate ?? erpCustomerData?.orderDate ?? utcIsoTimestampMs(now),
           startTime: utcIsoTimestampMs(now),
+          plannedStationChain: this.getPlannedStationChain(workpieceType, 'PRODUCTION'),
         },
       ];
     }

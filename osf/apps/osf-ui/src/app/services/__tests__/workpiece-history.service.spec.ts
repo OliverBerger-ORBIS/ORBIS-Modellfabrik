@@ -422,5 +422,195 @@ describe('WorkpieceHistoryService', () => {
       expect(svc.shouldAppendEvent('mock', 'wp-1', event)).toBe(true);
       expect(svc.shouldAppendEvent('mock', 'wp-1', event)).toBe(false);
     });
+
+    it('should deduplicate semantic duplicates across sources for station actions', () => {
+      const svc = service as unknown as {
+        shouldAppendEvent: (environmentKey: string, workpieceId: string, event: TrackTraceEvent) => boolean;
+      };
+
+      const ftsLikeEvent: TrackTraceEvent = {
+        timestamp: '2026-05-06T13:00:00Z',
+        eventType: 'PROCESS',
+        workpieceId: 'wp-2',
+        orderId: 'order-2',
+        orderUpdateId: 4,
+        actionId: 'action-xyz',
+        stationId: 'AIQS',
+        moduleId: '5iO4',
+        location: 'SVR4H76530',
+      };
+      const moduleLikeEvent: TrackTraceEvent = {
+        timestamp: '2026-05-06T13:00:02Z',
+        eventType: 'PROCESS',
+        workpieceId: 'wp-2',
+        orderId: 'order-2',
+        orderUpdateId: 4,
+        actionId: 'other-source-action',
+        stationId: 'AIQS',
+        moduleId: 'SVR4H76530',
+        location: 'SVR4H76530',
+      };
+
+      expect(svc.shouldAppendEvent('mock', 'wp-2', ftsLikeEvent)).toBe(true);
+      expect(svc.shouldAppendEvent('mock', 'wp-2', moduleLikeEvent)).toBe(false);
+    });
+  });
+
+  describe('Planned station chain', () => {
+    it('should return fixed storage chain DPS -> HBW', () => {
+      const svc = service as unknown as {
+        getPlannedStationChain: (workpieceType: string, orderType: 'STORAGE' | 'PRODUCTION') => string[];
+      };
+      expect(svc.getPlannedStationChain('BLUE', 'STORAGE')).toEqual(['DPS', 'HBW']);
+    });
+
+    it('should return production chain by workpiece type', () => {
+      const svc = service as unknown as {
+        getPlannedStationChain: (workpieceType: string, orderType: 'STORAGE' | 'PRODUCTION') => string[];
+      };
+      expect(svc.getPlannedStationChain('BLUE', 'PRODUCTION')).toEqual(['HBW', 'DRILL', 'MILL', 'AIQS', 'DPS']);
+      expect(svc.getPlannedStationChain('WHITE', 'PRODUCTION')).toEqual(['HBW', 'DRILL', 'AIQS', 'DPS']);
+      expect(svc.getPlannedStationChain('RED', 'PRODUCTION')).toEqual(['HBW', 'MILL', 'AIQS', 'DPS']);
+    });
+  });
+
+  describe('Environment snapshot trigger matrix', () => {
+    it('captures production PROCESS events for DRILL/MILL/AIQS', () => {
+      const svc = service as unknown as {
+        shouldCaptureEnvironmentSnapshot: (event: TrackTraceEvent) => boolean;
+      };
+      expect(
+        svc.shouldCaptureEnvironmentSnapshot({
+          timestamp: '2026-05-01T10:00:00.000Z',
+          eventType: 'PROCESS',
+          orderType: 'PRODUCTION',
+          stationId: 'DRILL',
+        })
+      ).toBe(true);
+      expect(
+        svc.shouldCaptureEnvironmentSnapshot({
+          timestamp: '2026-05-01T10:00:00.500Z',
+          eventType: 'PROCESS',
+          orderType: 'PRODUCTION',
+          stationId: 'MILL',
+        })
+      ).toBe(true);
+      expect(
+        svc.shouldCaptureEnvironmentSnapshot({
+          timestamp: '2026-05-01T10:00:01.000Z',
+          eventType: 'PROCESS',
+          orderType: 'PRODUCTION',
+          stationId: 'AIQS',
+        })
+      ).toBe(true);
+    });
+
+    it('captures HBW/DPS by order-specific pick/drop rules', () => {
+      const svc = service as unknown as {
+        shouldCaptureEnvironmentSnapshot: (event: TrackTraceEvent) => boolean;
+      };
+      expect(
+        svc.shouldCaptureEnvironmentSnapshot({
+          timestamp: '2026-05-01T10:00:02.000Z',
+          eventType: 'PICK',
+          orderType: 'PRODUCTION',
+          stationId: 'HBW',
+        })
+      ).toBe(true);
+      expect(
+        svc.shouldCaptureEnvironmentSnapshot({
+          timestamp: '2026-05-01T10:00:03.000Z',
+          eventType: 'DROP',
+          orderType: 'PRODUCTION',
+          stationId: 'DPS',
+        })
+      ).toBe(true);
+      expect(
+        svc.shouldCaptureEnvironmentSnapshot({
+          timestamp: '2026-05-01T10:00:04.000Z',
+          eventType: 'PICK',
+          orderType: 'STORAGE',
+          stationId: 'DPS',
+        })
+      ).toBe(true);
+      expect(
+        svc.shouldCaptureEnvironmentSnapshot({
+          timestamp: '2026-05-01T10:00:05.000Z',
+          eventType: 'DROP',
+          orderType: 'STORAGE',
+          stationId: 'HBW',
+        })
+      ).toBe(true);
+    });
+
+    it('does not capture non-matrix events', () => {
+      const svc = service as unknown as {
+        shouldCaptureEnvironmentSnapshot: (event: TrackTraceEvent) => boolean;
+      };
+      expect(
+        svc.shouldCaptureEnvironmentSnapshot({
+          timestamp: '2026-05-01T10:00:06.000Z',
+          eventType: 'PICK',
+          orderType: 'PRODUCTION',
+          stationId: 'MILL',
+        })
+      ).toBe(false);
+      expect(
+        svc.shouldCaptureEnvironmentSnapshot({
+          timestamp: '2026-05-01T10:00:07.000Z',
+          eventType: 'DROP',
+          orderType: 'PRODUCTION',
+          stationId: 'AIQS',
+        })
+      ).toBe(false);
+      expect(
+        svc.shouldCaptureEnvironmentSnapshot({
+          timestamp: '2026-05-01T10:00:08.000Z',
+          eventType: 'DROP',
+          orderType: 'STORAGE',
+          stationId: 'DPS',
+        })
+      ).toBe(false);
+      expect(
+        svc.shouldCaptureEnvironmentSnapshot({
+          timestamp: '2026-05-01T10:00:09.000Z',
+          eventType: 'PICK',
+          orderType: 'STORAGE',
+          stationId: 'HBW',
+        })
+      ).toBe(false);
+    });
+  });
+
+  describe('Module storage fallback parsing', () => {
+    it('extracts workpiece type from actionStates metadata when loads are missing', () => {
+      const svc = service as unknown as {
+        resolveModuleActionState: (state: unknown) => { metadata?: Record<string, unknown> } | null;
+        resolveModuleWorkpieceType: (
+          state: unknown,
+          actionState: { metadata?: Record<string, unknown> }
+        ) => 'BLUE' | 'WHITE' | 'RED' | null;
+      };
+
+      const moduleState = {
+        serialNumber: 'SVR4H73275',
+        timestamp: '2026-05-06T13:00:00Z',
+        orderId: 'order-storage-1',
+        actionState: null,
+        actionStates: [
+          {
+            id: 'a-1',
+            command: 'DROP',
+            state: 'FINISHED',
+            timestamp: '2026-05-06T13:00:00Z',
+            metadata: { workpiece: { type: 'WHITE' } },
+          },
+        ],
+      };
+
+      const resolved = svc.resolveModuleActionState(moduleState);
+      expect(resolved).toBeTruthy();
+      expect(svc.resolveModuleWorkpieceType(moduleState, resolved!)).toBe('WHITE');
+    });
   });
 });

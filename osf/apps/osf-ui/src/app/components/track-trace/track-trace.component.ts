@@ -8,6 +8,7 @@ import { ModuleNameService } from '../../services/module-name.service';
 import { EnvironmentService } from '../../services/environment.service';
 import {
   TrackTraceEnvironmentService,
+  type TrackTraceEnvironmentRow,
   type TrackTraceEnvironmentSnapshot,
 } from '../../services/track-trace-environment.service';
 import { ICONS } from '../../shared/icons/icon.registry';
@@ -268,6 +269,43 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     return eventType;
   }
 
+  getEventPrimaryActor(event: TrackTraceEvent): string {
+    const eventType = (event.eventType || '').toUpperCase();
+    const isBracketAction = eventType === 'PICK' || eventType === 'PROCESS' || eventType === 'DROP';
+    if (isBracketAction && event.stationId) {
+      return event.stationId.toUpperCase();
+    }
+    return event.moduleName || 'FTS';
+  }
+
+  getAgvAccentClass(label: string | null | undefined): string {
+    const normalized = (label || '').toUpperCase();
+    if (normalized.includes('AGV-1')) {
+      return 'agv-accent--1';
+    }
+    if (normalized.includes('AGV-2')) {
+      return 'agv-accent--2';
+    }
+    return '';
+  }
+
+  getEventTransportContext(event: TrackTraceEvent): string | null {
+    const eventType = (event.eventType || '').toUpperCase();
+    const isBracketAction = eventType === 'PICK' || eventType === 'PROCESS' || eventType === 'DROP';
+    if (!isBracketAction) {
+      return null;
+    }
+    const moduleName = (event.moduleName || '').toUpperCase();
+    const stationId = (event.stationId || '').toUpperCase();
+    if (!moduleName || moduleName === stationId) {
+      return null;
+    }
+    if (moduleName.includes('AGV') || moduleName.includes('FTS')) {
+      return moduleName;
+    }
+    return null;
+  }
+
   getOrderTypeIcon(orderType: string | undefined): string {
     if (!orderType) return 'assets/svg/ui/heading-customer-orders.svg';
     switch (orderType.toUpperCase()) {
@@ -290,6 +328,137 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
       default:
         return orderType;
     }
+  }
+
+  formatPlannedStationChain(chain: string[] | undefined): string {
+    if (!chain || chain.length === 0) {
+      return '';
+    }
+    return chain.join(' -> ');
+  }
+
+  isOrderScopedEvent(event: TrackTraceEvent): boolean {
+    const orderType = (event.orderType || '').toUpperCase();
+    return orderType === 'STORAGE' || orderType === 'PRODUCTION';
+  }
+
+  getEventEnvironmentSnapshot(event: TrackTraceEvent): TrackTraceEnvironmentSnapshot | null {
+    const raw = event.details?.['environmentSnapshot'];
+    if (!raw || typeof raw !== 'object') {
+      return null;
+    }
+    const candidate = raw as Partial<TrackTraceEnvironmentSnapshot>;
+    if (!Array.isArray(candidate.rows)) {
+      return null;
+    }
+    const rows = candidate.rows.filter(
+      (row): row is TrackTraceEnvironmentRow =>
+        !!row &&
+        typeof row.id === 'string' &&
+        typeof row.label === 'string' &&
+        typeof row.value === 'string' &&
+        (row.variant === 'normal' || row.variant === 'warn' || row.variant === 'alarm')
+    );
+    return {
+      rows,
+      hasAlarm: Boolean(candidate.hasAlarm),
+      updatedAt: typeof candidate.updatedAt === 'string' ? candidate.updatedAt : event.timestamp,
+    };
+  }
+
+  isEnvironmentAlarm(snapshot: TrackTraceEnvironmentSnapshot): boolean {
+    return snapshot.hasAlarm || snapshot.rows.some((row) => row.variant === 'alarm');
+  }
+
+  isEnvironmentWarn(snapshot: TrackTraceEnvironmentSnapshot): boolean {
+    if (this.isEnvironmentAlarm(snapshot)) {
+      return false;
+    }
+    return snapshot.rows.some((row) => row.variant === 'warn');
+  }
+
+  getOrderFlowAccents(
+    events: TrackTraceEvent[] | undefined,
+    order: OrderContext | null | undefined
+  ): Array<{ station: string; index: number; total: number; active: boolean }> {
+    const plannedChain = (order?.plannedStationChain ?? []).map((step) => step.toUpperCase());
+    if (!events || !order || plannedChain.length === 0) {
+      return [];
+    }
+
+    const orderType = (order.orderType || '').toUpperCase();
+    const orderEvents = events.filter((event) => event.orderId === order.orderId);
+
+    return plannedChain.map((station, idx) => {
+      const active = orderEvents.some((event) =>
+        this.isFlowAnchorEvent(orderType, station, (event.eventType || '').toUpperCase()) &&
+        (event.stationId || '').toUpperCase() === station
+      );
+      return {
+        station,
+        index: idx + 1,
+        total: plannedChain.length,
+        active,
+      };
+    });
+  }
+
+  getBusinessFlowAccent(
+    event: TrackTraceEvent,
+    order: OrderContext | null | undefined
+  ): { station: string; index: number; total: number } | null {
+    const plannedChain = (order?.plannedStationChain ?? []).map((step) => step.toUpperCase());
+    if (plannedChain.length === 0) {
+      return null;
+    }
+
+    const station = (event.stationId || '').toUpperCase();
+    const eventType = (event.eventType || '').toUpperCase();
+    const orderType = (order?.orderType || event.orderType || '').toUpperCase();
+    if (!station || !eventType || !orderType) {
+      return null;
+    }
+
+    const stationIndex = plannedChain.indexOf(station);
+    if (stationIndex < 0) {
+      return null;
+    }
+    if (!this.isFlowAnchorEvent(orderType, station, eventType)) {
+      return null;
+    }
+
+    return {
+      station,
+      index: stationIndex + 1,
+      total: plannedChain.length,
+    };
+  }
+
+  private isFlowAnchorEvent(orderType: string, station: string, eventType: string): boolean {
+    if (orderType === 'PRODUCTION') {
+      if (['DRILL', 'MILL', 'AIQS'].includes(station)) {
+        return eventType === 'PROCESS';
+      }
+      if (station === 'HBW') {
+        return eventType === 'PICK';
+      }
+      if (station === 'DPS') {
+        return eventType === 'DROP';
+      }
+      return false;
+    }
+
+    if (orderType === 'STORAGE') {
+      if (station === 'DPS') {
+        return eventType === 'PICK';
+      }
+      if (station === 'HBW') {
+        return eventType === 'DROP';
+      }
+      return false;
+    }
+
+    return false;
   }
 
   getStationIcon(stationId: string | undefined): string {

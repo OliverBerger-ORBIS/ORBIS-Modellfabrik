@@ -27,9 +27,9 @@
 - [x] **Process → Order:** nach Auslösen einer Order (`ccu/order/request`) **ohne** Tab-Wechsel (mehrere Aufträge möglich); Sprung in den Order-Tab nur per Klick auf eine **Production-Flow-Produktkarte** (Blue/White/Red) rechts → `openOrderTabFromProductionFlow` / `/:locale/order?product=…` (05.05.2026, Unit-Tests `openOrderTab`, `openOrderTabFromProductionFlow`)
 - [x] **Order → Shopfloor:** aus dem Order-Tab in den Shopfloor-Tab — **Modul** auf der eingebetteten Shopfloor-Vorschau in der Order-Card anklicken → `/:locale/shopfloor?module=…` (z. B. HBW), Fokus wie Shopfloor-Tab `selectModuleByType` (05.05.2026, `order-card.component.spec`)
 - [ ] **UX/Navigation (Analyse):** Entscheidungsgrundlage: `BackButtonComponent` in den **Haupt-Tabs** (z. B. Process/Order/Shopfloor nach Deep-Link-Flows) einbauen **oder** bewusst nur **Sidebar-Navigation** + **Browser-Zurück**; Status quo: Use-Case-Seiten haben `app-back-button`, die Tab-Routen nicht — Empfehlung dokumentieren, danach ggf. umsetzen
-- [ ] **Track & Trace Use-Case:** Umwelt-/Sensor-Daten eventbasiert „samplen“/speichern (Snapshots zu Shopfloor-Events: HBW Pick/Drop, DPS Pick/Drop, DRILL/MILL/AIQS Prozessschritte)
-- [ ] **Analyse/Fix:** Track&Trace Live zeigt AIQS-Event-Sequenzen doppelt (Start+Ende) → Root cause + Fix (z. B. Produkt Blau: AIQS, DRILL, MILL, AIQS)
-- [ ] **Track&Trace Business-Kontext:** geplante Stationskette kurz anzeigen (z. B. Lagerauftrag: DPS→HBW; Produktion Blau: HBW→DRILL→MILL→AIQS→DPS)
+- [x] **Track & Trace Use-Case:** Umwelt-/Sensor-Daten eventbasiert „samplen“/speichern (Snapshots zu Shopfloor-Events: HBW Pick/Drop, DPS Pick/Drop, DRILL/MILL/AIQS Prozessschritte) — umgesetzt inkl. 3-Spalten-Timeline mit zeitsynchroner Sensor-Spalte (07.05.2026, `npx nx test osf-ui --testPathPattern='track-trace.component.spec|track-trace-tab.component.spec|workpiece-history.service.spec'`)
+- [x] **Analyse/Fix:** Track&Trace Live zeigt AIQS-Event-Sequenzen doppelt (Start+Ende) → Root cause + Fix (z. B. Produkt Blau: AIQS, DRILL, MILL, AIQS) — semantische Dedup-Logik stabilisiert (quellenübergreifend FTS/Module) und Klammer-Prinzip wiederhergestellt (07.05.2026, `npx nx test osf-ui --testPathPattern='workpiece-history.service.spec'`)
+- [x] **Track&Trace Business-Kontext:** geplante Stationskette kurz anzeigen (z. B. Lagerauftrag: DPS→HBW; Produktion Blau: HBW→DRILL→MILL→AIQS→DPS) — sichtbar im Order-Kontext inkl. Flow-Akzenten/Lane auf Event-Höhe und Stations-Icons (07.05.2026, visuelle Verifikation Mock-Environment)
 
 ### Hannover Messe / Presentation (Übernahme aus Sprint 20)
 
@@ -79,5 +79,5 @@
 
 ---
 
-*Stand: 06.05.2026* · [sprints_README.md](sprints_README.md)
+*Stand: 07.05.2026* · [sprints_README.md](sprints_README.md)
 
