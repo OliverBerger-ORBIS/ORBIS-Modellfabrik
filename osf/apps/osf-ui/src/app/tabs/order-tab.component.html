@@ -27,9 +27,12 @@
 
   <div class="order-tab__grid">
     <section>
-      <div class="order-tab__section-heading">
+      <div class="order-tab__section-heading" [class.order-tab__section-heading--context]="highlightedProduct !== null">
         <img src="assets/svg/ui/heading-production.svg" alt="" aria-hidden="true" />
         <h3 i18n="@@orderTabProductionHeadline">Production orders</h3>
+        <span class="order-tab__context-chip" *ngIf="highlightedProduct !== null">
+          {{ highlightedProduct }}
+        </span>
       </div>
 
       <article class="order-section">

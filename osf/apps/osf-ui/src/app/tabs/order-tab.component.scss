@@ -40,6 +40,24 @@
 
 .order-tab__section-heading {
   margin-bottom: 0.75rem;
+
+  &--context {
+    padding: 0.2rem 0.45rem;
+    border-radius: 10px;
+    background: rgba(var(--orbis-blue-strong-rgb), 0.08);
+  }
+}
+
+.order-tab__context-chip {
+  margin-left: auto;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--orbis-blue-strong-rgb), 0.28);
+  background: rgba(var(--orbis-blue-strong-rgb), 0.14);
+  color: var(--orbis-blue-strong);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
 }
 
 .order-tab__fixtures {

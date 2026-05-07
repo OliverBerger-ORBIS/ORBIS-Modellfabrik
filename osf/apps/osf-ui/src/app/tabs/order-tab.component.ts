@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import type { OrderActive } from '@osf/entities';
+import { ActivatedRoute } from '@angular/router';
 import { getDashboardController } from '../mock-dashboard';
 import { OrderCardComponent } from '../components/order-card/order-card.component';
 import type { OrderFixtureName } from '@osf/testing-fixtures';
@@ -19,6 +20,8 @@ const ORDER_TYPES = {
   PRODUCTION: 'PRODUCTION',
   STORAGE: 'STORAGE',
 };
+const PRODUCT_TYPES = ['BLUE', 'WHITE', 'RED'] as const;
+type ProductType = (typeof PRODUCT_TYPES)[number];
 
 const isCompleted = (order: OrderActive) =>
   (order.state ?? order.status ?? '').toUpperCase() === 'COMPLETED';
@@ -59,6 +62,7 @@ export class OrderTabComponent implements OnInit, OnDestroy {
     private readonly messageMonitor: MessageMonitorService,
     private readonly connectionService: ConnectionService,
     private readonly cdr: ChangeDetectorRef,
+    private readonly route: ActivatedRoute,
     private readonly http: HttpClient,
     private readonly mappingService: ShopfloorMappingService,
     private readonly agvRouteService: AgvRouteService
@@ -149,6 +153,12 @@ export class OrderTabComponent implements OnInit, OnDestroy {
 
   productionCompletedCollapsed = true;
   storageCompletedCollapsed = true;
+  highlightedProduct: ProductType | null = null;
+
+  private applyProductContext(productRaw: unknown): void {
+    const product = typeof productRaw === 'string' ? productRaw.toUpperCase() : '';
+    this.highlightedProduct = PRODUCT_TYPES.includes(product as ProductType) ? (product as ProductType) : null;
+  }
 
   toggleProductionCompleted(): void {
     this.productionCompletedCollapsed = !this.productionCompletedCollapsed;
@@ -293,12 +303,22 @@ export class OrderTabComponent implements OnInit, OnDestroy {
 
     this.productionActive$ = orderList$.pipe(
       map((orders: OrderActive[]) =>
-        orders.filter((order: OrderActive) => inferType(order) === ORDER_TYPES.PRODUCTION && !isCompleted(order))
+        orders
+          .filter((order: OrderActive) => inferType(order) === ORDER_TYPES.PRODUCTION && !isCompleted(order))
+          .filter((order: OrderActive) =>
+            this.highlightedProduct ? String(order.type ?? '').toUpperCase() === this.highlightedProduct : true
+          )
       )
     );
 
     this.productionCompleted$ = completedList$.pipe(
-      map((orders: OrderActive[]) => orders.filter((order: OrderActive) => inferType(order) === ORDER_TYPES.PRODUCTION))
+      map((orders: OrderActive[]) =>
+        orders
+          .filter((order: OrderActive) => inferType(order) === ORDER_TYPES.PRODUCTION)
+          .filter((order: OrderActive) =>
+            this.highlightedProduct ? String(order.type ?? '').toUpperCase() === this.highlightedProduct : true
+          )
+      )
     );
 
     this.storageActive$ = orderList$.pipe(
@@ -317,6 +337,16 @@ export class OrderTabComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.subscriptions.add(
+      this.route.queryParams.subscribe((params) => {
+        const previous = this.highlightedProduct;
+        this.applyProductContext(params['product']);
+        if (this.highlightedProduct !== previous) {
+          this.cdr.markForCheck();
+        }
+      })
+    );
+
     this.subscriptions.add(
       this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').pipe(
         catchError((e) => {

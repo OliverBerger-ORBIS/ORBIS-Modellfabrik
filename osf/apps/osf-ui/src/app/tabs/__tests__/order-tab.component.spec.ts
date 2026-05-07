@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BehaviorSubject, of } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { filter, take } from 'rxjs/operators';
 import { OrderTabComponent } from '../order-tab.component';
 import { EnvironmentService } from '../../services/environment.service';
 import { MessageMonitorService } from '../../services/message-monitor.service';
@@ -9,10 +11,12 @@ import * as mockDashboard from '../../mock-dashboard';
 import type { OrderActive } from '@osf/entities';
 
 // Mock getDashboardController
+const ordersStream$ = new BehaviorSubject<Record<string, OrderActive>>({});
+const completedOrdersStream$ = new BehaviorSubject<Record<string, OrderActive>>({});
 jest.spyOn(mockDashboard, 'getDashboardController').mockReturnValue({
   streams: {
-    orders$: of({}),
-    completedOrders$: of({}),
+    orders$: ordersStream$.asObservable(),
+    completedOrders$: completedOrdersStream$.asObservable(),
   },
   loadTabFixture: jest.fn(),
   getCurrentFixture: jest.fn(() => 'startup'),
@@ -24,6 +28,7 @@ describe('OrderTabComponent', () => {
   let environmentService: jest.Mocked<EnvironmentService>;
   let messageMonitor: jest.Mocked<MessageMonitorService>;
   let connectionService: jest.Mocked<ConnectionService>;
+  let routeQueryParams$: BehaviorSubject<Record<string, unknown>>;
 
   beforeEach(async () => {
     const environmentServiceMock = {
@@ -33,11 +38,13 @@ describe('OrderTabComponent', () => {
 
     const messageMonitorMock = {
       getLastMessage: jest.fn(() => of({ valid: false, payload: null })),
+      getHistory: jest.fn(() => []),
     };
 
     const connectionServiceMock = {
       state$: new BehaviorSubject<'disconnected'>('disconnected'),
     };
+    routeQueryParams$ = new BehaviorSubject<Record<string, unknown>>({});
 
     await TestBed.configureTestingModule({
       imports: [OrderTabComponent, HttpClientTestingModule],
@@ -45,6 +52,7 @@ describe('OrderTabComponent', () => {
         { provide: EnvironmentService, useValue: environmentServiceMock },
         { provide: MessageMonitorService, useValue: messageMonitorMock },
         { provide: ConnectionService, useValue: connectionServiceMock },
+        { provide: ActivatedRoute, useValue: { queryParams: routeQueryParams$.asObservable() } },
       ],
     }).compileComponents();
 
@@ -126,6 +134,27 @@ describe('OrderTabComponent', () => {
     const unsubscribeSpy = jest.spyOn(component['subscriptions'], 'unsubscribe');
     component.ngOnDestroy();
     expect(unsubscribeSpy).toHaveBeenCalled();
+  });
+
+  it('applies product query context and filters production lists', (done) => {
+    routeQueryParams$.next({ product: 'BLUE' });
+    const activeOrders = {
+      'o-blue': { orderId: 'o-blue', orderType: 'PRODUCTION', type: 'BLUE', state: 'ENQUEUED' } as OrderActive,
+      'o-red': { orderId: 'o-red', orderType: 'PRODUCTION', type: 'RED', state: 'ENQUEUED' } as OrderActive,
+    };
+    ordersStream$.next(activeOrders);
+    fixture.detectChanges();
+
+    component.productionActive$
+      .pipe(
+        filter((orders) => orders.length > 0),
+        take(1)
+      )
+      .subscribe((orders) => {
+        expect(component.highlightedProduct).toBe('BLUE');
+        expect(orders.map((o) => o.orderId)).toEqual(['o-blue']);
+        done();
+      });
   });
 });
 
