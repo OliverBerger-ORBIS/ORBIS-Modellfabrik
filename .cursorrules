@@ -101,6 +101,7 @@ User kann Tasks mit Präfix kennzeichnen – Agent muss entsprechend handeln:
 - **Default-Sprache:** Englisch (EN). Template-Source-Strings, UI-Labels, Buttons in EN formulieren.
 - **I18n:** DE und FR können nach Implementierung in `messages.de.json` / `messages.fr.json` nachgepflegt werden.
 - **Anforderungen:** User formuliert oft auf Deutsch – Implementierung trotzdem mit EN als Default.
+- **DPS-Terminologie (verbindlich):** EN = **Delivery and Pickup Station (DPS)**, DE = **Warenein- und ausgang**. Nicht vertauschen.
 
 ### Code-Qualität (OSF - Produktiver Code)
 - **TypeScript:** Strikte Typisierung, keine `any` ohne Begründung

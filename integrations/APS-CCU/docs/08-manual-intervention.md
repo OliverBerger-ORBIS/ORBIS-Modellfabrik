@@ -312,8 +312,8 @@ If manual intervention causes problems:
 # Send park command
 mosquitto_pub -t "ccu/set/park" -m '{"timestamp":"2024-12-08T16:00:00.000Z"}'
 
-# Cancel all orders
-mosquitto_pub -t "ccu/order/cancel" -m '{"orderId":"*","timestamp":"2024-12-08T16:00:00.000Z"}'
+# Cancel all ENQUEUED orders (payload: array of order IDs from ccu/order/active; IN_PROGRESS is ignored)
+mosquitto_pub -t "ccu/order/cancel" -m '["orderId-1","orderId-2"]'
 ```
 
 #### Step 2: Perform Factory Reset

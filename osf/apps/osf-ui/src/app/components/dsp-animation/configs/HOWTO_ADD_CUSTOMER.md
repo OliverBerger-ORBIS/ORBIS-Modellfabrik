@@ -152,7 +152,7 @@ export const ACME_CONFIG: CustomerDspConfig = {
 - `dps` - DPS Station
 - `hbw` - HBW Station
 - `hbw` - HBW (High Bay Warehouse)
-- `dps` - DPS (Distribution & Picking System) - **NEU**
+- `dps` - DPS (Delivery and Pickup Station) - **NEU**
 - `aiqs` - AIQS (AI Quality System) - **NEU**
 
 **Systems (Shopfloor Systems):**
