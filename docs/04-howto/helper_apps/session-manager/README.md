@@ -8,10 +8,10 @@ Der **Session Manager** ist eine unabhängige Helper App zur Analyse der APS Fis
 
 - **📹 Aufnahme** von MQTT-Sessions der APS-Fabrik
 - **🎬 Wiedergabe** von aufgezeichneten Sessions
-- **📊 Analyse** der Nachrichten-Ströme und -Muster (primär extern / OSF; der frühere Tab **Session Analyse** ist aus der App entfernt, Stand v1.3.0)
+- **📊 Analyse** der Nachrichten-Ströme und -Muster (primär extern / OSF; der frühere Tab **Session Analyse** ist aus der App entfernt, Stand v1.4.0)
 - **🔍 Schema-Integration** für automatische Payload-Validierung
 
-**Navigation (v1.3.0):** Sidebar nur noch **Replay Station**, **Session Recorder**, **Einstellungen** (inkl. **Logging & Diagnose**).
+**Navigation (v1.4.0):** Sidebar nur noch **Replay Station**, **Session Recorder**, **Einstellungen** (inkl. **Logging & Diagnose**).
 
 ## 🎯 Zweck-Diagramm
 

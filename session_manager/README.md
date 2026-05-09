@@ -28,10 +28,15 @@ streamlit run session_manager/app.py --server.port 8502
 
 ### 🔄 Session Replay
 - **Vollständiger Replay:** Wiederholung aufgezeichneter Sessions (`.log` Dateien, JSON-Zeilen-Format)
+- **Replay-Quellen (UI):**
+  - `A) Session-Log`
+  - `B) Session-Log + Preload-Topics`
+  - `C) Test-Topics direkt`
 - **Test-Topic Management:** 
   - Einzelne JSON-Testdaten laden und senden
   - Automatischer Preload aus `data/osf-data/test_topics/preloads/`
 - **Speed Control:** Replay-Geschwindigkeit anpassbar
+- **Broker-Singleton-Guard:** Replay/Sendeaktionen werden blockiert, wenn lokal mehr als eine Broker-Instanz erkannt wird
 
 ### 📋 Live-Logs
 - **Ring-Buffer:** Zeigt letzte N Log-Nachrichten

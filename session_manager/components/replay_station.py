@@ -76,6 +76,39 @@ def _local_listener_pids(port: int) -> tuple[set[int], str]:
     return pids, ""
 
 
+def _local_single_broker_pid(host: str, port: int) -> tuple[Optional[int], str]:
+    """
+    Resolve the one local broker pid that should handle replay traffic.
+    Returns (pid, error_message). pid is None when no listener is found.
+    """
+    mqtt_pids, mqtt_err = _local_listener_pids(int(port))
+    if mqtt_err:
+        return None, f"MQTT preflight failed: {mqtt_err}"
+    if len(mqtt_pids) > 1:
+        pid_list = ", ".join(str(pid) for pid in sorted(mqtt_pids))
+        return None, (
+            f"Duplicate MQTT listeners detected on {host}:{port} (pids: {pid_list}). "
+            "Stop extra broker instances before replay."
+        )
+    if not mqtt_pids:
+        return None, ""
+    return next(iter(mqtt_pids)), ""
+
+
+def _local_mqtt_related_pids() -> tuple[set[int], str]:
+    """
+    Collect local listener pids on common MQTT ports to detect multiple broker processes.
+    """
+    mqtt_related_ports = (1883, 1884, 1885, 8883, 9001)
+    all_pids: set[int] = set()
+    for p in mqtt_related_ports:
+        pids, err = _local_listener_pids(p)
+        if err:
+            return set(), err
+        all_pids.update(pids)
+    return all_pids, ""
+
+
 def _mqtt_single_instance_preflight(host: str, port: int) -> tuple[bool, str]:
     """
     Guard against accidental local double broker setups.
@@ -84,28 +117,45 @@ def _mqtt_single_instance_preflight(host: str, port: int) -> tuple[bool, str]:
     if not _is_local_mqtt_host(host):
         return True, ""
 
-    mqtt_pids, mqtt_err = _local_listener_pids(int(port))
-    if mqtt_err:
-        return False, f"MQTT preflight failed: {mqtt_err}"
-    if len(mqtt_pids) > 1:
-        pid_list = ", ".join(str(pid) for pid in sorted(mqtt_pids))
-        return False, (
-            f"Duplicate MQTT listeners detected on {host}:{port} (pids: {pid_list}). "
-            "Stop extra broker instances before replay."
-        )
+    broker_pid, pid_err = _local_single_broker_pid(host, port)
+    if pid_err:
+        return False, pid_err
 
     ws_pids, ws_err = _local_listener_pids(9001)
     if ws_err:
         logger.warning(f"⚠️ MQTT preflight websocket check skipped: {ws_err}")
-        return True, ""
-
-    if mqtt_pids and ws_pids and mqtt_pids.isdisjoint(ws_pids):
+    elif broker_pid and ws_pids and broker_pid not in ws_pids:
+        ws_pid_list = ", ".join(str(pid) for pid in sorted(ws_pids))
         return False, (
-            "MQTT preflight failed: port 1883 and 9001 are served by different processes. "
+            f"MQTT preflight failed: MQTT {host}:{port} runs as pid {broker_pid}, "
+            f"but websocket port 9001 is served by pid(s) {ws_pid_list}. "
             "Use exactly one broker instance for replay."
         )
 
+    mqtt_related_pids, related_err = _local_mqtt_related_pids()
+    if related_err:
+        return False, f"MQTT preflight failed: {related_err}"
+    if len(mqtt_related_pids) > 1:
+        pid_list = ", ".join(str(pid) for pid in sorted(mqtt_related_pids))
+        return False, (
+            f"MQTT preflight failed: multiple local MQTT-related listener processes detected ({pid_list}). "
+            "Ensure exactly one broker instance is running."
+        )
+
     return True, ""
+
+
+def _ensure_single_broker_or_error(action_label: str) -> bool:
+    """
+    Guard all replay/publish actions with the single-broker preflight.
+    """
+    host = st.session_state.get("mqtt_host", "localhost")
+    port = int(st.session_state.get("mqtt_port", 1883))
+    ok, reason = _mqtt_single_instance_preflight(host, port)
+    if not ok:
+        st.error(f"❌ {action_label} blockiert: {reason}")
+        return False
+    return True
 
 
 # =========================
@@ -300,7 +350,8 @@ def show_replay_station():
     rerun_controller = RerunController()
 
     st.header("📡 Replay Station")
-    st.markdown("MQTT-Nachrichten für Tests senden - **MQTT-Konfiguration in ⚙️ Einstellungen**")
+    st.markdown("Default: aufgezeichnete Sessions reproduzierbar replayen (ohne Live-APS).")
+    st.markdown("`🗂️ Quelle -> 🛡️ Broker-Check -> 🔀 Broker -> 📥 Empfänger (OSF-UI)`")
 
     # Konfiguration aus Settings laden
     from .settings_manager import SettingsManager
@@ -309,197 +360,237 @@ def show_replay_station():
     mqtt_settings = settings_manager.get_mqtt_broker_settings()
     session_directory = settings_manager.get_session_directory()
 
-    # Verbindungsstatus anzeigen
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.subheader("🔌 MQTT Verbindung")
-        st.info(f"**Broker:** {mqtt_settings['host']}:{mqtt_settings['port']}")
-        st.info(f"**QoS:** {mqtt_settings['qos']} | **Timeout:** {mqtt_settings['timeout']}s")
-
-        if "mqtt_connected" not in st.session_state:
-            st.session_state.mqtt_connected = False
-
-        if st.session_state.mqtt_connected:
-            st.success("✅ Verbunden")
-        else:
-            st.error("❌ Nicht verbunden")
-
-    with col2:
-        st.subheader("⚙️ Konfiguration")
-        st.info(f"**Session-Verzeichnis:** `{session_directory}`")
-        st.markdown("**MQTT-Einstellungen** können hier konfiguriert werden")
-        st.info("💡 MQTT-Konfiguration wird automatisch aus den Session-Daten geladen")
-
-    # Connection controls
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button("🔌 Verbindung testen", key="test_mqtt"):
-            logger.debug("🔌 User klickt: Verbindung testen")
-            test_mqtt_connection(mqtt_settings["host"], mqtt_settings["port"], rerun_controller)
-
-    with col2:
-        if st.button("🔌 Verbindung trennen", key="disconnect_mqtt"):
-            logger.debug("🔌 User klickt: Verbindung trennen")
-            disconnect_mqtt(rerun_controller)
-
     # Session State für MQTT Parameter speichern
     st.session_state.mqtt_host = mqtt_settings["host"]
     st.session_state.mqtt_port = mqtt_settings["port"]
     replay_ctrl = _get_replay_controller(st.session_state.mqtt_host, st.session_state.mqtt_port)
 
-    st.markdown("---")
+    if "mqtt_connected" not in st.session_state:
+        st.session_state.mqtt_connected = False
+    if "_flow_source_mode" not in st.session_state:
+        st.session_state._flow_source_mode = "A) Session-Log"
+    if "_show_source_picker" not in st.session_state:
+        st.session_state._show_source_picker = False
+    if "_show_broker_panel" not in st.session_state:
+        st.session_state._show_broker_panel = False
 
-    # Sektion 1: Session Replay
-    st.subheader("📁 Session Replay")
-
-    # Session-Verzeichnis analysieren
-    logger.debug(f"🔍 Replay Station: Suche Sessions in: {session_directory}")
-    session_files = get_session_files(session_directory)
-    logger.debug(f"📁 Gefundene Session-Dateien: {len(session_files)}")
-
-    if not session_files:
-        st.warning("❌ Keine Session-Dateien gefunden")
-        st.info(f"💡 Legen Sie Log-Dateien (.log) in `{session_directory}/` ab")
-        st.info("ℹ️ **Hinweis:** Nur .log Dateien (JSON-Zeilen-Format) werden für Replay unterstützt")
-    else:
-        # Regex-Filter
-        col1, col2 = st.columns([2, 1])
-        with col1:
-            regex_filter = st.text_input("🔍 Regex-Filter", placeholder="z.B. 'Waren' für Wareneingang-Sessions")
-        with col2:
-            if st.button("🔍 Filtern"):
-                logger.debug(f"🔍 User klickt: Filtern mit '{regex_filter}'")
-                st.session_state.session_filter = regex_filter
-                rerun_controller.request_rerun()
-
-        # Session-Liste filtern
-        filtered_sessions = filter_sessions(session_files, st.session_state.get("session_filter", ""))
-
-        if filtered_sessions:
-            # Session-Auswahl
-            selected_session = st.selectbox("📂 Session auswählen:", filtered_sessions, format_func=lambda x: x.name)
-
-            if selected_session:
-                # Session-Info
-                st.info(f"📁 Ausgewählte Session: {selected_session.name}")
-
-                # Test-Topic Preload & Individuelle Auswahl
-                st.markdown("#### 📋 Test-Topic Management")
-
-                # Sektion 1: Individuelles Senden
-                st.markdown("##### 🎯 Individuelle Test-Topics")
-                test_topic_files = get_test_topic_files()
-
-                if test_topic_files:
-                    # Multiselect für individuelle Auswahl
-                    selected_test_topics = st.multiselect(
-                        "Wähle Test-Topics zum Senden:",
-                        options=test_topic_files,
-                        format_func=lambda x: x.name,
-                        help="Wähle eine oder mehrere JSON-Dateien aus data/osf-data/test_topics/",
-                    )
-
-                    col1, col2 = st.columns([2, 1])
-                    with col1:
-                        if selected_test_topics:
-                            st.info(f"✅ {len(selected_test_topics)} Test-Topic(s) ausgewählt")
-                    with col2:
-                        if st.button(
-                            "📤 Ausgewählte jetzt senden", key="send_selected_topics", disabled=not selected_test_topics
-                        ):
-                            logger.debug(
-                                f"📤 User klickt: Ausgewählte Test-Topics senden ({len(selected_test_topics)} Dateien)"
-                            )
-                            send_selected_test_topics(selected_test_topics, replay_ctrl)
-                else:
-                    st.warning("❌ Keine Test-Topic-Dateien in data/osf-data/test_topics/ gefunden")
-
-                st.markdown("---")
-
-                # Sektion 2: Automatischer Preload
-                st.markdown("##### 🚀 Automatischer Preload")
-                col1, col2 = st.columns([2, 1])
-
-                with col1:
-                    send_preloads = st.checkbox(
-                        "🚀 Test-Topics vor Session-Replay senden",
-                        value=True,
-                        help="Sendet automatisch alle Test-Topics aus data/osf-data/test_topics/preloads/ vor dem Session-Replay",
-                    )
-
-                with col2:
-                    if st.button("🚀 Preloads jetzt senden", key="send_preloads_now"):
-                        logger.debug("🚀 User klickt: Preloads jetzt senden")
-                        send_preload_test_topics(replay_ctrl)
-
-                # Verfügbare Preload-Topics anzeigen
-                preload_files = get_preload_test_topic_files()
-                if preload_files:
-                    st.info(f"🚀 {len(preload_files)} Preload-Test-Topic(s) verfügbar")
-                    with st.expander("📋 Verfügbare Preload-Topics anzeigen"):
-                        for preload_file in preload_files[:10]:  # Erste 10 anzeigen
-                            st.text(f"• {preload_file.name}")
-                        if len(preload_files) > 10:
-                            st.text(f"... und {len(preload_files) - 10} weitere")
-                else:
-                    st.info("ℹ️ Keine Preload-Test-Topics in data/osf-data/test_topics/preloads/ gefunden")
-
-                # Session laden
-                if st.button("📂 Session laden"):
-                    logger.debug(f"📂 User klickt: Session laden - {selected_session.name}")
-                    if send_preloads:
-                        logger.info("🚀 Test-Topic Preload vor Session-Load")
-                        send_preload_test_topics(replay_ctrl)
-                    load_session(selected_session, replay_ctrl)
-
-                # Replay-Kontrollen (wenn Session geladen)
-                if "loaded_session" in st.session_state and st.session_state.loaded_session:
-                    show_replay_controls(rerun_controller)
-        else:
-            st.warning("❌ Keine Sessions gefunden (Regex-Filter)")
-
-    st.markdown("---")
-
-    # Sektion 2: Test Messages (sofort testbar)
-    st.subheader("🧪 Test Messages")
-    st.markdown("Sofort testbare MQTT-Nachrichten senden")
-
-    # Test Message 1
-    col1, col2 = st.columns([3, 1])
+    # Große Bedienungs-Flow-Darstellung
+    st.subheader("🧭 Bedienungsflow")
+    st.caption("Klick auf **Quelle** oder **Broker**, um die jeweilige Konfiguration einzublenden.")
+    col1, col2, col3, col4, col5 = st.columns([2.2, 0.6, 2.2, 0.6, 2.2])
     with col1:
-        st.text_input("Topic", value="test/session_manager", key="test_topic_1")
+        source_label = st.session_state._flow_source_mode
+        if st.button(f"🗂️ Quelle\n{source_label}", key="flow_source_btn", use_container_width=True):
+            st.session_state._show_source_picker = not st.session_state._show_source_picker
     with col2:
-        if st.button("📤 Senden", key="send_test_1"):
-            send_test_message(
-                "test/session_manager",
-                {"message": "Hello from Session Manager!", "timestamp": utc_iso_timestamp_ms()},
-            )
-
-    # Test Message 2
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        st.text_input("Topic", value="module/v1/ff/SVR3QA0022/order", key="test_topic_2")
-    with col2:
-        if st.button("📤 Senden", key="send_test_2"):
-            send_test_message("module/v1/ff/SVR3QA0022/order", {"command": "PICK", "workpiece": "RED"})
-
-    # Schnelltest-Buttons
-    st.markdown("#### 🚀 Schnelltest-Nachrichten")
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        if st.button("📡 Test 1", key="quick_test_1"):
-            send_test_message("test/quick/1", {"id": 1, "status": "active"})
-
-    with col2:
-        if st.button("📡 Test 2", key="quick_test_2"):
-            send_test_message("test/quick/2", {"id": 2, "value": 123.45})
-
+        st.markdown("### ➜")
     with col3:
-        if st.button("📡 Test 3", key="quick_test_3"):
-            send_test_message("test/quick/3", {"id": 3, "data": "Hello World"})
+        if st.button("🔀 Broker\n(mit Check)", key="flow_broker_btn", use_container_width=True):
+            st.session_state._show_broker_panel = not st.session_state._show_broker_panel
+    with col4:
+        st.markdown("### ➜")
+    with col5:
+        st.info("📥 Empfänger\n\nOSF-UI / Consumer")
+
+    if st.session_state._show_source_picker:
+        st.markdown("#### 🗂️ Quelle auswählen")
+        st.session_state._flow_source_mode = st.radio(
+            "Replay-Quelle",
+            options=("A) Session-Log", "B) Session-Log + Preload-Topics", "C) Test-Topics direkt"),
+            key="flow_source_mode_radio",
+            horizontal=False,
+        )
+    source_mode = st.session_state._flow_source_mode
+
+    if st.session_state._show_broker_panel:
+        st.markdown("#### 🔀 Broker-Einstellungen")
+        st.info(f"**Broker:** {mqtt_settings['host']}:{mqtt_settings['port']} | **QoS:** {mqtt_settings['qos']}")
+        ok, reason = _mqtt_single_instance_preflight(mqtt_settings["host"], int(mqtt_settings["port"]))
+        if ok:
+            st.success("🛡️ Broker-Check: OK (ein Broker aktiv)")
+        else:
+            st.error(f"🛡️ Broker-Check: {reason}")
+
+        c1, c2 = st.columns(2)
+        with c1:
+            if st.button("🔌 Verbindung testen", key="test_mqtt"):
+                logger.debug("🔌 User klickt: Verbindung testen")
+                test_mqtt_connection(mqtt_settings["host"], mqtt_settings["port"], rerun_controller)
+        with c2:
+            if st.button("🔌 Verbindung trennen", key="disconnect_mqtt"):
+                logger.debug("🔌 User klickt: Verbindung trennen")
+                disconnect_mqtt(rerun_controller)
+
+    st.markdown("---")
+
+    # Default-Bedienung: Session-Replay aus bereits aufgenommenen Sessions
+    show_session_mode = source_mode in {"A) Session-Log", "B) Session-Log + Preload-Topics"}
+    st.subheader("📁 Standard-Bedienung")
+    st.markdown("**Default:** Replay aus vorhandenen Session-Logs.")
+    if show_session_mode:
+        logger.debug(f"🔍 Replay Station: Suche Sessions in: {session_directory}")
+        session_files = get_session_files(session_directory)
+        logger.debug(f"📁 Gefundene Session-Dateien: {len(session_files)}")
+
+        if not session_files:
+            st.warning("❌ Keine Session-Dateien gefunden")
+            st.info(f"💡 Legen Sie Log-Dateien (.log) in `{session_directory}/` ab")
+            st.info("ℹ️ **Hinweis:** Nur .log Dateien (JSON-Zeilen-Format) werden für Replay unterstützt")
+        else:
+            col1, col2 = st.columns([2, 1])
+            with col1:
+                regex_filter = st.text_input("🔍 Regex-Filter", placeholder="z.B. 'Waren' für Wareneingang-Sessions")
+            with col2:
+                if st.button("🔍 Filtern"):
+                    logger.debug(f"🔍 User klickt: Filtern mit '{regex_filter}'")
+                    st.session_state.session_filter = regex_filter
+                    rerun_controller.request_rerun()
+
+            filtered_sessions = filter_sessions(session_files, st.session_state.get("session_filter", ""))
+
+            if filtered_sessions:
+                selected_session = st.selectbox(
+                    "📂 Session auswählen:", filtered_sessions, format_func=lambda x: x.name
+                )
+                if selected_session:
+                    st.info(f"📁 Ausgewählte Session: {selected_session.name}")
+                    apply_timeshift_on_load = st.checkbox(
+                        "🕒 Timeshift aktiv (Session-Zeit auf 'jetzt' verschieben)",
+                        value=True,
+                        help="Wenn deaktiviert, bleiben originale Session-Timestamps im Payload erhalten.",
+                        key="apply_timeshift_on_load",
+                    )
+                    preload_on_load = source_mode == "B) Session-Log + Preload-Topics"
+                    if source_mode == "B) Session-Log + Preload-Topics":
+                        preload_on_load = st.checkbox(
+                            "🚀 Bei `Session laden` zuerst Preload-Topics senden",
+                            value=True,
+                            help="Optionaler Vorlauf aus data/osf-data/test_topics/preloads/",
+                            key="preload_on_load_default_mode_b",
+                        )
+                    if st.button("📂 Session laden"):
+                        logger.debug(f"📂 User klickt: Session laden - {selected_session.name}")
+                        if preload_on_load:
+                            logger.info("🚀 Test-Topic Preload vor Session-Load")
+                            send_preload_test_topics(replay_ctrl)
+                        load_session(selected_session, replay_ctrl, apply_timeshift=apply_timeshift_on_load)
+
+            else:
+                st.warning("❌ Keine Sessions gefunden (Regex-Filter)")
+    else:
+        st.info("Quelle C aktiv. Direkte Test-Topics findest du unter **Optionale Details**.")
+
+    # Replay-Bedienung immer sichtbar halten.
+    st.markdown("---")
+    st.subheader("🎮 Replay-Bedienung")
+    if "loaded_session" in st.session_state and st.session_state.loaded_session:
+        show_replay_controls(rerun_controller)
+    else:
+        st.info(
+            "Noch keine Session geladen. Bitte in Quelle A/B eine Session auswählen und `📂 Session laden` klicken."
+        )
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.button("▶️ Play / Resume", key="play_resume_btn_disabled", disabled=True)
+        with col2:
+            st.button("⏸️ Pause", key="pause_btn_disabled", disabled=True)
+        with col3:
+            st.button("⏹️ Stop", key="stop_btn_disabled", disabled=True)
+        with col4:
+            st.button("🔄 Reset", key="reset_btn_disabled", disabled=True)
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.selectbox(
+                "🏃 Geschwindigkeit",
+                [0.2, 0.33, 0.5, 1.0, 2.0, 3.0, 5.0],
+                index=3,
+                format_func=lambda x: f"{x}x" if x >= 1 else f"1/{int(1/x)}x",
+                key="speed_disabled_placeholder",
+                disabled=True,
+            )
+        with col2:
+            st.checkbox("🔄 Loop", value=False, key="loop_disabled_placeholder", disabled=True)
+
+    st.markdown("---")
+
+    # Zusatzfeatures bewusst sekundär halten
+    with st.expander("🧩 Optionale Details (Preloads, Test-Topics, Direkt-Tests)", expanded=False):
+        st.markdown("##### 🚀 Preload-Topics (optional)")
+        c1, c2 = st.columns([2, 1])
+        with c1:
+            preload_files = get_preload_test_topic_files()
+            if preload_files:
+                st.info(f"🚀 {len(preload_files)} Preload-Test-Topic(s) verfügbar")
+            else:
+                st.info("ℹ️ Keine Preload-Test-Topics in data/osf-data/test_topics/preloads/ gefunden")
+        with c2:
+            if st.button("🚀 Preloads jetzt senden", key="send_preloads_now"):
+                logger.debug("🚀 User klickt: Preloads jetzt senden")
+                send_preload_test_topics(replay_ctrl)
+
+        if preload_files:
+            with st.expander("📋 Verfügbare Preload-Topics anzeigen"):
+                for preload_file in preload_files[:10]:
+                    st.text(f"• {preload_file.name}")
+                if len(preload_files) > 10:
+                    st.text(f"... und {len(preload_files) - 10} weitere")
+
+        st.markdown("---")
+        st.markdown("##### 🧪 Test-Topics direkt (Dateien)")
+        test_topic_files = get_test_topic_files()
+        if test_topic_files:
+            selected_test_topics = st.multiselect(
+                "Wähle Test-Topics zum Senden:",
+                options=test_topic_files,
+                format_func=lambda x: x.name,
+                help="Wähle eine oder mehrere JSON-Dateien aus data/osf-data/test_topics/",
+            )
+            c1, c2 = st.columns([2, 1])
+            with c1:
+                if selected_test_topics:
+                    st.info(f"✅ {len(selected_test_topics)} Test-Topic(s) ausgewählt")
+            with c2:
+                if st.button(
+                    "📤 Ausgewählte jetzt senden", key="send_selected_topics", disabled=not selected_test_topics
+                ):
+                    logger.debug(
+                        f"📤 User klickt: Ausgewählte Test-Topics senden ({len(selected_test_topics)} Dateien)"
+                    )
+                    send_selected_test_topics(selected_test_topics, replay_ctrl)
+        else:
+            st.warning("❌ Keine Test-Topic-Dateien in data/osf-data/test_topics/ gefunden")
+
+        st.markdown("---")
+        st.markdown("##### 📨 Direkte Test-Messages")
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.text_input("Topic", value="test/session_manager", key="test_topic_1")
+        with col2:
+            if st.button("📤 Senden", key="send_test_1"):
+                send_test_message(
+                    "test/session_manager",
+                    {"message": "Hello from Session Manager!", "timestamp": utc_iso_timestamp_ms()},
+                )
+
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.text_input("Topic", value="module/v1/ff/SVR3QA0022/order", key="test_topic_2")
+        with col2:
+            if st.button("📤 Senden", key="send_test_2"):
+                send_test_message("module/v1/ff/SVR3QA0022/order", {"command": "PICK", "workpiece": "RED"})
+
+        st.markdown("#### 🚀 Schnelltest-Nachrichten")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            if st.button("📡 Test 1", key="quick_test_1"):
+                send_test_message("test/quick/1", {"id": 1, "status": "active"})
+        with col2:
+            if st.button("📡 Test 2", key="quick_test_2"):
+                send_test_message("test/quick/2", {"id": 2, "value": 123.45})
+        with col3:
+            if st.button("📡 Test 3", key="quick_test_3"):
+                send_test_message("test/quick/3", {"id": 3, "data": "Hello World"})
 
 
 def test_mqtt_connection(host, port, rerun_controller: RerunController):
@@ -552,6 +643,9 @@ def disconnect_mqtt(rerun_controller: RerunController):
 def send_test_message(topic, payload):
     """Test-Nachricht mit persistentem MQTT-Client senden"""
     try:
+        if not _ensure_single_broker_or_error("Test-Nachricht"):
+            st.session_state.mqtt_connected = False
+            return False
         # Temporären MQTT-Client für Test erstellen
         test_client = SessionManagerMQTTClient(
             st.session_state.mqtt_host, st.session_state.mqtt_port, "session_manager_test"
@@ -576,14 +670,19 @@ def send_test_message(topic, payload):
         else:
             st.session_state.mqtt_connected = False
             st.error("❌ MQTT-Client konnte nicht verbinden")
+            return False
     except Exception as e:
         st.session_state.mqtt_connected = False
         st.error(f"❌ Fehler beim Senden: {e}")
+        return False
+    return True
 
 
 def send_selected_test_topics(selected_files: List[Path], replay_ctrl: ReplayController):
     """Ausgewählte Test-Topic-Messages aus JSON-Dateien laden und an Broker senden"""
     try:
+        if not _ensure_single_broker_or_error("Ausgewählte Test-Topics"):
+            return False
         if not selected_files:
             st.warning("❌ Keine Test-Topics ausgewählt")
             return False
@@ -657,6 +756,8 @@ def send_selected_test_topics(selected_files: List[Path], replay_ctrl: ReplayCon
 def send_preload_test_topics(replay_ctrl: ReplayController):
     """Preload Test-Topic-Messages aus JSON-Dateien laden und an Broker senden (alle aus preloads/)"""
     try:
+        if not _ensure_single_broker_or_error("Preload-Test-Topics"):
+            return False
         # Preload-Verzeichnis
         preload_dir = PROJECT_ROOT / "data/osf-data/test_topics/preloads"
 
@@ -843,7 +944,7 @@ def filter_sessions(session_files, regex_filter):
         return session_files
 
 
-def load_session(session_file, replay_ctrl: ReplayController):
+def load_session(session_file, replay_ctrl: ReplayController, apply_timeshift: bool = True):
     """Session laden und in Session State speichern (nur .log mit JSON-Zeilen-Format)"""
     try:
         messages = load_log_session(session_file)
@@ -928,11 +1029,11 @@ def load_session(session_file, replay_ctrl: ReplayController):
                     payload = m["payload"]
                     ts = _to_epoch_s(m.get("timestamp", 0))
                     ts_rel = max(0.0, ts - t0)
-                    shifted_ts_iso = _to_iso_utc(replay_anchor_epoch + ts_rel)
-
-                    # Keep replay timeline aligned with "now" to make Grafana time windows useful.
-                    payload = _shift_payload_timestamps(payload, shifted_ts_iso)
-                    m["timestamp"] = shifted_ts_iso
+                    if apply_timeshift:
+                        shifted_ts_iso = _to_iso_utc(replay_anchor_epoch + ts_rel)
+                        # Keep replay timeline aligned with "now" to make Grafana time windows useful.
+                        payload = _shift_payload_timestamps(payload, shifted_ts_iso)
+                        m["timestamp"] = shifted_ts_iso
 
                     if isinstance(payload, (dict, list)):
                         payload = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
@@ -952,7 +1053,10 @@ def load_session(session_file, replay_ctrl: ReplayController):
                 "loop": False,
             }
             st.success(f"✅ Session '{session_file.name}' geladen ({len(messages)} Nachrichten)")
-            st.info("🕒 Replay-Zeitmodus aktiv: Session-Timestamps werden relativ zu 'jetzt' gesendet.")
+            if apply_timeshift:
+                st.info("🕒 Timeshift aktiv: Session-Timestamps werden relativ zu 'jetzt' gesendet.")
+            else:
+                st.info("🕒 Timeshift deaktiviert: originale Session-Timestamps bleiben unverändert.")
         else:
             st.error(f"❌ Session '{session_file.name}' konnte nicht geladen werden")
     except Exception as e:
@@ -1094,11 +1198,11 @@ def show_replay_controls(rerun_controller: RerunController):
         st.progress(0.0)
         st.text("📊 Fortschritt: 0/0")
 
-    # UI-Polling statt Re-Run pro Nachricht
+    # Auto-Refresh für laufendes Replay (alle 10 Sekunden)
     if replay_ctrl.is_running():
-        # Einfacher manueller Refresh-Button
-        if st.button("🔄 Status", key="refresh_status"):
-            st.rerun()
+        st.caption("🔄 Auto-Refresh aktiv (alle 10s).")
+        time.sleep(10)
+        st.rerun()
 
     # (alte Replay-Logik entfernt - wird jetzt vom ReplayController gehandhabt)
 

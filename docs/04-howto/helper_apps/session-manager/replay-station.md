@@ -12,6 +12,11 @@ Die **Replay Station** ermöglicht das Einspielen von aufgezeichneten MQTT-Sessi
 
 ## 🏗️ Architektur
 
+### Datenfluss mit Symbolen
+
+- **Session Recorder:** `📡 Quelle (abstrakt, i. d. R. live APS) -> 🔀 Broker -> 🎙️ Session Recorder -> 📁 Session-Log-Verzeichnis`
+- **Replay Station:** `📁/🚀/🧪 Replay-Quelle -> 🛡️ Broker-Check -> 🔀 Broker -> 📥 Empfänger (OSF-UI)`
+
 ```mermaid
 graph LR
     A[Session Files] -->|Load| B[Replay Station]
@@ -26,13 +31,23 @@ graph LR
 
 ## 🎮 Bedienung
 
-### 1. **Session-Auswahl**
+### 1. **Replay-Quellen (UI-Optionen)**
+
+Die Replay Station stellt die Quellen jetzt entlang der tatsächlichen UI-Optionen dar:
+
+- **A) Session-Log**
+- **B) Session-Log + Preload-Topics**
+- **C) Test-Topics direkt**
+
+**Einsatz:** primär für Test-/Entwicklungsfälle, wenn die Live-Umgebung nicht verfügbar ist.
+
+### 2. **Session-Auswahl (für A/B)**
 - **Verzeichnis:** `data/osf-data/sessions/`
 - **Filter:** Regex-basierte Session-Suche
-- **Formate:** SQLite (.db) Dateien
+- **Formate:** JSON-Lines `.log` Dateien
 - **Auswahl:** Dropdown mit gefilterten Sessions
 
-### 2. **Test-Topic Management** 🆕
+### 3. **Test-Topic Management**
 
 Die Replay Station bietet zwei Modi für das Senden von Test-Topics:
 
@@ -72,19 +87,19 @@ Die Replay Station bietet zwei Modi für das Senden von Test-Topics:
 
 > 📖 Siehe [Test-Topics README](../../../../data/osf-data/test_topics/README.md) für Details
 
-### 3. **Replay-Kontrollen**
+### 4. **Replay-Kontrollen**
 - **▶️ Play:** Session starten/fortsetzen
 - **⏸️ Pause:** Session pausieren
 - **⏹️ Stop:** Session stoppen
 - **🔄 Reset:** Session zurücksetzen
 
-### 4. **Geschwindigkeits-Kontrolle**
+### 5. **Geschwindigkeits-Kontrolle**
 - **1x:** Original-Geschwindigkeit
 - **2x:** Doppelte Geschwindigkeit
 - **5x:** Fünffache Geschwindigkeit
 - **10x:** Zehnfache Geschwindigkeit
 
-### 5. **Fortschritts-Anzeige**
+### 6. **Fortschritts-Anzeige**
 - **Progress Bar:** Visueller Fortschrittsbalken
 - **Message Count:** Aktuelle/Gesamt Nachrichten
 - **Status:** Aktiv/Pausiert/Beendet
@@ -141,7 +156,8 @@ sequenceDiagram
 - **QoS:** Level 1 für zuverlässige Übertragung
 - **Retain:** False (nur Live-Replay)
 - **Timeout:** 5 Sekunden pro Nachricht
-- **Preflight-Guard:** Vor `Verbindung testen` und `Play` blockiert die Replay Station bei doppelten lokalen Broker-Instanzen (z. B. zweiter `mosquitto -v`)
+- **Preflight-Guard (Singleton):** Vor allen Sendepfaden (`Verbindung testen`, `Play`, `Preloads`, `Test-Topics`, `Test-Messages`) blockiert die Replay Station bei doppelten lokalen Broker-Instanzen
+- **Single-Broker-Regel:** Es darf lokal nur **eine** Broker-Instanz aktiv sein, die MQTT und optional WebSocket bedient
 
 ### **Broker-Check (CLI)**
 

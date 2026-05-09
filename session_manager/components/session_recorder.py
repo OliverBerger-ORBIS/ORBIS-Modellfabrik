@@ -4,7 +4,9 @@ Einfache 1:1 Aufnahme von MQTT-Nachrichten
 """
 
 import json
+import subprocess
 import threading
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
@@ -13,7 +15,15 @@ import streamlit as st
 
 from ..utils.logging_config import get_logger
 from ..utils.path_constants import PROJECT_ROOT
-from ..utils.recording_topic_filter import should_write_message_to_session_log
+from ..utils.recording_topic_filter import (
+    CUSTOM_FILTER_MODE_EXCLUDE,
+    CUSTOM_FILTER_MODE_INCLUDE,
+    CUSTOM_FILTER_MODE_NONE,
+    EXCLUSION_PRESET_ANALYSIS,
+    EXCLUSION_PRESET_NO_CAM,
+    EXCLUSION_PRESET_NONE,
+    should_write_message_to_session_log,
+)
 from ..utils.session_meta_line import build_session_meta_line
 from ..utils.ui_refresh import RerunController
 from ..utils.utc_iso_timestamp import utc_iso_timestamp_ms
@@ -54,6 +64,132 @@ message_buffer = ThreadSafeMessageBuffer()
 _recording_active = False
 _include_retained = False
 _recording_exclusion_preset = "none"
+_recording_custom_filter_mode = "none"
+_recording_custom_filter_topics: list[str] = []
+
+
+def _is_local_mqtt_host(host: str) -> bool:
+    normalized = (host or "").strip().lower()
+    return normalized in {"", "localhost", "127.0.0.1", "::1", "0.0.0.0"}
+
+
+def _local_listener_pids(port: int) -> tuple[set[int], str]:
+    try:
+        result = subprocess.run(
+            ["lsof", "-nP", f"-iTCP:{int(port)}", "-sTCP:LISTEN"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError:
+        return set(), "lsof not available"
+    except Exception as exc:
+        return set(), str(exc)
+
+    if result.returncode != 0 and not result.stdout.strip():
+        return set(), ""
+
+    lines = [line for line in result.stdout.splitlines() if line.strip()]
+    if len(lines) <= 1:
+        return set(), ""
+
+    pids: set[int] = set()
+    for line in lines[1:]:
+        parts = line.split()
+        if len(parts) < 2:
+            continue
+        try:
+            pids.add(int(parts[1]))
+        except ValueError:
+            continue
+    return pids, ""
+
+
+def _local_mqtt_related_pids() -> tuple[set[int], str]:
+    mqtt_related_ports = (1883, 1884, 1885, 8883, 9001)
+    all_pids: set[int] = set()
+    for p in mqtt_related_ports:
+        pids, err = _local_listener_pids(p)
+        if err:
+            return set(), err
+        all_pids.update(pids)
+    return all_pids, ""
+
+
+def _mqtt_single_instance_preflight(host: str, port: int) -> tuple[bool, str]:
+    if not _is_local_mqtt_host(host):
+        return True, ""
+
+    pids, err = _local_listener_pids(int(port))
+    if err:
+        return False, f"MQTT preflight failed: {err}"
+    if len(pids) > 1:
+        pid_list = ", ".join(str(pid) for pid in sorted(pids))
+        return False, (
+            f"Duplicate MQTT listeners detected on {host}:{port} (pids: {pid_list}). "
+            "Stop extra broker instances before recording."
+        )
+
+    all_pids, related_err = _local_mqtt_related_pids()
+    if related_err:
+        return False, f"MQTT preflight failed: {related_err}"
+    if len(all_pids) > 1:
+        pid_list = ", ".join(str(pid) for pid in sorted(all_pids))
+        return False, (
+            f"MQTT preflight failed: multiple local MQTT-related listener processes detected ({pid_list}). "
+            "Ensure exactly one broker instance is running."
+        )
+    return True, ""
+
+
+def _collect_known_topics(settings_manager) -> list[str]:
+    """
+    Build a topic catalog for custom filter selection.
+    Sources: existing session logs, test topic files, and preload topic files.
+    """
+    known: set[str] = set()
+
+    session_dir = settings_manager.get_session_recorder_directory()
+    session_path = Path(session_dir)
+    if not session_path.is_absolute():
+        session_path = PROJECT_ROOT / session_dir
+    if session_path.exists():
+        for log_file in sorted(session_path.glob("*.log"), reverse=True)[:30]:
+            try:
+                with open(log_file, encoding="utf-8") as f:
+                    for idx, line in enumerate(f):
+                        if idx > 1500:
+                            break
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            data = json.loads(line)
+                        except Exception:
+                            continue
+                        topic = str(data.get("topic", "")).strip()
+                        if topic:
+                            known.add(topic)
+            except Exception:
+                continue
+
+    for base_dir in (
+        PROJECT_ROOT / "data/osf-data/test_topics",
+        PROJECT_ROOT / "data/osf-data/test_topics/preloads",
+    ):
+        if not base_dir.exists():
+            continue
+        for topic_file in sorted(base_dir.glob("*.json")):
+            try:
+                with open(topic_file, encoding="utf-8") as f:
+                    data = json.load(f)
+                topic = str(data.get("topic", "")).strip()
+                if topic:
+                    known.add(topic)
+            except Exception:
+                continue
+
+    return sorted(known)
 
 
 def show_session_recorder():
@@ -65,17 +201,14 @@ def show_session_recorder():
     rerun_controller = RerunController()
 
     st.header("🔴 Session Recorder")
-    st.markdown(
-        "Aufnahme von MQTT-Messages als JSON-Zeilen-Log. **Broker**, **Session-Verzeichnis** und "
-        "**MQTT-Auth** sind im Tab **⚙️ Einstellungen** (Sidebar) — oder über den Button rechts."
-    )
+    st.markdown("Default: Live-MQTT-Daten als Session-Log aufnehmen.")
+    st.markdown("`📡 Quelle -> 🛡️ Broker-Check -> 🎙️ Recorder -> 📁 Session-Log-Verzeichnis`")
 
     # Konfiguration aus Settings laden
     from .settings_manager import SettingsManager
 
     settings_manager = SettingsManager()
     mqtt_settings = settings_manager.get_session_recorder_mqtt_settings()
-    session_directory = settings_manager.get_session_recorder_directory()
 
     # Tab-spezifische Session State initialisieren (vollständig unabhängig)
     if "session_recorder" not in st.session_state:
@@ -88,43 +221,95 @@ def show_session_recorder():
             "include_retained": False,
         }
 
-    # Status anzeigen
-    col1, col2 = st.columns(2)
+    if "_recorder_source_mode" not in st.session_state:
+        st.session_state._recorder_source_mode = "A) Live-MQTT (APS/Testbed)"
+    if "_recorder_show_source_picker" not in st.session_state:
+        st.session_state._recorder_show_source_picker = False
+    if "_recorder_show_broker_panel" not in st.session_state:
+        st.session_state._recorder_show_broker_panel = False
 
-    with col1:
-        st.subheader("🔌 MQTT Verbindung")
-        st.info(f"**Broker:** {mqtt_settings['host']}:{mqtt_settings['port']}")
-        st.info(f"**QoS:** {mqtt_settings['qos']} | **Timeout:** {mqtt_settings['timeout']}s")
+    st.subheader("🧭 Bedienungsflow")
+    st.caption("Klick auf **Quelle** oder **Broker**, um die jeweilige Konfiguration einzublenden.")
+    f1, f2, f3, f4, f5 = st.columns([2.2, 0.6, 2.2, 0.6, 2.2])
+    with f1:
+        if st.button(
+            f"📡 Quelle\n{st.session_state._recorder_source_mode}",
+            key="recorder_flow_source_btn",
+            use_container_width=True,
+        ):
+            st.session_state._recorder_show_source_picker = not st.session_state._recorder_show_source_picker
+    with f2:
+        st.markdown("### ➜")
+    with f3:
+        if st.button("🔀 Broker\n(mit Check)", key="recorder_flow_broker_btn", use_container_width=True):
+            st.session_state._recorder_show_broker_panel = not st.session_state._recorder_show_broker_panel
+    with f4:
+        st.markdown("### ➜")
+    with f5:
+        st.info("🎙️ Recorder\n\n📁 Session-Log")
 
-        # Authentifizierung anzeigen
+    if st.session_state._recorder_show_source_picker:
+        st.markdown("#### 📡 Quelle auswählen")
+        st.session_state._recorder_source_mode = st.radio(
+            "Recorder-Quelle",
+            options=("A) Live-MQTT (APS/Testbed)",),
+            key="recorder_source_mode_radio",
+            horizontal=False,
+        )
+
+    if st.session_state._recorder_show_broker_panel:
+        st.markdown("#### 🔀 Broker-Einstellungen")
+        st.info(
+            f"**Broker:** {mqtt_settings['host']}:{mqtt_settings['port']} | "
+            f"**QoS:** {mqtt_settings['qos']} | **Timeout:** {mqtt_settings['timeout']}s"
+        )
         if mqtt_settings.get("username"):
             st.info(f"**Auth:** {mqtt_settings['username']} (authentifiziert)")
         else:
             st.info("**Auth:** Keine Authentifizierung")
 
-        if st.session_state.session_recorder["connected"]:
-            st.success("✅ Verbunden")
+        ok, reason = _mqtt_single_instance_preflight(mqtt_settings["host"], int(mqtt_settings["port"]))
+        if ok:
+            st.success("🛡️ Broker-Check: OK (ein Broker aktiv)")
         else:
-            st.error("❌ Nicht verbunden")
+            st.error(f"🛡️ Broker-Check: {reason}")
 
-    with col2:
-        st.subheader("📁 Konfiguration")
-        st.info(f"**Session-Verzeichnis:** `{session_directory}`")
-        st.info("**Format:** log (JSON-Zeilen)")
-        st.caption("Pfad, Broker und Zugangsdaten werden **nicht** hier, sondern unter **⚙️ Einstellungen** gepflegt.")
-        if st.button("⚙️ Zu Einstellungen wechseln", help="Öffnet den Tab Einstellungen in der Sidebar"):
-            st.session_state["main_sidebar_tab"] = "⚙️ Einstellungen"
-            st.rerun()
-        st.caption(
-            "Hohe Rate durch Sensoren: Preset **Topic-Aufnahme** (unten) auf **Analyse** stellen — "
-            "dann werden u. a. `osf/arduino/…`, BME680, Kamera und LDR nicht ins Log geschrieben "
-            "(Subscribe bleibt `#`)."
-        )
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            if st.button(
+                "🔌 Broker Verbinden",
+                key="recorder_connect_btn",
+                disabled=st.session_state.session_recorder["connected"],
+            ):
+                ok, reason = _mqtt_single_instance_preflight(mqtt_settings["host"], int(mqtt_settings["port"]))
+                if not ok:
+                    st.error(f"❌ Verbindung blockiert: {reason}")
+                elif connect_to_broker(mqtt_settings):
+                    st.session_state.session_recorder["connected"] = True
+                    st.success("✅ MQTT verbunden!")
+                    rerun_controller.request_rerun()
+                else:
+                    st.error("❌ Verbindung fehlgeschlagen!")
+        with c2:
+            if st.button(
+                "🔌 Broker Trennen",
+                key="recorder_disconnect_btn",
+                disabled=not st.session_state.session_recorder["connected"],
+            ):
+                disconnect_from_broker()
+                st.session_state.session_recorder["connected"] = False
+                st.success("✅ MQTT getrennt!")
+                rerun_controller.request_rerun()
+        with c3:
+            if st.button("⚙️ Zu Einstellungen wechseln", key="recorder_to_settings_btn"):
+                st.session_state["main_sidebar_tab"] = "⚙️ Einstellungen"
+                st.rerun()
 
     st.markdown("---")
 
-    # Session-Name eingeben
-    st.subheader("📝 Session-Name")
+    # Default-Bedienung
+    st.subheader("📝 Standard-Bedienung")
+    st.markdown("**Default:** Live-MQTT-Daten als Session-Log aufnehmen.")
     session_name = st.text_input(
         "Session-Name eingeben",
         value=st.session_state.session_recorder["session_name"],
@@ -136,59 +321,7 @@ def show_session_recorder():
         st.session_state.session_recorder["session_name"] = session_name
         st.success(f"✅ Session-Name gesetzt: {session_name}")
 
-    st.markdown("---")
-
-    # Verbindungs-Controls
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button("🔌 Broker Verbinden", disabled=st.session_state.session_recorder["connected"]):
-            if connect_to_broker(mqtt_settings):
-                st.session_state.session_recorder["connected"] = True
-                st.success("✅ MQTT verbunden!")
-                rerun_controller.request_rerun()
-            else:
-                st.error("❌ Verbindung fehlgeschlagen!")
-
-    with col2:
-        if st.button("🔌 Broker Trennen", disabled=not st.session_state.session_recorder["connected"]):
-            disconnect_from_broker()
-            st.session_state.session_recorder["connected"] = False
-            st.success("✅ MQTT getrennt!")
-            rerun_controller.request_rerun()
-
-    st.markdown("---")
-
-    # Recording-Controls
-    st.subheader("🔴 Aufnahme")
-    include_retained = st.checkbox(
-        "Retained Messages am Start miterfassen",
-        value=st.session_state.session_recorder.get("include_retained", False),
-        help="State/Connection/Factsheet beim Subscribe – nur aktivieren, wenn initialer Stand nötig ist.",
-        key="session_recorder_include_retained",
-    )
-    st.session_state.session_recorder["include_retained"] = include_retained
-    st.caption(
-        "**Normal:** Nur Nachrichten während der Aufnahme. **Mit Retained:** Zusätzlich initialer Stand beim Start."
-    )
-
-    preset_labels = ("Alle Topics (unfiltered)", "Analyse: ohne Arduino / BME680 / Kamera / LDR (DR-25)")
-    preset_values = ("none", "analysis")
-    current_preset = settings_manager.get_session_recorder_recording_exclusion_preset()
-    preset_index = preset_values.index(current_preset) if current_preset in preset_values else 0
-    selected_label = st.selectbox(
-        "Topic-Aufnahme",
-        options=list(preset_labels),
-        index=preset_index,
-        help=(
-            "Baseline: alle Topics. Analyse: schreibt keine Messages zu osf/arduino/…, "
-            "TXT BME680/Kamera/LDR — kleinere Logs für CCU/FTS/Module (vgl. DR-25)."
-        ),
-        key=f"session_recorder_exclusion_preset_{current_preset}",
-    )
-    new_preset = preset_values[preset_labels.index(selected_label)]
-    if new_preset != current_preset:
-        settings_manager.set_session_recorder_recording_exclusion_preset(new_preset)
+    include_retained_flag = st.session_state.session_recorder.get("include_retained", False)
 
     if not st.session_state.session_recorder["session_name"]:
         st.warning("⚠️ Bitte Session-Name eingeben")
@@ -197,16 +330,20 @@ def show_session_recorder():
 
         with col1:
             if st.button("▶️ Aufnahme Starten", disabled=st.session_state.session_recorder["recording"], type="primary"):
-                started = start_recording(mqtt_settings, rerun_controller)
-                if started:
-                    st.session_state.session_recorder["recording"] = True
-                    st.session_state.session_recorder["connected"] = True
-                    st.session_state.session_recorder["start_time"] = datetime.now()
-                    success_msg = "🔴 Aufnahme gestartet!" + (" (inkl. retained)" if include_retained else "")
-                    st.success(success_msg)
-                    rerun_controller.request_rerun()
+                ok, reason = _mqtt_single_instance_preflight(mqtt_settings["host"], int(mqtt_settings["port"]))
+                if not ok:
+                    st.error(f"❌ Aufnahme blockiert: {reason}")
                 else:
-                    st.error("❌ Verbindung/Aufnahme fehlgeschlagen!")
+                    started = start_recording(mqtt_settings, rerun_controller)
+                    if started:
+                        st.session_state.session_recorder["recording"] = True
+                        st.session_state.session_recorder["connected"] = True
+                        st.session_state.session_recorder["start_time"] = datetime.now()
+                        success_msg = "🔴 Aufnahme gestartet!" + (" (inkl. retained)" if include_retained_flag else "")
+                        st.success(success_msg)
+                        rerun_controller.request_rerun()
+                    else:
+                        st.error("❌ Verbindung/Aufnahme fehlgeschlagen!")
 
         with col2:
             if st.button(
@@ -216,33 +353,112 @@ def show_session_recorder():
                 st.success("⏹️ Aufnahme beendet und gespeichert!")
                 rerun_controller.request_rerun()
 
+    with st.expander("🧩 Optionale Details (Retained, Topic-Filter, Meta)", expanded=False):
+        include_retained = st.checkbox(
+            "Retained Messages am Start miterfassen",
+            value=st.session_state.session_recorder.get("include_retained", False),
+            help="State/Connection/Factsheet beim Subscribe – nur aktivieren, wenn initialer Stand nötig ist.",
+            key="session_recorder_include_retained",
+        )
+        st.session_state.session_recorder["include_retained"] = include_retained
+        st.caption("**Normal:** Nur Nachrichten während der Aufnahme. **Mit Retained:** Zusätzlich initialer Stand.")
+
+        preset_labels = (
+            "Alle Topics (unfiltered)",
+            "Ohne Kamera (Cam-Payloads ausschließen)",
+            "Analyse: ohne Arduino / BME680 / Kamera / LDR (DR-25)",
+        )
+        preset_values = (EXCLUSION_PRESET_NONE, EXCLUSION_PRESET_NO_CAM, EXCLUSION_PRESET_ANALYSIS)
+        current_preset = settings_manager.get_session_recorder_recording_exclusion_preset()
+        preset_index = preset_values.index(current_preset) if current_preset in preset_values else 0
+        selected_label = st.selectbox(
+            "Preset-Filter",
+            options=list(preset_labels),
+            index=preset_index,
+            help=(
+                "Baseline: alle Topics. Ohne Kamera: nur Cam-Topics ausfiltern. "
+                "Analyse: schreibt keine Messages zu osf/arduino/…, "
+                "TXT BME680/Kamera/LDR — kleinere Logs für CCU/FTS/Module (vgl. DR-25)."
+            ),
+            key=f"session_recorder_preset_{current_preset}",
+        )
+        new_preset = preset_values[preset_labels.index(selected_label)]
+        if new_preset != current_preset:
+            settings_manager.set_session_recorder_recording_exclusion_preset(new_preset)
+
+        filter_mode_labels = (
+            "Kein zusätzlicher Filter",
+            "Custom Exclude (ausgewählte Topics ausschließen)",
+            "Custom Include (nur ausgewählte Topics aufnehmen)",
+        )
+        filter_mode_values = (CUSTOM_FILTER_MODE_NONE, CUSTOM_FILTER_MODE_EXCLUDE, CUSTOM_FILTER_MODE_INCLUDE)
+        current_filter_mode = settings_manager.get_session_recorder_custom_filter_mode()
+        mode_index = filter_mode_values.index(current_filter_mode) if current_filter_mode in filter_mode_values else 0
+        selected_mode_label = st.selectbox(
+            "Zusatzfilter-Modus",
+            options=list(filter_mode_labels),
+            index=mode_index,
+            key=f"session_recorder_custom_filter_mode_{current_filter_mode}",
+        )
+        selected_filter_mode = filter_mode_values[filter_mode_labels.index(selected_mode_label)]
+        if selected_filter_mode != current_filter_mode:
+            settings_manager.set_session_recorder_custom_filter_mode(selected_filter_mode)
+            current_filter_mode = selected_filter_mode
+
+        if current_filter_mode in (CUSTOM_FILTER_MODE_EXCLUDE, CUSTOM_FILTER_MODE_INCLUDE):
+            st.markdown("##### 🎯 Custom Topic-Auswahl")
+            known_topics = _collect_known_topics(settings_manager)
+            persisted_topics = settings_manager.get_session_recorder_custom_filter_topics()
+            options = sorted(set(known_topics).union(persisted_topics))
+            selected_topics = st.multiselect(
+                "Topics auswählen",
+                options=options,
+                default=[t for t in persisted_topics if t in options],
+                help=(
+                    "Exakte Topics oder Prefix-Regeln (z. B. /j1/txt/1/i/cam/# oder osf/arduino/*) "
+                    "werden unterstützt."
+                ),
+                key="session_recorder_custom_filter_topics_select",
+            )
+            custom_topic_add = st.text_input(
+                "Topic-Regel hinzufügen (optional)",
+                value="",
+                placeholder="z. B. /j1/txt/1/i/cam/#",
+                key="session_recorder_custom_filter_topic_add",
+            ).strip()
+            if custom_topic_add:
+                selected_topics = sorted(set(selected_topics).union({custom_topic_add}))
+            if selected_topics != persisted_topics:
+                settings_manager.set_session_recorder_custom_filter_topics(selected_topics)
+            st.caption(f"Aktive Custom-Topics: {len(selected_topics)}")
+
+        if st.session_state.session_recorder["recording"]:
+            st.markdown("---")
+            st.subheader("📋 Session-Meta (optional)")
+            st.caption(
+                "Wird als **erste Zeile** in der `.log` gespeichert (ohne topic/payload/timestamp — Replay ignoriert sie)."
+            )
+            st.selectbox(
+                "CCU / Order-Ergebnis (Kurz)",
+                options=["unknown", "ok", "nok", "mixed"],
+                key="session_recorder_meta_outcome",
+                help="Zusammenfassung des Order-Ergebnisses für INVENTORY / Analyse.",
+            )
+            st.text_area(
+                "CCU / Orders (was wurde geordert / Szenario)",
+                height=100,
+                key="session_recorder_meta_ccu",
+                placeholder="z. B. zwei parallele Lageraufträge, Quality-Fail → Ersatzauftrag …",
+            )
+            st.text_area(
+                "Zusätzliche Notiz",
+                height=68,
+                key="session_recorder_meta_note",
+                placeholder="Optional",
+            )
+
     # Status anzeigen
     if st.session_state.session_recorder["recording"]:
-        st.markdown("---")
-        st.subheader("📋 Session-Meta (optional)")
-        st.caption(
-            "Wird als **erste Zeile** in der `.log` gespeichert (ohne topic/payload/timestamp — Replay ignoriert sie). "
-            "Enthält u. a. Dauer, Preset, Broker, OSF-Workspace-Version (`package.json`), CCU/Order-Kontext."
-        )
-        st.selectbox(
-            "CCU / Order-Ergebnis (Kurz)",
-            options=["unknown", "ok", "nok", "mixed"],
-            key="session_recorder_meta_outcome",
-            help="Zusammenfassung des Order-Ergebnisses für INVENTORY / Analyse.",
-        )
-        st.text_area(
-            "CCU / Orders (was wurde geordert / Szenario)",
-            height=100,
-            key="session_recorder_meta_ccu",
-            placeholder="z. B. zwei parallele Lageraufträge, Quality-Fail → Ersatzauftrag …",
-        )
-        st.text_area(
-            "Zusätzliche Notiz",
-            height=68,
-            key="session_recorder_meta_note",
-            placeholder="Optional",
-        )
-
         st.markdown("---")
         st.subheader("📊 Aufnahme-Status")
 
@@ -269,20 +485,9 @@ def show_session_recorder():
             for msg in messages[-5:]:  # Letzte 5 Nachrichten
                 st.code(f"{msg['topic']}: {msg['payload'][:100]}...")
 
-        # Manueller Refresh-Button
-        col1, col2, col3 = st.columns([1, 1, 2])
-
-        with col1:
-            if st.button("🔄 Aktualisieren", key="refresh_status"):
-                rerun_controller.request_rerun()
-
-        with col2:
-            if st.button("📊 Status prüfen", key="check_status"):
-                st.info(f"📨 Aktuelle Nachrichten: {message_buffer.count()}")
-                st.info(f"⏱️ Aufnahme läuft seit: {st.session_state.session_recorder['start_time']}")
-
-        with col3:
-            st.info("💡 **Tipp:** Klicke 'Aktualisieren' um den Status zu aktualisieren")
+        st.caption("🔄 Auto-Refresh aktiv (alle 10s).")
+        time.sleep(10)
+        st.rerun()
 
 
 def connect_to_broker(mqtt_settings: Dict[str, Any]) -> bool:
@@ -352,6 +557,7 @@ def start_recording(mqtt_settings=None, rerun_controller=None) -> bool:
     Nur Nachrichten während der Aufnahme werden gespeichert.
     """
     global _recording_active, _include_retained, _recording_exclusion_preset
+    global _recording_custom_filter_mode, _recording_custom_filter_topics
     try:
         logger.info("🔴 Session-Aufnahme wird gestartet...")
 
@@ -365,6 +571,8 @@ def start_recording(mqtt_settings=None, rerun_controller=None) -> bool:
 
         settings_manager = SettingsManager()
         _recording_exclusion_preset = settings_manager.get_session_recorder_recording_exclusion_preset()
+        _recording_custom_filter_mode = settings_manager.get_session_recorder_custom_filter_mode()
+        _recording_custom_filter_topics = settings_manager.get_session_recorder_custom_filter_topics()
 
         # Falls nicht verbunden: zuerst verbinden (Subscribe erfolgt in on_connect)
         just_connected = False
@@ -461,13 +669,19 @@ def stop_recording() -> bool:
 def on_message_received(client, userdata, msg):
     """Callback für empfangene MQTT-Nachrichten – nur während Aufnahme, optional ohne retained"""
     global _recording_active, _include_retained, _recording_exclusion_preset
+    global _recording_custom_filter_mode, _recording_custom_filter_topics
     try:
         if not _recording_active:
             return
         is_retain = getattr(msg, "retain", False)
         if is_retain and not _include_retained:
             return
-        if not should_write_message_to_session_log(msg.topic, _recording_exclusion_preset):
+        if not should_write_message_to_session_log(
+            msg.topic,
+            _recording_exclusion_preset,
+            custom_filter_mode=_recording_custom_filter_mode,
+            custom_filter_topics=_recording_custom_filter_topics,
+        ):
             return
 
         message = {

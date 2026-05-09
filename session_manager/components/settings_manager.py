@@ -53,8 +53,11 @@ class SettingsManager:
                     "auto_save": True,
                     "save_interval": 300,  # 5 Minuten
                     "max_file_size": 100,  # MB
-                    # DR-25: "none" = alle Topics; "analysis" = ohne Arduino/BME680/Kamera/LDR (TXT)
+                    # Presets: "none" = alle Topics; "no_cam" = ohne Kamera; "analysis" = ohne Arduino/BME680/Kamera/LDR
                     "recording_exclusion_preset": "none",
+                    # Optionaler Zusatzfilter: none | exclude | include
+                    "recording_custom_filter_mode": "none",
+                    "recording_custom_filter_topics": [],
                 },
             },
         }
@@ -139,17 +142,46 @@ class SettingsManager:
         self.save_settings()
 
     def get_session_recorder_recording_exclusion_preset(self) -> str:
-        """Preset für Topic-Ausschluss beim Record (DR-25): none | analysis."""
+        """Preset für Topic-Ausschluss beim Record: none | no_cam | analysis."""
         rec = self.get_setting("session_recorder", "recording", {})
         preset = rec.get("recording_exclusion_preset", "none")
-        return preset if preset in ("none", "analysis") else "none"
+        return preset if preset in ("none", "no_cam", "analysis") else "none"
 
     def set_session_recorder_recording_exclusion_preset(self, preset: str) -> None:
         """Persistiert recording_exclusion_preset unter session_recorder.recording."""
-        if preset not in ("none", "analysis"):
+        if preset not in ("none", "no_cam", "analysis"):
             preset = "none"
         rec = dict(self.get_setting("session_recorder", "recording", {}))
         rec["recording_exclusion_preset"] = preset
+        self.set_setting("session_recorder", "recording", rec)
+
+    def get_session_recorder_custom_filter_mode(self) -> str:
+        """Zusatzfilter-Modus: none | exclude | include."""
+        rec = self.get_setting("session_recorder", "recording", {})
+        mode = rec.get("recording_custom_filter_mode", "none")
+        return mode if mode in ("none", "exclude", "include") else "none"
+
+    def set_session_recorder_custom_filter_mode(self, mode: str) -> None:
+        """Persistiert recording_custom_filter_mode."""
+        if mode not in ("none", "exclude", "include"):
+            mode = "none"
+        rec = dict(self.get_setting("session_recorder", "recording", {}))
+        rec["recording_custom_filter_mode"] = mode
+        self.set_setting("session_recorder", "recording", rec)
+
+    def get_session_recorder_custom_filter_topics(self) -> list[str]:
+        """Zusatzfilter-Topics als Liste."""
+        rec = self.get_setting("session_recorder", "recording", {})
+        topics = rec.get("recording_custom_filter_topics", [])
+        if not isinstance(topics, list):
+            return []
+        return [str(t).strip() for t in topics if str(t).strip()]
+
+    def set_session_recorder_custom_filter_topics(self, topics: list[str]) -> None:
+        """Persistiert recording_custom_filter_topics."""
+        cleaned = [str(t).strip() for t in topics if str(t).strip()]
+        rec = dict(self.get_setting("session_recorder", "recording", {}))
+        rec["recording_custom_filter_topics"] = cleaned
         self.set_setting("session_recorder", "recording", rec)
 
     def update_session_recorder_mqtt_settings(
