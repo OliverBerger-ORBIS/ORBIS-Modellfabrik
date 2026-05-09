@@ -1,0 +1,27 @@
+{
+  "title": "Modul- und FTS-Zustaende",
+  "uid": "osf-module-fts-state",
+  "schemaVersion": 39,
+  "version": 1,
+  "timezone": "browser",
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Latest Module/FTS States",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PB856C894E7EBB34A"
+      },
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT ts, source, module_type, module_serial, action_state, event_type, topic FROM shopfloor_event WHERE ts >= now() - interval '24 hours' AND (topic LIKE 'module/v1/ff/%' OR topic LIKE 'fts/v1/ff/%') ORDER BY ts DESC LIMIT 200"
+        }
+      ]
+    }
+  ]
+}

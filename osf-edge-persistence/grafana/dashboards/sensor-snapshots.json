@@ -1,0 +1,45 @@
+{
+  "title": "Sensor Snapshots",
+  "uid": "osf-sensor-snapshots",
+  "schemaVersion": 39,
+  "version": 1,
+  "timezone": "browser",
+  "refresh": "10s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Latest Numeric Snapshots",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PB856C894E7EBB34A"
+      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT ts, source, station_id, sensor_type, metric_name, value_numeric, reason FROM sensor_snapshot WHERE value_numeric IS NOT NULL ORDER BY ts DESC LIMIT 200"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Numeric Metrics (Last 24h)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PB856C894E7EBB34A"
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 10 },
+      "targets": [
+        {
+          "format": "time_series",
+          "refId": "A",
+          "rawSql": "SELECT date_trunc('second', ts) AS time, metric_name AS metric, avg(value_numeric)::double precision AS value FROM sensor_snapshot WHERE value_numeric IS NOT NULL AND ts BETWEEN now() - interval '24 hours' AND now() GROUP BY 1,2 ORDER BY 1"
+        }
+      ]
+    }
+  ]
+}

@@ -43,11 +43,15 @@
 
 ### Backend & Grafana (Übernahme aus Sprint 20)
 
-- [ ] RPi-Service: Persistenz (Prozess/Shopfloor/Umwelt), Grafana; Interface später DSP-DISC-tauglich
+- [x] Architekturentscheidung + Leitplanken dokumentiert: **DSP-Edge als Zielplattform**, Deploy in Phase 1 variabel (**local-dev**, **rpi-pilot**, **edge-prod**), MQTT-Ingest read-only, generisches Sensor-Metrikmodell — DR-28 erstellt (08.05.2026)
+- [x] Edge Persistence Stack lokal implementiert (Docker Compose, Postgres/Timescale, Grafana-Provisioning, Persistence-Service, Schema/Retention) — lokale Unit-Tests + Type-Checks grün (08.05.2026, `npm run test`, `npm run lint:types`)
+- [x] Lokaler Replay-Smoke-Test erfolgreich (synthetische Arduino-Session): Parsing/Normalisierung verifiziert (`station_id`, `sensor_type`), Reason-Logik mit `EVENT`/`THRESHOLD`/`INTERVAL` nachgewiesen (08.05.2026, SQL-Checks in `sensor_snapshot`)
+- [ ] Grafana lokal visuell verifizieren (Dashboards: Systemstatus, Aufträge, Workpiece Trace, Sensor Snapshots, Modul-/FTS-Zustände) inkl. kurzer Abnahme-Notiz — Technikpfad lokal verifiziert (08.05.2026): Datasource-Provisioning/Grafana-Auth/Debug-Dashboard (`osf-sensor-debug-live`) zeigen Daten stabil; Update 09.05.2026: Replay-Zeitmodus im Sender reaktiviert (Timeshift), `ccu/order/active`/`ccu/order/completed` End-to-End technisch nachgewiesen (Broker + Postgres), Orders-Dashboard um Active-/State-Panels erweitert; fachliches Feintuning/Abnahme weiterhin bewusst auf echte ORBIS-Daten + neue Session-Logs verschoben
+- [ ] Vor-Ort-Abnahme bei ORBIS mit echter Sensor-Station + echten Sessions (2 AGVs) und Bewertung der Datenqualität für OEE/Optimierung/PM
 
 ### Integration & Tests (Übernahme aus Sprint 20)
 
-- [ ] Sessions **2 AGVs**; weitere Aufnahmen mit **Analyse**-Preset (DR-25) bei Bedarf
+- [ ] Sessions **2 AGVs**; weitere Aufnahmen mit **Analyse**-Preset (DR-25) bei Bedarf — Vorab lokal: synthetische Arduino-Replay-Session erstellt; echte Sensor-Station-Aufnahmen folgen vor Ort bei ORBIS
 - [ ] **dsp/correlation/info** E2E
 - [ ] **ccu/order/request** E2E (Ersatzauftrag nach Quality-Fail)
 
@@ -79,5 +83,5 @@
 
 ---
 
-*Stand: 07.05.2026* · [sprints_README.md](sprints_README.md)
+*Stand: 09.05.2026* · [sprints_README.md](sprints_README.md)
 

@@ -1,0 +1,27 @@
+{
+  "title": "Workpiece Trace",
+  "uid": "osf-workpiece-trace",
+  "schemaVersion": 39,
+  "version": 1,
+  "timezone": "browser",
+  "refresh": "20s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Events by Workpiece",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PB856C894E7EBB34A"
+      },
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT ts, workpiece_id, order_id, module_type, action, action_state, topic FROM shopfloor_event WHERE ts >= now() - interval '24 hours' ORDER BY ts DESC LIMIT 200"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "osf-edge-persistence-service",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Read-only MQTT persistence service for OSF Edge stack",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint:types": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "mqtt": "^5.14.1",
+    "pg": "^8.16.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.17",
+    "@types/pg": "^8.15.1",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^2.1.8"
+  }
+}

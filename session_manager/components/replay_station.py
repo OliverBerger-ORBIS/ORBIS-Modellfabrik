@@ -7,10 +7,11 @@ Isolierte Version ohne OMF-Dependencies
 import json
 import logging
 import re
+import subprocess
 import threading
 import time
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import List, Optional, Protocol, Tuple
 
@@ -32,6 +33,79 @@ logging.basicConfig(
     handlers=[logging.FileHandler(log_dir / "session_manager.log"), logging.StreamHandler()],
 )
 logger = get_logger(__name__)
+
+
+def _is_local_mqtt_host(host: str) -> bool:
+    normalized = (host or "").strip().lower()
+    return normalized in {"", "localhost", "127.0.0.1", "::1", "0.0.0.0"}
+
+
+def _local_listener_pids(port: int) -> tuple[set[int], str]:
+    """
+    Read local TCP LISTEN pids for a port via lsof.
+    Returns (pids, error_message). error_message is empty on success.
+    """
+    try:
+        result = subprocess.run(
+            ["lsof", "-nP", f"-iTCP:{int(port)}", "-sTCP:LISTEN"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError:
+        return set(), "lsof not available"
+    except Exception as exc:
+        return set(), str(exc)
+
+    if result.returncode != 0 and not result.stdout.strip():
+        return set(), ""
+
+    lines = [line for line in result.stdout.splitlines() if line.strip()]
+    if len(lines) <= 1:
+        return set(), ""
+
+    pids: set[int] = set()
+    for line in lines[1:]:
+        parts = line.split()
+        if len(parts) < 2:
+            continue
+        try:
+            pids.add(int(parts[1]))
+        except ValueError:
+            continue
+    return pids, ""
+
+
+def _mqtt_single_instance_preflight(host: str, port: int) -> tuple[bool, str]:
+    """
+    Guard against accidental local double broker setups.
+    We only enforce this for localhost-style hosts.
+    """
+    if not _is_local_mqtt_host(host):
+        return True, ""
+
+    mqtt_pids, mqtt_err = _local_listener_pids(int(port))
+    if mqtt_err:
+        return False, f"MQTT preflight failed: {mqtt_err}"
+    if len(mqtt_pids) > 1:
+        pid_list = ", ".join(str(pid) for pid in sorted(mqtt_pids))
+        return False, (
+            f"Duplicate MQTT listeners detected on {host}:{port} (pids: {pid_list}). "
+            "Stop extra broker instances before replay."
+        )
+
+    ws_pids, ws_err = _local_listener_pids(9001)
+    if ws_err:
+        logger.warning(f"⚠️ MQTT preflight websocket check skipped: {ws_err}")
+        return True, ""
+
+    if mqtt_pids and ws_pids and mqtt_pids.isdisjoint(ws_pids):
+        return False, (
+            "MQTT preflight failed: port 1883 and 9001 are served by different processes. "
+            "Use exactly one broker instance for replay."
+        )
+
+    return True, ""
 
 
 # =========================
@@ -87,6 +161,14 @@ class ReplayController:
                 self._pause.clear()
                 return
 
+            if not self._seq:
+                logger.warning("⚠️ Replay gestartet ohne geladene Session")
+                return
+
+            # Wenn das Replay bereits am Ende angekommen ist, bei Play sauber von vorne starten.
+            if self._idx >= len(self._seq):
+                self._idx = 0
+
             # MQTT-Client initialisieren falls nötig
             if not self._mqtt_client:
                 self._mqtt_client = SessionManagerMQTTClient(self.host, self.port, "session_manager_replay")
@@ -96,7 +178,7 @@ class ReplayController:
 
             self._stop.clear()
             self._pause.clear()
-            self.started_at_mono = time.monotonic() - (self._seq[self._idx].ts_rel / self._speed if self._seq else 0.0)
+            self.started_at_mono = time.monotonic() - (self._seq[self._idx].ts_rel / self._speed)
             self._worker = threading.Thread(target=self._run, name="replay-worker", daemon=True)
             self._worker.start()
 
@@ -423,6 +505,13 @@ def show_replay_station():
 def test_mqtt_connection(host, port, rerun_controller: RerunController):
     """MQTT Verbindung testen mit persistentem MQTT-Client"""
     try:
+        ok, reason = _mqtt_single_instance_preflight(host, int(port))
+        if not ok:
+            st.error(f"❌ {reason}")
+            st.session_state.mqtt_connected = False
+            rerun_controller.request_rerun()
+            return False
+
         # Temporären MQTT-Client für Test erstellen
         test_client = SessionManagerMQTTClient(host, port, "session_manager_test")
 
@@ -762,6 +851,7 @@ def load_session(session_file, replay_ctrl: ReplayController):
         if messages:
             # Sequenz vorbereiten: (ts_rel, topic, payload_bytes, qos, retain)
             items: List[Tuple[float, str, bytes, int, bool]] = []
+            replay_anchor_epoch = time.time()
 
             # Timestamps auf Sekunden float normalisieren
             def _to_epoch_s(ts_val):
@@ -783,6 +873,54 @@ def load_session(session_file, replay_ctrl: ReplayController):
                     except Exception:
                         return 0.0
 
+            def _to_iso_utc(ts_epoch: float) -> str:
+                return (
+                    datetime.fromtimestamp(ts_epoch, tz=UTC).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+                )
+
+            def _shift_payload_timestamps(payload_in, shifted_iso_ts: str):
+                """
+                Shift timestamp keys to replay-now timeline for Grafana/live dashboards.
+                Supports JSON strings, dicts and lists.
+                """
+                payload_obj = payload_in
+                payload_was_json_string = False
+                time_keys = {
+                    "timestamp",
+                    "ts",
+                    "startedAt",
+                    "stoppedAt",
+                    "receivedAt",
+                    "createdAt",
+                    "updatedAt",
+                    "finishedAt",
+                }
+
+                if isinstance(payload_obj, str):
+                    try:
+                        payload_obj = json.loads(payload_obj)
+                        payload_was_json_string = True
+                    except Exception:
+                        return payload_in
+
+                def _walk(value):
+                    if isinstance(value, dict):
+                        out = {}
+                        for key, item in value.items():
+                            if key in time_keys:
+                                out[key] = shifted_iso_ts
+                            else:
+                                out[key] = _walk(item)
+                        return out
+                    if isinstance(value, list):
+                        return [_walk(item) for item in value]
+                    return value
+
+                shifted = _walk(payload_obj)
+                if payload_was_json_string:
+                    return json.dumps(shifted, separators=(",", ":"), ensure_ascii=False)
+                return shifted
+
             if messages:
                 t0 = _to_epoch_s(messages[0].get("timestamp", 0))
                 for m in messages:
@@ -790,6 +928,12 @@ def load_session(session_file, replay_ctrl: ReplayController):
                     payload = m["payload"]
                     ts = _to_epoch_s(m.get("timestamp", 0))
                     ts_rel = max(0.0, ts - t0)
+                    shifted_ts_iso = _to_iso_utc(replay_anchor_epoch + ts_rel)
+
+                    # Keep replay timeline aligned with "now" to make Grafana time windows useful.
+                    payload = _shift_payload_timestamps(payload, shifted_ts_iso)
+                    m["timestamp"] = shifted_ts_iso
+
                     if isinstance(payload, (dict, list)):
                         payload = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
                     payload_b = (payload if isinstance(payload, (bytes, bytearray)) else str(payload)).encode("utf-8")
@@ -808,6 +952,7 @@ def load_session(session_file, replay_ctrl: ReplayController):
                 "loop": False,
             }
             st.success(f"✅ Session '{session_file.name}' geladen ({len(messages)} Nachrichten)")
+            st.info("🕒 Replay-Zeitmodus aktiv: Session-Timestamps werden relativ zu 'jetzt' gesendet.")
         else:
             st.error(f"❌ Session '{session_file.name}' konnte nicht geladen werden")
     except Exception as e:
@@ -874,6 +1019,11 @@ def show_replay_controls(rerun_controller: RerunController):
                 else str(session.get("file", "Unknown"))
             )
             logger.debug(f"▶️ User klickt: Play/Resume - Session: {session_name}")
+            ok, reason = _mqtt_single_instance_preflight(st.session_state.mqtt_host, st.session_state.mqtt_port)
+            if not ok:
+                st.error(f"❌ {reason}")
+                session["is_playing"] = False
+                return
             # Controller starten (mit aktueller Geschwindigkeit)
             replay_ctrl.play(speed=session.get("speed", 1.0))
             session["is_playing"] = True

@@ -1,0 +1,4 @@
+data/
+services/persistence-service/dist/
+services/persistence-service/node_modules/
+.env

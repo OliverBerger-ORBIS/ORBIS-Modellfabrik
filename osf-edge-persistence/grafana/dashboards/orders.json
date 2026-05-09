@@ -1,0 +1,61 @@
+{
+  "title": "Orders",
+  "uid": "osf-orders",
+  "schemaVersion": 39,
+  "version": 1,
+  "timezone": "browser",
+  "refresh": "15s",
+  "panels": [
+    {
+      "id": 10,
+      "title": "Orders by State (Last 24h)",
+      "type": "barchart",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PB856C894E7EBB34A"
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT state, count(*)::double precision AS value FROM production_order WHERE received_at >= now() - interval '24 hours' GROUP BY state ORDER BY state"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Active Orders (Latest)",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PB856C894E7EBB34A"
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT received_at, order_id, order_type, workpiece_id, state FROM production_order WHERE state IN ('IN_PROGRESS', 'RUNNING', 'ENQUEUED') AND received_at >= now() - interval '24 hours' ORDER BY received_at DESC LIMIT 50"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "title": "Completed Orders (Last 24h)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PB856C894E7EBB34A"
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "format": "time_series",
+          "refId": "A",
+          "rawSql": "SELECT date_trunc('minute', stopped_at) AS time, count(*)::double precision AS value FROM production_order WHERE stopped_at IS NOT NULL AND stopped_at >= now() - interval '24 hours' GROUP BY 1 ORDER BY 1"
+        }
+      ]
+    }
+  ]
+}

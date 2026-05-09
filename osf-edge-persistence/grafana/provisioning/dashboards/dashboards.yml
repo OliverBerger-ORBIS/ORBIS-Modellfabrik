@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: "OSF Dashboards"
+    orgId: 1
+    folder: "OSF Edge Persistence"
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

@@ -1,0 +1,27 @@
+{
+  "title": "Systemstatus",
+  "uid": "osf-system-status",
+  "schemaVersion": 39,
+  "version": 1,
+  "timezone": "browser",
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Events per Minute",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PB856C894E7EBB34A"
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "format": "time_series",
+          "refId": "A",
+          "rawSql": "SELECT date_trunc('minute', ts) AS time, count(*)::double precision AS value FROM shopfloor_event WHERE ts >= now() - interval '24 hours' GROUP BY 1 ORDER BY 1"
+        }
+      ]
+    }
+  ]
+}

@@ -123,14 +123,16 @@ sequenceDiagram
 ## 🔧 Technische Details
 
 ### **Session-Format**
-- **SQLite:** Strukturierte Nachrichten-Daten
-- **Timestamps:** Originale Zeitstempel für Timing
+- **JSON-Lines `.log`:** eine MQTT-Nachricht pro Zeile
+- **Timestamps:** Originale Zeitstempel für Timing/Timeshift
 - **Topics:** Vollständige MQTT-Topic-Struktur
 - **Payloads:** JSON-Nachrichten-Inhalte
 
 ### **Replay-Engine**
 - **Threading:** Background-Thread für non-blocking UI
 - **Timing:** Präzise Zeitsteuerung basierend auf Original-Timestamps
+- **Zeitanker:** Beim Laden wird die Session relativ zu **jetzt** verankert (keine historischen/futuristischen Zeitfenster in Grafana)
+- **Payload-Timestamps:** Standardfelder `timestamp` und `ts` werden beim Replay auf die aktuelle Timeline verschoben
 - **Speed-Control:** Multiplikator für Replay-Geschwindigkeit
 - **Error-Handling:** Graceful Fehlerbehandlung bei MQTT-Problemen
 
@@ -139,6 +141,19 @@ sequenceDiagram
 - **QoS:** Level 1 für zuverlässige Übertragung
 - **Retain:** False (nur Live-Replay)
 - **Timeout:** 5 Sekunden pro Nachricht
+- **Preflight-Guard:** Vor `Verbindung testen` und `Play` blockiert die Replay Station bei doppelten lokalen Broker-Instanzen (z. B. zweiter `mosquitto -v`)
+
+### **Broker-Check (CLI)**
+
+Vor Replay-Smoke-Tests einmal lokal ausführen:
+
+```bash
+./scripts/mqtt-single-instance-check.sh
+```
+
+Erwartung:
+- `OK` → genau eine Broker-Instanz bedient MQTT/WebSocket
+- `ERROR` → doppelte Instanz zuerst beenden (typische Ursache für irreführende Replay-/Grafana-Fehler)
 
 ## 🎯 Sprint-Zuordnung
 

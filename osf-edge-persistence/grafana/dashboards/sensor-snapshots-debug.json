@@ -1,0 +1,62 @@
+{
+  "title": "Sensor Snapshots Debug",
+  "uid": "osf-sensor-debug-live",
+  "schemaVersion": 39,
+  "version": 1,
+  "timezone": "browser",
+  "refresh": "10s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Sanity SQL (now + 1)",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PB856C894E7EBB34A"
+      },
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT now() AS server_now, 1::int AS sanity_value"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Latest Numeric Snapshots",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PB856C894E7EBB34A"
+      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 6 },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT ts, source, station_id, sensor_type, metric_name, value_numeric, reason FROM sensor_snapshot WHERE value_numeric IS NOT NULL ORDER BY ts DESC LIMIT 200"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Numeric Metrics (Last 24h)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PB856C894E7EBB34A"
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT date_trunc('second', ts) AS time, metric_name AS metric, avg(value_numeric)::double precision AS value FROM sensor_snapshot WHERE value_numeric IS NOT NULL AND ts BETWEEN now() - interval '24 hours' AND now() GROUP BY 1,2 ORDER BY 1"
+        }
+      ]
+    }
+  ]
+}
