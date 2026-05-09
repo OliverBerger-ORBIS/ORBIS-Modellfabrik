@@ -62,6 +62,7 @@
 
 ### Sprint-Wechsel (am Ende des Sprints abarbeiten)
 
+- [ ] **Versioning/Release:** Session-Manager-Tags sauber namespacen (z. B. `session-manager-v1.4.0`), damit keine Kollision mit OSF-Haupttags (`vX.Y.Z`) entsteht; Konvention in Release-Checkliste verankern
 - [ ] Sprint 21: Status Abgeschlossen, Datum
 - [ ] Sprint 22 anlegen, offene `[ ]` übernehmen
 - [ ] PROJECT_STATUS / Roadmap kurz

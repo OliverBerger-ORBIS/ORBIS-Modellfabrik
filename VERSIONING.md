@@ -40,6 +40,12 @@ Das aktualisiert: `package.json` → `version.ts` → `VERSION`
 2. CHANGELOG.md Eintrag ergänzen
 3. Commit, Push → Deploy nutzt package.json automatisch
 
+## Git-Tag-Konvention (Kollisionen vermeiden)
+
+- **OSF-Hauptrelease:** `vX.Y.Z` (z. B. `v1.1.5`)
+- **Session Manager Release:** `session-manager-vX.Y.Z` (z. B. `session-manager-v1.4.0`)
+- **Wichtig:** Keine Session-Manager-Releases mit reinem `vX.Y.Z` taggen, damit OSF- und Session-Manager-Tags nicht kollidieren.
+
 ## Für KI-Assistenten / Cursor
 
 - **Version ändern:** Nur `package.json` → `"version"`, danach `npm run update-version`
