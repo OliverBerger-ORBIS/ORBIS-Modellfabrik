@@ -1,8 +1,11 @@
-# Metrics Service (Node.js + TypeScript) - Backend Variant A
+# Metrics Service (Node.js + TypeScript) - Backend Variant A (Legacy/Alternative)
+
+> **Status-Hinweis (2026-05-08):** Diese InfluxDB-basierte Variante bleibt als bestehende Alternative dokumentiert.  
+> Der aktuelle Zielpfad fuer Sprint 21 Backend & Grafana ist der Edge-Persistence-Stack mit PostgreSQL/Timescale, siehe [DR-28](../03-decision-records/28-edge-persistence-stack-and-metrics-model.md).
 
 ## Übersicht
 
-Der **Metrics Service** ist ein Backend-Dienst, der MQTT-Telemetriedaten von der Fischertechnik Modell-Fabrik (FMF) konsumiert und in eine Time-Series-Datenbank (InfluxDB) schreibt. Dies ermöglicht die Visualisierung von Produktions-KPIs, FTS-Metriken, Modulauslastung und Umweltdaten in Grafana-Dashboards.
+Der **Metrics Service** ist ein Backend-Dienst, der MQTT-Telemetriedaten von der Fischertechnik Modell-Fabrik (FMF) konsumiert und in eine Time-Series-Datenbank (InfluxDB) schreibt. Dies ermoeglicht die Visualisierung von Produktions-KPIs, FTS-Metriken, Modulauslastung und Umweltdaten in Grafana-Dashboards.
 
 ### Architektur
 

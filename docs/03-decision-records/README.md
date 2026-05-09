@@ -98,6 +98,10 @@ Kanonisches Format `YYYY-MM-DDThh:mm:ss.sssZ`; `utcIsoTimestampMs` (`@osf/entiti
 **Status:** Accepted | **Datum:** 2026-05-05  
 OCC als kanonischer Default, 9 Edge-Function-Icons in der Functional Story, Management Cockpit als Design-/Deployment-Ebene, Edge-Runtime autonom.
 
+### 28. [Edge Persistence Stack und generisches Sensor-Metrikmodell](28-edge-persistence-stack-and-metrics-model.md)
+**Status:** Accepted | **Datum:** 2026-05-08  
+Zielzustand Edge statt RPi fuer Persistenz/Grafana, deploy-variabel in Phase 1 (local/rpi/edge), PostgreSQL+Timescale als primaere DB, read-only MQTT-Ingest und generisches Sensor-Metrikmodell.
+
 ---
 
 ## Template
@@ -106,4 +110,4 @@ Für neue Decision Records: [decision_template.md](decision_template.md)
 
 ---
 
-*Letzte Aktualisierung: 2026-05-05*
+*Letzte Aktualisierung: 2026-05-08*

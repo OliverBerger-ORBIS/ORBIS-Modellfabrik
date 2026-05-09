@@ -42,6 +42,7 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 | mixed-sr-pr-prnok_20260305_121602 | | ✓ | ✓ | ✓ | 1 | **Quality-Fail:** Fixture mixed_pr_prnok |
 | calibrate_dps_1_20251202_101939 | | | ✓ | | 1 | DPS-Kalibrierung, Storage |
 | vibration-sw420_20260303_094240 | | ✓ | ✓ | ✓ | 1 | Kurz, SW-420 Vibrationssensor im Kontext |
+| synthetic-arduino-sensors_20260508_091000 | | | | | 0 | **Synthetisch:** Arduino-Topics aus OSF_MultiSensor-Sketch, inkl. EVENT/THRESHOLD/INTERVAL-Faelle (lokaler Replay/Persistence-Test ohne Hardware) |
 | auftrag-blau_1.log | | ✓ | | | 0 | Mock/Synthetisch, keine FTS-Events |
 | auftrag-rot_1.log | | ✓ | | | 0 | Mock/Synthetisch, keine FTS-Events |
 | auftrag-weiss_1.log | | ✓ | | | 1 | Älteres Format, wenig FTS |
