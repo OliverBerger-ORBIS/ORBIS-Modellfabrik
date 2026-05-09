@@ -156,6 +156,22 @@ export class EnvironmentService {
       this.definitions.live.connection.mqttPort = 9001;
       needsMigration = true;
     }
+
+    // Local dev safety-net:
+    // Older/stored replay settings may still point to the shopfloor broker (192.168.0.100),
+    // which breaks local replay smoke tests. When running on localhost, normalize replay
+    // host back to localhost unless user explicitly configured another host.
+    const locationHost = typeof window !== 'undefined' ? window.location?.hostname : '';
+    const isLocalDevHost =
+      locationHost === 'localhost' ||
+      locationHost === '127.0.0.1' ||
+      locationHost === '::1' ||
+      (locationHost.length > 0 && locationHost !== '192.168.0.100');
+    if (isLocalDevHost && this.definitions.replay.connection.mqttHost === '192.168.0.100') {
+      console.log('[environment] Migrating replay host from 192.168.0.100 to localhost (local dev)');
+      this.definitions.replay.connection.mqttHost = 'localhost';
+      needsMigration = true;
+    }
     
     // Persist migrated connections if any changes were made
     if (needsMigration) {

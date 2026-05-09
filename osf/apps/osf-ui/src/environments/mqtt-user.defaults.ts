@@ -5,7 +5,8 @@
  * as Arduino in ORBIS mode. For DAHEIM (e.g. LAN Mosquitto on 192.168.178.x), change this file locally
  * or use Settings (localStorage overrides these defaults).
  *
- * Leave `replayMqttHost` empty to use `localhost`.
+ * Local dev on `localhost`/`127.0.0.1` automatically falls back to `localhost`
+ * to keep replay smoke tests working without manual settings changes.
  */
 export const MQTT_USER_DEFAULTS = {
   replayMqttHost: '192.168.0.100',
@@ -22,9 +23,20 @@ export function buildReplayConnectionDefaults(): {
   mqttUsername?: string;
   mqttPassword?: string;
 } {
-  const host = MQTT_USER_DEFAULTS.replayMqttHost.trim();
+  const configuredHost = MQTT_USER_DEFAULTS.replayMqttHost.trim();
+  const locationHost = typeof window !== 'undefined' ? window.location?.hostname : '';
+  // Local/dev rule: unless the UI itself is served from the shopfloor RPi host,
+  // prefer localhost for replay to avoid accidental cross-broker connections.
+  const isLocalDevHost =
+    locationHost === 'localhost' ||
+    locationHost === '127.0.0.1' ||
+    locationHost === '::1' ||
+    (locationHost.length > 0 && locationHost !== '192.168.0.100');
+  const host =
+    isLocalDevHost && configuredHost === '192.168.0.100' ? 'localhost' : configuredHost || 'localhost';
+
   return {
-    mqttHost: host || 'localhost',
+    mqttHost: host,
     mqttPort: MQTT_USER_DEFAULTS.replayMqttPort,
     mqttPath: '',
     mqttUsername: MQTT_USER_DEFAULTS.replayMqttUsername,
