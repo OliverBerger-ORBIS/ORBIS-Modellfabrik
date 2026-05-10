@@ -4,6 +4,11 @@
 
 Die **Replay Station** ermöglicht das Einspielen von aufgezeichneten MQTT-Sessions in das OSF-UI im Replay-Modus. Dies ermöglicht das Testen des OSF-UIs, wenn die APS-Fabrik nicht verfügbar ist.
 
+> **Mode-Policy (verbindlich):**
+> - **LIVE-Modus** auf RPi/Edge-Node: Persistence-Service nutzt `env.live` (APS-Broker).
+> - **REPLAY-Modus** lokal auf dem Mac: Persistence-Service nutzt `env.replay` (localhost-Broker via Docker Host Gateway).
+> - Replay ist ein Testmodus und nicht fuer produktionsnahe Deployments gedacht.
+
 **Vorteile:**
 - **Definierte Abfolge** von Nachrichten
 - **Reproduzierbare Tests** des OSF-UIs

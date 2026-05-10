@@ -34,6 +34,12 @@ The stack now uses two explicit runtime profiles:
 - `env.live` (default): persistence subscribes to APS broker (`192.168.0.100:1883`)
 - `env.replay` (test): persistence subscribes to local host broker (`host.docker.internal:1883`)
 
+### Mode policy (team standard)
+
+- Use **LIVE** (`env.live`) when the stack runs on RPi / future edge node.
+- Use **REPLAY** (`env.replay`) only for local tests on Mac with Replay-Station + local broker.
+- Do not use REPLAY profile on production-like deployments.
+
 ## Quick start (default = LIVE)
 
 1. Activate LIVE profile:
