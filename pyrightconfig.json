@@ -3,11 +3,15 @@
   "include": [
     "session_manager",
     "scripts",
+    "**/__pycache__",
+    "**/.*",
     "tests"
   ],
   "exclude": [
     "**/node_modules",
     "**/.venv",
+    "**/__pycache__",
+    "**/.*",
     "**/dist",
     "**/build",
     "**/integrations/TXT-*/workspaces/**",

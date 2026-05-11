@@ -1,4 +1,7 @@
-"""Canonical UTC ISO-8601 with millisecond precision and Z suffix (aligned with OSF `utcIsoTimestampMs` / Arduino v1.1.6+)."""
+"""Canonical UTC ISO-8601 with millisecond precision and Z suffix.
+
+Aligned with OSF ``utcIsoTimestampMs`` / Arduino v1.1.6+.
+"""
 
 from datetime import datetime, timezone
 

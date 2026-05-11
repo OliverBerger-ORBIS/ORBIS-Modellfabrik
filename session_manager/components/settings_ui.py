@@ -27,7 +27,8 @@ class SettingsUI:
         logger.info("⚙️ Settings Tab geladen")
         st.title("⚙️ Einstellungen")
         st.markdown(
-            "Konfiguration für **Replay Station**, **Session Recorder**, **Logging** und Import/Export der Einstellungsdatei."
+            "Konfiguration für **Replay Station**, **Session Recorder**, **Logging** "
+            "und Import/Export der Einstellungsdatei."
         )
 
         tab1, tab2, tab3 = st.tabs(["▶️ Replay Station", "🔴 Session Recorder", "📝 Logging & Diagnose"])
@@ -51,7 +52,8 @@ class SettingsUI:
 
         current_level = st.session_state.get("logging_level", "INFO")
         st.caption(
-            f"Aktuelles Level: **{current_level}** · Live-Stream unten (Ring-Buffer). JSONL-Datei unter Projekt-`logs/`."
+            f"Aktuelles Level: **{current_level}** · Live-Stream unten (Ring-Buffer). "
+            "JSONL-Datei unter Projekt-`logs/`."
         )
         level_options = ["DEBUG", "INFO", "WARNING", "ERROR"]
         selected_level = st.selectbox(

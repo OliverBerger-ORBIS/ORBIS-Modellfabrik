@@ -92,3 +92,26 @@ ignore-paths = [
     "^integrations/TXT-.*/workspaces/.*$",
     "^integrations/APS-NodeRED/backups/.*$",
 ]
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint.messages_control]
+disable = [
+    "missing-function-docstring",
+    "missing-class-docstring",
+    "import-outside-toplevel",
+    "broad-exception-caught",
+    "protected-access",
+    "logging-fstring-interpolation",
+    "logging-not-lazy",
+    "global-statement",
+    "global-variable-not-assigned",
+    "unused-argument",
+    "redefined-outer-name",
+    "reimported",
+    "invalid-name",
+]
+
+[tool.pylint.design]
+max-module-lines = 1600

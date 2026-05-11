@@ -72,5 +72,19 @@
     "**/node_modules": false
   },
 
-  "python.analysis.diagnosticMode": "workspace"
+  "python.analysis.diagnosticMode": "workspace",
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingImports": "none"
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+  "pylint.cwd": "${workspaceFolder}",
+  "pylint.path": [
+    "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pylint"
+  ],
+  "pylint.args": [
+    "--rcfile=${workspaceFolder}/.pylintrc",
+    "--disable=import-error,missing-function-docstring,missing-class-docstring,import-outside-toplevel,broad-exception-caught,protected-access,logging-fstring-interpolation,logging-not-lazy,global-statement,global-variable-not-assigned,unused-argument,redefined-outer-name,reimported,invalid-name"
+  ]
 }

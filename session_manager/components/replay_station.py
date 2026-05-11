@@ -163,8 +163,9 @@ def _ensure_single_broker_or_error(action_label: str) -> bool:
 # =========================
 # Replay-Controller (neu)
 # =========================
-class _Publisher(Protocol):
-    def publish(self, topic: str, payload: str | bytes, qos: int = 0, retain: bool = False) -> None: ...
+class _Publisher(Protocol):  # pylint: disable=too-few-public-methods
+    def publish(self, topic: str, payload: str | bytes, qos: int = 0, retain: bool = False) -> None:
+        """Publish one MQTT message to the configured broker."""
 
 
 @dataclass(frozen=True)
@@ -199,7 +200,7 @@ class ReplayController:
 
     # ---------- öffentlich ----------
     def load(self, items: List[Tuple[float, str, bytes, int, bool]]) -> None:
-        """items: Liste (ts_rel, topic, payload_bytes, qos, retain)"""
+        """Load replay items as ``(ts_rel, topic, payload_bytes, qos, retain)`` tuples."""
         with self._lock:
             self._seq = [_ReplayItem(*it) for it in items]
             self._idx = 0
@@ -207,6 +208,7 @@ class ReplayController:
             self._pause.clear()
 
     def play(self, speed: float = 1.0) -> None:
+        """Start replay or resume an active worker with updated speed."""
         with self._lock:
             self._speed = max(0.1, float(speed))
             if self._worker and self._worker.is_alive():
@@ -235,9 +237,11 @@ class ReplayController:
             self._worker.start()
 
     def pause(self) -> None:
+        """Pause replay processing without resetting position."""
         self._pause.set()
 
     def resume(self) -> None:
+        """Resume replay from current index and align timing baseline."""
         with self._lock:
             if not (self._worker and self._worker.is_alive()):
                 return
@@ -248,6 +252,7 @@ class ReplayController:
             self._pause.clear()
 
     def stop(self) -> None:
+        """Stop replay and reset index to the beginning."""
         self._stop.set()
         self._pause.clear()
         with self._lock:
@@ -257,6 +262,7 @@ class ReplayController:
                 self._worker.join(timeout=2.0)  # Max 2 Sekunden warten
 
     def set_speed(self, speed: float) -> None:
+        """Update replay speed and recompute timing base for current index."""
         with self._lock:
             self._speed = max(0.1, float(speed))
             if self._seq and self._idx < len(self._seq):
@@ -266,15 +272,18 @@ class ReplayController:
                 self.started_at_mono = now - current_rel / self._speed
 
     def progress(self) -> tuple[int, int]:
+        """Return current index and total replay items."""
         with self._lock:
             return self._idx, len(self._seq)
 
     def is_running(self) -> bool:
+        """Return ``True`` while worker thread is active and not paused/stopped."""
         w = self._worker
         return bool(w and w.is_alive() and not self._pause.is_set() and not self._stop.is_set())
 
     # ---------- intern ----------
     def _run(self) -> None:
+        """Background replay loop publishing queued messages at scaled timing."""
         while not self._stop.is_set():
             with self._lock:
                 if self._idx >= len(self._seq):
@@ -1130,7 +1139,11 @@ def show_replay_controls(rerun_controller: RerunController):
         idx, total = replay_ctrl.progress()
         st.metric("Aktuell", f"{min(idx, total)}/{total}")
     with col3:
-        status = "▶️ Aktiv" if replay_ctrl.is_running() else ("⏸️ Pausiert" if session.get("is_playing") else "⏹️ Stopp")
+        status = (
+            "▶️ Aktiv"
+            if replay_ctrl.is_running()
+            else ("⏸️ Pausiert" if session.get("is_playing") else "⏹️ Stopp")
+        )
         st.metric("Status", status)
 
     # Kontroll-Buttons
@@ -1244,7 +1257,10 @@ def start_replay():
         else str(session.get("file", "Unknown"))
     )
     logger.debug(
-        f"▶️ Start Replay: Session={session_name}, Index={session['current_index']}, Messages={len(session['messages'])}"
+        (
+            f"▶️ Start Replay: Session={session_name}, "
+            f"Index={session['current_index']}, Messages={len(session['messages'])}"
+        )
     )
 
     # Einfache Lösung: Replay direkt starten (ohne Threading)

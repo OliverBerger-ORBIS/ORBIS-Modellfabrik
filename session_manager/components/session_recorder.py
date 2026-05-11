@@ -329,7 +329,11 @@ def show_session_recorder():
         col1, col2 = st.columns(2)
 
         with col1:
-            if st.button("▶️ Aufnahme Starten", disabled=st.session_state.session_recorder["recording"], type="primary"):
+            if st.button(
+                "▶️ Aufnahme Starten",
+                disabled=st.session_state.session_recorder["recording"],
+                type="primary",
+            ):
                 ok, reason = _mqtt_single_instance_preflight(mqtt_settings["host"], int(mqtt_settings["port"]))
                 if not ok:
                     st.error(f"❌ Aufnahme blockiert: {reason}")
@@ -436,7 +440,8 @@ def show_session_recorder():
             st.markdown("---")
             st.subheader("📋 Session-Meta (optional)")
             st.caption(
-                "Wird als **erste Zeile** in der `.log` gespeichert (ohne topic/payload/timestamp — Replay ignoriert sie)."
+                "Wird als **erste Zeile** in der `.log` gespeichert "
+                "(ohne topic/payload/timestamp — Replay ignoriert sie)."
             )
             st.selectbox(
                 "CCU / Order-Ergebnis (Kurz)",
