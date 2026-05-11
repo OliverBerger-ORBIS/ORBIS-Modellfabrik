@@ -51,7 +51,6 @@ streamlit run session_manager/app.py --server.port 8502
 session_manager/
 ├── __init__.py                    # Package-Init
 ├── app.py                         # Hauptapp (Streamlit)
-├── mqtt_client.py                 # MQTT-Client
 ├── session_manager_settings.json  # Settings
 ├── README.md                      # Diese Datei
 ├── components/                    # UI-Komponenten
@@ -59,21 +58,18 @@ session_manager/
 │   ├── replay_station.py          # Replay-Tab
 │   ├── logs.py                    # Logs-Tab
 │   ├── settings_ui.py             # Settings-Tab
-│   ├── order_analyzer.py          # Order-Flow-Analyse
-│   ├── auftrag_rot_analyzer.py    # Auftrag-Analyse
 │   └── settings_manager.py        # Settings-Manager
 ├── utils/                         # Utils (eigenständig)
 │   ├── logging_config.py          # Thread-sicheres Logging
 │   ├── path_constants.py          # Pfad-Konstanten
 │   ├── ui_refresh.py              # RerunController
-│   ├── session_logger.py          # Session-Logger
 │   └── streamlit_log_buffer.py    # Log-Ring-Buffer
 ├── mqtt/                          # MQTT-Client
 │   └── mqtt_client.py             # SessionManagerMQTTClient
 └── tests/                         # Python-Tests (pytest)
-    ├── test_session_manager_logging.py
-    ├── test_session_logger.py
     ├── test_logging_cleanup.py
+    ├── test_recording_topic_filter.py
+    ├── test_session_meta_line.py
     └── test_session_log_format.py   # Session .log (JSON-Zeilen) Roundtrip
 ```
 

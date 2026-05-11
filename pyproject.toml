@@ -86,3 +86,9 @@ markers = [
     "integration: marks tests as integration tests",
     "unit: marks tests as unit tests",
 ]
+
+[tool.pylint.main]
+ignore-paths = [
+    "^integrations/TXT-.*/workspaces/.*$",
+    "^integrations/APS-NodeRED/backups/.*$",
+]

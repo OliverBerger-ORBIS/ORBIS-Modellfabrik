@@ -27,16 +27,21 @@ class SettingsManager:
 
     def _load_settings(self) -> Dict[str, Any]:
         """Lädt die Einstellungen aus der JSON-Datei"""
-        logger.debug(f"Lade Einstellungen aus: {self.settings_file}")
+        logger.debug("Lade Einstellungen aus: %s", self.settings_file)
         if self.settings_file.exists():
             try:
                 with open(self.settings_file, encoding="utf-8") as f:
                     return json.load(f)
-            except Exception as e:
-                logger.error(f"Fehler beim Laden der Einstellungen: {e}")
+            except (OSError, json.JSONDecodeError) as e:
+                logger.error("Fehler beim Laden der Einstellungen: %s", e)
                 return self._get_default_settings()
         else:
             return self._get_default_settings()
+
+    def reload_settings(self) -> Dict[str, Any]:
+        """Lädt Einstellungen neu und aktualisiert den In-Memory-State."""
+        self.settings = self._load_settings()
+        return self.settings
 
     def _get_default_settings(self) -> Dict[str, Any]:
         """Gibt die Standard-Einstellungen zurück"""
@@ -67,9 +72,9 @@ class SettingsManager:
         try:
             with open(self.settings_file, "w", encoding="utf-8") as f:
                 json.dump(self.settings, f, indent=2, ensure_ascii=False)
-            logger.debug(f"Einstellungen gespeichert: {self.settings_file}")
-        except Exception as e:
-            logger.error(f"Fehler beim Speichern der Einstellungen: {e}")
+            logger.debug("Einstellungen gespeichert: %s", self.settings_file)
+        except (OSError, TypeError, ValueError) as e:
+            logger.error("Fehler beim Speichern der Einstellungen: %s", e)
 
     def get_setting(self, section: str, key: str, default=None):
         """Holt eine spezifische Einstellung"""
@@ -108,7 +113,7 @@ class SettingsManager:
     def get_session_directory(self, section: str = "replay_station") -> str:
         """Gibt das Session-Verzeichnis zurück"""
         directory = self.settings.get(section, {}).get("session_directory", "data/osf-data/sessions")
-        logger.debug(f"🔍 Settings: get_session_directory({section}) = {directory}")
+        logger.debug("🔍 Settings: get_session_directory(%s) = %s", section, directory)
         return directory
 
     def update_session_directory(self, directory: str):

@@ -3,6 +3,8 @@ Thread-sicheres Logging-System für Session Manager
 Isolierte Version ohne OMF-Dependencies
 """
 
+# pylint: disable=broad-exception-caught,protected-access
+
 from __future__ import annotations
 
 import atexit
@@ -83,7 +85,7 @@ def configure_logging(
     file_json.setLevel(level)
     file_json.setFormatter(logging.Formatter("%(message)s"))  # wir schreiben bereits JSON-Strings
 
-    handlers = [("file_json", file_json)]
+    handlers: list[tuple[str, logging.Handler]] = [("file_json", file_json)]
 
     # Ring-Buffer-Handler für UI-Logs hinzufügen wenn bereitgestellt
     if ring_buffer is not None:
@@ -121,29 +123,12 @@ def configure_logging(
     listener.start()
     atexit.register(listener.stop)
 
-    # JSON-Wrapper: root-Logger umschreiben, damit file_json JSON bekommt
-    class JsonAdapter(logging.LoggerAdapter):
-        def process(self, msg, kwargs):
-            record = {
-                "app": app_name,
-                "level": logging.getLevelName(kwargs.get("levelno", kwargs.get("level", root.level))),
-                "logger": self.logger.name,
-                "msg": msg,
-            }
-            extra = kwargs.pop("extra", {}) or {}
-            record.update(extra)
-            # force JSON line
-            kwargs["extra"] = {"_json": json.dumps(record, ensure_ascii=False)}
-            return "%(_json)s", kwargs
-
-    # Optional convenience method
-    logging.Logger.adapter = lambda self: JsonAdapter(self, {})
-
     # JSON-Formatter für file_json Handler
     class JsonFormatter(logging.Formatter):
         def format(self, record):
-            if hasattr(record, "_json"):
-                return record._json
+            json_line = getattr(record, "_json", None)
+            if isinstance(json_line, str):
+                return json_line
             else:
                 # Fallback für normale Logs
                 record_dict = {

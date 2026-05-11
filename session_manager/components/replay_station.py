@@ -4,6 +4,8 @@ Funktionalität wie alte Replay Station - MQTT-Nachrichten für Tests senden
 Isolierte Version ohne OMF-Dependencies
 """
 
+# pylint: disable=logging-fstring-interpolation,broad-exception-caught,protected-access,unused-argument
+
 import json
 import logging
 import re
@@ -54,7 +56,7 @@ def _local_listener_pids(port: int) -> tuple[set[int], str]:
         )
     except FileNotFoundError:
         return set(), "lsof not available"
-    except Exception as exc:
+    except OSError as exc:
         return set(), str(exc)
 
     if result.returncode != 0 and not result.stdout.strip():
@@ -655,7 +657,12 @@ def send_test_message(topic, payload):
             # Payload-Aufbereitung wie normale Session-Daten (konsistent)
             if isinstance(payload, (dict, list)):
                 payload = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
-            payload_b = (payload if isinstance(payload, (bytes, bytearray)) else str(payload)).encode("utf-8")
+            if isinstance(payload, bytes):
+                payload_b = payload
+            elif isinstance(payload, bytearray):
+                payload_b = bytes(payload)
+            else:
+                payload_b = str(payload).encode("utf-8")
 
             # Nachricht senden
             success = test_client.publish(topic, payload_b, qos=1)
@@ -716,7 +723,12 @@ def send_selected_test_topics(selected_files: List[Path], replay_ctrl: ReplayCon
                     # Payload-Aufbereitung wie normale Session-Daten
                     if isinstance(payload, (dict, list)):
                         payload = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
-                    payload_b = (payload if isinstance(payload, (bytes, bytearray)) else str(payload)).encode("utf-8")
+                    if isinstance(payload, bytes):
+                        payload_b = payload
+                    elif isinstance(payload, bytearray):
+                        payload_b = bytes(payload)
+                    else:
+                        payload_b = str(payload).encode("utf-8")
 
                     success = test_client.publish(topic, payload_b, qos=qos, retain=retain)
 
@@ -801,7 +813,12 @@ def send_preload_test_topics(replay_ctrl: ReplayController):
                     # Payload-Aufbereitung wie normale Session-Daten
                     if isinstance(payload, (dict, list)):
                         payload = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
-                    payload_b = (payload if isinstance(payload, (bytes, bytearray)) else str(payload)).encode("utf-8")
+                    if isinstance(payload, bytes):
+                        payload_b = payload
+                    elif isinstance(payload, bytearray):
+                        payload_b = bytes(payload)
+                    else:
+                        payload_b = str(payload).encode("utf-8")
 
                     success = preload_client.publish(topic, payload_b, qos=qos, retain=retain)
 
@@ -1037,7 +1054,12 @@ def load_session(session_file, replay_ctrl: ReplayController, apply_timeshift: b
 
                     if isinstance(payload, (dict, list)):
                         payload = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
-                    payload_b = (payload if isinstance(payload, (bytes, bytearray)) else str(payload)).encode("utf-8")
+                    if isinstance(payload, bytes):
+                        payload_b = payload
+                    elif isinstance(payload, bytearray):
+                        payload_b = bytes(payload)
+                    else:
+                        payload_b = str(payload).encode("utf-8")
                     qos = m.get("qos", 1)
                     retain = m.get("retain", False)
                     items.append((ts_rel, topic, payload_b, qos, retain))
@@ -1304,13 +1326,12 @@ def replay_worker(session_data):
             if loop and st.session_state.loaded_session.get("is_playing", False):
                 logger.debug("🔄 Loop: Starte von vorne")
                 st.session_state.loaded_session["current_index"] = 0
-                replay_worker()
+                replay_worker(st.session_state.loaded_session)
             else:
                 logger.debug("⏹️ Replay beendet")
                 st.session_state.loaded_session["is_playing"] = False
     except Exception as e:
         logger.error(f"❌ Loop/Ende Fehler: {e}")
-        pass
 
 
 def send_replay_message(topic, payload):

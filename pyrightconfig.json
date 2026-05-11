@@ -1,0 +1,22 @@
+{
+  "typeCheckingMode": "basic",
+  "include": [
+    "session_manager",
+    "scripts",
+    "tests"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/.venv",
+    "**/dist",
+    "**/build",
+    "**/integrations/TXT-*/workspaces/**",
+    "**/integrations/APS-NodeRED/backups/**"
+  ],
+  "ignore": [
+    "integrations/TXT-*/workspaces/**",
+    "integrations/APS-NodeRED/backups/**"
+  ],
+  "reportMissingImports": "warning",
+  "reportUndefinedVariable": "warning"
+}

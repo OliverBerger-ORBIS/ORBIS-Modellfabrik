@@ -70,5 +70,7 @@
   // Hinweis: .git wird NICHT ausgeschlossen, damit GitLens funktioniert
   "files.exclude": {
     "**/node_modules": false
-  }
+  },
+
+  "python.analysis.diagnosticMode": "workspace"
 }

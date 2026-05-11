@@ -21,6 +21,8 @@ Usage:
 
 from __future__ import annotations
 
+# pylint: disable=broad-exception-caught
+
 import argparse
 import json
 from dataclasses import dataclass
@@ -96,7 +98,7 @@ def has_finished_order(payload: dict | list) -> bool:
     return isinstance(payload, dict) and payload.get("state") == "FINISHED"
 
 
-def is_check_quality_failed(payload: dict) -> bool:
+def is_check_quality_failed(payload: dict | list) -> bool:
     """Prüft ob module/v1/ff/+/state actionState command CHECK_QUALITY mit state/result FAILED hat."""
     if not isinstance(payload, dict):
         return False
@@ -123,7 +125,7 @@ def is_check_quality_failed(payload: dict) -> bool:
     return False
 
 
-def extract_fts_position(payload: dict) -> tuple[str | None, str | None]:
+def extract_fts_position(payload: dict | list) -> tuple[str | None, str | None]:
     """Extrahiert lastModuleSerialNumber, lastNodeId aus FTS-State oder ccu/pairing transports."""
     if not isinstance(payload, dict):
         return None, None

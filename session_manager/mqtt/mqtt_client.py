@@ -3,10 +3,12 @@ Persistenter MQTT-Client für Session Manager
 Thread-sichere Implementierung ohne Connection-Loops
 """
 
+# pylint: disable=broad-exception-caught,unused-argument
+
 import threading
 import time
 from dataclasses import dataclass
-from typing import Callable, Optional
+from typing import Any, Callable
 
 try:
     import paho.mqtt.client as mqtt
@@ -39,7 +41,7 @@ class SessionManagerMQTTClient:
         self.client_id = client_id
         self.connected = False
         self._lock = threading.Lock()
-        self._client: Optional[mqtt.Client] = None
+        self._client: Any = None
         self._message_callbacks: list[Callable[[MQTTMessage], None]] = []
 
     def connect(self) -> bool:
@@ -59,6 +61,8 @@ class SessionManagerMQTTClient:
                     self.disconnect()
 
                 # Neuen Client erstellen
+                if mqtt is None:
+                    return False
                 self._client = mqtt.Client(client_id=self.client_id)
                 self._client.on_connect = self._on_connect
                 self._client.on_disconnect = self._on_disconnect
@@ -110,6 +114,8 @@ class SessionManagerMQTTClient:
             return False
 
         try:
+            if mqtt is None:
+                return False
             result = self._client.publish(topic, payload, qos, retain)
             return result.rc == mqtt.MQTT_ERR_SUCCESS
         except Exception:
@@ -130,6 +136,8 @@ class SessionManagerMQTTClient:
             return False
 
         try:
+            if mqtt is None:
+                return False
             result = self._client.subscribe(topic, qos)
             return result[0] == mqtt.MQTT_ERR_SUCCESS
         except Exception:

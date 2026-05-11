@@ -140,7 +140,7 @@ class SettingsUI:
         with col1:
             mqtt_host = st.text_input(
                 "MQTT Broker Host",
-                value=mqtt_settings.get("host", "localhost"),
+                value=str(mqtt_settings.get("host", "localhost") or "localhost"),
                 help="Hostname oder IP-Adresse des MQTT Brokers",
             )
 
@@ -247,7 +247,7 @@ class SettingsUI:
         with col1:
             mqtt_host = st.text_input(
                 "MQTT Broker Host",
-                value=mqtt_settings.get("host", "localhost"),
+                value=str(mqtt_settings.get("host", "localhost") or "localhost"),
                 help="Hostname oder IP-Adresse des MQTT Brokers",
                 key="recorder_mqtt_host",
             )
@@ -285,7 +285,7 @@ class SettingsUI:
         with col3:
             mqtt_username = st.text_input(
                 "MQTT Username (optional)",
-                value=mqtt_settings.get("username", ""),
+                value=str(mqtt_settings.get("username", "") or ""),
                 help="Benutzername für MQTT Broker Authentifizierung",
                 key="recorder_mqtt_username",
             )
@@ -293,7 +293,7 @@ class SettingsUI:
         with col4:
             mqtt_password = st.text_input(
                 "MQTT Password (optional)",
-                value=mqtt_settings.get("password", ""),
+                value=str(mqtt_settings.get("password", "") or ""),
                 type="password",
                 help="Passwort für MQTT Broker Authentifizierung",
                 key="recorder_mqtt_password",
@@ -393,7 +393,7 @@ class SettingsUI:
 
         with col3:
             if st.button("📥 Einstellungen laden"):
-                self.settings_manager._load_settings()
+                self.settings_manager.reload_settings()
                 st.success("Einstellungen neu geladen!")
 
         # Einstellungsdatei-Info

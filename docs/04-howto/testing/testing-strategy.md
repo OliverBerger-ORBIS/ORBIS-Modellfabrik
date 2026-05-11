@@ -75,9 +75,10 @@ addopts = --cov=omf --cov-report=html --cov-report=term
 ```
 session_manager/
 └── tests/                       # Session Manager Python-Tests
-    ├── test_session_manager_logging.py
-    ├── test_session_logger.py
-    └── test_logging_cleanup.py
+    ├── test_logging_cleanup.py
+    ├── test_recording_topic_filter.py
+    ├── test_session_meta_line.py
+    └── test_session_log_format.py
 
 osf/                             # OSF Angular/Jest-Tests
 └── apps/osf-ui/.../__tests__/   # Component/Service-Tests

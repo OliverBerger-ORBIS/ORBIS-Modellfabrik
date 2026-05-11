@@ -2,7 +2,7 @@
 
 **Quelle:** Session-Analyse von auftrag-*.log Sessions  
 **Datum:** 2025-10-08  
-**Analyse-Tool:** `session_manager/components/order_analyzer.py` (Order Analyzer Tab)
+**Analyse-Tool:** `scripts/analyze_session_fts_positions.py`
 
 ## 🎯 Order-Identifikation
 
@@ -161,8 +161,8 @@ def get_first_order_topic(order_id: str, messages: List) -> str:
 
 ### Analyse-Tool
 ```bash
-# Session Manager starten – Order Analyzer Tab nutzen
-python -m session_manager
+# Script ausführen
+python scripts/analyze_session_fts_positions.py
 
 # Analysiert Session-Daten aus data/osf-data/sessions/ (*.log, JSON-Zeilen)
 ```
@@ -202,7 +202,7 @@ python -m session_manager
 
 ## 🔗 Verwandte Dokumentation
 
-- **Analyse-Tool:** `session_manager/components/order_analyzer.py`
+- **Analyse-Tool:** `scripts/analyze_session_fts_positions.py`
 - **Fischertechnik Order-Protokoll:** `docs/06-integrations/fischertechnik-official/02-architecture.md`
 - **Track & Trace:** `docs/03-decision-records/13-track-trace-architecture.md`
 
