@@ -10,7 +10,6 @@ import { ICONS } from '../shared/icons/icon.registry';
 import { BehaviorSubject, combineLatest, interval, Subscription } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import hljs from 'highlight.js';
-import 'highlight.js/styles/github.css';
 
 interface TopicInfo {
   topic: string;

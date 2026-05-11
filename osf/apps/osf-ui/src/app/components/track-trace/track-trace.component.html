@@ -229,8 +229,8 @@
         <ng-container *ngFor="let group of groupEventsByOrder(history); trackBy: trackByOrder">
           <div
             class="order-group-header-row"
-            [class.storage]="group.order?.orderType === 'STORAGE'"
-            [class.production]="group.order?.orderType === 'PRODUCTION'"
+            [class.storage]="group.order.orderType === 'STORAGE'"
+            [class.production]="group.order.orderType === 'PRODUCTION'"
             *ngIf="group.order"
           >
             <img [src]="getOrderTypeIcon(group.order.orderType)" alt="" width="16" height="16" />

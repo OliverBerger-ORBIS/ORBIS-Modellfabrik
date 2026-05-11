@@ -5,7 +5,6 @@ import { ShopfloorMappingService } from '../../services/shopfloor-mapping.servic
 import { combineLatest, Observable, of } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import hljs from 'highlight.js';
-import 'highlight.js/styles/github.css';
 
 interface ModuleTopicMessage {
   topic: string;
