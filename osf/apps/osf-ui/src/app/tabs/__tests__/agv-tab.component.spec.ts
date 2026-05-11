@@ -834,5 +834,91 @@ describe('AgvTabComponent', () => {
       ).toBe(true);
     });
   });
+
+  describe('route layer helper methods', () => {
+    it('flattenOrderGraphPath concatenates BFS legs without duplicate join nodes', () => {
+      (ftsRouteService.findRoutePath as jest.Mock).mockImplementation((start: string, target: string) => {
+        if (start === 'A' && target === 'B') {
+          return ['A', 'I1', 'B'];
+        }
+        if (start === 'B' && target === 'C') {
+          return ['B', 'I2', 'C'];
+        }
+        return null;
+      });
+
+      const flatten = (component as unknown as { flattenOrderGraphPath: (order: unknown) => string[] | null })
+        .flattenOrderGraphPath;
+      expect(flatten.call(component, { nodes: [{ id: 'A' }, { id: 'B' }, { id: 'C' }] })).toEqual([
+        'A',
+        'I1',
+        'B',
+        'I2',
+        'C',
+      ]);
+    });
+
+    it('buildTraveledSegmentsFromFtsOrder includes only reached segments', () => {
+      (ftsRouteService.resolveNodeRef as jest.Mock).mockImplementation((id: string) => id);
+      (ftsRouteService.findRoutePath as jest.Mock).mockImplementation((start: string, target: string) => {
+        if (start === 'A' && target === 'B') {
+          return ['A', 'X', 'B'];
+        }
+        if (start === 'B' && target === 'C') {
+          return ['B', 'Y', 'C'];
+        }
+        return null;
+      });
+      (ftsRouteService.pathToRouteSegments as jest.Mock).mockImplementation((path: string[]) => {
+        const out: Array<{ x1: number; y1: number; x2: number; y2: number }> = [];
+        for (let i = 0; i < path.length - 1; i += 1) {
+          out.push({ x1: i, y1: i, x2: i + 1, y2: i + 1 });
+        }
+        return out;
+      });
+
+      const build = (
+        component as unknown as {
+          buildTraveledSegmentsFromFtsOrder: (order: unknown, lastNodeId: string | null | undefined) => Array<{
+            x1: number;
+            y1: number;
+            x2: number;
+            y2: number;
+          }>;
+        }
+      ).buildTraveledSegmentsFromFtsOrder;
+      const traveled = build.call(component, { nodes: [{ id: 'A' }, { id: 'B' }, { id: 'C' }] }, 'B');
+
+      // Only path A->...->B counts as traveled when current node is B.
+      expect(traveled.length).toBe(2);
+    });
+
+    it('sameAgvRouteLayers compares geometry and style fields', () => {
+      const same = (
+        component as unknown as {
+          sameAgvRouteLayers: (
+            a: { planned: Array<{ x1: number; y1: number; x2: number; y2: number; stroke?: string; strokeDasharray?: string }>; traveled: Array<{ x1: number; y1: number; x2: number; y2: number; stroke?: string; strokeDasharray?: string }> },
+            b: { planned: Array<{ x1: number; y1: number; x2: number; y2: number; stroke?: string; strokeDasharray?: string }>; traveled: Array<{ x1: number; y1: number; x2: number; y2: number; stroke?: string; strokeDasharray?: string }> }
+          ) => boolean;
+        }
+      ).sameAgvRouteLayers;
+
+      const a = {
+        planned: [{ x1: 0, y1: 0, x2: 1, y2: 1, stroke: '#f97316', strokeDasharray: '3 14' }],
+        traveled: [{ x1: 0, y1: 0, x2: 0.2, y2: 0.2, stroke: '#f97316', strokeDasharray: 'none' }],
+      };
+      const b = {
+        planned: [{ x1: 0.1, y1: 0.1, x2: 1.1, y2: 1.1, stroke: '#f97316', strokeDasharray: '3 14' }],
+        traveled: [{ x1: 0.1, y1: 0.1, x2: 0.3, y2: 0.3, stroke: '#f97316', strokeDasharray: 'none' }],
+      };
+      expect(same.call(component, a, b)).toBe(true);
+      expect(
+        same.call(component, a, {
+          ...b,
+          planned: [{ ...b.planned[0], strokeDasharray: 'none' }],
+        })
+      ).toBe(false);
+    });
+  });
 });
 

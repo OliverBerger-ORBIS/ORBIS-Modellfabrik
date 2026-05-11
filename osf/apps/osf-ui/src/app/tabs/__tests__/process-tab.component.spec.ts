@@ -25,6 +25,10 @@ jest.spyOn(mockDashboard, 'getDashboardController').mockReturnValue({
       lastUpdated: '',
     }),
   },
+  commands: {
+    sendCustomerOrder: jest.fn(async () => undefined),
+    requestRawMaterial: jest.fn(async () => undefined),
+  },
   loadTabFixture: jest.fn(),
   getCurrentFixture: jest.fn(() => 'startup'),
 } as any);
@@ -222,6 +226,34 @@ describe('ProcessTabComponent', () => {
       
       component.toggleSection('unknown');
       expect(component.isSectionExpanded('unknown')).toBe(true);
+    });
+  });
+
+  describe('UI test framework pilots', () => {
+    it('pilot: orderWorkpiece sends ccu/order/request command and opens ERP customer context', async () => {
+      const dashboard = mockDashboard.getDashboardController() as unknown as {
+        commands: { sendCustomerOrder: jest.Mock };
+      };
+
+      await component.orderWorkpiece('BLUE');
+
+      expect(dashboard.commands.sendCustomerOrder).toHaveBeenCalledWith('BLUE');
+      expect(component.erpInfoBoxOpen['customer-BLUE']).toBe(true);
+      expect(component.erpOrderDataByType['customer-BLUE']).toBeTruthy();
+      expect(component.erpOrderWorkpieceType['customer-BLUE']).toBe('BLUE');
+    });
+
+    it('pilot: orderRawMaterial sends raw-material command and opens ERP purchase context', async () => {
+      const dashboard = mockDashboard.getDashboardController() as unknown as {
+        commands: { requestRawMaterial: jest.Mock };
+      };
+
+      await component.orderRawMaterial('WHITE');
+
+      expect(dashboard.commands.requestRawMaterial).toHaveBeenCalledWith('WHITE');
+      expect(component.erpInfoBoxOpen['purchase-WHITE']).toBe(true);
+      expect(component.erpOrderDataByType['purchase-WHITE']).toBeTruthy();
+      expect(component.erpOrderWorkpieceType['purchase-WHITE']).toBe('WHITE');
     });
   });
 });

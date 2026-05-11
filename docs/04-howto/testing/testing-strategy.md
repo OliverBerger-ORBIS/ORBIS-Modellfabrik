@@ -58,6 +58,29 @@ Begründung: Tests spiegeln das gewünschte Verhalten wider. Wenn sich die fachl
 - **Tools:** memory_profiler, cProfile
 - **Kriterien:** Keine Memory-Leaks, akzeptable Response-Zeiten
 
+## 🧭 OSF-UI Test-Tiering (verbindlich)
+
+Für die OSF-UI gelten zwei klar getrennte Test-Tiers, damit schnelle Regression-Checks und realitätsnahe Abnahme nicht vermischt werden:
+
+### **Tier A – Unit/Component (automatisch, schnell, CI-relevant)**
+- **Scope:** Services, Helper, Tabs/Components mit gemockten Abhängigkeiten.
+- **Ort:** `osf/apps/osf-ui/src/app/**/__tests__/*.spec.ts`.
+- **Ziel:** Fachlogik und UI-Interaktion reproduzierbar in Sekunden prüfen.
+- **Gate-Relevanz:** Fließt in Coverage/Gates ein.
+- **Beispiele (Pilot-Pfade):**
+  - `ProcessTabComponent.orderWorkpiece()` → `ccu/order/request` command path.
+  - `OrderTabComponent.requestCorrelation()` → `dsp/correlation/request` trigger path.
+
+### **Tier B – Replay/Integration-Abnahme (session-basiert, realitätsnah)**
+- **Scope:** End-to-End Verhalten über MQTT-Topics, Retained Messages, Session-Replay.
+- **Ort:** Session-Manager/Replay-How-tos, Sprint-Abnahmen, ggf. dedizierte Replay-Skripte.
+- **Ziel:** Nachweis, dass Datenflüsse mit realen/aufgezeichneten Nachrichten korrekt laufen.
+- **Gate-Relevanz:** Kein harter Coverage-Gate-Blocker; dient als fachliche Abnahme.
+- **Beispiel-Pfad:** `dsp/correlation/info` Ankunft im MessageMonitor und Darstellung im UI-Kontext.
+
+### **Arbeitsregel pro kritischem Flow**
+Für jeden kritischen Pfad zuerst einen Tier-A Pilot-Test anlegen (automatisierter Schutz), danach Tier-B Replay-Abnahme dokumentieren (Produktionsnähe).
+
 ## 🔧 Test-Tools
 
 ### **pytest Configuration**

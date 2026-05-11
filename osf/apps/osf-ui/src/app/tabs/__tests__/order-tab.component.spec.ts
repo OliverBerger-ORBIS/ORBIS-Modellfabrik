@@ -18,6 +18,9 @@ jest.spyOn(mockDashboard, 'getDashboardController').mockReturnValue({
     orders$: ordersStream$.asObservable(),
     completedOrders$: completedOrdersStream$.asObservable(),
   },
+  commands: {
+    requestCorrelationInfo: jest.fn(async () => undefined),
+  },
   loadTabFixture: jest.fn(),
   getCurrentFixture: jest.fn(() => 'startup'),
 } as any);
@@ -155,6 +158,34 @@ describe('OrderTabComponent', () => {
         expect(orders.map((o) => o.orderId)).toEqual(['o-blue']);
         done();
       });
+  });
+
+  describe('UI test framework pilots', () => {
+    it('pilot: requestCorrelation prefers requestId but sends both IDs for DSP lookup', async () => {
+      const dashboard = mockDashboard.getDashboardController() as unknown as {
+        commands: { requestCorrelationInfo: jest.Mock };
+      };
+      const order = { orderId: 'ORD-42', requestId: 'REQ-42' };
+
+      await component.requestCorrelation(order);
+
+      expect(dashboard.commands.requestCorrelationInfo).toHaveBeenCalledWith({
+        requestId: 'REQ-42',
+        ccuOrderId: 'ORD-42',
+      });
+    });
+
+    it('pilot: requestCorrelation falls back to ccuOrderId when requestId is missing', async () => {
+      const dashboard = mockDashboard.getDashboardController() as unknown as {
+        commands: { requestCorrelationInfo: jest.Mock };
+      };
+
+      await component.requestCorrelation({ orderId: 'ORD-77' });
+
+      expect(dashboard.commands.requestCorrelationInfo).toHaveBeenCalledWith({
+        ccuOrderId: 'ORD-77',
+      });
+    });
   });
 });
 

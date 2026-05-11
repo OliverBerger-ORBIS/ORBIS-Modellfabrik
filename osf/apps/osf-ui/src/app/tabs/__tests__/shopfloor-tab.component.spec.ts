@@ -836,6 +836,39 @@ Payload:
     });
   });
 
+  describe('result and state helper methods', () => {
+    it('maps state and result classes with safe defaults', () => {
+      const component = createComponent();
+      expect(component.getStateClass('RUNNING')).toBe('running');
+      expect(component.getStateClass('FAILED')).toBe('failed');
+      expect(component.getStateClass(undefined)).toBe('unknown');
+      expect(component.getResultClass('PASSED')).toBe('passed');
+      expect(component.getResultClass('FAILED')).toBe('failed');
+      expect(component.getResultClass(undefined)).toBe('');
+    });
+
+    it('detects any result in generic and module-specific helpers', () => {
+      const component = createComponent();
+      expect(component.hasAnyResult([{ result: 'PASSED' }])).toBe(true);
+      expect(component.hasAnyResult([{ result: undefined }])).toBe(false);
+      expect(component.hasAnyResult(undefined)).toBe(false);
+
+      const dpsState = {
+        actionStates: [{ command: 'PICK', state: 'FINISHED', timestamp: 'x', result: 'PASSED' }],
+      } as any;
+      const aiqsState = {
+        actionStates: [{ command: 'CHECK_QUALITY', state: 'FINISHED', timestamp: 'x', result: 'FAILED' }],
+      } as any;
+      expect(component.hasDpsAnyResult(dpsState)).toBe(true);
+      expect(component.hasAiqsAnyResult(aiqsState)).toBe(true);
+
+      // Fresh component to avoid cached action history from previous helper calls.
+      const fresh = createComponent();
+      expect(fresh.hasDpsAnyResult(null)).toBe(false);
+      expect(fresh.hasAiqsAnyResult(null)).toBe(false);
+    });
+  });
+
   describe('Quality Check Image functionality', () => {
     const QUALITY_CHECK_TOPIC = '/j1/txt/1/i/quality_check';
     const mockBase64Image = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';

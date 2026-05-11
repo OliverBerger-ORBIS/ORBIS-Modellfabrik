@@ -14,6 +14,22 @@
 
 ---
 
+## Coverage Standing
+
+| Stand | Datum | Branches | Functions | Lines | Statements | Gates (B/F/L/S) | Gate-Margin (B/F/L/S) |
+|--------|--------|----------|-----------|-------|------------|------------------|------------------------|
+| Sprint-Start (Baseline) | 10.05.2026 | 35.76% | 45.74% | 44.04% | 43.28% | 30 / 42 / 47 / 46 | +5.76 / +3.74 / -2.96 / -2.72 pp |
+| Aktuell | 10.05.2026 | 39.44% | 49.68% | 48.94% | 48.13% | 30 / 42 / 47 / 46 | +9.44 / +7.68 / +1.94 / +2.13 pp |
+
+- **Messmethode (konstant):** `NODE_OPTIONS="--max-old-space-size=4096" BASELINE_BROWSER_MAPPING_IGNORE_OLD_DATA=true npx jest --config "osf/apps/osf-ui/jest.config.ts" --runInBand --coverage --coverageDirectory ".tmp-coverage-osf-ui" --coverageReporters=json-summary --coverageThreshold='{}'` (Quelle: `osf/apps/osf-ui/.tmp-coverage-osf-ui/coverage-summary.json`, Feld `total`)
+- **Top-3 Gaps (Test-Fokus):**
+  1. `osf/apps/osf-ui/src/app/tabs/shopfloor-tab.component.ts` — 42.63% Lines, 666 uncovered
+  2. `osf/apps/osf-ui/src/app/tabs/agv-tab.component.ts` — 54.07% Lines, 389 uncovered
+  3. `osf/apps/osf-ui/src/app/components/dsp-animation/dsp-animation.component.ts` — 41.21% Lines, 318 uncovered
+- **Schwellenwerte erhöhen:** sukzessive (z. B. +1pp), wenn Gate-Margins stabil positiv sind.
+
+---
+
 ## Aufgaben (thematisch, mit Haken)
 
 ### OCC Feedback – Verbesserungen
@@ -51,6 +67,10 @@
 
 ### Integration & Tests (Übernahme aus Sprint 20)
 
+- [ ] **UI-Test-Framework (Start in Sprint 21):** Test-Tiering verbindlich umsetzen (**lokale Unit/Component-Tests** vs. **Replay-/Integrations-Abnahme**), Coverage-Standing-Format pro Sprint etablieren (Branches/Functions/Lines/Statements + Gate-Margin + Top-3 Gaps) und 2 Pilot-Tests für kritische Pfade automatisieren — Basis: [test-framework-replay-comparison-2026-03.md](../07-analysis/test-framework-replay-comparison-2026-03.md)
+  - Coverage-Werte und Test-Fokus stehen zentral unter **Coverage Standing** (feste Position im Sprint-Dokument).
+  - Test-Tiering verbindlich in [testing-strategy.md](../04-howto/testing/testing-strategy.md) ergänzt (Tier A: Unit/Component, Tier B: Replay/Integration-Abnahme).
+  - 2 automatisierte Pilot-Tests umgesetzt (10.05.2026): `process-tab.component.spec.ts` (Order-Command-Pfad), `order-tab.component.spec.ts` (Correlation-Request-Pfad).
 - [ ] Sessions **2 AGVs**; weitere Aufnahmen mit **Analyse**-Preset (DR-25) bei Bedarf — Vorab lokal: synthetische Arduino-Replay-Session erstellt; echte Sensor-Station-Aufnahmen folgen vor Ort bei ORBIS
 - [ ] **dsp/correlation/info** E2E
 - [ ] **ccu/order/request** E2E (Ersatzauftrag nach Quality-Fail)
@@ -74,7 +94,6 @@
 - Produkt WHITE „2× Bohren“ (MES/CCU/Kette)
 - Customer **Netzsch** (`NETZSCH_CONFIG`)
 - Arduino: optionales 7-Segment
-- UI-Test-Framework — [test-framework-replay-comparison-2026-03.md](../07-analysis/test-framework-replay-comparison-2026-03.md)
 
 ---
 

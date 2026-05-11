@@ -55,6 +55,18 @@ Template: [sprint_template.md](sprint_template.md) · Beispiele: [sprint_18.md](
 
 ---
 
+## 📊 Coverage Standing Standard
+
+Für jeden Sprint gilt ein einheitlicher Ablauf, damit Coverage-Trends vergleichbar bleiben und die Sprint-Dateien schlank bleiben:
+
+- **Feste Position im Sprint-Dokument:** `## Coverage Standing` steht immer zwischen `## Externe Termine` und `## Aufgaben`.
+- **Struktur:** kompakte Tabelle mit mindestens `Sprint-Start (Baseline)` und `Aktuell` (Branches / Functions / Lines / Statements, Gates, Gate-Margins).
+- **Pflege im laufenden Sprint:** Baseline bleibt unverändert, nur `Aktuell` + `Top-3 Gaps` werden nach Messung aktualisiert.
+- **Sprintwechsel-Prüfung:** Coverage-Verlauf (Baseline vs. Aktuell) prüfen; bei fehlender Verbesserung/Stagnation ist Coverage-Verbesserung im Folgesprint ein Pflichtpunkt.
+- **Neuer Sprint (`sprint_XX.md`):** Coverage-Standing-Sektion aus dem Vorgänger übernehmen und initialen Baseline-Wert setzen.
+
+---
+
 ## 🔗 Sprint Links
 - [Sprint 01](sprint_01.md) – Projekt-Initialisierung und Know-How Aufbau (24.07 - 06.08.2025)
 - [Sprint 02](sprint_02.md) – Aufbau und Inbetriebnahme der Modellfabrik (07.08 - 22.08.2025)
