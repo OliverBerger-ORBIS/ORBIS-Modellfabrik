@@ -27,7 +27,7 @@
       "auto_save": true,
       "save_interval": 300,
       "max_file_size": 100,
-      "recording_exclusion_preset": "analysis"
+      "recording_exclusion_preset": "no_cam"
     }
   },
   "template_analysis": {
