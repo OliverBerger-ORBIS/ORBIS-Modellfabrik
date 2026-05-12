@@ -19,7 +19,7 @@
 | Stand | Datum | Branches | Functions | Lines | Statements | Gates (B/F/L/S) | Gate-Margin (B/F/L/S) |
 |--------|--------|----------|-----------|-------|------------|------------------|------------------------|
 | Sprint-Start (Baseline) | 10.05.2026 | 35.76% | 45.74% | 44.04% | 43.28% | 30 / 42 / 47 / 46 | +5.76 / +3.74 / -2.96 / -2.72 pp |
-| Aktuell | 10.05.2026 | 39.44% | 49.68% | 48.94% | 48.13% | 30 / 42 / 47 / 46 | +9.44 / +7.68 / +1.94 / +2.13 pp |
+| Aktuell | 11.05.2026 | 39.44% | 49.80% | 49.18% | 48.36% | 30 / 42 / 47 / 46 | +9.44 / +7.80 / +2.18 / +2.36 pp |
 
 - **Messmethode (konstant):** `NODE_OPTIONS="--max-old-space-size=4096" BASELINE_BROWSER_MAPPING_IGNORE_OLD_DATA=true npx jest --config "osf/apps/osf-ui/jest.config.ts" --runInBand --coverage --coverageDirectory ".tmp-coverage-osf-ui" --coverageReporters=json-summary --coverageThreshold='{}'` (Quelle: `osf/apps/osf-ui/.tmp-coverage-osf-ui/coverage-summary.json`, Feld `total`)
 - **Top-3 Gaps (Test-Fokus):**
@@ -55,23 +55,24 @@
 
 ### OSF-UI – Bugs / UX (Übernahme aus Sprint 20)
 
-- [ ] **Shopfloor Overlay (RPi):** Z-Index/Stacking robust (RPi == localhost), systematischer Vergleich falls Regression
+- [ ] **Shopfloor AGV auf RPi (aktuelles Kernproblem):** AGV-Erkennung/Anzeige im Shopfloor auf RPi wiederherstellen (RPi != localhost); Overlay/Z-Index-Validierung erst sinnvoll nach erfolgreicher AGV-Anzeige. Hinweis: Vor-Ort-Test auf RPi ist aufwaendig und muehsam (mehrstufige Live-Verifikation).
 
 ### Backend & Grafana (Übernahme aus Sprint 20)
 
 - [x] Architekturentscheidung + Leitplanken dokumentiert: **DSP-Edge als Zielplattform**, Deploy in Phase 1 variabel (**local-dev**, **rpi-pilot**, **edge-prod**), MQTT-Ingest read-only, generisches Sensor-Metrikmodell — DR-28 erstellt (08.05.2026)
 - [x] Edge Persistence Stack lokal implementiert (Docker Compose, Postgres/Timescale, Grafana-Provisioning, Persistence-Service, Schema/Retention) — lokale Unit-Tests + Type-Checks grün (08.05.2026, `npm run test`, `npm run lint:types`)
 - [x] Lokaler Replay-Smoke-Test erfolgreich (synthetische Arduino-Session): Parsing/Normalisierung verifiziert (`station_id`, `sensor_type`), Reason-Logik mit `EVENT`/`THRESHOLD`/`INTERVAL` nachgewiesen (08.05.2026, SQL-Checks in `sensor_snapshot`)
-- [ ] Grafana lokal visuell verifizieren (Dashboards: Systemstatus, Aufträge, Workpiece Trace, Sensor Snapshots, Modul-/FTS-Zustände) inkl. kurzer Abnahme-Notiz — Technikpfad lokal verifiziert (08.05.2026): Datasource-Provisioning/Grafana-Auth/Debug-Dashboard (`osf-sensor-debug-live`) zeigen Daten stabil; Update 09.05.2026: Replay-Zeitmodus im Sender reaktiviert (Timeshift), `ccu/order/active`/`ccu/order/completed` End-to-End technisch nachgewiesen (Broker + Postgres), Orders-Dashboard um Active-/State-Panels erweitert; fachliches Feintuning/Abnahme weiterhin bewusst auf echte ORBIS-Daten + neue Session-Logs verschoben
+- [x] Grafana lokal visuell verifizieren (Dashboards: Systemstatus, Aufträge, Workpiece Trace, Sensor Snapshots, Modul-/FTS-Zustände) inkl. kurzer Abnahme-Notiz — prinzipieller technischer Durchstich-Test erfolgreich (11.05.2026, lokal ohne RPi): Replay (`version1.1.6`/`version1.1.6-test2`) -> MQTT -> Persistence -> Postgres/Timescale -> Grafana durchgaengig validiert; OSF-Dashboard zeigt Orders + Sensor-Daten stabil, DB-Ingestion waehrend Replay nachgewiesen (u. a. `mqtt_raw_message`, `sensor_snapshot`, `shopfloor_event` mit frischen Timestamps/Row-Zuwachs).
 - [ ] Vor-Ort-Abnahme bei ORBIS mit echter Sensor-Station + echten Sessions (2 AGVs) und Bewertung der Datenqualität für OEE/Optimierung/PM
 
 ### Integration & Tests (Übernahme aus Sprint 20)
 
-- [ ] **UI-Test-Framework (Start in Sprint 21):** Test-Tiering verbindlich umsetzen (**lokale Unit/Component-Tests** vs. **Replay-/Integrations-Abnahme**), Coverage-Standing-Format pro Sprint etablieren (Branches/Functions/Lines/Statements + Gate-Margin + Top-3 Gaps) und 2 Pilot-Tests für kritische Pfade automatisieren — Basis: [test-framework-replay-comparison-2026-03.md](../07-analysis/test-framework-replay-comparison-2026-03.md)
+- [ ] **UI-Test-Framework (Start in Sprint 21):** Grundgeruest in Sprint 21 abgeschlossen (Test-Tiering dokumentiert, Coverage-Standing etabliert, 2 Pilot-Tests umgesetzt); offen bleibt der Ausbau zur stabilen Abdeckung weiterer kritischer Flows (lokale Unit/Component-Tests vs. Replay-/Integrations-Abnahme) — Basis: [test-framework-replay-comparison-2026-03.md](../07-analysis/test-framework-replay-comparison-2026-03.md)
   - Coverage-Werte und Test-Fokus stehen zentral unter **Coverage Standing** (feste Position im Sprint-Dokument).
   - Test-Tiering verbindlich in [testing-strategy.md](../04-howto/testing/testing-strategy.md) ergänzt (Tier A: Unit/Component, Tier B: Replay/Integration-Abnahme).
   - 2 automatisierte Pilot-Tests umgesetzt (10.05.2026): `process-tab.component.spec.ts` (Order-Command-Pfad), `order-tab.component.spec.ts` (Correlation-Request-Pfad).
-- [ ] Sessions **2 AGVs**; weitere Aufnahmen mit **Analyse**-Preset (DR-25) bei Bedarf — Vorab lokal: synthetische Arduino-Replay-Session erstellt; echte Sensor-Station-Aufnahmen folgen vor Ort bei ORBIS
+- [x] Sessions **2 AGVs** aufgenommen und als Replay-Input verifiziert (11.05.2026): `version1.1.6_20260511_134733.log`, `version1.1.6-test2_20260511_141131.log` — weitere Aufnahmen mit **Analyse**-Preset (DR-25) bei Bedarf.
+  - Update 11.05.2026: Session-Logs mit 2 AGVs liegen vor (`version1.1.6_20260511_134733.log`, `version1.1.6-test2_20260511_141131.log`) und sind als Tier-B Replay-Input vorhanden; offen bleibt die strukturierte Einbindung als verbindlicher Test-Framework-Flow inkl. klarer Akzeptanzkriterien.
 - [ ] **dsp/correlation/info** E2E
 - [ ] **ccu/order/request** E2E (Ersatzauftrag nach Quality-Fail)
 
@@ -94,6 +95,11 @@
 - Produkt WHITE „2× Bohren“ (MES/CCU/Kette)
 - Customer **Netzsch** (`NETZSCH_CONFIG`)
 - Arduino: optionales 7-Segment
+- UI-Test-Framework gezielt ausbauen (von 2 Pilot-Tests zu stabiler Abdeckung kritischer Flows mit Tier A + Tier B Nachweisen).
+- Grafana-Dashboards ausbauen (fachliche Panels schärfen, offene Visualisierungs-/Abnahmepunkte systematisch schließen).
+- Deployment vorbereiten: Grafana + Persistence-Stack auf DSP-Docker lauffähig machen (neben local-dev als nächster Zielpfad).
+- APS-Erweiterung: neue NFC-IDs generierbar machen, damit Track&Trace nicht dauerhaft auf denselben NFCs basiert.
+- Unterschiede localhost vs. RPi systematisch abarbeiten (insb. AGV-Erkennung/Anzeige auf RPi als Voraussetzung vor Overlay-Checks).
 
 ---
 
@@ -103,5 +109,5 @@
 
 ---
 
-*Stand: 09.05.2026* · [sprints_README.md](sprints_README.md)
+*Stand: 11.05.2026* · [sprints_README.md](sprints_README.md)
 

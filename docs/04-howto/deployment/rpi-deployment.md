@@ -137,6 +137,41 @@ ssh ff22@192.168.0.100 "cd /home/ff22/fischertechnik/ff-central-control-unit && 
 
 ---
 
+## Feldnotiz 2026-05-11: Deployment-Probleme vor Ort
+
+Beobachtung beim Vor-Ort-Deployment:
+- Der Standard-Deploy war vor Ort nicht durchgehend stabil.
+- Erfolgreicher Fallback war: **manueller Tar-Transfer + remote `docker load` + `docker compose up -d`**.
+
+Bewährt in diesem Einsatz:
+- Container-Neustart im CCU-Compose-Verzeichnis auf dem Pi.
+- Verifikation direkt auf dem Pi (`docker ps`) und anschließend UI-Check auf `:8080`.
+
+Nicht zuverlässig im Vor-Ort-Lauf:
+- „One-shot“-Automatik ohne manuelle Zwischenprüfung.
+
+Empfehlung für zukünftige Deployments:
+- Bei ersten Fehleranzeichen sofort auf den manuellen Fallback wechseln statt mehrfach blind zu retrien.
+- Nach jedem Deploy die zwei Pflichtchecks durchführen:
+  1. `ssh ff22@192.168.0.100 "docker ps | grep osf-ui"`
+  2. Browser-Check `http://192.168.0.100:8080`
+
+Konkreter Fallback (copy-paste):
+
+```bash
+# Lokal (Mac): Image als Tar exportieren und auf den Pi kopieren
+docker save orbis-osf-ui:<VERSION_TAG> -o /tmp/orbis-osf-ui_<VERSION_TAG>.tar
+scp /tmp/orbis-osf-ui_<VERSION_TAG>.tar ff22@192.168.0.100:/tmp/
+
+# Remote (Pi): Image laden und Compose-Stack neu starten
+ssh ff22@192.168.0.100 "cd /home/ff22/fischertechnik/ff-central-control-unit && docker load -i /tmp/orbis-osf-ui_<VERSION_TAG>.tar && docker compose -f docker-compose-prod.yml up -d"
+
+# Pflichtchecks
+ssh ff22@192.168.0.100 "docker ps | grep osf-ui"
+```
+
+---
+
 ## Verifikation
 
 - **OSF-UI:** http://192.168.0.100:8080 (oder raspberrypi.local:8080)

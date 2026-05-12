@@ -124,6 +124,37 @@ ssh ff22@192.168.0.100 "cd /home/ff22/fischertechnik/ff-central-control-unit && 
 ssh-keygen -R 192.168.0.100
 ```
 
+### Vor-Ort-Fallback (erprobt 2026-05-11)
+
+Wenn der Standard-Deploy vor Ort instabil läuft:
+
+1. Image lokal als Tar bereitstellen/übertragen (manuell)
+2. Auf dem Pi manuell laden
+3. Compose-Stack im CCU-Verzeichnis neu starten
+
+Kurzform:
+```bash
+# auf dem Pi
+ssh ff22@192.168.0.100 "cd /home/ff22/fischertechnik/ff-central-control-unit && docker load -i /tmp/<image>.tar && docker compose -f docker-compose-prod.yml up -d"
+```
+
+Vollstaendiger manueller Ablauf (lokal + remote):
+```bash
+# Lokal (Mac): Image exportieren
+docker save orbis-osf-ui:<VERSION_TAG> -o /tmp/orbis-osf-ui_<VERSION_TAG>.tar
+
+# Lokal (Mac): Tar auf den Pi kopieren
+scp /tmp/orbis-osf-ui_<VERSION_TAG>.tar ff22@192.168.0.100:/tmp/
+
+# Remote (Pi): Tar laden und Stack neu starten
+ssh ff22@192.168.0.100 "cd /home/ff22/fischertechnik/ff-central-control-unit && docker load -i /tmp/orbis-osf-ui_<VERSION_TAG>.tar && docker compose -f docker-compose-prod.yml up -d"
+```
+
+Danach immer prüfen:
+```bash
+ssh ff22@192.168.0.100 "docker ps | grep osf-ui"
+```
+
 ### Alte Images aufräumen (Platzmangel)
 
 ```bash

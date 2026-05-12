@@ -43,6 +43,8 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 | calibrate_dps_1_20251202_101939 | | | ✓ | | 1 | DPS-Kalibrierung, Storage |
 | vibration-sw420_20260303_094240 | | ✓ | ✓ | ✓ | 1 | Kurz, SW-420 Vibrationssensor im Kontext |
 | synthetic-arduino-sensors_20260508_091000 | | | | | 0 | **Synthetisch:** Arduino-Topics aus OSF_MultiSensor-Sketch, inkl. EVENT/THRESHOLD/INTERVAL-Faelle (lokaler Replay/Persistence-Test ohne Hardware) |
+| version1.1.6_20260511_134733 | | ✓ | ✓ | ✓ | 2 | ORBIS Live-Aufnahme (v1.1.6), 2 AGVs, Arduino/BME680/LDR vorhanden; Orders aus OSF-UI |
+| version1.1.6-test2_20260511_141131 | | ✓ | ✓ | ✓ | 2 | ORBIS Live-Aufnahme (v1.1.6-test2), 2 AGVs, Replay/Persistence/Grafana-Durchstich genutzt |
 | auftrag-blau_1.log | | ✓ | | | 0 | Mock/Synthetisch, keine FTS-Events |
 | auftrag-rot_1.log | | ✓ | | | 0 | Mock/Synthetisch, keine FTS-Events |
 | auftrag-weiss_1.log | | ✓ | | | 1 | Älteres Format, wenig FTS |

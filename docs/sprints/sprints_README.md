@@ -34,6 +34,7 @@ Diese Aufgaben sind **Teil des laufenden Sprints** und müssen erledigt sein, **
 2. **Neuer Sprint:** Aus Template anlegen (`sprint_XX.md`), offene `[ ]` aus dem alten Sprint übernehmen.
 3. **PROJECT_STATUS:** Neue Tabellenzeile für nächsten Sprint anlegen, Externe Events eintragen.
 4. **Roadmap prüfen:** Sind Phasen/Versionen/Daten noch aktuell? (bei Bedarf anpassen).
+5. **Backlog-Priorisierung (pragmatisch):** Vor Übernahme von Backlog-Punkten in den nächsten Sprint immer kurze Rücksprache mit Oliver, welche Punkte tatsächlich priorisiert werden.
 
 *Hinweis: Der neue Sprint enthält dann wieder einen eigenen "Sprint-Abschluss"-Block für den darauf folgenden Wechsel.*
 
