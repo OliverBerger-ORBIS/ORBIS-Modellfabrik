@@ -3,10 +3,12 @@
 import json
 import unittest
 from datetime import datetime
+from unittest.mock import patch
 
 from session_manager.utils.session_meta_line import (
     SESSION_META_KIND,
     build_session_meta_line,
+    detect_ccu_version_via_runtime_image,
     extract_ccu_version_from_messages,
     is_session_meta_line,
     read_osf_workspace_version,
@@ -73,5 +75,21 @@ class TestSessionMetaLine(unittest.TestCase):
             {"topic": "module/v1/ff/demo/state", "payload": '{"state":"READY"}'},
         ]
         version, source = extract_ccu_version_from_messages(messages)
+        self.assertEqual(version, "unknown")
+        self.assertEqual(source, "unavailable")
+
+    @patch("session_manager.utils.session_meta_line.subprocess.run")
+    def test_detect_ccu_version_via_runtime_image_parses_tag(self, mock_run):
+        mock_run.return_value.returncode = 0
+        mock_run.return_value.stdout = "ghcr.io/ommsolutions/ff-ccu-armv7:v1.3.0-osf.4\n"
+        version, source = detect_ccu_version_via_runtime_image("192.168.0.100")
+        self.assertEqual(version, "1.3.0-osf.4")
+        self.assertEqual(source, "rpi-docker-inspect")
+
+    @patch("session_manager.utils.session_meta_line.subprocess.run")
+    def test_detect_ccu_version_via_runtime_image_unknown_on_error(self, mock_run):
+        mock_run.return_value.returncode = 1
+        mock_run.return_value.stdout = ""
+        version, source = detect_ccu_version_via_runtime_image("192.168.0.100")
         self.assertEqual(version, "unknown")
         self.assertEqual(source, "unavailable")

@@ -106,10 +106,10 @@ Wichtige Felder:
 - `recordingExclusionPreset`, `brokerHost`, `brokerPort`
 - `osfWorkspaceVersion` (aus Root-`package.json`)
 - `sessionRecorderVersion` (aus `session_manager.__version__`)
-- `ccuVersion` + `ccuVersionSource` (automatisch aus aufgenommenen CCU-Topics erkannt; priorisiert `ccu/state/version-mismatch`)
+- `ccuVersion` + `ccuVersionSource` (automatisch aus aufgenommenen CCU-Topics erkannt; priorisiert `ccu/state/version-mismatch`, Fallback: laufendes RPi-Container-Image via `ssh ... docker inspect central-control-prod`)
 - `ccuOrdersDescription`, `ccuOrderOutcome` (`ok` | `nok` | `mixed` | `unknown`), `note`
 
-Falls die automatische Erkennung keine Version findet (z. B. Recording ohne passendes Version-Topic), kann im Recorder waehrend der Aufnahme ein manueller Override gesetzt werden: **CCU-Version (optional, Override)**. Dann wird `ccuVersionSource = "manual"` gespeichert.
+Falls die automatische Erkennung keine Version findet (z. B. Recording ohne passendes Version-Topic und ohne RPi-Inspect), kann im Recorder waehrend der Aufnahme ein manueller Override gesetzt werden: **CCU-Version (optional, Override)**. Dann wird `ccuVersionSource = "manual_override"` gespeichert.
 
 Die **INVENTORY**-Tabelle unter `data/osf-data/sessions/INVENTORY.md` sollte bei neuen/gelöschten Sessions manuell mitgepflegt werden; Hilfe: `python scripts/check_session_inventory.py` (meldet auch fehlende bzw. `unknown`-`ccuVersion` bei `session_meta`).
 

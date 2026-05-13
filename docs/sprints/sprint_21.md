@@ -55,7 +55,7 @@
 
 ### OSF-UI – Bugs / UX (Übernahme aus Sprint 20)
 
-- [ ] **Shopfloor AGV auf RPi (aktuelles Kernproblem):** AGV-Erkennung/Anzeige im Shopfloor auf RPi wiederherstellen (RPi != localhost); Overlay/Z-Index-Validierung erst sinnvoll nach erfolgreicher AGV-Anzeige. Hinweis: Vor-Ort-Test auf RPi ist aufwaendig und muehsam (mehrstufige Live-Verifikation).
+- [x] **Shopfloor AGV-Sichtbarkeit (Live-Status 12.05.2026):** Gestern gemeldetes Problem (AGV-Tab/AGV-Sichtbarkeit auf RPi) heute nicht reproduzierbar; Test auf Windows-Client erfolgreich (Edge/Chrome/Firefox als Zielplattform). Bewertung: vermutlich umgebungs-/browserabhaengig (RPi/OS/Browser-Kombination), aktuell kein blockierender Fehler fuer den Praesentationsbetrieb. Guard: vor Demos kurzer AGV-Sichtbarkeits-Smoke-Test auf Windows durchfuehren.
 
 ### Backend & Grafana (Übernahme aus Sprint 20)
 
@@ -73,8 +73,8 @@
   - 2 automatisierte Pilot-Tests umgesetzt (10.05.2026): `process-tab.component.spec.ts` (Order-Command-Pfad), `order-tab.component.spec.ts` (Correlation-Request-Pfad).
 - [x] Sessions **2 AGVs** aufgenommen und als Replay-Input verifiziert (11.05.2026): `version1.1.6_20260511_134733.log`, `version1.1.6-test2_20260511_141131.log` — weitere Aufnahmen mit **Analyse**-Preset (DR-25) bei Bedarf.
   - Update 11.05.2026: Session-Logs mit 2 AGVs liegen vor (`version1.1.6_20260511_134733.log`, `version1.1.6-test2_20260511_141131.log`) und sind als Tier-B Replay-Input vorhanden; offen bleibt die strukturierte Einbindung als verbindlicher Test-Framework-Flow inkl. klarer Akzeptanzkriterien.
-- [ ] **dsp/correlation/info** E2E
-- [ ] **ccu/order/request** E2E (Ersatzauftrag nach Quality-Fail)
+- [ ] **dsp/correlation/info** E2E (BLOCKED bis Team-Setup aktiv): angehen sobald DSP wieder aktiv ist und der Correlation-Flow im gemeinsamen Testfenster ausgeloest werden kann; dann End-to-End-Nachweis (Topic-Eingang + UI-Kontext) dokumentieren.
+- [ ] **ccu/order/request** E2E (Ersatzauftrag nach Quality-Fail, BLOCKED bis Team-Setup aktiv): angehen sobald MES aktiv ist und der Quality-Fail-/Ersatzauftragspfad im grossen Team reproduzierbar getriggert werden kann; dann E2E-Nachweis mit klarer Ereigniskette dokumentieren.
 
 ### Blog & Organisation (Übernahme aus Sprint 20)
 

@@ -24,7 +24,11 @@ from ..utils.recording_topic_filter import (
     EXCLUSION_PRESET_NONE,
     should_write_message_to_session_log,
 )
-from ..utils.session_meta_line import build_session_meta_line, extract_ccu_version_from_messages
+from ..utils.session_meta_line import (
+    build_session_meta_line,
+    detect_ccu_version_via_runtime_image,
+    extract_ccu_version_from_messages,
+)
 from ..utils.ui_refresh import RerunController
 from ..utils.utc_iso_timestamp import utc_iso_timestamp_ms
 
@@ -744,7 +748,12 @@ def save_session():
         messages = message_buffer.get_messages()
         message_count = len(messages)
         logger.info(f"📊 {message_count} Messages werden gespeichert...")
+        mqtt_settings = settings_manager.get_session_recorder_mqtt_settings()
         ccu_version, ccu_version_source = extract_ccu_version_from_messages(messages)
+        if ccu_version == "unknown":
+            runtime_version, runtime_source = detect_ccu_version_via_runtime_image(str(mqtt_settings.get("host", "")))
+            if runtime_version != "unknown":
+                ccu_version, ccu_version_source = runtime_version, runtime_source
         manual_ccu_version = str(st.session_state.get("session_recorder_meta_ccu_version", "") or "").strip()
         if not manual_ccu_version and ccu_version == "unknown":
             logger.warning(
@@ -756,7 +765,6 @@ def save_session():
         log_filepath = session_dir / log_filename
         logger.info(f"📝 Log-Datei wird erstellt: {log_filename}")
 
-        mqtt_settings = settings_manager.get_session_recorder_mqtt_settings()
         ended_at = datetime.now()
         started_at = st.session_state.session_recorder.get("start_time") or ended_at
         meta_line = build_session_meta_line(
@@ -771,7 +779,7 @@ def save_session():
             ccu_order_outcome=str(st.session_state.get("session_recorder_meta_outcome", "unknown") or "unknown"),
             note=str(st.session_state.get("session_recorder_meta_note", "") or ""),
             ccu_version=manual_ccu_version or ccu_version,
-            ccu_version_source=("manual" if manual_ccu_version else ccu_version_source),
+            ccu_version_source=("manual_override" if manual_ccu_version else ccu_version_source),
         )
         save_log_session(log_filepath, messages, meta_line=meta_line)
         logger.info(f"✅ Log Session gespeichert: {log_filepath}")

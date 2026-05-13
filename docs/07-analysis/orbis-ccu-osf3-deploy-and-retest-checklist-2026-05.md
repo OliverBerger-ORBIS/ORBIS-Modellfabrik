@@ -1,4 +1,4 @@
-# ORBIS Checklist: CCU `v1.3.0-osf.3` Deploy + Retest
+# ORBIS Checklist: CCU `v1.3.0-osf.4` Deploy + Retest
 
 Stand: 2026-05-13
 
@@ -10,8 +10,8 @@ Ziel: Vor-Ort bei ORBIS die vorbereitete CCU-Haertung deployen und danach die Se
 
 1. Branch/Workspace prüfen (keine ungewollten Änderungen).
 2. Version prüfen:
-   - `integrations/APS-CCU/package.json` -> `1.3.0-osf.3`
-   - `integrations/APS-CCU/central-control/package.json` -> `1.3.0-osf.3`
+   - `integrations/APS-CCU/package.json` -> `1.3.0-osf.4`
+   - `integrations/APS-CCU/central-control/package.json` -> `1.3.0-osf.4`
 3. Optional lokaler Test:
    - `cd integrations/APS-CCU/central-control`
    - `npm test -- src/modules/order/management/order-management.test.ts src/modules/fts/navigation/navigation.test.ts`
@@ -22,8 +22,8 @@ Ziel: Vor-Ort bei ORBIS die vorbereitete CCU-Haertung deployen und danach die Se
 
 ```bash
 cd integrations/APS-CCU
-npm run docker:build v1.3.0-osf.3 central
-npm run docker:deploy -- ff22@192.168.0.100 v1.3.0-osf.3 central
+npm run docker:build v1.3.0-osf.4 central
+npm run docker:deploy -- ff22@192.168.0.100 v1.3.0-osf.4 central
 ```
 
 Verifikation:

@@ -632,8 +632,9 @@ export class OrderManagement {
         console.warn(`ORDER_MANAGEMENT: Failed to send clearing navigation for AIQS module ${aiqsModuleSerial}`, e);
       }
     }
-    await this.retriggerFTSSteps();
-    await this.startNextOrder();
+    // Keep quality-fail handling isolated to the failed order/FTS.
+    // Other active production flows must continue via their own regular action updates
+    // and should not be globally retriggered from within this fail path.
     return this.sendOrderListUpdate();
   }
 

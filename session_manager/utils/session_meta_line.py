@@ -7,6 +7,8 @@ Wird von load_log_session / Replay übersprungen; Session-Analyse überspringt e
 from __future__ import annotations
 
 import json
+import re
+import subprocess
 from datetime import datetime
 from typing import Any
 
@@ -45,7 +47,8 @@ def extract_ccu_version_from_messages(messages: list[dict[str, Any]]) -> tuple[s
 
     Prioritaet:
     1) ccu/state/version-mismatch -> payload.ccuVersion
-    2) ccu/pairing/state -> payload.ccuVersion (falls vorhanden)
+    2) ccu/state/version -> payload.version|ccuVersion
+    3) ccu/pairing/state -> payload.ccuVersion (falls vorhanden)
     """
     for msg in messages:
         topic = str(msg.get("topic", "") or "")
@@ -64,6 +67,21 @@ def extract_ccu_version_from_messages(messages: list[dict[str, Any]]) -> tuple[s
 
     for msg in messages:
         topic = str(msg.get("topic", "") or "")
+        if topic != "ccu/state/version":
+            continue
+        payload = msg.get("payload")
+        if not isinstance(payload, str):
+            continue
+        try:
+            payload_data = json.loads(payload)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        ccu_version = str(payload_data.get("version", "") or payload_data.get("ccuVersion", "") or "").strip()
+        if ccu_version:
+            return ccu_version, topic
+
+    for msg in messages:
+        topic = str(msg.get("topic", "") or "")
         if topic != "ccu/pairing/state":
             continue
         payload = msg.get("payload")
@@ -77,6 +95,52 @@ def extract_ccu_version_from_messages(messages: list[dict[str, Any]]) -> tuple[s
         if ccu_version:
             return ccu_version, topic
 
+    return "unknown", "unavailable"
+
+
+def detect_ccu_version_via_runtime_image(
+    broker_host: str, ssh_user: str = "ff22", timeout_sec: int = 3
+) -> tuple[str, str]:
+    """
+    Ermittelt die laufende CCU-Version ohne CCU-Topic-Aenderung direkt ueber den Container-Tag auf dem Zielhost.
+
+    Beispiel-Image:
+      ghcr.io/ommsolutions/ff-ccu-armv7:v1.3.0-osf.3
+    -> Version: 1.3.0-osf.3
+    """
+    host = str(broker_host or "").strip()
+    if not host or host in {"localhost", "127.0.0.1", "::1"}:
+        return "unknown", "unavailable"
+
+    cmd = [
+        "ssh",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        f"ConnectTimeout={max(1, int(timeout_sec))}",
+        f"{ssh_user}@{host}",
+        "docker inspect central-control-prod --format '{{.Config.Image}}'",
+    ]
+    try:
+        result = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=max(1, int(timeout_sec) + 1))
+    except Exception:
+        return "unknown", "unavailable"
+
+    if result.returncode != 0:
+        return "unknown", "unavailable"
+
+    image_ref = str(result.stdout or "").strip()
+    if not image_ref:
+        return "unknown", "unavailable"
+
+    tag = image_ref.rsplit(":", 1)[-1].strip()
+    if not tag:
+        return "unknown", "unavailable"
+
+    # Normalisiere "v1.3.0-osf.3" -> "1.3.0-osf.3"
+    normalized = re.sub(r"^v(?=\d)", "", tag)
+    if normalized:
+        return normalized, "rpi-docker-inspect"
     return "unknown", "unavailable"
 
 

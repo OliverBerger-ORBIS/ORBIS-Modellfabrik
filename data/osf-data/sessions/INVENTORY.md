@@ -48,6 +48,12 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 | production-rw-agv2-b-agv1_20260512_125623 | | ✓ | | | 2 | Produktion RED+WHITE (AGV-2) plus BLUE (AGV-1); erfolgreicher Replay mit Reihenfolgevariation |
 | production-wr-agv1-b-agv2_20260512_135956 | | ✓ | | | 2 | Exakt-Replay WR+B; RED zuerst wegen DRILL-Belegung, AIQS-Sauggreiferproblem manuell korrigiert |
 | production-wr-agv2-b-agv1_20260512_141431 | | ✓ | | | 2 | Produktion WHITE+RED (AGV-2) plus BLUE (AGV-1); erfolgreich (RED aussortiert, WHITE/BLUE zu DPS) |
+| production-wr-agv1-b-agv2-clean_20260513_121714 | | ✓ | | | 2 | ORBIS Retest (CCU osf.3): RED fail, BLUE haengt nach DRILL->MILL; manueller Recovery noetig (HBW/clearLoadHandler) |
+| production-wr-agv2-b-agv1-clean_20260513_123633 | | ✓ | | | 2 | ORBIS Retest (CCU osf.3): erfolgreicher Vergleichslauf, kein Stillstand |
+| production-wr-agv2-b-agv1-clean_20260513_125101 | | ✓ | | | 2 | ORBIS Retest (CCU osf.3): erfolgreicher Vergleichslauf, kein Stillstand |
+| production-wr-agv2-b-agv1-clean_20260513_135600 | | ✓ | | | 2 | ORBIS Retest (CCU osf.4): erfolgreicher Lauf nach Deploy |
+| production-wr-agv1-b-agv2-clean_20260513_140925 | | ✓ | | | 2 | ORBIS Retest (CCU osf.4): RED fail bei BLUE waitingForLoadHandling, trotzdem kein Stillstand |
+| production-wr-agv1-b-agv2-clean_20260513_142311 | | ✓ | | | 2 | ORBIS Retest (CCU osf.4): Wiederholung erfolgreich, Ablauf wie geplant |
 | production-red_20260303_081525 | | ✓ | ✓ | ✓ | 1 | Prod überwiegend, wenig Storage |
 | production-white_20260303_081127 | | ✓ | ✓ | ✓ | 1 | Prod überwiegend, wenig Storage |
 | production-blue-part1_20260303_082030 | | ✓ | ✓ | ✓ | 1 | Prod Blau Teil 1 |
@@ -61,6 +67,12 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 | storage-rbw_20260512_124845 | | | ✓ | | 2 | Storage RED->BLUE->WHITE (Wiederholung) als Vorbereitung |
 | storage-rbw_20260512_130304 | | | ✓ | | 2 | Storage RED->BLUE->WHITE (zusaetzliche Vorbereitung) |
 | storage-wbr_20260512_140621 | | | ✓ | | 2 | Storage WHITE->BLUE->RED als Vorbereitung vor finalem Produktionslauf |
+| storage-wbr-clean_20260513_120633 | | | ✓ | | 2 | ORBIS Retest (CCU osf.3): Storage WHITE->BLUE->RED als Vorbereitung |
+| storage-bwr-clean_20260513_122833 | | | ✓ | | 2 | ORBIS Retest (CCU osf.3): Storage BLUE->WHITE->RED als Vorbereitung |
+| storage-rbw-clean_20260513_124250 | | | ✓ | | 2 | ORBIS Retest (CCU osf.3): Storage RED->BLUE->WHITE als Vorbereitung |
+| storage-bwr-clean_20260513_134800 | | | ✓ | | 2 | ORBIS Retest (CCU osf.4): Vorbereitungslauf vor Deploy-Verifikation |
+| storage-brw-clean_20260513_140201 | | | ✓ | | 2 | ORBIS Retest (CCU osf.4): Storage BLUE->RED->WHITE vor finalen Produktionslaeufen |
+| storage-rwb-clean_20260513_141546 | | | ✓ | | 2 | ORBIS Retest (CCU osf.4): Storage RED->WHITE->BLUE, danach erfolgreicher Produktionslauf |
 | storage-white-agv2-clean_20260512_103825 | | | ✓ | | 2 | Storage WHITE mit AGV-2 (clean, no_cam, ohne retained); Sonderfall: AGV-2 navigierte von HBW nach DPS |
 | storage-red_20260303_080428 | | | ✓ | | 1 | Reine Einlagerung Rot |
 | storage-white_20260303_075954 | | | ✓ | | 1 | Reine Einlagerung Weiß |
@@ -92,7 +104,7 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 
 ## Versionen (aus Logs/Factsheets)
 
-- **CCU:** 1.3.0 (typisch in pairing/state)
+- **CCU:** Historisch `1.3.0`; aktuelle ORBIS-Retests 2026-05-13 mit `1.3.0-osf.3` und `1.3.0-osf.4` (siehe `session_meta.ccuVersion`)
 - **Module:** 1.3.0 (HBW, DRILL, MILL, AIQS), DPS 1.6.0
 - **osf-ui:** Nicht in Logs – Aufnahmezeitpunkt als Proxy (z.B. 2026-03-12 = v0.8.8/0.8.9)
 
@@ -127,6 +139,10 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 | **production-rw-agv2-b-agv1_20260512_125623** | Replay paralleler Orders mit RED+WHITE auf AGV-2 und BLUE auf AGV-1; Lauf erfolgreich, Reihenfolge bei Produktion variierte. | Gut fuer Robustheits-/Reihenfolgeanalyse ohne Stillstand |
 | **production-wr-agv1-b-agv2_20260512_135956** | Exakt-Replay des WR+B-Szenarios: RED zuerst wegen DRILL-Belegung; AIQS-Sauggreiferproblem bei WHITE, manuelle Korrektur via DROP+clearLoadHandler. | Sehr gut fuer Analyse manueller Recovery-Pfade unter Last/Parallelitaet |
 | **production-wr-agv2-b-agv1_20260512_141431** | WHITE+RED auf AGV-2 und BLUE auf AGV-1; laut Feldnotiz erfolgreicher Abschluss (RED aussortiert, WHITE/BLUE zu DPS). | Gut als erfolgreicher Abschlusslauf nach den WR+B-Replays |
+| **production-wr-agv1-b-agv2-clean_20260513_121714** | WR+B-Retest mit CCU `1.3.0-osf.3`: RED Quality-Fail wurde erkannt, BLUE blieb danach an MILL/Load-Handling haengen; manueller Eingriff (AGV -> HBW, `clearLoadHandler`) erforderlich. | Schluessel-Lauf fuer das intermittierende Problem unter osf.3 |
+| **production-wr-agv2-b-agv1-clean_20260513_123633 / 125101** | Zwei direkte Vergleichslaeufe unter CCU `1.3.0-osf.3`, beide ohne Stillstand. | Belegt die Timing-Sensitivitaet (nicht deterministisch reproduzierbar unter osf.3) |
+| **production-wr-agv2-b-agv1-clean_20260513_135600** | Erster Verifikationslauf nach Deploy CCU `1.3.0-osf.4`, Ablauf ohne manuellen Eingriff. | Erster Feldnachweis fuer osf.4 |
+| **production-wr-agv1-b-agv2-clean_20260513_140925 / 142311** | Zwei Verifikationslaeufe unter CCU `1.3.0-osf.4`; auch im Fall RED-NOK mit BLUE `waitingForLoadHandling` lief der Prozess ohne Hanger bis DPS weiter. | Starker Hinweis, dass die osf.4-Isolation des RED-Fail-Pfads den Seiteneffekt auf parallele BLUE-Produktion entfernt |
 | **orbis-fulltopics-baseline_20260409_082701** | Full-Topic-Aufnahme (Kamera, Arduino-Sensorik, retained States) mit kurzem Produktionsimpuls; zwei AGVs in den FTS-Topics. | Gut als technische Baseline fuer Track&Trace-/UI-Tests mit maximalem Topic-Spektrum |
 | **production-red** | Produktion Rot überwiegend, minimal Storage. | Prod-fokussiert |
 | **production-white** | Produktion Weiß überwiegend, minimal Storage. | Prod-fokussiert |
@@ -143,6 +159,8 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 | **storage-wrb-clean_20260512_120639** | Storage WHITE->RED->BLUE (clean), Lauf erfolgreich abgeschlossen. | Gut als stabiler Gegenlauf zum RWB-Stillstand |
 | **storage-rbw_20260512_122437 / 124845 / 130304** | Drei RBW-Storage-Vorbereitungslaufe vor NOK-/Replay-Produktionen. | Gut als vorbereitende Referenzlaeufe mit vergleichbarer Ausgangslage |
 | **storage-wbr_20260512_140621** | Storage WHITE->BLUE->RED als Vorbereitung vor finalem Produktionslauf. | Gut als letzter Vorbereitungslauf in der Serie |
+| **storage-wbr-clean_20260513_120633 / storage-bwr-clean_20260513_122833 / storage-rbw-clean_20260513_124250** | Drei vorbereitende Storage-Laeufe fuer WR+B-Retests unter CCU `1.3.0-osf.3`. | Gut fuer Vergleichbarkeit der Ausgangslage vor osf.3-Problem-/Vergleichslaeufen |
+| **storage-bwr-clean_20260513_134800 / storage-brw-clean_20260513_140201 / storage-rwb-clean_20260513_141546** | Vorbereitungsserie fuer Verifikation unter CCU `1.3.0-osf.4`, jeweils mit anschliessenden erfolgreichen Produktionslaeufen. | Stuetze fuer osf.4-Verifikationskette (Storage->Production ohne manuellen Recovery) |
 | **storage-white-agv2-clean_20260512_103825** | Storage WHITE mit AGV-2 als Primär-Transport (clean/no retained), Sensor-Topics enthalten. Nebenereignis: AGV-2 navigierte im Ablauf von HBW nach DPS. | Gut für reproduzierbare Storage-Basis mit dokumentiertem AGV-Navigationspfad (HBW→DPS) |
 | **storage-red** | Reine Einlagerung Rot. | Storage-Only |
 | **storage-white** | Reine Einlagerung Weiß. | Storage-Only |
@@ -192,8 +210,10 @@ Feldhinweis fuer die neuen Serien: Mehrere Production-Sessions bauen direkt auf 
 | A | `storage-rwb-clean_20260512_115152` | `production-wb-agv1-r-agv2_20260512_120106`, `production-wb-agv2-r-agv1-clean_20260512_121518` | Storage-Reihenfolge RED->WHITE->BLUE als Ausgangslage fuer WB+R-Produktionsreplays |
 | B | `storage-rbw_20260512_122437`, `storage-rbw_20260512_124845`, `storage-rbw_20260512_130304` | `production-wr-agv1-b-agv2_20260512_123508`, `production-rw-agv2-b-agv1_20260512_125623`, `production-wr-agv1-b-agv2_20260512_135956` | RBW-Vorbereitung fuer WR+B/RW+B-Replays inkl. NOK-/Recovery-Szenarien |
 | C | `storage-wbr_20260512_140621` | `production-wr-agv2-b-agv1_20260512_141431` | WBR-Storage direkt vor erfolgreichem WR+B-Abschlusslauf |
+| D (osf.3 Retest) | `storage-wbr-clean_20260513_120633`, `storage-bwr-clean_20260513_122833`, `storage-rbw-clean_20260513_124250` | `production-wr-agv1-b-agv2-clean_20260513_121714`, `production-wr-agv2-b-agv1-clean_20260513_123633`, `production-wr-agv2-b-agv1-clean_20260513_125101` | Vergleichsserie unter CCU `1.3.0-osf.3`: 1 Problem-Lauf + 2 erfolgreiche Laeufe -> intermittierend/timing-sensitiv |
+| E (osf.4 Verify) | `storage-bwr-clean_20260513_134800`, `storage-brw-clean_20260513_140201`, `storage-rwb-clean_20260513_141546` | `production-wr-agv2-b-agv1-clean_20260513_135600`, `production-wr-agv1-b-agv2-clean_20260513_140925`, `production-wr-agv1-b-agv2-clean_20260513_142311` | Verifikationsserie unter CCU `1.3.0-osf.4`: trotz RED-NOK und BLUE waitingForLoadHandling kein manueller Eingriff notwendig |
 
-Ergaenzende Feldbeobachtung zu WR+B-Serien (insbesondere Chain B/C): Der zuvor beobachtete automatische Abort/Stillstand nach RED-Ausschuss war im Wiederholungslauf `production-wr-agv2-b-agv1_20260512_141431` nicht reproduzierbar. Das spricht fuer timing-sensitive Abarbeitung (Reihenfolge/zeitlicher Versatz bei Order-Submission). Je nach Interleaving von Order-, Modul- und FTS-Topics kann der Flow entweder durchlaufen oder in einen teilweisen Stillstand laufen. Teilweise ist Recovery durch manuelle Eingriffe moeglich (z. B. AGV gezielt Richtung HBW senden, danach `clearLoadHandler`).
+Ergaenzende Feldbeobachtung zu WR+B-Serien: Unter CCU `1.3.0-osf.3` trat der bekannte Stillstand weiterhin intermittierend auf (`production-wr-agv1-b-agv2-clean_20260513_121714`), waehrend direkte Vergleichslaeufe erfolgreich waren. Unter CCU `1.3.0-osf.4` liefen die drei Verifikationslaeufe (`135600`, `140925`, `142311`) stabil durch. Damit ist die Hypothese konsistent, dass die Isolation des RED-Quality-Fail-Pfads (kein globales Retriggern aus dem Fail-Handler) den Seiteneffekt auf parallele BLUE-Abarbeitung beseitigt.
 
 ---
 

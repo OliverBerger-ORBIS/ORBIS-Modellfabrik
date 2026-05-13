@@ -707,8 +707,8 @@ describe('Test order management handling', () => {
     expect(createOrderSpy).not.toHaveBeenCalled();
     // OSF: FTS must be moved away from AIQS so it does not block the module
     expect(navCommandSender.sendClearModuleNodeNavigationRequest).toHaveBeenCalledWith(aiqsModuleSerial);
-    expect(underTest.retriggerFTSSteps).toHaveBeenCalled();
-    expect(underTest.startNextOrder).toHaveBeenCalled();
+    expect(underTest.retriggerFTSSteps).not.toHaveBeenCalled();
+    expect(underTest.startNextOrder).not.toHaveBeenCalled();
 
     const expectedProdStep: OrderManufactureStep = {
       type: 'MANUFACTURE',
@@ -750,7 +750,7 @@ describe('Test order management handling', () => {
     });
   });
 
-  it('should continue quality-fail handling even when clear navigation fails', async () => {
+  it('should continue isolated quality-fail handling even when clear navigation fails', async () => {
     const aiqsModuleSerial = 'aiqsModuleSerial';
     jest.spyOn(navCommandSender, 'sendClearModuleNodeNavigationRequest').mockRejectedValue(new Error('simulated clear failure'));
     jest.spyOn(OrderManagement.getInstance(), 'retriggerFTSSteps').mockResolvedValue(0);
@@ -790,8 +790,8 @@ describe('Test order management handling', () => {
     underTest['orderQueue'] = [activeOrder];
 
     await expect(underTest.handleActionUpdate(orderId, prodStepId, State.FINISHED, QualityResult.FAILED)).resolves.toBeUndefined();
-    expect(underTest.retriggerFTSSteps).toHaveBeenCalled();
-    expect(underTest.startNextOrder).toHaveBeenCalled();
+    expect(underTest.retriggerFTSSteps).not.toHaveBeenCalled();
+    expect(underTest.startNextOrder).not.toHaveBeenCalled();
     expect(activeOrder.state).toBe(OrderState.ERROR);
   });
 

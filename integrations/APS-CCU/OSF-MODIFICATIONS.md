@@ -18,7 +18,8 @@ Phase-5-Kontext: MES und DSP (ORBIS) übernehmen zunehmend die Steuerung; die CC
 | 1   | ccu/order/request: Optionale Erweiterung um requestId | ✅ Umgesetzt | `common/protocol/ccu.ts`, `central-control/.../order/index.ts` | Sprint 16, Commit d2052f95 |
 | 2   | Quality-Fail: Kein automatischer Ersatzauftrag | ✅ Umgesetzt (seit v1.3.0-osf.1) | `central-control/src/modules/order/management/order-management.ts` | Sprint 17, [Analyse](../../docs/07-analysis/ccu-quality-fail-behaviour-2026-03.md), [DR-21](../../docs/03-decision-records/21-ccu-osf-versioning.md) |
 | 3   | ccu/order/active, completed: Optional serialNumber in NAVIGATION steps | ❌ Zurückgenommen (2026-03) | – | Ursprünglich für AGV-1/AGV-2 Anzeige; entfernt, da potenzielle Ursache für Stillstand |
-| 4   | Quality-Fail-Härtung: deterministisches Clearing + robuste Fortsetzung | ✅ Umgesetzt (ab v1.3.0-osf.3, Deploy ausstehend) | `central-control/src/modules/fts/navigation/navigation.ts`, `central-control/src/modules/order/management/order-management.ts` | 2026-05: intermittierender Stillstand in Parallel-Orders (Timing-sensitiv, 1/4 reproduzierbar) |
+| 4   | Quality-Fail-Härtung: deterministisches Clearing + robuste Fortsetzung | ⚠️ Teilwirksam (v1.3.0-osf.3) | `central-control/src/modules/fts/navigation/navigation.ts`, `central-control/src/modules/order/management/order-management.ts` | 2026-05: intermittierender Stillstand in Parallel-Orders blieb timing-sensitiv reproduzierbar |
+| 5   | Quality-Fail-Isolation: kein globales Retriggern aus RED-Fail-Pfad | ✅ Umgesetzt (ab v1.3.0-osf.4) | `central-control/src/modules/order/management/order-management.ts` | 2026-05: RED-Quality-Fail darf laufende BLUE/WHITE-Flows zeitlich nicht beeinflussen |
 
 ---
 
@@ -103,7 +104,31 @@ Ziel der Härtung: Nach `CHECK_QUALITY=FAILED` soll die Fabrik konsistenter weit
 
 #### Version
 
-- Geplant für Release/Deploy: `v1.3.0-osf.3`
+- Release: `v1.3.0-osf.3` (Race-Szenario nicht vollstaendig behoben)
+
+---
+
+### 5. Quality-Fail-Isolation: kein globales Retriggern aus RED-Fail-Pfad
+
+#### Zweck (Warum)
+
+In WR+B Parallel-Laeufen trat weiterhin ein timing-sensitiver Stillstand auf.  
+Arbeitshypothese aus ORBIS-Retest: kritisch ist der BLUE-Handshake-Zustand (`waitingForLoadHandling`) genau im Moment des RED-Quality-Fails.
+
+#### Wie (Implementation)
+
+- Im RED-Quality-Fail-Handler bleibt die Behandlung auf die fehlgeschlagene Order/FTS isoliert.
+- Das globale `retriggerFTSSteps()` und `startNextOrder()` wurde aus diesem Pfad entfernt.
+- Andere laufende Orders laufen ueber ihre regulaeren Action-Updates weiter, ohne zusaetzlichen globalen Eingriff im Fail-Zeitfenster.
+
+#### Betroffene Dateien
+
+- `central-control/src/modules/order/management/order-management.ts`
+- `central-control/src/modules/order/management/order-management.test.ts`
+
+#### Version
+
+- Geplant fuer Release/Deploy: `v1.3.0-osf.4`
 
 ---
 

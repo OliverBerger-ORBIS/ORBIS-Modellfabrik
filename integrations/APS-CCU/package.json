@@ -1,6 +1,6 @@
 {
   "name": "ff-central-control-unit",
-  "version": "1.3.0-osf.3",
+  "version": "1.3.0-osf.4",
   "private": true,
   "scripts": {
     "setup": "node scripts/setup.js",

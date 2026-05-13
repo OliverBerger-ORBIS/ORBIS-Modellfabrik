@@ -159,7 +159,7 @@ Wenn der Schalter deaktiviert ist, wäre aus unserer Sicht das gewünschte Verha
 
 ---
 
-## 3. Quality-Fail-Haertung fuer Parallelbetrieb (deterministisches Clearing + robuste Fortsetzung)
+## 3. Quality-Fail-Haertung fuer Parallelbetrieb (osf.3 -> osf.4)
 
 ### Fachliche Idee
 
@@ -170,29 +170,38 @@ Die bisherige Clearing-Logik nach `CHECK_QUALITY=FAILED` war in Parallel-Order-S
 Ziel der Haertung:
 - berechenbareres Clearing-Verhalten
 - bessere Fortsetzung des Rest-Workflows auch bei transienten Clearing-Fehlern
+- kein globaler Timing-Einfluss auf andere parallele Production-Flows beim RED-Quality-Fail
 
 ### Umsetzung in unserer Version
 
-1. `sendClearModuleNodeNavigationRequest(...)`:
+1. `sendClearModuleNodeNavigationRequest(...)` (osf.3):
    - nur **erreichbare** freie Module werden als Ziel betrachtet
    - **HBW wird priorisiert** (fachlich stabilere Zielwahl)
-2. `handleActionUpdateQualityCheckFailure(...)`:
+2. `handleActionUpdateQualityCheckFailure(...)` (osf.3):
    - Clearing-Aufruf in `try/catch` (Warnung statt Abbruch)
-   - danach immer `retriggerFTSSteps()` und `startNextOrder()`
+   - danach wurde global `retriggerFTSSteps()` und `startNextOrder()` ausgeloest
+3. `handleActionUpdateQualityCheckFailure(...)` (osf.4):
+   - globales Retriggern/Starten im Quality-Fail-Pfad entfernt
+   - Quality-Fail-Behandlung bleibt auf betroffene RED-Order/FTS isoliert
+   - andere Orders laufen nur ueber regulaere Action-Updates weiter
 
 ### Relevante Code-Stellen
 
 - Clearing-Zielauswahl in [navigation.ts](../../integrations/APS-CCU/central-control/src/modules/fts/navigation/navigation.ts#L338-L403)
-- Quality-Fail-Flow in [order-management.ts](../../integrations/APS-CCU/central-control/src/modules/order/management/order-management.ts#L614-L636)
+- Quality-Fail-Flow in [order-management.ts](../../integrations/APS-CCU/central-control/src/modules/order/management/order-management.ts#L614-L638)
 
 ### Tests
 
 - HBW-Praeferenz beim Clearing in [navigation.test.ts](../../integrations/APS-CCU/central-control/src/modules/fts/navigation/navigation.test.ts#L485-L550)
 - Fortsetzung trotz Clearing-Fehler in [order-management.test.ts](../../integrations/APS-CCU/central-control/src/modules/order/management/order-management.test.ts#L752-L797)
+- Isolation ohne globales Retriggern in denselben Quality-Fail-Tests (Erwartung aktualisiert)
 
 ### Hinweis fuer Upstream/Fischertechnik
 
-Diese Anpassung ist als Stabilisierung eines intermittierenden Fehlermusters gedacht (nicht als formaler Kausalbeweis).  
+Ergebnis ORBIS-Retest:
+- osf.3 war nur teilwirksam (Stillstand in WR+B unter Timing-Interleaving weiterhin beobachtet)
+- osf.4 entfernt den globalen Eingriff aus dem RED-Fail-Zeitfenster und folgt damit der beobachteten Race-Hypothese
+
 Empfehlung: bei Upstream-Review als optionale Hardening-Verbesserung fuer Parallel-Order-/Quality-Fail-Szenarien pruefen.
 
 ---
@@ -217,4 +226,4 @@ Wir haben den Quality-Fail-Flow fuer Parallelbetrieb gehaertet: Clearing-Ziele w
 
 Vor-Ort-Checkliste fuer Deploy und Reproduktionslauf:
 
-- [orbis-ccu-osf3-deploy-and-retest-checklist-2026-05.md](orbis-ccu-osf3-deploy-and-retest-checklist-2026-05.md)
+- [orbis-ccu-osf3-deploy-and-retest-checklist-2026-05.md](orbis-ccu-osf3-deploy-and-retest-checklist-2026-05.md) (fuer osf.4 entsprechend anpassen)
