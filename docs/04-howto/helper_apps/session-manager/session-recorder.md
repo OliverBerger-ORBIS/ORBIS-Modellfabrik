@@ -99,9 +99,19 @@ Persistenz: `session_manager_settings.json` → `session_recorder.recording.reco
 
 ### **Session-Meta (erste Zeile in der `.log`)**
 
-Beim Speichern schreibt der Recorder optional eine **erste JSON-Zeile** mit `_kind: "session_meta"` (ohne `topic` / `payload` / `timestamp`). **Replay** und `load_log_session` ignorieren sie. Felder u. a.: `recordingStartedAt`, `recordingEndedAt`, `durationSec`, `recordingExclusionPreset`, `brokerHost`, `osfWorkspaceVersion` (aus Root-`package.json`), `ccuOrdersDescription`, `ccuOrderOutcome` (`ok` | `nok` | `mixed` | `unknown`), `note`.
+Beim Speichern schreibt der Recorder optional eine **erste JSON-Zeile** mit `_kind: "session_meta"` (ohne `topic` / `payload` / `timestamp`). **Replay** und `load_log_session` ignorieren sie.
 
-Die **INVENTORY**-Tabelle unter `data/osf-data/sessions/INVENTORY.md` sollte bei neuen/gelöschten Sessions manuell mitgepflegt werden; Hilfe: `python scripts/check_session_inventory.py`.
+Wichtige Felder:
+- `recordingStartedAt`, `recordingEndedAt`, `durationSec`
+- `recordingExclusionPreset`, `brokerHost`, `brokerPort`
+- `osfWorkspaceVersion` (aus Root-`package.json`)
+- `sessionRecorderVersion` (aus `session_manager.__version__`)
+- `ccuVersion` + `ccuVersionSource` (automatisch aus aufgenommenen CCU-Topics erkannt; priorisiert `ccu/state/version-mismatch`)
+- `ccuOrdersDescription`, `ccuOrderOutcome` (`ok` | `nok` | `mixed` | `unknown`), `note`
+
+Falls die automatische Erkennung keine Version findet (z. B. Recording ohne passendes Version-Topic), kann im Recorder waehrend der Aufnahme ein manueller Override gesetzt werden: **CCU-Version (optional, Override)**. Dann wird `ccuVersionSource = "manual"` gespeichert.
+
+Die **INVENTORY**-Tabelle unter `data/osf-data/sessions/INVENTORY.md` sollte bei neuen/gelöschten Sessions manuell mitgepflegt werden; Hilfe: `python scripts/check_session_inventory.py` (meldet auch fehlende bzw. `unknown`-`ccuVersion` bei `session_meta`).
 
 ### **⚠️ Kritische Paho-MQTT-Patterns (nicht ändern)**
 

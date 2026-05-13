@@ -24,7 +24,7 @@ from ..utils.recording_topic_filter import (
     EXCLUSION_PRESET_NONE,
     should_write_message_to_session_log,
 )
-from ..utils.session_meta_line import build_session_meta_line
+from ..utils.session_meta_line import build_session_meta_line, extract_ccu_version_from_messages
 from ..utils.ui_refresh import RerunController
 from ..utils.utc_iso_timestamp import utc_iso_timestamp_ms
 
@@ -449,6 +449,16 @@ def show_session_recorder():
                 key="session_recorder_meta_outcome",
                 help="Zusammenfassung des Order-Ergebnisses für INVENTORY / Analyse.",
             )
+            st.text_input(
+                "CCU-Version (optional, Override)",
+                value=str(st.session_state.get("session_recorder_meta_ccu_version", "") or ""),
+                key="session_recorder_meta_ccu_version",
+                placeholder="z. B. 1.3.0-osf.3",
+                help=(
+                    "Optionaler manueller Override. Ohne Eingabe versucht der Recorder "
+                    "die Version automatisch aus CCU-Topics zu erkennen."
+                ),
+            )
             st.text_area(
                 "CCU / Orders (was wurde geordert / Szenario)",
                 height=100,
@@ -734,6 +744,13 @@ def save_session():
         messages = message_buffer.get_messages()
         message_count = len(messages)
         logger.info(f"📊 {message_count} Messages werden gespeichert...")
+        ccu_version, ccu_version_source = extract_ccu_version_from_messages(messages)
+        manual_ccu_version = str(st.session_state.get("session_recorder_meta_ccu_version", "") or "").strip()
+        if not manual_ccu_version and ccu_version == "unknown":
+            logger.warning(
+                "⚠️ CCU-Version konnte nicht automatisch erkannt werden. "
+                "Nutze optional 'CCU-Version (Override)' fuer eindeutige Analysen."
+            )
 
         log_filename = f"{session_name}_{timestamp}.log"
         log_filepath = session_dir / log_filename
@@ -753,6 +770,8 @@ def save_session():
             ccu_orders_description=str(st.session_state.get("session_recorder_meta_ccu", "") or ""),
             ccu_order_outcome=str(st.session_state.get("session_recorder_meta_outcome", "unknown") or "unknown"),
             note=str(st.session_state.get("session_recorder_meta_note", "") or ""),
+            ccu_version=manual_ccu_version or ccu_version,
+            ccu_version_source=("manual" if manual_ccu_version else ccu_version_source),
         )
         save_log_session(log_filepath, messages, meta_line=meta_line)
         logger.info(f"✅ Log Session gespeichert: {log_filepath}")
@@ -771,6 +790,7 @@ def _clear_session_meta_widget_keys() -> None:
         "session_recorder_meta_ccu",
         "session_recorder_meta_note",
         "session_recorder_meta_outcome",
+        "session_recorder_meta_ccu_version",
     ):
         st.session_state.pop(k, None)
 

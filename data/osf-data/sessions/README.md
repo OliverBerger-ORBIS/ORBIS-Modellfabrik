@@ -6,7 +6,7 @@ Dieses Verzeichnis enthält MQTT-Session-Daten für die ORBIS Smart-Factory.
 
 - **Dateiformat:** `.log` (JSON-Zeilen – eine MQTT-Nachricht pro Zeile)
 - **Pfad:** `data/osf-data/sessions/`
-- **Erste Zeile (optional, Session Manager):** `session_meta` — JSON **ohne** die MQTT-Pflichtfelder `topic` / `payload` / `timestamp`. Enthält u. a. Aufnahmezeitraum, Dauer, Preset, Broker, OSF-Workspace-Version (`package.json`), CCU/Order-Kurzinfo. **Replay Station** und Loader ignorieren diese Zeile automatisch.
+- **Erste Zeile (optional, Session Manager):** `session_meta` — JSON **ohne** die MQTT-Pflichtfelder `topic` / `payload` / `timestamp`. Enthält u. a. Aufnahmezeitraum, Dauer, Preset, Broker, `sessionRecorderVersion`, `osfWorkspaceVersion` (`package.json`), `ccuVersion` (+ Quelle) sowie CCU/Order-Kurzinfo. **Replay Station** und Loader ignorieren diese Zeile automatisch.
 
 ## 🎯 Verwendung
 

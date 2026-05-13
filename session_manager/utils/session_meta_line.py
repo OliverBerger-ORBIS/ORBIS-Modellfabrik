@@ -29,6 +29,57 @@ def read_osf_workspace_version() -> str:
         return "unknown"
 
 
+def read_session_recorder_version() -> str:
+    """Version des Session Managers/Recorders aus dem Paket."""
+    try:
+        from session_manager import __version__
+
+        return str(__version__)
+    except Exception:
+        return "unknown"
+
+
+def extract_ccu_version_from_messages(messages: list[dict[str, Any]]) -> tuple[str, str]:
+    """
+    Leitet die CCU-Version aus aufgenommenen Nachrichten ab.
+
+    Prioritaet:
+    1) ccu/state/version-mismatch -> payload.ccuVersion
+    2) ccu/pairing/state -> payload.ccuVersion (falls vorhanden)
+    """
+    for msg in messages:
+        topic = str(msg.get("topic", "") or "")
+        if topic != "ccu/state/version-mismatch":
+            continue
+        payload = msg.get("payload")
+        if not isinstance(payload, str):
+            continue
+        try:
+            payload_data = json.loads(payload)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        ccu_version = str(payload_data.get("ccuVersion", "") or "").strip()
+        if ccu_version:
+            return ccu_version, topic
+
+    for msg in messages:
+        topic = str(msg.get("topic", "") or "")
+        if topic != "ccu/pairing/state":
+            continue
+        payload = msg.get("payload")
+        if not isinstance(payload, str):
+            continue
+        try:
+            payload_data = json.loads(payload)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        ccu_version = str(payload_data.get("ccuVersion", "") or "").strip()
+        if ccu_version:
+            return ccu_version, topic
+
+    return "unknown", "unavailable"
+
+
 def _dt_iso(dt: datetime) -> str:
     """ISO mit Millisekunden (naive = lokale Session-Manager-Zeit)."""
     return dt.isoformat(timespec="milliseconds")
@@ -46,6 +97,8 @@ def build_session_meta_line(
     ccu_orders_description: str,
     ccu_order_outcome: str,
     note: str,
+    ccu_version: str = "unknown",
+    ccu_version_source: str = "unavailable",
 ) -> str:
     """
     Eine JSON-Zeile — keine Keys topic/payload/timestamp → Replay lädt nur echte MQTT-Zeilen.
@@ -66,6 +119,9 @@ def build_session_meta_line(
         "brokerHost": broker_host,
         "brokerPort": int(broker_port),
         "osfWorkspaceVersion": read_osf_workspace_version(),
+        "sessionRecorderVersion": read_session_recorder_version(),
+        "ccuVersion": (ccu_version or "unknown").strip() or "unknown",
+        "ccuVersionSource": (ccu_version_source or "unavailable").strip() or "unavailable",
         "ccuOrdersDescription": (ccu_orders_description or "").strip(),
         "ccuOrderOutcome": ccu_order_outcome if ccu_order_outcome in ("ok", "nok", "mixed", "unknown") else "unknown",
         "note": (note or "").strip(),

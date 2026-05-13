@@ -7,8 +7,10 @@ from datetime import datetime
 from session_manager.utils.session_meta_line import (
     SESSION_META_KIND,
     build_session_meta_line,
+    extract_ccu_version_from_messages,
     is_session_meta_line,
     read_osf_workspace_version,
+    read_session_recorder_version,
 )
 
 
@@ -25,6 +27,8 @@ class TestSessionMetaLine(unittest.TestCase):
             ccu_orders_description="two parallel storage",
             ccu_order_outcome="ok",
             note="demo",
+            ccu_version="1.3.0-osf.3",
+            ccu_version_source="ccu/state/version-mismatch",
         )
         data = json.loads(line)
         self.assertEqual(data.get("_kind"), SESSION_META_KIND)
@@ -32,6 +36,9 @@ class TestSessionMetaLine(unittest.TestCase):
         self.assertNotIn("payload", data)
         self.assertNotIn("timestamp", data)
         self.assertEqual(data.get("ccuOrderOutcome"), "ok")
+        self.assertEqual(data.get("ccuVersion"), "1.3.0-osf.3")
+        self.assertEqual(data.get("ccuVersionSource"), "ccu/state/version-mismatch")
+        self.assertIn("sessionRecorderVersion", data)
         self.assertEqual(data.get("durationSec"), 210.0)
         self.assertTrue(is_session_meta_line(data))
 
@@ -39,3 +46,32 @@ class TestSessionMetaLine(unittest.TestCase):
         v = read_osf_workspace_version()
         self.assertIsInstance(v, str)
         self.assertTrue(len(v) > 0)
+
+    def test_read_session_recorder_version_returns_string(self):
+        v = read_session_recorder_version()
+        self.assertIsInstance(v, str)
+        self.assertTrue(len(v) > 0)
+
+    def test_extract_ccu_version_from_messages_prefers_version_mismatch(self):
+        messages = [
+            {
+                "topic": "ccu/state/version-mismatch",
+                "payload": '{"ccuVersion":"1.3.0-osf.3","mismatchedModules":[]}',
+            },
+            {
+                "topic": "ccu/pairing/state",
+                "payload": '{"ccuVersion":"1.3.0-osf.2"}',
+            },
+        ]
+        version, source = extract_ccu_version_from_messages(messages)
+        self.assertEqual(version, "1.3.0-osf.3")
+        self.assertEqual(source, "ccu/state/version-mismatch")
+
+    def test_extract_ccu_version_from_messages_unknown_when_absent(self):
+        messages = [
+            {"topic": "ccu/pairing/state", "payload": '{"modules":[]}'},
+            {"topic": "module/v1/ff/demo/state", "payload": '{"state":"READY"}'},
+        ]
+        version, source = extract_ccu_version_from_messages(messages)
+        self.assertEqual(version, "unknown")
+        self.assertEqual(source, "unavailable")

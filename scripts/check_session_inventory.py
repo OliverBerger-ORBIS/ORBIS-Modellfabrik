@@ -10,6 +10,7 @@ Pflege: Bei neuer Session Zeile in INVENTORY ergänzen; bei gelöschter Datei Ze
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -49,6 +50,28 @@ def main() -> None:
 
     only_files = sorted(stems - mentioned)
     only_inventory = sorted(mentioned - stems)
+    missing_ccu_version: list[str] = []
+    unknown_ccu_version: list[str] = []
+
+    for log_file in log_files:
+        try:
+            first_line = log_file.read_text(encoding="utf-8").splitlines()[0].strip()
+        except Exception:
+            continue
+        if not first_line:
+            continue
+        try:
+            first_obj = json.loads(first_line)
+        except json.JSONDecodeError:
+            continue
+        if first_obj.get("_kind") != "session_meta":
+            continue
+
+        ccu_version = str(first_obj.get("ccuVersion", "") or "").strip()
+        if not ccu_version:
+            missing_ccu_version.append(log_file.name)
+        elif ccu_version == "unknown":
+            unknown_ccu_version.append(log_file.name)
 
     print("Session-Logs vs. INVENTORY.md")
     print(f"  Verzeichnis: {sessions_dir}")
@@ -70,6 +93,22 @@ def main() -> None:
             print(f"  - {s}")
         if len(only_inventory) > 50:
             print(f"  ... +{len(only_inventory) - 50} weitere")
+        print()
+
+    if missing_ccu_version:
+        print("Session-Logs mit session_meta, aber ohne ccuVersion:")
+        for name in missing_ccu_version[:50]:
+            print(f"  - {name}")
+        if len(missing_ccu_version) > 50:
+            print(f"  ... +{len(missing_ccu_version) - 50} weitere")
+        print()
+
+    if unknown_ccu_version:
+        print("Session-Logs mit ccuVersion=unknown (Version nicht erkannt):")
+        for name in unknown_ccu_version[:50]:
+            print(f"  - {name}")
+        if len(unknown_ccu_version) > 50:
+            print(f"  ... +{len(unknown_ccu_version) - 50} weitere")
         print()
 
     if not only_files and not only_inventory:
