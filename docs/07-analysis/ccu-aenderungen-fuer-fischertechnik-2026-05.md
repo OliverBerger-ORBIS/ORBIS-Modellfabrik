@@ -1,8 +1,8 @@
 # APS-CCU – Übergabe der ORBIS-Änderungen an Fischertechnik
 
-Stand: 2026-05-11
+Stand: 2026-05-13
 
-Diese Notiz beschreibt zwei bereits in der ORBIS-Version umgesetzte Änderungen an der APS-CCU, inklusive der relevanten Code-Stellen und einer Einschätzung, was aus unserer Sicht für eine mögliche Übernahme ins Original-Repo geprüft werden sollte.
+Diese Notiz beschreibt drei in der ORBIS-Version umgesetzte Änderungen an der APS-CCU, inklusive der relevanten Code-Stellen und einer Einschätzung, was aus unserer Sicht für eine mögliche Übernahme ins Original-Repo geprüft werden sollte.
 
 Hinweis zu den Pfaden: Die unten genannten Dateipfade beziehen sich auf das Fischertechnik-Upstream-Repo `Agile-Production-Simulation-24V-Dev` (Branch `release`). In unserem Workspace liegt davon eine lokale Spiegelung unter `integrations/APS-CCU/`. Die Links zeigen daher auf unseren lokalen Spiegel, die angezeigten Pfade entsprechen aber der Upstream-Struktur.
 
@@ -159,6 +159,44 @@ Wenn der Schalter deaktiviert ist, wäre aus unserer Sicht das gewünschte Verha
 
 ---
 
+## 3. Quality-Fail-Haertung fuer Parallelbetrieb (deterministisches Clearing + robuste Fortsetzung)
+
+### Fachliche Idee
+
+Die bisherige Clearing-Logik nach `CHECK_QUALITY=FAILED` war in Parallel-Order-Szenarien timing-sensitiv:
+- das Clearing-Ziel war nicht deterministisch (erstes freies Modul)
+- ein Clearing-Fehler konnte den Folgefluss beeintraechtigen
+
+Ziel der Haertung:
+- berechenbareres Clearing-Verhalten
+- bessere Fortsetzung des Rest-Workflows auch bei transienten Clearing-Fehlern
+
+### Umsetzung in unserer Version
+
+1. `sendClearModuleNodeNavigationRequest(...)`:
+   - nur **erreichbare** freie Module werden als Ziel betrachtet
+   - **HBW wird priorisiert** (fachlich stabilere Zielwahl)
+2. `handleActionUpdateQualityCheckFailure(...)`:
+   - Clearing-Aufruf in `try/catch` (Warnung statt Abbruch)
+   - danach immer `retriggerFTSSteps()` und `startNextOrder()`
+
+### Relevante Code-Stellen
+
+- Clearing-Zielauswahl in [navigation.ts](../../integrations/APS-CCU/central-control/src/modules/fts/navigation/navigation.ts#L338-L403)
+- Quality-Fail-Flow in [order-management.ts](../../integrations/APS-CCU/central-control/src/modules/order/management/order-management.ts#L614-L636)
+
+### Tests
+
+- HBW-Praeferenz beim Clearing in [navigation.test.ts](../../integrations/APS-CCU/central-control/src/modules/fts/navigation/navigation.test.ts#L485-L550)
+- Fortsetzung trotz Clearing-Fehler in [order-management.test.ts](../../integrations/APS-CCU/central-control/src/modules/order/management/order-management.test.ts#L752-L797)
+
+### Hinweis fuer Upstream/Fischertechnik
+
+Diese Anpassung ist als Stabilisierung eines intermittierenden Fehlermusters gedacht (nicht als formaler Kausalbeweis).  
+Empfehlung: bei Upstream-Review als optionale Hardening-Verbesserung fuer Parallel-Order-/Quality-Fail-Szenarien pruefen.
+
+---
+
 ## Kurzfassung für eine externe Übergabe
 
 ### Änderung 1
@@ -168,3 +206,15 @@ Wir haben `ccu/order/request` um ein optionales Feld `requestId` erweitert. Die 
 ### Änderung 2
 
 Wir haben den Quality-Fail-Pfad für `PRODUCTION`-Orders so angepasst, dass bei `CHECK_QUALITY = FAILED` kein automatischer Ersatzauftrag erzeugt wird. Stattdessen geht die Order auf `ERROR`, verbleibende Steps werden abgebrochen, die AIQS wird freigegeben und das FTS wird aus der AIQS-Situation heraus freigeräumt. Die fachliche Idee ist, die Folgeentscheidung einem übergeordneten Business-Prozess zu überlassen. Diese Lösung ist bei uns aktuell hart codiert und sollte aus unserer Sicht im Original-Repo eher als konfigurierbare Option geprüft werden. Zusätzlich sollte geprüft werden, ob unsere technische Umsetzung – insbesondere das Clearing des FTS bei parallelen Orders – an der richtigen Stelle und mit der richtigen Semantik umgesetzt ist.
+
+### Änderung 3
+
+Wir haben den Quality-Fail-Flow fuer Parallelbetrieb gehaertet: Clearing-Ziele werden deterministischer gewaehlt (nur erreichbare Ziele, HBW-Praeferenz), Clearing-Fehler werden abgefangen und der Folgefluss wird aktiv fortgesetzt (`retriggerFTSSteps()`, `startNextOrder()`). Damit soll das beobachtete intermittierende Stillstandsmuster reduziert werden.
+
+---
+
+## ORBIS Deploy + Retest
+
+Vor-Ort-Checkliste fuer Deploy und Reproduktionslauf:
+
+- [orbis-ccu-osf3-deploy-and-retest-checklist-2026-05.md](orbis-ccu-osf3-deploy-and-retest-checklist-2026-05.md)

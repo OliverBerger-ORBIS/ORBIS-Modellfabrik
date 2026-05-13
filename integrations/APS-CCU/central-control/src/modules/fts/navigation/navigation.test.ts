@@ -471,6 +471,7 @@ describe('Test Navigation', () => {
       .mockImplementation(moduleId => (moduleId === blockedModuleId ? fts : undefined));
 
     jest.spyOn(PairingStates.getInstance(), 'getAll').mockReturnValue([targetModule]);
+    jest.spyOn(NavigatorService, 'getFTSPath').mockReturnValue({ path: [1], distance: 1 });
     jest.spyOn(NavigatorService, 'getFTSOrder').mockReturnValue(initialOrder);
     jest.spyOn(FactoryLayoutService, 'blockNodeSequence').mockReturnValue();
 
@@ -478,7 +479,64 @@ describe('Test Navigation', () => {
 
     expect(mqtt.publish).toHaveBeenCalledWith(getFtsTopic(FTS_SERIAL, FtsTopic.ORDER), JSON.stringify(expectedOrder));
     expect(readyFtsMock).toHaveBeenNthCalledWith(1, blockedModuleId);
-    expect(readyFtsMock).toHaveBeenNthCalledWith(2, targetModuleId);
+    expect(readyFtsMock).toHaveBeenCalledWith(targetModuleId);
+  });
+
+  it('should prefer reachable HBW target when clearing a blocked module', async () => {
+    const blockedModuleId = 'aiqsModule';
+    const fts: FtsPairedModule = {
+      serialNumber: FTS_SERIAL,
+      type: 'FTS',
+      lastModuleSerialNumber: blockedModuleId,
+    };
+    const hbwModule: PairedModule = {
+      serialNumber: 'hbwModule',
+      type: 'MODULE',
+      subType: ModuleType.HBW,
+      connected: true,
+      pairedSince: new Date(),
+    };
+    const dpsModule: PairedModule = {
+      serialNumber: 'dpsModule',
+      type: 'MODULE',
+      subType: ModuleType.DPS,
+      connected: true,
+      pairedSince: new Date(),
+    };
+    const initialOrder: FtsOrder = {
+      edges: [],
+      nodes: [],
+      orderId: 'someOrderId',
+      orderUpdateId: 0,
+      serialNumber: FTS_SERIAL,
+      timestamp: new Date('2023-02-02T11:46:19.000Z'),
+    };
+
+    jest.spyOn(FtsPairingStates.getInstance(), 'getFtsAtPosition').mockImplementation(moduleId => {
+      if (moduleId === blockedModuleId) {
+        return fts;
+      }
+      return undefined;
+    });
+    jest.spyOn(PairingStates.getInstance(), 'getAll').mockReturnValue([dpsModule, hbwModule]);
+    jest.spyOn(NavigatorService, 'getFTSPath').mockImplementation((start, target, _serialNumber) => {
+      if (start !== blockedModuleId) {
+        return null;
+      }
+      if (target === hbwModule.serialNumber) {
+        return { path: [1, 2], distance: 8 };
+      }
+      if (target === dpsModule.serialNumber) {
+        return { path: [1], distance: 2 };
+      }
+      return null;
+    });
+    const getOrderSpy = jest.spyOn(NavigatorService, 'getFTSOrder').mockReturnValue(initialOrder);
+    jest.spyOn(FactoryLayoutService, 'blockNodeSequence').mockReturnValue();
+
+    await sendClearModuleNodeNavigationRequest(blockedModuleId);
+
+    expect(getOrderSpy).toHaveBeenCalledWith(blockedModuleId, hbwModule.serialNumber, expect.any(String), 0, FTS_SERIAL, expect.any(String));
   });
 
   it('should return a valid path for an FTS that can fulfill the order', async () => {

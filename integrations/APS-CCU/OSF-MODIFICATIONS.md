@@ -18,6 +18,7 @@ Phase-5-Kontext: MES und DSP (ORBIS) übernehmen zunehmend die Steuerung; die CC
 | 1   | ccu/order/request: Optionale Erweiterung um requestId | ✅ Umgesetzt | `common/protocol/ccu.ts`, `central-control/.../order/index.ts` | Sprint 16, Commit d2052f95 |
 | 2   | Quality-Fail: Kein automatischer Ersatzauftrag | ✅ Umgesetzt (seit v1.3.0-osf.1) | `central-control/src/modules/order/management/order-management.ts` | Sprint 17, [Analyse](../../docs/07-analysis/ccu-quality-fail-behaviour-2026-03.md), [DR-21](../../docs/03-decision-records/21-ccu-osf-versioning.md) |
 | 3   | ccu/order/active, completed: Optional serialNumber in NAVIGATION steps | ❌ Zurückgenommen (2026-03) | – | Ursprünglich für AGV-1/AGV-2 Anzeige; entfernt, da potenzielle Ursache für Stillstand |
+| 4   | Quality-Fail-Härtung: deterministisches Clearing + robuste Fortsetzung | ✅ Umgesetzt (ab v1.3.0-osf.3, Deploy ausstehend) | `central-control/src/modules/fts/navigation/navigation.ts`, `central-control/src/modules/order/management/order-management.ts` | 2026-05: intermittierender Stillstand in Parallel-Orders (Timing-sensitiv, 1/4 reproduzierbar) |
 
 ---
 
@@ -74,4 +75,36 @@ Ursprünglich für AGV-1/AGV-2 Anzeige in osf-ui. Entfernt, da potenzielle Ursac
 
 ---
 
-*Letzte Aktualisierung: 2026-03-12*
+### 4. Quality-Fail-Härtung: deterministisches Clearing + robuste Fortsetzung
+
+#### Zweck (Warum)
+
+Bei parallelen Orders wurde ein intermittierender Stillstand beobachtet (nur in einem Teil der Wiederholungsläufe reproduzierbar).  
+Ziel der Härtung: Nach `CHECK_QUALITY=FAILED` soll die Fabrik konsistenter weiterlaufen und nicht vom zufälligen Clearing-Ziel oder transienten Fehlern im Clearing abhängen.
+
+#### Wie (Implementation)
+
+- **Deterministische Zielwahl beim Clearing:**  
+  `sendClearModuleNodeNavigationRequest(...)` berücksichtigt nur **erreichbare** freie Module und priorisiert **HBW** gegenüber anderen Modulen.
+- **Robustes Fehlerverhalten im Quality-Fail-Pfad:**  
+  Fehler bei `sendClearModuleNodeNavigationRequest(...)` werden abgefangen (Warnung statt Abbruch).
+- **Aktive Fortsetzung des Flows:**  
+  Nach Quality-Fail werden `retriggerFTSSteps()` und `startNextOrder()` explizit aufgerufen.
+- **Tests erweitert:**  
+  - Präferenztest für HBW-Clearing in `navigation.test.ts`
+  - Test für Fortsetzung trotz Clearing-Fehler in `order-management.test.ts`
+
+#### Betroffene Dateien
+
+- `central-control/src/modules/fts/navigation/navigation.ts`
+- `central-control/src/modules/fts/navigation/navigation.test.ts`
+- `central-control/src/modules/order/management/order-management.ts`
+- `central-control/src/modules/order/management/order-management.test.ts`
+
+#### Version
+
+- Geplant für Release/Deploy: `v1.3.0-osf.3`
+
+---
+
+*Letzte Aktualisierung: 2026-05-13*

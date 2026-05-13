@@ -655,6 +655,7 @@ describe('Test order management handling', () => {
     const aiqsModuleSerial = 'aiqsModuleSerial';
     jest.spyOn(navCommandSender, 'sendClearModuleNodeNavigationRequest').mockResolvedValue();
     jest.spyOn(OrderManagement.getInstance(), 'retriggerFTSSteps').mockResolvedValue(0);
+    jest.spyOn(OrderManagement.getInstance(), 'startNextOrder').mockResolvedValue();
 
     const orderId = 'orderId';
     const navStepId = 'navStepId';
@@ -707,6 +708,7 @@ describe('Test order management handling', () => {
     // OSF: FTS must be moved away from AIQS so it does not block the module
     expect(navCommandSender.sendClearModuleNodeNavigationRequest).toHaveBeenCalledWith(aiqsModuleSerial);
     expect(underTest.retriggerFTSSteps).toHaveBeenCalled();
+    expect(underTest.startNextOrder).toHaveBeenCalled();
 
     const expectedProdStep: OrderManufactureStep = {
       type: 'MANUFACTURE',
@@ -746,6 +748,51 @@ describe('Test order management handling', () => {
       qos: 2,
       retain: true,
     });
+  });
+
+  it('should continue quality-fail handling even when clear navigation fails', async () => {
+    const aiqsModuleSerial = 'aiqsModuleSerial';
+    jest.spyOn(navCommandSender, 'sendClearModuleNodeNavigationRequest').mockRejectedValue(new Error('simulated clear failure'));
+    jest.spyOn(OrderManagement.getInstance(), 'retriggerFTSSteps').mockResolvedValue(0);
+    jest.spyOn(OrderManagement.getInstance(), 'startNextOrder').mockResolvedValue();
+
+    const orderId = 'orderId';
+    const prodStepId = 'prodStepId';
+    const navStep: OrderNavigationStep = {
+      id: 'navStepId',
+      state: OrderState.ENQUEUED,
+      type: 'NAVIGATION',
+      target: ModuleType.DPS,
+      source: ModuleType.AIQS,
+      dependentActionId: prodStepId,
+    };
+    const prodStep: OrderManufactureStep = {
+      type: 'MANUFACTURE',
+      state: OrderState.IN_PROGRESS,
+      id: prodStepId,
+      moduleType: ModuleType.AIQS,
+      command: ModuleCommandType.CHECK_QUALITY,
+      startedAt: MOCKED_DATE,
+      serialNumber: aiqsModuleSerial,
+    };
+    const activeOrder: OrderResponse = {
+      orderType: 'PRODUCTION',
+      orderId,
+      type: 'BLUE',
+      timestamp: MOCKED_DATE,
+      productionSteps: [prodStep, navStep],
+      state: OrderState.IN_PROGRESS,
+      startedAt: MOCKED_DATE,
+      workpieceId: 'workpieceId',
+    };
+
+    underTest['activeOrders'] = [activeOrder];
+    underTest['orderQueue'] = [activeOrder];
+
+    await expect(underTest.handleActionUpdate(orderId, prodStepId, State.FINISHED, QualityResult.FAILED)).resolves.toBeUndefined();
+    expect(underTest.retriggerFTSSteps).toHaveBeenCalled();
+    expect(underTest.startNextOrder).toHaveBeenCalled();
+    expect(activeOrder.state).toBe(OrderState.ERROR);
   });
 
   it('should return the target for a navigation action id', async () => {

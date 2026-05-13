@@ -345,21 +345,41 @@ export const sendClearModuleNodeNavigationRequest = async (blockedModuleId: stri
   if (!ftsAtModule) {
     return;
   }
-  // Only try to drive to connected modules in the layout, but do not use the charger as that is no normal docking location
-  const freeModule = pairingStates
+  const serialNumber = ftsAtModule.serialNumber;
+  const startPosition = blockedModuleId;
+  const reachableTargets = pairingStates
     .getAll()
-    .find(m => m.pairedSince && m.connected && m.subType !== ModuleType.CHRG && !ftsPairingStates.getFtsAtPosition(m.serialNumber));
-  if (!freeModule) {
+    .filter(
+      m =>
+        m.pairedSince &&
+        m.connected &&
+        m.serialNumber !== blockedModuleId &&
+        m.subType !== ModuleType.CHRG &&
+        !ftsPairingStates.getFtsAtPosition(m.serialNumber),
+    )
+    .map(module => ({
+      module,
+      path: NavigatorService.getFTSPath(startPosition, module.serialNumber, serialNumber),
+    }))
+    .filter(candidate => !!candidate.path)
+    .sort((a, b) => {
+      const aHbwPriority = a.module.subType === ModuleType.HBW ? 0 : 1;
+      const bHbwPriority = b.module.subType === ModuleType.HBW ? 0 : 1;
+      if (aHbwPriority !== bHbwPriority) {
+        return aHbwPriority - bHbwPriority;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return a.path!.distance - b.path!.distance;
+    });
+
+  if (reachableTargets.length === 0) {
     console.log(
-      `ORDER_MANAGEMENT: The docking node for module ${blockedModuleId} is blocked by an FTS, but no other docking location is free`,
+      `ORDER_MANAGEMENT: The docking node for module ${blockedModuleId} is blocked by an FTS, but no reachable free docking location exists`,
     );
     return;
   }
 
-  const serialNumber = ftsAtModule.serialNumber;
-
-  const startPosition = blockedModuleId;
-  const targetPosition = freeModule.serialNumber;
+  const targetPosition = reachableTargets[0].module.serialNumber;
 
   const openBay = ftsPairingStates.getOpenloadingBay(serialNumber);
 

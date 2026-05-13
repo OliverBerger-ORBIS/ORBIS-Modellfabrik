@@ -625,9 +625,15 @@ export class OrderManagement {
     // OSF: Move FTS away from AIQS so it does not block the module. No new production order is created.
     const aiqsModuleSerial = step.serialNumber;
     if (aiqsModuleSerial) {
-      await sendClearModuleNodeNavigationRequest(aiqsModuleSerial);
+      try {
+        await sendClearModuleNodeNavigationRequest(aiqsModuleSerial);
+      } catch (e) {
+        // Clearing can fail transiently (e.g. no path / publish error). Keep the controller progressing anyway.
+        console.warn(`ORDER_MANAGEMENT: Failed to send clearing navigation for AIQS module ${aiqsModuleSerial}`, e);
+      }
     }
     await this.retriggerFTSSteps();
+    await this.startNextOrder();
     return this.sendOrderListUpdate();
   }
 
