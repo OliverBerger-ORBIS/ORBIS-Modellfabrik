@@ -1,6 +1,6 @@
 # Sprint 21 – OCC Feedback & Stabilisierung (v1.1.x)
 
-**Zeitraum:** 01.05.2026 – 15.05.2026 · **Status:** Laufend · **Vorheriger Sprint:** [Sprint 20](./sprint_20.md)
+**Zeitraum:** 01.05.2026 – 15.05.2026 · **Status:** Abgeschlossen · **Vorheriger Sprint:** [Sprint 20](./sprint_20.md)
 
 **Kurz:** OCC-Feedback in konkrete UX-Verbesserungen übersetzen, offene Sprint-20 Punkte fertigstellen, Korrelation Shopfloor↔Sensoren absichern.
 
@@ -19,7 +19,7 @@
 | Stand | Datum | Branches | Functions | Lines | Statements | Gates (B/F/L/S) | Gate-Margin (B/F/L/S) |
 |--------|--------|----------|-----------|-------|------------|------------------|------------------------|
 | Sprint-Start (Baseline) | 10.05.2026 | 35.76% | 45.74% | 44.04% | 43.28% | 30 / 42 / 47 / 46 | +5.76 / +3.74 / -2.96 / -2.72 pp |
-| Aktuell | 11.05.2026 | 39.44% | 49.80% | 49.18% | 48.36% | 30 / 42 / 47 / 46 | +9.44 / +7.80 / +2.18 / +2.36 pp |
+| Aktuell (Sprint-Ende) | 13.05.2026 | 39.44% | 49.80% | 49.18% | 48.36% | 30 / 42 / 47 / 46 | +9.44 / +7.80 / +2.18 / +2.36 pp |
 
 - **Messmethode (konstant):** `NODE_OPTIONS="--max-old-space-size=4096" BASELINE_BROWSER_MAPPING_IGNORE_OLD_DATA=true npx jest --config "osf/apps/osf-ui/jest.config.ts" --runInBand --coverage --coverageDirectory ".tmp-coverage-osf-ui" --coverageReporters=json-summary --coverageThreshold='{}'` (Quelle: `osf/apps/osf-ui/.tmp-coverage-osf-ui/coverage-summary.json`, Feld `total`)
 - **Top-3 Gaps (Test-Fokus):**
@@ -63,7 +63,7 @@
 - [x] Edge Persistence Stack lokal implementiert (Docker Compose, Postgres/Timescale, Grafana-Provisioning, Persistence-Service, Schema/Retention) — lokale Unit-Tests + Type-Checks grün (08.05.2026, `npm run test`, `npm run lint:types`)
 - [x] Lokaler Replay-Smoke-Test erfolgreich (synthetische Arduino-Session): Parsing/Normalisierung verifiziert (`station_id`, `sensor_type`), Reason-Logik mit `EVENT`/`THRESHOLD`/`INTERVAL` nachgewiesen (08.05.2026, SQL-Checks in `sensor_snapshot`)
 - [x] Grafana lokal visuell verifizieren (Dashboards: Systemstatus, Aufträge, Workpiece Trace, Sensor Snapshots, Modul-/FTS-Zustände) inkl. kurzer Abnahme-Notiz — prinzipieller technischer Durchstich-Test erfolgreich (11.05.2026, lokal ohne RPi): Replay (`version1.1.6`/`version1.1.6-test2`) -> MQTT -> Persistence -> Postgres/Timescale -> Grafana durchgaengig validiert; OSF-Dashboard zeigt Orders + Sensor-Daten stabil, DB-Ingestion waehrend Replay nachgewiesen (u. a. `mqtt_raw_message`, `sensor_snapshot`, `shopfloor_event` mit frischen Timestamps/Row-Zuwachs).
-- [ ] Vor-Ort-Abnahme bei ORBIS mit echter Sensor-Station + echten Sessions (2 AGVs) und Bewertung der Datenqualität für OEE/Optimierung/PM
+- [x] Vor-Ort-Abnahme bei ORBIS mit echter Sensor-Station + echten Sessions (2 AGVs) und Bewertung der Datenqualität für OEE/Optimierung/PM — durchgeführt (13.05.2026); Folgethema Datenpfad Live (`192.168.0.100`) vs. Replay (`localhost`) in Sprint 22 konkretisiert
 
 ### Integration & Tests (Übernahme aus Sprint 20)
 
@@ -83,10 +83,10 @@
 
 ### Sprint-Wechsel (am Ende des Sprints abarbeiten)
 
-- [ ] **Versioning/Release:** Session-Manager-Tags sauber namespacen (z. B. `session-manager-v1.4.0`), damit keine Kollision mit OSF-Haupttags (`vX.Y.Z`) entsteht; Konvention in Release-Checkliste verankern
-- [ ] Sprint 21: Status Abgeschlossen, Datum
-- [ ] Sprint 22 anlegen, offene `[ ]` übernehmen
-- [ ] PROJECT_STATUS / Roadmap kurz
+- [x] **Versioning/Release:** Session-Manager-Tags sauber namespacen (z. B. `session-manager-v1.4.0`), damit keine Kollision mit OSF-Haupttags (`vX.Y.Z`) entsteht; Konvention in Release-Checkliste verankern (13.05.2026, in Sprint 22 uebernommen)
+- [x] Sprint 21: Status Abgeschlossen, Datum (13.05.2026)
+- [x] Sprint 22 anlegen, offene `[ ]` übernehmen (13.05.2026)
+- [x] PROJECT_STATUS / Roadmap kurz (13.05.2026)
 
 ---
 
@@ -95,11 +95,6 @@
 - Produkt WHITE „2× Bohren“ (MES/CCU/Kette)
 - Customer **Netzsch** (`NETZSCH_CONFIG`)
 - Arduino: optionales 7-Segment
-- UI-Test-Framework gezielt ausbauen (von 2 Pilot-Tests zu stabiler Abdeckung kritischer Flows mit Tier A + Tier B Nachweisen).
-- Grafana-Dashboards ausbauen (fachliche Panels schärfen, offene Visualisierungs-/Abnahmepunkte systematisch schließen).
-- Deployment vorbereiten: Grafana + Persistence-Stack auf DSP-Docker lauffähig machen (neben local-dev als nächster Zielpfad).
-- APS-Erweiterung: neue NFC-IDs generierbar machen, damit Track&Trace nicht dauerhaft auf denselben NFCs basiert.
-- Unterschiede localhost vs. RPi systematisch abarbeiten (insb. AGV-Erkennung/Anzeige auf RPi als Voraussetzung vor Overlay-Checks).
 
 ---
 
@@ -109,5 +104,5 @@
 
 ---
 
-*Stand: 11.05.2026* · [sprints_README.md](sprints_README.md)
+*Stand: 13.05.2026* · [sprints_README.md](sprints_README.md)
 

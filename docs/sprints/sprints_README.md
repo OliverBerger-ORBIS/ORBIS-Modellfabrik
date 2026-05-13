@@ -63,8 +63,8 @@ Für jeden Sprint gilt ein einheitlicher Ablauf, damit Coverage-Trends vergleich
 - **Feste Position im Sprint-Dokument:** `## Coverage Standing` steht immer zwischen `## Externe Termine` und `## Aufgaben`.
 - **Struktur:** kompakte Tabelle mit mindestens `Sprint-Start (Baseline)` und `Aktuell` (Branches / Functions / Lines / Statements, Gates, Gate-Margins).
 - **Pflege im laufenden Sprint:** Baseline bleibt unverändert, nur `Aktuell` + `Top-3 Gaps` werden nach Messung aktualisiert.
-- **Sprintwechsel-Prüfung:** Coverage-Verlauf (Baseline vs. Aktuell) prüfen; bei fehlender Verbesserung/Stagnation ist Coverage-Verbesserung im Folgesprint ein Pflichtpunkt.
-- **Neuer Sprint (`sprint_XX.md`):** Coverage-Standing-Sektion aus dem Vorgänger übernehmen und initialen Baseline-Wert setzen.
+- **Sprintwechsel-Prüfung (Pflicht):** Am Sprintende Coverage erneut messen und den finalen Wert als `Aktuell` eintragen; erst danach den Sprint abschliessen.
+- **Neuer Sprint (`sprint_XX.md`):** Coverage-Standing-Sektion aus dem Vorgänger übernehmen und den initialen Baseline-Wert aus der finalen Sprint-Ende-Messung des Vorgaengers setzen.
 
 ---
 
@@ -88,7 +88,9 @@ Für jeden Sprint gilt ein einheitlicher Ablauf, damit Coverage-Trends vergleich
 - [Sprint 17](sprint_17.md) – MES/Integration & LogiMAT Vorbereitung (05.03 - 18.03.2026) ✅
 - [Sprint 18](sprint_18.md) – LogiMAT-Messe Durchführung (19.03 - 01.04.2026) ✅
 - [Sprint 19](sprint_19.md) – Sensor-Station, Backend/Grafana & Hannover-Vorbereitung (02.04 - 17.04.2026) ✅
-- [Sprint 20](sprint_20.md) – Hannover Messe & Customer Connect (v1.1.x) (16.04 - 29.04.2026) ⏳ **AKTUELL**
+- [Sprint 20](sprint_20.md) – Hannover Messe & Customer Connect (v1.1.x) (16.04 - 30.04.2026) ✅
+- [Sprint 21](sprint_21.md) – OCC Feedback & Stabilisierung (v1.1.x) (01.05 - 15.05.2026) ✅
+- [Sprint 22](sprint_22.md) – ORBIS Feldbetrieb & Datenpfad-Stabilisierung (16.05 - 29.05.2026) ⏳ **AKTUELL**
 
 ## 📊 Berichte
 - [ORBIS-Projekt-Abschlussbericht Sprints 1-12](ORBIS-Projekt-Abschlussbericht_sprints_01-12.md) – Erstes ORBIS-Projekt (ORBIS-Modellfabrik)
