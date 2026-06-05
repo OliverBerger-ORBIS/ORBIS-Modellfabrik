@@ -1,0 +1,26 @@
+# Sprint-Datumsregel (Do-Wechsel)
+
+Gilt fuer alle Sprint-Dokumente `docs/sprints/sprint_*.md`, den Index `docs/sprints/sprints_README.md` und `docs/PROJECT_STATUS.md`.
+
+## Ziel
+- Sprintwechsel standardmaessig am **Donnerstag**.
+- Ausnahme nur bei **Feiertag am Donnerstag**: Wechsel auf **Mittwoch** oder **Freitag**.
+- Keine stillen Datumsverschiebungen auf Samstag/Sonntag.
+
+## Pflichtpruefung bei jeder Sprint-Anlage/-Aenderung
+1. **Wochentag pruefen** fuer Start- und Enddatum.
+2. Wenn Do-Regel verletzt:
+   - nur korrigieren auf Do (oder Mi/Fr bei Feiertag),
+   - kurze Begruendung im Sprintkopf als Zusatzsatz (`Ausnahme: Feiertag ...`), falls nicht Donnerstag.
+3. **Konsistenz in allen Dateien** sicherstellen:
+   - `docs/sprints/sprint_XX.md` (Zeitraum im Kopf)
+   - `docs/sprints/sprints_README.md` (Sprint-Link-Zeile)
+   - `docs/PROJECT_STATUS.md` (Roadmap-Tabelle + Sprint-Uebersicht)
+4. **Keine Wochenend-Starts** fuer neue Sprints.
+
+## Datumsformat
+- Sprint-Dateien: `DD.MM.YYYY – DD.MM.YYYY`
+- `PROJECT_STATUS.md` Tabellen: bestehendes Format des Dokuments beibehalten.
+
+## Doku-Hygiene
+- Bei jeder Sprint-Datei-Aktualisierung `*Stand: DD.MM.YYYY*` auf aktuelles Datum setzen.

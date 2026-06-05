@@ -1,8 +1,10 @@
 # Sprint 22 – ORBIS Feldbetrieb & Datenpfad-Stabilisierung
 
-**Zeitraum:** 16.05.2026 – 29.05.2026 · **Status:** Laufend · **Vorheriger Sprint:** [Sprint 21](./sprint_21.md)
+**Zeitraum:** 15.05.2026 – 28.05.2026 · **Status:** Abgeschlossen · **Vorheriger Sprint:** [Sprint 21](./sprint_21.md)
 
 **Kurz:** Feldbetrieb bei ORBIS stabilisieren (Live vs. Replay Datenpfade), offene Integrations-/Testpunkte aus Sprint 21 abschliessen und Demo-Readiness fuer den Kundentermin absichern.
+
+**Retrospektive:** Der Sprint wurde operativ durch dringende 3D-Druck-/SLS-Aufgaben fuer die Sensor-Station ueberlagert; dadurch wurden Hardware-Deliverables priorisiert und Integrations-/Testthemen teilweise in Sprint 23 verschoben.
 
 ---
 
@@ -10,7 +12,9 @@
 
 | Datum | Event | Nutzen fuer OSF |
 |--------|--------|----------------|
+| **21.05.2026** | **Spontan-Praesentation OSF** (IT-Leiter von Hörmann USA, Name folgt) mit Richard Reiss als ORBIS-Kundenbetreuer | Kurzfristige Demo-/Argumentationsfaehigkeit gegenueber IT-Entscheidern validieren und Feedback fuer Priorisierung aufnehmen |
 | **22.05.2026** | **Kunde Hager – OSF Praesentation bei ORBIS** | Demo-Readiness, Daten-/Ablaufstabilitaet unter Live-Bedingungen verifizieren |
+| **26.05.2026** | **ORBIS France – Video für Messe** | Erstellen eines Videos zur Demo von OSF/DSP/MES ohne Modellfabrik; zum Abspielen als Dauerschleife |
 
 ---
 
@@ -49,6 +53,17 @@
 - [ ] Deployment vorbereiten: Grafana + Persistence-Stack auf DSP-Docker lauffaehig machen (neben local-dev als naechster Zielpfad).
 - [ ] Session-Manager-Tags sauber namespacen (z. B. `session-manager-vX.Y.Z`) und Konvention in Release-Checkliste verankern.
 
+### Sensor-Station / Mechanik & 3D-Druck
+
+- [ ] Sensor-Station-Layout fuer Transport und Betrieb finalisieren: Sensoren, Ampel, Stromversorgung, Arduino und Breadboard auf einer 15x25 cm Acryl-Grundplatte so positionieren und befestigen, dass alles in die Acryl-Transportbox (gleiche Grundflaeche, 28 cm Hoehe) passt; Betriebskonzept festhalten (Transport: Box ueber Grundplatte stuelpen, Betrieb: Grundplatte auf umgedrehter Box als Sockel, 28 cm ueber Shopfloor-Niveau).
+- [x] 3D-Druck-Umgebung aufgesetzt: Bambu P2S installiert/in Betrieb; OpenSCAD als CAD/Modellierungsplattform im Einsatz.
+- [x] Fusion 360 fuer Druckvorlagen (STL-Workflow) aufgesetzt und fuer Halterungsdesigns eingesetzt.
+- [x] Molex-Halter Prototyp gedruckt und auf 4-PIN-Stecker umgestellt (kleineres Bauformat).
+- [ ] Halterung fuer 24V->12V DC/DC-Wandler inkl. Wago-Klemmen und 2A-Sicherung drucken und fit-checken.
+- [ ] Halterung fuer 12V-DC-Rundbuchse (Barrel Jack) drucken und fit-checken.
+- [x] Gehaeuse/Halterung fuer GL.iNet Router AX3000 WiFi 6 (Modell GL-MT3000) mit Fusion 360 konstruiert und umgesetzt.
+- [ ] Dokumentation ergaenzen: bestehende Verdrahtung als bereits getestet referenzieren; Fokus auf mechanischem Aufbau, Druckteilen, Befestigungspunkten und Montageablauf.
+
 ### Track&Trace / APS
 
 - [ ] APS-Erweiterung: neue NFC-IDs generierbar machen, damit Track&Trace nicht dauerhaft auf denselben NFCs basiert.
@@ -60,8 +75,8 @@
 
 ### Sprint-Wechsel (am Ende des Sprints abarbeiten)
 
-- [ ] Sprint 22: Status Abgeschlossen, Datum
-- [ ] Sprint 23 anlegen, offene `[ ]` übernehmen
+- [x] Sprint 22: Status Abgeschlossen, Datum
+- [x] Sprint 23 anlegen, offene `[ ]` übernehmen
 - [ ] PROJECT_STATUS / Roadmap kurz
 
 ---
@@ -80,4 +95,4 @@
 
 ---
 
-*Stand: 13.05.2026* · [sprints_README.md](sprints_README.md)
+*Stand: 05.06.2026* · [sprints_README.md](sprints_README.md)

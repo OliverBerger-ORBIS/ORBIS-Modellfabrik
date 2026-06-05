@@ -1,6 +1,6 @@
 # Sprint 21 – OCC Feedback & Stabilisierung (v1.1.x)
 
-**Zeitraum:** 01.05.2026 – 15.05.2026 · **Status:** Abgeschlossen · **Vorheriger Sprint:** [Sprint 20](./sprint_20.md)
+**Zeitraum:** 01.05.2026 – 14.05.2026 · **Status:** Abgeschlossen · **Vorheriger Sprint:** [Sprint 20](./sprint_20.md)
 
 **Kurz:** OCC-Feedback in konkrete UX-Verbesserungen übersetzen, offene Sprint-20 Punkte fertigstellen, Korrelation Shopfloor↔Sensoren absichern.
 
@@ -104,5 +104,5 @@
 
 ---
 
-*Stand: 13.05.2026* · [sprints_README.md](sprints_README.md)
+*Stand: 05.06.2026* · [sprints_README.md](sprints_README.md)
 

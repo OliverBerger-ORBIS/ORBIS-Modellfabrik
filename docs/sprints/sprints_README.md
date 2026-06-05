@@ -1,7 +1,7 @@
 # Sprint Documentation Index
 
 Version: 0.5  
-Letzte Aktualisierung: 2026-04-17  
+Letzte Aktualisierung: 2026-06-05  
 
 ---
 
@@ -89,8 +89,9 @@ Für jeden Sprint gilt ein einheitlicher Ablauf, damit Coverage-Trends vergleich
 - [Sprint 18](sprint_18.md) – LogiMAT-Messe Durchführung (19.03 - 01.04.2026) ✅
 - [Sprint 19](sprint_19.md) – Sensor-Station, Backend/Grafana & Hannover-Vorbereitung (02.04 - 17.04.2026) ✅
 - [Sprint 20](sprint_20.md) – Hannover Messe & Customer Connect (v1.1.x) (16.04 - 30.04.2026) ✅
-- [Sprint 21](sprint_21.md) – OCC Feedback & Stabilisierung (v1.1.x) (01.05 - 15.05.2026) ✅
-- [Sprint 22](sprint_22.md) – ORBIS Feldbetrieb & Datenpfad-Stabilisierung (16.05 - 29.05.2026) ⏳ **AKTUELL**
+- [Sprint 21](sprint_21.md) – OCC Feedback & Stabilisierung (v1.1.x) (01.05 - 14.05.2026) ✅
+- [Sprint 22](sprint_22.md) – ORBIS Feldbetrieb & Datenpfad-Stabilisierung (15.05 - 28.05.2026) ✅
+- [Sprint 23](sprint_23.md) – Urlaubssprint & Hardware-Fokus (29.05 - 11.06.2026) ⏳ **AKTUELL**
 
 ## 📊 Berichte
 - [ORBIS-Projekt-Abschlussbericht Sprints 1-12](ORBIS-Projekt-Abschlussbericht_sprints_01-12.md) – Erstes ORBIS-Projekt (ORBIS-Modellfabrik)
