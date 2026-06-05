@@ -77,7 +77,7 @@
 
 - [x] Sprint 22: Status Abgeschlossen, Datum
 - [x] Sprint 23 anlegen, offene `[ ]` übernehmen
-- [ ] PROJECT_STATUS / Roadmap kurz
+- [x] PROJECT_STATUS / Roadmap kurz
 
 ---
 

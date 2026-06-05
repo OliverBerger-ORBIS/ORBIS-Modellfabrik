@@ -1,6 +1,8 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
+  "npm.autoDetect": "off",
+  "task.autoDetect": "on",
   
   // TypeScript Language Server Optimierungen
   "typescript.tsserver.maxTsServerMemory": 4096,

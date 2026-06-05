@@ -1,0 +1,22 @@
+# Sprint-Transition-Integritaet (Pflichtcheck)
+
+Gilt fuer Sprint-Wechsel zwischen `docs/sprints/sprint_XX.md` und `docs/sprints/sprint_YY.md` (YY = XX+1).
+
+## Zweck
+Sicherstellen, dass beim Abschluss eines Sprints keine offenen Aufgaben verloren gehen.
+
+## Pflichtablauf vor `Status: Abgeschlossen`
+1. **Open-Task-Inventar erstellen:** alle `- [ ]` aus `sprint_XX.md` erfassen (ohne Backlog-Stichpunkte ohne Checkbox).
+2. **1:1-Abgleich in neuem Sprint:** jede offene Aufgabe aus `sprint_XX.md` muss in `sprint_YY.md` vorhanden sein.
+3. **Abweichungen explizit kennzeichnen:** falls eine Aufgabe bewusst nicht uebernommen wird, muss im neuen Sprint unter passendem Thema ein Punkt stehen: `Nicht uebernommen aus Sprint XX: <Grund>`.
+4. **Erst dann** darf in `sprint_XX.md` der Punkt `Sprint XX: Status Abgeschlossen` auf `- [x]` gesetzt werden.
+
+## Pflichtkonsistenz bei Sprint-Wechsel
+- `docs/sprints/sprint_XX.md` (Abschluss + Stand-Datum)
+- `docs/sprints/sprint_YY.md` (uebernommene offenen Tasks + Stand-Datum)
+- `docs/sprints/sprints_README.md` (aktueller Sprint-Link/Zeitraum)
+- `docs/PROJECT_STATUS.md` (Roadmap/Sprint-Uebersicht)
+
+## Definition of Done (Sprint-Wechsel)
+- Kein offener `- [ ]` Punkt aus Sprint XX geht ohne expliziten Eintrag verloren.
+- Datums-/Do-Wechsel-Regel aus `sprint-date-cycle.mdc` ist erfuellt.
