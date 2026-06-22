@@ -1,10 +1,8 @@
-# Sprint 23 – Urlaubssprint & Hardware-Fokus
+# Sprint 24 – LOM-Day Vorbereitung & AI-HUB Datenerfassung
 
-**Zeitraum:** 29.05.2026 – 11.06.2026 · **Status:** Abgeschlossen · **Vorheriger Sprint:** [Sprint 22](./sprint_22.md)
+**Zeitraum:** 12.06.2026 – 25.06.2026 · **Status:** Laufend · **Vorheriger Sprint:** [Sprint 23](./sprint_23.md)
 
-**Kurz:** Urlaubssprint mit bewusst reduzierter Umsetzung; Fokus auf pragmatische Hardware-Fortschritte (3D-Druck, Mounting) und Fortsetzung offener Integrationspunkte aus Sprint 22.
-
-**Rahmenbedingung:** Urlaub vom 04.06.2026 bis 12.06.2026. Sprint wird normal geplant, mit erwartbar geringerer Umsetzungsquote.
+**Kurz:** Fortsetzung offener Integrationspunkte, Abschluss zentraler Sensor-Station-Hardwarearbeiten und Start des AI-HUB-Datenerfassungsprojekts (Object Detection/Tracking) als Vorbereitung fuer den LOM-Day.
 
 ---
 
@@ -12,25 +10,25 @@
 
 | Datum | Event | Nutzen fuer OSF |
 |--------|--------|----------------|
-| **01.06.2026** | **Praesentation OSF fuer ORBIS-Amerika-Mitarbeiter** (Christen, Adjud) | Internationales Stakeholder-Feedback zur OSF-Darstellung und Priorisierung der naechsten Schritte |
+| **26.06.2026** | **LOM-Day: Vorstellung der OSF** | Stakeholder-Validierung der aktuellen OSF-Demo, Input fuer Priorisierung nach Sprint 24 |
 
 ---
 
 ## Aufgaben (thematisch, mit Haken)
 
-### ORBIS Feldbetrieb / Integrations-Fortsetzung (Carry-over aus Sprint 22)
+### ORBIS Feldbetrieb / Integrations-Fortsetzung (Carry-over aus Sprint 23)
 
 - [ ] Datenpfad-Regel verbindlich dokumentieren und testen: ORBIS Live -> Broker `192.168.0.100`, Replay -> Broker `localhost`; Abweichungen als Troubleshooting-Checkliste erfassen.
 - [ ] Lokalen Dashboard-Fall "keine orders" reproduzieren und Ursache dokumentieren (Ingest/Replay/Broker-Mapping/DB-Stand).
 - [ ] Unterschiede localhost vs. RPi systematisch abarbeiten (insb. AGV-Erkennung/Anzeige auf RPi als Voraussetzung vor Overlay-Checks).
 
-### Integration & Tests (Carry-over aus Sprint 22)
+### Integration & Tests (Carry-over aus Sprint 23)
 
 - [ ] **UI-Test-Framework (Fortsetzung):** von 2 Pilot-Tests zu stabiler Abdeckung kritischer Flows mit Tier A + Tier B Nachweisen ausbauen.
 - [ ] **dsp/correlation/info** E2E (BLOCKED bis Team-Setup aktiv): End-to-End-Nachweis (Topic-Eingang + UI-Kontext) dokumentieren.
 - [ ] **ccu/order/request** E2E (Ersatzauftrag nach Quality-Fail, BLOCKED bis Team-Setup aktiv): E2E-Nachweis mit klarer Ereigniskette dokumentieren.
 
-### Backend & Deployment (Carry-over aus Sprint 22)
+### Backend & Deployment (Carry-over aus Sprint 23)
 
 - [ ] Grafana-Dashboards ausbauen (fachliche Panels schaerfen, offene Visualisierungs-/Abnahmepunkte systematisch schliessen).
 - [ ] Deployment vorbereiten: Grafana + Persistence-Stack auf DSP-Docker lauffaehig machen (neben local-dev als naechster Zielpfad).
@@ -38,28 +36,33 @@
 
 ### Sensor-Station / 3D-Druck & Mounting
 
-- [ ] Sensor-Station-Layout fuer Transport und Betrieb finalisieren: Sensoren, Ampel, Stromversorgung, Arduino und Breadboard auf einer 15x25 cm Acryl-Grundplatte so positionieren und befestigen, dass alles in die Acryl-Transportbox (gleiche Grundflaeche, 28 cm Hoehe) passt; Betriebskonzept festhalten (Transport: Box ueber Grundplatte stuelpen, Betrieb: Grundplatte auf umgedrehter Box als Sockel, 28 cm ueber Shopfloor-Niveau).
-- [x] Prototyp fuer 24V->12V DC/DC-Wandler-Halterung inkl. Sicherung und Wago-Klemmen in OpenSCAD designt.
-- [ ] Halterung fuer 24V->12V DC/DC-Wandler inkl. Wago-Klemmen und 2A-Sicherung drucken und fit-checken.
-- [x] `gwn6072m-mount` als neuer Router-Mount: Prototyp erstellt und gedruckt.
+- [x] Sensor-Station-Layout fuer Transport und Betrieb finalisiert: neue Grundplatte aufgebaut, Komponenten positioniert und verschraubt.
+- [x] Halterung fuer 24V->12V DC/DC-Wandler inkl. Wago-Klemmen und Sicherung gedruckt und montiert.
+- [x] Halterung fuer 12V-DC-Rundbuchse (Barrel Jack) gedruckt und integriert.
 - [ ] Zielposition fuer `gwn6072m-mount` final entscheiden und verifizieren: ORBIS-Platte oder Platte der Charging-Station.
-- [ ] Halterung fuer 12V-DC-Rundbuchse (Barrel Jack) drucken und fit-checken.
 - [ ] Dokumentation ergaenzen: mechanischer Aufbau, Druckteile, Befestigungspunkte und Montageablauf.
 
-### Track&Trace / APS (Carry-over aus Sprint 22)
+### AI-HUB Kooperation / Datenerfassung
+
+- [x] Zusammenarbeit mit ORBIS AI-HUB (Dr. Abdul) fuer Object Detection und Object Tracking gestartet.
+- [x] Datenbeitrag der OSF festgelegt: Konftel-20 Videodaten mit 60 FPS plus korrelierte NFC-Tag-Informationen aus MQTT.
+- [ ] Datenerhebung durchfuehren: pro Werkstueckfarbe (Blau, Weiss, Rot) mindestens 2 Sequenz-Videos aufnehmen; jede Sequenz enthaelt Storage und Production nacheinander im selben Video (Gesamtziel: mindestens 6 Sequenzen).
+- [ ] Datenablage und Zuordnung dokumentieren (Dateinamen, Farbe, Order-Typ, NFC-Tag, MQTT-Korrelation pro Sequenz).
+
+### Track&Trace / APS (Carry-over aus Sprint 23)
 
 - [ ] APS-Erweiterung: neue NFC-IDs generierbar machen, damit Track&Trace nicht dauerhaft auf denselben NFCs basiert.
 
-### Blog & Organisation (Carry-over aus Sprint 22)
+### Blog & Organisation (Carry-over aus Sprint 23)
 
 - [ ] Blog: Reviews A1, A2, A3
 - [ ] Azure DevOps: Repo/Boards von GitHub
 
 ### Sprint-Wechsel (am Ende des Sprints abarbeiten)
 
-- [x] Sprint 23: Status Abgeschlossen, Datum
-- [x] Sprint 24 anlegen, offene `[ ]` uebernehmen
-- [x] PROJECT_STATUS / Roadmap kurz
+- [ ] Sprint 24: Status Abgeschlossen, Datum
+- [ ] Sprint 25 anlegen, offene `[ ]` uebernehmen
+- [ ] PROJECT_STATUS / Roadmap kurz
 
 ---
 
@@ -71,7 +74,7 @@
 
 ## Links
 
-- [Sprint 22](sprint_22.md) · [PROJECT_STATUS.md](../PROJECT_STATUS.md) · [sprints_README.md](sprints_README.md)
+- [Sprint 23](sprint_23.md) · [PROJECT_STATUS.md](../PROJECT_STATUS.md) · [sprints_README.md](sprints_README.md)
 
 ---
 
