@@ -64,7 +64,7 @@ Neu kompilieren, flashen. Bei DAHEIM: Arduino-IP in der Fritz!Box reservieren (z
 |--------|--------------------|
 | VCC | (+) Bus |
 | GND | (−) Bus |
-| DO | Arduino **D11** |
+| DO | Arduino **D3** |
 
 ### 2.4 DHT11 (3-Pin: links −, Mitte +, rechts S)
 
@@ -72,7 +72,7 @@ Neu kompilieren, flashen. Bei DAHEIM: Arduino-IP in der Fritz!Box reservieren (z
 |--------|--------------------|
 | Mitte (VCC) | (+) Bus |
 | Links (−) GND | (−) Bus |
-| Rechts (S) Data | Arduino **D12** |
+| Rechts (S) Data | Arduino **D2** |
 
 ### 2.5 Flammensensor KY-026
 
@@ -80,7 +80,7 @@ Neu kompilieren, flashen. Bei DAHEIM: Arduino-IP in der Fritz!Box reservieren (z
 |--------|--------------------|
 | VCC | (+) Bus |
 | GND | (−) Bus |
-| AOut (analog) | Arduino **A1** |
+| AOut (analog) | Arduino **A2** |
 
 ### 2.6 MQ-2 Gas-Sensor (Rauch/CO)
 
@@ -88,7 +88,7 @@ Neu kompilieren, flashen. Bei DAHEIM: Arduino-IP in der Fritz!Box reservieren (z
 |--------|--------------------|
 | VCC | (+) Bus |
 | GND | (−) Bus |
-| AOut (analog) | Arduino **A0** |
+| AOut (analog) | Arduino **A3** |
 
 ### 2.7 4-Kanal Relais (5V-Steuerung)
 
@@ -108,6 +108,8 @@ Relais aktiv-niedrig: LOW = ein, HIGH = aus. Ruhe = Grün ein (D7 LOW).
 ### 3.0 Alternative: 12 V aus 24 V-APS (Molex / Step-Down)
 
 Liegt die Sensorstation an einer **24 V-Kaskade** und soll **ohne separates 12 V-Steckernetzteil** auskommen: **ein** DC/DC **24 V→12 V** (z. B. Funduino **F23105924** / XL4005), gemeinsame **12 V-Schiene** für Relais/Ampel und **Arduino VIN** — vollständige BOM, Mermaid-Schema, **DAHEIM vs. ORBIS** (USB + Tisch‑12 V vs. APS) → [sensor-station-24v-bom-wiring.md](sensor-station-24v-bom-wiring.md). **Relais, Ampel und Common Ground** in den folgenden Abschnitten bleiben unverändert; nur die **Quelle** für 12 V+ / 12 V− weicht ab.
+
+**Ist-Stand (QC 22.06.2026):** Konkrete Kabelfarben fuer IN+/IN-/OUT+/OUT- inkl. Wago5-Verteilung, COM1->COM4-Bruecken (rot) und gemessene 12.0 V sind in [sensor-station-24v-bom-wiring.md](sensor-station-24v-bom-wiring.md) unter **6.1 Ist-Stand Verdrahtung** dokumentiert.
 
 ### 3.1 COM-Kette (alle COMs an 12V+)
 
@@ -147,7 +149,7 @@ Ohne Common Ground kann die Relais-Logik fehlschlagen.
 
 ## 4. MQTT & Publish-Verhalten
 
-**Publish-Logik:** Kombiniert: **sofort** bei Zustands-/Level-Wechseln (Alarm-Reaktion) **und zusätzlich periodische Telemetrie** für Korrelation mit Shopfloor-Events (Zeitreihe der Rohwerte). *(Stand: Sketch v1.1.12)*.
+**Publish-Logik:** Kombiniert: **sofort** bei Zustands-/Level-Wechseln (Alarm-Reaktion) **und zusätzlich periodische Telemetrie** für Korrelation mit Shopfloor-Events (Zeitreihe der Rohwerte). *(Stand: Sketch v1.1.13)*.
 
 **Sketch-Versionierung:** SemVer im Header (`#define SKETCH_VERSION "1.1.x"`). Bei jedem Deployment Version anpassen. Serial Monitor zeigt „Sketch v1.1.x“ beim Start. Gängige Praxis: Version im Code, ggf. Git-Tag für Releases.
 
@@ -157,10 +159,13 @@ Ohne Common Ground kann die Relais-Logik fehlschlagen.
 3. Upload, Serial Monitor (9600): „Sketch v1.1.x“ prüfen
 4. MQTT: `mosquitto_sub -h <broker> -t "osf/arduino/#" -v` – alle Sensoren melden?
 
+**Teststatus 22.06.2026 (v1.1.13):** Serial-Sensortest nach Pin-Remap erfolgreich. Relais/Ampel-Lasttest ist bis zum naechsten Vor-Ort-Termin bei ORBIS ausstehend. MQTT-E2E-Test wurde bewusst auf den Folgetag verschoben, da in v1.1.13 keine MQTT-Logik geaendert wurde.
+
 **Upgrade Notes v1.1.9:** State-Topics publish-on-change (keine periodischen 2s Re-Publishes mehr bei Warnung/Alarm).
 **Upgrade Notes v1.1.10:** SW-420 triggert nur **Gelb** (nicht Rot); zusätzlich moderate Entprellung + Print-Drossel im Serial Monitor. MPU-Schwellen: Gelb=18000, Rot=36000.
 **Upgrade Notes v1.1.11:** Fix: `lastPublishedGasLevel` korrekt initialisiert (kein doppeltes Gas-State Publish direkt nach Boot). Debug-Print nutzt eigenes Tracking und funktioniert damit auch im Serial-only Modus (`USE_MQTT=0`).
 **Upgrade Notes v1.1.12:** Periodische Telemetrie-Publishes wieder aktiv (MPU ~1s, DHT ~5s, Flame/Gas ~2s) zusätzlich zu sofortigen Zustandswechsel-Events – wichtig für Event-Korrelation.
+**Upgrade Notes v1.1.13:** Pin-Remap zur saubereren Verkabelung: SW-420 `D3` (grau), DHT11 `D2` (weiss), Flamme `A2` (lila), MQ-2 `A3` (grau). Serial-Test nach Umbau erfolgreich (22.06.2026).
 
 ---
 
@@ -212,10 +217,10 @@ mosquitto_sub -h 192.168.178.65 -t "osf/arduino/#" -v
 - [ ] 5V vom Arduino an Breadboard (+)
 - [ ] GND vom Arduino an Breadboard (−)
 - [ ] MPU-6050: VCC/GND an BB, SDA→A4, SCL→A5
-- [ ] SW-420: VCC/GND an BB, DO→**D11**
-- [ ] DHT11: Mitte→5V, links−→GND, rechts S→**D12**
-- [ ] Flamme: VCC/GND an BB, AOut→**A1**
-- [ ] MQ-2 Gas: VCC/GND an BB, AOut→**A0**
+- [ ] SW-420: VCC/GND an BB, DO→**D3**
+- [ ] DHT11: Mitte→5V, links−→GND, rechts S→**D2**
+- [ ] Flamme: VCC/GND an BB, AOut→**A2**
+- [ ] MQ-2 Gas: VCC/GND an BB, AOut→**A3**
 - [ ] Relais: VCC/GND an BB, IN1→D7, IN2→D8, IN3→D9, IN4→D10
 
 ### 12V-Seite

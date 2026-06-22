@@ -39,6 +39,9 @@
 - [x] Sensor-Station-Layout fuer Transport und Betrieb finalisiert: neue Grundplatte aufgebaut, Komponenten positioniert und verschraubt.
 - [x] Halterung fuer 24V->12V DC/DC-Wandler inkl. Wago-Klemmen und Sicherung gedruckt und montiert.
 - [x] Halterung fuer 12V-DC-Rundbuchse (Barrel Jack) gedruckt und integriert.
+- [x] Verkabelungs-Qualitaetscheck Sensor-Board durchgefuehrt und dokumentiert (22.06.2026): 24V->12V-Pfad, Common Ground und Sensor-Pin-Remap auf Sketch v1.1.13 (SW-420 D3, DHT11 D2, Flame A2, MQ-2 A3) per Serial-Test verifiziert.
+- [ ] Vor-Ort Test ORBIS: Relais/Ampel-Funktion (Gruen/Gelb/Rot/Sirene) mit 12V-Lastpfad pruefen; aktuell ausserhalb ORBIS nicht testbar.
+- [ ] 24V-Molex-Adapterkabel fertigen und testen: fischertechnik Molex 6-Pin auf Sensor-Station Molex 4-Pin (crimpen, Polaritaet pruefen, Lasttest).
 - [ ] Zielposition fuer `gwn6072m-mount` final entscheiden und verifizieren: ORBIS-Platte oder Platte der Charging-Station.
 - [ ] Dokumentation ergaenzen: mechanischer Aufbau, Druckteile, Befestigungspunkte und Montageablauf.
 
@@ -48,6 +51,10 @@
 - [x] Datenbeitrag der OSF festgelegt: Konftel-20 Videodaten mit 60 FPS plus korrelierte NFC-Tag-Informationen aus MQTT.
 - [ ] Datenerhebung durchfuehren: pro Werkstueckfarbe (Blau, Weiss, Rot) mindestens 2 Sequenz-Videos aufnehmen; jede Sequenz enthaelt Storage und Production nacheinander im selben Video (Gesamtziel: mindestens 6 Sequenzen).
 - [ ] Datenablage und Zuordnung dokumentieren (Dateinamen, Farbe, Order-Typ, NFC-Tag, MQTT-Korrelation pro Sequenz).
+
+### Arduino Test-Follow-up
+
+- [ ] MQTT-E2E-Test (auf morgen verschoben): `osf/arduino/#` gegen lokalen Broker pruefen; keine Protokoll-Aenderung in v1.1.13, daher nicht release-blockierend fuer den Pin-Remap.
 
 ### Track&Trace / APS (Carry-over aus Sprint 23)
 

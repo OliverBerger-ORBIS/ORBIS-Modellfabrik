@@ -1,8 +1,8 @@
 /*
  * Projekt: OSF Multi-Sensor – Arduino R4 WiFi
  * Sketch: OSF_MultiSensor_R4WiFi
- * Version: 1.1.12  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
- * Hardware: Arduino Uno R4 WiFi, MPU-6050 (I2C), SW-420 (D11), DHT11 (D12), Flamme (A1), MQ-2 Gas (A0), 4-Ch Relais, 12V Ampel
+ * Version: 1.1.13  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
+ * Hardware: Arduino Uno R4 WiFi, MPU-6050 (I2C), SW-420 (D3), DHT11 (D2), Flamme (A2), MQ-2 Gas (A3), 4-Ch Relais, 12V Ampel
  * Quelle: docs/05-hardware/arduino-r4-multisensor.md
  *
  * Release notes (v1.1.9):
@@ -11,19 +11,21 @@
  * - Serial debug: log magnitude + thresholds on amp light level transitions.
  * Release notes (v1.1.12):
  * - Periodic telemetry publishes for correlation with shopfloor events (keep immediate state changes).
+ * Release notes (v1.1.13):
+ * - Sensor pin remap for cleaner wiring: SW-420 D3, DHT11 D2, Flame A2, MQ-2 A3.
  *
  * Sensoren: MPU-6050 + SW-420 + DHT11 + Flammensensor + MQ-2 Gas. Gemeinsame Ampel (OR-Logik).
  * USE_MQTT: 0 = nur Serial, 1 = MQTT über WiFi
  */
-#define SKETCH_VERSION "1.1.12"
-#define USE_MQTT 1
+#define SKETCH_VERSION "1.1.13"
+#define USE_MQTT 0
 
 /** Relais-Logik: 1 = aktiv-niedrig (LOW=ein, typisch). 0 = aktiv-hoch (HIGH=ein, manche Module). */
 #define RELAY_ACTIVE_LOW 1
 #define RELAY_ON  (RELAY_ACTIVE_LOW ? LOW : HIGH)
 #define RELAY_OFF (RELAY_ACTIVE_LOW ? HIGH : LOW)
 /** Relais-Test beim Start: 2s Grün, 2s Gelb, 2s Rot. 0 = deaktivieren. */
-#define RELAY_STARTUP_TEST 1
+#define RELAY_STARTUP_TEST 0
 
 #define SENSOR_ACTIVE_HIGH 1  // SW-420: 1 = HIGH bei Vibration, 0 = LOW bei Vibration
 
@@ -32,6 +34,12 @@
 #include <math.h>
 #include <MPU6050.h>
 #include <DHT.h>
+
+// Keep core threshold defaults available in both modes (USE_MQTT 0/1).
+const float DHT_TEMP_WARN = 30.0;   // °C – Gelb
+const float DHT_TEMP_DANGER = 35.0; // °C – Rot
+const float DHT_HUM_WARN = 60.0;    // % – Gelb (Orange)
+const float DHT_HUM_DANGER = 85.0;  // % – Rot (Alarm)
 
 #if USE_MQTT
 #include <WiFiS3.h>
@@ -95,10 +103,6 @@ const unsigned long MQTT_MPU_TELEMETRY_INTERVAL = 1000;    // magnitude time ser
 const unsigned long MQTT_DHT_TELEMETRY_INTERVAL = 5000;    // temp/humidity time series
 const unsigned long MQTT_FLAME_TELEMETRY_INTERVAL = 2000;  // raw time series
 const unsigned long MQTT_GAS_TELEMETRY_INTERVAL = 2000;    // raw + level time series
-const float DHT_TEMP_WARN = 30.0;   // °C – Gelb
-const float DHT_TEMP_DANGER = 35.0; // °C – Rot
-const float DHT_HUM_WARN = 60.0;    // % – Gelb (Orange)
-const float DHT_HUM_DANGER = 85.0;  // % – Rot (Alarm)
 
 unsigned long lastReconnectAttempt = 0;
 const unsigned long RECONNECT_INTERVAL = 5000;
@@ -118,11 +122,11 @@ PubSubClient mqttClient(wifiClient);
 // Used for Serial debug output independent of USE_MQTT.
 int lastDebugPrintedLevel = -1;
 
-const int SW420_PIN = 11;
-const int DHT_PIN = 12;  // DHT11 Data. Sensor links→rechts: − GND, Mitte VCC, S Data
-const int FLAME_PIN = A1;  // Flammensensor AO (analog)
+const int SW420_PIN = 3;
+const int DHT_PIN = 2;  // DHT11 Data. Sensor links→rechts: − GND, Mitte VCC, S Data
+const int FLAME_PIN = A2;  // Flammensensor AO (analog)
 const int FLAME_THRESHOLD = 25;  // raw < 25 → Flamme. Ruhe ~38, Feuerzeug nah ~10–15. Poti beeinflusst nur DO, nicht A0!
-const int GAS_PIN = A0;  // MQ-2 Gas-Sensor AO (analog). Hoch = Gefahr (Rauch/CO)
+const int GAS_PIN = A3;  // MQ-2 Gas-Sensor AO (analog). Hoch = Gefahr (Rauch/CO)
 const int GAS_THRESHOLD_WARN = 500;   // Gelb: raw > 500 (erhöhte Konzentration)
 const int GAS_THRESHOLD_DANGER = 750; // Rot: raw > 750 (Alarm, starke Rauch/Gas-Belastung)
 const int FLAME_CONFIRM_SAMPLES = 20;  // N Messungen unter Schwellenwert nötig (20×10ms = 200ms) – filtert Licht-Spitzen

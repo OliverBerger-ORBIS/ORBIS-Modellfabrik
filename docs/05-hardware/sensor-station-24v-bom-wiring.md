@@ -154,6 +154,22 @@ Für steckbaren **2×3**-Pfad (Housing + Kontakte), passend zu **LIYY 4×0,75 
 
 ---
 
+## 6.1 Ist-Stand Verdrahtung (Qualitaetscheck 22.06.2026)
+
+Verifizierter Aufbau am Sensor-Board (ORBI S-Station, 24V-Betrieb):
+
+| Pfad | Ist-Verkabelung |
+|------|------------------|
+| **IN+ (24V)** | Molex **braun + weiss** -> **2A-Sicherung** -> als **weisses Kabel** auf DC/DC **IN+** |
+| **IN- (GND)** | Molex **gelb + gruen** -> als **gelbes Kabel** auf DC/DC **IN-** |
+| **OUT+ (12V, Wago5)** | **braun** auf Wago5 -> Arduino **VIN (rot)**, Relais **COM1** plus Bruecken **COM1->COM4 (rot)**, **Barrel+ (braun)** |
+| **OUT- (GND, Wago5)** | **gruen** auf Wago5 -> **Ampel Common (grau)**, **Barrel- (gruen)**, Arduino **GND (schwarz)** |
+| **DC/DC Ausgangsspannung** | **12.0 V** gemessen |
+
+Hinweis: Diese Farbangaben dokumentieren den **aktuellen Ist-Aufbau** und ergaenzen die logische Verdrahtung aus Abschnitt 3.
+
+---
+
 ## 7. Variante B (nur zur Einordnung — meist schlechterer „Value“)
 
 - Zusätzlich **24 V→5 V** mit USB (z. B. F23108225 / F23108224) für Arduino **und** separat noch 12 V für die Ampel ⇒ **zwei** Wandlerstufen. Für „eine Versorgungsidee + Barrel“ ist **Variante A** (ein XL4005, 12 V für Ampel + VIN) vorzuziehen.
