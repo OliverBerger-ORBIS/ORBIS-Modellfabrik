@@ -18,6 +18,7 @@ import argparse
 import streamlit as st
 
 # Import components
+from session_manager.components.object_detection_capture import show_object_detection_capture
 from session_manager.components.replay_station import show_replay_station
 from session_manager.components.session_recorder import show_session_recorder
 from session_manager.components.settings_manager import SettingsManager
@@ -96,6 +97,7 @@ def main():
     tab_options = [
         "📡 Replay Station",
         "🎙️ Session Recorder",
+        "🎯 Object Detection",
         "⚙️ Einstellungen",
     ]
     tab = st.sidebar.selectbox(
@@ -108,12 +110,14 @@ def main():
         show_replay_station()
     elif tab == "🎙️ Session Recorder":
         show_session_recorder()
+    elif tab == "🎯 Object Detection":
+        show_object_detection_capture()
     elif tab == "⚙️ Einstellungen":
         st.session_state.settings_ui.render_settings_page()
 
     # Footer
     st.sidebar.markdown("---")
-    st.sidebar.markdown("**Session Manager v1.4.0**")
+    st.sidebar.markdown("**Session Manager v1.7.0**")
     st.sidebar.markdown("ORBIS Smart-Factory")
 
 

@@ -43,14 +43,14 @@
 - [ ] Vor-Ort Test ORBIS: Relais/Ampel-Funktion (Gruen/Gelb/Rot/Sirene) mit 12V-Lastpfad pruefen; aktuell ausserhalb ORBIS nicht testbar.
 - [ ] 24V-Molex-Adapterkabel fertigen und testen: fischertechnik Molex 6-Pin auf Sensor-Station Molex 4-Pin (crimpen, Polaritaet pruefen, Lasttest).
 - [ ] Zielposition fuer `gwn6072m-mount` final entscheiden und verifizieren: ORBIS-Platte oder Platte der Charging-Station.
-- [ ] Dokumentation ergaenzen: mechanischer Aufbau, Druckteile, Befestigungspunkte und Montageablauf.
+- [x] Dokumentation ergaenzen: mechanischer Aufbau, Druckteile, Befestigungspunkte und Montageablauf. **Nicht erforderlich** als detaillierte Repo-Doku; Einmal-Aktion ist abgeschlossen und wurde praktisch umgesetzt.
 
 ### AI-HUB Kooperation / Datenerfassung
 
 - [x] Zusammenarbeit mit ORBIS AI-HUB (Dr. Abdul) fuer Object Detection und Object Tracking gestartet.
 - [x] Datenbeitrag der OSF festgelegt: Konftel-20 Videodaten mit 60 FPS plus korrelierte NFC-Tag-Informationen aus MQTT.
 - [ ] Datenerhebung durchfuehren: pro Werkstueckfarbe (Blau, Weiss, Rot) mindestens 2 Sequenz-Videos aufnehmen; jede Sequenz enthaelt Storage und Production nacheinander im selben Video (Gesamtziel: mindestens 6 Sequenzen).
-- [ ] Datenablage und Zuordnung dokumentieren (Dateinamen, Farbe, Order-Typ, NFC-Tag, MQTT-Korrelation pro Sequenz).
+- [x] Datenablage und Zuordnung dokumentieren (Dateinamen, Farbe, Order-Typ, NFC-Tag, MQTT-Korrelation pro Sequenz): MVP-Workflow im Session Manager Tab `Object Detection` eingefuehrt (Session-Ordner je Name, `manifest.json`, `meta_min.jsonl`, optional `events_full.log`, manuelle Videoablage).
 
 ### Arduino Test-Follow-up
 

@@ -11,7 +11,7 @@ Der **Session Manager** ist eine unabhängige Helper App zur Analyse der APS Fis
 - **📊 Analyse** der Nachrichten-Ströme und -Muster (primär extern / OSF; der frühere Tab **Session Analyse** ist aus der App entfernt, Stand v1.4.0)
 - **🔍 Schema-Integration** für automatische Payload-Validierung
 
-**Navigation (v1.4.0):** Sidebar nur noch **Replay Station**, **Session Recorder**, **Einstellungen** (inkl. **Logging & Diagnose**).
+**Navigation (v1.7.0):** Sidebar **Replay Station**, **Session Recorder**, **Object Detection**, **Einstellungen** (inkl. **Logging & Diagnose**).
 
 ## 🎯 Zweck-Diagramm
 
@@ -59,6 +59,7 @@ Die Session Manager Komponenten wurden in folgenden Sprints entwickelt:
 |---------------|-------------|---------------|
 | 📡 **Replay Station** | Sessions wiedergeben | [replay-station.md](replay-station.md) |
 | 🎙️ **Session Recorder** | MQTT-Sessions aufnehmen | [session-recorder.md](session-recorder.md) |
+| 🎯 **Object Detection** | Gefuehrter Capture-Workflow (MVP) | [object-detection-capture.md](object-detection-capture.md) |
 | ⚙️ **Einstellungen** | Replay-, Recorder-, Logging-Pfade und MQTT | (UI in der App; vgl. Recorder-/Replay-Doku) |
 | 🔍 **Template Analysis** (Legacy) | Nicht mehr in der Sidebar; Doku historisch | [template-analysis.md](template-analysis.md) |
 

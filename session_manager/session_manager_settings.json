@@ -30,6 +30,26 @@
       "recording_exclusion_preset": "no_cam"
     }
   },
+  "object_detection": {
+    "capture_settings": {
+      "base_directory": "data/osf-data/sessions/object-detection",
+      "mqtt_broker": {
+        "host": "192.168.0.100",
+        "port": 1883,
+        "qos": 1,
+        "timeout": 5,
+        "username": "default",
+        "password": "default"
+      },
+      "capture": {
+        "topic_filters": [
+          "#"
+        ],
+        "save_full_events": false,
+        "video_filename": "video.mp4"
+      }
+    }
+  },
   "template_analysis": {
     "show_payload_preview": true,
     "max_payload_length": 200

@@ -26,6 +26,13 @@ streamlit run session_manager/app.py --server.port 8502
 - **Auto-Stop:** Automatisches Stoppen nach konfigurierbarer Zeit
 - **Topic-Aufnahme (DR-25):** Preset **„Alle Topics“** oder **„Analyse: ohne Arduino / BME680 / Kamera / LDR“** — letzteres unterdrückt nur den **Schreibpfad** ins Log (`subscribe("#")` unverändert). Konfiguration: Tab *Session Recorder* oder *Einstellungen → Session Recorder*, persistiert in `session_manager_settings.json` als `session_recorder.recording.recording_exclusion_preset` (`none` | `analysis`). Details: [session-recorder.md](../docs/04-howto/helper_apps/session-manager/session-recorder.md), [DR-25](../docs/03-decision-records/25-session-log-topic-filters.md).
 
+### 🎯 Object Detection Capture (MVP)
+- **Gefuehrter Workflow:** Session-Name, Preflight, Start/Stop in eigenem Tab
+- **Automatische Ordneranlage:** `data/osf-data/sessions/object-detection/<session_name>/`
+- **Minimal-Feed:** `meta_min.jsonl` mit `order_id`/`nfc_tag` fuer AI-HUB
+- **Optional QA-Feed:** `events_full.log` separat (nicht Teil des Minimal-Feeds)
+- **Video im MVP:** manuell (z. B. OBS), Dateiname via Workflow/Manifest vorgegeben
+
 ### 🔄 Session Replay
 - **Vollständiger Replay:** Wiederholung aufgezeichneter Sessions (`.log` Dateien, JSON-Zeilen-Format)
 - **Replay-Quellen (UI):**
@@ -132,6 +139,14 @@ ORBIS-Modellfabrik/
 3. Klicke **"🎙️ Recording starten"**
 4. System nimmt alle MQTT-Nachrichten auf
 5. Stoppe mit **"⏹️ Recording stoppen"**
+
+### 1b. Object Detection aufnehmen (MVP)
+1. Öffne **"🎯 Object Detection"** Tab
+2. Session-Name setzen (z. B. `object-detection_white-1`)
+3. **Preflight** grün prüfen
+4. **"▶️ OD-Session starten"**
+5. Videoaufnahme manuell starten (z. B. OBS)
+6. **"⏹️ OD-Session stoppen"** und Video im Session-Ordner ablegen
 
 ### 2. Session abspielen
 1. Öffne **"🔄 Replay Station"** Tab
