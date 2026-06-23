@@ -18,7 +18,7 @@
  * USE_MQTT: 0 = nur Serial, 1 = MQTT über WiFi
  */
 #define SKETCH_VERSION "1.1.13"
-#define USE_MQTT 0
+#define USE_MQTT 1
 
 /** Relais-Logik: 1 = aktiv-niedrig (LOW=ein, typisch). 0 = aktiv-hoch (HIGH=ein, manche Module). */
 #define RELAY_ACTIVE_LOW 1

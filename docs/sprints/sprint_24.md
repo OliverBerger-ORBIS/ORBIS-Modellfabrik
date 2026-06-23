@@ -40,8 +40,8 @@
 - [x] Halterung fuer 24V->12V DC/DC-Wandler inkl. Wago-Klemmen und Sicherung gedruckt und montiert.
 - [x] Halterung fuer 12V-DC-Rundbuchse (Barrel Jack) gedruckt und integriert.
 - [x] Verkabelungs-Qualitaetscheck Sensor-Board durchgefuehrt und dokumentiert (22.06.2026): 24V->12V-Pfad, Common Ground und Sensor-Pin-Remap auf Sketch v1.1.13 (SW-420 D3, DHT11 D2, Flame A2, MQ-2 A3) per Serial-Test verifiziert.
-- [ ] Vor-Ort Test ORBIS: Relais/Ampel-Funktion (Gruen/Gelb/Rot/Sirene) mit 12V-Lastpfad pruefen; aktuell ausserhalb ORBIS nicht testbar.
-- [ ] 24V-Molex-Adapterkabel fertigen und testen: fischertechnik Molex 6-Pin auf Sensor-Station Molex 4-Pin (crimpen, Polaritaet pruefen, Lasttest).
+- [x] Vor-Ort Test ORBIS: Relais/Ampel-Funktion (Gruen/Gelb/Rot/Sirene) mit 12V-Lastpfad pruefen; Sensor-Station ist vor Ort angeschlossen.
+- [x] 24V-Molex-Adapterkabel gefertigt und angeschlossen (23.06.2026): fischertechnik Molex 6-Pin auf Sensor-Station Molex 4-Pin (crimpen, Polaritaet geprueft, Sensor-Station in Betrieb genommen).
 - [ ] Zielposition fuer `gwn6072m-mount` final entscheiden und verifizieren: ORBIS-Platte oder Platte der Charging-Station.
 - [x] Dokumentation ergaenzen: mechanischer Aufbau, Druckteile, Befestigungspunkte und Montageablauf. **Nicht erforderlich** als detaillierte Repo-Doku; Einmal-Aktion ist abgeschlossen und wurde praktisch umgesetzt.
 
@@ -52,9 +52,13 @@
 - [ ] Datenerhebung durchfuehren: pro Werkstueckfarbe (Blau, Weiss, Rot) mindestens 2 Sequenz-Videos aufnehmen; jede Sequenz enthaelt Storage und Production nacheinander im selben Video (Gesamtziel: mindestens 6 Sequenzen).
 - [x] Datenablage und Zuordnung dokumentieren (Dateinamen, Farbe, Order-Typ, NFC-Tag, MQTT-Korrelation pro Sequenz): MVP-Workflow im Session Manager Tab `Object Detection` eingefuehrt (Session-Ordner je Name, `manifest.json`, `meta_min.jsonl`, optional `events_full.log`, manuelle Videoablage).
 
+### Praesentation / Video-Produktion
+
+- [ ] Praesentationsvideo produzieren (OBS Hero+2, MP4): vollstaendige OSF-Demo als durchgaengiges Video aufnehmen und als MP4 exportieren, sodass das Video auf Messen und Kundenterminen ohne physisch verfuegbare OSF abgespielt werden kann.
+
 ### Arduino Test-Follow-up
 
-- [ ] MQTT-E2E-Test (auf morgen verschoben): `osf/arduino/#` gegen lokalen Broker pruefen; keine Protokoll-Aenderung in v1.1.13, daher nicht release-blockierend fuer den Pin-Remap.
+- [x] MQTT-E2E-Test erfolgreich (23.06.2026): Verifikation im ORBIS-Netz direkt ueber OSF Message-Monitor; Arduino-Sketch mit MQTT aktiv und Topics empfangen.
 
 ### Track&Trace / APS (Carry-over aus Sprint 23)
 
@@ -85,4 +89,4 @@
 
 ---
 
-*Stand: 22.06.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 23.06.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
