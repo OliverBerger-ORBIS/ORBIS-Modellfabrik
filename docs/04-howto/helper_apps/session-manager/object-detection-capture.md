@@ -46,6 +46,12 @@ Dateien je Session:
 - Video-Dateiname festlegen (Default `video.mp4`)
 - Topic-Filter setzen (`#` oder eingeschraenkte Filter)
 - Optional: `events_full.log` aktivieren
+- Optional: Preset-Ausschluss fuer `events_full.log` setzen:
+  - `none`
+  - `exclude_cam`
+  - `exclude_aps_sensors`
+  - `exclude_arduino`
+  - `exclude_all_sensors`
 
 ## 2) Preflight
 
@@ -53,7 +59,7 @@ Der Tab prueft:
 - Session-Name gueltig
 - paho-mqtt verfuegbar
 - Ablagepfad beschreibbar
-- Session-Ordner noch nicht vorhanden
+- Session-Ordner noch nicht vorhanden (oder bereits aktiv in derselben laufenden Session)
 - Broker erreichbar
 - Single-Instance-Check fuer lokale Broker (wenn host lokal)
 - Topic-Filter gesetzt
@@ -65,6 +71,7 @@ Nur bei gruener Pruefung startet die Session.
 - Klick auf `OD-Session starten`
 - MQTT-Subscribe auf `#`
 - Automatische Anlage/Initialisierung von `manifest.json` und `meta_min.jsonl`
+- `meta_min.jsonl` und optionale `events_full.log` werden bereits waehrend der Aufnahme fortlaufend geschrieben
 - Minimale Event-Extraktion aus Payloads:
   - Order-Felder: `orderId`, `order_id`, `productionOrderId`, `transportOrderId`
   - NFC-Felder: `nfcTag`, `nfc_tag`, `nfcId`, `nfc_id`, `tagId`
@@ -89,4 +96,5 @@ Video wird im MVP nicht aus dem Session Manager fernbedient. Start in OBS (oder 
 ## Hinweise
 
 - Der MVP ist auf robuste Datenerfassung ausgelegt, nicht auf Vollautomation.
+- Bei Windows-Stop/Restart sorgt Cleanup beim Beenden dafuer, dass MQTT-Loop und Dateihandler sauber geschlossen werden.
 - V2-Erweiterung (optional): OBS-WebSocket Start/Stop direkt aus dem Tab.

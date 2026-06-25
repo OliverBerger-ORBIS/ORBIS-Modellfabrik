@@ -46,6 +46,7 @@
           "#"
         ],
         "save_full_events": false,
+        "full_events_exclusion_preset": "none",
         "video_filename": "video.mp4"
       }
     }

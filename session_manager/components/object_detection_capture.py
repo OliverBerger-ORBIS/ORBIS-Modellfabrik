@@ -9,6 +9,7 @@ Goal:
 
 from __future__ import annotations
 
+import atexit
 import json
 import re
 import socket
@@ -53,11 +54,28 @@ _runtime: dict[str, Any] = {
     "full_file": None,
     "topic_filters": ["#"],
     "save_full_events": False,
+    "full_events_exclusion_preset": "none",
     "captured_min_events": 0,
     "captured_full_events": 0,
     "last_order_id": "",
     "last_nfc_tag": "",
     "started_at": "",
+}
+
+_shutdown_registered = False
+
+# Optional full-events exclusion presets (for QA log only)
+FULL_EVENTS_PRESET_NONE = "none"
+FULL_EVENTS_PRESET_EXCLUDE_CAM = "exclude_cam"
+FULL_EVENTS_PRESET_EXCLUDE_APS_SENSORS = "exclude_aps_sensors"
+FULL_EVENTS_PRESET_EXCLUDE_ARDUINO = "exclude_arduino"
+FULL_EVENTS_PRESET_EXCLUDE_ALL_SENSORS = "exclude_all_sensors"
+VALID_FULL_EVENTS_PRESETS = {
+    FULL_EVENTS_PRESET_NONE,
+    FULL_EVENTS_PRESET_EXCLUDE_CAM,
+    FULL_EVENTS_PRESET_EXCLUDE_APS_SENSORS,
+    FULL_EVENTS_PRESET_EXCLUDE_ARDUINO,
+    FULL_EVENTS_PRESET_EXCLUDE_ALL_SENSORS,
 }
 
 
@@ -75,6 +93,7 @@ def _get_default_settings() -> dict[str, Any]:
         "capture": {
             "topic_filters": ["#"],
             "save_full_events": False,
+            "full_events_exclusion_preset": FULL_EVENTS_PRESET_NONE,
             "video_filename": "video.mp4",
         },
     }
@@ -208,6 +227,46 @@ def _topic_allowed(topic: str, filters: list[str]) -> bool:
     return any(_mqtt_rule_matches(rule.strip(), topic) for rule in filters if rule.strip())
 
 
+def _normalize_full_events_preset(preset: str | None) -> str:
+    if not preset or preset not in VALID_FULL_EVENTS_PRESETS:
+        return FULL_EVENTS_PRESET_NONE
+    return preset
+
+
+def _is_cam_topic(topic: str) -> bool:
+    return topic == "/j1/txt/1/i/cam" or topic.startswith("/j1/txt/1/i/cam/")
+
+
+def _is_aps_sensor_topic(topic: str) -> bool:
+    # APS/TXT-side sensors commonly used in logs
+    return topic in {
+        "/j1/txt/1/i/bme680",
+        "/j1/txt/1/i/bme",
+        "/j1/txt/1/c/bme680",
+        "/j1/txt/1/i/ldr",
+        "/j1/txt/1/c/ldr",
+    }
+
+
+def _is_arduino_sensor_topic(topic: str) -> bool:
+    return topic.startswith("osf/arduino/")
+
+
+def _full_events_allowed(topic: str, preset: str) -> bool:
+    normalized = _normalize_full_events_preset(preset)
+    if normalized == FULL_EVENTS_PRESET_NONE:
+        return True
+    if normalized == FULL_EVENTS_PRESET_EXCLUDE_CAM:
+        return not _is_cam_topic(topic)
+    if normalized == FULL_EVENTS_PRESET_EXCLUDE_APS_SENSORS:
+        return not (_is_cam_topic(topic) or _is_aps_sensor_topic(topic))
+    if normalized == FULL_EVENTS_PRESET_EXCLUDE_ARDUINO:
+        return not _is_arduino_sensor_topic(topic)
+    if normalized == FULL_EVENTS_PRESET_EXCLUDE_ALL_SENSORS:
+        return not (_is_cam_topic(topic) or _is_aps_sensor_topic(topic) or _is_arduino_sensor_topic(topic))
+    return True
+
+
 def _extract_candidate_values(node: Any, keys: set[str], out: list[str]) -> None:
     if isinstance(node, dict):
         for k, v in node.items():
@@ -255,6 +314,9 @@ def _build_manifest(session_name: str, session_dir: Path, settings: dict[str, An
         },
         "topic_filters": settings["capture"].get("topic_filters", ["#"]),
         "save_full_events": bool(settings["capture"].get("save_full_events", False)),
+        "full_events_exclusion_preset": _normalize_full_events_preset(
+            str(settings["capture"].get("full_events_exclusion_preset", FULL_EVENTS_PRESET_NONE))
+        ),
         "counts": {"meta_min_events": 0, "full_events": 0},
         "latest": {"order_id": "", "nfc_tag": ""},
         "notes": "MVP workflow: OBS recording remains manual.",
@@ -288,7 +350,11 @@ def _od_on_message(client, userdata, msg):
             return
 
         # Optional full events log for later QA correlation (kept separate from AI feed)
-        if _runtime["save_full_events"] and _runtime["full_file"] is not None:
+        if (
+            _runtime["save_full_events"]
+            and _runtime["full_file"] is not None
+            and _full_events_allowed(topic, str(_runtime.get("full_events_exclusion_preset", FULL_EVENTS_PRESET_NONE)))
+        ):
             full_entry = {
                 "topic": topic,
                 "payload": payload_raw,
@@ -297,7 +363,6 @@ def _od_on_message(client, userdata, msg):
                 "retain": getattr(msg, "retain", False),
             }
             _runtime["full_file"].write(json.dumps(full_entry, ensure_ascii=False) + "\n")
-            _runtime["full_file"].flush()
             _runtime["captured_full_events"] += 1
 
         if not _topic_allowed(topic, _runtime["topic_filters"]):
@@ -322,7 +387,6 @@ def _od_on_message(client, userdata, msg):
         }
         if _runtime["meta_file"] is not None:
             _runtime["meta_file"].write(json.dumps(meta_entry, ensure_ascii=False) + "\n")
-            _runtime["meta_file"].flush()
             _runtime["captured_min_events"] += 1
 
 
@@ -357,6 +421,26 @@ def _disconnect_runtime_client() -> None:
     _runtime["connected"] = False
 
 
+def _shutdown_runtime_cleanup() -> None:
+    """Best-effort cleanup for interpreter shutdown (helps on Windows)."""
+    with _runtime_lock:
+        has_client = _runtime.get("client") is not None
+        has_files = _runtime.get("meta_file") is not None or _runtime.get("full_file") is not None
+        _runtime["active"] = False
+    if has_client:
+        _disconnect_runtime_client()
+    if has_files:
+        _close_runtime_files()
+
+
+def _ensure_shutdown_hook() -> None:
+    global _shutdown_registered
+    if _shutdown_registered:
+        return
+    atexit.register(_shutdown_runtime_cleanup)
+    _shutdown_registered = True
+
+
 def _preflight_checks(session_name: str, settings: dict[str, Any]) -> list[tuple[str, bool, str]]:
     checks: list[tuple[str, bool, str]] = []
     valid_name, name_reason = _validate_session_name(session_name)
@@ -380,7 +464,12 @@ def _preflight_checks(session_name: str, settings: dict[str, Any]) -> list[tuple
     if valid_name:
         session_dir = base_dir / session_name
         if session_dir.exists():
-            checks.append(("Session-Ordner bereits vorhanden", False, str(session_dir)))
+            with _runtime_lock:
+                active_same_session = bool(_runtime.get("active")) and str(_runtime.get("session_name")) == session_name
+            if active_same_session:
+                checks.append(("Session-Ordner aktiv in Verwendung", True, str(session_dir)))
+            else:
+                checks.append(("Session-Ordner bereits vorhanden", False, str(session_dir)))
         else:
             checks.append(("Session-Ordner frei", True, str(session_dir)))
 
@@ -406,6 +495,7 @@ def _preflight_checks(session_name: str, settings: dict[str, Any]) -> list[tuple
 
 
 def _start_capture(session_name: str, settings: dict[str, Any]) -> tuple[bool, str]:
+    _ensure_shutdown_hook()
     with _runtime_lock:
         if _runtime["active"]:
             return False, "Capture läuft bereits."
@@ -428,7 +518,7 @@ def _start_capture(session_name: str, settings: dict[str, Any]) -> tuple[bool, s
     manifest = _build_manifest(session_name, session_dir, settings)
     _write_manifest(manifest_path, manifest)
 
-    meta_file = open(meta_path, "w", encoding="utf-8")
+    meta_file = open(meta_path, "w", encoding="utf-8", buffering=1)
     meta_file.write(
         json.dumps(
             {
@@ -445,8 +535,11 @@ def _start_capture(session_name: str, settings: dict[str, Any]) -> tuple[bool, s
 
     full_file = None
     save_full_events = bool(settings["capture"].get("save_full_events", False))
+    full_events_exclusion_preset = _normalize_full_events_preset(
+        str(settings["capture"].get("full_events_exclusion_preset", FULL_EVENTS_PRESET_NONE))
+    )
     if save_full_events:
-        full_file = open(full_path, "w", encoding="utf-8")
+        full_file = open(full_path, "w", encoding="utf-8", buffering=1)
 
     try:
         assert mqtt is not None
@@ -481,6 +574,7 @@ def _start_capture(session_name: str, settings: dict[str, Any]) -> tuple[bool, s
                     str(t).strip() for t in settings["capture"].get("topic_filters", ["#"]) if str(t).strip()
                 ],
                 "save_full_events": save_full_events,
+                "full_events_exclusion_preset": full_events_exclusion_preset,
                 "captured_min_events": 0,
                 "captured_full_events": 0,
                 "last_order_id": "",
@@ -500,6 +594,8 @@ def _start_capture(session_name: str, settings: dict[str, Any]) -> tuple[bool, s
 
 
 def _stop_capture(video_filename: str, aborted: bool = False) -> tuple[bool, str]:
+    client_to_disconnect = False
+    files_to_close = False
     with _runtime_lock:
         if not _runtime["active"] and not aborted:
             return False, "Keine aktive OD-Session."
@@ -511,8 +607,14 @@ def _stop_capture(video_filename: str, aborted: bool = False) -> tuple[bool, str
         latest_order = str(_runtime.get("last_order_id", ""))
         latest_nfc = str(_runtime.get("last_nfc_tag", ""))
 
+        client_to_disconnect = _runtime.get("client") is not None
+        files_to_close = _runtime.get("meta_file") is not None or _runtime.get("full_file") is not None
         _runtime["active"] = False
+
+    # Important: disconnect/close outside lock to avoid callback deadlocks on Windows.
+    if client_to_disconnect:
         _disconnect_runtime_client()
+    if files_to_close:
         _close_runtime_files()
 
     if isinstance(manifest_path, Path) and manifest_path.exists():
@@ -537,6 +639,7 @@ def _stop_capture(video_filename: str, aborted: bool = False) -> tuple[bool, str
                 "manifest_path": None,
                 "topic_filters": ["#"],
                 "save_full_events": False,
+                "full_events_exclusion_preset": FULL_EVENTS_PRESET_NONE,
                 "started_at": "",
             }
         )
@@ -564,6 +667,10 @@ def show_object_detection_capture():
         st.session_state.od_video_filename = str(settings["capture"].get("video_filename", "video.mp4"))
     if "od_save_full_events" not in st.session_state:
         st.session_state.od_save_full_events = bool(settings["capture"].get("save_full_events", False))
+    if "od_full_events_exclusion_preset" not in st.session_state:
+        st.session_state.od_full_events_exclusion_preset = _normalize_full_events_preset(
+            str(settings["capture"].get("full_events_exclusion_preset", FULL_EVENTS_PRESET_NONE))
+        )
     if "od_base_directory" not in st.session_state:
         st.session_state.od_base_directory = str(settings["base_directory"])
     if "od_mqtt_host" not in st.session_state:
@@ -610,6 +717,27 @@ def show_object_detection_capture():
             value=st.session_state.od_topic_filters,
             height=100,
             label_visibility="collapsed",
+        )
+        st.session_state.od_full_events_exclusion_preset = st.selectbox(
+            "Preset-Ausschluss fuer optionale Full-Events",
+            options=[
+                FULL_EVENTS_PRESET_NONE,
+                FULL_EVENTS_PRESET_EXCLUDE_CAM,
+                FULL_EVENTS_PRESET_EXCLUDE_APS_SENSORS,
+                FULL_EVENTS_PRESET_EXCLUDE_ARDUINO,
+                FULL_EVENTS_PRESET_EXCLUDE_ALL_SENSORS,
+            ],
+            index=[
+                FULL_EVENTS_PRESET_NONE,
+                FULL_EVENTS_PRESET_EXCLUDE_CAM,
+                FULL_EVENTS_PRESET_EXCLUDE_APS_SENSORS,
+                FULL_EVENTS_PRESET_EXCLUDE_ARDUINO,
+                FULL_EVENTS_PRESET_EXCLUDE_ALL_SENSORS,
+            ].index(st.session_state.od_full_events_exclusion_preset),
+            help=(
+                "Gilt nur fuer `events_full.log` (QA/Korrelation). "
+                "Der minimale OD-Feed (`meta_min.jsonl`) bleibt davon unberuehrt."
+            ),
         )
 
     st.markdown("#### MQTT Broker")
@@ -667,6 +795,9 @@ def show_object_detection_capture():
                 ]
                 or ["#"],
                 "save_full_events": bool(st.session_state.od_save_full_events),
+                "full_events_exclusion_preset": _normalize_full_events_preset(
+                    st.session_state.od_full_events_exclusion_preset
+                ),
                 "video_filename": st.session_state.od_video_filename.strip() or "video.mp4",
             },
         }
@@ -684,6 +815,9 @@ def show_object_detection_capture():
             "topic_filters": [line.strip() for line in st.session_state.od_topic_filters.splitlines() if line.strip()]
             or ["#"],
             "save_full_events": bool(st.session_state.od_save_full_events),
+            "full_events_exclusion_preset": _normalize_full_events_preset(
+                st.session_state.od_full_events_exclusion_preset
+            ),
             "video_filename": st.session_state.od_video_filename.strip() or "video.mp4",
         },
     }
@@ -737,5 +871,7 @@ def show_object_detection_capture():
         "Videoaufnahme bleibt im MVP manuell (z. B. OBS auf Windows):\n"
         "1. Nach `OD-Session starten` Recording in OBS starten\n"
         "2. Nach `OD-Session stoppen` Recording in OBS stoppen\n"
-        "3. Video als angegebenen Dateinamen im Session-Ordner ablegen"
+        "3. Video als angegebenen Dateinamen im Session-Ordner ablegen\n\n"
+        "Tipp: In OBS den Dateinamen/Pfad im Ausgabemodus vor Start anpassen, "
+        "damit kein manuelles Umbenennen mit Timestamp noetig ist."
     )
