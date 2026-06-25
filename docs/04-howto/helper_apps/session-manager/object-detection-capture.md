@@ -74,7 +74,7 @@ Nur bei gruener Pruefung startet die Session.
 - `meta_min.jsonl` und optionale `events_full.log` werden bereits waehrend der Aufnahme fortlaufend geschrieben
 - Minimale Event-Extraktion aus Payloads:
   - Order-Felder: `orderId`, `order_id`, `productionOrderId`, `transportOrderId`
-  - NFC-Felder: `nfcTag`, `nfc_tag`, `nfcId`, `nfc_id`, `tagId`
+  - NFC-Felder: bevorzugt DPS `RGB_NFC` bei `actionState.state=FINISHED` aus `actionState.result`; Fallbacks: `nfcTag`, `nfc_tag`, `nfcId`, `nfc_id`, `tagId`, `workpieceId`, `loadId`
 
 ## 4) Video starten (MVP manuell)
 

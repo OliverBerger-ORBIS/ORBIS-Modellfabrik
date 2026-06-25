@@ -11,7 +11,7 @@ Der **Session Manager** ist eine unabhängige Helper App zur Analyse der APS Fis
 - **📊 Analyse** der Nachrichten-Ströme und -Muster (primär extern / OSF; der frühere Tab **Session Analyse** ist aus der App entfernt, Stand v1.4.0)
 - **🔍 Schema-Integration** für automatische Payload-Validierung
 
-**Navigation (v1.7.0):** Sidebar **Replay Station**, **Session Recorder**, **Object Detection**, **Einstellungen** (inkl. **Logging & Diagnose**).
+**Navigation (v1.7.1):** Sidebar **Replay Station**, **Session Recorder**, **Object Detection**, **Einstellungen** (inkl. **Logging & Diagnose**).
 
 ## 🎯 Zweck-Diagramm
 

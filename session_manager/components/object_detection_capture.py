@@ -39,7 +39,7 @@ logger = get_logger("session_manager.object_detection_capture")
 
 _SESSION_NAME_PATTERN = re.compile(r"^[A-Za-z0-9._-]+$")
 _ORDER_ID_KEYS = {"orderid", "order_id", "productionorderid", "transportorderid"}
-_NFC_TAG_KEYS = {"nfctag", "nfc_tag", "nfcid", "nfc_id", "tagid"}
+_NFC_TAG_KEYS = {"nfctag", "nfc_tag", "nfcid", "nfc_id", "tagid", "workpieceid", "loadid"}
 _PHASE_KEYS = {"phase", "step", "orderphase", "state"}
 
 _runtime_lock = threading.Lock()
@@ -278,6 +278,18 @@ def _extract_candidate_values(node: Any, keys: set[str], out: list[str]) -> None
             _extract_candidate_values(item, keys, out)
 
 
+def _looks_like_nfc_value(value: str) -> bool:
+    normalized = (value or "").strip()
+    if not normalized:
+        return False
+    upper = normalized.upper()
+    if upper in {"PASSED", "FAILED", "NONE", "NULL", "N/A"}:
+        return False
+    if normalized == "0":
+        return False
+    return len(normalized) >= 6
+
+
 def _extract_min_fields(payload_raw: str) -> tuple[str, str, str]:
     try:
         payload = json.loads(payload_raw)
@@ -290,9 +302,36 @@ def _extract_min_fields(payload_raw: str) -> tuple[str, str, str]:
     _extract_candidate_values(payload, _ORDER_ID_KEYS, order_values)
     _extract_candidate_values(payload, _NFC_TAG_KEYS, nfc_values)
     _extract_candidate_values(payload, _PHASE_KEYS, phase_values)
+
+    # Preferred NFC source: DPS RGB_NFC result once the read has finished.
+    # This is the operational point where the NFC tag is effectively available.
+    nfc_from_rgb_nfc = ""
+    if isinstance(payload, dict):
+        action_state = payload.get("actionState")
+        if isinstance(action_state, dict):
+            command = str(action_state.get("command", "")).strip().upper()
+            state = str(action_state.get("state", "")).strip().upper()
+            result = str(action_state.get("result", "")).strip()
+            if command == "RGB_NFC" and state == "FINISHED" and _looks_like_nfc_value(result):
+                nfc_from_rgb_nfc = result
+            if not nfc_from_rgb_nfc:
+                metadata = action_state.get("metadata")
+                if isinstance(metadata, dict):
+                    workpiece_id = str(metadata.get("workpieceId", "")).strip()
+                    if _looks_like_nfc_value(workpiece_id):
+                        nfc_from_rgb_nfc = workpiece_id
+
+    # Fallback: treat workpiece/load IDs as NFC-equivalent identifiers when plausible.
+    nfc_from_generic = ""
+    for candidate in nfc_values:
+        if _looks_like_nfc_value(candidate):
+            nfc_from_generic = candidate
+            break
+
+    chosen_nfc = nfc_from_rgb_nfc or nfc_from_generic
     return (
         order_values[0] if order_values else "",
-        nfc_values[0] if nfc_values else "",
+        chosen_nfc,
         phase_values[0] if phase_values else "",
     )
 

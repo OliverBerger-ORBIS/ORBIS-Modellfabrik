@@ -117,7 +117,7 @@ def main():
 
     # Footer
     st.sidebar.markdown("---")
-    st.sidebar.markdown("**Session Manager v1.7.0**")
+    st.sidebar.markdown("**Session Manager v1.7.1**")
     st.sidebar.markdown("ORBIS Smart-Factory")
 
 
