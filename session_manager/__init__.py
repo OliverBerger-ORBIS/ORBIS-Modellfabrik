@@ -17,5 +17,5 @@ streamlit run session_manager/app.py
 ```
 """
 
-__version__ = "1.7.1"
+__version__ = "1.7.2"
 __author__ = "ORBIS Smart-Factory Team"
