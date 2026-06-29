@@ -1,0 +1,41 @@
+# Session Manager Release Tagging (Namespace Pflicht)
+
+Gilt fuer alle Releases der Helper-App `session_manager/`.
+
+## Ziel
+- Session-Manager-Releases werden ausschliesslich mit Namespaced Tags markiert.
+- Tag-Format ist verbindlich: `session-manager-vX.Y.Z`.
+- Historie wird nie umgeschrieben; alte Tags duerfen nicht verschoben oder geloescht werden.
+
+## Verbindliche Konvention
+1. **Version zuerst aktualisieren** (Single Source fuer Session Manager):
+   - `session_manager/__init__.py` (`__version__`)
+   - `session_manager/app.py` (Sidebar-/UI-Version)
+   - `docs/04-howto/helper_apps/session-manager/README.md` (Navigation-Version)
+2. **SemVer verwenden**:
+   - Patch = Bugfix
+   - Minor = neues Feature
+   - Major = Breaking Change
+3. **Tag immer namespaced**:
+   - `session-manager-v1.7.2` (korrekt)
+   - `v1.7.2` (nicht fuer Session Manager verwenden)
+
+## Release-Ablauf (Pflicht)
+1. Relevante Aenderungen committen.
+2. Konsistenz pruefen:
+   - `rg "__version__|v[0-9]+\\.[0-9]+\\.[0-9]+" session_manager/__init__.py session_manager/app.py docs/04-howto/helper_apps/session-manager/README.md`
+3. Tag setzen:
+   - `git tag session-manager-vX.Y.Z`
+4. Tag pushen:
+   - `git push origin session-manager-vX.Y.Z`
+
+## Retrospektive Tags (erlaubt, ohne Historie zu brechen)
+- Fehlende Namespaced Tags duerfen **zusaetzlich** auf bestehende Release-Commits gesetzt werden.
+- Bereits vorhandene Tags bleiben unveraendert.
+- Beispiel:
+  - `git tag session-manager-v1.6.0 <commit-sha>`
+  - `git push origin session-manager-v1.6.0`
+
+## Doku-Verankerung
+- Die operative Schrittfolge muss in der Checkliste gepflegt sein:
+  - `docs/04-howto/helper_apps/session-manager/release-checklist.md`

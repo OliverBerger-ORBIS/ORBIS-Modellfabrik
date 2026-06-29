@@ -66,6 +66,7 @@ Die Session Manager Komponenten wurden in folgenden Sprints entwickelt:
 ### 🔧 Allgemeine Themen
 
 - [**Troubleshooting**](troubleshooting.md) - Häufige Probleme und Lösungen
+- [**Release-Checkliste**](release-checklist.md) - Verbindlicher Ablauf fuer Version + Tag (`session-manager-vX.Y.Z`)
 
 ## 🚀 Schnellstart
 
