@@ -39,3 +39,6 @@ deploy/osf-ui/docker-images/
 # Mosquitto runtime (persistence)
 mosquitto.db
 
+
+# Session Manager OD capture artifacts (local-only)
+data/osf-data/sessions/object-detection/
