@@ -823,6 +823,16 @@ def show_object_detection_capture():
     st.caption(
         f"MQTT Broker fuer OD-Capture: `{broker['host']}:{broker['port']}` (QoS {broker['qos']}, Timeout {broker['timeout']}s)"
     )
+    if _is_local_mqtt_host(str(broker["host"])):
+        st.warning(
+            "OD-Capture laeuft aktuell gegen lokalen Broker (`localhost`). "
+            "Fuer produktnahe ORBIS-Liveaufnahmen den Fabrik-/RPi-Broker verwenden."
+        )
+    else:
+        st.info(
+            "OD-Capture nutzt einen externen Broker. "
+            "No-Mix-Regel beachten: keine parallelen Replay-Injects auf denselben Topics/Brokern."
+        )
 
     if st.button("💾 OD-Einstellungen speichern", key="od_save_settings_btn"):
         new_settings = {

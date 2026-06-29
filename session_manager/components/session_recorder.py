@@ -213,6 +213,20 @@ def show_session_recorder():
 
     settings_manager = SettingsManager()
     mqtt_settings = settings_manager.get_session_recorder_mqtt_settings()
+    recorder_host = str(mqtt_settings.get("host", "")).strip() or "localhost"
+    recorder_is_local = _is_local_mqtt_host(recorder_host)
+
+    st.info(
+        "ℹ️ **Live-Aufnahme-Modus:** Session Recorder zeichnet Live-MQTT auf "
+        "(z. B. Mode B: Live auf RPi oder Mode C: Live mit lokalem OSF)."
+    )
+    if recorder_is_local:
+        st.warning(
+            "Broker-Ziel ist lokal (`localhost`). Fuer ORBIS-Livebetrieb den Fabrik-/RPi-Broker "
+            "(typisch `192.168.0.100`) verwenden."
+        )
+    else:
+        st.caption("Broker-Ziel ist extern. Das passt fuer Live-Aufnahmen gegen Fabrik-/RPi-Infrastruktur.")
 
     # Tab-spezifische Session State initialisieren (vollständig unabhängig)
     if "session_recorder" not in st.session_state:

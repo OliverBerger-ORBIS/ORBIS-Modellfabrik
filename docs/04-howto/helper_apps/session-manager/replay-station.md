@@ -116,7 +116,7 @@ sequenceDiagram
     participant U as User
     participant UI as Replay Station UI
     participant R as Replay Engine
-    participant DB as SQLite DB
+    participant DB as Session Log (.log)
     participant M as MQTT Broker
     participant D as OSF-UI
     
@@ -157,7 +157,7 @@ sequenceDiagram
 - **Error-Handling:** Graceful Fehlerbehandlung bei MQTT-Problemen
 
 ### **MQTT-Integration**
-- **Broker:** localhost:1883 (Standard MQTT Port)
+- **Broker:** konfigurierbar; lokal meist `localhost:1883`, alternativ externer erreichbarer Broker
 - **QoS:** Level 1 für zuverlässige Übertragung
 - **Retain:** False (nur Live-Replay)
 - **Timeout:** 5 Sekunden pro Nachricht

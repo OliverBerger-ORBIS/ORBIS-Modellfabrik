@@ -46,7 +46,7 @@ Die Session Manager Komponenten wurden in folgenden Sprints entwickelt:
 
 | Komponente | Sprint | Zeitraum | Beschreibung |
 |------------|--------|----------|--------------|
-| **📹 Session Recorder** | Sprint 1 | 24.07 - 06.08.2025 | MQTT-Aufnahme, SQLite + Log-Dateien |
+| **📹 Session Recorder** | Sprint 1 | 24.07 - 06.08.2025 | MQTT-Aufnahme, Session-Logs |
 | **🎬 Replay Station** | Sprint 2 | 07.08 - 22.08.2025 | Session-Wiedergabe für Dashboard-Tests |
 | **🔍 Template Analysis** | Sprint 4 | 04.09 - 17.09.2025 | Registry-Aufbau, Template-Integration |
 | **⚡ Optimierungen** | Sprint 5 | 18.09 - 01.10.2025 | Performance, UI, Integration |
@@ -67,6 +67,7 @@ Die Session Manager Komponenten wurden in folgenden Sprints entwickelt:
 
 - [**Troubleshooting**](troubleshooting.md) - Häufige Probleme und Lösungen
 - [**Release-Checkliste**](release-checklist.md) - Verbindlicher Ablauf fuer Version + Tag (`session-manager-vX.Y.Z`)
+- [**Laufmodi-Matrix**](runtime-modes-matrix.md) - Betriebsmodi und Konfig-Regeln fuer `OSF` + `Session Manager` + `Mosquitto`
 
 ## 🚀 Schnellstart
 

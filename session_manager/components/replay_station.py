@@ -370,6 +370,20 @@ def show_replay_station():
     settings_manager = SettingsManager()
     mqtt_settings = settings_manager.get_mqtt_broker_settings()
     session_directory = settings_manager.get_session_directory()
+    replay_host = str(mqtt_settings.get("host", "")).strip() or "localhost"
+    replay_is_local = _is_local_mqtt_host(replay_host)
+
+    st.info(
+        "ℹ️ **Betriebsmodus A (Local Replay):** Session Manager und OSF lokal betreiben; "
+        "Replay in Session-Dateien ist der Standardfall."
+    )
+    if replay_is_local:
+        st.caption("Broker-Ziel aktuell lokal (`localhost`/loopback). Das passt fuer reproduzierbare Replay-Tests.")
+    else:
+        st.warning(
+            "Replay nutzt einen externen Broker. Achte auf die No-Mix-Regel: "
+            "keinen parallelen Live-Fabrikbetrieb auf denselben Topics/Brokern."
+        )
 
     # Session State für MQTT Parameter speichern
     st.session_state.mqtt_host = mqtt_settings["host"]
@@ -1139,11 +1153,7 @@ def show_replay_controls(rerun_controller: RerunController):
         idx, total = replay_ctrl.progress()
         st.metric("Aktuell", f"{min(idx, total)}/{total}")
     with col3:
-        status = (
-            "▶️ Aktiv"
-            if replay_ctrl.is_running()
-            else ("⏸️ Pausiert" if session.get("is_playing") else "⏹️ Stopp")
-        )
+        status = "▶️ Aktiv" if replay_ctrl.is_running() else ("⏸️ Pausiert" if session.get("is_playing") else "⏹️ Stopp")
         st.metric("Status", status)
 
     # Kontroll-Buttons
@@ -1257,10 +1267,8 @@ def start_replay():
         else str(session.get("file", "Unknown"))
     )
     logger.debug(
-        (
-            f"▶️ Start Replay: Session={session_name}, "
-            f"Index={session['current_index']}, Messages={len(session['messages'])}"
-        )
+        f"▶️ Start Replay: Session={session_name}, "
+        f"Index={session['current_index']}, Messages={len(session['messages'])}"
     )
 
     # Einfache Lösung: Replay direkt starten (ohne Threading)

@@ -2,6 +2,16 @@
 
 ## 🚨 Häufige Probleme und Lösungen
 
+### 🧭 Erstcheck: Modus und Broker-Ziel
+
+Vor jeder Fehlersuche zuerst pruefen:
+
+1. Welcher Modus ist aktiv (Local Replay / Live auf RPi / Live mit lokalem OSF)?
+2. Passt das Broker-Ziel zum Modus?
+   - Replay lokal: oft `localhost`
+   - Live ORBIS/RPi: typischerweise `192.168.0.100`
+3. Keine Live- und Replay-Injects gleichzeitig auf denselben Topics/Brokern (No-Mix-Regel).
+
 ### 📹 Session Recorder
 
 #### **Problem: MQTT-Verbindung fehlgeschlagen**
@@ -24,7 +34,7 @@ Error: Failed to save session
 1. **Verzeichnis prüfen:** `data/osf-data/sessions/` existiert?
 2. **Berechtigung:** Schreibrechte auf Verzeichnis?
 3. **Speicherplatz:** Ausreichend Platz verfügbar?
-4. **SQLite:** SQLite3 installiert?
+4. **Format prüfen:** Recorder schreibt JSON-Lines `.log` Dateien.
 
 ### 🎬 Replay Station
 
@@ -34,7 +44,7 @@ Error: Failed to load session file
 ```
 
 **Lösung:**
-1. **Datei-Format:** SQLite (.db) Datei?
+1. **Datei-Format:** `.log` (JSON-Lines) Datei?
 2. **Datei-Integrität:** Datei beschädigt?
 3. **Pfad:** Korrekter Dateipfad?
 4. **Berechtigung:** Lesezugriff auf Datei?
@@ -96,14 +106,11 @@ netstat -an | grep 1883
 
 ### **Session-Daten prüfen**
 ```bash
-# SQLite-Datenbank öffnen
-sqlite3 data/osf-data/sessions/session_name.db
+# Anzahl Messages in einer Session-Datei prüfen (JSON-Lines)
+wc -l "data/osf-data/sessions/<session>.log"
 
-# Tabellen anzeigen
-.tables
-
-# Message-Count prüfen
-SELECT COUNT(*) FROM messages;
+# Spot-Check auf Topic/Pattern
+rg "ccu/order|dsp/correlation|nfc" "data/osf-data/sessions/<session>.log"
 ```
 
 ## 🆘 Notfall-Lösungen
@@ -114,7 +121,7 @@ SELECT COUNT(*) FROM messages;
 pkill -f "streamlit run"
 
 # Session Manager neu starten
-streamlit run omf/helper_apps/session_manager/session_manager.py
+streamlit run session_manager/app.py
 ```
 
 ### **MQTT-Broker neu starten**
@@ -148,4 +155,5 @@ Bei weiteren Problemen:
 
 - [**Session Recorder**](session-recorder.md) - Aufnahme-Probleme
 - [**Replay Station**](replay-station.md) - Wiedergabe-Probleme
+- [**Laufmodi-Matrix**](runtime-modes-matrix.md) - Modus/Broker-Regeln fuer OSF + Session Manager + Mosquitto
 - [**Template Analysis**](template-analysis.md) - Template-Probleme
