@@ -1,6 +1,6 @@
 # Sprint 24 – LOM-Day Vorbereitung & AI-HUB Datenerfassung
 
-**Zeitraum:** 12.06.2026 – 25.06.2026 · **Status:** Laufend · **Vorheriger Sprint:** [Sprint 23](./sprint_23.md)
+**Zeitraum:** 12.06.2026 – 25.06.2026 · **Status:** Abgeschlossen · **Vorheriger Sprint:** [Sprint 23](./sprint_23.md)
 
 **Kurz:** Fortsetzung offener Integrationspunkte, Abschluss zentraler Sensor-Station-Hardwarearbeiten und Start des AI-HUB-Datenerfassungsprojekts (Object Detection/Tracking) als Vorbereitung fuer den LOM-Day.
 
@@ -10,7 +10,7 @@
 
 | Datum | Event | Nutzen fuer OSF |
 |--------|--------|----------------|
-| **26.06.2026** | **LOM-Day: Vorstellung der OSF** | Stakeholder-Validierung der aktuellen OSF-Demo, Input fuer Priorisierung nach Sprint 24 |
+| — | — | Keine externen Termine im Sprintzeitraum 12.06–25.06 dokumentiert |
 
 ---
 
@@ -49,12 +49,12 @@
 
 - [x] Zusammenarbeit mit ORBIS AI-HUB (Dr. Abdul) fuer Object Detection und Object Tracking gestartet.
 - [x] Datenbeitrag der OSF festgelegt: Konftel-20 Videodaten mit 60 FPS plus korrelierte NFC-Tag-Informationen aus MQTT.
-- [ ] Datenerhebung durchfuehren: pro Werkstueckfarbe (Blau, Weiss, Rot) mindestens 2 Sequenz-Videos aufnehmen; jede Sequenz enthaelt Storage und Production nacheinander im selben Video (Gesamtziel: mindestens 6 Sequenzen).
+- [x] Datenerhebung durchgefuehrt (25.06.2026): OD-Sessions aufgenommen und dem AI-HUB-Team zur Verfuegung gestellt.
 - [x] Datenablage und Zuordnung dokumentieren (Dateinamen, Farbe, Order-Typ, NFC-Tag, MQTT-Korrelation pro Sequenz): MVP-Workflow im Session Manager Tab `Object Detection` eingefuehrt (Session-Ordner je Name, `manifest.json`, `meta_min.jsonl`, optional `events_full.log`, manuelle Videoablage).
 
 ### Praesentation / Video-Produktion
 
-- [ ] Praesentationsvideo produzieren (OBS Hero+2, MP4): vollstaendige OSF-Demo als durchgaengiges Video aufnehmen und als MP4 exportieren, sodass das Video auf Messen und Kundenterminen ohne physisch verfuegbare OSF abgespielt werden kann.
+- [x] Praesentationsvideo Version 1 produziert (OBS Hero+2, MP4): vollstaendige OSF-Demo als durchgaengiges Video exportiert und fuer Messe-/Kundentermine ohne physisch verfuegbare OSF vorbereitet.
 
 ### Arduino Test-Follow-up
 
@@ -71,9 +71,17 @@
 
 ### Sprint-Wechsel (am Ende des Sprints abarbeiten)
 
-- [ ] Sprint 24: Status Abgeschlossen, Datum
-- [ ] Sprint 25 anlegen, offene `[ ]` uebernehmen
-- [ ] PROJECT_STATUS / Roadmap kurz
+- [x] Sprint 24: Status Abgeschlossen, Datum
+- [x] Sprint 25 angelegt, offene `[ ]` uebernommen
+- [x] PROJECT_STATUS / Roadmap kurz
+
+---
+
+## Retrospektive
+
+- Datenerhebung fuer Object Detection erfolgreich gestartet; Sessions an AI-HUB uebergeben.
+- Praesentationsvideo V1 (OBS Hero+2) ist verfuegbar und bildet eine lauffaehige Offline-Demo ab.
+- Offene Integrations-/Deployment-Themen wurden bewusst in den Folge-Sprint uebernommen.
 
 ---
 
@@ -89,4 +97,4 @@
 
 ---
 
-*Stand: 23.06.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 29.06.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)

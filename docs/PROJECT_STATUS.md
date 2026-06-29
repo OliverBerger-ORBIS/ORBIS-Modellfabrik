@@ -1,6 +1,6 @@
 # ORBIS SmartFactory – Projektstatus
 
-**Letzte Aktualisierung:** 2026-06-22
+**Letzte Aktualisierung:** 2026-06-29
 
 > **Workflow:** Die Sprint-Tabelle wird bei jedem Sprint-Abschluss aktualisiert (neue Zeile, Events).  
 > Details: [sprints_README.md – Dokumenten-Workflow](sprints/sprints_README.md#-dokumenten-workflow-aktualität-sicherstellen)
@@ -9,11 +9,11 @@
 - OSF (vormals OMF3) produktionsreif für Kunden-Demos; **LogiMAT 2026 durchgeführt** (Demo mit zwei AGVs erfolgreich).
 - **Messe-WLAN:** Nur **2,4 GHz** am Stand → **bekanntes Risiko** für Instabilität; angesichts der **ortsbedingten Einschränkung** keine zuverlässige technische „Lösung“ zu erwarten — **Lessons Learned** für weitere Events (Erwartungsmanagement). Siehe [sprint_18.md – Messe-Ergebnis](sprints/sprint_18.md).
 - OMF2 als Legacy eingefroren.
-- Aktuelle Entwicklung: **Phase 5** — **Sprint 24** (LOM-Day-Vorbereitung, AI-HUB Datenerfassung und Integrations-Carry-over aus Sprint 23).
+- Aktuelle Entwicklung: **Phase 5** — **Sprint 25** (LOM-Day-Nachbereitung, Praesentationstechnik und Integrations-Carry-over aus Sprint 24).
 - **ORBIS-SmartFactory** ab Sprint 13 (Genehmigung ausstehend, Arbeit wird fortgeführt).
 
 ## 🔥 Aktuelle Schwerpunkte
-- **Sprint 24:** LOM-Day-Vorbereitung (26.06), AI-HUB Datenerfassung fuer Object Detection/Tracking (Konftel-20 60 FPS + NFC/MQTT-Korrelation) und Abschluss offener Integrationspunkte. Details: [sprint_24.md](sprints/sprint_24.md).
+- **Sprint 25:** LOM-Day-Nachbereitung (26.06), Verbesserungen der Praesentationstechnik (Desktop-/Fancy-Zones-Workflow) und Fortsetzung offener Integrationsaufgaben. Details: [sprint_25.md](sprints/sprint_25.md).
 - **02.04.2026:** ORBIS-internes **Vertriebsmeeting** — **OSF-Präsentation** für Vertrieb durchgeführt (Start Sprint 19).
 - Letzter großer Außenauftritt: **Hannover Messe** + **ORBIS Customer-Connect** (siehe Roadmap).
 - **Phase 5 – MES/DSP-Integration:** ORBIS MES und DSP übernehmen zunehmend die Steuerung (QM-Check, Order-Entscheidungen). APS-CCU als Interim-Layer; Modifikationen: [integrations/APS-CCU/OSF-MODIFICATIONS.md](../integrations/APS-CCU/OSF-MODIFICATIONS.md).
@@ -26,7 +26,8 @@
 
 | Sprint | Zeitraum | Ereignis / Fokus | Status |
 |--------|----------|------------------|--------|
-| **24** | **12.06.26 - 25.06.26** | LOM-Day Vorbereitung; AI-HUB Datenerfassung (Object Detection/Tracking); Integrations-Carry-over ([sprint_24](sprints/sprint_24.md)) | **Laufend** |
+| **25** | **26.06.26 - 09.07.26** | LOM-Day Nachbereitung; Praesentationstechnik (Desktop/Fancy-Zones); Integrations-Carry-over ([sprint_25](sprints/sprint_25.md)) | **Laufend** |
+| **24** | **12.06.26 - 25.06.26** | LOM-Day Vorbereitung; AI-HUB Datenerfassung (Object Detection/Tracking); Integrations-Carry-over ([sprint_24](sprints/sprint_24.md)) | **Abgeschlossen** |
 | **23** | **29.05.26 - 11.06.26** | Urlaubssprint; reduzierte Umsetzung; Hardware-/Mounting-Fokus; ORBIS-Amerika-Praesentation 01.06. ([sprint_23](sprints/sprint_23.md)) | **Abgeschlossen** |
 | **22** | **15.05.26 - 28.05.26** | ORBIS Feldbetrieb; Live-vs-Replay Datenpfad; Integrationsnachweise; Hager-Praesentation ([sprint_22](sprints/sprint_22.md)) | **Abgeschlossen** |
 | **21** | **01.05.26 - 14.05.26** | OCC-Feedback & Stabilisierung; Functional View Default OCC; Track&Trace Korrelation ([sprint_21](sprints/sprint_21.md)) | **Abgeschlossen** |
@@ -64,7 +65,8 @@
 | 21 | 01.05 - 14.05.2026 | ORBIS-SmartFactory | Phase 5 | OCC Follow-ups (Functional View Default OCC, UX-Flows, Track&Trace Korrelation) |
 | 22 | 15.05 - 28.05.2026 | ORBIS-SmartFactory | Phase 5 | Kunde Hager: OSF-Praesentation bei ORBIS (22.05.2026); Fokus Datenpfad Live vs. Replay |
 | 23 | 29.05 - 11.06.2026 | ORBIS-SmartFactory | Phase 5 | Urlaubssprint (Urlaub 04.06–12.06); ORBIS-Amerika-Praesentation (Christen, Adjud) am 01.06.2026; Hardware-Fokus (DC/DC- und Router-Mount-Prototypen) |
-| 24 | 12.06 - 25.06.2026 | ORBIS-SmartFactory | Phase 5 | LOM-Day Planung (26.06); AI-HUB Kooperation (Dr. Abdul) fuer Object Detection/Tracking; Datenerfassung mit Sequenzvideos (Storage->Production) |
+| 24 | 12.06 - 25.06.2026 | ORBIS-SmartFactory | Phase 5 | LOM-Day Vorbereitung; AI-HUB Kooperation (Dr. Abdul) fuer Object Detection/Tracking; OD-Sessions aufgenommen und bereitgestellt; Praesentationsvideo V1 (OBS Hero+2) erstellt |
+| 25 | 26.06 - 09.07.2026 | ORBIS-SmartFactory | Phase 5 | LOM-Day Durchfuehrung/Nachbereitung (26.06): OSF inhaltlich erfolgreich, MES/SAP mit hoher Latenz; Fokus auf Verbesserung der Praesentationstechnik |
 
 > **Spalten-Erläuterung:**  
 > - **ORBIS-Projekt:** Interne Projektzuordnung für Abrechnung (ORBIS-Modellfabrik bzw. ORBIS-SmartFactory).  
