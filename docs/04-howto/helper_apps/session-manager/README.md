@@ -11,7 +11,7 @@ Der **Session Manager** ist eine unabhängige Helper App zur Analyse der APS Fis
 - **📊 Analyse** der Nachrichten-Ströme und -Muster (primär extern / OSF; der frühere Tab **Session Analyse** ist aus der App entfernt, Stand v1.4.0)
 - **🔍 Schema-Integration** für automatische Payload-Validierung
 
-**Navigation (v1.7.2):** Sidebar **Replay Station**, **Session Recorder**, **Object Detection**, **Einstellungen** (inkl. **Logging & Diagnose**).
+**Navigation (v1.7.3):** Sidebar **Replay Station**, **Session Recorder**, **Object Detection**, **Einstellungen** (inkl. **Logging & Diagnose**).
 
 ## 🎯 Zweck-Diagramm
 
@@ -75,6 +75,17 @@ Die Session Manager Komponenten wurden in folgenden Sprints entwickelt:
 # Session Manager starten
 streamlit run session_manager/app.py
 ```
+
+### Windows-MQTT-Vorbereitung
+
+Wenn OSF auf Windows lokal gegen den Session Manager laufen soll, vor dem Start der UI einmal die lokale WebSocket-Bridge aktivieren:
+
+```powershell
+.\scripts\start-mosquitto-ws-bridge.ps1
+streamlit run session_manager/app.py
+```
+
+Der Mosquitto-Dienst bedient dabei `localhost:1883`; die Bridge stellt `ws://localhost:9001` fuer den Browser bereit.
 
 ## 📈 Sprint-Zuordnung
 

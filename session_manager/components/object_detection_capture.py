@@ -12,6 +12,7 @@ from __future__ import annotations
 import atexit
 import json
 import re
+import shutil
 import socket
 import subprocess
 import threading
@@ -146,35 +147,72 @@ def _is_local_mqtt_host(host: str) -> bool:
 
 
 def _local_listener_pids(port: int) -> tuple[set[int], str]:
-    try:
-        result = subprocess.run(
-            ["lsof", "-nP", f"-iTCP:{int(port)}", "-sTCP:LISTEN"],
-            check=False,
-            capture_output=True,
-            text=True,
-        )
-    except FileNotFoundError:
-        return set(), "lsof not available"
-    except Exception as exc:
-        return set(), str(exc)
-
-    if result.returncode != 0 and not result.stdout.strip():
-        return set(), ""
-
-    lines = [line for line in result.stdout.splitlines() if line.strip()]
-    if len(lines) <= 1:
-        return set(), ""
-
-    pids: set[int] = set()
-    for line in lines[1:]:
-        parts = line.split()
-        if len(parts) < 2:
-            continue
+    if shutil.which("lsof"):
         try:
-            pids.add(int(parts[1]))
-        except ValueError:
-            continue
-    return pids, ""
+            result = subprocess.run(
+                ["lsof", "-nP", f"-iTCP:{int(port)}", "-sTCP:LISTEN"],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+        except Exception as exc:
+            return set(), str(exc)
+
+        if result.returncode != 0 and not result.stdout.strip():
+            return set(), ""
+
+        lines = [line for line in result.stdout.splitlines() if line.strip()]
+        if len(lines) <= 1:
+            return set(), ""
+
+        pids: set[int] = set()
+        for line in lines[1:]:
+            parts = line.split()
+            if len(parts) < 2:
+                continue
+            try:
+                pids.add(int(parts[1]))
+            except ValueError:
+                continue
+        return pids, ""
+
+    if shutil.which("netstat"):
+        try:
+            result = subprocess.run(
+                ["netstat", "-ano", "-p", "tcp"],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+        except Exception as exc:
+            return set(), str(exc)
+
+        if result.returncode != 0 and not result.stdout.strip():
+            return set(), ""
+
+        pids: set[int] = set()
+        suffix = f":{int(port)}"
+        for line in result.stdout.splitlines():
+            parts = line.split()
+            if len(parts) < 5:
+                continue
+            proto = parts[0].upper()
+            local_addr = parts[1]
+            remote_addr = parts[2]
+            pid_str = parts[-1]
+            if proto != "TCP":
+                continue
+            if not local_addr.endswith(suffix):
+                continue
+            if not remote_addr.endswith(":0"):
+                continue
+            try:
+                pids.add(int(pid_str))
+            except ValueError:
+                continue
+        return pids, ""
+
+    return set(), "neither lsof nor netstat available"
 
 
 def _mqtt_single_instance_preflight(host: str, port: int) -> tuple[bool, str]:

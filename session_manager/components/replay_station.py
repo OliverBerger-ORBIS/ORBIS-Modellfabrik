@@ -8,7 +8,9 @@ Isolierte Version ohne OMF-Dependencies
 
 import json
 import logging
+import platform
 import re
+import shutil
 import subprocess
 import threading
 import time
@@ -44,38 +46,77 @@ def _is_local_mqtt_host(host: str) -> bool:
 
 def _local_listener_pids(port: int) -> tuple[set[int], str]:
     """
-    Read local TCP LISTEN pids for a port via lsof.
+    Read local TCP LISTEN pids for a port.
+    - Unix/macOS: via lsof
+    - Windows (fallback): via netstat -ano
     Returns (pids, error_message). error_message is empty on success.
     """
-    try:
-        result = subprocess.run(
-            ["lsof", "-nP", f"-iTCP:{int(port)}", "-sTCP:LISTEN"],
-            check=False,
-            capture_output=True,
-            text=True,
-        )
-    except FileNotFoundError:
-        return set(), "lsof not available"
-    except OSError as exc:
-        return set(), str(exc)
-
-    if result.returncode != 0 and not result.stdout.strip():
-        return set(), ""
-
-    lines = [line for line in result.stdout.splitlines() if line.strip()]
-    if len(lines) <= 1:
-        return set(), ""
-
-    pids: set[int] = set()
-    for line in lines[1:]:
-        parts = line.split()
-        if len(parts) < 2:
-            continue
+    if shutil.which("lsof"):
         try:
-            pids.add(int(parts[1]))
-        except ValueError:
-            continue
-    return pids, ""
+            result = subprocess.run(
+                ["lsof", "-nP", f"-iTCP:{int(port)}", "-sTCP:LISTEN"],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+        except OSError as exc:
+            return set(), str(exc)
+
+        if result.returncode != 0 and not result.stdout.strip():
+            return set(), ""
+
+        lines = [line for line in result.stdout.splitlines() if line.strip()]
+        if len(lines) <= 1:
+            return set(), ""
+
+        pids: set[int] = set()
+        for line in lines[1:]:
+            parts = line.split()
+            if len(parts) < 2:
+                continue
+            try:
+                pids.add(int(parts[1]))
+            except ValueError:
+                continue
+        return pids, ""
+
+    if shutil.which("netstat"):
+        try:
+            result = subprocess.run(
+                ["netstat", "-ano", "-p", "tcp"],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+        except OSError as exc:
+            return set(), str(exc)
+
+        if result.returncode != 0 and not result.stdout.strip():
+            return set(), ""
+
+        pids: set[int] = set()
+        suffix = f":{int(port)}"
+        for line in result.stdout.splitlines():
+            parts = line.split()
+            if len(parts) < 5:
+                continue
+            proto = parts[0].upper()
+            local_addr = parts[1]
+            remote_addr = parts[2]
+            pid_str = parts[-1]
+            if proto != "TCP":
+                continue
+            if not local_addr.endswith(suffix):
+                continue
+            if not remote_addr.endswith(":0"):
+                continue
+            try:
+                pids.add(int(pid_str))
+            except ValueError:
+                continue
+        return pids, ""
+
+    return set(), "neither lsof nor netstat available"
 
 
 def _local_single_broker_pid(host: str, port: int) -> tuple[Optional[int], str]:
@@ -111,6 +152,51 @@ def _local_mqtt_related_pids() -> tuple[set[int], str]:
     return all_pids, ""
 
 
+def _pid_process_name(pid: int) -> str:
+    """Best effort process-name lookup for a pid."""
+    if pid <= 0:
+        return ""
+    if shutil.which("tasklist"):
+        try:
+            result = subprocess.run(
+                ["tasklist", "/FI", f"PID eq {int(pid)}", "/FO", "CSV", "/NH"],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            line = (result.stdout or "").strip()
+            if line and "No tasks are running" not in line:
+                first_col = line.split(",", maxsplit=1)[0].strip().strip('"')
+                return first_col.lower()
+        except OSError:
+            return ""
+    return ""
+
+
+def _allow_split_mosquitto_setup(broker_pid: Optional[int], ws_pids: set[int], all_related_pids: set[int]) -> bool:
+    """
+    Allow a pragmatic Windows/local-dev setup:
+    - TCP 1883 is served by one mosquitto process (service)
+    - WS 9001 is served by another mosquitto process (bridge)
+    - no extra MQTT-related listener processes exist
+    """
+    if platform.system().lower() != "windows":
+        return False
+
+    if not broker_pid or len(ws_pids) != 1:
+        return False
+
+    ws_pid = next(iter(ws_pids))
+    if len(all_related_pids) > 2:
+        return False
+    if not {broker_pid, ws_pid}.issubset(all_related_pids):
+        return False
+
+    broker_name = _pid_process_name(broker_pid)
+    ws_name = _pid_process_name(ws_pid)
+    return "mosquitto" in broker_name and "mosquitto" in ws_name
+
+
 def _mqtt_single_instance_preflight(host: str, port: int) -> tuple[bool, str]:
     """
     Guard against accidental local double broker setups.
@@ -127,17 +213,29 @@ def _mqtt_single_instance_preflight(host: str, port: int) -> tuple[bool, str]:
     if ws_err:
         logger.warning(f"⚠️ MQTT preflight websocket check skipped: {ws_err}")
     elif broker_pid and ws_pids and broker_pid not in ws_pids:
-        ws_pid_list = ", ".join(str(pid) for pid in sorted(ws_pids))
-        return False, (
-            f"MQTT preflight failed: MQTT {host}:{port} runs as pid {broker_pid}, "
-            f"but websocket port 9001 is served by pid(s) {ws_pid_list}. "
-            "Use exactly one broker instance for replay."
+        mqtt_related_pids_tmp, related_err_tmp = _local_mqtt_related_pids()
+        if related_err_tmp:
+            return False, f"MQTT preflight failed: {related_err_tmp}"
+        if not _allow_split_mosquitto_setup(broker_pid, ws_pids, mqtt_related_pids_tmp):
+            ws_pid_list = ", ".join(str(pid) for pid in sorted(ws_pids))
+            return False, (
+                f"MQTT preflight failed: MQTT {host}:{port} runs as pid {broker_pid}, "
+                f"but websocket port 9001 is served by pid(s) {ws_pid_list}. "
+                "Use exactly one broker instance for replay."
+            )
+        logger.warning(
+            "MQTT preflight: split mosquitto setup accepted (TCP and WS via separate mosquitto pids)."
         )
 
     mqtt_related_pids, related_err = _local_mqtt_related_pids()
     if related_err:
         return False, f"MQTT preflight failed: {related_err}"
     if len(mqtt_related_pids) > 1:
+        if _allow_split_mosquitto_setup(broker_pid, ws_pids, mqtt_related_pids):
+            logger.warning(
+                "MQTT preflight: multiple MQTT listener pids accepted due to split mosquitto bridge setup."
+            )
+            return True, ""
         pid_list = ", ".join(str(pid) for pid in sorted(mqtt_related_pids))
         return False, (
             f"MQTT preflight failed: multiple local MQTT-related listener processes detected ({pid_list}). "

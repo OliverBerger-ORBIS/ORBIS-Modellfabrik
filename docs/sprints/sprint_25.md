@@ -35,7 +35,8 @@
 
 - [x] Datenpfad-Regel verbindlich dokumentieren: ORBIS Live -> Broker `192.168.0.100`; Replay -> erreichbarer Replay-Broker (lokal `localhost` oder externer Broker); Abweichungen in einer Troubleshooting-Checkliste erfassen. *(Ursprung: Sprint 22; 29.06.2026: `runtime-modes-matrix.md`, `troubleshooting.md`)*
 - [x] Betriebsmodi + Konfig-Matrix fuer `OSF`/`Session Manager`/`Mosquitto` kompakt dokumentieren (Mode A: Local Replay, Mode B: Live auf RPi, Mode C: Live mit lokalem OSF) inkl. klarer No-Mix-Regel fuer Live+Replay auf denselben Topics/Brokern. *(Ursprung: Sprint 25; 29.06.2026: `docs/04-howto/helper_apps/session-manager/runtime-modes-matrix.md`)*
-- [ ] Replay-Modus auf Windows-Rechner verifizieren (inkl. Betrieb ohne lokalen Mosquitto, wenn ein externer Broker erreichbar ist). *(Ursprung: Sprint 25)*
+- [x] Windows-Startpfad fuer Replay dokumentiert und automatisiert: Mosquitto-Service auf `localhost:1883` plus WebSocket-Bridge auf `ws://localhost:9001` via `scripts/start-mosquitto-ws-bridge.ps1`; OSF- und Session-Manager-Checks auf Windows verifiziert. *(29.06.2026)*
+- [x] Replay-Modus auf Windows-Rechner verifizieren (inkl. Betrieb mit lokalen Mosquitto). *(Ursprung: Sprint 25)*
 - [ ] Live-Modus am ORBIS-Setup verifizieren (BLOCKED solange kein Zugriff vor Ort moeglich ist). *(Ursprung: Sprint 25)*
 - [ ] Lokalen Dashboard-Fall "keine orders" reproduzieren und die Ursache dokumentieren (Ingest/Replay/Broker-Mapping/DB-Stand). *(Ursprung: Sprint 22)*
 - [ ] Unterschiede zwischen localhost und RPi systematisch abarbeiten (insb. AGV-Erkennung/Anzeige auf RPi als Voraussetzung vor Overlay-Checks). *(Ursprung: Sprint 22)*

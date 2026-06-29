@@ -6,7 +6,8 @@ Die **Replay Station** ermöglicht das Einspielen von aufgezeichneten MQTT-Sessi
 
 > **Mode-Policy (verbindlich):**
 > - **LIVE-Modus** auf RPi/Edge-Node: Persistence-Service nutzt `env.live` (APS-Broker).
-> - **REPLAY-Modus** lokal auf dem Mac: Persistence-Service nutzt `env.replay` (localhost-Broker via Docker Host Gateway).
+> - **REPLAY-Modus auf macOS**: Persistence-Service nutzt `env.replay` (localhost-Broker via Docker Host Gateway) wie bisher.
+> - **REPLAY-Modus auf Windows**: Mosquitto laeuft lokal auf `localhost:1883`; die WebSocket-Bridge fuer den Browser wird mit `scripts/start-mosquitto-ws-bridge.ps1` auf `ws://localhost:9001` gestartet.
 > - Replay ist ein Testmodus und nicht fuer produktionsnahe Deployments gedacht.
 
 **Vorteile:**
@@ -163,6 +164,7 @@ sequenceDiagram
 - **Timeout:** 5 Sekunden pro Nachricht
 - **Preflight-Guard (Singleton):** Vor allen Sendepfaden (`Verbindung testen`, `Play`, `Preloads`, `Test-Topics`, `Test-Messages`) blockiert die Replay Station bei doppelten lokalen Broker-Instanzen
 - **Single-Broker-Regel:** Es darf lokal nur **eine** Broker-Instanz aktiv sein, die MQTT und optional WebSocket bedient
+- **Windows-Startpfad:** `mosquitto`-Dienst auf 1883 + `scripts/start-mosquitto-ws-bridge.ps1` fuer 9001; danach kann OSF mit `localhost:9001` verbinden
 
 ### **Broker-Check (CLI)**
 
@@ -171,6 +173,8 @@ Vor Replay-Smoke-Tests einmal lokal ausführen:
 ```bash
 ./scripts/mqtt-single-instance-check.sh
 ```
+
+Windows: zuerst `scripts/start-mosquitto-ws-bridge.ps1` starten, dann den Replay-Smoke-Test in OSF oder im Session Manager ausfuehren.
 
 Erwartung:
 - `OK` → genau eine Broker-Instanz bedient MQTT/WebSocket
