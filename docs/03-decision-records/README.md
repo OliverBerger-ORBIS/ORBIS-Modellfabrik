@@ -102,6 +102,10 @@ OCC als kanonischer Default, 9 Edge-Function-Icons in der Functional Story, Mana
 **Status:** Accepted | **Datum:** 2026-05-08  
 Zielzustand Edge statt RPi fuer Persistenz/Grafana, deploy-variabel in Phase 1 (local/rpi/edge), PostgreSQL+Timescale als primaere DB, read-only MQTT-Ingest und generisches Sensor-Metrikmodell.
 
+### 29. [Windows-Praesentation ueber virtuelle Desktops (ohne FancyZones, OBS nur Kamera)](29-windows-desktops-presentation-without-fancyzones.md)
+**Status:** Accepted | **Datum:** 2026-07-08  
+Praesentationsbetrieb mit Windows-Bordmitteln (virtuelle Desktops + Desktop-Wechsel), ohne FancyZones/PowerToys-Pflicht; OBS ausschliesslich fuer Kamera-Quelle und Preview.
+
 ---
 
 ## Template
@@ -110,4 +114,4 @@ Für neue Decision Records: [decision_template.md](decision_template.md)
 
 ---
 
-*Letzte Aktualisierung: 2026-05-08*
+*Letzte Aktualisierung: 2026-07-08*

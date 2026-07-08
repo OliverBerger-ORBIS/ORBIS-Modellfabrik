@@ -2,6 +2,9 @@
 
 Diese Anleitung beschreibt den **vereinfachten Zielstandard** fuer Messe- und Videokonferenz-Setups.
 
+Schneller Operator-Pfad (Checkliste):
+- [Windows Präsentations-Setup – Desktops + Teams + OBS (Normal/Replay)](windows-desktops-teams-obs-setup-checklist.md)
+
 ## Geltender Standard (ab 06.05.2026)
 
 - **OBS wird nur fuer die Kamera-Quelle verwendet** (Kamera aktiv, Kamera-Rotation).
@@ -29,6 +32,7 @@ Diese Ansatze sind zu fragil und zu fehleranfaellig fuer den produktiven Demo-Be
 ### 1.1 OBS (nur Kamera)
 
 - Eine Kamera-Quelle (`cam_usb`) als Video-Capture-Device
+- Fallback erlaubt: Built-in-Laptop-Kamera, wenn Konftel-20 nicht angeschlossen ist
 - Optional wenige Kamera-Szenen (z. B. `CAM_WIDE`, `CAM_STATION`, `CAM_DETAIL`) fuer schnelle Umschaltung
 - Keine Browser-Window-Captures als Pflichtbestandteil der Hauptpraesentation
 - Wichtig: **USB-Kamera immer anschliessen, bevor OBS geoeffnet wird** (sonst fehlerhafte oder fehlende Source-Zuordnung)

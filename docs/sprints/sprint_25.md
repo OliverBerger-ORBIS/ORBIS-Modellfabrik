@@ -2,7 +2,7 @@
 
 **Zeitraum:** 26.06.2026 – 09.07.2026 · **Status:** Laufend · **Vorheriger Sprint:** [Sprint 24](./sprint_24.md)
 
-**Kurz:** Nachbereitung des LOM-Day, Stabilisierung der Praesentationstechnik (Desktop-/Fancy-Zones-Workflow) und transparente Bearbeitung offener Integrationspunkte mit Task-Historie.
+**Kurz:** Nachbereitung des LOM-Day, Stabilisierung der Praesentationstechnik (Windows-Desktops-Workflow ohne FancyZones) und transparente Bearbeitung offener Integrationspunkte mit Task-Historie.
 
 ---
 
@@ -21,14 +21,14 @@
 - [x] LOM-Day Ergebnis dokumentiert (26.06.2026): OSF-Praesentation inhaltlich erfolgreich.
 - [ ] MES/SAP-Latenzzeiten aus dem LOM-Day technisch nachanalysieren und fuer Demo-Betrieb priorisierte Gegenmassnahmen festlegen. *(Ursprung: Sprint 25)*
 - [ ] Praesentationstechnik aus LOM-Day aufarbeiten: Ursachenanalyse fuer unbefriedigende Beamer-Darstellung dokumentieren. *(Ursprung: Sprint 25)*
-
 ### Praesentationstechnik (neu)
 
-- [ ] Handlungsanweisung erstellen: Setup A (Sharing Laptop-Monitor unter Windows) fuer Praesentationen. *(Ursprung: Sprint 25)*
-- [ ] Handlungsanweisung erstellen: Setup B (Sharing zweiter Monitor) fuer Praesentationen. *(Ursprung: Sprint 25)*
-- [ ] Desktop-Szenenmodell verbindlich beschreiben und testen: Desktop 1 (Vorbereitung, nie sharen), Desktop 2 (Fullscreen), Desktop 3 (Hero+2). *(Ursprung: Sprint 25)*
-- [ ] Checkliste fuer Aufbau/Vorbereitung vor Kundenpraesentationen erstellen und gegen zwei Testdurchlaeufe verifizieren. *(Ursprung: Sprint 25)*
-- [ ] Praesentationsvideo V1 reviewen und entscheiden: OBS-Ansatz beibehalten oder Umstellung auf Teams-Monitor + Fancy-Zones/Desktops. *(Ursprung: Sprint 25, Vorarbeit: Sprint 24)*
+- [x] Handlungsanweisung erstellt: Setup A (Sharing Laptop-Monitor unter Windows) als Quick-Checklist dokumentiert. *(Ursprung: Sprint 25; 29.06.2026: `docs/04-howto/presentation/windows-desktops-teams-obs-setup-checklist.md`)*
+- [x] Handlungsanweisung erstellt: Setup B (Sharing zweiter Monitor) in derselben Quick-Checklist dokumentiert. *(Ursprung: Sprint 25; 29.06.2026: `docs/04-howto/presentation/windows-desktops-teams-obs-setup-checklist.md`)*
+- [x] Desktop-Szenenmodell verbindlich beschrieben und aktualisiert: Desktop 1 (`Working`), Desktop 2 (`Fullscreen`), Desktop 3 (`Hero` mit Digital Twin + Kamera-Preview). *(Ursprung: Sprint 25; fortlaufend aktualisiert in `docs/04-howto/presentation/windows-desktops-teams-obs-setup-checklist.md`)*
+- [x] Checkliste fuer Aufbau/Vorbereitung gegen zwei Testdurchlaeufe verifiziert. *(29.06.2026 erster Testlauf erfolgreich; 08.07.2026 erneuter Test nach Windows-Neustart erfolgreich)*
+- [x] Zielentscheidung dokumentiert: Praesentation mit Windows-Bordmitteln (virtuelle Desktops + Desktop-Wechsel), **kein FancyZones**, **keine OBS-Praesentation** (OBS nur Kamera). *(DR: `docs/03-decision-records/29-windows-desktops-presentation-without-fancyzones.md`)*
+- [ ] Erprobung laufend: 6-Aktionen-Workflow stabilisieren (Modus waehlen -> Apps starten -> auf Desktops verteilen -> anordnen/Zoom pruefen -> Desktop-Wechsel testen -> optional Teams Recording); Kamera Konftel-20 vs. Built-in weiter validieren. *(Offen: Konftel-Feineinstellung vor Ort bei ORBIS)*
 - *Wozu: Aufbau einer stabilen, reproduzierbaren und schnell einrichtbaren Praesentations-Umgebung auf dem ORBIS-Windows-Rechner, unabhaengig vom Ziel-Setup (Beamer, zweiter Monitor oder nur Laptop-Monitor).*
 
 ### ORBIS Feldbetrieb / Integrations-Fortsetzung
@@ -93,4 +93,4 @@
 
 ---
 
-*Stand: 29.06.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 08.07.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
