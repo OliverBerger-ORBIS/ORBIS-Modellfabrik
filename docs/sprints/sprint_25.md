@@ -53,7 +53,6 @@
 - [ ] Grafana-Dashboards ausbauen (fachliche Panels schaerfen, offene Visualisierungs-/Abnahmepunkte systematisch schliessen). *(Ursprung: Sprint 22)*
 - [ ] Deployment vorbereiten: Grafana + Persistence-Stack auf DSP-Docker lauffaehig machen (neben local-dev als naechster Zielpfad). *(Ursprung: Sprint 22)*
 - [x] Session-Manager-Tags sauber namespacen (z. B. `session-manager-vX.Y.Z`) und Konvention in Release-Checkliste verankern.
-- [ ] **RPi OSF-UI v1.1.7 deployen** (vorbereitet, Deploy spaeter vor Ort): nach Push `npm run docker:osf-ui:deploy -- ff22@192.168.0.100` — Checkliste [rpi-deployment.md](../04-howto/deployment/rpi-deployment.md).
 - *Wozu: Stabiles Deployment auf RPi sicherstellen, damit die komplette Praesentation nicht vom Arbeitsrechner, lokalen Versionen oder einer lokalen Angular-App auf `localhost` abhaengt.*
 
 ### Router GWN 7062m
@@ -87,6 +86,7 @@
 ## Erledigt
 
 - [x] **OSF-UI I18n (EN-Source-Strings):** DPS-Terminologie, DSP-Architektur-Geraete-Labels, Functional Steps 4–12, Deployment-Pipeline, Sensor-/Shopfloor-UI; FR Label-Wrap AIQS/DPS — manuell EN/DE/FR verifiziert (09.07.2026). Release **v1.1.7**.
+- [x] **RPi OSF-UI v1.1.7:** Preflight (LAN, Docker, SSH) + `npm run docker:osf-ui:deploy -- ff22@192.168.0.100` — `osf-ui-prod` orbis-osf-ui:1.1.7, HTTP :8080 OK (09.07.2026).
 
 ---
 
