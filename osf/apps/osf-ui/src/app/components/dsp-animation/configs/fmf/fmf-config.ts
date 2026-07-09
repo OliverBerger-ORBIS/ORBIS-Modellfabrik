@@ -33,7 +33,7 @@ export const FMF_CONFIG: CustomerDspConfig = {
     },
     {
       id: 'sf-device-dps',
-      label: $localize`:@@deviceDPS:Goods In- / and Outbound`,
+      label: $localize`:@@deviceDPS:Delivery and / Pickup Station`,
       iconKey: 'conveyor', // Not used, customIconPath takes precedence
       customIconPath: 'device-dps', // Use correct DPS icon
     },

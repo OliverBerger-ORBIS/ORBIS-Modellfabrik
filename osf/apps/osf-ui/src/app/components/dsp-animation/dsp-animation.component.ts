@@ -191,14 +191,14 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     'sf-system-factory': $localize`:@@dspArchLabelFactory:Factory`,
     'sf-system-fts': $localize`:@@dspArchLabelFTS:AGV\nSystem`,
     // Device labels with manual break hints (" / ") for consistent wrapping
-    'sf-device-mill': $localize`:@@deviceMILL:Fräs / station`,
-    'sf-device-drill': $localize`:@@deviceDRILL:Bohr / station`,
-    'sf-device-aiqs': $localize`:@@deviceAIQS:KI- / Qualitäts / station`,
-    'sf-device-hbw': $localize`:@@deviceHBW:Hochregal / lager`,
-    'sf-device-dps': $localize`:@@deviceDPS:Waren Ein- / und Ausgang`,
-    'sf-device-chrg': $localize`:@@deviceCHRG:Lade- / station`,
-    'sf-device-conveyor': $localize`:@@deviceConveyor:Förder- / station`,
-    'sf-device-stone-oven': $localize`:@@deviceStoneOven:Ofen / station`,
+    'sf-device-mill': $localize`:@@deviceMILL:Mill / station`,
+    'sf-device-drill': $localize`:@@deviceDRILL:Drill / station`,
+    'sf-device-aiqs': $localize`:@@deviceAIQS:AI / Quality / station`,
+    'sf-device-hbw': $localize`:@@deviceHBW:High-bay / warehouse`,
+    'sf-device-dps': $localize`:@@deviceDPS:Delivery and / Pickup Station`,
+    'sf-device-chrg': $localize`:@@deviceCHRG:Charging / station`,
+    'sf-device-conveyor': $localize`:@@deviceConveyor:Conveyor / station`,
+    'sf-device-stone-oven': $localize`:@@deviceStoneOven:Oven / station`,
     // DSP Edge Components
     'edge-comp-disc': $localize`:@@edgeComponentDisc:DISC`,
     'edge-comp-event-bus': $localize`:@@edgeComponentEventBus:Event Bus`,
@@ -698,8 +698,8 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
         const part = parts[i].trim();
         if (!part) continue;
         
-        // Check if this part needs a hyphen when breaking (if it doesn't already end with one)
-        const needsHyphen = i < parts.length - 1 && !part.endsWith('-');
+        // Hyphenate only for single-token prefix parts (e.g. "Mill", "Lade-"), not multi-word phrases
+        const needsHyphen = i < parts.length - 1 && !part.endsWith('-') && !/\s/.test(part);
         
         // Further split long parts if needed
         if (part.length > maxCharsPerLine) {
@@ -718,8 +718,7 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
             }
           }
           if (current && lines.length < maxLines) {
-            // If this is not the last part and doesn't end with hyphen, add hyphen
-            if (i < parts.length - 1 && !current.endsWith('-')) {
+            if (i < parts.length - 1 && !current.endsWith('-') && !/\s/.test(current)) {
               lines.push(`${current}-`);
             } else {
               lines.push(current);

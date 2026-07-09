@@ -265,6 +265,39 @@ describe('DspAnimationComponent - Label Wrapping', () => {
           expect(lines[1]).toContain('Station');
         }
       });
+
+      it('should wrap DPS label in two lines at standard device box width', () => {
+        const container = createContainer(
+          'sf-device-dps',
+          'Delivery and / Pickup Station',
+          120,
+          12
+        );
+        component['containers'] = [container];
+        const lines = (component as any).getWrappedLabelLines(container);
+        expect(lines).toEqual(['Delivery and', 'Pickup Station']);
+      });
+
+      it('should wrap FR AIQS label in two lines at standard device box width', () => {
+        component['containerLabels']['sf-device-aiqs'] = 'IA Qualité / station';
+        const container = createContainer('sf-device-aiqs', 'IA Qualité / station', 120, 12);
+        component['containers'] = [container];
+        const lines = (component as any).getWrappedLabelLines(container);
+        expect(lines).toEqual(['IA Qualité', 'station']);
+      });
+
+      it('should wrap FR DPS label in two lines at standard device box width', () => {
+        component['containerLabels']['sf-device-dps'] = 'Livraison et / collecte-station';
+        const container = createContainer(
+          'sf-device-dps',
+          'Livraison et / collecte-station',
+          120,
+          12
+        );
+        component['containers'] = [container];
+        const lines = (component as any).getWrappedLabelLines(container);
+        expect(lines).toEqual(['Livraison et', 'collecte-station']);
+      });
     });
 
     describe('Max lines limit', () => {

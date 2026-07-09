@@ -193,7 +193,7 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
       label: $localize`:@@processModuleAiQs:AI Quality Station`,
       icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['AIQS']),
     },
-    DPS: { label: $localize`:@@processModuleDps:Goods outgoing`, icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS']) },
+    DPS: { label: $localize`:@@processModuleDps:Delivery and Pickup`, icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS']) },
   };
 
   constructor(

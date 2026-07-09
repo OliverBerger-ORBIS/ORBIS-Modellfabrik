@@ -145,8 +145,8 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     // Step 4: Interoperability
     {
       id: 'step-4',
-      label: $localize`:@@dspArchStepInterop:Interoperabilität`,
-      description: $localize`:@@dspArchStepInteropDesc:DSP ermöglicht herstellerunabhängige, ereignisgesteuerte Kommunikation zwischen Maschinen, Shopfloor-Systemen und IT-Plattformen.`,
+      label: $localize`:@@dspArchStepInterop:Interoperability`,
+      description: $localize`:@@dspArchStepInteropDesc:DSP enables vendor-independent, event-driven communication between machines, shopfloor systems, and IT platforms.`,
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
@@ -178,8 +178,8 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     // Step 5: Shopfloor Connectivity
     {
       id: 'step-5',
-      label: $localize`:@@dspArchStepConnectivity:Shopfloor-Konnektivität`,
-      description: $localize`:@@dspArchStepConnectivityDesc:DSP verbindet Maschinen, Sensoren, Logistiksysteme und Shopfloor-Assets über direkte, bidirektionale Kommunikation – ohne Eingriffe in bestehende Steuerungslogik.`,
+      label: $localize`:@@dspArchStepConnectivity:Shopfloor Connectivity`,
+      description: $localize`:@@dspArchStepConnectivityDesc:DSP connects machines, sensors, logistics systems, and shopfloor assets through direct, bidirectional communication without interfering with existing control logic.`,
       visibleContainerIds: ['layer-dsp', 'dsp-edge', ...baseShopfloorContainers],
       highlightedContainerIds: ['dsp-edge'],
       visibleConnectionIds: customerConfig
@@ -209,8 +209,8 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     // Step 6: Event-Driven Processing
     {
       id: 'step-6',
-      label: $localize`:@@dspArchStepEvent:Ereignisgesteuerte Verarbeitung`,
-      description: $localize`:@@dspArchStepEventDesc:DSP verarbeitet Shopfloor-Ereignisse in Echtzeit und übersetzt technische Signale in prozessrelevante Informationen.`,
+      label: $localize`:@@dspArchStepEvent:Event-Driven Processing`,
+      description: $localize`:@@dspArchStepEventDesc:DSP processes shopfloor events in real time and translates technical signals into process-relevant information.`,
       visibleContainerIds: ['layer-dsp', 'dsp-edge', ...baseShopfloorContainers],
       highlightedContainerIds: ['dsp-edge'],
       visibleConnectionIds: customerConfig
@@ -245,8 +245,8 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     // Step 7: Decentralized Process Choreography
     {
       id: 'step-7',
-      label: $localize`:@@dspArchStepChoreo:Dezentrale Prozesschoreografie`,
-      description: $localize`:@@dspArchStepChoreoDesc:DSP ermöglicht dezentrale, resiliente Prozessausführung, bei der autonome Prozessobjekte ohne zentrale monolithische Steuerung zusammenarbeiten.`,
+      label: $localize`:@@dspArchStepChoreo:Decentralized Process Choreography`,
+      description: $localize`:@@dspArchStepChoreoDesc:DSP enables decentralized, resilient process execution where autonomous process objects cooperate without central monolithic control.`,
       visibleContainerIds: [
         'layer-bp',
         'bp-erp',
@@ -272,8 +272,8 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     // Step 8: Digital Twin
     {
       id: 'step-8',
-      label: $localize`:@@dspArchStepDigitalTwin:Digitaler Zwilling`,
-      description: $localize`:@@dspArchStepDigitalTwinDesc:DSP erzeugt ein digitales Echtzeit-Abbild von Maschinen, Prozessen und Werkstücken durch die Zusammenführung von Daten aus verschiedenen Systemen.`,
+      label: $localize`:@@dspArchStepDigitalTwin:Digital Twin`,
+      description: $localize`:@@dspArchStepDigitalTwinDesc:DSP creates a real-time digital representation of machines, processes, and workpieces by consolidating data from multiple systems.`,
       visibleContainerIds: [
         'layer-bp',
         ...bpStep7VisibleIds,
@@ -301,8 +301,8 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     // Step 9: Platform Independence / Best-of-Breed
     {
       id: 'step-9',
-      label: $localize`:@@dspArchStepBestBreed:Plattformunabhängigkeit & Best-of-Breed-Integration`,
-      description: $localize`:@@dspArchStepBestBreedDesc:DSP integriert heterogene ERP-, MES-, EWM-, CRM-, Analytics- und Data-Lake-Systeme und bleibt dabei unabhängig von Herstellern und Plattformen.`,
+      label: $localize`:@@dspArchStepBestBreed:Platform Independence & Best-of-Breed Integration`,
+      description: $localize`:@@dspArchStepBestBreedDesc:DSP integrates heterogeneous ERP, MES, EWM, CRM, analytics, and data lake systems while remaining independent of vendors and platforms.`,
       visibleContainerIds: [
         'layer-bp',
         ...bpWithoutAnalyticsAndDataLake,
@@ -323,8 +323,8 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     // Step 10: Business & Analytics Integration
     {
       id: 'step-10',
-      label: $localize`:@@dspArchStepAnalytics:Business- & Analytics-Integration`,
-      description: $localize`:@@dspArchStepAnalyticsDesc:DSP synchronisiert Shopfloor-Ereignisse und digitale Zwillinge mit Business-Systemen, Data Lakes und Analytics-Plattformen für durchgängige Transparenz.`,
+      label: $localize`:@@dspArchStepAnalytics:Business & Analytics Integration`,
+      description: $localize`:@@dspArchStepAnalyticsDesc:DSP synchronizes shopfloor events and digital twins with business systems, data lakes, and analytics platforms for end-to-end visibility.`,
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',
@@ -345,8 +345,8 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     // Step 11: AI Enablement
     {
       id: 'step-11',
-      label: $localize`:@@dspArchStepAI:AI- & Analytics-Enablement`,
-      description: $localize`:@@dspArchStepAIDesc:DSP stellt strukturierte Echtzeitdaten als Grundlage für Analytics, Machine Learning und prädiktive Optimierung bereit.`,
+      label: $localize`:@@dspArchStepAI:AI & Analytics Enablement`,
+      description: $localize`:@@dspArchStepAIDesc:DSP provides structured real-time data as a foundation for analytics, machine learning, and predictive optimization.`,
       visibleContainerIds: [
         ...getBusinessContainerIds(customerConfig),
         'layer-dsp',
@@ -366,8 +366,8 @@ export function createDefaultSteps(customerConfig?: CustomerDspConfig): StepConf
     // Step 12: Autonomous & Adaptive Enterprise
     {
       id: 'step-12',
-      label: $localize`:@@dspArchStepAuto:Autonomes & Adaptives Unternehmen (Zielbild)`,
-      description: $localize`:@@dspArchStepAutoDesc:DSP ermöglicht den Übergang zu einer autonomen, adaptiven Fertigung, in der sich Prozesse kontinuierlich auf Basis von Echtzeitdaten selbst optimieren.`,
+      label: $localize`:@@dspArchStepAuto:Autonomous & Adaptive Enterprise (Target State)`,
+      description: $localize`:@@dspArchStepAutoDesc:DSP enables the transition to autonomous, adaptive manufacturing where processes continuously self-optimize based on real-time data.`,
       visibleContainerIds: [
         'layer-bp',
         'layer-dsp',

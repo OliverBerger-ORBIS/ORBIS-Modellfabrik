@@ -47,8 +47,8 @@ export function createDeploymentView(customerConfig?: import('./configs/types').
   const pipelineShapes = [
     { id: 'deployment-step-integration', label: $localize`:@@dspDeployIntegration:Integration`, fill: pipelineFills[0] },
     { id: 'deployment-step-transformation', label: $localize`:@@dspDeployTransformation:Transformation`, fill: pipelineFills[1] },
-    { id: 'deployment-step-consolidation', label: $localize`:@@dspDeployConsolidation:Konsolidierung`, fill: pipelineFills[2] },
-    { id: 'deployment-step-provisioning', label: $localize`:@@dspDeployProvisioning:Bereitstellung`, fill: pipelineFills[3] },
+    { id: 'deployment-step-consolidation', label: $localize`:@@dspDeployConsolidation:Consolidation`, fill: pipelineFills[2] },
+    { id: 'deployment-step-provisioning', label: $localize`:@@dspDeployProvisioning:Provisioning`, fill: pipelineFills[3] },
   ];
 
   const pipelineContainers: ContainerConfig[] = [];
