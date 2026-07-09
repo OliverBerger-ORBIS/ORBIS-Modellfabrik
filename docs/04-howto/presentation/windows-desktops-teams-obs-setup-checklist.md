@@ -43,8 +43,10 @@ Ziel: Reproduzierbares Demo-Setup auf Windows mit **virtuellen Desktops** als La
 - [ ] Desktop 2: Fullscreen (Edge, Zoom 100%, DSP-Architecture 85%)
 - [ ] Desktop 3: Hero (Chrome Zoom 80%, DSP-Architecture 100% + Edge InPrivate Digital Twin rechts oben + Kamera-Preview rechts unten)
 - [ ] Kameraquelle gewählt: Konftel-20 (Normal) oder Laptop-Cam (Replay/Fallback)
+- [ ] Konftel-20 Presets eingerichtet (0 = Gesamtansicht, 1 = DRILL, 2 = HBW, 3 = MILL, 4 = AIQS, 5 = DPS, 6 = CHRG) 
 - [ ] OBS-Preview auf Desktop 1 offen + zweites Preview auf Desktop 3 (rechts unten)
 - [ ] Kamera-Verzerrungs-Check bestanden (OBS + Teams)
+- [ ] Preset-Test bestanden (0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 0, Positionen korrekt)
 
 ### Teams-Pfad
 - [ ] In Teams den Präsentationsmonitor im Vollbild teilen
@@ -86,7 +88,22 @@ Ziel: Reproduzierbares Demo-Setup auf Windows mit **virtuellen Desktops** als La
 - [ ] Desktop 3 (rechts unten): OBS-Kamera-Preview
 - [ ] Kamera-Verzerrungs-Check (OBS + Teams) durchführen
 
-> Offene Nachpflege (vor Ort bei ORBIS): Konftel-Feineinstellung in OBS (Crop/Transform/Resolution) final validieren und dann hier ergänzen.
+> **Konftel-20 OBS-Einstellungen (validiert 09.07.2026 vor Ort bei ORBIS):**
+> - **Resolution:** Device Default
+> - **Zoom:** mit Fernbedienung auf korrekten Ausschnitt einstellen
+> - **Edit Transform:**
+>   - Bounding Box Type: **Scale to inner bounds (FIT)**
+>   - Bounding Box Size: **1920 × 1080**
+>   - Crop – Top: **10**, Bottom: **10**, Left: **120**, Right: **120**
+> - Preview Desktop 1 + Desktop 3 verifiziert: ✓
+>
+> **Konftel-20 Presets einrichten (Fernbedienung):**
+> - Kamera auf Zielausschnitt ausrichten -> **PRESET** -> Ziffer (**0-6**) speichern
+> - Empfohlene Belegung: **0 Gesamtansicht**, **1 DRILL**, **2 HBW**, **3 MILL**, **4 AIQS**, **5 DPS**, **6 CHRG** (OBS Cam-View zeigt erfolgreiche Tastenbelegung links oben)
+>
+> **Preset-Test (Pflicht):**
+> - Sequenz drücken: **0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 0**
+> - In OBS-Preview Desktop 1 und Desktop 3 prüfen: korrekter Ausschnitt, reproduzierbare Position, keine Verzerrung
 
 ### Aktion 5) Kurztest Navigation
 - [ ] Mit `WIN + Ctrl + ←/→` kurz zwischen Desktop 1/2/3 wechseln

@@ -28,7 +28,7 @@
 - [x] Desktop-Szenenmodell verbindlich beschrieben und aktualisiert: Desktop 1 (`Working`), Desktop 2 (`Fullscreen`), Desktop 3 (`Hero` mit Digital Twin + Kamera-Preview). *(Ursprung: Sprint 25; fortlaufend aktualisiert in `docs/04-howto/presentation/windows-desktops-teams-obs-setup-checklist.md`)*
 - [x] Checkliste fuer Aufbau/Vorbereitung gegen zwei Testdurchlaeufe verifiziert. *(29.06.2026 erster Testlauf erfolgreich; 08.07.2026 erneuter Test nach Windows-Neustart erfolgreich)*
 - [x] Zielentscheidung dokumentiert: Praesentation mit Windows-Bordmitteln (virtuelle Desktops + Desktop-Wechsel), **kein FancyZones**, **keine OBS-Praesentation** (OBS nur Kamera). *(DR: `docs/03-decision-records/29-windows-desktops-presentation-without-fancyzones.md`)*
-- [ ] Erprobung laufend: 6-Aktionen-Workflow stabilisieren (Modus waehlen -> Apps starten -> auf Desktops verteilen -> anordnen/Zoom pruefen -> Desktop-Wechsel testen -> optional Teams Recording); Kamera Konftel-20 vs. Built-in weiter validieren. *(Offen: Konftel-Feineinstellung vor Ort bei ORBIS)*
+- [x] 6-Aktionen-Workflow stabilisiert und Konftel-20 in OBS final konfiguriert: Resolution Device Default, Edit Transform Bounds FIT 1920×1080, Crop Top/Bottom 10, Left/Right 120; Preview Desktop 1 + Desktop 3 verifiziert. *(09.07.2026 vor Ort bei ORBIS)*
 - *Wozu: Aufbau einer stabilen, reproduzierbaren und schnell einrichtbaren Praesentations-Umgebung auf dem ORBIS-Windows-Rechner, unabhaengig vom Ziel-Setup (Beamer, zweiter Monitor oder nur Laptop-Monitor).*
 
 ### ORBIS Feldbetrieb / Integrations-Fortsetzung
@@ -37,7 +37,7 @@
 - [x] Betriebsmodi + Konfig-Matrix fuer `OSF`/`Session Manager`/`Mosquitto` kompakt dokumentieren (Mode A: Local Replay, Mode B: Live auf RPi, Mode C: Live mit lokalem OSF) inkl. klarer No-Mix-Regel fuer Live+Replay auf denselben Topics/Brokern. *(Ursprung: Sprint 25; 29.06.2026: `docs/04-howto/helper_apps/session-manager/runtime-modes-matrix.md`)*
 - [x] Windows-Startpfad fuer Replay dokumentiert und automatisiert: Mosquitto-Service auf `localhost:1883` plus WebSocket-Bridge auf `ws://localhost:9001` via `scripts/start-mosquitto-ws-bridge.ps1`; OSF- und Session-Manager-Checks auf Windows verifiziert. *(29.06.2026)*
 - [x] Replay-Modus auf Windows-Rechner verifizieren (inkl. Betrieb mit lokalen Mosquitto). *(Ursprung: Sprint 25)*
-- [ ] Live-Modus am ORBIS-Setup verifizieren (BLOCKED solange kein Zugriff vor Ort moeglich ist). *(Ursprung: Sprint 25)*
+- [x] Live-Modus am ORBIS-Setup verifizieren (erfolgreich getestet). *(Ursprung: Sprint 25; 09.07.2026)*
 - [ ] Lokalen Dashboard-Fall "keine orders" reproduzieren und die Ursache dokumentieren (Ingest/Replay/Broker-Mapping/DB-Stand). *(Ursprung: Sprint 22)*
 - [ ] Unterschiede zwischen localhost und RPi systematisch abarbeiten (insb. AGV-Erkennung/Anzeige auf RPi als Voraussetzung vor Overlay-Checks). *(Ursprung: Sprint 22)*
 - *Wozu: Sicherstellen, dass OSF im Live- und Replay-Betrieb reproduzierbar funktioniert (lokal und auf RPi), damit Demo-/Messeszenarien nicht an Broker-Mapping, Datenpfad oder Umgebungsunterschieden scheitern.*
