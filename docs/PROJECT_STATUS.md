@@ -1,6 +1,6 @@
 # ORBIS SmartFactory – Projektstatus
 
-**Letzte Aktualisierung:** 2026-06-29
+**Letzte Aktualisierung:** 2026-07-09
 
 > **Workflow:** Die Sprint-Tabelle wird bei jedem Sprint-Abschluss aktualisiert (neue Zeile, Events).  
 > Details: [sprints_README.md – Dokumenten-Workflow](sprints/sprints_README.md#-dokumenten-workflow-aktualität-sicherstellen)
@@ -9,11 +9,11 @@
 - OSF (vormals OMF3) produktionsreif für Kunden-Demos; **LogiMAT 2026 durchgeführt** (Demo mit zwei AGVs erfolgreich).
 - **Messe-WLAN:** Nur **2,4 GHz** am Stand → **bekanntes Risiko** für Instabilität; angesichts der **ortsbedingten Einschränkung** keine zuverlässige technische „Lösung“ zu erwarten — **Lessons Learned** für weitere Events (Erwartungsmanagement). Siehe [sprint_18.md – Messe-Ergebnis](sprints/sprint_18.md).
 - OMF2 als Legacy eingefroren.
-- Aktuelle Entwicklung: **Phase 5** — **Sprint 25** (LOM-Day-Nachbereitung, Praesentationstechnik und Integrations-Carry-over aus Sprint 24).
+- Aktuelle Entwicklung: **Phase 5** — **Sprint 26** (NFC-Tags/Track&Trace, Use-Case-Darstellung fuer Desktop-Praesentation, Grafana Dashboard).
 - **ORBIS-SmartFactory** ab Sprint 13 (Genehmigung ausstehend, Arbeit wird fortgeführt).
 
 ## 🔥 Aktuelle Schwerpunkte
-- **Sprint 25:** LOM-Day-Nachbereitung (26.06), Verbesserungen der Praesentationstechnik (Desktop-/Fancy-Zones-Workflow) und Fortsetzung offener Integrationsaufgaben. Details: [sprint_25.md](sprints/sprint_25.md).
+- **Sprint 26:** NFC-Tag-Erweiterung Track&Trace, Use-Case-Diagramm-Groessen fuer Desktop 2/3, Grafana/Modus-A-Replay; Kundentermin Musashi 14.07. Details: [sprint_26.md](sprints/sprint_26.md).
 - **02.04.2026:** ORBIS-internes **Vertriebsmeeting** — **OSF-Präsentation** für Vertrieb durchgeführt (Start Sprint 19).
 - Letzter großer Außenauftritt: **Hannover Messe** + **ORBIS Customer-Connect** (siehe Roadmap).
 - **Phase 5 – MES/DSP-Integration:** ORBIS MES und DSP übernehmen zunehmend die Steuerung (QM-Check, Order-Entscheidungen). APS-CCU als Interim-Layer; Modifikationen: [integrations/APS-CCU/OSF-MODIFICATIONS.md](../integrations/APS-CCU/OSF-MODIFICATIONS.md).
@@ -26,7 +26,8 @@
 
 | Sprint | Zeitraum | Ereignis / Fokus | Status |
 |--------|----------|------------------|--------|
-| **25** | **26.06.26 - 09.07.26** | LOM-Day Nachbereitung; Praesentationstechnik (Desktop/Fancy-Zones); Integrations-Carry-over ([sprint_25](sprints/sprint_25.md)) | **Laufend** |
+| **26** | **10.07.26 - 23.07.26** | NFC-Tags Track&Trace; Use-Case-Darstellung Desktop 2/3; Grafana Dashboard; Musashi 14.07. ([sprint_26](sprints/sprint_26.md)) | **Laufend** |
+| **25** | **26.06.26 - 09.07.26** | LOM-Day Nachbereitung; Praesentationstechnik Windows-Desktops; Router/Netzwerk; OSF-UI v1.1.7 ([sprint_25](sprints/sprint_25.md)) | **Abgeschlossen** |
 | **24** | **12.06.26 - 25.06.26** | LOM-Day Vorbereitung; AI-HUB Datenerfassung (Object Detection/Tracking); Integrations-Carry-over ([sprint_24](sprints/sprint_24.md)) | **Abgeschlossen** |
 | **23** | **29.05.26 - 11.06.26** | Urlaubssprint; reduzierte Umsetzung; Hardware-/Mounting-Fokus; ORBIS-Amerika-Praesentation 01.06. ([sprint_23](sprints/sprint_23.md)) | **Abgeschlossen** |
 | **22** | **15.05.26 - 28.05.26** | ORBIS Feldbetrieb; Live-vs-Replay Datenpfad; Integrationsnachweise; Hager-Praesentation ([sprint_22](sprints/sprint_22.md)) | **Abgeschlossen** |
@@ -66,7 +67,8 @@
 | 22 | 15.05 - 28.05.2026 | ORBIS-SmartFactory | Phase 5 | Kunde Hager: OSF-Praesentation bei ORBIS (22.05.2026); Fokus Datenpfad Live vs. Replay |
 | 23 | 29.05 - 11.06.2026 | ORBIS-SmartFactory | Phase 5 | Urlaubssprint (Urlaub 04.06–12.06); ORBIS-Amerika-Praesentation (Christen, Adjud) am 01.06.2026; Hardware-Fokus (DC/DC- und Router-Mount-Prototypen) |
 | 24 | 12.06 - 25.06.2026 | ORBIS-SmartFactory | Phase 5 | LOM-Day Vorbereitung; AI-HUB Kooperation (Dr. Abdul) fuer Object Detection/Tracking; OD-Sessions aufgenommen und bereitgestellt; Praesentationsvideo V1 (OBS Hero+2) erstellt |
-| 25 | 26.06 - 09.07.2026 | ORBIS-SmartFactory | Phase 5 | LOM-Day Durchfuehrung/Nachbereitung (26.06): OSF inhaltlich erfolgreich, MES/SAP mit hoher Latenz; Fokus auf Verbesserung der Praesentationstechnik |
+| 25 | 26.06 - 09.07.2026 | ORBIS-SmartFactory | Phase 5 | LOM-Day (26.06); Praesentationstechnik Windows-Desktops; Router/Netzwerk; OSF-UI v1.1.7 RPi-Deploy |
+| 26 | 10.07 - 23.07.2026 | ORBIS-SmartFactory | Phase 5 | Kundentermin Musashi (14.07.2026); Fokus NFC-Tags, Use-Case-Darstellung, Grafana Dashboard |
 
 > **Spalten-Erläuterung:**  
 > - **ORBIS-Projekt:** Interne Projektzuordnung für Abrechnung (ORBIS-Modellfabrik bzw. ORBIS-SmartFactory).  
@@ -84,10 +86,11 @@
 - **22.05.2026:** Kunde **Hager** — OSF-Praesentation bei ORBIS
 - **01.06.2026:** ORBIS-Amerika-Mitarbeiter (Christen, Adjud) — OSF-Praesentation
 - **26.06.2026:** LOM-Day — Vorstellung der OSF
+- **14.07.2026:** Kunde **Musashi** — OSF-Kundentermin (Router/Netzwerk + Windows-Desktop-Praesentation)
 
 ## 📚 Weitere Dokumentation
 - [Roadmap & Entwicklungsphasen](01-strategy/roadmap.md)
-- [Sprint-Dokumentation](sprints/) – [sprint_24.md](sprints/sprint_24.md) (aktuell)
+- [Sprint-Dokumentation](sprints/) – [sprint_26.md](sprints/sprint_26.md) (aktuell)
 - [Decision Records](03-decision-records/)
 - [Architektur](02-architecture/)
 - [HowTos & Guides](04-howto/)

@@ -93,7 +93,8 @@ Für jeden Sprint gilt ein einheitlicher Ablauf, damit Coverage-Trends vergleich
 - [Sprint 22](sprint_22.md) – ORBIS Feldbetrieb & Datenpfad-Stabilisierung (15.05 - 28.05.2026) ✅
 - [Sprint 23](sprint_23.md) – Urlaubssprint & Hardware-Fokus (29.05 - 11.06.2026) ✅
 - [Sprint 24](sprint_24.md) – LOM-Day Vorbereitung & AI-HUB Datenerfassung (12.06 - 25.06.2026) ✅
-- [Sprint 25](sprint_25.md) – LOM-Day Nachbereitung & Praesentationstechnik (26.06 - 09.07.2026) ⏳ **AKTUELL**
+- [Sprint 25](sprint_25.md) – LOM-Day Nachbereitung & Praesentationstechnik (26.06 - 09.07.2026) ✅
+- [Sprint 26](sprint_26.md) – NFC-Tags, Use-Case-Darstellung & Grafana Dashboard (10.07 - 23.07.2026) ⏳ **AKTUELL**
 
 ## 📊 Berichte
 - [ORBIS-Projekt-Abschlussbericht Sprints 1-12](ORBIS-Projekt-Abschlussbericht_sprints_01-12.md) – Erstes ORBIS-Projekt (ORBIS-Modellfabrik)
