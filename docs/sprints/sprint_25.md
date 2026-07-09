@@ -58,12 +58,14 @@
 
 ### Router GWN 7062m
 
-- [ ] Router-Beschaffung: https://www.grandstream.com/products/networking-solutions/routers/product/gwn7062m
-- [ ] 3D-Modell fuer `gwn7062m-mount` von V1 auf final erweitern (BLOCKED bis `gwn7062m` verfuegbar). *(Ursprung: Sprint 25)*
-- [ ] Montageort final entscheiden und verifizieren: Option A ORBIS-Platte oder Option B Charging-Station. *(Ursprung: Sprint 23)*
-- [ ] Router-Einrichtung durch IT-Abteilung koordinieren und abschliessen. *(Ursprung: Sprint 25)*
-- [ ] Router im OSF-Betrieb testen (WLAN fuer OSF + VPN fuer MES/DSP/SAP). *(Ursprung: Sprint 25)*
-- *Wozu: Ein Router, der OSF-WLAN und VPN-Anbindung (MES/DSP/SAP) in einer schlanken, produktionsnahen Hardware fuer Messen und ORBIS-Einsatz vereint.*
+### Router / Netzwerk-Setup (aktualisiert)
+
+- [x] Entscheidung angepasst: statt `GWN7062m` wurde ein weiterer **GL.iNet** eingesetzt, ergaenzt um **USB-Stick (WLAN per LTE)** und einen **TP-Link Router**. *(Update: 09.07.2026)*
+- [x] Netzwerkanbindung aufgebaut und verifiziert: Verbindung von **FT-LAN** zu **ORBIS-LAN** sowie zum WLAN **ORBIS_H15_F05** hergestellt. *(Update: 09.07.2026)*
+- [x] WLAN-Konfiguration gesetzt und dokumentiert: **SSID** `ORBIS_H15_F05`, **PW** `49117837`. *(Update: 09.07.2026)*
+- [x] Aufbau-Ort final festgelegt: Montage **auf dem ORBIS-DSP Edge Knoten**. *(Update: 09.07.2026)*
+- [x] Router-/Netzwerk-Tests im OSF-Betrieb erfolgreich durchgefuehrt. *(Update: 09.07.2026)*
+- *Wozu: Ein schlankes, praxisnahes Netzwerk-Setup, das OSF-WLAN sowie die Anbindung zwischen FT- und ORBIS-Netzen fuer Demo- und Feldbetrieb stabil bereitstellt.*
 
 ### Track&Trace / APS
 
