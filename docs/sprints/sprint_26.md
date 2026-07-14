@@ -10,15 +10,17 @@
 
 | Datum | Event | Nutzen fuer OSF |
 |--------|--------|----------------|
-| **14.07.2026** | **Kundentermin Musashi** | Erstverifikation Router-/Netzwerk-Setup und Windows-Desktop-Praesentation (Follow-up LOM-Day) |
+| **14.08.2026** | **Kundentermin Musashi** (verschoben von 14.07.2026) | Erstverifikation Router-/Netzwerk-Setup und Windows-Desktop-Praesentation (Follow-up LOM-Day) |
 
 ---
 
 ## Aufgaben (thematisch, mit Haken)
 
-### LOM-Day / Kundentermine
+### Router / Netzwerk-Setup
 
-- [ ] **Musashi (14.07.2026):** Router-/Netzwerk-Setup und Windows-Desktop-Praesentation im Kundentermin testen/pruefen. *(Ursprung: Sprint 25)*
+- [x] **GL.iNet-Router-Mount (DPS-Station):** 3D-Druck erstellt und passgenau an der **DPS-Station** eingebaut — ersetzt den originalen **FT-Router** vor Ort. *(14.07.2026)*
+- [ ] **Netzwerk-Topologie/Verkabelung:** [How-to](../04-howto/setup/orbis-shopfloor-network-topology.md) mit Netzwerk-Kollegen vervollstaendigen (TBD: ORBIS-LAN, Router-B-Ports, DSP/MES/SAP, FT↔ORBIS-Bruecke); HTML-Review via `bash scripts/export-network-topology-html.sh`. *(Sprint 26)*
+- *Rollen (Sprint 25): GL.iNet = DPS/FT-Ersatz auf **FT-LAN**; separater Router (TP-Link + LTE-USB) = **ORBIS-LAN**, DSP, MES/SAP, WLAN `ORBIS_H15_F05`.*
 
 ### Track&Trace / NFC-Tags
 
@@ -65,4 +67,4 @@
 
 ---
 
-*Stand: 09.07.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 14.07.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)

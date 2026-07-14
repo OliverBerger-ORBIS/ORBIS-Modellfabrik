@@ -10,6 +10,7 @@
   - [Arduino IDE Setup](setup/arduino-ide-setup.md)
   - [RPi: chrony NTP server (Arduino ORBIS LAN)](rpi-chrony-ntp-server.md)
   - [ROBO Pro Coding Setup](setup/robo-pro-setup.md)
+  - [ORBIS Shopfloor Netzwerk-Topologie (FT-LAN + OSF-Erweiterung)](setup/orbis-shopfloor-network-topology.md) — HTML: `bash scripts/export-network-topology-html.sh`
 - Deployment
   - [GitHub Pages Deployment](deployment/github-pages-deployment.md)
 - MQTT

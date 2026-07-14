@@ -65,12 +65,13 @@
 
 ### Router / Netzwerk-Setup
 
-- [x] Entscheidung angepasst: statt `GWN7062m` wurde ein weiterer **GL.iNet** eingesetzt, ergaenzt um **USB-Stick (WLAN per LTE)** und einen **TP-Link Router**. *(Update: 09.07.2026)*
-- [x] Netzwerkanbindung aufgebaut und verifiziert: Verbindung von **FT-LAN** zu **ORBIS-LAN** sowie zum WLAN **ORBIS_H15_F05** hergestellt. *(Update: 09.07.2026)*
+- [x] Entscheidung angepasst: statt `GWN7062m` **Zwei-Router-Setup** — (1) **GL.iNet** an der **DPS-Station** als Ersatz fuer den originalen **FT-Router**; (2) **separater Router** (TP-Link) fuer Anbindung **DSP**, **WLAN per LTE-USB-Stick** und **ORBIS-Netz**. *(Update: 09.07.2026)*
+- [x] Netzwerkanbindung aufgebaut und verifiziert: **FT-LAN** ↔ **ORBIS-LAN**, Demo-WLAN **ORBIS_H15_F05** (LTE-Router). *(Update: 09.07.2026)*
 - [x] WLAN-Konfiguration gesetzt und dokumentiert: **SSID** `ORBIS_H15_F05`, **PW** `49117837`. *(Update: 09.07.2026)*
-- [x] Aufbau-Ort final festgelegt: Montage **auf dem ORBIS-DSP Edge Knoten**. *(Update: 09.07.2026)*
+- [x] Montageort GL.iNet festgelegt: **DPS-Station** (Warenein- und -ausgang), ersetzt FT-Router — **nicht** am DSP-Edge-Knoten. *(Update: 09.07.2026; Mount Sprint 26)*
 - [x] Router-/Netzwerk-Tests im OSF-Betrieb erfolgreich durchgefuehrt. *(Update: 09.07.2026)*
-- *Wozu: Ein schlankes, praxisnahes Netzwerk-Setup, das OSF-WLAN sowie die Anbindung zwischen FT- und ORBIS-Netzen fuer Demo- und Feldbetrieb stabil bereitstellt.*
+- *Wozu: FT-Shopfloor-Anbindung an der DPS bleibt lokal stabil (GL.iNet); DSP-/ORBIS-/Demo-WLAN-Anbindung laeuft ueber den separaten LTE-Router — klare Rollen statt Ein-Router-fuer-alles.*
+- *Topologie/Verkabelung:* [orbis-shopfloor-network-topology.md](../04-howto/setup/orbis-shopfloor-network-topology.md) (Entwurf mit TBD-Lücken)*
 
 ### Track&Trace / APS
 

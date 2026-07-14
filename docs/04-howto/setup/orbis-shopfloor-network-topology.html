@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ORBIS Shopfloor — Netzwerk-Topologie (FT-LAN + OSF-Erweiterung)</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --text: #1a1a1a;
+      --muted: #555;
+      --border: #d0d7de;
+      --bg: #fff;
+      --code-bg: #f6f8fa;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text: #e6edf3;
+        --muted: #9da7b3;
+        --border: #30363d;
+        --bg: #0d1117;
+        --code-bg: #161b22;
+      }
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      line-height: 1.55;
+      color: var(--text);
+      background: var(--bg);
+    }
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+    h1, h2, h3 { line-height: 1.25; }
+    h1 { font-size: 1.75rem; margin-top: 0; }
+    h2 { margin-top: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.35rem; }
+    h3 { margin-top: 1.5rem; }
+    p, ul { margin: 0.75rem 0; }
+    a { color: #0969da; }
+    code {
+      background: var(--code-bg);
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+      font-size: 0.92em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.45rem 0.6rem;
+      vertical-align: top;
+      text-align: left;
+    }
+    th { background: var(--code-bg); }
+    pre.mermaid {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-bottom: 1.5rem;
+    }
+    .footer {
+      margin-top: 2.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    li.task { list-style: none; margin-left: -1.2rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>ORBIS Shopfloor — Netzwerk-Topologie (FT-LAN + OSF-Erweiterung)</h1>
+<p><strong>Stand:</strong> 14.07.2026 · <strong>Status:</strong> Entwurf mit Lücken (<code>TBD</code>) — zur Vervollständigung durch Netzwerk-/ORBIS-Kollegen   <strong>Bezug:</strong> <a href="../../sprints/sprint_25.md">Sprint 25 Router-Setup</a> · <a href="../../06-integrations/00-REFERENCE/hardware-architecture.md">FT Hardware-Architektur</a></p>
+<hr>
+<h2>Kurz: Was bleibt, was neu ist</h2>
+<table><thead><tr><th>Ebene</th><th>Status</th><th>Inhalt</th></tr></thead><tbody><tr><td><strong>FT-LAN (APS)</strong></td><td><strong>Unverändert</strong></td><td>Fischertechnik-Modellfabrik: <code>192.168.0.0/24</code>, RPi, SPS/OPC-UA, TXT, MQTT — siehe <a href="../../06-integrations/00-REFERENCE/hardware-architecture.md">hardware-architecture.md</a></td></tr><tr><td><strong>OSF-Erweiterung</strong></td><td><strong>Neu (Jul 2026)</strong></td><td>Zwei-Router-Setup: GL.iNet an DPS (FT-Router-Ersatz) + separater Router für <strong>ORBIS-LAN</strong>, <strong>DSP</strong>, <strong>MES/SAP</strong> und Demo-<strong>WLAN</strong></td></tr><tr><td><strong>ORBIS-LAN</strong></td><td><strong>Zusätzlich</strong></td><td>Firmennetz ORBIS — <strong>nicht</strong> identisch mit FT-LAN; Zugriff auf DSP, MES, SAP</td></tr></tbody></table>
+<p><strong>Wichtig:</strong> <code>192.168.0.x</code> ist das <strong>FT-LAN</strong> der Modellfabrik. Die ORBIS-Firmenanbindung läuft über eine <strong>eigene LAN-Verbindung</strong> ins ORBIS-Netz (Subnetz/Adressen <strong>TBD</strong>).</p>
+<hr>
+<h2>Rollen der zwei Router (Sprint 25/26)</h2>
+<h3>Router A — GL.iNet an der DPS-Station</h3>
+<table><thead><tr><th>Feld</th><th>Wert / Hinweis</th></tr></thead><tbody><tr><td><strong>Ort</strong></td><td>DPS-Station (Warenein- und -ausgang)</td></tr><tr><td><strong>Funktion</strong></td><td>Ersatz für den <strong>originalen FT-Router</strong> an der DPS</td></tr><tr><td><strong>Netz</strong></td><td><strong>FT-LAN</strong> (<code>192.168.0.0/24</code>)</td></tr><tr><td><strong>Gateway (typ.)</strong></td><td><code>192.168.0.1</code> (Legacy: TP-Link TL-WR902AC — durch GL.iNet abgelöst)</td></tr><tr><td><strong>Mount</strong></td><td>3D-Druck-Halterung, Sprint 26 erledigt</td></tr><tr><td><strong>Admin-UI</strong></td><td>Am 14.07.2026 antwortet <code>http://192.168.0.1/</code> mit <strong>GL.iNet Admin Panel</strong> (<code>gl-ui</code>)</td></tr></tbody></table>
+<h3>Router B — ORBIS-/Demo-Router (TP-Link + LTE-USB)</h3>
+<table><thead><tr><th>Feld</th><th>Wert / Hinweis</th></tr></thead><tbody><tr><td><strong>Funktion</strong></td><td>Anbindung <strong>DSP</strong>, <strong>ORBIS-LAN</strong> (MES/SAP), Demo-<strong>WLAN</strong> über <strong>LTE-USB-Stick</strong></td></tr><tr><td><strong>WLAN (Demo)</strong></td><td>SSID <strong><code>ORBIS_H15_F05</code></strong>, PW <strong><code>49117837</code></strong> (Sprint 25)</td></tr><tr><td><strong>Phys. Anschlüsse</strong></td><td><strong><code>TBD</code></strong> — welche Ports gehen auf FT-LAN, ORBIS-LAN, DSP?</td></tr><tr><td><strong>ORBIS-LAN</strong></td><td><strong><code>TBD</code></strong> — Subnetz, Gateway, DNS, feste IPs für DSP/MES/SAP</td></tr><tr><td><strong>DSP-Erreichbarkeit</strong></td><td><strong><code>TBD</code></strong> — Hostname/IP, Port, VPN ja/nein</td></tr></tbody></table>
+<hr>
+<h2>Topologie-Diagramm (Entwurf)</h2>
+<pre class="mermaid">
+flowchart TB
+    subgraph ORBIS_CORP["ORBIS-LAN (Firmennetz) — TBD Subnetz"]
+        DSP["DSP / Edge — TBD IP"]
+        MES["MES — TBD"]
+        SAP["SAP — TBD"]
+        ORBIS_PC["ORBIS-Arbeitsplätze — TBD"]
+    end
+
+    subgraph DEMO_WLAN["Demo-WLAN (LTE)"]
+        SSID["SSID ORBIS_H15_F05<br/>LTE-USB am Router B"]
+        LAPTOP["Laptop / Tablet Demo"]
+    end
+
+    subgraph ROUTER_B["Router B — TP-Link + LTE-USB<br/>TBD: Port-Belegung"]
+        RB_LAN_ORBIS["LAN → ORBIS — TBD"]
+        RB_LAN_FT["LAN → FT-LAN — TBD"]
+        RB_LTE["LTE-USB → Internet / Demo-WLAN"]
+    end
+
+    subgraph FT_LAN["FT-LAN 192.168.0.0/24 — UNVERÄNDERT (APS)"]
+        GLINET["Router A — GL.iNet @ DPS<br/>Gateway 192.168.0.1<br/>ersetzt FT-Router"]
+
+        subgraph RPI["Raspberry Pi 192.168.0.100"]
+            MQTT["MQTT :1883 / WS :9001"]
+            CCU["CCU / Docker Stack"]
+            OSFUI["OSF-UI :8080"]
+        end
+
+        subgraph SPS_LAN["SPS OPC-UA (statisch)"]
+            MILL["MILL .40"]
+            DRILL["DRILL .50"]
+            AIQS_SPS["AIQS .70"]
+            HBW["HBW .80"]
+            DPS_SPS["DPS .90"]
+        end
+
+        subgraph TXT_WLAN["TXT-Controller (WLAN/DHCP)"]
+            TXT_DPS["TXT-DPS ~.102"]
+            TXT_AIQS["TXT-AIQS ~.103"]
+            TXT_FTS["TXT-FTS ~.104"]
+        end
+
+        ARDUINO["Arduino Sensor .95"]
+        DPS_ST["DPS-Station<br/>GL.iNet-Mount"]
+    end
+
+    RB_LAN_ORBIS --- ORBIS_CORP
+    RB_LTE --- SSID
+    SSID --- LAPTOP
+    RB_LAN_FT --- GLINET
+
+    GLINET --- RPI
+    GLINET --- SPS_LAN
+    GLINET --- TXT_WLAN
+    GLINET --- ARDUINO
+    GLINET --- DPS_ST
+
+    LAPTOP -.->|"Live OSF / Browser<br/>wenn geroutet"| MQTT
+    ORBIS_PC -.->|"TBD: Zugriffspfad"| DSP
+</pre>
+<hr>
+<h2>Verkabelung (Checkliste — bitte vervollständigen)</h2>
+<table><thead><tr><th>#</th><th>Von</th><th>Nach</th><th>Medien</th><th>Status</th><th>Notiz</th></tr></thead><tbody><tr><td>1</td><td>FT-Switch / Backbone</td><td><strong>GL.iNet (Router A)</strong> @ DPS</td><td>Ethernet</td><td><strong>TBD</strong></td><td>Ersetzt alten FT-Router-Anschluss</td></tr><tr><td>2</td><td><strong>GL.iNet</strong></td><td>DPS-SPS <code>192.168.0.90</code></td><td>Ethernet</td><td><strong>TBD</strong></td><td>OPC-UA wie in FT-Doku</td></tr><tr><td>3</td><td>FT-Switch</td><td>RPi <code>192.168.0.100</code></td><td>Ethernet</td><td><strong>Bestehend</strong></td><td>Unverändert</td></tr><tr><td>4</td><td>FT-Switch</td><td>MILL/DRILL/HBW/AIQS SPS</td><td>Ethernet</td><td><strong>Bestehend</strong></td><td>Statische IPs siehe Hardware-Doku</td></tr><tr><td>5</td><td><strong>Router B</strong></td><td><strong>ORBIS-LAN</strong> (Patch/Wand)</td><td>Ethernet</td><td><strong>TBD</strong></td><td>MES/SAP/DSP-Zugang</td></tr><tr><td>6</td><td><strong>Router B</strong></td><td><strong>FT-LAN</strong> (Switch/GL.iNet)</td><td>Ethernet</td><td><strong>TBD</strong></td><td>Brücke FT ↔ ORBIS — genaue Topologie klären</td></tr><tr><td>7</td><td><strong>Router B</strong></td><td><strong>DSP</strong> (Edge-Knoten)</td><td>Ethernet / via ORBIS</td><td><strong>TBD</strong></td><td>Direkt oder nur über ORBIS-LAN?</td></tr><tr><td>8</td><td><strong>Router B</strong></td><td><strong>LTE-USB-Stick</strong></td><td>USB</td><td><strong>Dokumentiert</strong></td><td>Demo-WLAN <code>ORBIS_H15_F05</code></td></tr></tbody></table>
+<hr>
+<h2>FT-LAN — Referenz (unverändert)</h2>
+<p>Kanonical: <a href="../../06-integrations/00-REFERENCE/hardware-architecture.md#-netzwerk-architektur">hardware-architecture.md § Netzwerk-Architektur</a></p>
+<table><thead><tr><th>Gerät</th><th>IP (typ.)</th><th>Protokoll</th></tr></thead><tbody><tr><td>Gateway (jetzt GL.iNet @ DPS)</td><td><code>192.168.0.1</code></td><td>—</td></tr><tr><td>Raspberry Pi (CCU, MQTT, OSF-UI)</td><td><code>192.168.0.100</code></td><td>MQTT 1883, WS 9001, HTTP 8080</td></tr><tr><td>MILL / DRILL / AIQS / HBW / DPS SPS</td><td><code>.40</code> / <code>.50</code> / <code>.70</code> / <code>.80</code> / <code>.90</code></td><td>OPC-UA :4840</td></tr><tr><td>Arduino Sensor-Station</td><td><code>192.168.0.95</code></td><td>MQTT</td></tr><tr><td>TXT-DPS / AIQS / FTS</td><td>DHCP ~<code>.102–.104</code></td><td>MQTT via WLAN</td></tr></tbody></table>
+<p><strong>OSF Live-Betrieb:</strong> Browser/OSF verbindet MQTT auf <strong><code>192.168.0.100</code></strong> — siehe <a href="../helper_apps/session-manager/runtime-modes-matrix.md">runtime-modes-matrix.md</a>.</p>
+<hr>
+<h2>Empirische Prüfung FT-LAN (14.07.2026)</h2>
+<p>Vom Entwicklungsrechner im erreichbaren Shopfloor-Netz bzw. vom RPi (<code>ff22@192.168.0.100</code>):</p>
+<table><thead><tr><th>Ziel</th><th>Ping (RPi)</th><th>Ping (Mac)</th><th>Anmerkung</th></tr></thead><tbody><tr><td><code>192.168.0.1</code></td><td>OK</td><td>OK</td><td>GL.iNet Admin (<code>gl-ui</code>)</td></tr><tr><td><code>192.168.0.100</code></td><td>—</td><td>OK</td><td>RPi</td></tr><tr><td><code>192.168.0.40–.50–.70–.80–.90–.95</code></td><td>OK</td><td><code>.90</code> OK</td><td>SPS + Arduino am FT-LAN</td></tr><tr><td><code>192.168.0.102–.105</code></td><td>FAIL</td><td><code>.102</code> FAIL</td><td>TXT oft offline oder nur per WLAN erreichbar</td></tr><tr><td><code>192.168.0.118</code></td><td>REACHABLE (ARP)</td><td>OK</td><td>HTTP: <strong>TXT Webserver</strong></td></tr><tr><td>MQTT/WS/OSF-UI auf <code>.100</code></td><td>—</td><td>—</td><td>Ports <strong>1883, 9001, 8080</strong> offen (RPi-Check)</td></tr></tbody></table>
+<p><strong>Nicht geprüft (TBD):</strong> ORBIS-LAN-Subnetz, Routing FT→ORBIS, DSP-IP, MES/SAP-Pfade, LTE-only Clients auf <code>ORBIS_H15_F05</code>.</p>
+<hr>
+<h2>Lücken für Kollegen (Vervollständigung)</h2>
+<p>Bitte eintragen (Pull Request oder direkt in dieser Datei):</p>
+<ul><li class='task'><label><input type='checkbox' disabled> <strong>ORBIS-LAN:</strong> Subnetz, Gateway, DNS</label></li><li class='task'><label><input type='checkbox' disabled> <strong>Router B:</strong> Modell, Management-IP, physische Port-Belegung (WAN/LAN1/LAN2)</label></li><li class='task'><label><input type='checkbox' disabled> <strong>DSP:</strong> IP/Hostname, erreichbar von FT-LAN ja/nein, nur via ORBIS-LAN?</label></li><li class='task'><label><input type='checkbox' disabled> <strong>MES / SAP:</strong> Endpunkte, Latenzpfad (relevant für LOM-Day-Follow-up)</label></li><li class='task'><label><input type='checkbox' disabled> <strong>Brücke FT-LAN ↔ ORBIS-LAN:</strong> Router B — ein Port oder zwei? NAT/Firewall-Regeln?</label></li><li class='task'><label><input type='checkbox' disabled> <strong>Demo-WLAN <code>ORBIS_H15_F05</code>:</strong> Nur Internet/LTE oder auch Route ins FT-LAN (<code>192.168.0.100</code>)?</label></li><li class='task'><label><input type='checkbox' disabled> <strong>Skizze/Foto</strong> der Verkabelung an Router B (optional, unter <code>docs/assets/</code> ablegen)</label></li></ul>
+<hr>
+<h2>Betriebsmodi (OSF)</h2>
+<table><thead><tr><th>Modus</th><th>Broker / Netz</th><th>Doku</th></tr></thead><tbody><tr><td><strong>Live (Modus B/C)</strong></td><td>MQTT <strong><code>192.168.0.100</code></strong> (FT-LAN)</td><td><a href="../helper_apps/session-manager/runtime-modes-matrix.md">runtime-modes-matrix.md</a></td></tr><tr><td><strong>Replay (Modus A)</strong></td><td><code>localhost</code> oder externer Broker</td><td>nicht FT-LAN</td></tr><tr><td><strong>MES/SAP/DSP</strong></td><td>ORBIS-LAN</td><td><strong><code>TBD</code></strong> — Latenz, Ports, VPN</td></tr></tbody></table>
+<hr>
+<h2>Änderungshistorie</h2>
+<table><thead><tr><th>Datum</th><th>Änderung</th></tr></thead><tbody><tr><td>14.07.2026</td><td>Erstversion: Trennung FT-LAN vs. ORBIS-LAN, Zwei-Router-Rollen, Mermaid + TBD-Checkliste, Ping-Snapshot FT-LAN</td></tr></tbody></table>
+<hr>
+<h2>HTML-Export (für Kollegen)</h2>
+<p>Standalone-HTML (Tabellen + Mermaid-Diagramm, Browser):</p>
+<p>```bash bash scripts/export-network-topology-html.sh</p>
+<p>```</p>
+<p>Erzeugt: <code>docs/04-howto/setup/orbis-shopfloor-network-topology.html</code> — per E-Mail/Teams teilen oder lokal im Browser öffnen. <strong>Mermaid</strong> lädt einmalig von CDN (Internet nötig beim ersten Öffnen).</p>
+    <p class="footer">Generated from <code>orbis-shopfloor-network-topology.md</code> — re-run <code>bash scripts/export-network-topology-html.sh</code> after edits.</p>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+  </script>
+</body>
+</html>
