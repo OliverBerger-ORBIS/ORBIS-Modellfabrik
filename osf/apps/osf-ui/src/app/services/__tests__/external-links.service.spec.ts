@@ -7,6 +7,7 @@ const fullSettings = (over: Partial<ExternalLinksSettings> = {}): ExternalLinksS
   bpErpApplicationUrl: 'process',
   bpPlanningApplicationUrl: '',
   bpMesApplicationUrl: '',
+  bpSupervisorApplicationUrl: '',
   bpEwmApplicationUrl: '',
   bpCrmApplicationUrl: '',
   bpAnalyticsApplicationUrl: 'https://grafana.example.com',

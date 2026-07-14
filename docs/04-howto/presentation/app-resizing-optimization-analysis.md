@@ -1,6 +1,6 @@
 # App-Resizing-Optimierung für OBS-Videopräsentation – Analyse
 
-> **Hinweis (historisch):** Dieses Dokument ist eine Planungs-/Analysebasis aus Sprint 13. Für den aktuellen operativen Ablauf und verbindliche Checks gilt die OBS-How-To-Doku `obs-video-presentation-setup.md`.
+> **Hinweis (historisch):** Sprint-13-Analyse. **Nicht** fuer neue Setups — siehe [presentation/README.md](./README.md).
 
 **Status:** Historische Analyse (Sprint 13)  
 **Sprint:** Sprint 13  

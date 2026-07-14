@@ -144,6 +144,7 @@ describe('ConfigurationTabComponent', () => {
         bpErpApplicationUrl: '',
         bpPlanningApplicationUrl: '',
         bpMesApplicationUrl: '',
+        bpSupervisorApplicationUrl: '',
         bpEwmApplicationUrl: '',
         bpCrmApplicationUrl: '',
         bpAnalyticsApplicationUrl: '',

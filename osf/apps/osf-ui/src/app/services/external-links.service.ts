@@ -17,6 +17,8 @@ export interface ExternalLinksSettings {
   readonly bpPlanningApplicationUrl: string;
   /** BP box `bp-mes`. */
   readonly bpMesApplicationUrl: string;
+  /** Optional: MES Supervisor (presentation / tab groups; not a diagram box). */
+  readonly bpSupervisorApplicationUrl: string;
   /** BP box `bp-ewm`. */
   readonly bpEwmApplicationUrl: string;
   /** BP box `bp-crm`. */
@@ -39,13 +41,16 @@ const DEFAULT_SETTINGS: ExternalLinksSettings = {
   bpPlanningApplicationUrl:
     'https://md1.orbis.de/sap/bc/ui5_ui5/omes/pt/index.html?sap-client=100&sap-ui-language=DE&sap-ui-xx-devmode=true#/OrderManagement/1010/SMARTFACTORY',
   bpMesApplicationUrl:
-    'https://md1.orbis.de/orbis/web_mes/webviewer/index.htm#mppservice=orbis/mes&mpptimeout=60000&defaultlang=EN&maskid=ffb6098113c549bda9192b793dbb75ab&viewermenue=true&extensions=[%22controlinfo%22]&LAYOUT=LIGHT&Werk=1010',
+    'https://md1.orbis.de/orbis(bD1kZSZjPTEwMA==)/web_mes/webviewer/index.htm#mppservice=orbis/mes&mpptimeout=60000&defaultlang=EN&maskid=ffb6098113c549bda9192b793dbb75ab&viewermenue=true&extensions=[%22controlinfo%22]&LAYOUT=LIGHT&Werk=1010',
+  bpSupervisorApplicationUrl:
+    'https://md1.orbis.de/sap/bc/ui5_ui5/omes/supervisor/index.html#/operation/1003442,0020,0',
   bpEwmApplicationUrl: 'https://www.orbis-group.com/de-de/sap-orbis-loesungen/logistics/apps.html',
   bpCrmApplicationUrl: 'https://www.orbis-group.com/de-de/microsoft-orbis-loesungen/dynamics-365-crm-kundenservice.html',
   bpAnalyticsApplicationUrl: 'http://192.168.0.201:3000/dashboards',
   bpDataLakeApplicationUrl: '',
   dspSmartfactoryDashboardUrl: '/dsp-action',
-  dspEdgeUrl: 'https://www.orbis-group.com/de-de/sap-orbis-loesungen/distributed-shopfloor-processing.html',
+  /** ORBIS DSP Edge product UI — host `192.168.0.201` (SSH `dsp-agent`); exact HTTP URL TBD at ORBIS. Not OSF-UI. */
+  dspEdgeUrl: '',
   dspManagementCockpitUrl: 'https://dspmcorbisprd.powerappsportals.com',
 };
 

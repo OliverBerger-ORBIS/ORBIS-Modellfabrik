@@ -39,12 +39,13 @@
     h2 { margin-top: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.35rem; }
     h3 { margin-top: 1.5rem; }
     p, ul { margin: 0.75rem 0; }
-    a { color: #0969da; }
+    a { color: #0969da; word-break: break-word; }
     code {
       background: var(--code-bg);
       padding: 0.1em 0.35em;
       border-radius: 4px;
       font-size: 0.92em;
+      word-break: break-all;
     }
     table {
       width: 100%;
@@ -67,11 +68,6 @@
       overflow-x: auto;
       margin: 1rem 0;
     }
-    .meta {
-      color: var(--muted);
-      font-size: 0.92rem;
-      margin-bottom: 1.5rem;
-    }
     .footer {
       margin-top: 2.5rem;
       padding-top: 1rem;
@@ -80,12 +76,22 @@
       font-size: 0.85rem;
     }
     li.task { list-style: none; margin-left: -1.2rem; }
+    @media print {
+      body { background: #fff; color: #000; }
+      main { max-width: none; padding: 0.4in 0.55in; }
+      a { color: #000; }
+      .no-print { display: none; }
+      h2, h3 { page-break-after: avoid; }
+      table, ul { page-break-inside: avoid; }
+      table { font-size: 0.82rem; }
+      th { background: #f0f0f0; }
+    }
   </style>
 </head>
 <body>
   <main>
     <h1>ORBIS Shopfloor — Netzwerk-Topologie (FT-LAN + OSF-Erweiterung)</h1>
-<p><strong>Stand:</strong> 14.07.2026 · <strong>Status:</strong> Entwurf mit Lücken (<code>TBD</code>) — zur Vervollständigung durch Netzwerk-/ORBIS-Kollegen   <strong>Bezug:</strong> <a href="../../sprints/sprint_25.md">Sprint 25 Router-Setup</a> · <a href="../../06-integrations/00-REFERENCE/hardware-architecture.md">FT Hardware-Architektur</a></p>
+<p><strong>Stand:</strong> 14.07.2026 · <strong>Status:</strong> Entwurf mit Lücken (<code>TBD</code>) — zur Vervollständigung durch Netzwerk-/ORBIS-Kollegen <strong>Bezug:</strong> <a href="../../sprints/sprint_25.md">Sprint 25 Router-Setup</a> · <a href="../../06-integrations/00-REFERENCE/hardware-architecture.md">FT Hardware-Architektur</a></p>
 <hr>
 <h2>Kurz: Was bleibt, was neu ist</h2>
 <table><thead><tr><th>Ebene</th><th>Status</th><th>Inhalt</th></tr></thead><tbody><tr><td><strong>FT-LAN (APS)</strong></td><td><strong>Unverändert</strong></td><td>Fischertechnik-Modellfabrik: <code>192.168.0.0/24</code>, RPi, SPS/OPC-UA, TXT, MQTT — siehe <a href="../../06-integrations/00-REFERENCE/hardware-architecture.md">hardware-architecture.md</a></td></tr><tr><td><strong>OSF-Erweiterung</strong></td><td><strong>Neu (Jul 2026)</strong></td><td>Zwei-Router-Setup: GL.iNet an DPS (FT-Router-Ersatz) + separater Router für <strong>ORBIS-LAN</strong>, <strong>DSP</strong>, <strong>MES/SAP</strong> und Demo-<strong>WLAN</strong></td></tr><tr><td><strong>ORBIS-LAN</strong></td><td><strong>Zusätzlich</strong></td><td>Firmennetz ORBIS — <strong>nicht</strong> identisch mit FT-LAN; Zugriff auf DSP, MES, SAP</td></tr></tbody></table>
@@ -175,7 +181,7 @@ flowchart TB
 <hr>
 <h2>Lücken für Kollegen (Vervollständigung)</h2>
 <p>Bitte eintragen (Pull Request oder direkt in dieser Datei):</p>
-<ul><li class='task'><label><input type='checkbox' disabled> <strong>ORBIS-LAN:</strong> Subnetz, Gateway, DNS</label></li><li class='task'><label><input type='checkbox' disabled> <strong>Router B:</strong> Modell, Management-IP, physische Port-Belegung (WAN/LAN1/LAN2)</label></li><li class='task'><label><input type='checkbox' disabled> <strong>DSP:</strong> IP/Hostname, erreichbar von FT-LAN ja/nein, nur via ORBIS-LAN?</label></li><li class='task'><label><input type='checkbox' disabled> <strong>MES / SAP:</strong> Endpunkte, Latenzpfad (relevant für LOM-Day-Follow-up)</label></li><li class='task'><label><input type='checkbox' disabled> <strong>Brücke FT-LAN ↔ ORBIS-LAN:</strong> Router B — ein Port oder zwei? NAT/Firewall-Regeln?</label></li><li class='task'><label><input type='checkbox' disabled> <strong>Demo-WLAN <code>ORBIS_H15_F05</code>:</strong> Nur Internet/LTE oder auch Route ins FT-LAN (<code>192.168.0.100</code>)?</label></li><li class='task'><label><input type='checkbox' disabled> <strong>Skizze/Foto</strong> der Verkabelung an Router B (optional, unter <code>docs/assets/</code> ablegen)</label></li></ul>
+<ul><li class='task'><label><input type='checkbox' disabled> <strong>ORBIS-LAN:</strong> Subnetz, Gateway, DNS</label></li><li class='task'><label><input type='checkbox' disabled> <strong>Router B:</strong> Modell, Management-IP, physische Port-Belegung (WAN/LAN1/LAN2)</label></li><li class='task'><label><input type='checkbox' disabled> <strong>DSP:</strong> Host <code>192.168.0.201</code>, SSH <code>dsp-agent@192.168.0.201</code>; HTTP-UI für Settings <strong><code>dspEdgeUrl</code></strong> (Port/Pfad <strong>TBD</strong>); Grafana <code>:3000</code> bestätigt in External Links</label></li><li class='task'><label><input type='checkbox' disabled> <strong>MES / SAP:</strong> Endpunkte, Latenzpfad (relevant für LOM-Day-Follow-up)</label></li><li class='task'><label><input type='checkbox' disabled> <strong>Brücke FT-LAN ↔ ORBIS-LAN:</strong> Router B — ein Port oder zwei? NAT/Firewall-Regeln?</label></li><li class='task'><label><input type='checkbox' disabled> <strong>Demo-WLAN <code>ORBIS_H15_F05</code>:</strong> Nur Internet/LTE oder auch Route ins FT-LAN (<code>192.168.0.100</code>)?</label></li><li class='task'><label><input type='checkbox' disabled> <strong>Skizze/Foto</strong> der Verkabelung an Router B (optional, unter <code>docs/assets/</code> ablegen)</label></li></ul>
 <hr>
 <h2>Betriebsmodi (OSF)</h2>
 <table><thead><tr><th>Modus</th><th>Broker / Netz</th><th>Doku</th></tr></thead><tbody><tr><td><strong>Live (Modus B/C)</strong></td><td>MQTT <strong><code>192.168.0.100</code></strong> (FT-LAN)</td><td><a href="../helper_apps/session-manager/runtime-modes-matrix.md">runtime-modes-matrix.md</a></td></tr><tr><td><strong>Replay (Modus A)</strong></td><td><code>localhost</code> oder externer Broker</td><td>nicht FT-LAN</td></tr><tr><td><strong>MES/SAP/DSP</strong></td><td>ORBIS-LAN</td><td><strong><code>TBD</code></strong> — Latenz, Ports, VPN</td></tr></tbody></table>
@@ -188,11 +194,13 @@ flowchart TB
 <p>```bash bash scripts/export-network-topology-html.sh</p>
 <p>```</p>
 <p>Erzeugt: <code>docs/04-howto/setup/orbis-shopfloor-network-topology.html</code> — per E-Mail/Teams teilen oder lokal im Browser öffnen. <strong>Mermaid</strong> lädt einmalig von CDN (Internet nötig beim ersten Öffnen).</p>
-    <p class="footer">Generated from <code>orbis-shopfloor-network-topology.md</code> — re-run <code>bash scripts/export-network-topology-html.sh</code> after edits.</p>
+    <p class="footer no-print">Generated from <code>orbis-shopfloor-network-topology.md</code> — re-run <code>bash scripts/export-network-topology-html.sh</code> after edits.</p>
   </main>
+  
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script>
     mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
   </script>
+
 </body>
 </html>

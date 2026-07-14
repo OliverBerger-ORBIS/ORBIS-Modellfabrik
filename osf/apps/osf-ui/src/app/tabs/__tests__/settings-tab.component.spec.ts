@@ -56,6 +56,7 @@ describe('SettingsTabComponent', () => {
     bpErpApplicationUrl: 'https://erp.example.com',
     bpPlanningApplicationUrl: '',
     bpMesApplicationUrl: '',
+    bpSupervisorApplicationUrl: '',
     bpEwmApplicationUrl: '',
     bpCrmApplicationUrl: '',
     bpAnalyticsApplicationUrl: 'https://grafana.example.com',

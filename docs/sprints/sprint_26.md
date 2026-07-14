@@ -10,6 +10,7 @@
 
 | Datum | Event | Nutzen fuer OSF |
 |--------|--------|----------------|
+| **14.07.2026** | **Interner Probelauf** Windows-Desktop/OBS + MES/PT (Musashi → 14.08.) | Dress rehearsal statt Kundentermin — siehe Erledigt |
 | **14.08.2026** | **Kundentermin Musashi** (verschoben von 14.07.2026) | Erstverifikation Router-/Netzwerk-Setup und Windows-Desktop-Praesentation (Follow-up LOM-Day) |
 
 ---
@@ -59,6 +60,7 @@
 
 ## Erledigt
 
+- [x] **Windows-Desktop-/OBS-Setup (Probelauf 14.07.2026):** Musashi-Termin auf 14.08. verschoben — am 14.07. stattdessen Live-Test am ORBIS-Stand: virtuelle Desktops, OBS-Kamera, Tab-Gruppen/Favoriten inkl. **MES MD1** und **Planungstool (PT MD1)** nach [Checkliste](../04-howto/presentation/windows-desktops-teams-obs-setup-checklist.md). **Ergebnis:** Setup grundsätzlich lauffähig. *Nicht Teil dieses Tests:* UC- und DSP-Architektur-Diagramme in OSF-UI (Landscape/Hero-Skalierung erst danach mit v1.1.8).
 - [x] **OSF-UI Praesentation Landscape/Hero (Desktop 2 + 3):** Zwei Profile statt Viewport-Fit — UC **Landscape** (`use-case-landscape-presentation.scss`, Flex-Kette, Sidebar default eingeklappt auf UC-Routen), DSP **Hero** (Diagramm-CSS-Fit, Accordion scrollbar). **Verifiziert 14.07.2026:** Desktop 2 Fullscreen **Browser 100 %** + UC-Diagramm **100 %** @ 1920×1200; Desktop 3 Hero **Browser 80 %** + DSP-Architektur **100 %** @ ~1040×1080; Checkliste [windows-desktops-teams-obs-setup-checklist.md](../04-howto/presentation/windows-desktops-teams-obs-setup-checklist.md) aktualisiert.
 
 ---

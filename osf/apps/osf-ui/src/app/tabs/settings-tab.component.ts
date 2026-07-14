@@ -198,7 +198,8 @@ import { ShopfloorRotationService, type ShopfloorRotation } from '../services/sh
 
           <label>
             <span i18n="@@settingsDspLinkLabel">DSP Edge URL</span>
-            <input type="url" formControlName="dspEdgeUrl" placeholder="https://dsp.example.com" />
+            <input type="url" formControlName="dspEdgeUrl" placeholder="http://192.168.0.201/…" />
+            <small i18n="@@settingsDspEdgeLinkHint">ORBIS DSP Edge product (not OSF-UI on the RPi). Leave empty until the HTTP endpoint is confirmed on site.</small>
           </label>
 
           <label>
@@ -280,6 +281,11 @@ import { ShopfloorRotationService, type ShopfloorRotation } from '../services/sh
             <input type="text" formControlName="bpPlanningApplicationUrl" placeholder="https://" />
             <small i18n="@@settingsBpPlanningLinkHint">Opens in a new tab when the BP-Planning box is clicked. Leave empty to disable.</small>
           </label>
+          <label>
+            <span i18n="@@settingsBpSupervisorLinkLabel">BP-Supervisor Application URL (MES Supervisor)</span>
+            <input type="text" formControlName="bpSupervisorApplicationUrl" placeholder="https://" />
+            <small i18n="@@settingsBpSupervisorLinkHint">For presentation tab groups (SV MD1). Not a diagram box click target. Leave empty to disable.</small>
+          </label>
           <footer>
             <button
               type="button"
@@ -289,6 +295,15 @@ import { ShopfloorRotationService, type ShopfloorRotation } from '../services/sh
               i18n="@@settingsOpenBpPlanningButton"
             >
               Open BP-Planning Link
+            </button>
+            <button
+              type="button"
+              class="secondary"
+              [disabled]="!linksForm.get('bpSupervisorApplicationUrl')?.value"
+              (click)="openExternalLink(linksForm.get('bpSupervisorApplicationUrl')?.value)"
+              i18n="@@settingsOpenBpSupervisorButton"
+            >
+              Open BP-Supervisor Link
             </button>
           </footer>
         </form>
@@ -443,13 +458,14 @@ export class SettingsTabComponent implements OnInit {
       bpErpApplicationUrl: [linkSettings.bpErpApplicationUrl],
       bpPlanningApplicationUrl: [linkSettings.bpPlanningApplicationUrl],
       bpMesApplicationUrl: [linkSettings.bpMesApplicationUrl],
+      bpSupervisorApplicationUrl: [linkSettings.bpSupervisorApplicationUrl],
       bpEwmApplicationUrl: [linkSettings.bpEwmApplicationUrl],
       bpCrmApplicationUrl: [linkSettings.bpCrmApplicationUrl],
       bpAnalyticsApplicationUrl: [linkSettings.bpAnalyticsApplicationUrl, [Validators.required]],
       bpDataLakeApplicationUrl: [linkSettings.bpDataLakeApplicationUrl],
 
       dspSmartfactoryDashboardUrl: [linkSettings.dspSmartfactoryDashboardUrl],
-      dspEdgeUrl: [linkSettings.dspEdgeUrl, [Validators.required]],
+      dspEdgeUrl: [linkSettings.dspEdgeUrl],
       dspManagementCockpitUrl: [linkSettings.dspManagementCockpitUrl, [Validators.required]],
     });
   }

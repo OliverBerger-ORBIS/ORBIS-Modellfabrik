@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export orbis-shopfloor-network-topology.md to a standalone HTML file with Mermaid."""
+"""Export Markdown how-to docs to standalone HTML (tables, tasks, optional Mermaid)."""
 
 from __future__ import annotations
 
@@ -79,7 +79,7 @@ def convert_markdown(md: str) -> str:
             while index < len(lines) and not lines[index].startswith("```"):
                 block.append(lines[index])
                 index += 1
-            index += 1  # closing fence
+            index += 1
             out.append(f'<pre class="mermaid">\n{chr(10).join(block)}\n</pre>')
             continue
 
@@ -127,14 +127,14 @@ def convert_markdown(md: str) -> str:
             index += 1
             continue
 
-        paragraph_lines = [line]
+        paragraph_lines = [line.strip()]
         index += 1
         while index < len(lines) and lines[index].strip() and not lines[index].startswith("#"):
             if is_table_row(lines[index]) or lines[index].startswith("```"):
                 break
             if re.match(r"^- ", lines[index]):
                 break
-            paragraph_lines.append(lines[index])
+            paragraph_lines.append(lines[index].strip())
             index += 1
         out.append(f"<p>{escape_inline(' '.join(paragraph_lines))}</p>")
 
@@ -182,12 +182,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     h2 {{ margin-top: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.35rem; }}
     h3 {{ margin-top: 1.5rem; }}
     p, ul {{ margin: 0.75rem 0; }}
-    a {{ color: #0969da; }}
+    a {{ color: #0969da; word-break: break-word; }}
     code {{
       background: var(--code-bg);
       padding: 0.1em 0.35em;
       border-radius: 4px;
       font-size: 0.92em;
+      word-break: break-all;
     }}
     table {{
       width: 100%;
@@ -210,11 +211,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       overflow-x: auto;
       margin: 1rem 0;
     }}
-    .meta {{
-      color: var(--muted);
-      font-size: 0.92rem;
-      margin-bottom: 1.5rem;
-    }}
     .footer {{
       margin-top: 2.5rem;
       padding-top: 1rem;
@@ -223,35 +219,68 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       font-size: 0.85rem;
     }}
     li.task {{ list-style: none; margin-left: -1.2rem; }}
+    @media print {{
+      body {{ background: #fff; color: #000; }}
+      main {{ max-width: none; padding: 0.4in 0.55in; }}
+      a {{ color: #000; }}
+      .no-print {{ display: none; }}
+      h2, h3 {{ page-break-after: avoid; }}
+      table, ul {{ page-break-inside: avoid; }}
+      table {{ font-size: 0.82rem; }}
+      th {{ background: #f0f0f0; }}
+    }}
   </style>
 </head>
 <body>
   <main>
     {body}
-    <p class="footer">Generated from <code>{source}</code> — re-run <code>bash scripts/export-network-topology-html.sh</code> after edits.</p>
+    <p class="footer no-print">Generated from <code>{source}</code> — re-run <code>{rerun_cmd}</code> after edits.</p>
   </main>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <script>
-    mermaid.initialize({{ startOnLoad: true, theme: "neutral", securityLevel: "loose" }});
-  </script>
+  {mermaid_script}
 </body>
 </html>
 """
 
+MERMAID_SCRIPT = """
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+  </script>
+"""
+
 
 def main() -> int:
-    if len(sys.argv) != 3:
-        print("Usage: export_network_topology_html.py <input.md> <output.html>", file=sys.stderr)
+    if len(sys.argv) < 3:
+        print(
+            "Usage: export_markdown_html.py <input.md> <output.html> [rerun_cmd] [--mermaid]",
+            file=sys.stderr,
+        )
         return 1
 
     source = Path(sys.argv[1])
     target = Path(sys.argv[2])
+    rerun_cmd = "bash scripts/export-markdown-html.sh"
+    include_mermaid = False
+
+    for arg in sys.argv[3:]:
+        if arg == "--mermaid":
+            include_mermaid = True
+        else:
+            rerun_cmd = arg
+
     md = source.read_text(encoding="utf-8")
     title_match = re.search(r"^# (.+)$", md, re.MULTILINE)
     title = title_match.group(1) if title_match else source.stem
     body = convert_markdown(md)
+    mermaid_script = MERMAID_SCRIPT if include_mermaid else ""
     target.write_text(
-        HTML_TEMPLATE.format(title=html.escape(title), body=body, source=source.name),
+        HTML_TEMPLATE.format(
+            title=html.escape(title),
+            body=body,
+            source=source.name,
+            rerun_cmd=rerun_cmd,
+            mermaid_script=mermaid_script,
+        ),
         encoding="utf-8",
     )
     print(f"Wrote {target}")

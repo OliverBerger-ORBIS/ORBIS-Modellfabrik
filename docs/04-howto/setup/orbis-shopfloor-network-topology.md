@@ -162,7 +162,7 @@ Bitte eintragen (Pull Request oder direkt in dieser Datei):
 
 - [ ] **ORBIS-LAN:** Subnetz, Gateway, DNS
 - [ ] **Router B:** Modell, Management-IP, physische Port-Belegung (WAN/LAN1/LAN2)
-- [ ] **DSP:** IP/Hostname, erreichbar von FT-LAN ja/nein, nur via ORBIS-LAN?
+- [ ] **DSP:** Host `192.168.0.201`, SSH `dsp-agent@192.168.0.201`; HTTP-UI für Settings **`dspEdgeUrl`** (Port/Pfad **TBD**); Grafana `:3000` bestätigt in External Links
 - [ ] **MES / SAP:** Endpunkte, Latenzpfad (relevant für LOM-Day-Follow-up)
 - [ ] **Brücke FT-LAN ↔ ORBIS-LAN:** Router B — ein Port oder zwei? NAT/Firewall-Regeln?
 - [ ] **Demo-WLAN `ORBIS_H15_F05`:** Nur Internet/LTE oder auch Route ins FT-LAN (`192.168.0.100`)?

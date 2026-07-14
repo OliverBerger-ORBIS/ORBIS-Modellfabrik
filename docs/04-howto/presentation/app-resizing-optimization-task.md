@@ -1,6 +1,6 @@
 # Angular-App Resizing-Optimierung für OBS-Videopräsentation
 
-> **Hinweis (historisch):** Dieses Task-Dokument stammt aus der Umsetzungsplanung (Sprint 13). Für den aktuellen Präsentations-Runbook-Stand ist `obs-video-presentation-setup.md` maßgeblich.
+> **Hinweis (historisch):** Sprint-13-Planung (OBS-Szenen). **Nicht** fuer neue Setups — siehe [presentation/README.md](./README.md) und [windows-desktops-teams-obs-setup-checklist.md](./windows-desktops-teams-obs-setup-checklist.md).
 
 **Status:** Historisches Task-Dokument (Sprint 13)  
 **Sprint:** Sprint 13  

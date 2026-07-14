@@ -11,6 +11,10 @@ if [[ ! -f "$SOURCE" ]]; then
   exit 1
 fi
 
-python3 "$ROOT/scripts/export_network_topology_html.py" "$SOURCE" "$TARGET"
+python3 "$ROOT/scripts/export_markdown_html.py" \
+  "$SOURCE" \
+  "$TARGET" \
+  "bash scripts/export-network-topology-html.sh" \
+  --mermaid
 echo "Open in browser: file://$TARGET"
 echo "Share: attach HTML or host on internal file share (Mermaid needs CDN/internet once)."

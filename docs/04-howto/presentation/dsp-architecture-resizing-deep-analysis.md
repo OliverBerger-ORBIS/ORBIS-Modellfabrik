@@ -1,6 +1,6 @@
 # DSP-Architektur Resizing – Tiefe Analyse & Lösungsoptionen
 
-> **Hinweis (historisch):** Dieses Dokument beschreibt den Analyse- und Entscheidungsstand aus Sprint 13 inklusive verworfener Optionen. Maßgeblich für die aktuelle Präsentationspraxis ist die OBS-How-To-Doku in `obs-video-presentation-setup.md`.
+> **Hinweis (historisch):** Analyse vor OSF-UI Hero-Fit (v1.1.8). **Nicht** fuer neue Setups — siehe [presentation/README.md](./README.md).
 
 **Status:** Historische Analyse (Sprint 13)  
 **Datum:** 2026-01-08  

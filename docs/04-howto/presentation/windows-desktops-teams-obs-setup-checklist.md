@@ -1,148 +1,199 @@
-# Windows Präsentations-Setup – Desktops + Teams + OBS (Normal/Replay)
+# Windows Präsentations-Setup – Desktops + Teams + OBS
 
-Ziel: Reproduzierbares Demo-Setup auf Windows mit **virtuellen Desktops** als Layout-Basis und **OBS für Kamera**.
+Reproduzierbares Demo-Setup: **virtuelle Windows-Desktops**, **OBS nur für Kamera**, OSF-UI mit **Landscape/Hero-Profilen** (ab v1.1.8).
 
-## Ultra-Kurz (6 Aktionen)
-- Modus wählen: **Normal (Live)** oder **Replay**.
-- In Desktop 1 (`Working`) alle nötigen Apps in Reihenfolge starten (bei Replay zuerst Mosquitto + OSF; Browser-Tabs erst nach laufendem OSF).
-- Apps auf Desktop 1/2/3 verteilen.
-- Apps in den Desktops anordnen und Zoom-/Größeneinstellungen prüfen (siehe [Referenz-Zoom](#referenz-zoom-verifiziert-14072026)).
-- Mit `WIN + Ctrl + ←/→` kurz testen, ob alles stabil funktioniert.
-- Optional Teams teilen und mit/ohne Aufnahme starten.
-
-## Scope
-- Teams teilt den Präsentationsmonitor im Vollbild und zeichnet auf.
-- Bei Problemen mit Teams-Meeting-Aufzeichnung wird das **Windows Snipping Tool** für Videoaufnahme verwendet.
-- Es gibt zwei Modi:
-  - **Normal-Modus:** APS + Konftel-20 + OSF (bevorzugt über RPi/APS)
-  - **Replay-Modus:** ohne APS, mit Laptop-Kamera + lokalem Mosquitto-Broker + OSF auf localhost
-- OBS wird für Kamera-Preview betrieben.
-- Kamera liegt auf Desktop 1 (Working) im OBS-Projector-Preview und zusätzlich auf Desktop 3 (rechts unten) als Gegenpart zum Digital Twin.
-- Für Object Detection bleibt OBS-Recording der Kamera möglich.
-- **Desktop 2 (Landscape Fullscreen):** **Edge**, Browser-Zoom **100 %**, Use-Case-Diagramm **100 %** (OSF-Zoom), Sidebar eingeklappt.
-- **Desktop 3 (Hero):** **Chrome**, Browser-Zoom **80 %**, DSP-Architektur-Diagramm **100 %** (OSF-Zoom) + **Edge InPrivate** für Digital Twin (rechts oben) + Kamera-Preview (rechts unten).
+**Index:** [presentation/README.md](./README.md) · **Entscheidung:** [DR-29](../../03-decision-records/29-windows-desktops-presentation-without-fancyzones.md)
 
 ---
 
-## Referenz-Zoom (verifiziert 14.07.2026)
+## Kurzüberblick
 
-| Desktop | Auflösung (typ.) | Browser | OSF-Diagramm-Zoom | Inhalt | Hinweise |
-|--------|-------------------|---------|-------------------|--------|----------|
-| **2 – Landscape Fullscreen** | 1920×1200 (Prio 1) | **100 %** | **100 %** (UC) | Use-Case UC-00…07 | Sidebar standardmäßig eingeklappt; per Toggle aufklappbar. |
-| **3 – Hero** | ~1040×1080 | **80 %** | **100 %** (DSP Architektur) | DSP → Accordion **Architektur** | Accordion normal scrollbar; Diagramm ohne Scroll bei ≤ **100 %** OSF-Zoom; Scroll erst bei OSF-Zoom **> 100 %**. |
+| Desktop | Rolle | Browser | Browser-Zoom | OSF-Diagramm | Inhalt |
+|--------|--------|---------|--------------|--------------|--------|
+| **1** | Working | — | — | — | OBS-Preview, Steuerung, VS Code, Teams optional |
+| **2** | Landscape Fullscreen | **Edge** | **100 %** | UC **100 %** | Use-Cases UC-00…07 (Sidebar eingeklappt) |
+| **3** | Hero | **Chrome** | **80 %** | DSP **100 %** | DSP → Accordion **Architektur**; Edge InPrivate Digital Twin; Kamera-Preview |
 
-**Semantik OSF-Diagramm-Zoom:** 100 % = maximaler Fit in den sichtbaren Diagrammbereich (nicht literal 1920 px Canvas).
-
-**Nach Browser-Update / Hard-Reload:** UC- und DSP-Zoom ggf. einmal **Reset** (↺), falls alter `sessionStorage`-Wert (`OSF.viewScale`) noch aktiv ist.
-
----
-
-## A) Schnell-Checkliste (operatorfähig)
-
-### Preflight (2 Minuten)
-- [ ] Windows-Desktop gestartet, externer Monitor erkannt (falls vorhanden)
-- [ ] Anzeigeeinstellung geprüft: Desktop-Rechtsklick → Anzeigeeinstellungen → **Diese Anzeigen duplizieren** (Laptop-Monitor)
-- [ ] Modus gewählt: **Normal** oder **Replay**
-- [ ] VS Code gestartet (optional im Normal-Modus, erforderlich im Replay-Modus)
-- [ ] Normal-Modus: APS gestartet (optional zusätzlich OSF auf localhost)
-- [ ] Replay-Modus: Mosquitto-Bridge läuft, OSF läuft auf localhost
-- [ ] Teams angemeldet und testweise monitor-share verfügbar
-- [ ] OBS installiert und startet fehlerfrei (scene collection osf-camera)
-- [ ] Browser vorhanden: Edge + Chrome (InPrivate für Digital Twin)
-- [ ] URL-Persistenz eingerichtet: Favoriten-Ordner `OSF-LH` + `OSF-RPi`, Browser-Start auf „Vorherige Sitzung fortsetzen“
-
-### Layout & Kamera
-- [ ] Desktop 1: Working (OBS-Preview + Steuerungs-Apps + VS Code)
-- [ ] Desktop 2: Fullscreen (Edge, Browser **100 %**, Use-Case-Diagramm **100 %**)
-- [ ] Desktop 3: Hero (Chrome Browser **80 %**, DSP-Architektur **100 %** + Edge InPrivate Digital Twin rechts oben + Kamera-Preview rechts unten)
-- [ ] Kameraquelle gewählt: Konftel-20 (Normal) oder Laptop-Cam (Replay/Fallback)
-- [ ] Konftel-20 Presets eingerichtet (0 = Gesamtansicht, 1 = DRILL, 2 = HBW, 3 = MILL, 4 = AIQS, 5 = DPS, 6 = CHRG) 
-- [ ] OBS-Preview auf Desktop 1 offen + zweites Preview auf Desktop 3 (rechts unten)
-- [ ] Kamera-Verzerrungs-Check bestanden (OBS + Teams)
-- [ ] Preset-Test bestanden (0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 0, Positionen korrekt)
-
-### Teams-Pfad
-- [ ] In Teams den Präsentationsmonitor im Vollbild teilen
-- [ ] Optional: Desktop 1 (`Working`) teilen, wenn Kamera-Vollbild im Fokus stehen soll
-- [ ] Recording-Pfad festlegen:
-  - Primär: Teams-Aufzeichnung (Meeting)
-  - Fallback: Windows Snipping Tool (Screen Recording)
-
+**Semantik OSF-Diagramm-Zoom:** 100 % = maximaler Fit ohne Scroll im Diagrammbereich (nicht literal 1920 px Canvas).
 
 ---
 
-## B) Erprobung – Schrittfolge (stabil, komplett händisch)
+## External Links (OSF Settings ↔ Tab-Gruppen)
 
-### Aktion 1) Modus wählen (Normal oder Replay)
-- [ ] **Normal (Live):** APS starten und Datenpfad prüfen
-- [ ] **Replay:** (VS Code starten)
-  - Mosquitto-Bridge starten: `.\scripts\start-mosquitto-ws-bridge.ps1`
-  - OSF starten: `.\scripts\run-osf.ps1` (alternativ `npm run serve:osf-ui`)
+Quelle der Wahrheit für Klick-Ziele im **DSP-Architektur-Diagramm:**  
+`osf/apps/osf-ui/public/assets/config/external-links.json` (Settings → **Export JSON** → deployen auf RPi).
+
+| Feld (Settings) | Tab-Name (Empfehlung) | URL (MD1, Stand 14.07.2026) |
+|-----------------|----------------------|-----------------------------|
+| BP-Planning | **PT MD1** | `https://md1.orbis.de/sap/bc/ui5_ui5/omes/pt/index.html?sap-client=100&sap-ui-language=DE&sap-ui-xx-devmode=true#/OrderManagement/1010/SMARTFACTORY` |
+| BP-MES | **MES MD1** | `https://md1.orbis.de/orbis(bD1kZSZjPTEwMA==)/web_mes/webviewer/index.htm#mppservice=orbis/mes&mpptimeout=60000&defaultlang=EN&maskid=ffb6098113c549bda9192b793dbb75ab&viewermenue=true&extensions=[%22controlinfo%22]&LAYOUT=LIGHT&Werk=1010` |
+| BP-Supervisor | **SV MD1** (Supervisor) | `https://md1.orbis.de/sap/bc/ui5_ui5/omes/supervisor/index.html#/operation/1003442,0020,0` |
+| BP-Analytics | **Grafana** | `http://192.168.0.201:3000/dashboards` (läuft auf **DSP-Edge-Knoten**, nicht RPi) |
+| DSP Edge | *(Diagramm-Klick)* | **`TBD`** — ORBIS **DSP Edge** auf `192.168.0.201` (SSH `dsp-agent@192.168.0.201`); **≠ OSF-UI** (`192.168.0.100:8080`) |
+| DSP SmartFactory | *(Diagramm-Klick)* | intern `/dsp-action` (OSF-UI auf RPi) |
+| DSP Management Cockpit | *(Diagramm-Klick)* | `https://dspmcorbisprd.powerappsportals.com` |
+| BP-ERP | *(Diagramm-Klick)* | intern `process` (OSF Process-Tab) |
+
+**Hinweise**
+
+- **MES CARD-ID:** Im MES-Viewer muss bei CARD-ID ein **Punkt (`.`)** eingegeben werden (ORBIS-Praxis).
+- **Supervisor:** Operations-ID in der URL kann sich ändern — Feld **`bpSupervisorApplicationUrl`** in Settings/JSON anpassen.
+- **Replay (localhost):** gleiche MD1-Links; OSF-URLs siehe Tab-Gruppe **OSF-LH** unten.
+
+### Drei getrennte Systeme (nicht verwechseln)
+
+| System | Host (FT-/ORBIS-LAN) | Rolle | Präsentations-Tab |
+|--------|----------------------|-------|-------------------|
+| **OSF-UI** | `192.168.0.100:8080` | Shopfloor-Dashboard (Angular), MQTT/CCU-Anbindung | Tab-Gruppe **OSF-RPi** / **OSF-LH** |
+| **DSP Edge** | `192.168.0.201` (SSH `dsp-agent`) | ORBIS-Produkt Edge-Runtime — **eigenes System** | **`dspEdgeUrl`** in Settings — **HTTP-URL noch klären** |
+| **Grafana / Persistence** | `192.168.0.201:3000` | Analytics auf dem Edge-Knoten ([DR-28](../../03-decision-records/28-edge-persistence-stack-and-metrics-model.md)) | Tab **Grafana** |
+
+**`dspEdgeUrl`:** Im Repo derzeit **leer** (`""`), bis vor Ort die HTTP-Oberfläche des DSP Edge (Port/Pfad) verifiziert ist. Frühere Werte waren falsch: Marketing-URL (`main`) bzw. fälschlich OSF-UI (`:8080/de/dsp`).
+
+**Vor Ort prüfen (wenn im ORBIS-Netz):** `ssh dsp-agent@192.168.0.201` → welche Ports/UI? Ergebnis in Settings → Export JSON → deployen.
+
+---
+
+## Tab-Gruppen & Favoriten (Edge + Chrome)
+
+Zwei **Favoritenordner** anlegen (in **Edge** und **Chrome** jeweils):
+
+### Ordner `OSF-RPi` (Live / Normal-Modus, Desktop 2 Edge)
+
+| Tab | URL |
+|-----|-----|
+| OSF Dashboard | `http://192.168.0.100:8080/de/dsp` |
+| OSF Use Cases | `http://192.168.0.100:8080/de/dsp/use-case` |
+| OSF Presentation (Digital Twin) | `http://192.168.0.100:8080/de/presentation` |
+| PT MD1 | siehe Tabelle External Links |
+| MES MD1 | siehe Tabelle External Links |
+| SV MD1 Supervisor | siehe Tabelle External Links |
+| Grafana | `http://192.168.0.201:3000/dashboards` |
+| *(optional)* DSP Edge UI | Settings **`dspEdgeUrl`** — **TBD** vor Ort klären |
+
+**Edge Desktop 2:** Tab-Gruppe **OSF-RPi** im Vollbild; Start-Tab typisch Use-Case oder DSP.
+
+### Ordner `OSF-LH` (Replay / localhost, Desktop 2 oder Dev)
+
+| Tab | URL |
+|-----|-----|
+| OSF Dashboard | `http://localhost:4200/de/dsp` |
+| OSF Use Cases | `http://localhost:4200/de/dsp/use-case` |
+| OSF Presentation | `http://localhost:4200/de/presentation` |
+| PT MD1 / MES MD1 / SV MD1 | identisch zu **OSF-RPi** (MD1-Server) |
+
+### Desktop 3 (Hero) — Chrome
+
+| Fenster | Browser | Tab / Inhalt |
+|---------|---------|--------------|
+| Hero links | Chrome | Tab-Gruppe oder einzelner Tab: `http://192.168.0.100:8080/de/dsp` (Browser-Zoom **80 %**) |
+| Digital Twin oben rechts | Edge **InPrivate** | `http://192.168.0.100:8080/de/presentation` |
+| Kamera unten rechts | OBS Projector Preview | siehe Konftel-Abschnitt unten |
+
+### Tab-Gruppen anlegen (Edge / Chrome)
+
+1. Tabs der jeweiligen Gruppe öffnen (URLs aus Tabellen oben).
+2. Rechtsklick auf einen Tab → **Zu neuer Gruppe hinzufügen** / **Add tab to new group**.
+3. Gruppe benennen: `OSF-RPi` bzw. `OSF-LH`.
+4. Farbe wählen (z. B. Blau = RPi, Grün = LH).
+5. Browser: **Beim Start vorherige Sitzung fortsetzen** aktivieren.
+
+### Favoriten exportieren (Übergabe an Kollegen)
+
+| Browser | Export |
+|---------|--------|
+| **Edge** | `…` → **Favoriten** → **Favoriten verwalten** → **…** → **Favoriten exportieren** → HTML-Datei |
+| **Chrome** | **Lesezeichen-Manager** (`Strg+Umschalt+O`) → **⋮** → **Lesezeichen exportieren** → HTML-Datei |
+
+Kollegen: Import über dieselben Menüs (**Favoriten importieren** / **Lesezeichen importieren**). Tab-Gruppen müssen einmalig manuell aus den Favoriten-Tabs neu gruppiert werden (Export enthält keine Gruppen-Metadaten).
+
+**OSF External Links (RPi):** Settings → External links → **Export JSON** → Datei ins Repo unter `public/assets/config/external-links.json` → Deploy ([rpi-deployment.md](../deployment/rpi-deployment.md)).
+
+---
+
+## Runbook (Schrittfolge)
+
+### 1) Modus wählen
+
+- [ ] **Normal (Live):** APS + OSF auf RPi (`192.168.0.100:8080`); Tab-Gruppe **OSF-RPi**
+- [ ] **Replay:** Mosquitto-Bridge + OSF lokal:
+  - `.\scripts\start-mosquitto-ws-bridge.ps1`
+  - `.\scripts\run-osf.ps1` (oder `npm run serve:osf-ui`)
+  - Tab-Gruppe **OSF-LH**
 - [ ] Erst wenn OSF läuft, Browser-Tabs öffnen
 
-### Aktion 2) Apps in Desktop 1 (`Working`) starten
-- [ ] OBS starten (Scene Collection: `osf-camera`)
-- [ ] Kameraquelle wählen:
-  - Normal-Modus: `scn-01_Konftel-Cam20`
-  - Replay-Modus: `scn-02_laptop-cam`
-- [ ] Zwei Camera-Preview-Projektoren als eigene Fenster öffnen
-- [ ] Edge + Chrome starten (sowie Edge InPrivate für Digital Twin)
-- [ ] Teams nur bei Bedarf starten (optional)
+### 2) Desktop 1 — Working starten
 
-### Aktion 3) Apps auf Desktops verteilen (WIN + TAB in Desktop 1)
-- [ ] Desktop 1: OBS-Preview + Steuerungs-Apps + VS Code
-- [ ] Desktop 2: Edge (Fullscreen)
-- [ ] Desktop 3: Chrome (Hero) + Edge InPrivate (Digital Twin) + OBS-Preview (Kamera)
+- [ ] OBS (Scene Collection `osf-camera`); Kamera **vor** OBS-Start per USB verbinden
+- [ ] Kameraquelle: Normal = `scn-01_Konftel-Cam20`, Replay = `scn-02_laptop-cam`
+- [ ] Zwei **Camera Preview**-Projektoren (Fenster) öffnen
+- [ ] Edge + Chrome starten; Teams optional
 
-### Aktion 4) In den Desktops anordnen und Werte prüfen
-- [ ] Desktop 2 (Edge): Browser-Zoom **100 %**, Use-Case-Diagramm **100 %** (Reset ↺ falls nötig)
-- [ ] Desktop 3 (Chrome): Browser-Zoom **80 %**, DSP-Architektur **100 %** (Accordion **Architektur** geöffnet)
-- [ ] Desktop 3 (rechts oben): Edge InPrivate mit Digital Twin
-- [ ] Desktop 3 (rechts unten): OBS-Kamera-Preview
-- [ ] Kamera-Verzerrungs-Check (OBS + Teams) durchführen
+### 3) Fenster auf Desktops verteilen (`Win + Tab`)
 
-> **Konftel-20 OBS-Einstellungen (validiert 09.07.2026 vor Ort bei ORBIS):**
-> - **Resolution:** Device Default
-> - **Zoom:** mit Fernbedienung auf korrekten Ausschnitt einstellen
-> - **Edit Transform:**
->   - Bounding Box Type: **Scale to inner bounds (FIT)**
->   - Bounding Box Size: **1920 × 1080**
->   - Crop – Top: **10**, Bottom: **10**, Left: **120**, Right: **120**
-> - Preview Desktop 1 + Desktop 3 verifiziert: ✓
->
-> **Konftel-20 Presets einrichten (Fernbedienung):**
-> - Kamera auf Zielausschnitt ausrichten -> **PRESET** -> Ziffer (**0-6**) speichern
-> - Empfohlene Belegung: **0 Gesamtansicht**, **1 DRILL**, **2 HBW**, **3 MILL**, **4 AIQS**, **5 DPS**, **6 CHRG** (OBS Cam-View zeigt erfolgreiche Tastenbelegung links oben)
->
-> **Preset-Test (Pflicht):**
-> - Sequenz drücken: **0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 0**
-> - In OBS-Preview Desktop 1 und Desktop 3 prüfen: korrekter Ausschnitt, reproduzierbare Position, keine Verzerrung
+- [ ] Desktop 1: OBS-Preview + Steuerung + VS Code
+- [ ] Desktop 2: Edge Vollbild (Tab-Gruppe **OSF-RPi** oder **OSF-LH**)
+- [ ] Desktop 3: Chrome Hero + Edge InPrivate (Digital Twin) + OBS-Preview (Kamera)
 
-### Aktion 5) Kurztest Navigation
-- [ ] Mit `WIN + Ctrl + ←/→` kurz zwischen Desktop 1/2/3 wechseln
-- [ ] Prüfen, ob Fensterpositionen, Zoom und Inhalte stabil bleiben
+### 4) Zoom & Layout prüfen
 
-### Aktion 6) Optional: Teams teilen und aufnehmen
-- [ ] Gewünschten Desktop/Monitor in Teams teilen
-- [ ] Optional Desktop 1 teilen, wenn Kamera-Vollbild im Fokus stehen soll
-- [ ] Aufnahme starten:
-  - Primär: Teams-Aufzeichnung
-  - Fallback: Snipping Tool
+- [ ] Desktop 2: Browser **100 %**, UC-Diagramm **100 %** (↺ Reset falls alter `sessionStorage`-Zoom)
+- [ ] Desktop 3 Chrome: Browser **80 %**, DSP-Architektur **100 %**, Accordion **Architektur** geöffnet
+- [ ] Sidebar auf UC-Routen eingeklappt (Toggle `⟩` zum Aufklappen)
+- [ ] Konftel/OBS: Verzerrungs-Check (siehe unten)
 
-### Optional: Object Detection
-- [ ] OBS-Kameraaufnahme kann parallel zur Teams-Aufnahme laufen
+### 5) Navigation testen
+
+- [ ] `Win + Ctrl + ←/→` zwischen Desktop 1/2/3 — Zoom und Fensterpositionen stabil
+
+### 6) Optional: Teams
+
+- [ ] Präsentationsmonitor teilen; Aufnahme Teams oder Snipping Tool
 
 ---
 
-## C) Fallbacks
+## Konftel-20 & OBS (Kamera)
 
-### Kein Konftel-20 angeschlossen
-- Built-in-Kamera verwenden.
-- **Identische OBS-Einstellungen wie bei Konftel-20 verwenden** (Crop/Transform zuerst gleich lassen).
-- Danach Kamera-Verzerrungs-Check durchführen (OBS Preview + Teams-Share).
-- Weiterhin 4:3 bevorzugen (z. B. 800x600).
-- Wenn nur 16:9 verfügbar: Crop/Letterbox bewusst prüfen, keine Geometrieverzerrung.
+> Validiert 09.07.2026 vor Ort bei ORBIS
 
-### Zweiter Monitor fehlt
-- Setup A nutzen (Laptop-Monitor teilen/duplizieren).
-- Desktop 1/2/3 weiterhin verwenden, nur auf einem Display.
+**OBS Transform (Kamera-Quelle):**
+
+- Resolution: **Device Default**
+- Bounding Box: **Scale to inner bounds (FIT)**, **1920 × 1080**
+- Crop: Top/Bottom **10**, Left/Right **120**
+
+**Presets (Fernbedienung):** `PRESET` + Ziffer speichern / Ziffer abrufen
+
+| Preset | Ziel |
+|--------|------|
+| 0 | Gesamtansicht |
+| 1 | DRILL |
+| 2 | HBW |
+| 3 | MILL |
+| 4 | AIQS |
+| 5 | DPS |
+| 6 | CHRG |
+
+**Pflicht-Test:** `0 → 1 → 2 → 3 → 4 → 5 → 6 → 0` in OBS-Preview (Desktop 1 + 3).
+
+---
+
+## Fallbacks
+
+**Kein Konftel-20:** Built-in-Kamera, gleiche OBS-Transform-Werte zuerst, dann Verzerrungs-Check.
+
+**Kein zweiter Monitor:** Desktops 1–3 auf einem Display; Monitor duplizieren.
+
+**Teams-Aufzeichnung problematisch:** Windows Snipping Tool (Screen Recording).
+
+---
+
+## HTML-Export (Drucken / PDF)
+
+Standalone-HTML für Browser-Druck (`Cmd+P` / `Strg+P`):
+
+```bash
+bash scripts/export-presentation-checklist-html.sh
+```
+
+Erzeugt: `docs/04-howto/presentation/windows-desktops-teams-obs-setup-checklist.html` — lokal öffnen, **Drucken** oder **Als PDF speichern**. Kein Internet nötig (kein Mermaid). Footer wird beim Druck ausgeblendet.
