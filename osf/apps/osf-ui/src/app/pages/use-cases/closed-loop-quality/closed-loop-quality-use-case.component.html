@@ -33,11 +33,11 @@
   >
     <div
       class="closed-loop-quality-use-case__diagram-wrapper"
+      [style.overflow]="diagramViewportOverflow"
     >
       <div
-        class="closed-loop-quality-use-case__diagram"
-        [style.width.px]="scaledViewportWidthPx"
-        [style.height.px]="scaledViewportHeightPx"
+        class="closed-loop-quality-use-case__diagram-fit"
+        [style.--uc-zoom]="zoom"
       >
         <div *ngIf="isLoading" class="closed-loop-quality-use-case__loading" i18n="@@loadingSvg">Loading SVG...</div>
         <div

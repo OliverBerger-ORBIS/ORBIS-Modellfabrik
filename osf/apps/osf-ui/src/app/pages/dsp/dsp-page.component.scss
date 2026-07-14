@@ -127,6 +127,41 @@
   }
 }
 
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+:host-context(.app-main--dsp-hero) {
+  .dsp-page {
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .dsp-page__header {
+    display: none;
+  }
+
+  .dsp-page__content {
+    padding: 0.35rem 0.5rem 0.5rem;
+  }
+
+  .dsp-page__accordion {
+    gap: 0.5rem;
+
+    .accordion-trigger {
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+    }
+
+    .accordion-panel {
+      padding: 0 0.75rem 0.75rem;
+    }
+  }
+}
+
 // Responsive adjustments
 @media (max-width: 768px) {
   .dsp-page {

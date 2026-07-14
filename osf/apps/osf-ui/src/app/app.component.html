@@ -2,6 +2,8 @@
   class="app-frame"
   *ngIf="environment$ | async as currentEnvironment; else loading"
   [class.app-frame--collapsed]="sidebarCollapsed"
+  [class.app-frame--use-case-landscape]="useCaseLandscapeMode"
+  [class.app-frame--dsp-hero]="dspHeroMode"
 >
   <aside class="app-sidebar" [class.app-sidebar--collapsed]="sidebarCollapsed">
     <button type="button" class="sidebar__toggle" (click)="toggleSidebar()">
@@ -87,7 +89,11 @@
     </div>
   </aside>
 
-  <div class="app-main">
+  <div
+    class="app-main"
+    [class.app-main--use-case-landscape]="useCaseLandscapeMode"
+    [class.app-main--dsp-hero]="dspHeroMode"
+  >
     <header class="app-header">
       <div class="header__title">
         <img [src]="orbitLogoPath" alt="ORBIS" />

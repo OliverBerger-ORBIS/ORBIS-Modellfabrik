@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AsyncPipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { EnvironmentKey, EnvironmentService } from './services/environment.service';
 import { RoleService, UserRole } from './services/role.service';
 import { LanguageService, LocaleKey } from './services/language.service';
@@ -10,7 +10,7 @@ import { ConnectionService, ConnectionState } from './services/connection.servic
 import { getDashboardController, type DashboardMessageMonitor } from './mock-dashboard';
 import { MessageMonitorService } from './services/message-monitor.service';
 import { WorkpieceHistoryService } from './services/workpiece-history.service';
-import { Subscription } from 'rxjs';
+import { Subscription, filter, map, startWith } from 'rxjs';
 import { VERSION } from '../environments/version';
 
 interface NavigationItem {
@@ -115,6 +115,11 @@ export class AppComponent implements OnDestroy {
       })) as NavigationItem[];
   }
   sidebarCollapsed = false;
+  useCaseLandscapeMode = false;
+  dspHeroMode = false;
+
+  private readonly useCaseDetailPattern = /\/dsp\/use-case\/[^/?#]+$/;
+  private readonly dspPagePattern = /\/dsp$/;
   selectedEnvironment: EnvironmentKey;
   selectedRole: UserRole;
   selectedLocale: LocaleKey;
@@ -161,7 +166,9 @@ export class AppComponent implements OnDestroy {
     private readonly connectionService: ConnectionService,
     public readonly languageService: LanguageService,
     private readonly messageMonitor: MessageMonitorService,
-    private readonly workpieceHistoryService: WorkpieceHistoryService
+    private readonly workpieceHistoryService: WorkpieceHistoryService,
+    private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef
   ) {
     this.environments = this.environmentService.environments;
     this.environment$ = this.environmentService.environment$;
@@ -236,6 +243,32 @@ export class AppComponent implements OnDestroy {
         }
       })
     );
+
+    this.subscriptions.add(
+      this.router.events
+        .pipe(
+          filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+          map((event) => event.urlAfterRedirects),
+          startWith(this.router.url)
+        )
+        .subscribe((url) => this.updatePresentationLayout(url))
+    );
+  }
+
+  private updatePresentationLayout(url: string): void {
+    const path = url.split('?')[0];
+    const isUseCaseDetail = this.useCaseDetailPattern.test(path);
+    const isDspPage = this.dspPagePattern.test(path) && !isUseCaseDetail;
+    const wasUseCaseDetail = this.useCaseLandscapeMode;
+
+    this.useCaseLandscapeMode = isUseCaseDetail;
+    this.dspHeroMode = isDspPage;
+
+    if (isUseCaseDetail && !wasUseCaseDetail) {
+      this.sidebarCollapsed = true;
+    }
+
+    this.cdr.markForCheck();
   }
 
   setEnvironment(value: EnvironmentKey): void {

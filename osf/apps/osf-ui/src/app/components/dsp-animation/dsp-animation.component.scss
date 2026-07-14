@@ -179,32 +179,39 @@
     }
   }
 
-  // Diagram wrapper - contains scrollable zoom area
+  // Diagram wrapper
   &__diagram-wrapper {
     position: relative;
-    overflow: auto;
-    max-height: none;
+    overflow: hidden;
     min-height: 0;
     flex: 1 1 auto;
     width: 100%;
+    height: 85vh;
+    max-height: 85vh;
     border: 1px solid rgba(23, 43, 77, 0.08);
     border-radius: 1.25rem;
     background: linear-gradient(135deg, rgba(var(--orbis-blue-light-rgb), 0.06) 0%, var(--neutral-lightgrey) 100%);
   }
 
-  // Diagram area
-  &__diagram {
-    padding: 0.5rem;
-    // Diagram size is controlled via inline style bindings (scaledViewportWidth/Height).
-    // Scrollbars are provided by the wrapper when the scaled diagram exceeds the viewport.
-    box-sizing: content-box;
+  &__diagram-fit {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 0.25rem;
 
     .diagram-svg {
-      width: auto;
-      height: auto;
-      min-height: 0;
-      max-height: none;  // Allow full height when zoomed
       display: block;
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      transform: scale(var(--dsp-zoom, 1));
+      transform-origin: center center;
     }
   }
 
@@ -549,5 +556,28 @@
   75% {
     text-shadow: 0 0 12px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.5), 0 2px 6px rgba(0, 0, 0, 0.2);
     filter: brightness(1.15);
+  }
+}
+
+:host-context(.app-main--dsp-hero) {
+  .dsp-architecture {
+    padding: 0.35rem 0.35rem 0.25rem;
+    box-shadow: none;
+  }
+
+  .dsp-architecture__diagram-wrapper {
+    flex: 0 0 auto;
+    height: min(68vh, calc(100vw * 1140 / 1200));
+    max-height: 68vh;
+    min-height: 420px;
+  }
+
+  .dsp-architecture__accordion {
+    margin-top: 0.35rem;
+    gap: 0.35rem;
+
+    .accordion-trigger {
+      padding: 0.65rem 0.85rem;
+    }
   }
 }

@@ -54,9 +54,8 @@
   <div class="anomaly-detection-use-case__content" *ngIf="activeTab === 'concept'">
     <div class="anomaly-detection-use-case__diagram-wrapper">
       <div
-        class="anomaly-detection-use-case__diagram"
-        [style.width.px]="scaledViewportWidthPx"
-        [style.height.px]="scaledViewportHeightPx"
+        class="anomaly-detection-use-case__diagram-fit"
+        [style.--uc-zoom]="zoom"
       >
         <div *ngIf="isLoading" class="anomaly-detection-use-case__loading" i18n="@@loadingSvg">Loading SVG...</div>
         <div

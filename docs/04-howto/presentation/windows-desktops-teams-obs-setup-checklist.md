@@ -6,7 +6,7 @@ Ziel: Reproduzierbares Demo-Setup auf Windows mit **virtuellen Desktops** als La
 - Modus wählen: **Normal (Live)** oder **Replay**.
 - In Desktop 1 (`Working`) alle nötigen Apps in Reihenfolge starten (bei Replay zuerst Mosquitto + OSF; Browser-Tabs erst nach laufendem OSF).
 - Apps auf Desktop 1/2/3 verteilen.
-- Apps in den Desktops anordnen und Zoom-/Größeneinstellungen prüfen.
+- Apps in den Desktops anordnen und Zoom-/Größeneinstellungen prüfen (siehe [Referenz-Zoom](#referenz-zoom-verifiziert-14072026)).
 - Mit `WIN + Ctrl + ←/→` kurz testen, ob alles stabil funktioniert.
 - Optional Teams teilen und mit/ohne Aufnahme starten.
 
@@ -19,8 +19,21 @@ Ziel: Reproduzierbares Demo-Setup auf Windows mit **virtuellen Desktops** als La
 - OBS wird für Kamera-Preview betrieben.
 - Kamera liegt auf Desktop 1 (Working) im OBS-Projector-Preview und zusätzlich auf Desktop 3 (rechts unten) als Gegenpart zum Digital Twin.
 - Für Object Detection bleibt OBS-Recording der Kamera möglich.
-- Desktop 2: **Edge** (Zoom 100%, DSP-Architecture 85%; Favoriten-Ordner `OSF-RPi`/`OSF-LH`).
-- Desktop 3: **Chrome** als Hero (Zoom 80%, DSP-Architecture 100%) + **Edge InPrivate** für Digital Twin (rechts oben) + Kamera-Preview (rechts unten).
+- **Desktop 2 (Landscape Fullscreen):** **Edge**, Browser-Zoom **100 %**, Use-Case-Diagramm **100 %** (OSF-Zoom), Sidebar eingeklappt.
+- **Desktop 3 (Hero):** **Chrome**, Browser-Zoom **80 %**, DSP-Architektur-Diagramm **100 %** (OSF-Zoom) + **Edge InPrivate** für Digital Twin (rechts oben) + Kamera-Preview (rechts unten).
+
+---
+
+## Referenz-Zoom (verifiziert 14.07.2026)
+
+| Desktop | Auflösung (typ.) | Browser | OSF-Diagramm-Zoom | Inhalt | Hinweise |
+|--------|-------------------|---------|-------------------|--------|----------|
+| **2 – Landscape Fullscreen** | 1920×1200 (Prio 1) | **100 %** | **100 %** (UC) | Use-Case UC-00…07 | Sidebar standardmäßig eingeklappt; per Toggle aufklappbar. |
+| **3 – Hero** | ~1040×1080 | **80 %** | **100 %** (DSP Architektur) | DSP → Accordion **Architektur** | Accordion normal scrollbar; Diagramm ohne Scroll bei ≤ **100 %** OSF-Zoom; Scroll erst bei OSF-Zoom **> 100 %**. |
+
+**Semantik OSF-Diagramm-Zoom:** 100 % = maximaler Fit in den sichtbaren Diagrammbereich (nicht literal 1920 px Canvas).
+
+**Nach Browser-Update / Hard-Reload:** UC- und DSP-Zoom ggf. einmal **Reset** (↺), falls alter `sessionStorage`-Wert (`OSF.viewScale`) noch aktiv ist.
 
 ---
 
@@ -40,8 +53,8 @@ Ziel: Reproduzierbares Demo-Setup auf Windows mit **virtuellen Desktops** als La
 
 ### Layout & Kamera
 - [ ] Desktop 1: Working (OBS-Preview + Steuerungs-Apps + VS Code)
-- [ ] Desktop 2: Fullscreen (Edge, Zoom 100%, DSP-Architecture 85%)
-- [ ] Desktop 3: Hero (Chrome Zoom 80%, DSP-Architecture 100% + Edge InPrivate Digital Twin rechts oben + Kamera-Preview rechts unten)
+- [ ] Desktop 2: Fullscreen (Edge, Browser **100 %**, Use-Case-Diagramm **100 %**)
+- [ ] Desktop 3: Hero (Chrome Browser **80 %**, DSP-Architektur **100 %** + Edge InPrivate Digital Twin rechts oben + Kamera-Preview rechts unten)
 - [ ] Kameraquelle gewählt: Konftel-20 (Normal) oder Laptop-Cam (Replay/Fallback)
 - [ ] Konftel-20 Presets eingerichtet (0 = Gesamtansicht, 1 = DRILL, 2 = HBW, 3 = MILL, 4 = AIQS, 5 = DPS, 6 = CHRG) 
 - [ ] OBS-Preview auf Desktop 1 offen + zweites Preview auf Desktop 3 (rechts unten)
@@ -82,8 +95,8 @@ Ziel: Reproduzierbares Demo-Setup auf Windows mit **virtuellen Desktops** als La
 - [ ] Desktop 3: Chrome (Hero) + Edge InPrivate (Digital Twin) + OBS-Preview (Kamera)
 
 ### Aktion 4) In den Desktops anordnen und Werte prüfen
-- [ ] Desktop 2 (Edge): Zoom **100%**, DSP-Architecture **85%**
-- [ ] Desktop 3 (Chrome): Zoom **80%**, DSP-Architecture **100%**
+- [ ] Desktop 2 (Edge): Browser-Zoom **100 %**, Use-Case-Diagramm **100 %** (Reset ↺ falls nötig)
+- [ ] Desktop 3 (Chrome): Browser-Zoom **80 %**, DSP-Architektur **100 %** (Accordion **Architektur** geöffnet)
 - [ ] Desktop 3 (rechts oben): Edge InPrivate mit Digital Twin
 - [ ] Desktop 3 (rechts unten): OBS-Kamera-Preview
 - [ ] Kamera-Verzerrungs-Check (OBS + Teams) durchführen

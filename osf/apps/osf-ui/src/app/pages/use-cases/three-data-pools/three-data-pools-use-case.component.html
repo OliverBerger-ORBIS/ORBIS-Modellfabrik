@@ -56,11 +56,11 @@
   >
     <div
       class="three-data-pools-use-case__diagram-wrapper"
+      [style.overflow]="diagramViewportOverflow"
     >
       <div
-        class="three-data-pools-use-case__diagram"
-        [style.width.px]="scaledViewportWidthPx"
-        [style.height.px]="scaledViewportHeightPx"
+        class="three-data-pools-use-case__diagram-fit"
+        [style.--uc-zoom]="zoom"
       >
         <div *ngIf="isLoading" class="three-data-pools-use-case__loading" i18n="@@loadingSvg">Loading SVG...</div>
         <div

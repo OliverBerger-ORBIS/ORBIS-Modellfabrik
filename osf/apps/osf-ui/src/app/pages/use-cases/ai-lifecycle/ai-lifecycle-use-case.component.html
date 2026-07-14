@@ -33,11 +33,11 @@
   >
     <div
       class="ai-lifecycle-use-case__diagram-wrapper"
+      [style.overflow]="diagramViewportOverflow"
     >
       <div
-        class="ai-lifecycle-use-case__diagram"
-        [style.width.px]="scaledViewportWidthPx"
-        [style.height.px]="scaledViewportHeightPx"
+        class="ai-lifecycle-use-case__diagram-fit"
+        [style.--uc-zoom]="zoom"
       >
         <div *ngIf="isLoading" class="ai-lifecycle-use-case__loading" i18n="@@loadingSvg">Loading SVG...</div>
         <div

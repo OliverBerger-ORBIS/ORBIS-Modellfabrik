@@ -146,6 +146,11 @@ export abstract class BaseUseCaseComponent implements OnInit, AfterViewInit, OnD
    * Diagram width in px at the current zoom (base SVG size × zoom).
    * Templates bind this to the diagram box / SVG host so scroll extent matches visible content (no transform-scale mismatch).
    */
+  /** Overflow when zoom > 100% — at 100% the diagram fits without scrollbars. */
+  protected get diagramViewportOverflow(): 'auto' | 'hidden' {
+    return this.zoom > 1.001 ? 'auto' : 'hidden';
+  }
+
   get scaledViewportWidthPx(): number | null {
     if (!this.svgBaseWidth) {
       return null;
@@ -310,6 +315,13 @@ export abstract class BaseUseCaseComponent implements OnInit, AfterViewInit, OnD
       const height = viewBox?.height ?? NaN;
       if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
         return;
+      }
+
+      // Let CSS size the SVG from the viewport box; fixed width/height attrs break contain-fit.
+      svgElement.removeAttribute('width');
+      svgElement.removeAttribute('height');
+      if (!svgElement.getAttribute('preserveAspectRatio')) {
+        svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       }
 
       const nextW = Math.round(width);

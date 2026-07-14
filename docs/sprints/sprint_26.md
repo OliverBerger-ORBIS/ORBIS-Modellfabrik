@@ -2,7 +2,7 @@
 
 **Zeitraum:** 10.07.2026 – 23.07.2026 · **Status:** Laufend · **Vorheriger Sprint:** [Sprint 25](./sprint_25.md)
 
-**Kurz:** NFC-Tag-Erweiterung fuer Track&Trace, Groessenanpassung der Use-Case-Diagramme fuer Windows-Desktop-Praesentation (Desktop 2 Fullscreen 100 %, Desktop 3 Hero 80 %), Grafana-Dashboard/Persistence-Datenpfad und Modus-A-Replay-Verifikation.
+**Kurz:** NFC-Tag-Erweiterung fuer Track&Trace, **Landscape/Hero-Praesentationsprofile** fuer Use-Case-/DSP-Diagramme (Browser-Zoom Desktop 2/3, Diagramm-Skalierung), Grafana-Dashboard/Persistence-Datenpfad und Modus-A-Replay-Verifikation.
 
 ---
 
@@ -27,11 +27,6 @@
 - [ ] APS-Erweiterung: neue NFC-IDs generierbar machen, damit Track&Trace nicht dauerhaft auf denselben NFCs basiert. *(Ursprung: Sprint 22)*
 - *Wozu: Track&Trace-Demos und Kundentermine mit frischen Werkstueck-Identitaeten statt wiederholter NFCs.*
 
-### OSF-UI / Use-Case-Diagramme (Praesentation)
-
-- [ ] Use-Case-Diagramme **groessenanpassen** (kein inhaltlicher Umbau): Darstellung in **Desktop 2 (Fullscreen, Zoom 100 %)** und **Desktop 3 (Hero, Zoom 80 %)** auf Laptop-Monitor ohne Ueberlauf/Scroll-Probleme. *(Ursprung: Sprint 26; Bezug: [windows-desktops-teams-obs-setup-checklist.md](../04-howto/presentation/windows-desktops-teams-obs-setup-checklist.md))*
-- *Wozu: Use-Cases im etablierten Windows-Desktop-Praesentations-Workflow (Sprint 25) sauber praesentierbar machen.*
-
 ### Grafana Dashboard
 
 - [ ] **Modus A (Replay + Session):** Grafana `localhost:3000` mit Session-Replay erneut pruefen — Orders/Daten sichtbar; Abweichungen in Troubleshooting dokumentieren. *(Ursprung: Sprint 22; Nachfolger „keine orders“; siehe [runtime-modes-matrix.md](../04-howto/helper_apps/session-manager/runtime-modes-matrix.md))*
@@ -40,6 +35,7 @@
 
 ### ORBIS Feldbetrieb / Integrations-Fortsetzung
 
+- [ ] **RPi OSF-UI v1.1.8 deployen (15.07.2026):** Preflight (LAN, Docker, SSH `ff22@192.168.0.100`) + `npm run docker:osf-ui:deploy -- ff22@192.168.0.100` — Praesentationsprofile Landscape/Hero mit ausliefern; Checkliste [rpi-deployment.md](../04-howto/deployment/rpi-deployment.md). *(Sprint 26)*
 - [ ] Unterschiede zwischen localhost und RPi systematisch abarbeiten (insb. AGV-Erkennung/Anzeige auf RPi als Voraussetzung vor Overlay-Checks). *(Ursprung: Sprint 22)*
 
 ### Integration & Tests
@@ -58,6 +54,12 @@
 - [ ] Sprint 26: Status Abgeschlossen, Datum *(Ursprung: Sprint 26)*
 - [ ] Sprint 27 anlegen, offene `[ ]` uebernehmen *(Ursprung: Sprint 26)*
 - [ ] PROJECT_STATUS / Roadmap kurz *(Ursprung: Sprint 26)*
+
+---
+
+## Erledigt
+
+- [x] **OSF-UI Praesentation Landscape/Hero (Desktop 2 + 3):** Zwei Profile statt Viewport-Fit — UC **Landscape** (`use-case-landscape-presentation.scss`, Flex-Kette, Sidebar default eingeklappt auf UC-Routen), DSP **Hero** (Diagramm-CSS-Fit, Accordion scrollbar). **Verifiziert 14.07.2026:** Desktop 2 Fullscreen **Browser 100 %** + UC-Diagramm **100 %** @ 1920×1200; Desktop 3 Hero **Browser 80 %** + DSP-Architektur **100 %** @ ~1040×1080; Checkliste [windows-desktops-teams-obs-setup-checklist.md](../04-howto/presentation/windows-desktops-teams-obs-setup-checklist.md) aktualisiert.
 
 ---
 

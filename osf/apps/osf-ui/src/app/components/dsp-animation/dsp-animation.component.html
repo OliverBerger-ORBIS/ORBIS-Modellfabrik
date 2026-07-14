@@ -109,20 +109,18 @@
     </div>
   </header>
 
-  <!-- SVG Diagram - wrapped in scrollable container -->
+  <!-- SVG Diagram - fit to viewport at ≤100% zoom; scroll only when zoomed in -->
   <div
     class="dsp-architecture__diagram-wrapper"
+    [style.overflow]="diagramViewportOverflow"
   >
     <div
-      class="dsp-architecture__diagram"
-      [style.width.px]="scaledViewportWidthPx"
-      [style.height.px]="scaledViewportHeightPx"
+      class="dsp-architecture__diagram-fit"
+      [style.--dsp-zoom]="zoom"
     >
     <svg
       [attr.viewBox]="'0 0 ' + viewBoxWidth + ' ' + viewBoxHeight"
-      [attr.width]="scaledViewportWidthPx"
-      [attr.height]="scaledViewportHeightPx"
-      preserveAspectRatio="xMinYMin meet"
+      preserveAspectRatio="xMidYMid meet"
       class="diagram-svg"
       role="img"
       [attr.aria-label]="title"

@@ -120,6 +120,11 @@ export class DspAnimationComponent implements OnInit, OnChanges, OnDestroy {
     return this.viewBoxHeight;
   }
 
+  /** Scroll only when zoomed above 100%; at ≤100% the diagram fits without scrollbars. */
+  protected get diagramViewportOverflow(): 'auto' | 'hidden' {
+    return this.zoom > 1.001 ? 'auto' : 'hidden';
+  }
+
   // i18n labels
   protected readonly baseTitle = $localize`:@@dspAnimationBaseTitle:DSP Architecture, interactive demonstration of DSP architecture visualisation with multiple views and animation`;
   protected readonly subtitle = $localize`:@@dspAnimationSubtitle:Reference Architecture`;
