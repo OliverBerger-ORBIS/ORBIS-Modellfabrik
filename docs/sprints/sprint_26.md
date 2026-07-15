@@ -10,7 +10,7 @@
 
 | Datum | Event | Nutzen fuer OSF |
 |--------|--------|----------------|
-| **14.07.2026** | **Interner Probelauf** Windows-Desktop/OBS + MES/PT (Musashi → 14.08.) | Dress rehearsal statt Kundentermin — siehe Erledigt |
+| **14.07.2026** | **Interner Probelauf** Windows-Desktop/OBS + MES/PT (Musashi → 14.08.) | Dress rehearsal statt Kundentermin — Probelauf 14.07. + Live-Test 15.07. abgeschlossen |
 | **14.08.2026** | **Kundentermin Musashi** (verschoben von 14.07.2026) | Erstverifikation Router-/Netzwerk-Setup und Windows-Desktop-Praesentation (Follow-up LOM-Day) |
 
 ---
@@ -22,6 +22,12 @@
 - [x] **GL.iNet-Router-Mount (DPS-Station):** 3D-Druck erstellt und passgenau an der **DPS-Station** eingebaut — ersetzt den originalen **FT-Router** vor Ort. *(14.07.2026)*
 - [ ] **Netzwerk-Topologie/Verkabelung:** [How-to](../04-howto/setup/orbis-shopfloor-network-topology.md) mit Netzwerk-Kollegen vervollstaendigen (TBD: ORBIS-LAN, Router-B-Ports, DSP/MES/SAP, FT↔ORBIS-Bruecke); HTML-Review via `bash scripts/export-network-topology-html.sh`. *(Sprint 26)*
 - *Rollen (Sprint 25): GL.iNet = DPS/FT-Ersatz auf **FT-LAN**; separater Router (TP-Link + LTE-USB) = **ORBIS-LAN**, DSP, MES/SAP, WLAN `ORBIS_H15_F05`.*
+
+### Praesentation (Windows-Desktops / OSF-UI)
+
+- [x] **OSF-UI Praesentation Landscape/Hero (Desktop 2 + 3):** UC **Landscape**, DSP **Hero** — verifiziert 14.07.2026 @ 1920×1200; Checkliste [windows-desktops-teams-obs-setup-checklist.md](../04-howto/presentation/windows-desktops-teams-obs-setup-checklist.md).
+- [x] **Windows-Desktop-/OBS-Setup (Probelauf 14.07.2026):** virtuelle Desktops, OBS-Kamera, Tab-Gruppen inkl. **MES MD1** und **PT MD1** — grundsaetzlich lauffaehig.
+- [x] **Praesentations-Setup Live-Test (15.07.2026):** Ablauf nach aktualisierter Checkliste — Shopfloor, Konftel-20/OBS (zwei Previews), Tab-Gruppen **OSF-RPi** + **MES** + **DSP**, Anzeige **Duplizieren**, Desktop-Verteilung (`Win + Ctrl + ←/→`), Preset-Kurztest — erfolgreich.
 
 ### Track&Trace / NFC-Tags
 
@@ -36,7 +42,7 @@
 
 ### ORBIS Feldbetrieb / Integrations-Fortsetzung
 
-- [ ] **RPi OSF-UI v1.1.8 deployen (15.07.2026):** Preflight (LAN, Docker, SSH `ff22@192.168.0.100`) + `npm run docker:osf-ui:deploy -- ff22@192.168.0.100` — Praesentationsprofile Landscape/Hero mit ausliefern; Checkliste [rpi-deployment.md](../04-howto/deployment/rpi-deployment.md). *(Sprint 26)*
+- [x] **RPi OSF-UI v1.1.8 deployen (15.07.2026):** `npm run docker:osf-ui:deploy -- ff22@192.168.0.100` — Container `orbis-osf-ui:1.1.8`, HTTP `:8080` 200 OK.
 - [ ] Unterschiede zwischen localhost und RPi systematisch abarbeiten (insb. AGV-Erkennung/Anzeige auf RPi als Voraussetzung vor Overlay-Checks). *(Ursprung: Sprint 22)*
 
 ### Integration & Tests
@@ -58,17 +64,10 @@
 
 ---
 
-## Erledigt
-
-- [x] **Windows-Desktop-/OBS-Setup (Probelauf 14.07.2026):** Musashi-Termin auf 14.08. verschoben — am 14.07. stattdessen Live-Test am ORBIS-Stand: virtuelle Desktops, OBS-Kamera, Tab-Gruppen/Favoriten inkl. **MES MD1** und **Planungstool (PT MD1)** nach [Checkliste](../04-howto/presentation/windows-desktops-teams-obs-setup-checklist.md). **Ergebnis:** Setup grundsätzlich lauffähig. *Nicht Teil dieses Tests:* UC- und DSP-Architektur-Diagramme in OSF-UI (Landscape/Hero-Skalierung erst danach mit v1.1.8).
-- [x] **OSF-UI Praesentation Landscape/Hero (Desktop 2 + 3):** Zwei Profile statt Viewport-Fit — UC **Landscape** (`use-case-landscape-presentation.scss`, Flex-Kette, Sidebar default eingeklappt auf UC-Routen), DSP **Hero** (Diagramm-CSS-Fit, Accordion scrollbar). **Verifiziert 14.07.2026:** Desktop 2 Fullscreen **Browser 100 %** + UC-Diagramm **100 %** @ 1920×1200; Desktop 3 Hero **Browser 80 %** + DSP-Architektur **100 %** @ ~1040×1080; Checkliste [windows-desktops-teams-obs-setup-checklist.md](../04-howto/presentation/windows-desktops-teams-obs-setup-checklist.md) aktualisiert.
-
----
-
 ## Links
 
 - [Sprint 25](sprint_25.md) · [PROJECT_STATUS.md](../PROJECT_STATUS.md) · [sprints_README.md](sprints_README.md)
 
 ---
 
-*Stand: 14.07.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 15.07.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
