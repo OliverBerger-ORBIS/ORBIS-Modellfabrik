@@ -19,9 +19,9 @@
 
 *Kurze Stichpunkte ohne Checkbox, wenn nötig.*
 
-### Externe Termine (optional)
+### Externe Termine & Outreach (optional)
 
-*Kurze Tabelle oder Liste: Datum, Event (Vertrieb/Messe/Partner), Link ins Projektziel. Größere Ereignisse zusätzlich bei Sprint-Abschluss in **PROJECT_STATUS** → Spalte **Externe Events** eintragen.*
+*Tabelle: Datum, Event (Kundentermin / Messe / Demo / **Blog**), Nutzen für OSF. Blog-Artikel gleichrangig zu Terminen (externe Wirkung). Größere Ereignisse zusätzlich bei Sprint-Abschluss in **PROJECT_STATUS** → Spalte **Externe Events** eintragen.*
 
 ---
 

@@ -49,7 +49,7 @@ Diese Aufgaben sind **Teil des laufenden Sprints** und müssen erledigt sein, **
 | **Aufgaben** | Nur Checkbox-Zeilen; **Gruppierung nach Thema**, nicht nach Erledigt-Status |
 | **Releases** | Optional kurze Tabelle im Kopf; Details → [CHANGELOG.md](../../CHANGELOG.md) |
 | **Backlog** | Optional Abschnitt **ohne** Checkboxen, wenn noch keine klaren Tasks |
-| **Externe Events** | Optional **`## Externe Termine`** (Tabelle) + zugehörige Tasks unter einem Thema (z. B. Presentation); bei Sprint-Abschluss Zeile **PROJECT_STATUS** → Spalte **Externe Events** pflegen |
+| **Externe Events / Outreach** | Optional **`## Externe Termine & Outreach`** (Tabelle: Kundentermine, Demos, **Blog-Artikel**) + Tasks unter dem Thema; bei Sprint-Abschluss Zeile **PROJECT_STATUS** → Spalte **Externe Events** pflegen |
 | **Sprint-Wechsel** | Checkboxen am Ende von „Aufgaben“ oder eigene Thema-Überschrift |
 
 Template: [sprint_template.md](sprint_template.md) · Beispiele: [sprint_18.md](sprint_18.md), [sprint_19.md](sprint_19.md)
@@ -60,7 +60,7 @@ Template: [sprint_template.md](sprint_template.md) · Beispiele: [sprint_18.md](
 
 Für jeden Sprint gilt ein einheitlicher Ablauf, damit Coverage-Trends vergleichbar bleiben und die Sprint-Dateien schlank bleiben:
 
-- **Feste Position im Sprint-Dokument:** `## Coverage Standing` steht immer zwischen `## Externe Termine` und `## Aufgaben`.
+- **Feste Position im Sprint-Dokument:** `## Coverage Standing` steht immer zwischen `## Externe Termine` / `## Externe Termine & Outreach` und `## Aufgaben`.
 - **Struktur:** kompakte Tabelle mit mindestens `Sprint-Start (Baseline)` und `Aktuell` (Branches / Functions / Lines / Statements, Gates, Gate-Margins).
 - **Pflege im laufenden Sprint:** Baseline bleibt unverändert, nur `Aktuell` + `Top-3 Gaps` werden nach Messung aktualisiert.
 - **Sprintwechsel-Prüfung (Pflicht):** Am Sprintende Coverage erneut messen und den finalen Wert als `Aktuell` eintragen; erst danach den Sprint abschliessen.

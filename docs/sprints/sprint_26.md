@@ -6,11 +6,15 @@
 
 ---
 
-## Externe Termine
+## Externe Termine & Outreach
+
+*Kundentermine, Demos und Blog-Artikel — externe Wirkung / Umsatz-relevante OSF-Nutzung. Bei Sprint-Abschluss auch in [PROJECT_STATUS](../PROJECT_STATUS.md) → Spalte **Externe Events**.*
 
 | Datum | Event | Nutzen fuer OSF |
 |--------|--------|----------------|
+| **19.06.2026** | **Blog A1** veröffentlicht — [Skalierbare Smart Factory](https://www.orbis-group.com/de-de/blog/branchen/manufacturing/skalierbare-smart-factory/) | Storytelling-Serie gestartet (Basis A2–A4); Marketing/Lead-Unterstützung *(Sprint 24)* |
 | **14.07.2026** | **Interner Probelauf** Windows-Desktop/OBS + MES/PT (Musashi → 14.08.) | Dress rehearsal statt Kundentermin — Probelauf 14.07. + Live-Test 15.07. abgeschlossen |
+| **16.07.2026** | **Blog A2 Review** (Track & Trace als konkreter Anwendungsfall) | Review erfolgt; geplante Veröffentlichung **20.–24.07.2026** |
 | **14.08.2026** | **Kundentermin Musashi** (verschoben von 14.07.2026) | Erstverifikation Router-/Netzwerk-Setup und Windows-Desktop-Praesentation (Follow-up LOM-Day) |
 
 ---
@@ -44,7 +48,7 @@
 ### ORBIS Feldbetrieb / Integrations-Fortsetzung
 
 - [x] **RPi OSF-UI v1.1.8 deployen (15.07.2026):** `npm run docker:osf-ui:deploy -- ff22@192.168.0.100` — Container `orbis-osf-ui:1.1.8`, HTTP `:8080` 200 OK.
-- [ ] Unterschiede zwischen localhost und RPi systematisch abarbeiten (insb. AGV-Erkennung/Anzeige auf RPi als Voraussetzung vor Overlay-Checks). *(Ursprung: Sprint 22)*
+- [x] Unterschiede zwischen localhost und RPi systematisch abarbeiten (insb. AGV-Erkennung/Anzeige auf RPi als Voraussetzung vor Overlay-Checks). **Not necessary** (16.07.2026): Präsentations-Setup-Checks — AGV-Darstellung/Overlay präsentationsfähig; LH↔RPi-/Browser-Unterschiede vorerst kein Prioritätsthema. *(Ursprung: Sprint 22)*
 
 ### Integration & Tests
 
@@ -54,8 +58,9 @@
 
 ### Blog & Organisation
 
-- [x] **Blog A1 veröffentlicht (19.06.2026):** [Skalierbare Smart Factory](https://www.orbis-group.com/de-de/blog/branchen/manufacturing/skalierbare-smart-factory/) *(Ursprung: Sprint 24; Basis für A2, A3 und A4)*
-- [ ] **Blog A2 Review (Track & Trace als konkreter Anwendungsfall) ** geplante Veröffentlichung am 20-24-Juli
+- [x] **Blog A1 veröffentlicht (19.06.2026):** [Skalierbare Smart Factory](https://www.orbis-group.com/de-de/blog/branchen/manufacturing/skalierbare-smart-factory/) — siehe auch Tabelle **Externe Termine & Outreach**. *(Ursprung: Sprint 24; Basis für A2, A3 und A4)*
+- [x] **Blog A2 Review (16.07.2026):** Track & Trace als konkreter Anwendungsfall — Review erfolgt; Veröffentlichung geplant **20.–24.07.2026**. *(Outreach-Tabelle)*
+- [ ] Blog A2 veröffentlichen *(Fenster 20.–24.07.2026)*
 - [ ] Blog: Review A3 *(Von Daten zu belastbaren KPIs)*
 - [ ] Blog: Review A4 *(Von Erkenntnissen zu Aktionen)*
 - [ ] Azure DevOps: Repo/Boards von GitHub *(Ursprung: Sprint 19)*
@@ -74,4 +79,4 @@
 
 ---
 
-*Stand: 15.07.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 16.07.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
