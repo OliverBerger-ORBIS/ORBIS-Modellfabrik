@@ -66,7 +66,8 @@
 
 ### Blog & Organisation (Carry-over aus Sprint 23)
 
-- [ ] Blog: Reviews A1, A2, A3
+- [x] **Blog A1 veröffentlicht (19.06.2026):** [Skalierbare Smart Factory](https://www.orbis-group.com/de-de/blog/branchen/manufacturing/skalierbare-smart-factory/)
+- [ ] Blog: Reviews A2, A3
 - [ ] Azure DevOps: Repo/Boards von GitHub
 
 ### Sprint-Wechsel (am Ende des Sprints abarbeiten)

@@ -54,7 +54,10 @@
 
 ### Blog & Organisation
 
-- [ ] Blog: Reviews A1, A2, A3 *(Ursprung: Sprint 19)*
+- [x] **Blog A1 veröffentlicht (19.06.2026):** [Skalierbare Smart Factory](https://www.orbis-group.com/de-de/blog/branchen/manufacturing/skalierbare-smart-factory/) *(Ursprung: Sprint 24; Basis für A2, A3 und A4)*
+- [ ] **Blog A2 Review (Track & Trace als konkreter Anwendungsfall) ** geplante Veröffentlichung am 20-24-Juli
+- [ ] Blog: Review A3 *(Von Daten zu belastbaren KPIs)*
+- [ ] Blog: Review A4 *(Von Erkenntnissen zu Aktionen)*
 - [ ] Azure DevOps: Repo/Boards von GitHub *(Ursprung: Sprint 19)*
 
 ### Sprint-Wechsel (am Ende des Sprints abarbeiten)

@@ -79,7 +79,8 @@
 
 ### Blog & Organisation
 
-- [ ] Blog: Reviews A1, A2, A3 *(Ursprung: Sprint 19)*
+
+- [ ] Blog: Reviews A2, A3, A4 *(Ursprung: Sprint 19)*
 - [ ] Azure DevOps: Repo/Boards von GitHub *(Ursprung: Sprint 19)*
 
 ### Sprint-Wechsel (am Ende des Sprints abarbeiten)
