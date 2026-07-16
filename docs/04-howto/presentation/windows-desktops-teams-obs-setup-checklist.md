@@ -242,12 +242,4 @@ Einmalige Einrichtung in **Edge** und **Chrome**.
 
 Tab-Gruppen: Unterordner → **Alle Tabs in Tabgruppe öffnen** ([Tab-Gruppen](#tab-gruppen-live--replay)).
 
----
 
-## HTML-Export (Drucken / PDF)
-
-```bash
-bash scripts/export-presentation-checklist-html.sh
-```
-
-Erzeugt `windows-desktops-teams-obs-setup-checklist.html` — lokal öffnen, **Drucken** / **Als PDF speichern**.

@@ -28,6 +28,7 @@
 - [x] **OSF-UI Praesentation Landscape/Hero (Desktop 2 + 3):** UC **Landscape**, DSP **Hero** — verifiziert 14.07.2026 @ 1920×1200; Checkliste [windows-desktops-teams-obs-setup-checklist.md](../04-howto/presentation/windows-desktops-teams-obs-setup-checklist.md).
 - [x] **Windows-Desktop-/OBS-Setup (Probelauf 14.07.2026):** virtuelle Desktops, OBS-Kamera, Tab-Gruppen inkl. **MES MD1** und **PT MD1** — grundsaetzlich lauffaehig.
 - [x] **Praesentations-Setup Live-Test (15.07.2026):** Ablauf nach aktualisierter Checkliste — Shopfloor, Konftel-20/OBS (zwei Previews), Tab-Gruppen **OSF-RPi** + **MES** + **DSP**, Anzeige **Duplizieren**, Desktop-Verteilung (`Win + Ctrl + ←/→`), Preset-Kurztest — erfolgreich.
+- [x] **Praesentations-Doku** und SmartFactory Favoriten im Azure DevOPs Projekt
 
 ### Track&Trace / NFC-Tags
 

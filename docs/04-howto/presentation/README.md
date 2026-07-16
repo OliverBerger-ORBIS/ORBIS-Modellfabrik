@@ -10,7 +10,8 @@
 
 | Dokument | Zweck |
 |----------|--------|
-| [windows-desktops-teams-obs-setup-checklist.md](./windows-desktops-teams-obs-setup-checklist.md) | **Haupt-Checkliste** — Druck: `bash scripts/export-presentation-checklist-html.sh` |
+| [windows-desktops-teams-obs-setup-checklist.md](./windows-desktops-teams-obs-setup-checklist.md) | **Haupt-Checkliste** |
+| [external-presenter-guide.md](./external-presenter-guide.md) | **Externe Präsentierer** — kurze Wiki-Version ohne Script-Zugriff, mit SmartFactory-Lesezeichen |
 | [bookmarks/SmartFactory.html](./bookmarks/SmartFactory.html) | **SmartFactory-Lesezeichen** (ein Import → Ordner + Unterordner) für Edge/Chrome |
 | [obs-video-presentation-setup.md](./obs-video-presentation-setup.md) | **Kamera/OBS/Konftel-20** — Presets, Transform, Verzerrungs-Check (kein OBS-Layout mehr) |
 
