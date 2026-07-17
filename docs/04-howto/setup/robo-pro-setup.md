@@ -1,7 +1,7 @@
 # ROBO Pro Coding Setup
 
 **Zielgruppe:** Entwickler*innen, die TXT-Controller der APS-Modellfabrik programmieren und Code deployen  
-**Letzte Aktualisierung:** 02.2026
+**Letzte Aktualisierung:** 17.07.2026
 
 ---
 
@@ -77,21 +77,22 @@ Das Setup enthält nur die Installation der App. Der Workflow zum Öffnen von `.
 1. **ROBO Pro Coding** öffnen
 2. Die App zeigt die Startoberfläche (Projektliste oder Begrüßungsbildschirm)
 
-### Verifizierung (ohne Controller)
+### Erste Verifikation (ohne Controller)
 
-Auch ohne verbundenen TXT-Controller kannst du prüfen, ob die Installation funktioniert:
-
-1. **Projekt öffnen:** `Datei → Öffnen` (oder über Projektauswahl)
-2. Ein vorhandenes `.ft`-Archiv öffnen (z. B. aus `integrations/TXT-AIQS/archives/`)
-3. Wenn das Projekt geladen wird und der Blockly- oder Python-Editor erscheint, ist die Installation korrekt
+1. **☰ → Projekt → Laden → Lokal** → eine `.ft` aus `integrations/TXT-*/archives/` öffnen  
+   (z. B. `TXT-DPS/archives/FF_DPS_24V.ft` oder `TXT-AIQS/archives/FF_AI_24V_cam_clfn.ft`)
+2. Rechts oben **Dateiliste** einblenden → unter `lib/` Module sichtbar?
+3. Wenn Blockly/Python-Ansicht erscheint, ist die Installation korrekt
+4. Deployment, Blockly-Fallen, Toolbar: [TXT-Controller Deployment](../txt-controller-deployment.md)
 
 ### Controller-Verbindung (optional zum Testen)
 
 Die eigentliche Verbindung und das Deployment sind im [TXT-Controller Deployment How-To](../txt-controller-deployment.md) beschrieben. Kurzüberblick:
 
-- **WLAN:** TXT muss im gleichen Netzwerk sein (DHCP-Bereich `192.168.0.101-199`)
-- **API-Key:** Vom Controller-Display ablesen, in ROBO Pro eingeben
-- **USB:** Direkte Kabelverbindung (einfachste Methode für erste Tests)
+- **WLAN:** gleiches Netz wie TXT (Demo-/FT-LAN)
+- **Verbinden / Deploy:** App-Toolbar (nicht macOS-Menüleiste) — Details im How-To
+- **API-Key:** Vom Controller-Display ablesen
+- **USB:** Alternative für erste Tests
 
 ---
 

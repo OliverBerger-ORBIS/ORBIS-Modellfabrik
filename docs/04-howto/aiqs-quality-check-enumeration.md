@@ -26,7 +26,7 @@
 | 2 | **Sofort als neues Projekt speichern:** `Datei → Speichern unter...` (Cmd+Shift+S) → `integrations/TXT-AIQS/archives/FF_AI_24V_cam_clfn.ft` *(damit das Original unverändert bleibt)* |
 | 3 | **Projekt umbenennen** (falls gewünscht): In RoboPro den Projektnamen auf `FF_AI_24V_cam_clfn` setzen |
 | 4 | **Code-Anpassungen** in Blockly vornehmen (Schritte 2a–2c unten) |
-| 5 | **Speichern** und **auf Controller deployen:** `Controller → Download` |
+| 5 | **Speichern** und **auf Controller deployen:** Toolbar **Programm hochladen** (siehe [txt-controller-deployment.md](./txt-controller-deployment.md); nicht Mac-Menüleiste) |
 | 6 | **Auf TXT-Controller:** Programm `FF_AI_24V_cam_clfn` laden (Load), als aktives Programm auswählen und Autostart aktivieren |
 | 7 | **OSF anpassen** (optional): MQTT-Nachricht mit `classification` und `classificationDesc` in der UI anzeigen (Schritt 5 unten) |
 
@@ -217,7 +217,7 @@ Sowohl im PASSED- als auch im FAILED-Zweig die Variablen `classification` und `c
 
 1. **Projekt speichern:** `Datei → Speichern` (Cmd+S)
 2. **Controller verbinden:** Falls noch nicht verbunden – RoboPro öffnet Verbindungsdialog, API-Key vom TXT-Display ablesen und eingeben
-3. **Deployment:** `Controller → Download` – das Projekt wird auf den TXT-Controller übertragen
+3. **Deployment:** Toolbar **Programm hochladen** – das Projekt wird auf den TXT-Controller übertragen (UI-Details: [txt-controller-deployment.md](./txt-controller-deployment.md))
 4. **Auf dem TXT-Controller:**
    - Programm **`FF_AI_24V_cam_clfn`** in der Programmliste auswählen (**Load**)
    - Als aktives Programm festlegen

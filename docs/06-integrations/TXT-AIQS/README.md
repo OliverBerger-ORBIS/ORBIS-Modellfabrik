@@ -22,7 +22,7 @@ TXT-AIQS is the AI Quality System TXT controller responsible for quality control
 
 ## Projekt-Struktur und FF_AI_24V-Varianten
 
-**Quelle of Truth:** TXT-Controller. Workflow: ROBO Pro → Controller verbinden → Projekt vom Controller öffnen → umbenennen → speichern nach `archives/` → Download auf Controller.
+**Quelle of Truth für Deployment:** `archives/*.ft` im Repo. Workflow: [TXT-Controller Deployment](../../04-howto/txt-controller-deployment.md) — Lokal aus `archives/` öffnen → Blockly → speichern → Toolbar Programm hochladen. **Nicht** über „Projekt laden“ vom Controller erwarten.
 
 ### Erwartete Varianten (archives/)
 
@@ -33,7 +33,7 @@ TXT-AIQS is the AI Quality System TXT controller responsible for quality control
 | `_cam` | Ton + MQTT-Nachricht Topic `quality_check` |
 | `_cam_clfn` | Wie _cam, Topic um `classification` erweitert |
 
-**Aktuell in archives/:** `FF_AI_24V_cam.ft`, `FF_AI_24V_cam_clfn.ft`, `FF_AI_24V_wav.ft`
+**Aktuell in archives/:** `FF_AI_24V.ft`, `FF_AI_24V_wav.ft`, `FF_AI_24V_cam.ft`, `FF_AI_24V_cam_clfn.ft`
 
 ### Verzeichnisstruktur
 

@@ -1,291 +1,252 @@
 # How-To: TXT-Controller Deployment mit ROBO Pro Coding
 
-**Datum:** 06.01.2026  
-**Status:** ✅ **Vollständig dokumentiert**
+**Datum:** 06.01.2026 · **Letzte Aktualisierung:** 17.07.2026  
+**Status:** ✅ Verifizierter Workflow (AIQS Sprint 17 + DPS NFC On-Site / Home-Office Jul 2026)
+
+**Verwandt:** [ROBO Pro Setup](setup/robo-pro-setup.md) · [DR-17](../03-decision-records/17-txt-controller-deployment.md) · [AIQS-Beispiel](aiqs-quality-check-enumeration.md)
 
 ---
 
-## 🎯 Übersicht
+## Kurz: Der kanonische Weg
 
-Dieses How-To beschreibt den vollständigen Workflow für Deployment von Code auf TXT-Controller mit ROBO Pro Coding.
-
-**Ziel:** Code-Änderungen auf TXT-Controller deployen und testen.
-
-### Schnell-Anleitung: FF_AI_24V_cam_clfn bearbeiten
-
-1. **Öffnen** (aus Repo, nicht vom Controller): `Datei → Öffnen` → `integrations/TXT-AIQS/archives/FF_AI_24V_cam_clfn.ft`
-2. **Verbinden:** Controller verbinden, API-Key vom Display
-3. **Ändern** (z.B. QoS in sorting_line.py): Professional Modus → `lib/sorting_line.py`
-4. **Deployen:** `Controller → Download`
-5. **Auf TXT:** Programm laden (Load), Autostart aktivieren
-
----
-
-## ⚠️ Wichtige Hinweise
-
-| Punkt | Hinweis |
-|------|---------|
-| **Keine Änderungen im Repo** | Änderungen am TXT-Projekt erfolgen **ausschließlich in RoboPro Coding**. Die Quellen in `workspaces/` werden nicht direkt bearbeitet – sie dienen der Analyse (z.B. nach Entpacken des `.ft`-Archivs). |
-| **RoboPro erforderlich** | RoboPro Coding muss installiert sein. Siehe [ROBO Pro Coding Setup](setup/robo-pro-setup.md). |
-| **Blockly-Modus für Code** | Code-Anpassungen erfolgen im **Blockly-Editor** (grafischer Modus). Das Ergebnis wird über den generierten Python-Code verifiziert. |
-| **Vorsicht bei Python-Edit** | Direktes Bearbeiten des Python-Codes im Professional-Modus kann **problematisch** sein: Der TXT reagiert extrem empfindlich auf Leerzeichen und Einrückungen. |
-
----
-
-## 📋 Voraussetzungen
-
-### Software
-- ✅ **ROBO Pro Coding** installiert – siehe [ROBO Pro Coding Setup](setup/robo-pro-setup.md)
-- ✅ **TXT-Controller** im WLAN (DHCP-Bereich `192.168.0.101-199`)
-- ✅ **SSH optional:** Nur für direkten Controller-Zugriff (muss am Controller aktiviert werden)
-
-### Netzwerk
-- **DHCP-Bereich:** `192.168.0.101-199`
-- **IP-Adresse:** Wird automatisch per DHCP vergeben
-- **ROBO Pro Coding scannt automatisch** den DHCP-Bereich
-
-### Zugangsdaten
-- **Username:** `ft` (für SSH, falls aktiviert)
-- **Password:** `fischertechnik` (für SSH, falls aktiviert)
-- **API-Key:** Muss vom Controller-Display abgelesen werden (ändert sich ständig!)
-
----
-
-## 📌 Projektnamen: Controller vs. Archives (AIQS)
-
-**Problem:** Der TXT-Controller zeigt oft abweichende Projektnamen (z.B. `FF_AI_24V_1`) – der Controller speichert nicht zwingend die vollen Archivnamen.
-
-| Quelle | Beispiel-Projektname | Bedeutung |
-|--------|---------------------|-----------|
-| **Archives (Repo)** | `FF_AI_24V_cam.ft`, `FF_AI_24V_cam_clfn.ft` | Eindeutige Varianten |
-| **Vom Controller geladen** | `FF_AI_24V_1`, `FF_AI_24V`, … | Unklare Zuordnung – kann _cam oder _cam_clfn sein |
-
-**Empfehlung:** Immer aus **archives/** öffnen, um die richtige Variante zu wählen:
-
-- **`FF_AI_24V_cam.ft`** – Basis mit Kamera, ohne classification
-- **`FF_AI_24V_cam_clfn.ft`** – Mit classification + classificationDesc (MQTT)
-
-**Workflow:** `Datei → Öffnen` → `integrations/TXT-AIQS/archives/FF_AI_24V_cam_clfn.ft` → verbinden → ändern → deployen. Nicht vom Controller laden, wenn du eine bestimmte Variante brauchst.
-
----
-
-## 📁 Verzeichnis-Struktur
-
-**Alle OSF-Versionen liegen in integrations.**
-
-```
-integrations/TXT-{MODULE}/
-├── archives/                       # .ft Archive – für ROBO Pro öffnen/deployen
-│   ├── FF_AI_24V.ft               # Original
-│   ├── FF_AI_24V_wav.ft
-│   ├── FF_AI_24V_cam.ft           # Basis mit Kamera
-│   └── FF_AI_24V_cam_clfn.ft      # Mit classification (MQTT)
-└── workspaces/                     # Entpackt für Code-Analyse (grep, diff)
-    └── FF_AI_24V_cam/              # unzip ../archives/FF_AI_24V_cam.ft -d .
+```text
+archives/*.ft öffnen (Lokal)
+  → Speichern unter… (Arbeitskopie, Original unberührt)
+  → Dateiliste einblenden → lib/<Modul> öffnen
+  → Nur Blockly ändern (Python-Panel = Anzeige)
+  → Cmd+S
+  → TXT verbinden (grüner Punkt) → Toolbar „Programm hochladen“
+  → Am TXT: Load + Autostart
 ```
 
-**Originale/ältere Versionen** bei Bedarf aus dem [Fischertechnik-Repository](https://github.com/fischertechnik/Agile-Production-Simulation-24V) besorgen.
+**Startpunkt ist immer das Repo:** `integrations/TXT-*/archives/*.ft`  
+**Nicht** `workspaces/*.py` deployen. **Nicht** erwarten, dass „Projekt laden“ vom Controller zieht.
 
 ---
 
-## 🔄 Workflow
+## Archives im Repo (Stand 17.07.2026)
 
-**Öffnen → Umbenennen → Speichern → Ändern → Speichern → Zurück auf Controller**
+| Modul | Pfad | Baseline / Varianten |
+|-------|------|----------------------|
+| **AIQS** | `integrations/TXT-AIQS/archives/` | `FF_AI_24V.ft`, `_wav`, `_cam`, `_cam_clfn` |
+| **DPS** | `integrations/TXT-DPS/archives/` | `FF_DPS_24V.ft`, `FF_DPS_24V_osf_nfc.ft` |
+| **CGW** | `integrations/TXT-CGW/archives/` | `FF_CGW_24V.ft` |
+| **FTS** | `integrations/TXT-FTS/archives/` | `fts_main.ft` |
 
-### Phase 1: Projekt öffnen
+Fehlt eine Baseline: **☰ → Projekt → Laden → fischertechnik GitLab** → Agile Production Simulation 24V → Speichern unter `archives/`.
 
-1. **ROBO Pro Coding öffnen**
-2. **Projekt öffnen** – empfohlen aus **archives/** (nicht vom Controller):
-   - `Datei → Öffnen` → `integrations/TXT-AIQS/archives/FF_AI_24V_cam_clfn.ft` (mit classification)
-   - Oder: `FF_AI_24V_cam.ft` (ohne classification)
-   - *Vom Controller laden* ergibt oft andere Namen (z.B. `FF_AI_24V_1`) – Zuordnung unklar.
-3. **Modus wählen:**
-   - **Grafischer Modus:** Für visuelle Programmierung (Blockly)
-   - **Professional Modus:** Für Python-Code-Änderungen
-     - `Ansicht → Art der Programmierung → Python-Programmierung`
+`workspaces/` = nur Analyse (grep/diff nach `unzip`). Kein Deploy-Format.
 
-### Phase 2: Umbenennen & speichern (bei neuem Projekt)
+---
 
-- **Projekt umbenennen** (falls neue Variante)
-- `Datei → Speichern unter...` → `integrations/TXT-AIQS/archives/FF_AI_24V_neu.ft`
+## ROBO Pro UI – was wo sitzt (Mac, verifiziert)
 
-### Phase 3: Änderungen durchführen
+### Zwei Menü-Ebenen
 
-**Im Grafischen Modus:**
-- ✅ Visuelle Änderungen mit Blockly-Blöcken
-- ❌ Python-Code nicht direkt bearbeitbar
-- ❌ Neue Python-Dateien können nicht erstellt werden
+| Ort | Inhalt |
+|-----|--------|
+| **☰** (Hamburger, App links oben) | Projekt: Neu, Laden, Speichern, Speichern unter…, Schließen |
+| **macOS-Menüleiste** (Apfel-Leiste) | **Kein** Eintrag „Controller → Verbinden“ / „Controller → Download“ |
 
-**Im Professional Modus:**
-- ✅ Python-Code direkt bearbeiten
-- ✅ Neue Dateien erstellen (z.B. `lib/camera_publisher.py`)
-- ✅ Dateien modifizieren
-- ✅ ROBO Pro speichert automatisch
+### Toolbar (rechts oben in der App)
 
-**Hinweis:** Für Änderungen an **bestehendem Code** (z.B. AIQS Quality-Check): **Blockly-Modus** bevorzugen. Der TXT reagiert empfindlich auf Leerzeichen; Änderungen über Blockly vermeiden Formatierungsprobleme. Professional Modus für neue Python-Dateien.
+Typische Icons (v.l.n.r.): Play · Stop · Debug · Schnittstellentest · **Programm hochladen** (Dokument mit Pfeil) · **Controller** (grüner Punkt = verbunden).
 
-### Phase 4: Speichern
+**Deploy = Toolbar „Programm hochladen“** (Tooltip mit Maus prüfen). Nicht in der Mac-Menüleiste suchen.
 
-- Änderungen speichern (`Cmd+S`) – Datei bleibt in `archives/`
+### Projekt laden ≠ vom Controller holen
 
-**Optional – Entpacken für Analyse (grep, diff):**
+**☰ → Projekt → Laden** bietet nur:
+
+- **Lokal** — `.ft` vom Laptop (unser Standard: `archives/`)
+- **fischertechnik GitLab** — offizielle Baseline
+
+Es gibt **keinen** Eintrag „Controller“ in diesem Dialog — auch bei grüner Verbindung.
+
+### Dateiliste (Projekt-Explorer)
+
+Die Dateiliste (`data/`, `lib/`, …) ist **nicht immer sichtbar**.
+
+- **Einblenden:** Icon **rechts oben** (Sidebar / Ordner-Symbol neben den Toolbar-Icons)
+- Dann: `lib` → gewünschtes Modul (z. B. `VGR`, `sorting_line`) anklicken → eigener Tab
+
+### Tabs
+
+| Tab | Inhalt |
+|-----|--------|
+| **Controllerkonfiguration** | Hardware (`txt_factory`, Mini-Taster, …) — **nicht** die Business-Logik |
+| **Hauptprogramm** | Start/Threads/MQTT-Setup |
+| **`lib/…`** (z. B. `VGR`) | Modul-Code — hier die NFC-/Prozess-Logik |
+
+---
+
+## Häufige Irrtümer (Jul 2026)
+
+| Irrtum | Realität |
+|--------|----------|
+| „Projekt laden“ holt `FF_DPS_24V` vom TXT | Nein — nur Lokal / GitLab |
+| „Upload vom Controller“ im ☰-Menü | Existiert so nicht (in dieser UI) |
+| Mac-Menüleiste → Controller → Download | Existiert nicht |
+| Rechts Python tippen | **Nur Anzeige.** Blockly → Python, **nicht** umgekehrt |
+| `workspaces/` editieren und deployen | Funktioniert nicht — nur `.ft` in ROBO Pro |
+| Leeres Projekt (`while True: pass`) bearbeiten | Falsches/neues Projekt — richtige `.ft` aus `archives/` öffnen |
+| Große Module (`VGR`) per Blockly-Suche finden | Schwer — Zoom verkleinern, panen, großen Monitor nutzen |
+
+---
+
+## Workflow A — Bestehende Variante ändern (Standard)
+
+Beispiel: DPS NFC → `FF_DPS_24V_osf_nfc.ft` · AIQS → `FF_AI_24V_cam_clfn.ft`
+
+1. Laptop im FT-/Demo-LAN (Deploy) **oder** nur lokal speichern (Home-Office ohne TXT).
+2. ROBO Pro: **☰ → Projekt → Laden → Lokal** →  
+   `…/ORBIS-Modellfabrik/integrations/TXT-<MODUL>/archives/<datei>.ft`
+3. Optional Arbeitskopie: **☰ → Projekt → Speichern unter…** → neuer Name in `archives/` (Original unberührt).
+4. Dateiliste einblenden → **`lib/<Modul>`** öffnen (nicht nur Controllerkonfiguration).
+5. Änderungen **nur in Blockly** (siehe unten).
+6. Rechts im Python-Panel **verifizieren** (nicht tippen).
+7. **`Cmd+S`**
+8. **Vor Ort:** Controller verbinden (API-Key vom Display) → grüner Punkt → Toolbar **Programm hochladen**.
+9. Am TXT: Programm **Load**, **Autostart**.
+10. Testen. Bei Fehler: Baseline-`.ft` erneut deployen.
+
+---
+
+## Workflow B — Neue Baseline aus GitLab (wenn `archives/` fehlt)
+
+1. **☰ → Projekt → Laden → fischertechnik GitLab**
+2. Projekt wählen (z. B. `FF_DPS_24V` unter Agile Production Simulation 24V)
+3. Sofort **Speichern unter…** → `integrations/TXT-…/archives/<name>.ft`
+4. Danach wie Workflow A (Arbeitskopie + Änderungen)
+
+---
+
+## Blockly ändern (verbindliche Regeln)
+
+### Regel 1: Nur Blockly → Python
+
+- Das rechte Python-Panel ist **read-only** / wird aus Blockly generiert.
+- Tippen im Python-Panel speichert die Logik **nicht** zurück in Blockly.
+- Professional-Modus / externes Editieren der `.py` in der `.ft` ist für APS-Projekte **unzuverlässig** (Einrückung, Metadaten) — siehe DR-17.
+
+### Regel 2: Bestehende Prozeduren finden
+
+1. Tab des Moduls (`VGR`, …) aktiv.
+2. Zoom **stark verkleinern** (−), Canvas **panen**.
+3. Nach `definiere <funktionsname>` suchen (z. B. `handle_NFC`).
+4. Hineinzoomen. **Keine neuen Prozeduren anlegen**, wenn die Funktion schon existiert.
+
+### Regel 3: Imports
+
+1. Block **„Python-Importe“** (oft oben im Modul) **anklicken**.
+2. Zeilen ergänzen, z. B. `import os` (mehrere Zeilen im selben Block möglich).
+3. Kategorie **„Importe“** in der Palette, falls kein Block vorhanden.
+
+### Regel 4: Neue Variable
+
+1. Palette **„Variablen“** → **„Variable erstellen…“**
+2. Name eingeben (z. B. `physical_uid`)
+3. In `setze […] auf`-Blöcken die Variable im rosa Dropdown wählen  
+   (**Nicht** „umbenennen“, wenn das alle Vorkommen von `uid` global ändert.)
+
+### Regel 5: Kurzer Python-Schnipsel
+
+1. Palette **„Verarbeitung“** → Block **„Python-Code“**
+2. In die richtige Stelle der Prozedur stecken (Reihenfolge beachten!)
+3. Block anklicken → Text eingeben, z. B. `uid = os.urandom(7).hex()`
+4. Rechts prüfen: Zeile erscheint an der **richtigen** Stelle (vor abhängigen Aufrufen)
+
+### Regel 6: Logik-Blöcke (Vergleiche)
+
+Beispiel Ausgang DPS: statt `valid = wp_uid == uid` → Tag vorhanden:
+
+`setze valid auf (wp_uid ≠ None) und (wp_uid ≠ "")`
+
+Muster wie bei anderen `valid`-Checks im selben Modul kopieren.
+
+---
+
+## Beispiel: DPS NFC (B-soft) — was geändert wurde
+
+Arbeitskopie: `integrations/TXT-DPS/archives/FF_DPS_24V_osf_nfc.ft` · Modul **`lib/VGR`**
+
+| Stelle | Änderung |
+|--------|----------|
+| Import | `import os` im Block „Python-Importe“ |
+| `handle_NFC` | Lesen → `physical_uid`; bei gültig: `uid = os.urandom(7).hex()` **dann** `nfc_input_history_handle()` |
+| `delivery_verify_nfctag` | `valid = wp_uid != None and wp_uid != ''` |
+| `delivery_write_history` | dieselbe `valid`-Zeile |
+
+Deploy + Live-Test: vor Ort am DPS-TXT (historisch oft `.186` / DHCP).
+
+---
+
+## Controller verbinden & deployen
+
+### Verbinden
+
+1. Laptop im gleichen Netz wie TXT (Demo-WLAN `ORBIS_H15_F05` / FT-LAN).
+2. Toolbar: **Controller**-Icon → TXT wählen (IP/Name; DPS ≠ CGW).
+3. **API-Key** vom TXT-Display eingeben (ändert sich).
+4. Erfolg: **grüner Punkt** am Controller-Icon.
+
+### Deploy
+
+1. Projekt gespeichert (`Cmd+S`).
+2. Toolbar: **Programm hochladen** (Dokument mit Pfeil — Tooltip lesen).
+3. Am TXT-Display: Programm auswählen → **Load** → **Autostart** nach Bedarf.
+
+### Home-Office vs. Shopfloor
+
+| Ort | Möglich |
+|-----|---------|
+| **Home-Office** | `.ft` aus `archives/` öffnen, Blockly ändern, speichern |
+| **Shopfloor** | zusätzlich verbinden, deployen, Live-Test |
+
+---
+
+## AIQS-Schnellreferenz
+
+Detailschritte Blockly: [aiqs-quality-check-enumeration.md](aiqs-quality-check-enumeration.md)
+
+1. Lokal: `archives/FF_AI_24V_cam_clfn.ft` (oder `_cam` → Speichern unter `_cam_clfn`)
+2. Änderungen in Blockly (`lib/machine_learning`, `lib/sorting_line`)
+3. Speichern → Programm hochladen → Load + Autostart
+
+---
+
+## Entpacken für Analyse (optional)
+
 ```bash
-cd integrations/TXT-AIQS/workspaces/
-unzip ../archives/FF_AI_24V_cam.ft -d .
+cd integrations/TXT-DPS/workspaces/
+unzip -o ../archives/FF_DPS_24V_osf_nfc.ft -d FF_DPS_24V_osf_nfc/
 ```
 
-### Phase 5: TXT-Controller verbinden
-
-1. **ROBO Pro Coding:**
-   - `Controller → Verbinden` oder entsprechendes Menü
-   - **WLAN-Verbindung** wählen
-
-2. **Controller-Scan:**
-   - ROBO Pro Coding scannt automatisch DHCP-Bereich `192.168.0.101-199`
-   - Controller erscheint in Liste
-
-3. **API-Key eingeben:**
-   - **API-Key vom Controller-Display ablesen** (wird angezeigt)
-   - API-Key in ROBO Pro Coding eingeben
-   - **Wichtig:** API-Key ändert sich ständig, muss vor jeder Verbindung neu abgelesen werden!
-
-4. **Verbindung herstellen:**
-   - Controller aus Liste auswählen
-   - Verbindung wird hergestellt
-
-### Phase 6: Deployment (Zurück auf Controller)
-
-1. **Projekt deployen:**
-   - `Controller → Download` oder entsprechendes Menü
-   - Projekt wird auf den TXT-Controller übertragen
-
-2. **Auf dem TXT-Controller:**
-   - Deploytes Programm in der Programmliste auswählen (**Load**)
-   - Als aktives Programm festlegen
-   - **Autostart** aktivieren (Programm startet beim Booten des Controllers)
-
-3. **Testen:**
-   - Funktionalität prüfen
-   - MQTT-Topics prüfen (falls relevant)
-   - Logs prüfen (falls verfügbar)
+Nur lesen/diff — Änderungen danach **nicht** zurückzippen als Deploy-Weg (DR-17).
 
 ---
 
----
+## Troubleshooting
 
-## 📦 Entpacken für Analyse
-
-```bash
-cd integrations/TXT-AIQS/workspaces/
-unzip ../archives/FF_AI_24V_cam.ft -d .
-```
-
-**Original** aus [Fischertechnik-Repo](https://github.com/fischertechnik/Agile-Production-Simulation-24V) herunterladen und bei Bedarf entpacken.
-
----
-
-## 🔍 Troubleshooting
-
-### Problem: Controller wird nicht gefunden
-
-**Lösung:**
-- Prüfen ob Controller im WLAN ist
-- Prüfen ob Controller im DHCP-Bereich `192.168.0.101-199` ist
-- ROBO Pro Coding Scan erneut starten
-
-### Problem: Verbindung schlägt fehl
-
-**Lösung:**
-- API-Key vom Controller-Display neu ablesen
-- API-Key kann sich geändert haben (bei Neustart)
-- Controller neu starten und API-Key erneut ablesen
-
-### Problem: Falscher API-Key
-
-**Lösung:**
-- API-Key muss vom Controller-Display abgelesen werden
-- API-Key ändert sich ständig, nicht speichern!
-- Bei jedem Verbindungsversuch neu ablesen
-
-### Problem: Python-Code nicht bearbeitbar
-
-**Lösung:**
-- Professional Modus aktivieren: `Ansicht → Art der Programmierung → Python-Programmierung`
-- Oder: `FF_AI_24V_orig_py.ft` direkt öffnen (bereits im Professional Modus)
-
-### Problem: Programm funktioniert nicht nach Deployment
-
-**Lösung:**
-- Prüfen ob alle Dateien korrekt deployed wurden
-- Prüfen ob `.blockly` Dateien vorhanden sind (falls nötig)
-- Prüfen ob Programm-Modus korrekt ist (Professional vs. Grafisch)
-- **Wichtig:** Externe Archiv-Manipulation kann zu Funktionsverlust führen!
+| Problem | Lösung |
+|---------|--------|
+| Nur Lokal / GitLab beim Laden | Erwartet. Baseline aus `archives/` oder GitLab. |
+| Kein „Controller“ in Mac-Menüleiste | Erwartet. Verbinden/Deploy über **Toolbar**. |
+| Keine `lib/`-Dateien sichtbar | Dateiliste rechts oben einblenden. |
+| Python-Panel nicht editierbar | Erwartet. Nur Blockly ändern. |
+| Prozedur nicht findbar | Zoom out, panen, großen Monitor; Name `definiere …` |
+| Falsches leeres Projekt | `archives/`-`.ft` laden, nicht „Neu“. |
+| Controller nicht gefunden | Gleiches WLAN, TXT an, API-Key neu, Scan. |
+| Nach Deploy altes Verhalten | Am TXT richtiges Programm Load/Autostart? Richtige `.ft` hochgeladen? |
 
 ---
 
-## 📝 Best Practices
+## Checkliste vor dem nächsten Eingriff
 
-### ✅ DO
-
-- ✅ Änderungen direkt in ROBO Pro durchführen
-- ✅ ROBO Pro für alle Archiv-Operationen verwenden
-- ✅ Original-Archiv als Basis verwenden
-- ✅ Neue Versionen über "Speichern unter..." erstellen
-- ✅ Professional Modus für Python-Code-Änderungen verwenden
-- ✅ API-Key vor jeder Verbindung neu ablesen
-
-### ❌ DON'T
-
-- ❌ Archive außerhalb von ROBO Pro modifizieren
-- ❌ Dateien manuell umbenennen
-- ❌ Scripts für Archiv-Manipulation verwenden (außer einfache Fälle)
-- ❌ ZIP-Archive direkt bearbeiten
-- ❌ API-Key speichern (ändert sich ständig)
-
----
-
-## 🔗 Verwandte Dokumentation
-
-- [Decision Record: TXT-Controller Deployment](../03-decision-records/17-txt-controller-deployment.md) - Entscheidungsgrundlagen
-- [ROBO Pro Connection Guide](../../06-integrations/TXT-AIQS/ROBO_PRO_CONNECTION_GUIDE.md) - Verbindungsanleitung
-- [ROBO Pro Troubleshooting](../../06-integrations/ROBO_PRO_TROUBLESHOOTING.md) - Problembehandlung
-
----
-
-## 📚 Beispiel: Kamera-MQTT-Publikation
-
-**Ziel:** Kamera-Bilder von AIQS über MQTT publizieren.
-
-### Schritt 1: Projekt öffnen
-
-1. ROBO Pro Coding öffnen
-2. `integrations/TXT-AIQS/archives/FF_AI_24V_wav.ft` öffnen (oder vom Controller)
-3. Professional Modus aktivieren: `Ansicht → Art der Programmierung → Python-Programmierung`
-
-### Schritt 2: Neue Datei erstellen
-
-1. `lib/camera_publisher.py` erstellen
-2. Code einfügen (analog zu TXT-DPS `SSC_Publisher.py`)
-3. ROBO Pro speichert automatisch
-
-### Schritt 3: Integration
-
-1. `lib/sorting_line.py` öffnen
-2. `camera_publisher` importieren und starten
-3. ROBO Pro speichert automatisch
-
-### Schritt 4: Variante speichern
-
-1. `Datei → Speichern unter...` → `integrations/TXT-AIQS/archives/FF_AI_24V_camera.ft`
-2. ROBO Pro erstellt Archiv automatisch
-
-### Schritt 5: Deployment
-
-1. TXT-Controller verbinden (API-Key ablesen)
-2. Projekt deployen
-3. Programm starten und testen
-
----
-
-*Letzte Aktualisierung: 18.02.2026 – Workflow ohne vendor, alle OSF-Versionen in integrations*
-
+- [ ] Richtige `.ft` in `integrations/TXT-*/archives/` (Baseline + Arbeitskopie)
+- [ ] Dateiliste sichtbar, richtiges `lib/`-Modul offen
+- [ ] Nur Blockly geändert; Python-Panel zur Kontrolle
+- [ ] Reihenfolge in `if`-Zweigen geprüft (z. B. ID erzeugen **vor** History)
+- [ ] `Cmd+S` → Dateigröße/`archives/` aktualisiert
+- [ ] Vor Ort: verbinden → Programm hochladen → Load + Autostart → Test
+- [ ] Rollback-`.ft` bekannt

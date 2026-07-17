@@ -36,7 +36,8 @@
 
 ### Track&Trace / NFC-Tags
 
-- [ ] APS-Erweiterung: neue NFC-IDs generierbar machen, damit Track&Trace nicht dauerhaft auf denselben NFCs basiert. *(Ursprung: Sprint 22)*
+- [x] **NFC B-soft — `.ft`-Änderung (17.07.2026):** Arbeitskopie `integrations/TXT-DPS/archives/FF_DPS_24V_osf_nfc.ft` — Blockly in `lib/VGR` (`handle_NFC` logische ID, Ausgang nur Tag-Present); Baseline `FF_DPS_24V.ft` + weitere TXT-Archives (AIQS/CGW/FTS) aus GitLab. Plan [nfc-logical-id-b-soft-plan-2026-07.md](../07-analysis/nfc-logical-id-b-soft-plan-2026-07.md); Workflow [txt-controller-deployment.md](../04-howto/txt-controller-deployment.md). *(Ursprung: Sprint 22)*
+- [ ] **NFC B-soft — Deploy + Live-Test in der Fabrik:** `FF_DPS_24V_osf_nfc.ft` auf DPS-TXT (Programm hochladen, Load, Autostart); Test Wareneingang (zwei IDs gleicher Tag) + Ausgang ohne Mismatch; bei Erfolg Plan-Doku löschen / Sprint abschließen. *(Ursprung: Sprint 22)*
 - *Wozu: Track&Trace-Demos und Kundentermine mit frischen Werkstueck-Identitaeten statt wiederholter NFCs.*
 
 ### Grafana Dashboard
@@ -79,4 +80,4 @@
 
 ---
 
-*Stand: 16.07.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 17.07.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)

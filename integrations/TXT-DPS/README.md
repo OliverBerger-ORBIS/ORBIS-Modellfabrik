@@ -7,35 +7,21 @@
 ## 🔍 Komponenten-Details
 
 ### **Hardware**
-- **IP-Adresse:** `192.168.0.101` (aktuell, DHCP-assigned)
-- **Controller-ID:** `TXT4.0-p0F4`
+- **IP-Adresse:** DHCP im FT-/Demo-LAN (vor Ort gemessen u. a. `192.168.0.186`; historisch oft `.101`)
 - **Controller:** TXT4.0
-- **Modul:** DPS (Delivery and Pickup Station)
-- **Status:** ✅ **Relevant für Fabrik-Prozesse** (steuert DPS-Modul, liefert Sensordaten)
+- **Modul:** DPS (Delivery and Pickup Station) / DE: Warenein- und ausgang
+- **Status:** ✅ Relevant für Fabrik-Prozesse (NFC, VGR, MQTT)
 
-### **⚠️ Wichtig: Zwei TXT-Controller im DPS-Modul**
+### **⚠️ Zwei TXT im DPS-Bereich**
 
-Im DPS-Modul (`SVR4H73275`) gibt es **zwei** TXT-Controller:
+1. **TXT-DPS** — ✅ relevant (dieses Verzeichnis)
+2. **TXT-CGW** — Cloud Gateway, siehe `integrations/TXT-CGW/`
 
-1. **TXT-DPS** (`192.168.0.101`, `TXT4.0-p0F4`) - ✅ **Relevant**
-   - Steuert das DPS-Modul
-   - Liefert Sensordaten (NFC-Reader, Sensoren)
-   - MQTT-Integration für Fabrik-Prozesse
-   - **Dieser Controller ist für die Analyse relevant**
-
-2. **TXT-CGW** (`192.168.0.102`, `TXT4.0-WiY4`) - ⚠️ **Nicht relevant**
-   - Cloud Gateway
-   - Transportiert MQTT-Topics in Fischertechnik-Cloud
-   - **Nicht relevant für lokale Fabrik-Prozesse**
-   - Wird im Configuration-Tab korrekt angezeigt, aber nicht für Funktionalität benötigt
-
-**Siehe auch:** `integrations/TXT-CGW/` für CGW-Sourcen (nur zur Vollständigkeit)
-
-### **Software**
-- **Haupt-Script:** `FF_DPS_24V.py` (5.96 KB) - Formatierte Version
-- **Original-Sourcen:** `FF_DPS_24V/main.py` - Original vom Controller
-- **Bibliotheken:** `FF_DPS_24V/lib/` - Alle lib/*.py Dateien vom Controller
-- **Konfiguration:** `.project.json`, `data/` Verzeichnis
+### **Software / Deployment**
+- **Baseline:** `archives/FF_DPS_24V.ft`
+- **OSF-Variante (NFC logische ID):** `archives/FF_DPS_24V_osf_nfc.ft`
+- **Analyse:** `workspaces/FF_DPS_24V/` (u. a. `lib/VGR.py`)
+- **How-To:** [TXT-Controller Deployment](../../docs/04-howto/txt-controller-deployment.md)
 
 ## 🔗 MQTT-Integration
 
@@ -59,41 +45,24 @@ Im DPS-Modul (`SVR4H73275`) gibt es **zwei** TXT-Controller:
 
 ```
 integrations/TXT-DPS/
-├── FF_DPS_24V/              # Original-Dateien vom Controller (komplett)
-│   ├── main.py              # Original main.py vom Controller
-│   └── lib/                 # Alle lib/*.py Dateien (wird vom Controller geladen)
-│       ├── camera.py        # Kamera-Funktionalität
-│       ├── DPS.py           # DPS-Modul-Logik
-│       ├── mqtt_utils.py    # MQTT-Utilities
-│       └── ...              # Weitere lib-Dateien
-├── FF_DPS_24V.py            # Formatierte/refactorierte Version (optional)
-├── FF_DPS_24V.blockly       # Blockly-Datei
-├── data/                    # Konfigurationen
-│   ├── config.json
-│   ├── factsheet.json
-│   └── robot_config.json
-├── .project.json            # Projekt-Metadaten
-└── README.md                # Diese Datei
+├── archives/                     # .ft für ROBO Pro (Startpunkt)
+│   ├── FF_DPS_24V.ft             # Baseline (GitLab)
+│   └── FF_DPS_24V_osf_nfc.ft     # OSF: logische workpieceId (B-soft)
+├── workspaces/                   # Entpackt nur für Analyse
+│   └── FF_DPS_24V/
+│       └── lib/VGR.py            # u. a. handle_NFC, delivery_*
+└── README.md
 ```
 
-**Status (2025-12-22):**
-- ✅ `FF_DPS_24V/main.py` vorhanden (Original vom Controller)
-- 🔄 `FF_DPS_24V/lib/` - In Arbeit (2 von ~30 Dateien bereits vorhanden)
-  - ✅ `DPS.py` - DPS-Modul-Logik
-  - ✅ `Factory.py` - Factory-Funktionen
-  - ⏳ Weitere lib-Dateien werden nach und nach geladen
-  - 📋 Siehe `FF_DPS_24V/lib/README.md` für vollständige Liste
-- ✅ `data/` Konfigurationen vorhanden
+**Status (2026-07-17):**
+- ✅ `archives/` mit Baseline + `_osf_nfc` (Blockly-Änderungen lokal; Deploy/Test vor Ort ausstehend)
+- ✅ `workspaces/FF_DPS_24V/` Analyse-Spiegel
 
 ## 🚀 Nächste Schritte
 
-1. **Vollständige Sourcen laden** - `lib/` Verzeichnis vom Controller via Web-Interface/SSH holen
-2. **Browser-Interface erkunden** - `http://192.168.0.102` für HTTP-Endpoint-Ermittlung
-3. **Dateien analysieren** - Code und Konfiguration (insbesondere `lib/camera.py` für HTTP-Endpoints)
-4. **Integration testen** - Mit OSF-Dashboard
+1. Vor Ort: `FF_DPS_24V_osf_nfc.ft` deployen (How-To) + Wareneingang/Ausgang testen
+2. Bei Erfolg: `.ft` committen, Sprint-26-NFC-Task abhaken
 
 ---
 
-*Erstellt: 23. September 2025*  
-*Aktualisiert: 22. Dezember 2025*  
-*Status: Vorbereitung - Bereit für Analyse mit vollständigen Sourcen*
+*Aktualisiert: 17.07.2026*
