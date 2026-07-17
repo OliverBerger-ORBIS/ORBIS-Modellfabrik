@@ -169,7 +169,7 @@ Quelle: `osf/apps/osf-ui/public/assets/config/external-links.json` (Settings →
 | BP-MES | **MES MD1** | `https://md1.orbis.de/orbis(bD1kZSZjPTEwMA==)/web_mes/webviewer/index.htm#mppservice=orbis/mes&mpptimeout=60000&defaultlang=EN&maskid=ffb6098113c549bda9192b793dbb75ab&viewermenue=true&extensions=[%22controlinfo%22]&LAYOUT=LIGHT&Werk=1010` |
 | BP-Supervisor | **SV MD1** | `https://md1.orbis.de/sap/bc/ui5_ui5/omes/supervisor/index.html#/operation/1003442,0020,0` |
 | BP-Analytics | **Grafana** | `http://192.168.0.201:3000/dashboards` |
-| DSP Edge | *(Diagramm)* | **`TBD`** — `192.168.0.201`, SSH `dsp-agent`; **≠ OSF-UI** |
+| DSP Edge | *(Diagramm)* | `https://192.168.0.200:8006` (Proxmox; VE/Runtime `.201`) — **≠ OSF-UI** |
 | DSP Management Cockpit | *(Diagramm)* | `https://dspmcorbisprd.powerappsportals.com` |
 
 **Hinweise:** MES CARD-ID mit **Punkt (`.`)**; Supervisor-URL ggf. in Settings anpassen.
@@ -179,7 +179,7 @@ Quelle: `osf/apps/osf-ui/public/assets/config/external-links.json` (Settings →
 | System | Host | Tab-Gruppe / Tab |
 |--------|------|-----------------|
 | **OSF-UI** | `192.168.0.100:8080` | **OSF-RPi** / **OSF-LH** |
-| **DSP Edge** | `192.168.0.201` | `dspEdgeUrl` — HTTP-URL TBD |
+| **DSP Edge** | `192.168.0.200:8006` (Proxmox) | `dspEdgeUrl` — VE `.201` für SSH/SQL/Grafana |
 | **Grafana** | `192.168.0.201:3000` | Tab in **DSP** |
 
 **Deploy External Links:** Settings → Export JSON → [rpi-deployment.md](../deployment/rpi-deployment.md).

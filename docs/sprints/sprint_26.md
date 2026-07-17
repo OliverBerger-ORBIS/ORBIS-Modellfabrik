@@ -24,8 +24,10 @@
 ### Router / Netzwerk-Setup
 
 - [x] **GL.iNet-Router-Mount (DPS-Station):** 3D-Druck erstellt und passgenau an der **DPS-Station** eingebaut — ersetzt den originalen **FT-Router** vor Ort. *(14.07.2026)*
-- [ ] **Netzwerk-Topologie/Verkabelung:** [How-to](../04-howto/setup/orbis-shopfloor-network-topology.md) mit Netzwerk-Kollegen vervollstaendigen (TBD: ORBIS-LAN, Router-B-Ports, DSP/MES/SAP, FT↔ORBIS-Bruecke); HTML-Review via `bash scripts/export-network-topology-html.sh`. *(Sprint 26)*
-- *Rollen (Sprint 25): GL.iNet = DPS/FT-Ersatz auf **FT-LAN**; separater Router (TP-Link + LTE-USB) = **ORBIS-LAN**, DSP, MES/SAP, WLAN `ORBIS_H15_F05`.*
+- [ ] **Netzwerk-Topologie/Verkabelung (Rest):** Router-B-Port-Pinout und ORBIS-LAN-Adressliste mit Netzwerk-Kollegen; HTML via `bash scripts/export-network-topology-html.sh`. *(Sprint 26)*
+- [x] **Netzwerk-Topologie — DSP Edge + WLAN-Kopplung (17.07.2026):** [How-to](../04-howto/setup/orbis-shopfloor-network-topology.md) — Proxmox `.200:8006` + VE `.201` (SSH/SQL :1443); Kette Proxmox→Switch→GL.iNet→FT; Demo-WLAN **`ORBIS_H15_F05`** (2,4 GHz, TXT) + **`ORBIS_H15_F05_5G`** (5 GHz, Laptop/Präsentation) im FT-LAN-Subnetz. *Nicht vollständig abgehakt: Router-B-Ports / ORBIS-LAN-Details noch TBD.*
+- [ ] **OSF External Links auf RPi deployen:** Repo hat `dspEdgeUrl` = `https://192.168.0.200:8006` — nach Deploy auf `ff22@192.168.0.100` (OSF-UI-Image/Container), damit Live-UI den DSP-Edge-Link zeigt. Bookmarks `SmartFactory.html` bereits angepasst. *(Sprint 26, Folgewoche)*
+- *Rollen: GL.iNet = DPS/FT-Ersatz auf **FT-LAN**; Router B (TP-Link + LTE) = Demo-WLAN + ORBIS-LAN-Brücke; DSP = Proxmox-PC im FT-LAN.*
 
 ### Praesentation (Windows-Desktops / OSF-UI)
 

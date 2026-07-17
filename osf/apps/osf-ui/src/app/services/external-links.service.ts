@@ -49,8 +49,8 @@ const DEFAULT_SETTINGS: ExternalLinksSettings = {
   bpAnalyticsApplicationUrl: 'http://192.168.0.201:3000/dashboards',
   bpDataLakeApplicationUrl: '',
   dspSmartfactoryDashboardUrl: '/dsp-action',
-  /** ORBIS DSP Edge product UI — host `192.168.0.201` (SSH `dsp-agent`); exact HTTP URL TBD at ORBIS. Not OSF-UI. */
-  dspEdgeUrl: '',
+  /** ORBIS DSP Edge entry: Proxmox UI on shopfloor host `.200` (VE/runtime on `.201`). Not OSF-UI. */
+  dspEdgeUrl: 'https://192.168.0.200:8006',
   dspManagementCockpitUrl: 'https://dspmcorbisprd.powerappsportals.com',
 };
 

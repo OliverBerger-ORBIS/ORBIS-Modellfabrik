@@ -27,4 +27,4 @@ Siehe [sprints_README.md](../../docs/sprints/sprints_README.md): *„Nicht zwei 
 
 # Netzwerk-Topologie-Doku (`docs/04-howto/setup/orbis-shopfloor-network-topology.md`)
 
-**DHCP Demo-WLAN `ORBIS_H15_F05`:** Pool **`192.168.0.100–199`** — **keine** feste Doku „`.101` = Gerät X“`. Nur statische FT-Kern-Hosts (RPi `.100`, SPS, `.201`, …) mit fixen IPs listen.
+**DHCP Demo-WLAN / LAN-Clients:** Pool **`192.168.0.101–199`** — **keine** feste Doku „`.191` = ORBIS-PC“ o. Ä. (LAN oder WLAN 2,4/5 GHz). Nur statische FT-Kern-Hosts (RPi `.100`, SPS, Proxmox `.200`, VE `.201`, …) mit fixen IPs listen.
