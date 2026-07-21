@@ -28,6 +28,7 @@ Sprint-bezogene und projektweite Analysen für OSF.
 ## Order / Track & Trace
 
 - [nfc-logical-id-b-soft-plan-2026-07.md](nfc-logical-id-b-soft-plan-2026-07.md) – **temporär:** On-Site-Plan TXT-DPS logische workpieceId (B-soft); nach Abarbeitung löschbar
+- [track-trace-live-content-fix-2026-07.md](track-trace-live-content-fix-2026-07.md) – **temporär:** Live-Demo Inhalt (Multi-Order, Publisher, Zeit vs. Sub-Order); Replay/HomeOffice; nach Phase 1(+2) löschbar
 - [production-order-analysis-results.md](production-order-analysis-results.md) – Order-Workflow aus Session-Analyse, OSF Order Manager Anforderungen, CCU-Backend-Analyse (referenziert von 13-track-trace-architecture)
 - [order-agv-mapping-without-mod3-2026-03.md](order-agv-mapping-without-mod3-2026-03.md) – Order↔AGV-Zuordnung ohne Mod-3-Wiederherstellung (Optionen, Empfehlung: Ableitung aus fts/order)
 

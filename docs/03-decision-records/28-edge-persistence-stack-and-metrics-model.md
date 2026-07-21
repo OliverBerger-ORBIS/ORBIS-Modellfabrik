@@ -45,6 +45,12 @@
 
 ---
 
+## Nachtrag (21.07.2026) – Track & Trace Persistenz
+
+**Entscheidung:** Die OSF-UI-Live-Demo (`WorkpieceHistoryService`) bleibt **session-/RAM-scoped** (Clear bei Header-Refresh / Reload). Längere NFC-/Ereignis-Historien (nach B-soft logischen IDs) gehören in den **Edge-Persistence-/Grafana-Pfad** (`shopfloor_event` / `workpiece`, Dashboard `workpiece-trace`) — **kein** paralleles Browser-localStorage für Genealogie. UI-Anbindung an die Edge-DB ist eine spätere Aufgabe, sobald Ingest stabil ist.
+
+---
+
 ## Konsequenzen
 
 - **Positiv:**

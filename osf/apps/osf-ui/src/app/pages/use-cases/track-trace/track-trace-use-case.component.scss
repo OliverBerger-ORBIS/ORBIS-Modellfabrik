@@ -45,8 +45,14 @@
     flex-direction: column;
     min-width: 0;
 
+    // Concept keeps landscape fit (overflow hidden via genealogy / diagram chain).
+    // Live Demo scrolls inside the remaining viewport — do not apply diagram fit clipping.
     &--live {
       margin: 0 -1rem -0.5rem -1rem;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
   }
 }

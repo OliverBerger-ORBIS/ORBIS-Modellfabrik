@@ -39,8 +39,12 @@
 ### Track&Trace / NFC-Tags
 
 - [x] **NFC B-soft — `.ft`-Änderung (17.07.2026):** Arbeitskopie `integrations/TXT-DPS/archives/FF_DPS_24V_osf_nfc.ft` — Blockly in `lib/VGR` (`handle_NFC` logische ID, Ausgang nur Tag-Present); Baseline `FF_DPS_24V.ft` + weitere TXT-Archives (AIQS/CGW/FTS) aus GitLab. Plan [nfc-logical-id-b-soft-plan-2026-07.md](../07-analysis/nfc-logical-id-b-soft-plan-2026-07.md); Workflow [txt-controller-deployment.md](../04-howto/txt-controller-deployment.md). *(Ursprung: Sprint 22)*
-- [ ] **NFC B-soft — Deploy + Live-Test in der Fabrik:** `FF_DPS_24V_osf_nfc.ft` auf DPS-TXT (Programm hochladen, Load, Autostart); Test Wareneingang (zwei IDs gleicher Tag) + Ausgang ohne Mismatch; bei Erfolg Plan-Doku löschen / Sprint abschließen. *(Ursprung: Sprint 22)*
+- [x] **NFC B-soft — Deploy + Live-Test (21.07.2026):** `FF_DPS_24V_osf_nfc.ft` auf DPS-TXT (.186) Deploy + Autostart. Test A OK (gleicher weißer Tag → zwei logische IDs); Test B OK (Ausgang ohne `NFC_workpieceId_mismatch`). Plan-Doku in `docs/07-analysis/` nach Sprint-Closeout löschen. *(Ursprung: Sprint 22)*
+- [x] **Track&Trace Live Demo UX (21.07.2026):** Landscape-/Viewport-Fit nur für Concept; Live-Panel `overflow-y: auto`; kompakte Sections (NFC-Suche rechts neben Überschrift; Werkstückfarbe-Label + Chips in einer Zeile; reduzierte Toolbar).
+- [ ] **Track&Trace Live Demo Inhalt (Multi-Order / Publisher / Zeitstrahl):** Auftragskontext STORAGE+PRODUCTION; Event-Publisher (FTS vs. Modul); Sub-Order-Gruppen nach Timestamp statt nur Sub-Order-Nr. Phase 1: A1+C1+B1; Phase 2 optional: FTS-Stations-Synthese abschalten (B3). Arbeitsdoku [track-trace-live-content-fix-2026-07.md](../07-analysis/track-trace-live-content-fix-2026-07.md). **HomeOffice/Replay** ausreichend. *(21.07.2026, Feldbefund)*
+- [ ] **Track&Trace Persistenz (Option B):** UI-Historie bleibt session-/RAM-scoped; längere NFC-Spuren später über Edge/Grafana (`osf-edge-persistence`, [DR-28](../03-decision-records/28-edge-persistence-stack-and-metrics-model.md)) — kein zusätzliches Browser-Speicherkonzept. *(Entscheidung 21.07.2026)*
 - *Wozu: Track&Trace-Demos und Kundentermine mit frischen Werkstueck-Identitaeten statt wiederholter NFCs.*
+- *Hinweis Demo: Capture läuft in Live/Replay nach MQTT-Connect auch ohne offenen Tab; Header-Refresh leert die Historie — dazwischen nicht unnötig refreshen.*)
 
 ### Grafana Dashboard
 
@@ -51,6 +55,7 @@
 ### ORBIS Feldbetrieb / Integrations-Fortsetzung
 
 - [x] **RPi OSF-UI v1.1.8 deployen (15.07.2026):** `npm run docker:osf-ui:deploy -- ff22@192.168.0.100` — Container `orbis-osf-ui:1.1.8`, HTTP `:8080` 200 OK.
+- [ ] **RPi OSF-UI v1.1.9 deployen (21.07.2026):** Track&Trace Live Demo UX + Sprint-26-Doku — `npm run docker:osf-ui:deploy -- ff22@192.168.0.100`.
 - [x] Unterschiede zwischen localhost und RPi systematisch abarbeiten (insb. AGV-Erkennung/Anzeige auf RPi als Voraussetzung vor Overlay-Checks). **Not necessary** (16.07.2026): Präsentations-Setup-Checks — AGV-Darstellung/Overlay präsentationsfähig; LH↔RPi-/Browser-Unterschiede vorerst kein Prioritätsthema. *(Ursprung: Sprint 22)*
 
 ### Integration & Tests
@@ -82,4 +87,4 @@
 
 ---
 
-*Stand: 17.07.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 21.07.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)

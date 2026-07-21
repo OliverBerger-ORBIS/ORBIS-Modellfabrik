@@ -1,19 +1,65 @@
 .track-trace-card {
-  padding: 2rem;
+  padding: 1rem 1.25rem 1.25rem;
   background: var(--color-surface, #fff);
   border-radius: 8px;
+
+  .card-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.65rem;
+    flex-wrap: wrap;
+  }
 
   h3 {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    margin: 0;
     font-size: 1.1rem;
     font-weight: 600;
 
     img {
       width: 24px;
       height: 24px;
+    }
+  }
+
+  .search-inline {
+    position: relative;
+    flex: 0 1 16rem;
+    min-width: 10rem;
+    max-width: 20rem;
+
+    .search-field {
+      width: 100%;
+      padding: 0.4rem 2rem 0.4rem 0.75rem;
+      border: 1px solid var(--color-border, #e0e0e0);
+      border-radius: 6px;
+      font-size: 0.8rem;
+
+      &:focus {
+        outline: none;
+        border-color: var(--orbis-blue-medium);
+        box-shadow: 0 0 0 2px rgba(var(--orbis-blue-medium-rgb), 0.1);
+      }
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--color-text-secondary, #666);
+      cursor: pointer;
+      padding: 0.25rem;
+
+      &:hover {
+        color: var(--color-error, #c62828);
+      }
     }
   }
 
@@ -24,8 +70,8 @@
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--color-text-secondary, #666);
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.35rem;
     border-bottom: 1px solid var(--color-border, #e0e0e0);
 
     .close-btn {
@@ -45,24 +91,36 @@
   }
 
   .cascade-section {
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
   }
 
-  .cascade-color-title {
+  .color-filter-row {
+    display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+    margin-bottom: 0.65rem;
+  }
 
-    .link-btn {
-      background: none;
-      border: none;
-      padding: 0;
-      font-size: 0.75rem;
-      color: var(--orbis-blue-medium);
-      cursor: pointer;
-      text-decoration: underline;
+  .color-filter-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text-secondary, #666);
+    white-space: nowrap;
+  }
 
-      &:hover {
-        color: var(--orbis-blue-strong, #2563b8);
-      }
+  .color-filter-row .link-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--orbis-blue-medium);
+    cursor: pointer;
+    text-decoration: underline;
+
+    &:hover {
+      color: var(--orbis-blue-strong, #2563b8);
     }
   }
 
@@ -70,14 +128,14 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0;
   }
 
   .color-chip {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.5rem 0.85rem;
+    padding: 0.35rem 0.75rem;
     border-radius: 999px;
     border: 2px solid var(--color-border, #e0e0e0);
     background: var(--color-surface-secondary, #f5f5f5);
@@ -139,51 +197,13 @@
     font-family: monospace;
   }
 
-  .search-section {
-    margin-bottom: 1rem;
-
-    .search-input {
-      position: relative;
-
-      .search-field {
-        width: 100%;
-        padding: 0.75rem 2.5rem 0.75rem 1rem;
-        border: 1px solid var(--color-border, #e0e0e0);
-        border-radius: 8px;
-        font-size: 0.875rem;
-
-        &:focus {
-          outline: none;
-          border-color: var(--orbis-blue-medium);
-          box-shadow: 0 0 0 2px rgba(var(--orbis-blue-medium-rgb), 0.1);
-        }
-      }
-
-      .clear-btn {
-        position: absolute;
-        right: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: var(--color-text-secondary, #666);
-        cursor: pointer;
-        padding: 0.25rem;
-
-        &:hover {
-          color: var(--color-error, #c62828);
-        }
-      }
-    }
-  }
-
   .workpieces-list,
   .cascade-section {
     .workpiece-items {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
-      max-height: 200px;
+      gap: 0.35rem;
+      max-height: 160px;
       overflow-y: auto;
     }
 
@@ -191,7 +211,7 @@
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      padding: 0.75rem;
+      padding: 0.5rem 0.65rem;
       border-radius: 8px;
       background: var(--color-surface-secondary, #f5f5f5);
       cursor: pointer;
@@ -253,8 +273,8 @@
   }
 
   .history-section {
-    margin-top: 1.5rem;
-    padding-top: 1rem;
+    margin-top: 0.85rem;
+    padding-top: 0.75rem;
     border-top: 2px solid var(--color-border, #e0e0e0);
 
     .history-content {
@@ -1670,11 +1690,11 @@
   }
 
   .info-banner {
-    margin-top: 1rem;
-    padding: 1rem;
+    margin-top: 0.75rem;
+    padding: 0.65rem 0.85rem;
     background: rgba(var(--orbis-blue-medium-rgb), 0.1);
     border-radius: 8px;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     color: var(--orbis-blue-medium);
 
     p {
