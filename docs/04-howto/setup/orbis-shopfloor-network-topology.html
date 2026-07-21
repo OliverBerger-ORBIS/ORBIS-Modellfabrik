@@ -91,17 +91,17 @@
 <body>
   <main>
     <h1>ORBIS Shopfloor — Netzwerk-Topologie (FT-LAN + OSF-Erweiterung)</h1>
-<p><strong>Stand:</strong> 17.07.2026 · <strong>Status:</strong> FT-LAN / DSP-Edge / Demo-WLAN erklärbar; Router-B-Port-Pinout und ORBIS-LAN-Details noch <strong>TBD</strong> <strong>Bezug:</strong> <a href="../../sprints/sprint_26.md">Sprint 26</a> · <a href="../../sprints/sprint_25.md">Sprint 25 Router-Setup</a> · <a href="../../06-integrations/00-REFERENCE/hardware-architecture.md">FT Hardware-Architektur</a></p>
+<p><strong>Stand:</strong> 21.07.2026 · <strong>Status:</strong> Omada-Port-Pinout + Verkabelung (Fotos) dokumentiert; ORBIS-LAN-Adressliste / MES-Pfad noch <strong>TBD</strong> <strong>Bezug:</strong> <a href="../../sprints/sprint_26.md">Sprint 26</a> · <a href="../../sprints/sprint_25.md">Sprint 25 Router-Setup</a> · <a href="../../06-integrations/00-REFERENCE/hardware-architecture.md">FT Hardware-Architektur</a></p>
 <p>&gt; <strong>Zugangsdaten:</strong> Im Repo absichtlich mitgeführt (Shopfloor-Betrieb, Team). Repo-Zugriff entsprechend schützen.</p>
 <hr>
 <h2>Kurz: Was bleibt, was neu ist</h2>
-<table><thead><tr><th>Ebene</th><th>Status</th><th>Inhalt</th></tr></thead><tbody><tr><td><strong>FT-LAN (APS)</strong></td><td><strong>Unverändert</strong></td><td>Fischertechnik-Modellfabrik: <code>192.168.0.0/24</code>, RPi, SPS/OPC-UA, TXT, MQTT — siehe <a href="../../06-integrations/00-REFERENCE/hardware-architecture.md">hardware-architecture.md</a></td></tr><tr><td><strong>OSF-Erweiterung</strong></td><td><strong>Dokumentiert (Jul 2026)</strong></td><td>GL.iNet an DPS (FT-Router-Ersatz) + separater Router (TP-Link + LTE) für <strong>ORBIS-LAN</strong>, Demo-<strong>WLAN</strong>, Anbindung <strong>DSP/Proxmox</strong></td></tr><tr><td><strong>DSP Edge</strong></td><td><strong>Dokumentiert</strong></td><td>Kleiner PC (~20×20×5 cm) mit <strong>Proxmox</strong> <code>.200</code> + Linux-VE <code>.201</code> (SQL, Grafana-Ziel, SSH)</td></tr><tr><td><strong>ORBIS-LAN</strong></td><td><strong>Teilweise</strong></td><td>Firmennetz ORBIS — <strong>≠ FT-LAN</strong>; u. a. <code>10.251.0.0/27</code> (routed) — Port-Details Router B <strong>TBD</strong></td></tr></tbody></table>
+<table><thead><tr><th>Ebene</th><th>Status</th><th>Inhalt</th></tr></thead><tbody><tr><td><strong>FT-LAN (APS)</strong></td><td><strong>Unverändert</strong></td><td>Fischertechnik-Modellfabrik: <code>192.168.0.0/24</code>, RPi, SPS/OPC-UA, TXT, MQTT — siehe <a href="../../06-integrations/00-REFERENCE/hardware-architecture.md">hardware-architecture.md</a></td></tr><tr><td><strong>OSF-Erweiterung</strong></td><td><strong>Dokumentiert (Jul 2026)</strong></td><td>Weißer GL.iNet @ DPS (FT-Router-Ersatz) + <strong>TP-Link Omada</strong> (Router B) + <strong>grauer GL.iNet + LTE</strong> als WAN-Zubringer; Demo-WLAN; DSP/Proxmox am Omada</td></tr><tr><td><strong>DSP Edge</strong></td><td><strong>Dokumentiert</strong></td><td>Kleiner PC (~20×20×5 cm) mit <strong>Proxmox</strong> <code>.200</code> + Linux-VE <code>.201</code> (SQL, Grafana-Ziel, SSH)</td></tr><tr><td><strong>ORBIS-LAN</strong></td><td><strong>Teilweise</strong></td><td>Firmennetz ORBIS — <strong>≠ FT-LAN</strong>; u. a. <code>10.251.0.0/27</code> (routed) — vollständige Adressliste <strong>TBD</strong></td></tr></tbody></table>
 <p><strong>Wichtig:</strong> <code>192.168.0.x</code> ist das <strong>FT-LAN</strong> der Modellfabrik (Ethernet + Demo-WLAN in dasselbe Subnetz). MES/SAP (<code>md1.orbis.de</code>) brauchen zusätzlich <strong>ORBIS-Firmennetz/VPN</strong>.</p>
 <hr>
 <h2>Adressierung FT-LAN <code>192.168.0.0/24</code></h2>
 <h3>Statische Geräte (Ethernet / feste IPs)</h3>
 <p>Nur diese Hosts fest dokumentieren:</p>
-<table><thead><tr><th>Bereich / Gerät</th><th>IP</th><th>Anmerkung</th></tr></thead><tbody><tr><td>Gateway</td><td><code>192.168.0.1</code></td><td><strong>GL.iNet</strong> @ DPS (ersetzt FT-Router an der Station)</td></tr><tr><td>SPS OPC-UA</td><td><code>.40</code> / <code>.50</code> / <code>.70</code> / <code>.80</code> / <code>.90</code></td><td>MILL, DRILL, AIQS, HBW, DPS</td></tr><tr><td>Arduino Sensor</td><td><code>192.168.0.95</code></td><td>MQTT</td></tr><tr><td><strong>Raspberry Pi</strong> (CCU, MQTT, OSF-UI)</td><td><strong><code>192.168.0.100</code></strong></td><td>statisch, Ethernet</td></tr><tr><td><strong>Proxmox</strong> (DSP-Edge-Hardware)</td><td><strong><code>192.168.0.200</code></strong></td><td>Hypervisor-UI <code>https://192.168.0.200:8006</code> — siehe <a href="#dsp-edge--proxmox--ve">DSP Edge</a></td></tr><tr><td><strong>Linux-VE auf Proxmox</strong> (DSP-Runtime)</td><td><strong><code>192.168.0.201</code></strong></td><td>SSH, SQL-Container, Grafana-Ziel</td></tr></tbody></table>
+<table><thead><tr><th>Bereich / Gerät</th><th>IP</th><th>Anmerkung</th></tr></thead><tbody><tr><td>Gateway</td><td><code>192.168.0.1</code></td><td><strong>Weißer GL.iNet</strong> @ DPS (ersetzt FT-Router an der Station)</td></tr><tr><td>SPS OPC-UA</td><td><code>.40</code> / <code>.50</code> / <code>.70</code> / <code>.80</code> / <code>.90</code></td><td>MILL, DRILL, AIQS, HBW, DPS</td></tr><tr><td>Arduino Sensor</td><td><code>192.168.0.95</code></td><td>MQTT</td></tr><tr><td><strong>Raspberry Pi</strong> (CCU, MQTT, OSF-UI)</td><td><strong><code>192.168.0.100</code></strong></td><td>statisch, Ethernet</td></tr><tr><td><strong>Proxmox</strong> (DSP-Edge-Hardware)</td><td><strong><code>192.168.0.200</code></strong></td><td>Hypervisor-UI <code>https://192.168.0.200:8006</code> — siehe <a href="#dsp-edge--proxmox--ve">DSP Edge</a></td></tr><tr><td><strong>Linux-VE auf Proxmox</strong> (DSP-Runtime)</td><td><strong><code>192.168.0.201</code></strong></td><td>SSH, SQL-Container, Grafana-Ziel</td></tr></tbody></table>
 <h3>DHCP-Clients (dynamisch) — <strong>keine Fix-IPs in der Doku</strong></h3>
 <p>DHCP-Pool: <strong><code>192.168.0.101</code> – <code>192.168.0.199</code></strong>.</p>
 <table><thead><tr><th>Client-Typ</th><th>Anbindung</th><th>IP</th></tr></thead><tbody><tr><td><strong>ORBIS-Arbeitsplatz</strong> (Laptop/PC)</td><td>Ethernet am FT-/GL.iNet-Pfad <strong>oder</strong> WLAN</td><td><strong>DHCP</strong> — wechselt</td></tr><tr><td><strong>TXT-Module</strong></td><td>nur <strong>WLAN 2,4 GHz</strong> (<code>ORBIS_H15_F05</code>)</td><td><strong>DHCP</strong></td></tr><tr><td>Laptop / Präsentation</td><td>bevorzugt <strong>WLAN 5 GHz</strong> (<code>ORBIS_H15_F05_5G</code>), alternativ 2,4 GHz oder LAN</td><td><strong>DHCP</strong></td></tr></tbody></table>
@@ -114,21 +114,28 @@
 <h2>DSP Edge — Proxmox + VE</h2>
 <p>Kleiner PC ohne Monitor (~20×20×5 cm). Darauf läuft die DSP-Edge-Komponente.</p>
 <h3>Host: Proxmox <code>192.168.0.200</code></h3>
-<table><thead><tr><th>Feld</th><th>Wert</th></tr></thead><tbody><tr><td><strong>URL</strong></td><td><code>https://192.168.0.200:8006</code></td></tr><tr><td><strong>User</strong></td><td><code>root</code></td></tr><tr><td><strong>Passwort</strong></td><td><code>AFF</code></td></tr><tr><td><strong>Rolle</strong></td><td>Hypervisor / Einstieg „DSP Edge“ in Bookmarks &amp; OSF <code>dspEdgeUrl</code></td></tr></tbody></table>
+<table><thead><tr><th>Feld</th><th>Wert</th></tr></thead><tbody><tr><td><strong>URL</strong></td><td><code>https://192.168.0.200:8006</code></td></tr><tr><td><strong>User</strong></td><td><code>root</code></td></tr><tr><td><strong>Passwort</strong></td><td><code>AFF</code></td></tr><tr><td><strong>Rolle</strong></td><td>Hypervisor / Einstieg „DSP Edge“ in Bookmarks &amp; OSF <code>dspEdgeUrl</code></td></tr><tr><td><strong>Kabel</strong></td><td>Omada <strong>Port 5</strong> (LAN)</td></tr></tbody></table>
 <h3>VE: Linux auf Proxmox (<code>Proxmox2026</code>) <code>192.168.0.201</code></h3>
-<table><thead><tr><th>Feld</th><th>Wert</th></tr></thead><tbody><tr><td><strong>SSH</strong></td><td><code>pocadm</code> / <code>$ompv$</code> · <code>dsp-agent</code> / <code>sibro01</code></td></tr><tr><td><strong>SQL Server (Container)</strong></td><td><code>192.168.0.201:1443</code> · User <code>sa</code> · PW <code>5KpcDHa9GEoR*3osiE</code></td></tr><tr><td><strong>Grafana (Ziel)</strong></td><td><code>http://192.168.0.201:3000/…</code> (Dienst ggf. noch starten — Stand 15.07. oft refused)</td></tr></tbody></table>
+<table><thead><tr><th>Feld</th><th>Wert</th></tr></thead><tbody><tr><td><strong>SSH</strong></td><td><code>pocadm</code> / <code>$ompv$</code> · <code>dsp-agent</code> / <code>sibro01</code></td></tr><tr><td><strong>SQL Server (Container)</strong></td><td><code>192.168.0.201:1443</code> · User <code>sa</code> · PW <code>5KpcDHa9GEoR*3osiE</code></td></tr><tr><td><strong>Grafana (Ziel)</strong></td><td><code>http://192.168.0.201:3000/…</code> (Dienst ggf. noch starten — Stand 15.07./21.07. oft refused)</td></tr></tbody></table>
 <p><strong>OSF External Link:</strong> <code>dspEdgeUrl</code> = Proxmox-UI (<code>.200:8006</code>). Analytics/Grafana weiter <code>.201:3000</code>.</p>
 <hr>
-<h2>Rollen der Router</h2>
+<h2>Rollen der Router / Geräte</h2>
+<p>Drei physische Netzwerk-Boxen + FT-Switch — nicht verwechseln:</p>
+<table><thead><tr><th>Gerät</th><th>Farbe / Ort</th><th>Rolle</th></tr></thead><tbody><tr><td><strong>GL.iNet weiß</strong></td><td>DPS-Station</td><td><strong>FT-Router-Ersatz</strong>, Gateway <strong><code>192.168.0.1</code></strong></td></tr><tr><td><strong>TP-Link Omada</strong></td><td>Stack Mitte (Tisch/Regal)</td><td><strong>Router B</strong>: Demo-WLAN, FT-LAN-Verteilung, Port-Hub für Proxmox / FT / GL.iNet</td></tr><tr><td><strong>GL.iNet grau</strong></td><td>Stack oben</td><td><strong>LTE-Zubringer</strong> (USB-Stick) → Omada <strong>WAN Port 1</strong></td></tr><tr><td><strong>FT-Switch</strong></td><td>Fischertechnik-Rahmen</td><td>Shopfloor-Ethernet (SPS, …); Uplink Omada <strong>Port 4</strong></td></tr><tr><td><strong>Proxmox-PC</strong></td><td>Stack unten</td><td>DSP Edge <code>.200</code> / VE <code>.201</code></td></tr></tbody></table>
 <h3>Router A — GL.iNet an der DPS-Station (weiß)</h3>
-<table><thead><tr><th>Feld</th><th>Wert / Hinweis</th></tr></thead><tbody><tr><td><strong>Ort</strong></td><td>DPS-Station (Warenein- und -ausgang)</td></tr><tr><td><strong>Funktion</strong></td><td>Ersatz für den <strong>originalen FT-Router</strong> an der DPS</td></tr><tr><td><strong>Netz</strong></td><td><strong>FT-LAN</strong> Gateway <code>192.168.0.1</code></td></tr><tr><td><strong>Admin-UI</strong></td><td><code>http://192.168.0.1/</code></td></tr><tr><td><strong>Routing</strong></td><td>Route ins <strong>ORBIS-LAN</strong> <code>10.251.0.0/27</code> (empirisch 15.07.2026)</td></tr></tbody></table>
-<h3>Router B — ORBIS-/Demo-Router (TP-Link + LTE-USB)</h3>
-<table><thead><tr><th>Feld</th><th>Wert / Hinweis</th></tr></thead><tbody><tr><td><strong>Funktion</strong></td><td>Demo-<strong>WLAN</strong> (2,4 + 5 GHz), LTE, Brücke Richtung <strong>ORBIS-LAN</strong> / Anbindung Richtung DSP</td></tr><tr><td><strong>DHCP</strong></td><td>Vergibt <strong><code>192.168.0.101–199</code></strong> an WLAN- und typische LAN-Clients</td></tr><tr><td><strong>Phys. Anschlüsse</strong></td><td><strong>TBD</strong> — exakte Port-Belegung</td></tr></tbody></table>
-<h3>Zwischen-Router / Switch (DSP ↔ GL.iNet)</h3>
-<table><thead><tr><th>Feld</th><th>Wert / Hinweis</th></tr></thead><tbody><tr><td><strong>Funktion</strong></td><td>Proxmox-PC per LAN angebunden; dieser Switch/Router ist <strong>mit dem weißen GL.iNet</strong> verbunden; GL.iNet wiederum mit dem <strong>FT-Backbone / FT-Router-Pfad</strong></td></tr><tr><td><strong>Wirkung</strong></td><td>DSP-Edge (<code>.200</code>/<code>.201</code>) sitzt im <strong>FT-LAN</strong>, erreichbar von Demo-WLAN und Ethernet-Shopfloor</td></tr></tbody></table>
+<table><thead><tr><th>Feld</th><th>Wert / Hinweis</th></tr></thead><tbody><tr><td><strong>Ort</strong></td><td>DPS-Station (Warenein- und -ausgang), 3D-gedruckter Mount</td></tr><tr><td><strong>Funktion</strong></td><td>Ersatz für den <strong>originalen FT-Router</strong> an der DPS</td></tr><tr><td><strong>Netz</strong></td><td><strong>FT-LAN</strong> Gateway <code>192.168.0.1</code></td></tr><tr><td><strong>Admin-UI</strong></td><td><code>http://192.168.0.1/</code></td></tr><tr><td><strong>Kabel</strong></td><td><strong>WAN</strong> ← Omada <strong>Port 3</strong> (Label am Gerät: <code>WAN PORT 3 TPLINK</code>)</td></tr><tr><td><strong>Inventory</strong></td><td><code>ITSINV-68893</code> (Barcode am Gerät)</td></tr><tr><td><strong>Routing</strong></td><td>Route ins <strong>ORBIS-LAN</strong> <code>10.251.0.0/27</code> (empirisch 15.07.2026; von FT-LAN-Client 21.07. oft <strong>nicht</strong> erreichbar)</td></tr></tbody></table>
+<p>Foto: <a href="../../assets/setup/network/glinet-white-dps-wan-port3.png">glinet-white-dps-wan-port3.png</a></p>
+<h3>Router B — TP-Link Omada (+ LTE über grauen GL.iNet)</h3>
+<table><thead><tr><th>Feld</th><th>Wert / Hinweis</th></tr></thead><tbody><tr><td><strong>Funktion</strong></td><td>Demo-<strong>WLAN</strong> (2,4 + 5 GHz), Port-Verteiler FT-LAN ↔ DSP; Internet über LTE (grauer GL.iNet)</td></tr><tr><td><strong>DHCP</strong></td><td>Vergibt <strong><code>192.168.0.101–199</code></strong> an WLAN- und typische LAN-Clients</td></tr><tr><td><strong>Phys. Stack</strong></td><td>Oben grau GL.iNet + LTE · Mitte Omada · unten Proxmox</td></tr></tbody></table>
+<p>Foto Stack: <a href="../../assets/setup/network/stack-glinet-grey-omada-proxmox.png">stack-glinet-grey-omada-proxmox.png</a></p>
+<h3>Omada-Port-Pinout (21.07.2026, vor Ort)</h3>
+<table><thead><tr><th>Port</th><th>Typ (Aufdruck)</th><th>Belegt</th><th>Ziel</th></tr></thead><tbody><tr><td><strong>1</strong></td><td>WAN</td><td>ja</td><td><strong>Grauer GL.iNet</strong> (LAN-Seite; LTE-Stick als Internet-Uplink)</td></tr><tr><td><strong>2</strong></td><td>WAN/LAN</td><td><strong>frei</strong></td><td>—</td></tr><tr><td><strong>3</strong></td><td>LAN / WAN-LAN</td><td>ja</td><td><strong>Weißer GL.iNet WAN</strong> @ DPS</td></tr><tr><td><strong>4</strong></td><td>LAN</td><td>ja</td><td><strong>FT-Switch</strong> (Label <code>FT PORT 4 TPLINK</code>)</td></tr><tr><td><strong>5</strong></td><td>LAN/WAN</td><td>ja</td><td><strong>Proxmox</strong> FT-LAN</td></tr></tbody></table>
+<p>Foto FT-Switch: <a href="../../assets/setup/network/ft-switch-port4-tplink.png">ft-switch-port4-tplink.png</a></p>
+<h3>Grauer GL.iNet (LTE)</h3>
+<table><thead><tr><th>Feld</th><th>Wert / Hinweis</th></tr></thead><tbody><tr><td><strong>Funktion</strong></td><td>Cellular WAN für Router B (nicht FT-Gateway)</td></tr><tr><td><strong>USB</strong></td><td>LTE-Stick gesteckt</td></tr><tr><td><strong>Kabel</strong></td><td>LAN → Omada <strong>Port 1 (WAN)</strong></td></tr></tbody></table>
 <hr>
 <h2>Wie FT-LAN und Demo-WLAN zusammenhängen</h2>
-<p>```text TXT (2,4 GHz) ──┐ ├── SSID ORBIS_H15_F05 (2,4) ──┐ Laptop/Präsi ───┤                              │ / ORBIS-PC     ├── SSID ORBIS_H15_F05_5G (5) ──┼── Router B (DHCP .101–.199) │                              │ ORBIS-PC LAN ──┴── Ethernet FT/GL.iNet ───────┘ ▼ gleiches Subnetz 192.168.0.0/24 │ FT Ethernet (SPS, RPi, …) ── GL.iNet .1 ◄── Switch/Router ◄── Proxmox .200 / VE .201 │ └── (geroutet) ORBIS-LAN 10.251.0.0/27 …</p>
+<p>```text LTE-Stick ── grauer GL.iNet ──LAN──► Omada Port 1 (WAN) │ WLAN 2,4 / 5 GHz ─────┤  DHCP .101–.199 │ ┌── Omada Port 3 ──WAN── weißer GL.iNet .1 @ DPS ── FT-LAN (RPi, …) ├── Omada Port 4 ──────── FT-Switch ── SPS / FT-Ethernet └── Omada Port 5 ──────── Proxmox .200 / VE .201</p>
 <p>```</p>
 <p><strong>Kurz:</strong> Demo-WLAN und LAN-Clients (außer festen Kern-Hosts) teilen das <strong>FT-LAN</strong>-Subnetz per <strong>DHCP</strong>. TXT nur 2,4 GHz; Präsentation bevorzugt 5 GHz-SSID. Ein ORBIS-Arbeitsplatz ist <strong>kein</strong> fester <code>.19x</code>-Eintrag.</p>
 <hr>
@@ -136,74 +143,72 @@
 <pre class="mermaid">
 flowchart TB
     subgraph ORBIS_CORP["ORBIS-LAN — z. B. 10.251.0.0/27"]
-        ORBIS_GW["Gateway 10.251.0.1 — TP-Link Admin"]
-        ORBIS_SVC["10.251.0.11 — nginx Admin Panel"]
+        ORBIS_GW["Gateway 10.251.0.1"]
+        ORBIS_SVC["10.251.0.11 — Admin Panel"]
         MES["MES / SAP — md1.orbis.de"]
     end
 
     subgraph DEMO_WLAN["Demo-WLAN + DHCP-Clients"]
         SSID24["ORBIS_H15_F05 — 2,4 GHz<br/>TXT + optional Laptop"]
         SSID5["ORBIS_H15_F05_5G — 5 GHz<br/>Laptop / Präsentation"]
-        DHCP["DHCP .101–.199<br/>auch ORBIS-PC per LAN"]
+        DHCP["DHCP .101–.199"]
     end
 
-    subgraph ROUTER_B["Router B — TP-Link + LTE<br/>Port-Belegung TBD"]
-        RB_LTE["LTE-USB"]
-        RB_WLAN["WLAN AP 2,4 + 5"]
-        RB_LAN["LAN → FT / ORBIS"]
+    subgraph STACK["Stack — Tisch/Regal"]
+        GREY["GL.iNet grau + LTE"]
+        OMADA["TP-Link Omada<br/>P1 WAN · P3 · P4 · P5"]
+        PROX["Proxmox .200:8006"]
+        VE["VE Linux .201"]
     end
 
     subgraph FT_LAN["FT-LAN 192.168.0.0/24"]
-        GLINET["GL.iNet @ DPS — .1"]
-        MIDSW["Switch / Router<br/>zwischen DSP und GL.iNet"]
+        GLINET["GL.iNet weiß @ DPS — .1"]
+        FTSW["FT-Switch"]
         RPI["RPi .100 — MQTT / OSF-UI"]
         SPS["SPS .40–.90"]
-        PROX["Proxmox .200:8006"]
-        VE["VE Linux .201<br/>SSH / SQL :1443 / Grafana"]
         TXT["TXT — nur 2,4 GHz WLAN"]
     end
 
-    RB_LTE --- RB_WLAN
-    RB_WLAN --- SSID24
-    RB_WLAN --- SSID5
+    GREY -->|"LAN → Port 1 WAN"| OMADA
+    OMADA --- SSID24
+    OMADA --- SSID5
     SSID24 --- TXT
     SSID5 --- LAPTOP["Laptop / ORBIS-PC WLAN"]
     DHCP --- LAPTOP
-    RB_LAN --- GLINET
-    RB_LAN --- ORBIS_CORP
-    GLINET --- MIDSW
-    MIDSW --- PROX
+    OMADA -->|"Port 3"| GLINET
+    OMADA -->|"Port 4"| FTSW
+    OMADA -->|"Port 5"| PROX
     PROX --- VE
     GLINET --- RPI
-    GLINET --- SPS
-    GLINET -.->|"Ethernet DHCP"| ORBISPC["ORBIS-PC LAN"]
+    FTSW --- SPS
+    GLINET -.->|"geroutet, oft nur vor Ort"| ORBIS_CORP
 </pre>
 <hr>
 <h2>Erreichbarkeit (empirisch)</h2>
-<h3>FT-LAN — Ping / Dienste (14.–17.07.2026)</h3>
-<table><thead><tr><th>Ziel</th><th>Ping</th><th>Dienste / HTTP</th><th>Anmerkung</th></tr></thead><tbody><tr><td><code>192.168.0.1</code></td><td>✅</td><td>GL.iNet Admin</td><td>Gateway</td></tr><tr><td><code>192.168.0.100</code></td><td>✅</td><td><strong>1883</strong>, <strong>9001</strong>, <strong>8080</strong></td><td>RPi / OSF-UI</td></tr><tr><td>SPS <code>.40–.90</code>, Arduino <code>.95</code></td><td>✅</td><td>OPC-UA <strong>4840</strong></td><td>statisch Ethernet</td></tr><tr><td><code>192.168.0.200</code></td><td>✅</td><td><strong>HTTPS :8006</strong> Proxmox; SSH</td><td>DSP-Edge-Hardware</td></tr><tr><td><code>192.168.0.201</code></td><td>✅</td><td>SSH; SQL <strong>:1443</strong>; Grafana <strong>:3000</strong> oft refused</td><td>Linux-VE</td></tr><tr><td>DHCP <code>.101–.199</code></td><td>variabel</td><td>—</td><td>Laptops, TXT, ORBIS-PCs — <strong>keine</strong> Fix-Tabelle</td></tr></tbody></table>
-<h3>ORBIS-LAN <code>10.251.0.0/27</code> (15.07.2026)</h3>
-<table><thead><tr><th>Ziel</th><th>Ping</th><th>Anmerkung</th></tr></thead><tbody><tr><td><code>10.251.0.1</code></td><td>✅</td><td>TP-Link Router Admin</td></tr><tr><td><code>10.251.0.11</code></td><td>✅</td><td>nginx „Admin Panel“, LuCI :8080</td></tr><tr><td>weitere</td><td><strong>TBD</strong></td><td>mit Netzwerk-Kollegen</td></tr></tbody></table>
+<h3>FT-LAN — Ping / Dienste (21.07.2026, Mac <code>192.168.0.189</code> Ethernet)</h3>
+<table><thead><tr><th>Ziel</th><th>Ping</th><th>Dienste / HTTP</th><th>Anmerkung</th></tr></thead><tbody><tr><td><code>192.168.0.1</code></td><td>✅</td><td>Admin <strong>HTTP 200</strong></td><td>Gateway weiß</td></tr><tr><td><code>192.168.0.100</code></td><td>✅</td><td>MQTT <strong>1883</strong>; OSF-UI <strong>:8080</strong> 200</td><td>RPi / OSF-UI v1.1.9</td></tr><tr><td><code>192.168.0.95</code></td><td>✅</td><td>—</td><td>Arduino</td></tr><tr><td><code>192.168.0.200</code></td><td>✅</td><td>Proxmox <strong>:8006</strong> 200</td><td>DSP-Edge-Hardware</td></tr><tr><td><code>192.168.0.201</code></td><td>✅</td><td>Ping OK; Grafana <strong>:3000</strong> refused; SQL <strong>:1443</strong> geschlossen (Stand Test)</td><td>Linux-VE</td></tr><tr><td>DHCP <code>.101–.199</code></td><td>variabel</td><td>—</td><td>Laptops, TXT — <strong>keine</strong> Fix-Tabelle</td></tr></tbody></table>
+<h3>ORBIS-LAN <code>10.251.0.0/27</code></h3>
+<table><thead><tr><th>Ziel</th><th>15.07.2026</th><th>21.07.2026 (von FT-LAN)</th><th>Anmerkung</th></tr></thead><tbody><tr><td><code>10.251.0.1</code></td><td>✅</td><td>❌ Timeout</td><td>TP-Link Admin — Route/Firewall/Session abhängig</td></tr><tr><td><code>10.251.0.11</code></td><td>✅</td><td>nicht erneut</td><td>nginx Admin Panel</td></tr><tr><td>weitere</td><td><strong>TBD</strong></td><td>—</td><td>mit Netzwerk-Kollegen</td></tr></tbody></table>
 <h3>Cloud / Firmen-Dienste</h3>
-<table><thead><tr><th>Ziel</th><th>Ergebnis</th></tr></thead><tbody><tr><td><strong><code>https://md1.orbis.de/</code></strong></td><td>oft <strong>Firmennetz/VPN</strong> nötig — Demo-WLAN allein reicht nicht immer</td></tr><tr><td>Internet</td><td>✅ über LTE (Router B)</td></tr></tbody></table>
+<table><thead><tr><th>Ziel</th><th>Ergebnis</th></tr></thead><tbody><tr><td><strong><code>https://md1.orbis.de/</code></strong></td><td>oft <strong>Firmennetz/VPN</strong> nötig — Demo-WLAN allein reicht nicht immer</td></tr><tr><td>Internet</td><td>✅ über LTE (grauer GL.iNet → Omada WAN)</td></tr></tbody></table>
 <h3>External Links (OSF-UI)</h3>
-<table><thead><tr><th>Key</th><th>URL</th><th>Hinweis</th></tr></thead><tbody><tr><td><code>dspEdgeUrl</code></td><td><code>https://192.168.0.200:8006</code></td><td>Proxmox — in Repo gesetzt; <strong>RPi-Deploy</strong> separat (Sprint 26)</td></tr><tr><td><code>bpAnalyticsApplicationUrl</code></td><td><code>http://192.168.0.201:3000/dashboards</code></td><td>Grafana auf VE</td></tr></tbody></table>
+<table><thead><tr><th>Key</th><th>URL</th><th>Hinweis</th></tr></thead><tbody><tr><td><code>dspEdgeUrl</code></td><td><code>https://192.168.0.200:8006</code></td><td>Proxmox — auf RPi mit OSF-UI <strong>v1.1.9</strong> deployed</td></tr><tr><td><code>bpAnalyticsApplicationUrl</code></td><td><code>http://192.168.0.201:3000/dashboards</code></td><td>Grafana auf VE</td></tr></tbody></table>
 <hr>
 <h2>Verkabelung (Checkliste)</h2>
-<table><thead><tr><th>#</th><th>Von</th><th>Nach</th><th>Status</th><th>Notiz</th></tr></thead><tbody><tr><td>1</td><td>FT-Backbone</td><td><strong>GL.iNet</strong> @ DPS</td><td><strong>Dokumentiert</strong></td><td>FT-Router-Ersatz an der Station</td></tr><tr><td>2</td><td>FT-Switch / Backbone</td><td>RPi <code>192.168.0.100</code></td><td><strong>Bestehend</strong></td><td>statisch</td></tr><tr><td>3</td><td>FT-Switch / Backbone</td><td>SPS <code>.40–.90</code></td><td><strong>Bestehend</strong></td><td>statisch</td></tr><tr><td>4</td><td><strong>Proxmox-PC</strong></td><td><strong>Switch/Router</strong> (Mitte)</td><td><strong>Dokumentiert</strong></td><td>LAN</td></tr><tr><td>5</td><td><strong>Switch/Router</strong> (Mitte)</td><td><strong>GL.iNet</strong> (weiß)</td><td><strong>Dokumentiert</strong></td><td>Kette DSP ↔ FT-LAN</td></tr><tr><td>6</td><td><strong>GL.iNet</strong></td><td><strong>FT-Router-/Backbone-Pfad</strong></td><td><strong>Dokumentiert</strong></td><td>Anbindung Modellfabrik</td></tr><tr><td>7</td><td><strong>Router B</strong></td><td><strong>ORBIS-LAN</strong></td><td><strong>TBD</strong></td><td>Port-Pinout</td></tr><tr><td>8</td><td><strong>Router B</strong></td><td><strong>FT-LAN</strong> / GL.iNet</td><td><strong>TBD</strong></td><td>exakte Ports</td></tr><tr><td>9</td><td><strong>Router B</strong></td><td><strong>LTE-USB</strong> + WLAN AP</td><td><strong>Dokumentiert</strong></td><td>SSIDs 2,4 + 5 GHz</td></tr></tbody></table>
+<table><thead><tr><th>#</th><th>Von</th><th>Nach</th><th>Status</th><th>Notiz</th></tr></thead><tbody><tr><td>1</td><td>Grauer GL.iNet LAN</td><td>Omada <strong>Port 1 WAN</strong></td><td><strong>Dokumentiert</strong></td><td>LTE-Uplink</td></tr><tr><td>2</td><td>Omada <strong>Port 3</strong></td><td>Weißer GL.iNet <strong>WAN</strong> @ DPS</td><td><strong>Dokumentiert</strong></td><td>Label <code>WAN PORT 3 TPLINK</code></td></tr><tr><td>3</td><td>Omada <strong>Port 4</strong></td><td>FT-Switch</td><td><strong>Dokumentiert</strong></td><td>Label <code>FT PORT 4 TPLINK</code></td></tr><tr><td>4</td><td>Omada <strong>Port 5</strong></td><td>Proxmox</td><td><strong>Dokumentiert</strong></td><td>FT-LAN <code>.200</code></td></tr><tr><td>5</td><td>Omada <strong>Port 2</strong></td><td>—</td><td>frei</td><td>—</td></tr><tr><td>6</td><td>FT-Switch</td><td>SPS / FT-Ethernet</td><td><strong>Bestehend</strong></td><td>Shopfloor</td></tr><tr><td>7</td><td>Weißer GL.iNet / FT-Pfad</td><td>RPi <code>.100</code></td><td><strong>Bestehend</strong></td><td>statisch</td></tr><tr><td>8</td><td>Omada WLAN</td><td>TXT / Laptops</td><td><strong>Dokumentiert</strong></td><td>Dual-SSID</td></tr><tr><td>9</td><td>Weißer GL.iNet</td><td>ORBIS-LAN <code>10.251.0.0/27</code></td><td><strong>Teilweise</strong></td><td>Route empirisch; Erreichbarkeit variabel</td></tr></tbody></table>
 <hr>
 <h2>FT-LAN — Referenz (statische Kern-Hosts)</h2>
 <p>Kanonical: <a href="../../06-integrations/00-REFERENCE/hardware-architecture.md#-netzwerk-architektur">hardware-architecture.md § Netzwerk-Architektur</a></p>
 <p><strong>OSF Live:</strong> MQTT/WebSocket <strong><code>192.168.0.100</code></strong> — <a href="../helper_apps/session-manager/runtime-modes-matrix.md">runtime-modes-matrix.md</a>.</p>
 <hr>
 <h2>Noch offen (nicht abgehakt)</h2>
-<ul><li class='task'><label><input type='checkbox' disabled> <strong>Router B:</strong> Modell, Management-IP, physische Port-Belegung (WAN/LAN1/LAN2) — Foto/Skizze optional</label></li><li class='task'><label><input type='checkbox' disabled> <strong>ORBIS-LAN:</strong> vollständige Adressliste, DNS, stabiler MES/SAP-Pfad zur Demo</label></li><li class='task'><label><input type='checkbox' disabled> <strong>Grafana auf <code>.201</code>:</strong> Dienst dauerhaft starten/öffentlichen (Persistence-Stack)</label></li><li class='task'><label><input type='checkbox' disabled> <strong>OSF External Links auf RPi deployen</strong> — siehe Sprint-26-Task (Repo bereits aktualisiert)</label></li></ul>
+<ul><li class='task'><label><input type='checkbox' disabled checked> <strong>Omada-Port-Pinout</strong> (P1/P3/P4/P5) + Fotos *(21.07.2026)*</label></li><li class='task'><label><input type='checkbox' disabled> <strong>ORBIS-LAN:</strong> vollständige Adressliste, DNS, stabiler MES/SAP-Pfad zur Demo (mit Netzwerk-Kollegen)</label></li><li class='task'><label><input type='checkbox' disabled> <strong>Warum <code>10.251.0.1</code> von FT-LAN oft timeout</strong> — Route auf weißem GL.iNet / Firewall prüfen</label></li><li class='task'><label><input type='checkbox' disabled> <strong>Grafana auf <code>.201</code>:</strong> Dienst dauerhaft starten/öffentlichen (Persistence-Stack); SQL <strong>:1443</strong> bei Bedarf prüfen</label></li><li class='task'><label><input type='checkbox' disabled> Omada <strong>Management-IP / Admin-UI-URL</strong> und exaktes Modell notieren (Aufkleber/UI)</label></li><li class='task'><label><input type='checkbox' disabled> HTML-Export nach Doc-Update: <code>bash scripts/export-network-topology-html.sh</code></label></li></ul>
 <hr>
 <h2>Betriebsmodi (OSF)</h2>
 <table><thead><tr><th>Modus</th><th>Broker / Netz</th><th>Doku</th></tr></thead><tbody><tr><td><strong>Live (Modus B/C)</strong></td><td>MQTT <strong><code>192.168.0.100</code></strong> (FT-LAN)</td><td><a href="../helper_apps/session-manager/runtime-modes-matrix.md">runtime-modes-matrix.md</a></td></tr><tr><td><strong>Replay (Modus A)</strong></td><td><code>localhost</code></td><td>nicht FT-LAN</td></tr><tr><td><strong>MES/SAP</strong></td><td>ORBIS-LAN + ggf. VPN</td><td><code>md1.orbis.de</code></td></tr><tr><td><strong>DSP Edge</strong></td><td>Proxmox <code>.200:8006</code> / VE <code>.201</code></td><td>dieses Dokument</td></tr></tbody></table>
 <hr>
 <h2>Änderungshistorie</h2>
-<table><thead><tr><th>Datum</th><th>Änderung</th></tr></thead><tbody><tr><td>14.07.2026</td><td>Erstversion: Zwei-Router-Rollen, Mermaid, Ping-Snapshot FT-LAN</td></tr><tr><td>15.07.2026</td><td>DHCP-Pool dokumentiert; Erreichbarkeit <code>.200</code>/<code>.201</code>; ORBIS-LAN <code>10.251.0.0/27</code></td></tr><tr><td>17.07.2026</td><td>Proxmox <code>.200:8006</code> + VE <code>.201</code>; Dual-SSID; Zugangsdaten; <strong>kein</strong> Fix-IP für ORBIS-Arbeitsplatz (DHCP <code>.101–.199</code>, LAN oder WLAN)</td></tr></tbody></table>
+<table><thead><tr><th>Datum</th><th>Änderung</th></tr></thead><tbody><tr><td>14.07.2026</td><td>Erstversion: Zwei-Router-Rollen, Mermaid, Ping-Snapshot FT-LAN</td></tr><tr><td>15.07.2026</td><td>DHCP-Pool dokumentiert; Erreichbarkeit <code>.200</code>/<code>.201</code>; ORBIS-LAN <code>10.251.0.0/27</code></td></tr><tr><td>17.07.2026</td><td>Proxmox <code>.200:8006</code> + VE <code>.201</code>; Dual-SSID; Zugangsdaten; <strong>kein</strong> Fix-IP für ORBIS-Arbeitsplatz (DHCP <code>.101–.199</code>, LAN oder WLAN)</td></tr><tr><td>21.07.2026</td><td>Omada-Pinout P1/P3/P4/P5; grau LTE vs. weiß DPS; Fotos unter <code>docs/assets/setup/network/</code>; Ping-Retest FT-LAN OK, <code>10.251.0.1</code> timeout</td></tr></tbody></table>
 <hr>
 <h2>HTML-Export (für Kollegen)</h2>
 <p>```bash bash scripts/export-network-topology-html.sh</p>

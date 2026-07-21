@@ -57,8 +57,8 @@
 
 - [x] **RPi OSF-UI v1.1.8 deployen (15.07.2026):** `npm run docker:osf-ui:deploy -- ff22@192.168.0.100` — Container `orbis-osf-ui:1.1.8`, HTTP `:8080` 200 OK.
 - [x] **RPi OSF-UI v1.1.9 deployen (21.07.2026):** Track&Trace Live Demo UX + Sprint-26-Doku — `npm run docker:osf-ui:deploy -- ff22@192.168.0.100` — Container `orbis-osf-ui:1.1.9`, HTTP `:8080` OK.
-- [x] **Shopfloor CELL_* als Serial (Fix in Code, v1.1.10):** Layout-Load über `ShopfloorLayoutService`/`baseHref`; Auswahl löst Hardware-Serial auf; kein Persistieren von `CELL_*`. Unit-Tests grün. **Verifikation:** nach RPi-Deploy v1.1.10 Hard-Reload → Modul-Klick zeigt `SVR…`, nicht `CELL_*`. *(21.07.2026)*
-- [ ] **RPi OSF-UI v1.1.10 deployen:** Shopfloor-Layout-/Serial-Fix — `npm run docker:osf-ui:deploy -- ff22@192.168.0.100`.
+- [x] **Shopfloor CELL_* als Serial (Fix in Code, v1.1.10):** Layout-Load über `ShopfloorLayoutService`/`baseHref`; Auswahl löst Hardware-Serial auf; kein Persistieren von `CELL_*`. Unit-Tests grün. **Verifikation RPi OK (21.07.2026):** Hard-Reload → Modul-Klick zeigt `SVR…`, nicht `CELL_*`.
+- [x] **RPi OSF-UI v1.1.10 deployen (21.07.2026):** Shopfloor-Layout-/Serial-Fix — `npm run docker:osf-ui:deploy -- ff22@192.168.0.100` — Container `orbis-osf-ui:1.1.10`, HTTP `:8080` OK; Live-Test Serial-Anzeige OK.
 - [x] Unterschiede zwischen localhost und RPi systematisch abarbeiten (insb. AGV-Erkennung/Anzeige auf RPi als Voraussetzung vor Overlay-Checks). **Not necessary** (16.07.2026): Präsentations-Setup-Checks — AGV-Darstellung/Overlay präsentationsfähig; LH↔RPi-/Browser-Unterschiede vorerst kein Prioritätsthema. *(Ursprung: Sprint 22)*
 
 ### Integration & Tests
