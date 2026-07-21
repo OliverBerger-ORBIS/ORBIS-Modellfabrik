@@ -39,6 +39,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { ShopfloorLayoutConfig, ShopfloorCellConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
 import { ShopfloorMappingService, type ModuleInfo } from '../services/shopfloor-mapping.service';
+import { ShopfloorLayoutService } from '../services/shopfloor-layout.service';
 import { AgvRouteService } from '../services/agv-route.service';
 import { ICONS } from '../shared/icons/icon.registry';
 import { isOsfConsoleDebugEnabled } from '../utils/osf-console-debug';
@@ -303,6 +304,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
     private readonly cdr: ChangeDetectorRef,
     private readonly http: HttpClient,
     private readonly mappingService: ShopfloorMappingService,
+    private readonly shopfloorLayoutService: ShopfloorLayoutService,
     private readonly agvRouteService: AgvRouteService,
     private readonly route: ActivatedRoute,
     private readonly router: Router
@@ -548,34 +550,31 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Load shopfloor layout config for serial number lookup and registry initialization
-    this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').subscribe({
-      next: (config) => {
+    // Use ShopfloorLayoutService (getAssetPath / locale baseHref) — never a bare relative URL,
+    // which 404s under /de|/en|/fr on the RPi nginx deploy and leaves CELL_* as fake serials.
+    this.subscriptions.add(
+      this.shopfloorLayoutService.config$.subscribe((config) => {
+        if (!config) {
+          return;
+        }
         this.layoutConfig = config;
-        this.mappingService.initializeLayout(config);
         this.agvRouteService.initializeLayout(config);
         this.initializeRegistry();
         this.shopfloorLayoutReady$.next(true);
-        
-        // Check for module query parameter from architecture click
-        this.route.queryParams.subscribe(params => {
+
+        this.route.queryParams.pipe(take(1)).subscribe((params) => {
           const moduleType = params['module'];
           if (moduleType) {
-            // Find module of this type and select it
             this.selectModuleByType(moduleType);
-            // Remove query parameter from URL
             this.router.navigate([], {
               relativeTo: this.route,
               queryParams: {},
-              replaceUrl: true
+              replaceUrl: true,
             });
           }
         });
-      },
-      error: (error) => {
-        console.warn('Failed to load shopfloor layout config:', error);
-      }
-    });
+      })
+    );
 
     this.subscriptions.add(
       this.connectionService.state$
@@ -1586,26 +1585,37 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const cell = this.layoutConfig?.cells.find((c: ShopfloorCellConfig) => c.id === event.id) ?? null;
+    const cell =
+      this.layoutConfig?.cells.find((c: ShopfloorCellConfig) => c.id === event.id) ??
+      this.mappingService.getCellById(event.id);
+    const resolvedSerial =
+      cell?.serial ??
+      this.mappingService.getSerialFromCellId(event.id) ??
+      (cell?.name ? this.mappingService.getSerialFromModuleType(cell.name) : null);
+
+    // Never treat layout cell ids (CELL_x_y) as hardware serials — status lookup would miss MQTT pairing.
+    if (!resolvedSerial || resolvedSerial.startsWith('CELL_')) {
+      console.warn('[module-tab] Could not resolve serial for shopfloor cell', event.id);
+      return;
+    }
+
     const snapshot = this.moduleOverviewState.getSnapshot(this.currentEnvironmentKey);
     const moduleStates = snapshot?.modules ?? {};
-    const moduleDetails =
-      Object.values(moduleStates).find((m) => m.id === (cell?.serial ?? event.id)) ??
-      moduleStates[event.id];
+    const moduleDetails = moduleStates[resolvedSerial] ?? Object.values(moduleStates).find((m) => m.id === resolvedSerial);
 
-    const moduleType = moduleDetails?.subType ?? cell?.name ?? 'UNKNOWN';
+    const moduleType = moduleDetails?.subType ?? cell?.name ?? this.mappingService.getModuleTypeFromSerial(resolvedSerial) ?? 'UNKNOWN';
     const display = this.moduleNameService.getModuleDisplayName(moduleType);
 
-    this.selectedModuleSerialNumber = moduleDetails?.id ?? cell?.serial ?? event.id;
+    this.selectedModuleSerialNumber = moduleDetails?.id ?? resolvedSerial;
     this.selectedModuleName = display.fullName;
 
-    // Save selection to localStorage
     this.saveModuleSelection(this.selectedModuleSerialNumber);
 
     if (isOsfConsoleDebugEnabled()) {
       console.log('[module-tab] Selected module:', {
         eventId: event.id,
         cellSerialNumber: cell?.serial,
+        resolvedSerial,
         moduleDetailsId: moduleDetails?.id,
         selectedModuleSerialNumber: this.selectedModuleSerialNumber,
         moduleType,
@@ -2777,7 +2787,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
    */
   private saveModuleSelection(serialNumber: string | null): void {
     try {
-      if (serialNumber) {
+      if (serialNumber && !serialNumber.startsWith('CELL_')) {
         localStorage.setItem(this.moduleSelectionStorageKey, serialNumber);
       } else {
         localStorage.removeItem(this.moduleSelectionStorageKey);
@@ -2793,7 +2803,12 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
    */
   private loadModuleSelection(): string | null {
     try {
-      return localStorage.getItem(this.moduleSelectionStorageKey);
+      const saved = localStorage.getItem(this.moduleSelectionStorageKey);
+      if (saved?.startsWith('CELL_')) {
+        localStorage.removeItem(this.moduleSelectionStorageKey);
+        return null;
+      }
+      return saved;
     } catch (error) {
       // Ignore localStorage errors
       console.warn('[module-tab] Failed to load module selection:', error);

@@ -10,10 +10,9 @@ import { BehaviorSubject, combineLatest, merge, Observable, of, Subscription } f
 import { EnvironmentService } from '../services/environment.service';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { ConnectionService } from '../services/connection.service';
-import { HttpClient } from '@angular/common/http';
 import { ShopfloorMappingService } from '../services/shopfloor-mapping.service';
+import { ShopfloorLayoutService } from '../services/shopfloor-layout.service';
 import { AgvRouteService } from '../services/agv-route.service';
-import type { ShopfloorLayoutConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
 import { buildFtsPreviewPositionsFromStates, type FtsPreviewPositionInput } from '../utils/build-fts-preview-positions';
 
 const ORDER_TYPES = {
@@ -63,8 +62,8 @@ export class OrderTabComponent implements OnInit, OnDestroy {
     private readonly connectionService: ConnectionService,
     private readonly cdr: ChangeDetectorRef,
     private readonly route: ActivatedRoute,
-    private readonly http: HttpClient,
     private readonly mappingService: ShopfloorMappingService,
+    private readonly shopfloorLayoutService: ShopfloorLayoutService,
     private readonly agvRouteService: AgvRouteService
   ) {
     this.orderFtsPositions$ = combineLatest([
@@ -348,14 +347,8 @@ export class OrderTabComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.add(
-      this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').pipe(
-        catchError((e) => {
-          console.warn('[order-tab] shopfloor layout load failed', e);
-          return of(null);
-        })
-      ).subscribe((config) => {
+      this.shopfloorLayoutService.config$.subscribe((config) => {
         if (config) {
-          this.mappingService.initializeLayout(config);
           this.agvRouteService.initializeLayout(config);
           this.orderLayoutReady$.next(true);
         }

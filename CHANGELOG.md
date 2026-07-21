@@ -10,6 +10,12 @@ All notable changes to OSF Dashboard will be documented here.
 
 - **Sprint 18** closed (LogiMAT, ORBIS Vertrieb OSF **02.04.2026**). **Sprint 19** opened — focus: Arduino sensor station (OSF, 24 V, box), backend/Grafana, blog, Hannover Messe prep (bird’s-eye camera, Konftel-20, OBS). See [sprint_19.md](docs/sprints/sprint_19.md), [PROJECT_STATUS.md](docs/PROJECT_STATUS.md).
 
+## [1.1.10] - 2026-07-21
+
+### OSF-UI
+
+- **Shopfloor Layout (RPi):** Load layout via `ShopfloorLayoutService` / locale `baseHref` (fixes CELL_* shown as serial under `/de|/en|/fr`). Cell selection resolves hardware serial; never persist `CELL_*` to localStorage.
+
 ## [1.1.9] - 2026-07-21
 
 ### OSF-UI

@@ -153,6 +153,16 @@ export class ShopfloorMappingService {
     return this.serialToModule.get(serialNumber)?.cellId ?? null;
   }
 
+  /** Resolve hardware serial from layout cell id (e.g. CELL_1_3 → SVR4H73275). */
+  getSerialFromCellId(cellId: string): string | null {
+    for (const module of this.serialToModule.values()) {
+      if (module.cellId === cellId) {
+        return module.serialNumber;
+      }
+    }
+    return null;
+  }
+
   getCellBySerial(serialNumber: string): ShopfloorCellConfig | null {
     const cellId = this.getCellIdFromSerial(serialNumber);
     return cellId ? this.getCellById(cellId) : null;

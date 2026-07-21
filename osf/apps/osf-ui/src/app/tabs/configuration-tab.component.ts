@@ -11,6 +11,7 @@ import { getDashboardController, type DashboardStreamSet } from '../mock-dashboa
 import { MessageMonitorService, MonitoredMessage } from '../services/message-monitor.service';
 import { ModuleNameService } from '../services/module-name.service';
 import { ShopfloorMappingService } from '../services/shopfloor-mapping.service';
+import { ShopfloorLayoutService } from '../services/shopfloor-layout.service';
 import { ModuleHardwareService } from '../services/module-hardware.service';
 import { EnvironmentService } from '../services/environment.service';
 import { ConnectionService, type ConnectionState } from '../services/connection.service';
@@ -283,12 +284,13 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly mappingService: ShopfloorMappingService,
+    private readonly shopfloorLayoutService: ShopfloorLayoutService,
     private readonly moduleHardwareService: ModuleHardwareService,
     private readonly cdr: ChangeDetectorRef
   ) {
     this.externalLinks$ = this.externalLinksService.settings$;
-    this.layoutInfo$ = this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').pipe(
-      tap((layout) => this.mappingService.initializeLayout(layout)),
+    this.layoutInfo$ = this.shopfloorLayoutService.config$.pipe(
+      filter((layout): layout is ShopfloorLayoutConfig => !!layout),
       map((layout) => this.buildLayout(layout)),
       tap((layout) => {
         if (!this.selectedCellSubject.value && layout.cells.length > 0) {

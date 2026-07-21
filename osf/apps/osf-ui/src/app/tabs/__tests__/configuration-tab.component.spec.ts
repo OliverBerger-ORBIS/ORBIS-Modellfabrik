@@ -8,6 +8,8 @@ import { MessageMonitorService } from '../../services/message-monitor.service';
 import { ModuleNameService } from '../../services/module-name.service';
 import { ConnectionService } from '../../services/connection.service';
 import { ExternalLinksService } from '../../services/external-links.service';
+import { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
+import { ShopfloorLayoutService } from '../../services/shopfloor-layout.service';
 import { ModuleHardwareService } from '../../services/module-hardware.service';
 import * as mockDashboard from '../../mock-dashboard';
 import type { ModuleOverviewState, CcuConfigSnapshot } from '@osf/entities';
@@ -159,6 +161,16 @@ describe('ConfigurationTabComponent', () => {
       get: jest.fn(() => of(mockLayoutConfig)),
     };
 
+    const shopfloorLayoutServiceMock = {
+      config$: of(mockLayoutConfig),
+    };
+
+    const shopfloorMappingServiceMock = {
+      initializeLayout: jest.fn(),
+      getAllModules: jest.fn(() => []),
+      isInitialized: jest.fn(() => true),
+    };
+
     const moduleHardwareServiceMock = {
       getModuleHardwareConfig: jest.fn((serial: string) => {
         if (serial === 'SVR4H73275') {
@@ -198,6 +210,8 @@ describe('ConfigurationTabComponent', () => {
         { provide: Router, useValue: routerMock },
         { provide: ActivatedRoute, useValue: activatedRouteMock },
         { provide: ModuleHardwareService, useValue: moduleHardwareServiceMock },
+        { provide: ShopfloorLayoutService, useValue: shopfloorLayoutServiceMock },
+        { provide: ShopfloorMappingService, useValue: shopfloorMappingServiceMock },
       ],
     }).compileComponents();
 
@@ -341,6 +355,9 @@ describe('ConfigurationTabComponent', () => {
         { provide: HttpClient, useValue: httpClient },
         { provide: Router, useValue: router },
         { provide: ActivatedRoute, useValue: activatedRoute },
+        { provide: ModuleHardwareService, useValue: moduleHardwareService },
+        { provide: ShopfloorLayoutService, useValue: { config$: of(mockLayoutConfig) } },
+        { provide: ShopfloorMappingService, useValue: { initializeLayout: jest.fn(), getAllModules: jest.fn(() => []), isInitialized: jest.fn(() => true) } },
       ],
     }).compileComponents();
     const liveFixture = TestBed.createComponent(ConfigurationTabComponent);

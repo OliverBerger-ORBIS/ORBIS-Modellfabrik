@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { ShopfloorPreviewComponent } from './shopfloor-preview.component';
 import { ModuleNameService } from '../../services/module-name.service';
 import { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
+import { ShopfloorLayoutService } from '../../services/shopfloor-layout.service';
 import { ShopfloorRotationService } from '../../services/shopfloor-rotation.service';
 
 describe('ShopfloorPreviewComponent', () => {
@@ -69,12 +70,7 @@ describe('ShopfloorPreviewComponent', () => {
 
   beforeEach(async () => {
     const httpMock = {
-      get: jest.fn((url: string) => {
-        if (url.includes('shopfloor_layout.json')) {
-          return of(layoutConfig);
-        }
-        return of('<svg/>');
-      }),
+      get: jest.fn(() => of('<svg/>')),
     };
     const moduleNameMock = {
       getModuleFullName: (key: string) => key,
@@ -83,6 +79,9 @@ describe('ShopfloorPreviewComponent', () => {
     const mappingMock = {
       initializeLayout: jest.fn(),
       getAgvColor: jest.fn(() => '#f97316'),
+    };
+    const layoutServiceMock = {
+      config$: of(layoutConfig),
     };
     const rotationMock = {
       current: 'none' as const,
@@ -95,6 +94,7 @@ describe('ShopfloorPreviewComponent', () => {
         { provide: HttpClient, useValue: httpMock },
         { provide: ModuleNameService, useValue: moduleNameMock },
         { provide: ShopfloorMappingService, useValue: mappingMock },
+        { provide: ShopfloorLayoutService, useValue: layoutServiceMock },
         { provide: ShopfloorRotationService, useValue: rotationMock },
       ],
     })

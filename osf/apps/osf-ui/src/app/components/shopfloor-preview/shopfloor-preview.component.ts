@@ -22,6 +22,7 @@ import { SHOPFLOOR_ASSET_MAP } from '@osf/testing-fixtures';
 import { resolveLegacyShopfloorPath } from '../../shared/icons/legacy-shopfloor-map';
 import { ModuleNameService } from '../../services/module-name.service';
 import { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
+import { ShopfloorLayoutService } from '../../services/shopfloor-layout.service';
 import { ShopfloorRotationService, type ShopfloorRotation } from '../../services/shopfloor-rotation.service';
 import type {
   ParsedRoad,
@@ -239,6 +240,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
     private readonly sanitizer: DomSanitizer,
     private readonly moduleNameService: ModuleNameService,
     private readonly mappingService: ShopfloorMappingService,
+    private readonly shopfloorLayoutService: ShopfloorLayoutService,
     private readonly rotationService: ShopfloorRotationService
   ) {}
 
@@ -248,8 +250,11 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
     const storageKey = this.getStorageKey();
     const savedScale = this.loadSavedScaleWithMigration(storageKey);
     this.currentScale = savedScale ?? this.scale;
-    this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').subscribe({
-      next: (config) => {
+    this.subscriptions.add(
+      this.shopfloorLayoutService.config$.subscribe((config) => {
+        if (!config) {
+          return;
+        }
         this.layoutConfig = config;
         this.parsedRoads = config.parsed_roads ?? [];
         this.indexLayout(config);
@@ -272,11 +277,8 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges, OnDestroy {
         this.updateViewModel();
         this.emitViewport();
         this.cdr.markForCheck();
-      },
-      error: (error) => {
-        console.error('Failed to load shopfloor layout', error);
-      },
-    });
+      })
+    );
   }
 
   ngOnDestroy(): void {

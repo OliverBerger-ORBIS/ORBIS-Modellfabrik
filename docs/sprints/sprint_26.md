@@ -24,10 +24,11 @@
 ### Router / Netzwerk-Setup
 
 - [x] **GL.iNet-Router-Mount (DPS-Station):** 3D-Druck erstellt und passgenau an der **DPS-Station** eingebaut — ersetzt den originalen **FT-Router** vor Ort. *(14.07.2026)*
-- [ ] **Netzwerk-Topologie/Verkabelung (Rest):** Router-B-Port-Pinout und ORBIS-LAN-Adressliste mit Netzwerk-Kollegen; HTML via `bash scripts/export-network-topology-html.sh`. *(Sprint 26)*
-- [x] **Netzwerk-Topologie — DSP Edge + WLAN-Kopplung (17.07.2026):** [How-to](../04-howto/setup/orbis-shopfloor-network-topology.md) — Proxmox `.200:8006` + VE `.201` (SSH/SQL :1443); Kette Proxmox→Switch→GL.iNet→FT; Demo-WLAN **`ORBIS_H15_F05`** (2,4 GHz, TXT) + **`ORBIS_H15_F05_5G`** (5 GHz, Laptop/Präsentation) im FT-LAN-Subnetz. *Nicht vollständig abgehakt: Router-B-Ports / ORBIS-LAN-Details noch TBD.*
-- [ ] **OSF External Links auf RPi deployen:** Repo hat `dspEdgeUrl` = `https://192.168.0.200:8006` — nach Deploy auf `ff22@192.168.0.100` (OSF-UI-Image/Container), damit Live-UI den DSP-Edge-Link zeigt. Bookmarks `SmartFactory.html` bereits angepasst. *(Sprint 26, Folgewoche)*
-- *Rollen: GL.iNet = DPS/FT-Ersatz auf **FT-LAN**; Router B (TP-Link + LTE) = Demo-WLAN + ORBIS-LAN-Brücke; DSP = Proxmox-PC im FT-LAN.*
+- [x] **Netzwerk-Topologie — Omada-Port-Pinout + Fotos (21.07.2026):** [How-to](../04-howto/setup/orbis-shopfloor-network-topology.md) — P1 grau LTE, P3 weiß GL.iNet WAN, P4 FT-Switch, P5 Proxmox; Fotos `docs/assets/setup/network/`. Ping FT-LAN OK (Mac `.189`).
+- [ ] **Netzwerk-Topologie/Verkabelung (Rest):** ORBIS-LAN-Adressliste + MES-Pfad mit Netzwerk-Kollegen (**nur mit ORBIS-VPN testbar**); Omada Admin-URL/Modell; ggf. HTML neu exportieren. *(Sprint 26)*
+- [x] **Netzwerk-Topologie — DSP Edge + WLAN-Kopplung (17.07.2026):** Proxmox `.200:8006` + VE `.201`; Dual-SSID Demo-WLAN im FT-LAN-Subnetz.
+- [x] **OSF External Links auf RPi deployen (21.07.2026):** Mit OSF-UI **v1.1.9** — `dspEdgeUrl` = `https://192.168.0.200:8006` in Container `osf-ui-prod` (en/de/fr `assets/config/external-links.json`). Bookmarks `SmartFactory.html` bereits angepasst.
+- *Rollen: GL.iNet weiß = DPS/FT-Gateway; GL.iNet grau = LTE→Omada WAN; Omada = WLAN + Port-Hub; Proxmox = DSP Edge im FT-LAN.*
 
 ### Praesentation (Windows-Desktops / OSF-UI)
 
@@ -55,7 +56,9 @@
 ### ORBIS Feldbetrieb / Integrations-Fortsetzung
 
 - [x] **RPi OSF-UI v1.1.8 deployen (15.07.2026):** `npm run docker:osf-ui:deploy -- ff22@192.168.0.100` — Container `orbis-osf-ui:1.1.8`, HTTP `:8080` 200 OK.
-- [ ] **RPi OSF-UI v1.1.9 deployen (21.07.2026):** Track&Trace Live Demo UX + Sprint-26-Doku — `npm run docker:osf-ui:deploy -- ff22@192.168.0.100`.
+- [x] **RPi OSF-UI v1.1.9 deployen (21.07.2026):** Track&Trace Live Demo UX + Sprint-26-Doku — `npm run docker:osf-ui:deploy -- ff22@192.168.0.100` — Container `orbis-osf-ui:1.1.9`, HTTP `:8080` OK.
+- [x] **Shopfloor CELL_* als Serial (Fix in Code, v1.1.10):** Layout-Load über `ShopfloorLayoutService`/`baseHref`; Auswahl löst Hardware-Serial auf; kein Persistieren von `CELL_*`. Unit-Tests grün. **Verifikation:** nach RPi-Deploy v1.1.10 Hard-Reload → Modul-Klick zeigt `SVR…`, nicht `CELL_*`. *(21.07.2026)*
+- [ ] **RPi OSF-UI v1.1.10 deployen:** Shopfloor-Layout-/Serial-Fix — `npm run docker:osf-ui:deploy -- ff22@192.168.0.100`.
 - [x] Unterschiede zwischen localhost und RPi systematisch abarbeiten (insb. AGV-Erkennung/Anzeige auf RPi als Voraussetzung vor Overlay-Checks). **Not necessary** (16.07.2026): Präsentations-Setup-Checks — AGV-Darstellung/Overlay präsentationsfähig; LH↔RPi-/Browser-Unterschiede vorerst kein Prioritätsthema. *(Ursprung: Sprint 22)*
 
 ### Integration & Tests

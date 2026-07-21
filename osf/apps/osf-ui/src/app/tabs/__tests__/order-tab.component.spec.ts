@@ -7,6 +7,9 @@ import { OrderTabComponent } from '../order-tab.component';
 import { EnvironmentService } from '../../services/environment.service';
 import { MessageMonitorService } from '../../services/message-monitor.service';
 import { ConnectionService } from '../../services/connection.service';
+import { ShopfloorLayoutService } from '../../services/shopfloor-layout.service';
+import { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
+import { AgvRouteService } from '../../services/agv-route.service';
 import * as mockDashboard from '../../mock-dashboard';
 import type { OrderActive } from '@osf/entities';
 
@@ -56,6 +59,17 @@ describe('OrderTabComponent', () => {
         { provide: MessageMonitorService, useValue: messageMonitorMock },
         { provide: ConnectionService, useValue: connectionServiceMock },
         { provide: ActivatedRoute, useValue: { queryParams: routeQueryParams$.asObservable() } },
+        { provide: ShopfloorLayoutService, useValue: { config$: of({ cells: [], modules_by_serial: {} }) } },
+        {
+          provide: ShopfloorMappingService,
+          useValue: {
+            initializeLayout: jest.fn(),
+            getAgvOptions: jest.fn(() => []),
+            getAgvColor: jest.fn(() => '#ccc'),
+            isInitialized: jest.fn(() => true),
+          },
+        },
+        { provide: AgvRouteService, useValue: { initializeLayout: jest.fn(), getNodePosition: jest.fn(() => null) } },
       ],
     }).compileComponents();
 

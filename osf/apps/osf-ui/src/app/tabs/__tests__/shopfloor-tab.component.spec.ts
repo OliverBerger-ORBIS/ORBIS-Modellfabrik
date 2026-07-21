@@ -10,6 +10,7 @@ import type { MessageMonitorService } from '../../services/message-monitor.servi
 import type { HttpClient } from '@angular/common/http';
 import type { ChangeDetectorRef } from '@angular/core';
 import type { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
+import type { ShopfloorLayoutService } from '../../services/shopfloor-layout.service';
 import type { AgvRouteService } from '../../services/agv-route.service';
 import type { ActivatedRoute, Router } from '@angular/router';
 
@@ -84,9 +85,33 @@ const createComponent = () => {
     getAllModules: jest.fn(() => []),
     getShopfloorTableRowSerialOrder: jest.fn(() => []),
     getAgvLabel: jest.fn((_serial: string) => null),
+    getAgvOptions: jest.fn(() => []),
+    getAgvColor: jest.fn(() => '#ccc'),
     isInitialized: jest.fn(() => false),
     getModuleTypeFromSerial: jest.fn(() => null),
+    getSerialFromCellId: jest.fn(() => null),
+    getSerialFromModuleType: jest.fn(() => null),
+    getCellById: jest.fn(() => null),
+    getModuleBySerial: jest.fn(() => null),
   } as unknown as ShopfloorMappingService;
+
+  const shopfloorLayoutServiceStub = {
+    config$: of({
+      cells: [
+        {
+          id: 'CELL_1_3',
+          name: 'DPS',
+          role: 'module',
+          serial: 'SVR4H73275',
+          position: { x: 0, y: 0 },
+          size: { w: 100, h: 100 },
+        },
+      ],
+      modules_by_serial: {
+        SVR4H73275: { type: 'DPS', cell_id: 'CELL_1_3' },
+      },
+    }),
+  } as unknown as ShopfloorLayoutService;
 
   const agvRouteServiceStub = {
     initializeLayout: jest.fn(),
@@ -115,6 +140,7 @@ const createComponent = () => {
     cdrStub,
     httpStub,
     mappingServiceStub,
+    shopfloorLayoutServiceStub,
     agvRouteServiceStub,
     routeStub,
     routerStub
@@ -362,6 +388,47 @@ describe('ShopfloorTabComponent sidebar and selection', () => {
     expect(component.selectedModuleName).toBe(testModuleName);
   });
 
+  it('resolves hardware serial from CELL_* layout id (RPi locale baseHref regression)', () => {
+    const component = createComponent();
+    (component as any).layoutConfig = {
+      cells: [
+        {
+          id: 'CELL_1_3',
+          name: 'DPS',
+          serial: 'SVR4H73275',
+          role: 'module',
+          position: { x: 0, y: 0 },
+          size: { w: 100, h: 100 },
+        },
+      ],
+    };
+    const mapping = (component as any).mappingService;
+    mapping.getSerialFromCellId = jest.fn(() => 'SVR4H73275');
+    mapping.getCellById = jest.fn(() => (component as any).layoutConfig.cells[0]);
+    mapping.getModuleTypeFromSerial = jest.fn(() => 'DPS');
+    mapping.isInitialized = jest.fn(() => true);
+
+    (component as any).moduleOverviewState.getSnapshot = jest.fn(() => ({
+      modules: {
+        SVR4H73275: {
+          id: 'SVR4H73275',
+          subType: 'DPS',
+          connected: true,
+          availability: 'READY',
+        },
+      },
+      transports: {},
+    }));
+    (component as any).dpsState$ = of(null);
+    (component as any).aiqsState$ = of(null);
+    jest.spyOn(component as any, 'loadSequenceCommands').mockResolvedValue(undefined);
+
+    component.onModuleCellSelected({ id: 'CELL_1_3', kind: 'module' });
+
+    expect(component.selectedModuleSerialNumber).toBe('SVR4H73275');
+    expect(component.selectedModuleSerialNumber?.startsWith('CELL_')).toBe(false);
+  });
+
   it('should preserve selection when sidebar is closed after double-click selection', () => {
     const component = createComponent();
     
@@ -556,9 +623,24 @@ Payload:
     
     (component as any).moduleOverviewState.getSnapshot = jest.fn(() => mockState);
     (component as any).currentEnvironmentKey = 'mock';
-    (component as any).layoutConfig = { cells: [] };
+    (component as any).layoutConfig = {
+      cells: [
+        {
+          id: 'CELL_1_0',
+          name: 'HBW',
+          serial: serialId,
+          role: 'module',
+          position: { x: 0, y: 0 },
+          size: { w: 50, h: 50 },
+        },
+      ],
+    };
+    (component as any).mappingService.getSerialFromCellId = jest.fn(() => serialId);
+    (component as any).dpsState$ = of(null);
+    (component as any).aiqsState$ = of(null);
+    jest.spyOn(component as any, 'loadSequenceCommands').mockResolvedValue(undefined);
     
-    component.onModuleCellSelected({ id: serialId, kind: 'module' });
+    component.onModuleCellSelected({ id: 'CELL_1_0', kind: 'module' });
     
     expect(setItemSpy).toHaveBeenCalledWith('shopfloor-tab-selected-module-serial-number', serialId);
     setItemSpy.mockRestore();
