@@ -1,6 +1,6 @@
 # ORBIS SmartFactory – Projektstatus
 
-**Letzte Aktualisierung:** 2026-07-16
+**Letzte Aktualisierung:** 2026-07-23
 
 > **Workflow:** Die Sprint-Tabelle wird bei jedem Sprint-Abschluss aktualisiert (neue Zeile, Events).  
 > Details: [sprints_README.md – Dokumenten-Workflow](sprints/sprints_README.md#-dokumenten-workflow-aktualität-sicherstellen)
@@ -9,11 +9,11 @@
 - OSF (vormals OMF3) produktionsreif für Kunden-Demos; **LogiMAT 2026 durchgeführt** (Demo mit zwei AGVs erfolgreich).
 - **Messe-WLAN:** Nur **2,4 GHz** am Stand → **bekanntes Risiko** für Instabilität; angesichts der **ortsbedingten Einschränkung** keine zuverlässige technische „Lösung“ zu erwarten — **Lessons Learned** für weitere Events (Erwartungsmanagement). Siehe [sprint_18.md – Messe-Ergebnis](sprints/sprint_18.md).
 - OMF2 als Legacy eingefroren.
-- Aktuelle Entwicklung: **Phase 5** — **Sprint 26** (NFC-Tags/Track&Trace, Use-Case-Darstellung fuer Desktop-Praesentation, Grafana Dashboard).
+- Aktuelle Entwicklung: **Phase 5** — **Sprint 27** (Grafana-Dashboard-Analyse & Track&Trace; Carry-over Netzwerk/FTS/Blog).
 - **ORBIS-SmartFactory** ab Sprint 13 (Genehmigung ausstehend, Arbeit wird fortgeführt).
 
 ## 🔥 Aktuelle Schwerpunkte
-- **Sprint 26:** NFC-Tag-Erweiterung Track&Trace, Use-Case-Diagramm-Groessen fuer Desktop 2/3, Grafana/Modus-A-Replay; Musashi **14.08.**; Blog A2 Review (16.07.). Details: [sprint_26.md](sprints/sprint_26.md).
+- **Sprint 27:** Grafana-Dashboard-Analyse (Modus A, Panels, Persistenz) + offene Track&Trace-Tasks; Musashi **14.08.**; Hochschulkooperation Magdeburg (geplant). Details: [sprint_27.md](sprints/sprint_27.md).
 - **02.04.2026:** ORBIS-internes **Vertriebsmeeting** — **OSF-Präsentation** für Vertrieb durchgeführt (Start Sprint 19).
 - Letzter großer Außenauftritt: **Hannover Messe** + **ORBIS Customer-Connect** (siehe Roadmap).
 - **Phase 5 – MES/DSP-Integration:** ORBIS MES und DSP übernehmen zunehmend die Steuerung (QM-Check, Order-Entscheidungen). APS-CCU als Interim-Layer; Modifikationen: [integrations/APS-CCU/OSF-MODIFICATIONS.md](../integrations/APS-CCU/OSF-MODIFICATIONS.md).
@@ -26,7 +26,8 @@
 
 | Sprint | Zeitraum | Ereignis / Fokus | Status |
 |--------|----------|------------------|--------|
-| **26** | **10.07.26 - 23.07.26** | NFC-Tags Track&Trace; Use-Case-Darstellung Desktop 2/3; Grafana; Musashi 14.08.; Blog A2 Review ([sprint_26](sprints/sprint_26.md)) | **Laufend** |
+| **27** | **24.07.26 - 06.08.26** | Grafana-Dashboard-Analyse & Track&Trace; Musashi 14.08.; Hochschulkooperation geplant ([sprint_27](sprints/sprint_27.md)) | **Laufend** |
+| **26** | **10.07.26 - 23.07.26** | NFC-Tags Track&Trace; Use-Case-Darstellung Desktop 2/3; Grafana; Blog A2 online; Office-Tower; v1.1.10 ([sprint_26](sprints/sprint_26.md)) | **Abgeschlossen** |
 | **25** | **26.06.26 - 09.07.26** | LOM-Day Nachbereitung; Praesentationstechnik Windows-Desktops; Router/Netzwerk; OSF-UI v1.1.7 ([sprint_25](sprints/sprint_25.md)) | **Abgeschlossen** |
 | **24** | **12.06.26 - 25.06.26** | LOM-Day Vorbereitung; AI-HUB Datenerfassung (Object Detection/Tracking); Integrations-Carry-over ([sprint_24](sprints/sprint_24.md)) | **Abgeschlossen** |
 | **23** | **29.05.26 - 11.06.26** | Urlaubssprint; reduzierte Umsetzung; Hardware-/Mounting-Fokus; ORBIS-Amerika-Praesentation 01.06. ([sprint_23](sprints/sprint_23.md)) | **Abgeschlossen** |
@@ -68,7 +69,8 @@
 | 23 | 29.05 - 11.06.2026 | ORBIS-SmartFactory | Phase 5 | Urlaubssprint (Urlaub 04.06–12.06); ORBIS-Amerika-Praesentation (Christen, Adjud) am 01.06.2026; Hardware-Fokus (DC/DC- und Router-Mount-Prototypen) |
 | 24 | 12.06 - 25.06.2026 | ORBIS-SmartFactory | Phase 5 | LOM-Day Vorbereitung; AI-HUB Kooperation (Dr. Abdul) fuer Object Detection/Tracking; OD-Sessions aufgenommen und bereitgestellt; Praesentationsvideo V1 (OBS Hero+2) erstellt |
 | 25 | 26.06 - 09.07.2026 | ORBIS-SmartFactory | Phase 5 | LOM-Day (26.06); Praesentationstechnik Windows-Desktops; Router/Netzwerk; OSF-UI v1.1.7 RPi-Deploy |
-| 26 | 10.07 - 23.07.2026 | ORBIS-SmartFactory | Phase 5 | Probelauf Präsentation (14.–15.07.); Blog A2 Review (16.07., Publish 20.–24.07.); Kundentermin Musashi (14.08.); Fokus NFC-Tags, Use-Case-Darstellung, Grafana |
+| 26 | 10.07 - 23.07.2026 | ORBIS-SmartFactory | Phase 5 | Probelauf Präsentation (14.–15.07.); Blog A2 veröffentlicht (23.07., [Track und Trace in der Fertigung](https://www.orbis-group.com/de-de/blog/branchen/manufacturing/track-und-trace-in-der-fertigung/)); Office-Tower 3D-Druck; OSF-UI v1.1.10; NFC B-soft Live-Test |
+| 27 | 24.07 - 06.08.2026 | ORBIS-SmartFactory | Phase 5 | Fokus Grafana-Dashboard-Analyse & Track&Trace; Kundentermin Musashi (14.08.); Hochschulkooperation Magdeburg (geplant); Carry-over Netzwerk/FTS/Blog A3–A4 |
 
 > **Spalten-Erläuterung:**  
 > - **ORBIS-Projekt:** Interne Projektzuordnung für Abrechnung (ORBIS-Modellfabrik bzw. ORBIS-SmartFactory).  
@@ -87,12 +89,13 @@
 - **01.06.2026:** ORBIS-Amerika-Mitarbeiter (Christen, Adjud) — OSF-Praesentation
 - **26.06.2026:** LOM-Day — Vorstellung der OSF
 - **19.06.2026:** **Blog A1** — [Skalierbare Smart Factory](https://www.orbis-group.com/de-de/blog/branchen/manufacturing/skalierbare-smart-factory/) (veröffentlicht)
-- **16.07.2026:** **Blog A2** Review (Track & Trace); Veröffentlichung geplant **20.–24.07.2026**
+- **23.07.2026:** **Blog A2** — [Track und Trace in der Fertigung](https://www.orbis-group.com/de-de/blog/branchen/manufacturing/track-und-trace-in-der-fertigung/) (veröffentlicht)
+- **geplant:** Hochschulkooperation **Kshitiz Bohara** (Uni Magdeburg) — GenAI / Agentic AI (SmartFactory, MES, DSP); mögl. Use Case: semantische Analyse Track-&-Trace-/Qualitätsereignisse; ORBIS-interne Abstimmung nach Kennenlernen noch offen → [sprint_27.md](sprints/sprint_27.md)
 - **14.08.2026:** Kunde **Musashi** — OSF-Kundentermin (Router/Netzwerk + Windows-Desktop-Praesentation; verschoben von 14.07.)
 
 ## 📚 Weitere Dokumentation
 - [Roadmap & Entwicklungsphasen](01-strategy/roadmap.md)
-- [Sprint-Dokumentation](sprints/) – [sprint_26.md](sprints/sprint_26.md) (aktuell)
+- [Sprint-Dokumentation](sprints/) – [sprint_27.md](sprints/sprint_27.md) (aktuell)
 - [Decision Records](03-decision-records/)
 - [Architektur](02-architecture/)
 - [HowTos & Guides](04-howto/)
