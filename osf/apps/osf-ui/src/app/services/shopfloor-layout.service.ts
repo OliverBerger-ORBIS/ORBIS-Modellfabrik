@@ -4,6 +4,7 @@ import { Observable, catchError, from, map, of, shareReplay, switchMap, tap } fr
 import { getAssetPath } from '../assets/detail-asset-map';
 import type { ShopfloorLayoutConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
 import { ShopfloorMappingService } from './shopfloor-mapping.service';
+import { VERSION } from '../../environments/version';
 
 export interface ShopfloorLayoutSnapshot {
   config: ShopfloorLayoutConfig | null;
@@ -36,7 +37,8 @@ export class ShopfloorLayoutService {
   }
 
   private loadLayout(): Observable<ShopfloorLayoutSnapshot> {
-    const url = getAssetPath('shopfloor/shopfloor_layout.json');
+    // Cache-bust: RPi nginx previously set max-age ~10y on application/json → stale layout without fts[].
+    const url = `${getAssetPath('shopfloor/shopfloor_layout.json')}?v=${encodeURIComponent(VERSION.full)}`;
     return this.http.get<ShopfloorLayoutConfig>(url).pipe(
       switchMap((config) =>
         from(sha256Hex(JSON.stringify(config))).pipe(

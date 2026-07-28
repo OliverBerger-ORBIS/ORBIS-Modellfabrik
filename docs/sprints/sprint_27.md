@@ -39,6 +39,7 @@
 ### Shopfloor / Message Monitor
 
 - [x] **Module/AGV-Filter an Layout-Registry (28.07.2026):** Message-Monitor Dropdown aus `shopfloor_layout` (Serial→Typ); FTS als **AGV-1/AGV-2** + FTS-Langname; Live ohne `HBW-DEMO`/`*-MISSING`; case-insensitive Serial-Lookup. Verifikation: localhost Live + RPi Hard-Reload.
+- [x] **Layout-Cache-Bust (28.07.2026):** RPi zeigte keine FTS trotz Layout mit `fts[]` — nginx `application/json` max-age ~10y. Fix: nginx epoch + `shopfloor_layout.json?v=<VERSION>` (v1.1.12).
 
 ### Router / Netzwerk-Setup
 
