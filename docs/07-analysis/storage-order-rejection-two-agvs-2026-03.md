@@ -182,7 +182,7 @@ Falls die Fehlerquelle nicht behoben werden kann: CCU könnte bei `type === 'UNK
 
 ### Befund 1: UNKNOWN ist Normalzustand in der Annahmestation (Vergleich storage-white)
 
-**storage-white_20260303_075954.log:** Der typische Ablauf:
+**storage-white_20260303_075954.log** *(Datei gelöscht 28.07.2026; historischer Vergleich aus damaliger Analyse):* Der typische Ablauf:
 
 | Zeit | DPS State | Aktion |
 |------|-----------|--------|

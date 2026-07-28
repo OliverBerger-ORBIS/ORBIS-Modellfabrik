@@ -1,7 +1,7 @@
 # Track & Trace Live Demo – Inhaltliche Korrekturen (Arbeitsdokument)
 
-**Status:** temporär · **Datum:** 21.07.2026 · **Sprint:** [26](../sprints/sprint_26.md)  
-**Löschen:** nach Abarbeitung der Sprint-Tasks (A1/C1/B1, ggf. B3) bzw. Sprint-Closeout
+**Status:** temporär · **Datum:** 21.07.2026 (Update 28.07.2026) · **Sprint:** [27](../sprints/sprint_27.md)  
+**Löschen:** nach Abarbeitung der Sprint-Tasks (A1/C1/B1, Sensor-Matrix, ggf. B3) bzw. Sprint-Closeout
 
 **Arbeitsmodus:** HomeOffice / **Replay** ausreichend — Feldbetrieb nicht nötig. Verifikation mit Session-Replay + Track&Trace Live Demo (bzw. Fixture-Presets `track-trace-*`).
 
@@ -17,9 +17,62 @@ Nach erfolgreichem NFC B-soft-Test und Live-Demo-UX:
 
 ---
 
+## Replay-Befund (28.07.2026)
+
+### Session-Eignung
+
+| Session | Bewertung |
+|---------|-----------|
+| `mixed-pw-pr-sw-pb-sr-sb_20260303_092241.log` | Zu komplex für Erstanalyse (Multi-Farbe, parallele Orders) — Fremd-Events in Weiß-Historie, doppelter Produktionsauftrag-Header |
+| `storage-white` + `production-white` (`20260303`) | **gelöscht 28.07.** — ersetzt durch `*-storage-production_20260728_*` |
+| `object-detection/od_white_1` | Nur STORAGE live; Capture unvollständig (kein PRODUCTION) |
+| **`white|red|blue-storage-production_20260728_*.log`** | **Referenz OK** für A1: je 1× STORAGE + 1× PRODUCTION, Sensorik vollständig |
+| **`production-wr-*` / `production-wb-*`** | Parallel-Production **ohne** Storage — ausreichend für Multi-AGV-/Parallel-Attribution, nachdem Multi-Order an den drei Referenzen verifiziert ist |
+
+### Kernbefund Live/Replay: Events ok, Production-Klammer fehlt
+
+**Beobachtung:** Im Track&Trace Live Demo werden Shopfloor-Events dem richtigen Werkstück zugeordnet. Es fehlt aber die Business-Überschrift / Auftragskontext-Karte **Production**.
+
+**Warum Events trotzdem am Werkstück hängen:** FTS `load[].loadId` = NFC/`workpieceId`. Darauf baut `WorkpieceHistoryService` die Historie.
+
+**Warum Production-Request oft ohne `workpieceId` startet:** OSF sendet Production farbbasiert (`type` + `orderType: PRODUCTION`, ohne `workpieceId`) — siehe `osf/libs/business` `requestProduction`. Das ist der Startzustand.
+
+**CCU-Verhalten (in den neuen Sessions gemessen):**
+
+| Phase | `workpieceId` |
+|-------|----------------|
+| STORAGE request/active/response | sofort gesetzt (z. B. White `2b2c6dd469a47a`) |
+| PRODUCTION request + erste active/response | **fehlt** |
+| PRODUCTION active ab ~HBW-PICK (~1 min später) | **gesetzt** — gleiche ID wie Storage |
+
+→ Die NFC-Identität geht **nicht verloren**; CCU bindet sie nachträglich an die Production-Order. Für die fehlende UI-Klammer ist das aber **nicht** die Ursache.
+
+**Root Cause der fehlenden Production-Klammer (A1):**
+
+1. Historie wird mit erstem FTS-`orderId` angelegt → meist **STORAGE**.
+2. `generateOrderContext(..., ftsOrderId, ...)` filtert auf **genau diese eine** Order-UUID.
+3. Spätere Updates patchen nur Daten in `existingHistory.orders`, rufen **keinen** Rebuild mit der neuen PRODUCTION-UUID.
+4. UI (`groupEventsByOrder`) sucht Header in `history.orders` → ohne PRODUCTION-Eintrag keine Production-Klammer, obwohl Events `orderType: PRODUCTION` tragen können.
+
+Relevant: `workpiece-history.service.ts` (`generateOrderContext`, `updateWorkpieceHistory` Order-Patch, `refreshAllOrderContexts` nutzt `orders[0]`).
+
+### Konkrete UI-Abweichungen (mixed-pw, Weiß `04798eca341290`)
+
+1. **Produktionsauftrag 2×** mit gleicher Order-UUID — pro Werkstück nur ein PRODUCTION-Block.
+2. **Bohrstation 2×** — sehr wahrscheinlich FTS-Synthese („via AGV“) vs. Modul-Events (ggf. plus Fremd-Werkstück in Mixed-Session).
+3. **DPS dann MILL** mit wechselnden Order-UUID-Präfixen — Fremdaufträge in der Historie / falsche Zuordnung.
+4. **AIQS erst am Schluss** — Timeline durch Vermischung unplausibel.
+
+### Storage-only (historisch `storage-white`; heute `*-storage-production_20260728_*`)
+
+- Shopfloor-Events **logisch** (DPS → HBW).
+- **Sensor-Spalte leer:** Trigger-Matrix STORAGE erwartet DPS **PICK** / HBW **DROP**, real sind DPS **DROP** / HBW **PICK**.
+- Nice-to-have: DPS-Meldung mit Farbe + NFC (nicht Blocker).
+---
+
 ## Root Causes (Kurz)
 
-### 1) Nur Lagerauftrag
+### 1) Nur Lagerauftrag / doppelter Order-Header
 
 | Ursache | Ort |
 |--------|-----|
@@ -45,6 +98,12 @@ UI heute: `getEventPrimaryActor` = Station, `getEventTransportContext` = optiona
 - Flache `history.events`: chronologisch sortiert.
 - UI: `groupEventsBySubOrder` sortiert Gruppen nach **numerischem Sub-Order-Suffix**, nicht nach `min(timestamp)`.
 - `subOrderId`-Vergabe FTS vs. Modul kann **zwei Gruppen** für einen Stationsbesuch erzeugen.
+
+### 4) Sensor-Matrix STORAGE (28.07.)
+
+- `shouldCaptureEnvironmentSnapshot` in `workpiece-history.service.ts`: STORAGE → DPS PICK / HBW DROP.
+- Realer Storage-Ablauf: DPS DROP / HBW PICK → keine Snapshots an den sichtbaren Events.
+- Session `storage-white` (historisch) hatte zudem nur BME680+LDR; die `20260728`-Referenzen enthalten volles Arduino-Set — Matrix-Mismatch bleibt (S1).
 
 ---
 
@@ -76,16 +135,26 @@ UI heute: `getEventPrimaryActor` = Station, `getEventTransportContext` = optiona
 | C2 | Flat timeline, Station nur Label | optional später |
 | C4 | Einheitliche `subOrderId` pro Stationsbesuch | mit B3 |
 
+### (d) Sensor-Matrix
+
+| Opt | Idee | Empf. |
+|-----|------|-------|
+| **S1** | STORAGE: Snapshot an **DPS DROP** + **HBW PICK**; Unit-Test-Matrix anpassen | **ja** |
+| S2 | Nice-to-have DPS Farbe/NFC in Event-Zeile | optional später |
+
 ---
 
 ## Umsetzungsplan (bei Implementierungs-Auftrag)
 
+**Vorbereitung:** drei Referenz-Sessions Storage→Production gleiches Werkstück (W/R/B) aufnehmen.
+
 **Phase 1 (Replay / HomeOffice):**
 
-1. **A1** – Multi-Order-Rebuild in `WorkpieceHistoryService`
+1. **A1** – Multi-Order-Rebuild in `WorkpieceHistoryService` — **erledigt 28.07.2026**
 2. **C1** – Sort in `groupEventsBySubOrder` (TrackTraceComponent)
 3. **B1** – `eventSource` setzen + UI-Badge (EN i18n)
-4. Unit-Tests + Replay-Verifikation (Session mit STORAGE→PRODUCTION, AIQS/MILL)
+4. **S1** – Sensor-Matrix STORAGE korrigieren + Tests
+5. Unit-Tests + Replay-Verifikation (neue Referenz-Sessions)
 
 **Phase 2 (separater Task, höheres Risiko):**
 
@@ -97,7 +166,7 @@ UI heute: `getEventPrimaryActor` = Station, `getEventTransportContext` = optiona
 
 ## Relevante Dateien
 
-- `osf/apps/osf-ui/src/app/services/workpiece-history.service.ts`
+- `osf/apps/osf-ui/src/app/services/workpiece-history.service.ts` (`shouldCaptureEnvironmentSnapshot`, Multi-Order)
 - `osf/apps/osf-ui/src/app/components/track-trace/track-trace.component.ts` / `.html`
 - Fixtures: `osf/libs/testing-fixtures` Presets `track-trace-*`
 - Architektur: [DR-13](../03-decision-records/13-track-trace-architecture.md)
@@ -106,7 +175,8 @@ UI heute: `getEventPrimaryActor` = Station, `getEventTransportContext` = optiona
 
 ## Abnahmekriterien (Phase 1)
 
-- [ ] Auftragskontext zeigt STORAGE **und** PRODUCTION, wenn beide Order-IDs in der Historie vorkommen
+- [x] Auftragskontext zeigt STORAGE **und** PRODUCTION, wenn beide Order-IDs in der Historie vorkommen *(A1 Code 28.07.2026; Live/Replay-Check noch ausstehend)*
 - [ ] Event-Zeile zeigt Publisher (FTS vs. Modul/Device)
 - [ ] Bei überlappenden Sub-Order-Timestamps an einer Station erscheint die Liste zeitlich korrekt (früheres Event weiter oben), nicht „ganzer Block A vor Block B“
-- [ ] Verifizierbar im **Replay**-Modus ohne Shopfloor
+- [ ] Storage: Umwelt-Snapshot an DPS DROP und HBW PICK (wenn Sensor-Topics im Replay vorhanden)
+- [ ] Verifizierbar im **Replay**-Modus ohne Shopfloor (idealerweise neue W/R/B-Referenz-Sessions)

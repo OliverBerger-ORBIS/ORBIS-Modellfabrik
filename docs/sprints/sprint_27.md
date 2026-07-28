@@ -29,8 +29,12 @@
 
 ### Track&Trace *(Fokus)*
 
-- [ ] **Track&Trace Live Demo Inhalt (Multi-Order / Publisher / Zeitstrahl):** Auftragskontext STORAGE+PRODUCTION; Event-Publisher (FTS vs. Modul); Sub-Order-Gruppen nach Timestamp statt nur Sub-Order-Nr. Phase 1: A1+C1+B1; Phase 2 optional: FTS-Stations-Synthese abschalten (B3). Arbeitsdoku [track-trace-live-content-fix-2026-07.md](../07-analysis/track-trace-live-content-fix-2026-07.md). **HomeOffice/Replay** ausreichend. *(21.07.2026, Feldbefund; Ursprung: Sprint 26)*
+- [x] **Track&Trace A1 Multi-Order (28.07.2026):** `WorkpieceHistoryService` rebuildet Auftragskontexte aus **allen** Event-Order-UUIDs → STORAGE **und** PRODUCTION als Business-Klammern. Unit-Tests grün. Verifikation: Replay `*-storage-production_20260728_*.log` + Live Demo (Hard-Reload).
+- [ ] **Track&Trace Live Demo Inhalt (Rest Phase 1: B1+C1, optional B3):** Event-Publisher (FTS vs. Modul); Sub-Order-Gruppen nach Timestamp. Arbeitsdoku [track-trace-live-content-fix-2026-07.md](../07-analysis/track-trace-live-content-fix-2026-07.md).
+- [ ] **Sensor-Matrix STORAGE korrigieren:** Umwelt-Snapshots an realen Storage-Events **DPS DROP** + **HBW PICK** (heute fälschlich DPS PICK / HBW DROP). Optional nice-to-have: DPS-Event mit Farbe + NFC-Lesung. *(28.07.2026, Replay-Befund)*
+- [x] **Replay-Referenz-Sessions aufgenommen (28.07.2026):** `white|red|blue-storage-production_20260728_*.log`. Alte Single-Color-`20260303`-Paare **gelöscht** (28.07.). Parallel-Production (`production-wr-*`) ohne Storage in derselben Session ausreichend für Multi-AGV-Herausforderungen, sobald Multi-Order an den drei Referenzen steht.
 - *Hinweis Demo: Capture läuft in Live/Replay nach MQTT-Connect auch ohne offenen Tab; Header-Refresh leert die Historie — dazwischen nicht unnötig refreshen.*
+- *Replay-Hinweis (28.07.): `mixed-pw-…` zu komplex für Erstanalyse; `od_white_1` unvollständig (nur STORAGE). Details in Arbeitsdoku.*
 
 ### Router / Netzwerk-Setup
 
@@ -39,7 +43,7 @@
 
 ### ORBIS Feldbetrieb / Hardware
 
-- [ ] **Kontrolle FTS Nr. 2 (Folgeprüfungen):** Weiterer Diagnose nach RoboPro-Schnittstellen-Test — Befund bisher **Kabelbruch oder Motor defekt**. *(23.07.2026; Ursprung: Sprint 26; TXT-Projekte lokal unter `integrations/`)*
+- [ ] **Kontrolle FTS Nr. 2 (Folgeprüfungen):** RoboPro-Schnittstellen-Test (23.07.) → Multimeter-Test **27.07.2026**: **Encoder-Motor defekt** (nicht Kabelbruch). Nächster Schritt: **Ersatzteile oder Reparatur**, Rücksprache bei **fischertechnik**. *(Ursprung: Sprint 26; TXT-Projekte lokal unter `integrations/`)*
 
 ### Integration & Tests
 
@@ -67,4 +71,4 @@
 
 ---
 
-*Stand: 23.07.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 28.07.2026 (nachmittag)* · Doku-Workflow: [sprints_README.md](sprints_README.md)

@@ -12,7 +12,7 @@
 | Quelle | Referenz | Verwendung |
 |--------|----------|------------|
 | `scripts/replay-sessions.ts` | `start-osf_20260303_075408.log` | Beispiel in Kommentar, `--help` Output |
-| `scripts/README-replay.md` | `start-osf_20260303_075408.log`, `production-white_20260303_081127.log` | Beispiele in allen Szenarien |
+| `scripts/README-replay.md` | `start-osf_20260303_075408.log`, `*-storage-production_20260728_*.log` | Beispiele in allen Szenarien |
 | `docs/04-howto/session-log-analyse.md` | `start-osf_20260303_075408.log` (Replay), `auftrag-blau_1.log` (Analyse) | Beispiel für Replay bzw. Analyse-Scripts |
 
 ### 1.2 Analysis-Metadaten (Output der Analyse-Scripts)
@@ -43,11 +43,10 @@ Die Mock-Fixtures in `osf/libs/testing-fixtures` und `osf/testing/fixtures/` lad
 
 ### 2.1 Aktuell im Repo (`data/osf-data/sessions/`)
 
-**Neue Sessions (03.03.2026, Default):**
+**Neue Sessions (03.03.2026, Default; Stand Inventar siehe `INVENTORY.md`):**
 - `start-osf_20260303_075408.log` – frischer Connect, alle retained Topics
-- `storage-white_20260303_075954.log`, `storage-red_20260303_080428.log`, `storage-blue_20260303_080705.log`
-- `production-white_20260303_081127.log`, `production-red_20260303_081525.log`, `production-blue_20260303_090705.log`
-- `production-blue-part1_20260303_082030.log`, `production-blue-part2_20260303_090117.log`
+- ~~`storage-{white,red,blue}_20260303_*.log` / `production-{white,red,blue}_20260303_*.log`~~ — **gelöscht 28.07.2026**, ersetzt durch `white|red|blue-storage-production_20260728_*.log`
+- `production-blue-part1_20260303_082030.log`, `production-blue-part2_20260303_090117.log` (falls noch vorhanden)
 - `mixed-pw-pr-sw-pb-sr-sb_20260303_092241.log`, `mixed-sw-pw-sw-pwnok-pw_20260303_093559.log`
 - `storage-red234_20260303_094003.log`, `vibration-sw420_20260303_094240.log`
 

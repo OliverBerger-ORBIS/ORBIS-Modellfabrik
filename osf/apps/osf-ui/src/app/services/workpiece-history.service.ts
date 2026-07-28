@@ -539,18 +539,7 @@ export class WorkpieceHistoryService implements OnDestroy {
     let hasChanges = false;
 
     for (const [, history] of historyMap) {
-      const orderId =
-        history.orders?.[0]?.orderId ??
-        history.events?.[0]?.orderId ??
-        (history.events?.length ? history.events[history.events.length - 1]?.orderId : undefined);
-      if (!orderId) continue;
-
-      const newOrders = this.generateOrderContext(
-        history.workpieceType,
-        orders,
-        orderId,
-        history.events
-      );
+      const newOrders = this.rebuildOrderContexts(history, orders);
       if (JSON.stringify(history.orders ?? []) !== JSON.stringify(newOrders)) {
         history.orders = newOrders;
         hasChanges = true;
@@ -614,7 +603,7 @@ export class WorkpieceHistoryService implements OnDestroy {
           events: [],
           currentLocation: state.lastNodeId,
           currentState: 'IN_TRANSPORT',
-          orders: this.generateOrderContext(loadItem.loadType, normalizedOrders, state.orderId, []),
+          orders: this.generateOrderContext(loadItem.loadType, normalizedOrders, state.orderId ? [state.orderId] : [], []),
         };
 
         // Determine order type based on location
@@ -764,30 +753,14 @@ export class WorkpieceHistoryService implements OnDestroy {
 
         existingHistory.currentLocation = state.lastNodeId;
         existingHistory.currentState = state.driving ? 'IN_TRANSPORT' : 'STATIONARY';
-        
-        // Update order context with extracted dates from events
-        if (existingHistory.orders && existingHistory.orders.length > 0) {
-          const orderType = this.determineOrderType(state.lastNodeId, existingHistory.events);
-          const extractedDates = this.extractDatesFromEvents(existingHistory.events, orderType);
-          
-          existingHistory.orders = existingHistory.orders.map(order => {
-            if (order.orderType === 'STORAGE') {
-              return {
-                ...order,
-                deliveryDate: extractedDates.deliveryDate || order.deliveryDate,
-                storageDate: extractedDates.storageDate || order.storageDate,
-              };
-            } else if (order.orderType === 'PRODUCTION') {
-              return {
-                ...order,
-                productionStartDate: extractedDates.productionStartDate || order.productionStartDate,
-                deliveryEndDate: extractedDates.deliveryEndDate || order.deliveryEndDate,
-              };
-            }
-            return order;
-          });
-        }
-        
+
+        // A1: rebuild STORAGE + PRODUCTION contexts from all distinct orderIds on this workpiece
+        existingHistory.orders = this.rebuildOrderContexts(
+          existingHistory,
+          normalizedOrders,
+          state.orderId
+        );
+
         historyMap.set(loadItem.loadId, existingHistory);
       }
     });
@@ -959,6 +932,16 @@ export class WorkpieceHistoryService implements OnDestroy {
       
       return 0;
     });
+
+    // A1: keep Production order context when module events carry a new orderId
+    const normalizedOrders = orders && typeof orders === 'object' && 'active' in orders
+      ? (orders as { active: Record<string, any>; completed: Record<string, any> })
+      : { active: (orders as any) || {}, completed: {} };
+    matchingHistory.orders = this.rebuildOrderContexts(
+      matchingHistory,
+      normalizedOrders,
+      moduleState.orderId
+    );
 
     historyMap.set(matchingWorkpieceId, matchingHistory);
     this.getStore(environmentKey).next(historyMap);
@@ -1297,19 +1280,64 @@ export class WorkpieceHistoryService implements OnDestroy {
   }
 
   /**
-   * Generate order context from active orders
+   * A1: Collect all distinct CCU/FTS orderIds for a workpiece and rebuild STORAGE + PRODUCTION contexts.
+   * Preserves previously resolved ERP/correlation fields per orderId when rebuilding.
+   */
+  private rebuildOrderContexts(
+    history: WorkpieceHistory,
+    orders: { active: Record<string, any>; completed: Record<string, any> } | unknown,
+    extraOrderId?: string
+  ): OrderContext[] {
+    const orderIds = new Set<string>();
+    for (const event of history.events ?? []) {
+      if (event.orderId) {
+        orderIds.add(event.orderId);
+      }
+    }
+    for (const order of history.orders ?? []) {
+      if (order.orderId) {
+        orderIds.add(order.orderId);
+      }
+    }
+    if (extraOrderId) {
+      orderIds.add(extraOrderId);
+    }
+
+    return this.generateOrderContext(
+      history.workpieceType,
+      orders,
+      [...orderIds],
+      history.events,
+      history.orders
+    );
+  }
+
+  /**
+   * Generate order context from active/completed CCU orders.
    * @param workpieceType - Workpiece type (BLUE, WHITE, RED)
    * @param orders - Orders object with active and completed orders
-   * @param ftsOrderId - Order ID from FTS state (real UUID from backend, not generated!)
+   * @param orderIds - One or more real backend order UUIDs (from FTS/module events)
    * @param events - Optional events array to extract date information
+   * @param previousContexts - Optional prior contexts to preserve ERP/correlation fields
    */
   private generateOrderContext(
     workpieceType: string,
     orders: { active: Record<string, any>; completed: Record<string, any> } | unknown,
-    ftsOrderId?: string,
-    events?: TrackTraceEvent[]
+    orderIds?: string | string[],
+    events?: TrackTraceEvent[],
+    previousContexts?: OrderContext[]
   ): OrderContext[] {
     const contexts: OrderContext[] = [];
+    const requestedIds = (Array.isArray(orderIds) ? orderIds : orderIds ? [orderIds] : [])
+      .map((id) => String(id).trim())
+      .filter((id) => id.length > 0);
+    const requestedIdSet = new Set(requestedIds);
+    const previousById = new Map((previousContexts ?? []).map((ctx) => [ctx.orderId, ctx]));
+
+    // Without concrete backend order UUIDs we must not invent contexts from the full CCU map
+    if (requestedIdSet.size === 0) {
+      return [];
+    }
 
     // Normalize orders parameter
     const normalizedOrders = orders && typeof orders === 'object' && 'active' in orders
@@ -1334,22 +1362,23 @@ export class WorkpieceHistoryService implements OnDestroy {
 
     // Combine active and completed orders for lookup
     const allOrders = { ...normalizedOrders.active, ...normalizedOrders.completed };
-    const activeOrdersArray = Object.values(normalizedOrders.active);
     const allOrdersArray = Object.values(allOrders);
+    const matchedIds = new Set<string>();
 
-    // Try to extract order info from orders if available
-    // Match orders by orderId - prefer FTS orderId if provided
+    // Match CCU orders by real backend UUID(s)
     if (allOrdersArray.length > 0) {
       for (const order of allOrdersArray) {
         if (order && typeof order === 'object' && 'orderId' in order && 'orderType' in order) {
           const orderType = String(order.orderType).toUpperCase();
           const orderId = String(order.orderId);
 
-          // If ftsOrderId is provided, only process matching orders
-          // This ensures we use the real UUID from FTS state
-          if (ftsOrderId && orderId !== ftsOrderId) {
-            continue; // Skip orders that don't match the FTS orderId
+          // A1: only include explicitly requested backend order UUIDs
+          if (!requestedIdSet.has(orderId)) {
+            continue;
           }
+          matchedIds.add(orderId);
+
+          const previous = previousById.get(orderId);
           
           // Extract ERP IDs if available (for fake ERP integration)
           const purchaseOrderId = 'purchaseOrderId' in order ? String(order.purchaseOrderId) : undefined;
@@ -1377,67 +1406,102 @@ export class WorkpieceHistoryService implements OnDestroy {
               ? 'COMPLETED'
               : 'ACTIVE';
 
-          // Extract date information from events if available
-          const extractedDates = events ? this.extractDatesFromEvents(events, orderType as 'STORAGE' | 'PRODUCTION') : {};
+          // Extract date information from events belonging to this order when possible
+          const eventsForOrder = (events ?? []).filter((event) => !event.orderId || event.orderId === orderId);
+          const extractedDates = this.extractDatesFromEvents(
+            eventsForOrder.length > 0 ? eventsForOrder : (events ?? []),
+            orderType as 'STORAGE' | 'PRODUCTION'
+          );
 
           if (orderType === 'STORAGE') {
             // Primary: CorrelationInfoService (dsp/correlation/info from DSP)
-            // Fallback: ErpOrderDataService (transition period until DSP sends correlation)
+            // Fallback: previous context, then ErpOrderDataService
             const correlationInfo = this.correlationInfoService.getCorrelationInfo(orderId);
             const fromCorrelation = correlationInfo?.orderType === 'PURCHASE' ? correlationInfo : null;
             const workpieceTypeUpper = workpieceType.toUpperCase() as 'BLUE' | 'WHITE' | 'RED';
-            const erpPurchaseData = fromCorrelation
-              ? null
-              : this.erpOrderDataService.popPurchaseOrderForWorkpieceType(workpieceTypeUpper);
+            const erpPurchaseData =
+              fromCorrelation || previous?.purchaseOrderId
+                ? null
+                : this.erpOrderDataService.popPurchaseOrderForWorkpieceType(workpieceTypeUpper);
 
             contexts.push({
               orderId,
               orderType: 'STORAGE',
               purchaseOrderId:
                 purchaseOrderId ||
+                previous?.purchaseOrderId ||
                 fromCorrelation?.purchaseOrderId ||
                 erpPurchaseData?.purchaseOrderId ||
                 generatePurchaseOrderId(),
-              supplierId: fromCorrelation?.supplierId ?? erpPurchaseData?.supplierId ?? generateSupplierId(),
-              orderDate: fromCorrelation?.orderDate ?? erpPurchaseData?.orderDate ?? orderDate,
-              rawMaterialOrderDate: fromCorrelation?.orderDate ?? erpPurchaseData?.orderDate,
-              deliveryDate: extractedDates.deliveryDate ?? fromCorrelation?.plannedDeliveryDate,
-              storageDate: extractedDates.storageDate,
-              fromLocation,
-              toLocation,
-              startTime: 'startedAt' in order ? String(order.startedAt) : undefined,
-              endTime: 'stoppedAt' in order ? String(order.stoppedAt) : undefined,
+              supplierId:
+                previous?.supplierId ??
+                fromCorrelation?.supplierId ??
+                erpPurchaseData?.supplierId ??
+                generateSupplierId(),
+              orderDate:
+                previous?.orderDate ??
+                fromCorrelation?.orderDate ??
+                erpPurchaseData?.orderDate ??
+                orderDate,
+              rawMaterialOrderDate:
+                previous?.rawMaterialOrderDate ??
+                fromCorrelation?.orderDate ??
+                erpPurchaseData?.orderDate,
+              deliveryDate: extractedDates.deliveryDate ?? previous?.deliveryDate ?? fromCorrelation?.plannedDeliveryDate,
+              storageDate: extractedDates.storageDate ?? previous?.storageDate,
+              fromLocation: fromLocation ?? previous?.fromLocation,
+              toLocation: toLocation ?? previous?.toLocation,
+              startTime: 'startedAt' in order ? String(order.startedAt) : previous?.startTime,
+              endTime: 'stoppedAt' in order ? String(order.stoppedAt) : previous?.endTime,
               status: orderStatus,
               plannedStationChain: this.getPlannedStationChain(workpieceType, 'STORAGE'),
             });
           } else if (orderType === 'PRODUCTION') {
             // Primary: CorrelationInfoService (dsp/correlation/info from DSP)
-            // Fallback: ErpOrderDataService (transition period until DSP sends correlation)
+            // Fallback: previous context, then ErpOrderDataService
             const correlationInfo = this.correlationInfoService.getCorrelationInfo(orderId);
             const fromCorrelation = correlationInfo?.orderType === 'CUSTOMER' ? correlationInfo : null;
-            const erpCustomerData = fromCorrelation ? null : this.erpOrderDataService.popCustomerOrder();
+            const erpCustomerData =
+              fromCorrelation || previous?.customerOrderId
+                ? null
+                : this.erpOrderDataService.popCustomerOrder();
 
             contexts.push({
               orderId,
               orderType: 'PRODUCTION',
               customerOrderId:
                 customerOrderId ||
+                previous?.customerOrderId ||
                 fromCorrelation?.customerOrderId ||
                 erpCustomerData?.customerOrderId ||
                 generateCustomerOrderId(),
-              customerId: fromCorrelation?.customerId ?? erpCustomerData?.customerId ?? generateCustomerId(),
-              orderDate: fromCorrelation?.orderDate ?? erpCustomerData?.orderDate ?? orderDate,
-              customerOrderDate: fromCorrelation?.orderDate ?? erpCustomerData?.orderDate,
+              customerId:
+                previous?.customerId ??
+                fromCorrelation?.customerId ??
+                erpCustomerData?.customerId ??
+                generateCustomerId(),
+              orderDate:
+                previous?.orderDate ??
+                fromCorrelation?.orderDate ??
+                erpCustomerData?.orderDate ??
+                orderDate,
+              customerOrderDate:
+                previous?.customerOrderDate ??
+                fromCorrelation?.orderDate ??
+                erpCustomerData?.orderDate,
               productionStartDate:
-                extractedDates.productionStartDate ?? ('startedAt' in order ? String(order.startedAt) : undefined),
+                extractedDates.productionStartDate ??
+                previous?.productionStartDate ??
+                ('startedAt' in order ? String(order.startedAt) : undefined),
               deliveryEndDate:
                 extractedDates.deliveryEndDate ??
+                previous?.deliveryEndDate ??
                 fromCorrelation?.plannedDeliveryDate ??
                 ('stoppedAt' in order ? String(order.stoppedAt) : undefined),
-              fromLocation,
-              toLocation,
-              startTime: 'startedAt' in order ? String(order.startedAt) : undefined,
-              endTime: 'stoppedAt' in order ? String(order.stoppedAt) : undefined,
+              fromLocation: fromLocation ?? previous?.fromLocation,
+              toLocation: toLocation ?? previous?.toLocation,
+              startTime: 'startedAt' in order ? String(order.startedAt) : previous?.startTime,
+              endTime: 'stoppedAt' in order ? String(order.stoppedAt) : previous?.endTime,
               status: orderStatus,
               plannedStationChain: this.getPlannedStationChain(workpieceType, 'PRODUCTION'),
             });
@@ -1446,52 +1510,70 @@ export class WorkpieceHistoryService implements OnDestroy {
       }
     }
 
-    // If no orders found, but we have an FTS orderId, create context with real orderId
-    // This ensures we always use the real UUID from the backend, not generated IDs
-    if (contexts.length === 0 && ftsOrderId) {
-      const now = new Date();
-      const oneHourAgo = new Date(now.getTime() - 3600000);
+    // For requested IDs not yet matched in CCU maps, keep previous context or create a typed shell
+    for (const orderId of requestedIds) {
+      if (matchedIds.has(orderId)) {
+        continue;
+      }
+      const previous = previousById.get(orderId);
+      if (previous) {
+        contexts.push({ ...previous });
+        continue;
+      }
 
-      // Primary: CorrelationInfoService | Fallback: ErpOrderDataService
-      const correlationInfo = this.correlationInfoService.getCorrelationInfo(ftsOrderId);
-      const fromCorrStorage = correlationInfo?.orderType === 'PURCHASE' ? correlationInfo : null;
-      const fromCorrProduction = correlationInfo?.orderType === 'CUSTOMER' ? correlationInfo : null;
-      const workpieceTypeUpper = workpieceType.toUpperCase() as 'BLUE' | 'WHITE' | 'RED';
-      const erpPurchaseData = fromCorrStorage ? null : this.erpOrderDataService.popPurchaseOrderForWorkpieceType(workpieceTypeUpper);
-      const erpCustomerData = fromCorrProduction ? null : this.erpOrderDataService.popCustomerOrder();
+      const eventsForOrder = (events ?? []).filter((event) => event.orderId === orderId);
+      const lastEvent = eventsForOrder[eventsForOrder.length - 1];
+      const inferredType =
+        eventsForOrder.find((event) => event.orderType === 'STORAGE' || event.orderType === 'PRODUCTION')
+          ?.orderType ??
+        (lastEvent?.location
+          ? this.determineOrderType(lastEvent.location, eventsForOrder)
+          : 'STORAGE');
 
-      return [
-        {
-          orderId: ftsOrderId,
-          orderType: 'STORAGE',
-          purchaseOrderId:
-            fromCorrStorage?.purchaseOrderId ?? erpPurchaseData?.purchaseOrderId ?? generatePurchaseOrderId(),
-          supplierId: fromCorrStorage?.supplierId ?? erpPurchaseData?.supplierId ?? generateSupplierId(),
-          orderDate: fromCorrStorage?.orderDate ?? erpPurchaseData?.orderDate ?? utcIsoTimestampMs(oneHourAgo),
-          startTime: utcIsoTimestampMs(oneHourAgo),
-          plannedStationChain: this.getPlannedStationChain(workpieceType, 'STORAGE'),
-        },
-        {
-          orderId: ftsOrderId,
+      if (inferredType === 'PRODUCTION') {
+        contexts.push({
+          orderId,
           orderType: 'PRODUCTION',
-          customerOrderId:
-            fromCorrProduction?.customerOrderId ?? erpCustomerData?.customerOrderId ?? generateCustomerOrderId(),
-          customerId: fromCorrProduction?.customerId ?? erpCustomerData?.customerId ?? generateCustomerId(),
-          orderDate: fromCorrProduction?.orderDate ?? erpCustomerData?.orderDate ?? utcIsoTimestampMs(now),
-          startTime: utcIsoTimestampMs(now),
+          customerOrderId: generateCustomerOrderId(),
+          customerId: generateCustomerId(),
+          orderDate: utcIsoTimestampMs(),
+          startTime: utcIsoTimestampMs(),
           plannedStationChain: this.getPlannedStationChain(workpieceType, 'PRODUCTION'),
-        },
-      ];
+        });
+      } else {
+        contexts.push({
+          orderId,
+          orderType: 'STORAGE',
+          purchaseOrderId: generatePurchaseOrderId(),
+          supplierId: generateSupplierId(),
+          orderDate: utcIsoTimestampMs(),
+          startTime: utcIsoTimestampMs(),
+          plannedStationChain: this.getPlannedStationChain(workpieceType, 'STORAGE'),
+        });
+      }
     }
 
-    // If no orders found and no FTS orderId, return empty array
-    // This should not happen in normal operation, but prevents generating fake orderIds
+    // If nothing requested and nothing matched, do not invent fake dual shells with one UUID
     if (contexts.length === 0) {
-      console.warn('[WorkpieceHistoryService] No orders found and no FTS orderId available. Cannot generate order context.');
+      console.warn('[WorkpieceHistoryService] No orders found for requested IDs. Cannot generate order context.', {
+        requestedIds,
+      });
       return [];
     }
 
-    return contexts;
+    // Stable demo order: STORAGE first, then PRODUCTION; within type by start/order date
+    const typeRank = (orderType: string): number =>
+      orderType.toUpperCase() === 'STORAGE' ? 0 : orderType.toUpperCase() === 'PRODUCTION' ? 1 : 2;
+
+    return contexts.sort((a, b) => {
+      const rankDiff = typeRank(a.orderType) - typeRank(b.orderType);
+      if (rankDiff !== 0) {
+        return rankDiff;
+      }
+      const aTime = Date.parse(a.startTime || a.orderDate || '') || 0;
+      const bTime = Date.parse(b.startTime || b.orderDate || '') || 0;
+      return aTime - bTime;
+    });
   }
 
   /**

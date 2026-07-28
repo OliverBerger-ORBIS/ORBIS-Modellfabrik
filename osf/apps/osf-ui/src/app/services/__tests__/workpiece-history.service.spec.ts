@@ -613,4 +613,113 @@ describe('WorkpieceHistoryService', () => {
       expect(svc.resolveModuleWorkpieceType(moduleState, resolved!)).toBe('WHITE');
     });
   });
+
+  describe('A1 Multi-Order context rebuild', () => {
+    it('builds STORAGE and PRODUCTION contexts from distinct event orderIds', () => {
+      const servicePrivate = service as unknown as {
+        generateOrderContext: (
+          workpieceType: string,
+          orders: { active: Record<string, unknown>; completed: Record<string, unknown> },
+          orderIds?: string | string[],
+          events?: TrackTraceEvent[],
+          previousContexts?: OrderContext[]
+        ) => OrderContext[];
+      };
+
+      const storageId = 'storage-uuid-1';
+      const productionId = 'production-uuid-2';
+      const orders = {
+        active: {
+          [productionId]: {
+            orderId: productionId,
+            orderType: 'PRODUCTION',
+            state: 'ENQUEUED',
+            startedAt: '2026-07-28T08:00:00Z',
+            productionSteps: [{ id: 's1', source: 'HBW', target: 'DPS', type: 'NAVIGATION' }],
+          },
+        },
+        completed: {
+          [storageId]: {
+            orderId: storageId,
+            orderType: 'STORAGE',
+            state: 'FINISHED',
+            startedAt: '2026-07-28T07:50:00Z',
+            productionSteps: [{ id: 's0', source: 'DPS', target: 'HBW', type: 'NAVIGATION' }],
+          },
+        },
+      };
+
+      const events: TrackTraceEvent[] = [
+        {
+          timestamp: '2026-07-28T07:50:10Z',
+          eventType: 'DROP',
+          location: 'SVR4H73275',
+          orderId: storageId,
+          orderType: 'STORAGE',
+        },
+        {
+          timestamp: '2026-07-28T08:01:00Z',
+          eventType: 'PICK',
+          location: 'SVR3QA0022',
+          orderId: productionId,
+          orderType: 'PRODUCTION',
+        },
+      ];
+
+      const contexts = servicePrivate.generateOrderContext(
+        'WHITE',
+        orders,
+        [storageId, productionId],
+        events
+      );
+
+      expect(contexts.map((c) => c.orderType)).toEqual(['STORAGE', 'PRODUCTION']);
+      expect(contexts.map((c) => c.orderId)).toEqual([storageId, productionId]);
+    });
+
+    it('preserves previous ERP fields when rebuilding the same orderId', () => {
+      const servicePrivate = service as unknown as {
+        generateOrderContext: (
+          workpieceType: string,
+          orders: { active: Record<string, unknown>; completed: Record<string, unknown> },
+          orderIds?: string | string[],
+          events?: TrackTraceEvent[],
+          previousContexts?: OrderContext[]
+        ) => OrderContext[];
+      };
+
+      const productionId = 'production-uuid-keep';
+      const orders = {
+        active: {
+          [productionId]: {
+            orderId: productionId,
+            orderType: 'PRODUCTION',
+            state: 'ENQUEUED',
+            startedAt: '2026-07-28T08:00:00Z',
+          },
+        },
+        completed: {},
+      };
+      const previous: OrderContext[] = [
+        {
+          orderId: productionId,
+          orderType: 'PRODUCTION',
+          customerOrderId: 'ERP-CO-KEEP',
+          customerId: 'CUST-KEEP',
+        },
+      ];
+
+      const contexts = servicePrivate.generateOrderContext(
+        'WHITE',
+        orders,
+        [productionId],
+        [],
+        previous
+      );
+
+      expect(contexts).toHaveLength(1);
+      expect(contexts[0].customerOrderId).toBe('ERP-CO-KEEP');
+      expect(contexts[0].customerId).toBe('CUST-KEEP');
+    });
+  });
 });

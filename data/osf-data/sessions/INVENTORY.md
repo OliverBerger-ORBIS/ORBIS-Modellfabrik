@@ -35,8 +35,9 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 | agv-1-mixed_20260312_133313 | | ✓ | ✓ | ✓ | 1 | Prod+Storage, AGV-1 |
 | agv-2-mixed_20260312_134156 | | ✓ | ✓ | ✓ | 2 | Prod+Storage, beide AGVs |
 | agv-2-mixed_20260312_164447 | | ✓ | ✓ | ✓ | 2 | Prod+Storage, beide AGVs |
-| production-blue_20260303_090705 | | ✓ | | | 1 | Reine Produktion Blau |
 | production-blue-agv1-clean_20260512_105826 | | ✓ | | | 1 | Produktion BLUE mit AGV-1 (clean, no_cam); Ablauf nach Plan, Quality-Check PASSED (BOHOMIPO2) |
+| production-blue-part1_20260303_082030 | | ✓ | ✓ | ✓ | 1 | Prod Blau Teil 1 |
+| production-blue-part2_20260303_090117 | | ✓ | ✓ | ✓ | 1 | Prod Blau Teil 2 |
 | production-white-agv1-clean_20260512_112936 | | ✓ | | | 1 | Produktion WHITE mit AGV-1 (clean); AGV-2 musste den Ablaufbereich raeumen |
 | production-white-agv1-nok-clean_20260512_105322 | | ✓ | | | 1 | Produktion WHITE mit AGV-1 (clean, no_cam, ohne retained); Quality-Check FAIL (NOK/CRACK), AGV-1 danach eigenstaendig Richtung HBW |
 | production-blue-agv2-clean_20260512_113429 | | ✓ | | | 2 | Produktion BLUE mit AGV-2 (clean); AGV-1 musste Weg/Bereich raeumen |
@@ -54,11 +55,9 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 | production-wr-agv2-b-agv1-clean_20260513_135600 | | ✓ | | | 2 | ORBIS Retest (CCU osf.4): erfolgreicher Lauf nach Deploy |
 | production-wr-agv1-b-agv2-clean_20260513_140925 | | ✓ | | | 2 | ORBIS Retest (CCU osf.4): RED fail bei BLUE waitingForLoadHandling, trotzdem kein Stillstand |
 | production-wr-agv1-b-agv2-clean_20260513_142311 | | ✓ | | | 2 | ORBIS Retest (CCU osf.4): Wiederholung erfolgreich, Ablauf wie geplant |
-| production-red_20260303_081525 | | ✓ | ✓ | ✓ | 1 | Prod überwiegend, wenig Storage |
-| production-white_20260303_081127 | | ✓ | ✓ | ✓ | 1 | Prod überwiegend, wenig Storage |
-| production-blue-part1_20260303_082030 | | ✓ | ✓ | ✓ | 1 | Prod Blau Teil 1 |
-| production-blue-part2_20260303_090117 | | ✓ | ✓ | ✓ | 1 | Prod Blau Teil 2 |
-| storage-blue_20260303_080705 | | | ✓ | | 1 | Reine Einlagerung Blau |
+| white-storage-production_20260728_095332 | | ✓ | ✓ | ✓ | 1 | **T&T-Referenz:** WHITE Storage→Production, Arduino-Sensorik; A1 Multi-Order |
+| red-storage-production_20260728_095905 | | ✓ | ✓ | ✓ | 1 | **T&T-Referenz:** RED Storage→Production, Arduino-Sensorik |
+| blue-storage-production_20260728_100418 | | ✓ | ✓ | ✓ | 1 | **T&T-Referenz:** BLUE Storage→Production, Arduino-Sensorik |
 | storage-blue-agv2-clean_20260512_104111 | | | ✓ | | 2 | Storage BLUE mit AGV-2 (clean, no_cam, ohne retained); Sonderfall: AGV-2 navigierte von HBW nach DPS |
 | storage-red-agv2-clean_20260512_103526 | | | ✓ | | 2 | Storage RED mit AGV-2 (clean, no_cam, ohne retained); Sonderfall: AGV-1 verliess wegen voller Ladung CHRG und fuhr Richtung HBW |
 | storage-rwb-clean_20260512_115152 | | | ✓ | | 2 | Storage RED->WHITE->BLUE (clean) mit Stillstand nach WHITE; AGV-2 fuhr nicht zu DPS, Factory-Reset noetig |
@@ -74,8 +73,6 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 | storage-brw-clean_20260513_140201 | | | ✓ | | 2 | ORBIS Retest (CCU osf.4): Storage BLUE->RED->WHITE vor finalen Produktionslaeufen |
 | storage-rwb-clean_20260513_141546 | | | ✓ | | 2 | ORBIS Retest (CCU osf.4): Storage RED->WHITE->BLUE, danach erfolgreicher Produktionslauf |
 | storage-white-agv2-clean_20260512_103825 | | | ✓ | | 2 | Storage WHITE mit AGV-2 (clean, no_cam, ohne retained); Sonderfall: AGV-2 navigierte von HBW nach DPS |
-| storage-red_20260303_080428 | | | ✓ | | 1 | Reine Einlagerung Rot |
-| storage-white_20260303_075954 | | | ✓ | | 1 | Reine Einlagerung Weiß |
 | storage-red234_20260303_094003 | | ✓ | ✓ | ✓ | 1 | Storage überwiegend, wenig Prod |
 | mixed-pw-pr-sw-pb-sr-sb_20260303_092241 | | ✓ | ✓ | ✓ | 1 | Gemischt: White, Red, Blue Prod+Storage |
 | mixed-sw-pw-sw-pwnok-pw_20260303_093559 | | ✓ | ✓ | ✓ | 1 | **Quality-Fail:** White prnok (CHECK_QUALITY FAILED), Ersatzauftrag |
@@ -126,7 +123,7 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 
 | Session | Ablauf | Eignung |
 |---------|--------|---------|
-| **production-blue** | Reine Produktion Blau: DRILL→MILL→AIQS→DPS. Ein AGV. | Ideal für Production-Only-Analyse |
+| **white|red|blue-storage-production_20260728_*** | Je Farbe: Storage→Production in einer Session, Arduino-Sensorik. | **T&T-Referenz** Multi-Order (A1) und Sensor-Spalte |
 | **production-blue-agv1-clean_20260512_105826** | Produktion BLUE mit AGV-1 als Primär-Transport (clean/no_cam), Sensor-Topics enthalten. Quality-Check erfolgreich (`PASSED`, Klassifikation `BOHOMIPO2`), Ablauf laut Feldbeobachtung nach Plan. | Sehr gut als reproduzierbare BLUE-Production-Basis (Happy Path) |
 | **production-white-agv1-clean_20260512_112936** | Produktion WHITE mit AGV-1 (clean/no_cam). Feldhinweis: AGV-2 musste den Ablaufbereich freigeben. | Gut als WHITE-Happy-Path mit dokumentierter Verkehrsinteraktion |
 | **production-white-agv1-nok-clean_20260512_105322** | Produktion WHITE mit AGV-1 als Primär-Transport (clean/no retained), Sensor-Topics enthalten. Quality-Check schlug fehl (`CHECK_QUALITY`, Ergebnis `FAILED`, Klassifikation `CRACK`); danach AGV-1 laut Feldbeobachtung autonom Richtung HBW. | Sehr gut für reproduzierbaren NOK-/Quality-Fail-Ablauf in WHITE-Produktion |
@@ -144,15 +141,13 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 | **production-wr-agv2-b-agv1-clean_20260513_135600** | Erster Verifikationslauf nach Deploy CCU `1.3.0-osf.4`, Ablauf ohne manuellen Eingriff. | Erster Feldnachweis fuer osf.4 |
 | **production-wr-agv1-b-agv2-clean_20260513_140925 / 142311** | Zwei Verifikationslaeufe unter CCU `1.3.0-osf.4`; auch im Fall RED-NOK mit BLUE `waitingForLoadHandling` lief der Prozess ohne Hanger bis DPS weiter. | Starker Hinweis, dass die osf.4-Isolation des RED-Fail-Pfads den Seiteneffekt auf parallele BLUE-Produktion entfernt |
 | **orbis-fulltopics-baseline_20260409_082701** | Full-Topic-Aufnahme (Kamera, Arduino-Sensorik, retained States) mit kurzem Produktionsimpuls; zwei AGVs in den FTS-Topics. | Gut als technische Baseline fuer Track&Trace-/UI-Tests mit maximalem Topic-Spektrum |
-| **production-red** | Produktion Rot überwiegend, minimal Storage. | Prod-fokussiert |
-| **production-white** | Produktion Weiß überwiegend, minimal Storage. | Prod-fokussiert |
+| **production-wr-*** / **production-wb-*** | Parallel-Production (nur PRODUCTION-Requests). | Parallel-Attribution / Multi-AGV — Storage nicht nötig, wenn Multi-Order schon an `*-storage-production_20260728_*` verifiziert |
 | **production-blue-part1/2** | Produktion Blau in zwei Phasen. | Längere Prod-Sequenz |
 
 ### Storage (ein AGV)
 
 | Session | Ablauf | Eignung |
 |---------|--------|---------|
-| **storage-blue** | Reine Einlagerung Blau. HBW→DPS. | Ideal für Storage-Only |
 | **storage-blue-agv2-clean_20260512_104111** | Storage BLUE mit AGV-2 als Primär-Transport (clean/no retained), Sensor-Topics enthalten. Nebenereignis: AGV-2 navigierte im Ablauf von HBW nach DPS. | Gut für reproduzierbare Storage-Basis mit dokumentiertem AGV-Navigationspfad (HBW→DPS) |
 | **storage-red-agv2-clean_20260512_103526** | Storage RED mit AGV-2 als Primär-Transport (clean/no retained), Sensor-Topics enthalten. Nebenereignis: AGV-1 verließ CHRG bei voller Ladung und erhielt Fahrtauftrag Richtung HBW. | Gut für reproduzierbare Storage-Basis mit dokumentiertem AGV-Nebenpfad |
 | **storage-rwb-clean_20260512_115152** | Storage RED->WHITE->BLUE (clean). Nach WHITE trat Stillstand auf: AGV-2 fuhr nicht zu DPS; Supervisor-Kommandos wirkungslos, erst Factory-Reset half. | Sehr gut fuer Reproduktion/Analyse des Storage-Stillstands nach WHITE |
@@ -162,8 +157,6 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 | **storage-wbr-clean_20260513_120633 / storage-bwr-clean_20260513_122833 / storage-rbw-clean_20260513_124250** | Drei vorbereitende Storage-Laeufe fuer WR+B-Retests unter CCU `1.3.0-osf.3`. | Gut fuer Vergleichbarkeit der Ausgangslage vor osf.3-Problem-/Vergleichslaeufen |
 | **storage-bwr-clean_20260513_134800 / storage-brw-clean_20260513_140201 / storage-rwb-clean_20260513_141546** | Vorbereitungsserie fuer Verifikation unter CCU `1.3.0-osf.4`, jeweils mit anschliessenden erfolgreichen Produktionslaeufen. | Stuetze fuer osf.4-Verifikationskette (Storage->Production ohne manuellen Recovery) |
 | **storage-white-agv2-clean_20260512_103825** | Storage WHITE mit AGV-2 als Primär-Transport (clean/no retained), Sensor-Topics enthalten. Nebenereignis: AGV-2 navigierte im Ablauf von HBW nach DPS. | Gut für reproduzierbare Storage-Basis mit dokumentiertem AGV-Navigationspfad (HBW→DPS) |
-| **storage-red** | Reine Einlagerung Rot. | Storage-Only |
-| **storage-white** | Reine Einlagerung Weiß. | Storage-Only |
 | **calibrate_dps** | DPS-Kalibrierung, Storage-Orders. | Speziell DPS/Calibration |
 | **two-agvs** | Beide AGVs, vorwiegend Storage (3 Orders). | Zwei-AGV Storage, wenig Last |
 | **two-agvs_20260401_081603** | Zwei-AGV-Storage-Lauf mit Full-Topic-Aufnahme (inkl. Kamera) und sichtbaren Storage-Orders. | Gut als Storage-Referenz mit vollem Topic-Volumen |
@@ -217,4 +210,4 @@ Ergaenzende Feldbeobachtung zu WR+B-Serien: Unter CCU `1.3.0-osf.3` trat der bek
 
 ---
 
-*Stand: 2026-05-13. Bei neuen Sessions: Ablauf kurz beschreiben, in Schnellübersicht einordnen, Besonderheiten (Stillstand, ccu/set/park, etc.) vermerken.*
+*Stand: 2026-07-28. Bei neuen Sessions: Ablauf kurz beschreiben, in Schnellübersicht einordnen, Besonderheiten (Stillstand, ccu/set/park, etc.) vermerken. Gelöscht 28.07.: Single-Color `storage|production-{white,red,blue}_20260303_*` (ersetzt durch `*-storage-production_20260728_*`).*
