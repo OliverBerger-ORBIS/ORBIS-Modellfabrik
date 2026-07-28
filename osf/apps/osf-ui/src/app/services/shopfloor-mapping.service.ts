@@ -141,16 +141,37 @@ export class ShopfloorMappingService {
     return this.initialized;
   }
 
+  /**
+   * Resolve layout map key for a serial (exact match, then case-insensitive).
+   * MQTT / brokers sometimes alter casing (e.g. `5iO4` vs `5IO4`).
+   */
+  private resolveSerialKey(serialNumber: string): string | null {
+    if (!serialNumber) {
+      return null;
+    }
+    if (this.serialToModule.has(serialNumber)) {
+      return serialNumber;
+    }
+    const lower = serialNumber.toLowerCase();
+    for (const key of this.serialToModule.keys()) {
+      if (key.toLowerCase() === lower) {
+        return key;
+      }
+    }
+    return null;
+  }
+
   getModuleBySerial(serialNumber: string): ModuleInfo | null {
-    return this.serialToModule.get(serialNumber) ?? null;
+    const key = this.resolveSerialKey(serialNumber);
+    return key ? (this.serialToModule.get(key) ?? null) : null;
   }
 
   getModuleTypeFromSerial(serialNumber: string): string | null {
-    return this.serialToModule.get(serialNumber)?.moduleType ?? null;
+    return this.getModuleBySerial(serialNumber)?.moduleType ?? null;
   }
 
   getCellIdFromSerial(serialNumber: string): string | null {
-    return this.serialToModule.get(serialNumber)?.cellId ?? null;
+    return this.getModuleBySerial(serialNumber)?.cellId ?? null;
   }
 
   /** Resolve hardware serial from layout cell id (e.g. CELL_1_3 → SVR4H73275). */
@@ -195,6 +216,10 @@ export class ShopfloorMappingService {
   }
 
   getModuleIcon(serialNumber: string): string | null {
+    const module = this.getModuleBySerial(serialNumber);
+    if (module?.icon) {
+      return module.icon;
+    }
     const cell = this.getCellBySerial(serialNumber);
     return cell?.icon ?? null;
   }
@@ -216,7 +241,10 @@ export class ShopfloorMappingService {
 
   /** Display label for AGV by serial (e.g. AGV-1, AGV-2) */
   getAgvLabel(serial: string): string | null {
-    const fts = this.ftsConfig.find((f) => f.serial === serial);
+    const canonical = this.resolveSerialKey(serial) ?? serial;
+    const fts = this.ftsConfig.find(
+      (f) => f.serial === canonical || f.serial?.toLowerCase() === serial.toLowerCase()
+    );
     return fts?.label ?? null;
   }
 
@@ -226,7 +254,8 @@ export class ShopfloorMappingService {
    */
   getAgvColor(serial: string): string {
     const opts = this.getAgvOptions();
-    const idx = opts.findIndex((o) => o.serial === serial);
+    const lower = serial.toLowerCase();
+    const idx = opts.findIndex((o) => o.serial === serial || o.serial.toLowerCase() === lower);
     if (idx === 0) {
       return ORBIS_COLORS.agv.agv1;
     }

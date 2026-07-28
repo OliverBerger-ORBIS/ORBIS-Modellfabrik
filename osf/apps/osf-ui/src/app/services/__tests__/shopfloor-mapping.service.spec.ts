@@ -105,6 +105,11 @@ describe('ShopfloorMappingService', () => {
       expect(service.getModuleTypeFromSerial('SVR001')).toBe('DRILL');
     });
 
+    it('should resolve serial case-insensitively', () => {
+      expect(service.getModuleTypeFromSerial('svr001')).toBe('DRILL');
+      expect(service.getModuleBySerial('svr001')?.serialNumber).toBe('SVR001');
+    });
+
     it('should return cell ID from serial', () => {
       expect(service.getCellIdFromSerial('SVR001')).toBe('cell-drill');
     });
@@ -298,6 +303,8 @@ describe('ShopfloorMappingService', () => {
 
       expect(service.getAgvColor('5iO4')).toBe(ORBIS_COLORS.agv.agv1);
       expect(service.getAgvColor('leJ4')).toBe(ORBIS_COLORS.agv.agv2);
+      expect(service.getAgvLabel('5IO4')).toBe('AGV-1');
+      expect(service.getAgvColor('5IO4')).toBe(ORBIS_COLORS.agv.agv1);
       // Serial not listed in fts[] → no label / grey (not treated as a configured AGV)
       expect(service.getAgvLabel('unknown-fts-serial')).toBeNull();
       expect(service.getAgvColor('unknown-fts-serial')).toBe(ORBIS_COLORS.orbisGrey.medium);

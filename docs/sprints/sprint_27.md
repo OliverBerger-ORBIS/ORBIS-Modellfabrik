@@ -36,6 +36,10 @@
 - *Hinweis Demo: Capture läuft in Live/Replay nach MQTT-Connect auch ohne offenen Tab; Header-Refresh leert die Historie — dazwischen nicht unnötig refreshen.*
 - *Replay-Hinweis (28.07.): `mixed-pw-…` zu komplex für Erstanalyse; `od_white_1` unvollständig (nur STORAGE). Details in Arbeitsdoku.*
 
+### Shopfloor / Message Monitor
+
+- [x] **Module/AGV-Filter an Layout-Registry (28.07.2026):** Message-Monitor Dropdown aus `shopfloor_layout` (Serial→Typ); FTS als **AGV-1/AGV-2** + FTS-Langname; Live ohne `HBW-DEMO`/`*-MISSING`; case-insensitive Serial-Lookup. Verifikation: localhost Live + RPi Hard-Reload.
+
 ### Router / Netzwerk-Setup
 
 - [ ] **Netzwerk-Topologie/Verkabelung (Rest):** ORBIS-LAN-Adressliste + MES-Pfad mit Netzwerk-Kollegen (**nur mit ORBIS-VPN testbar**); Omada Admin-URL/Modell; ggf. HTML neu exportieren. *(Ursprung: Sprint 26)*

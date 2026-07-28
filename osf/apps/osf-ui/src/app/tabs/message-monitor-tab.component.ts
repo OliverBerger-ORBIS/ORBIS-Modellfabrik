@@ -4,19 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { MessageMonitorService, MonitoredMessage } from '../services/message-monitor.service';
 import { EnvironmentService } from '../services/environment.service';
 import { ModuleNameService } from '../services/module-name.service';
+import { ShopfloorLayoutService } from '../services/shopfloor-layout.service';
 import { ShopfloorMappingService } from '../services/shopfloor-mapping.service';
 import { resolveLegacyShopfloorPath } from '../shared/icons/legacy-shopfloor-map';
 import { ICONS } from '../shared/icons/icon.registry';
 import { BehaviorSubject, combineLatest, interval, Subscription } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { filter, map, startWith } from 'rxjs/operators';
 import hljs from 'highlight.js';
-
-interface TopicInfo {
-  topic: string;
-  messageCount: number;
-  lastTimestamp: string;
-  valid: boolean;
-}
 
 interface ModuleInfo {
   serial: string;
@@ -30,6 +24,14 @@ type StatusFilter = 'all' | 'connection' | 'state' | 'factsheet';
 const CCU_ICON = 'assets/svg/ui/heading-ccu.svg';
 const TXT_ICON = 'assets/svg/shopfloor/stations/mixer.svg';
 const DSP_ICON = ICONS.brand.dsp;
+const FTS_ICON = resolveLegacyShopfloorPath('assets/svg/shopfloor/shared/agv-vehicle.svg');
+const DEFAULT_MODULE_ICON = resolveLegacyShopfloorPath('assets/svg/shopfloor/stations/dps-station.svg');
+
+/** CCU placeholders / demo serials — not shown in Live module filter. */
+function isPlaceholderOrDemoSerial(serial: string): boolean {
+  const upper = serial.toUpperCase();
+  return upper.endsWith('-MISSING') || upper.endsWith('-DEMO');
+}
 
 @Component({
   standalone: true,
@@ -42,43 +44,46 @@ const DSP_ICON = ICONS.brand.dsp;
 export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewChecked {
   private readonly subscriptions = new Subscription();
   private readonly refreshTrigger = new BehaviorSubject<number>(0);
-  
+
   @ViewChild('jsonCodeBlock', { static: false }) jsonCodeBlock?: ElementRef<HTMLElement>;
   private shouldHighlight = false;
 
   // Observable state - get all messages from all topics, sorted newest first
   readonly messages$ = combineLatest([
     this.refreshTrigger,
-    interval(1000).pipe(startWith(0))
-  ]).pipe(
-    map(() => this.getAllMessages())
-  );
+    interval(1000).pipe(startWith(0)),
+  ]).pipe(map(() => this.getAllMessages()));
 
   // UI state
   selectedMessage: MonitoredMessage | null = null;
-  
+
   // Filter state
   filterText = '';
   filterTopicType: TopicTypeFilter = 'all';
   filterModule = '';
   filterStatus: StatusFilter = 'all';
-  
-  // Available modules/FTS for dropdown (extracted from topics)
+
+  /** Module/AGV filter options — layout registry (Live); + topic extras in Mock/Replay */
   availableModules: ModuleInfo[] = [];
-  
+
   readonly monitorHeadingIcon = 'assets/svg/ui/heading-message-monitor.svg';
-  
+
   private readonly STORAGE_KEY = 'OSF.message-monitor.filters';
 
   constructor(
     private readonly messageMonitor: MessageMonitorService,
     private readonly environmentService: EnvironmentService,
     private readonly moduleNameService: ModuleNameService,
-    private readonly mappingService: ShopfloorMappingService
+    private readonly mappingService: ShopfloorMappingService,
+    private readonly layoutService: ShopfloorLayoutService
   ) {}
 
   get isMockMode(): boolean {
     return this.environmentService.current.key === 'mock';
+  }
+
+  get isLiveEnvironment(): boolean {
+    return this.environmentService.current.key === 'live';
   }
 
   get environmentLabel(): string {
@@ -86,18 +91,22 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
   }
 
   ngOnInit(): void {
-    // Load persisted filter settings
     this.loadFilterSettings();
-    
-    // Extract available modules/FTS from topics
+
     this.updateAvailableModules();
-    
-    // Trigger initial refresh
+    this.subscriptions.add(
+      this.layoutService.config$
+        .pipe(filter((config): config is NonNullable<typeof config> => config !== null))
+        .subscribe(() => {
+          this.updateAvailableModules();
+          this.refreshTrigger.next(Date.now());
+        })
+    );
+
     this.refreshTrigger.next(Date.now());
   }
 
   ngOnDestroy(): void {
-    // Save filter settings when leaving tab
     this.saveFilterSettings();
     this.subscriptions.unsubscribe();
   }
@@ -105,20 +114,16 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
   getAllMessages(): MonitoredMessage[] {
     const allTopics = this.messageMonitor.getTopics();
     const allMessages: MonitoredMessage[] = [];
-    
-    // Collect all messages from all topics
-    allTopics.forEach(topic => {
+
+    allTopics.forEach((topic) => {
       const history = this.messageMonitor.getHistory(topic);
       allMessages.push(...history);
     });
-    
-    // Update available modules/FTS when topics change
+
     this.updateAvailableModules();
-    
-    // Filter messages
-    const filtered = allMessages.filter(msg => this.filterMessage(msg));
-    
-    // Sort by timestamp, newest first (as per new requirement "Die Neuste zuoberst")
+
+    const filtered = allMessages.filter((msg) => this.filterMessage(msg));
+
     return filtered.sort((a, b) => {
       if (!a.timestamp) return 1;
       if (!b.timestamp) return -1;
@@ -127,7 +132,6 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
   }
 
   filterMessage(message: MonitoredMessage): boolean {
-    // Topic type filter (All Topics, CCU, DSP, Module/FTS topics)
     if (this.filterTopicType === 'ccu') {
       if (!message.topic.startsWith('ccu/')) {
         return false;
@@ -137,7 +141,6 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
         return false;
       }
     } else if (this.filterTopicType === 'module-fts') {
-      // Filter for module/* and fts/* topics (with or without /v1/)
       const isModuleTopic = message.topic.startsWith('module/');
       const isFtsTopic = message.topic.startsWith('fts/');
       if (!isModuleTopic && !isFtsTopic) {
@@ -148,24 +151,18 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
         return false;
       }
     }
-    // 'all' shows everything, no filter needed
 
-    // Module/FTS filter (only when Topic Type is Module/FTS)
     if (this.filterTopicType === 'module-fts' && this.filterModule) {
-      // Special case: "AGV" filter shows all fts/* topics
+      // Legacy: "AGV" filter shows all fts/* topics (localStorage)
       if (this.filterModule === 'AGV') {
         if (!message.topic.startsWith('fts/')) {
           return false;
         }
-      } else {
-        // Filter by module serial (for module topics)
-      if (!message.topic.includes(this.filterModule)) {
+      } else if (!message.topic.includes(this.filterModule)) {
         return false;
-        }
       }
     }
 
-    // Status filter (only when Topic Type is Module/FTS)
     if (this.filterTopicType === 'module-fts' && this.filterStatus !== 'all') {
       if (this.filterStatus === 'connection' && !message.topic.includes('/connection')) {
         return false;
@@ -178,7 +175,6 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
       }
     }
 
-    // Text filter (always applies)
     if (this.filterText && !message.topic.toLowerCase().includes(this.filterText.toLowerCase())) {
       return false;
     }
@@ -223,7 +219,6 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
   }
 
   onTopicTypeChange(): void {
-    // Reset module filter when switching topic type
     if (this.filterTopicType !== 'module-fts') {
       this.filterModule = '';
     }
@@ -234,57 +229,147 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
     this.refreshTrigger.next(Date.now());
   }
 
+  /**
+   * Build Module/AGV dropdown from shopfloor layout registry.
+   * Live: layout serials only (no HBW-DEMO / *-MISSING).
+   * Mock/Replay: layout + non-placeholder topic serials not already listed.
+   */
   updateAvailableModules(): void {
+    const seen = new Set<string>();
+    const moduleList: ModuleInfo[] = [];
+
+    if (this.mappingService.isInitialized()) {
+      const bySerial = new Map(
+        this.mappingService.getAllModules().map((m) => [m.serialNumber, m])
+      );
+      for (const serial of this.mappingService.getShopfloorTableRowSerialOrder()) {
+        const module = bySerial.get(serial);
+        if (!module || seen.has(serial) || isPlaceholderOrDemoSerial(serial)) {
+          continue;
+        }
+        moduleList.push(this.toFilterModuleInfo(module.serialNumber, module.moduleType));
+        seen.add(serial);
+        seen.add(serial.toLowerCase());
+      }
+      for (const module of bySerial.values()) {
+        if (seen.has(module.serialNumber) || isPlaceholderOrDemoSerial(module.serialNumber)) {
+          continue;
+        }
+        moduleList.push(this.toFilterModuleInfo(module.serialNumber, module.moduleType));
+        seen.add(module.serialNumber);
+        seen.add(module.serialNumber.toLowerCase());
+      }
+    }
+
+    if (!this.isLiveEnvironment) {
+      for (const serial of this.extractSerialsFromTopics()) {
+        if (isPlaceholderOrDemoSerial(serial)) {
+          continue;
+        }
+        const mapped = this.mappingService.getModuleBySerial(serial);
+        const canonical = mapped?.serialNumber ?? serial;
+        if (
+          seen.has(canonical) ||
+          seen.has(canonical.toLowerCase()) ||
+          seen.has(serial.toLowerCase())
+        ) {
+          continue;
+        }
+        const moduleType =
+          mapped?.moduleType ?? this.mappingService.getModuleTypeFromSerial(serial) ?? serial;
+        moduleList.push(this.toFilterModuleInfo(canonical, moduleType));
+        seen.add(canonical);
+        seen.add(canonical.toLowerCase());
+      }
+    }
+
+    if (!this.mappingService.isInitialized()) {
+      for (const serial of this.extractSerialsFromTopics()) {
+        if (isPlaceholderOrDemoSerial(serial) || seen.has(serial.toLowerCase())) {
+          continue;
+        }
+        moduleList.push(this.toFilterModuleInfo(serial, serial));
+        seen.add(serial);
+        seen.add(serial.toLowerCase());
+      }
+    }
+
+    moduleList.sort((a, b) => a.name.localeCompare(b.name));
+    this.availableModules = moduleList;
+
+    if (
+      this.filterModule &&
+      this.filterModule !== 'AGV' &&
+      !moduleList.some((m) => m.serial === this.filterModule)
+    ) {
+      this.filterModule = '';
+    }
+  }
+
+  private toFilterModuleInfo(serial: string, moduleType: string): ModuleInfo {
+    const isFts =
+      moduleType === 'FTS' || this.mappingService.getModuleTypeFromSerial(serial) === 'FTS';
+    let name: string;
+    if (isFts) {
+      const agvLabel = this.mappingService.getAgvLabel(serial);
+      const ftsFull = this.moduleNameService.getModuleFullName('FTS');
+      name = agvLabel
+        ? `${agvLabel} (${ftsFull})`
+        : this.moduleNameService.getModuleDisplayText('FTS', 'id-full');
+    } else {
+      name = this.moduleNameService.getModuleDisplayText(moduleType, 'id-full');
+    }
+    // Layout stores icon keys (e.g. "FTS"); img src needs asset paths
+    const mappedIcon = this.mappingService.getModuleIcon(serial);
+    const icon =
+      mappedIcon && mappedIcon.includes('/')
+        ? mappedIcon
+        : isFts
+          ? FTS_ICON
+          : DEFAULT_MODULE_ICON;
+    return { serial, name, icon };
+  }
+
+  private extractSerialsFromTopics(): string[] {
     const allTopics = this.messageMonitor.getTopics();
     const moduleSerials = new Set<string>();
-    let hasFtsTopics = false;
+    const topicSuffixes = new Set([
+      'status',
+      'connection',
+      'factsheet',
+      'state',
+      'order',
+      'instantAction',
+    ]);
 
-    // Known topic suffixes that should NOT be treated as module serials
-    const topicSuffixes = new Set(['status', 'connection', 'factsheet', 'state', 'order', 'instantAction']);
-
-    // Extract module/FTS serials from topics
-    allTopics.forEach(topic => {
-      // Module topics: module/* (with or without /v1/)
+    allTopics.forEach((topic) => {
       if (topic.startsWith('module/')) {
         const parts = topic.split('/');
-        // Check for NodeRed pattern: module/v1/ff/NodeRed/<serial>/...
         if (parts.length >= 5 && parts[3] === 'NodeRed') {
           const potentialSerial = parts[4];
-          // Only add if it's not a known topic suffix
           if (!topicSuffixes.has(potentialSerial)) {
             moduleSerials.add(potentialSerial);
           }
         } else if (parts.length >= 4 && parts[1] === 'v1' && parts[2] === 'ff') {
-          // Direct pattern: module/v1/ff/<serial>/...
           const potentialSerial = parts[3];
-          // Only add if it's not a known topic suffix
           if (!topicSuffixes.has(potentialSerial)) {
             moduleSerials.add(potentialSerial);
           }
         } else if (parts.length >= 2) {
-          // Generic pattern: module/<serial>/...
           const potentialSerial = parts[1];
-          // Only add if it's not a known topic suffix
           if (!topicSuffixes.has(potentialSerial)) {
             moduleSerials.add(potentialSerial);
           }
         }
-      }
-      // FTS topics: fts/* (with or without /v1/)
-      else if (topic.startsWith('fts/')) {
-        hasFtsTopics = true;
+      } else if (topic.startsWith('fts/')) {
         const parts = topic.split('/');
         if (parts.length >= 4 && parts[1] === 'v1' && parts[2] === 'ff') {
-          // Pattern: fts/v1/ff/<serial>/...
           const potentialSerial = parts[3];
-          // Only add if it's not a known topic suffix
           if (!topicSuffixes.has(potentialSerial)) {
             moduleSerials.add(potentialSerial);
           }
         } else if (parts.length >= 2) {
-          // Generic pattern: fts/<serial>/...
           const potentialSerial = parts[1];
-          // Only add if it's not a known topic suffix
           if (!topicSuffixes.has(potentialSerial)) {
             moduleSerials.add(potentialSerial);
           }
@@ -292,85 +377,58 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
       }
     });
 
-    // Build module info list
-    const moduleList = Array.from(moduleSerials)
-      .map((serial) => {
-        const moduleType = this.mappingService.getModuleTypeFromSerial(serial) ?? serial;
-        const displayName = this.moduleNameService.getModuleDisplayText(moduleType, 'id-full');
-        const icon = this.mappingService.getModuleIcon(serial) ?? resolveLegacyShopfloorPath('assets/svg/shopfloor/stations/dps-station.svg');
-        return { serial, name: displayName, icon };
-      })
-      .sort((a, b) => a.name.localeCompare(b.name));
-
-    // Add "AGV" option if FTS topics exist
-    if (hasFtsTopics) {
-      // Check if AGV is already in the list (by serial '5iO4')
-      const hasAgv = moduleList.some(m => m.serial === '5iO4' || m.name.toUpperCase().includes('AGV'));
-      if (!hasAgv) {
-        // Add AGV option at the beginning
-        moduleList.unshift({
-          serial: 'AGV',
-          name: this.moduleNameService.getModuleDisplayText('FTS', 'id-full'),
-          icon: resolveLegacyShopfloorPath('assets/svg/shopfloor/shared/agv-vehicle.svg')
-        });
-      }
-    }
-
-    this.availableModules = moduleList;
+    return Array.from(moduleSerials);
   }
 
   getTopicName(topic: string): { name: string; icon: string } {
-    // CCU topics
     if (topic.startsWith('ccu/')) {
       return { name: 'CCU', icon: CCU_ICON };
     }
 
-    // DSP topics (use DSP icon)
     if (topic.startsWith('dsp/')) {
       return { name: 'DSP', icon: DSP_ICON };
     }
 
-    // TXT topics
     if (topic.startsWith('/j1/txt/')) {
       return { name: 'TXT', icon: TXT_ICON };
     }
 
-    // Module topics: extract serial and get module info
     if (topic.startsWith('module/v1/ff/')) {
       const parts = topic.split('/');
       let serial: string | undefined;
-      
-      // Check for NodeRed pattern: module/v1/ff/NodeRed/<serial>/...
+
       if (parts.length >= 5 && parts[3] === 'NodeRed') {
         serial = parts[4];
       } else if (parts.length >= 4) {
-        // Direct pattern: module/v1/ff/<serial>/...
         serial = parts[3];
       }
 
       if (serial) {
         const moduleType = this.mappingService.getModuleTypeFromSerial(serial) ?? serial;
         const displayName = this.moduleNameService.getModuleDisplayText(moduleType, 'id-only');
-        const icon = this.mappingService.getModuleIcon(serial) ?? resolveLegacyShopfloorPath('assets/svg/shopfloor/stations/dps-station.svg');
+        const mappedIcon = this.mappingService.getModuleIcon(serial);
+        const icon =
+          mappedIcon && mappedIcon.includes('/') ? mappedIcon : DEFAULT_MODULE_ICON;
         return { name: displayName, icon };
       }
     }
 
-    // FTS topics: fts/v1/ff/<serial>/...
+    // FTS topics — prefer AGV-1 / AGV-2 when layout known
     if (topic.startsWith('fts/v1/ff/')) {
       const parts = topic.split('/');
       if (parts.length >= 4) {
         const serial = parts[3];
-        const moduleType = this.mappingService.getModuleTypeFromSerial(serial) ?? 'FTS';
-        const displayName = this.moduleNameService.getModuleDisplayText(moduleType, 'id-only');
-        const icon = this.mappingService.getModuleIcon(serial) ?? resolveLegacyShopfloorPath('assets/svg/shopfloor/shared/agv-vehicle.svg');
+        const agvLabel = this.mappingService.getAgvLabel(serial);
+        const displayName =
+          agvLabel ?? this.moduleNameService.getModuleDisplayText('FTS', 'id-only');
+        const mappedIcon = this.mappingService.getModuleIcon(serial);
+        const icon = mappedIcon && mappedIcon.includes('/') ? mappedIcon : FTS_ICON;
         return { name: displayName, icon };
       }
     }
 
-    // Default: use first element of topic path
     const firstElement = topic.split('/')[0] || topic;
-    return { name: firstElement, icon: resolveLegacyShopfloorPath('assets/svg/shopfloor/stations/dps-station.svg') };
+    return { name: firstElement, icon: DEFAULT_MODULE_ICON };
   }
 
   private loadFilterSettings(): void {
@@ -403,7 +461,11 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
   }
 
   clearAllData(): void {
-    if (confirm($localize`:@@messageMonitorClearConfirm:Are you sure you want to clear all monitored data?`)) {
+    if (
+      confirm(
+        $localize`:@@messageMonitorClearConfirm:Are you sure you want to clear all monitored data?`
+      )
+    ) {
       this.messageMonitor.clearAll();
       this.selectedMessage = null;
       this.refreshTrigger.next(Date.now());
@@ -416,7 +478,6 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
   }
 
   ngAfterViewChecked(): void {
-    // Highlight JSON when code block is rendered
     if (this.shouldHighlight && this.jsonCodeBlock) {
       hljs.highlightElement(this.jsonCodeBlock.nativeElement);
       this.shouldHighlight = false;
@@ -426,7 +487,6 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
   formatPayloadPreview(payload: unknown): string {
     try {
       const str = JSON.stringify(payload);
-      // Show first 100 characters
       return str.length > 100 ? str.substring(0, 100) + '...' : str;
     } catch {
       return String(payload);
