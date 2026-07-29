@@ -80,15 +80,18 @@ export class ModuleNameService {
 
   /**
    * Get location display text from serial ID or module ID
-   * Returns: "MODULE_TYPE (Full Name) (Serial-ID)"
-   * Handles intersections: "1" -> "1 (Intersection 1)"
+   * Returns short name + speaking name, e.g. "AIQS (AI Quality Station)", "1 (Intersection 1)"
    */
   getLocationDisplayText(location: string): { moduleType: string; fullName: string; serialNumber: string | null } {
     // Check if it's an intersection using AgvRouteService mapping
     const resolved = this.ftsRouteService.resolveNodeRef(location);
-    if (resolved && resolved.startsWith('intersection:')) {
-      // Extract intersection number from canonical form "intersection:1"
-      const intersectionNumber = resolved.replace('intersection:', '');
+    const bareIntersection =
+      /^\d+$/.test(location.trim()) ? location.trim() : null;
+    const intersectionNumber =
+      resolved && resolved.startsWith('intersection:')
+        ? resolved.replace('intersection:', '')
+        : bareIntersection;
+    if (intersectionNumber) {
       const intersectionNames: Record<string, string> = {
         '1': $localize`:@@intersection1:Intersection 1`,
         '2': $localize`:@@intersection2:Intersection 2`,

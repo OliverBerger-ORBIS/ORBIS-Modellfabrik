@@ -1,6 +1,6 @@
 # Track & Trace Live Demo – Inhaltliche Korrekturen (Arbeitsdokument)
 
-**Status:** temporär · **Datum:** 21.07.2026 (Update 28.07.2026) · **Sprint:** [27](../sprints/sprint_27.md)  
+**Status:** temporär · **Datum:** 21.07.2026 (Update 29.07.2026) · **Sprint:** [27](../sprints/sprint_27.md)  
 **Löschen:** nach Abarbeitung der Sprint-Tasks (A1/C1/B1, Sensor-Matrix, ggf. B3) bzw. Sprint-Closeout
 
 **Arbeitsmodus:** HomeOffice / **Replay** ausreichend — Feldbetrieb nicht nötig. Verifikation mit Session-Replay + Track&Trace Live Demo (bzw. Fixture-Presets `track-trace-*`).
@@ -150,15 +150,18 @@ UI heute: `getEventPrimaryActor` = Station, `getEventTransportContext` = optiona
 
 **Phase 1 (Replay / HomeOffice):**
 
-1. **A1** – Multi-Order-Rebuild in `WorkpieceHistoryService` — **erledigt 28.07.2026**
-2. **C1** – Sort in `groupEventsBySubOrder` (TrackTraceComponent)
-3. **B1** – `eventSource` setzen + UI-Badge (EN i18n)
-4. **S1** – Sensor-Matrix STORAGE korrigieren + Tests
-5. Unit-Tests + Replay-Verifikation (neue Referenz-Sessions)
+1. **A1** – Multi-Order-Rebuild — **erledigt 28.07.2026**
+2. **C1** – Gruppen nach `min(timestamp)` — **erledigt 28.07.2026**
+3. **B1** – `eventSource` + Badge — **erledigt 28.07.2026**
+4. **S1** – STORAGE-Sensor DPS DROP + HBW PICK — **erledigt 28.07.2026**
+5. **Antwort A Modul-Events** — Color/NFC + DRILL/MILL als Event-Namen + Position in HBW — **erledigt 28.07.2026**
+6. Unit-Tests + Replay-Verifikation
 
-**Phase 2 (separater Task, höheres Risiko):**
+**Phase 2 (28.07.2026 abends):**
 
-- **B3** (+ ggf. **C4**): FTS nur Transport/DOCK/TURN; Stationen nur aus Modul-MQTT
+- **B3** — FTS nur Transport/DOCK/TURN; Stationen nur Modul-MQTT
+- UI: Spalten **Station | Transport**; ein Stations-Header pro Besuch (DPS Color/NFC/DROP)
+- Order Context: max. **1× STORAGE + 1× PRODUCTION** (UUID-Shells mergen)
 
 **Nicht Teil dieses Tasks:** Persistenz (Option B bleibt Edge/Grafana, [DR-28](../03-decision-records/28-edge-persistence-stack-and-metrics-model.md)).
 
@@ -176,7 +179,10 @@ UI heute: `getEventPrimaryActor` = Station, `getEventTransportContext` = optiona
 ## Abnahmekriterien (Phase 1)
 
 - [x] Auftragskontext zeigt STORAGE **und** PRODUCTION, wenn beide Order-IDs in der Historie vorkommen *(A1 Code 28.07.2026; Live/Replay-Check noch ausstehend)*
-- [ ] Event-Zeile zeigt Publisher (FTS vs. Modul/Device)
-- [ ] Bei überlappenden Sub-Order-Timestamps an einer Station erscheint die Liste zeitlich korrekt (früheres Event weiter oben), nicht „ganzer Block A vor Block B“
-- [ ] Storage: Umwelt-Snapshot an DPS DROP und HBW PICK (wenn Sensor-Topics im Replay vorhanden)
+- [x] Event-Zeile zeigt Publisher (FTS vs. Modul/Device) *(B1 28.07.2026)*
+- [x] Bei überlappenden Sub-Order-Timestamps an einer Station erscheint die Liste zeitlich korrekt (früheres Event weiter oben), nicht „ganzer Block A vor Block B“ *(C1 28.07.2026)*
+- [x] STORAGE-Sensor-Snapshots an DPS DROP + HBW PICK *(S1 28.07.2026)*
+- [x] PRODUCTION-Sensor-Snapshots erweitert: **HBW DROP + DPS PICK** *(Phase 3, 29.07.2026)*
+- [x] Transport-Events: **Intersection N**-Label + Location-Icon; Bucket-Slot mit Farbe *(Phase 3, 29.07.2026)*
+- [x] CHECK_QUALITY: **Ergebnis-Badge** (OK/FAILED) inline im Event *(Phase 3, 29.07.2026)*
 - [ ] Verifizierbar im **Replay**-Modus ohne Shopfloor (idealerweise neue W/R/B-Referenz-Sessions)

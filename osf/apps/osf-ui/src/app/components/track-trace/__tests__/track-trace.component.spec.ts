@@ -7,7 +7,7 @@ import { WorkpieceHistoryService } from '../../../services/workpiece-history.ser
 import { ModuleNameService } from '../../../services/module-name.service';
 import { EnvironmentService } from '../../../services/environment.service';
 import { TrackTraceEnvironmentService } from '../../../services/track-trace-environment.service';
-import type { WorkpieceHistory, OrderContext } from '../../../services/workpiece-history.service';
+import type { WorkpieceHistory, OrderContext, TrackTraceEvent } from '../../../services/workpiece-history.service';
 
 describe('TrackTraceComponent', () => {
   let component: TrackTraceComponent;
@@ -200,6 +200,223 @@ describe('TrackTraceComponent', () => {
       expect(component.getAgvAccentClass('AGV-2')).toBe('agv-accent--2');
       expect(component.getAgvAccentClass('DRILL')).toBe('');
     });
+
+    it('labels FTS vs Module event sources', () => {
+      expect(component.getEventSourceLabel('FTS')).toBeTruthy();
+      expect(component.getEventSourceLabel('MODULE')).toBeTruthy();
+      expect(component.getEventSourceLabel(undefined)).toBeNull();
+    });
+
+    it('labels Color/NFC intake and shows HBW position separately', () => {
+      expect(
+        component.getEventLabel('INPUT_RGB', {
+          timestamp: 't',
+          eventType: 'INPUT_RGB',
+        })
+      ).toBeTruthy();
+      expect(
+        component.getEventLabel('RGB_NFC', {
+          timestamp: 't',
+          eventType: 'RGB_NFC',
+        })
+      ).toBeTruthy();
+      expect(
+        component.getEventLabel('PICK', {
+          timestamp: 't',
+          eventType: 'PICK',
+          stationId: 'HBW',
+          details: { loadPosition: 'A1' },
+        })
+      ).toBe('PICK');
+      expect(
+        component.getEventPositionLabel({
+          timestamp: 't',
+          eventType: 'PICK',
+          stationId: 'HBW',
+          details: { loadPosition: 'A1' },
+        })
+      ).toContain('A1');
+    });
+  });
+
+  describe('groupEventsBySubOrder chronology (C1)', () => {
+    it('orders groups by earliest event timestamp, not sub-order suffix', () => {
+      const events = [
+        {
+          timestamp: '2026-05-06T12:02:00.000Z',
+          eventType: 'PROCESS',
+          stationId: 'AIQS',
+          subOrderId: 'order-1-1',
+          moduleId: 'SVR_AIQS',
+        },
+        {
+          timestamp: '2026-05-06T12:00:00.000Z',
+          eventType: 'PROCESS',
+          stationId: 'AIQS',
+          subOrderId: 'order-1-9',
+          moduleId: 'SVR_AIQS',
+        },
+      ] as TrackTraceEvent[];
+      const stationGroups = [
+        {
+          stationId: 'AIQS',
+          stationName: 'AIQS',
+          events,
+        },
+      ];
+      const groups = component.groupEventsBySubOrder(events, stationGroups);
+      expect(groups.map((g) => g.subOrderId)).toEqual(['order-1-9', 'order-1-1']);
+    });
+  });
+
+  describe('Station | Transport timeline (B3 layout)', () => {
+    it('groups consecutive DPS station events under one header and splits columns', () => {
+      const order: OrderContext = {
+        orderId: 'storage-1',
+        orderType: 'STORAGE',
+        plannedStationChain: ['DPS', 'HBW'],
+      };
+      const events: TrackTraceEvent[] = [
+        {
+          timestamp: '2026-07-28T15:00:00Z',
+          eventType: 'INPUT_RGB',
+          stationId: 'DPS',
+          stationName: 'DPS',
+          orderType: 'STORAGE',
+          eventSource: 'MODULE',
+        },
+        {
+          timestamp: '2026-07-28T15:00:10Z',
+          eventType: 'RGB_NFC',
+          stationId: 'DPS',
+          stationName: 'DPS',
+          orderType: 'STORAGE',
+          eventSource: 'MODULE',
+        },
+        {
+          timestamp: '2026-07-28T15:00:20Z',
+          eventType: 'DROP',
+          stationId: 'DPS',
+          stationName: 'DPS',
+          orderType: 'STORAGE',
+          eventSource: 'MODULE',
+        },
+        {
+          timestamp: '2026-07-28T15:00:30Z',
+          eventType: 'PASS',
+          orderType: 'STORAGE',
+          eventSource: 'FTS',
+          moduleName: 'AGV-1',
+        },
+        {
+          timestamp: '2026-07-28T15:00:40Z',
+          eventType: 'PICK',
+          stationId: 'HBW',
+          stationName: 'HBW',
+          orderType: 'STORAGE',
+          eventSource: 'MODULE',
+        },
+      ];
+
+      const timeline = component.buildShopfloorTimeline(events, order);
+      const headers = timeline.filter((i) => i.kind === 'station-header');
+      expect(headers.map((h) => (h.kind === 'station-header' ? h.stationId : ''))).toEqual([
+        'DPS',
+        'HBW',
+      ]);
+
+      const dpsEvents = timeline.filter(
+        (i) => i.kind === 'event' && i.column === 'station' && i.event.stationId === 'DPS'
+      );
+      expect(dpsEvents).toHaveLength(3);
+      expect(dpsEvents[0]?.kind === 'event' && dpsEvents[0].showBusinessChip).toBe(true);
+      expect(dpsEvents[1]?.kind === 'event' && dpsEvents[1].showBusinessChip).toBe(false);
+
+      const transport = timeline.filter((i) => i.kind === 'event' && i.column === 'transport');
+      expect(transport).toHaveLength(1);
+    });
+  });
+
+  describe('Quality result badge', () => {
+    it('returns FAILED badge for CHECK_QUALITY event with failed result', () => {
+      const badge = component.getQualityResultBadge({
+        timestamp: 't',
+        eventType: 'CHECK_QUALITY',
+        stationId: 'AIQS',
+        details: { result: 'FAILED' },
+      });
+      expect(badge).toBe('FAILED');
+      const cls = component.getQualityResultClass({
+        timestamp: 't',
+        eventType: 'CHECK_QUALITY',
+        stationId: 'AIQS',
+        details: { result: 'FAILED' },
+      });
+      expect(cls).toBe('quality-result--failed');
+    });
+
+    it('returns OK badge and ok class', () => {
+      const badge = component.getQualityResultBadge({
+        timestamp: 't',
+        eventType: 'CHECK_QUALITY',
+        details: { result: 'OK' },
+      });
+      expect(badge).toBe('OK');
+      expect(
+        component.getQualityResultClass({
+          timestamp: 't',
+          eventType: 'CHECK_QUALITY',
+          details: { result: 'OK' },
+        })
+      ).toBe('quality-result--ok');
+    });
+
+    it('returns null for non-CHECK_QUALITY events', () => {
+      expect(
+        component.getQualityResultBadge({
+          timestamp: 't',
+          eventType: 'DRILL',
+          details: { result: 'OK' },
+        })
+      ).toBeNull();
+    });
+  });
+
+  describe('Position label for FTS transport events', () => {
+    it('shows Intersection N for PASS events with intersectionNumber', () => {
+      const label = component.getEventPositionLabel({
+        timestamp: 't',
+        eventType: 'PASS',
+        eventSource: 'FTS',
+        workpieceType: 'BLUE',
+        details: { intersectionNumber: '2', loadPosition: '1' },
+      });
+      expect(label).toContain('2');
+      expect(label).toContain('1');
+      expect(label).toContain('BLUE');
+    });
+
+    it('shows only bucket position when no intersectionNumber for TURN', () => {
+      const label = component.getEventPositionLabel({
+        timestamp: 't',
+        eventType: 'TURN',
+        eventSource: 'FTS',
+        workpieceType: 'WHITE',
+        details: { loadPosition: '2' },
+      });
+      expect(label).toContain('2');
+      expect(label).toContain('WHITE');
+    });
+
+    it('returns null for DOCK events without position', () => {
+      const label = component.getEventPositionLabel({
+        timestamp: 't',
+        eventType: 'DOCK',
+        eventSource: 'FTS',
+        details: {},
+      });
+      expect(label).toBeNull();
+    });
   });
 
   describe('Order flow accents', () => {
@@ -208,7 +425,7 @@ describe('TrackTraceComponent', () => {
         [
           {
             timestamp: '2026-05-06T12:00:00.000Z',
-            eventType: 'PICK',
+            eventType: 'DROP',
             stationId: 'HBW',
             orderId: 'order-prod-1',
             orderType: 'PRODUCTION',

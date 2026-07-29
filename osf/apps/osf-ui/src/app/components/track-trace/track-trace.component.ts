@@ -14,7 +14,14 @@ import {
 import { ICONS } from '../../shared/icons/icon.registry';
 
 /** Manufacturing event types that should be grouped by station */
-const MANUFACTURING_EVENT_TYPES = ['PICK', 'PROCESS', 'DROP'] as const;
+const MANUFACTURING_EVENT_TYPES = [
+  'PICK',
+  'PROCESS',
+  'DROP',
+  'DRILL',
+  'MILL',
+  'CHECK_QUALITY',
+] as const;
 
 /** Workpiece / NFC color family for cascade selection */
 export type TrackTraceWorkpieceColor = 'WHITE' | 'BLUE' | 'RED';
@@ -254,6 +261,11 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
       case 'TRANSPORT':
         return ICONS.shopfloor.shared.agvVehicle;
       case 'PROCESS':
+      case 'DRILL':
+      case 'MILL':
+      case 'CHECK_QUALITY':
+      case 'INPUT_RGB':
+      case 'RGB_NFC':
         return ICONS.shopfloor.shared.processEvent;
       default:
         return ICONS.shopfloor.shared.locationMarker;
@@ -261,18 +273,112 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
   }
   
   getEventLabel(eventType: string, event?: TrackTraceEvent): string {
-    if (eventType.toUpperCase() === 'TURN' && event?.details && 'direction' in event.details) {
+    const type = eventType.toUpperCase();
+    if (type === 'TURN' && event?.details && 'direction' in event.details) {
       const dir = String(event.details['direction']).toUpperCase();
       if (dir === 'LEFT') return $localize`:@@ftsActionTurnLeft:TURN LEFT`;
       if (dir === 'RIGHT') return $localize`:@@ftsActionTurnRight:TURN RIGHT`;
     }
+    if (type === 'INPUT_RGB') {
+      return $localize`:@@trackTraceEventColor:Color`;
+    }
+    if (type === 'RGB_NFC') {
+      return $localize`:@@trackTraceEventNfc:NFC`;
+    }
+    // Keep action name clean; rack slot is shown via getEventPositionLabel
     return eventType;
+  }
+
+  /** HBW rack slot / FTS bucket position label. */
+  getEventPositionLabel(event: TrackTraceEvent): string | null {
+    const eventType = (event.eventType || '').toUpperCase();
+
+    if (event.eventSource === 'FTS') {
+      const intersectionNum = event.details?.['intersectionNumber'];
+      const loadPos = event.details?.['loadPosition'];
+      const workpieceType = (event.workpieceType || '').toUpperCase();
+
+      const parts: string[] = [];
+      if (typeof intersectionNum === 'string' && intersectionNum.trim()) {
+        parts.push(
+          $localize`:@@trackTraceIntersection:Intersection ${intersectionNum}:number:`
+        );
+      }
+
+      // Bucket slot + color for non-DOCK FTS events
+      if (typeof loadPos === 'string' && loadPos.trim() && eventType !== 'DOCK') {
+        const slotLabel = $localize`:@@trackTracePosition:Position: ${loadPos}:position:`;
+        const colorSuffix = workpieceType ? ` (${workpieceType})` : '';
+        parts.push(`${slotLabel}${colorSuffix}`);
+      }
+      return parts.length > 0 ? parts.join(' · ') : null;
+    }
+
+    // Station events
+    const pos = event.details?.['loadPosition'];
+    if (typeof pos !== 'string' || !pos.trim()) {
+      return null;
+    }
+    const station = (event.stationId || event.moduleName || '').toUpperCase();
+    if (station === 'HBW') {
+      return $localize`:@@trackTracePositionInHbw:Position in HBW: ${pos}:position:`;
+    }
+    return $localize`:@@trackTracePositionGeneric:Position: ${pos}:position:`;
+  }
+
+  /** Icon for bucket slot in FTS transport events (colored workpiece or empty slot). */
+  getBucketPositionIcon(event: TrackTraceEvent): string | null {
+    if (event.eventSource !== 'FTS') return null;
+    const eventType = (event.eventType || '').toUpperCase();
+    if (eventType === 'DOCK') return null;
+    const loadPos = event.details?.['loadPosition'];
+    if (typeof loadPos !== 'string' || !loadPos.trim()) return null;
+    // Show colored workpiece icon or empty slot
+    return this.getWorkpieceIcon(event.workpieceType || '');
+  }
+
+  /** Result badge for CHECK_QUALITY events (e.g. "OK", "FAILED"). */
+  getQualityResultBadge(event: TrackTraceEvent): string | null {
+    const eventType = (event.eventType || '').toUpperCase();
+    if (eventType !== 'CHECK_QUALITY') {
+      return null;
+    }
+    const result = event.details?.['result'];
+    if (typeof result === 'string' && result.trim()) {
+      return result.toUpperCase();
+    }
+    return null;
+  }
+
+  getQualityResultClass(event: TrackTraceEvent): string {
+    const badge = this.getQualityResultBadge(event);
+    if (!badge) return '';
+    if (badge === 'OK' || badge === 'PASS' || badge === 'PASSED') {
+      return 'quality-result--ok';
+    }
+    if (
+      badge === 'FAILED' ||
+      badge === 'FAIL' ||
+      badge === 'NOK' ||
+      badge === 'ERROR'
+    ) {
+      return 'quality-result--failed';
+    }
+    return 'quality-result--unknown';
   }
 
   getEventPrimaryActor(event: TrackTraceEvent): string {
     const eventType = (event.eventType || '').toUpperCase();
-    const isBracketAction = eventType === 'PICK' || eventType === 'PROCESS' || eventType === 'DROP';
-    if (isBracketAction && event.stationId) {
+    const isStationAction =
+      eventType === 'PICK' ||
+      eventType === 'PROCESS' ||
+      eventType === 'DROP' ||
+      eventType === 'DRILL' ||
+      eventType === 'MILL' ||
+      eventType === 'CHECK_QUALITY' ||
+      eventType === 'INPUT_RGB' ||
+      eventType === 'RGB_NFC';
+    if (isStationAction && event.stationId) {
       return event.stationId.toUpperCase();
     }
     return event.moduleName || 'FTS';
@@ -291,7 +397,15 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
 
   getEventTransportContext(event: TrackTraceEvent): string | null {
     const eventType = (event.eventType || '').toUpperCase();
-    const isBracketAction = eventType === 'PICK' || eventType === 'PROCESS' || eventType === 'DROP';
+    const isBracketAction =
+      eventType === 'PICK' ||
+      eventType === 'PROCESS' ||
+      eventType === 'DROP' ||
+      eventType === 'DRILL' ||
+      eventType === 'MILL' ||
+      eventType === 'CHECK_QUALITY' ||
+      eventType === 'INPUT_RGB' ||
+      eventType === 'RGB_NFC';
     if (!isBracketAction) {
       return null;
     }
@@ -302,6 +416,17 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     }
     if (moduleName.includes('AGV') || moduleName.includes('FTS')) {
       return moduleName;
+    }
+    return null;
+  }
+
+  /** Publisher badge label (B1): FTS MQTT vs module device MQTT. */
+  getEventSourceLabel(source: 'FTS' | 'MODULE' | undefined): string | null {
+    if (source === 'MODULE') {
+      return $localize`:@@trackTraceEventSourceModule:Module`;
+    }
+    if (source === 'FTS') {
+      return $localize`:@@trackTraceEventSourceFts:FTS`;
     }
     return null;
   }
@@ -413,17 +538,12 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     }
 
     const station = (event.stationId || '').toUpperCase();
-    const eventType = (event.eventType || '').toUpperCase();
-    const orderType = (order?.orderType || event.orderType || '').toUpperCase();
-    if (!station || !eventType || !orderType) {
+    if (!station) {
       return null;
     }
 
     const stationIndex = plannedChain.indexOf(station);
     if (stationIndex < 0) {
-      return null;
-    }
-    if (!this.isFlowAnchorEvent(orderType, station, eventType)) {
       return null;
     }
 
@@ -434,26 +554,141 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     };
   }
 
+  /** Station column: module MQTT (+ intake). Transport column: FTS DOCK/PASS/TURN. */
+  classifyShopfloorColumn(event: TrackTraceEvent): 'station' | 'transport' {
+    const type = (event.eventType || '').toUpperCase();
+    if (event.eventSource === 'MODULE') {
+      return 'station';
+    }
+    if (event.eventSource === 'FTS') {
+      return 'transport';
+    }
+    if (
+      type === 'INPUT_RGB' ||
+      type === 'RGB_NFC' ||
+      type === 'PICK' ||
+      type === 'DROP' ||
+      type === 'PROCESS' ||
+      type === 'DRILL' ||
+      type === 'MILL' ||
+      type === 'CHECK_QUALITY'
+    ) {
+      return 'station';
+    }
+    return 'transport';
+  }
+
+  /**
+   * Chronological shopfloor rows: station visits get one header + business chip;
+   * events go into Station or Transport column (B3 layout).
+   */
+  buildShopfloorTimeline(
+    events: TrackTraceEvent[],
+    order: OrderContext | null
+  ): Array<
+    | { kind: 'station-header'; stationId: string; stationName: string }
+    | {
+        kind: 'event';
+        event: TrackTraceEvent;
+        column: 'station' | 'transport';
+        showBusinessChip: boolean;
+      }
+  > {
+    const sorted = [...events].sort((a, b) => {
+      const timeDiff = new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+      if (timeDiff !== 0) {
+        return timeDiff;
+      }
+      return (a.actionId || '').localeCompare(b.actionId || '');
+    });
+
+    const items: Array<
+      | { kind: 'station-header'; stationId: string; stationName: string }
+      | {
+          kind: 'event';
+          event: TrackTraceEvent;
+          column: 'station' | 'transport';
+          showBusinessChip: boolean;
+        }
+    > = [];
+
+    let lastStationVisitId: string | null = null;
+
+    for (const event of sorted) {
+      if (!this.isOrderScopedEvent(event)) {
+        continue;
+      }
+      const column = this.classifyShopfloorColumn(event);
+
+      if (column === 'station') {
+        const sid = (event.stationId || event.moduleName || '').toUpperCase();
+        const isNewVisit = !!sid && sid !== lastStationVisitId;
+        if (isNewVisit) {
+          items.push({
+            kind: 'station-header',
+            stationId: sid,
+            stationName: event.stationName || sid,
+          });
+          lastStationVisitId = sid;
+        }
+        items.push({
+          kind: 'event',
+          event,
+          column: 'station',
+          showBusinessChip: isNewVisit && this.getBusinessFlowAccent(event, order) !== null,
+        });
+      } else {
+        lastStationVisitId = null;
+        items.push({
+          kind: 'event',
+          event,
+          column: 'transport',
+          showBusinessChip: false,
+        });
+      }
+    }
+
+    return items;
+  }
+
+  trackByTimelineItem(
+    index: number,
+    item:
+      | { kind: 'station-header'; stationId: string }
+      | { kind: 'event'; event: TrackTraceEvent }
+  ): string {
+    if (item.kind === 'station-header') {
+      return `hdr-${item.stationId}-${index}`;
+    }
+    return `evt-${item.event.timestamp}-${item.event.eventType}-${item.event.actionId || index}`;
+  }
+
   private isFlowAnchorEvent(orderType: string, station: string, eventType: string): boolean {
     if (orderType === 'PRODUCTION') {
       if (['DRILL', 'MILL', 'AIQS'].includes(station)) {
-        return eventType === 'PROCESS';
+        return (
+          eventType === 'PROCESS' ||
+          eventType === 'DRILL' ||
+          eventType === 'MILL' ||
+          eventType === 'CHECK_QUALITY'
+        );
       }
       if (station === 'HBW') {
-        return eventType === 'PICK';
+        return eventType === 'DROP';
       }
       if (station === 'DPS') {
-        return eventType === 'DROP';
+        return eventType === 'PICK';
       }
       return false;
     }
 
     if (orderType === 'STORAGE') {
+      // One DPS visit chip is driven by timeline (first station event); anchors for strip helper:
       if (station === 'DPS') {
-        return eventType === 'PICK';
+        return eventType === 'DROP' || eventType === 'INPUT_RGB' || eventType === 'RGB_NFC';
       }
       if (station === 'HBW') {
-        return eventType === 'DROP';
+        return eventType === 'PICK';
       }
       return false;
     }
@@ -751,8 +986,8 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Collect all groups (module groups + other events) and sort them together by Sub-Order-ID
-    // This ensures that FTS events are interleaved correctly with module groups
+    // Collect all groups (module groups + other events) and sort by earliest event time (C1).
+    // Sub-Order suffix order is only a tie-breaker — chronology has higher priority for the demo.
     const allGroups: Array<{ subOrderId: string; moduleId?: string; moduleName?: string; events: TrackTraceEvent[] }> = [];
     
     // Add module groups
@@ -779,36 +1014,51 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
         });
       }
     });
-    
-    // Sort ALL groups together by Sub-Order-ID (extract numeric part after last '-')
-    // Format: orderId-1, orderId-2, etc. -> sort by numeric part (1, 2, 3...)
-    // This ensures correct sequence: Sub-Order-ID -1, -2, -3, etc.
-    allGroups.sort((a, b) => {
-      const numA = this.extractSubOrderNumber(a.subOrderId);
-      const numB = this.extractSubOrderNumber(b.subOrderId);
-      if (numA !== null && numB !== null) {
-        return numA - numB; // Numeric sort
-      }
-      // Fallback to string comparison if numeric extraction fails
-      return (a.subOrderId || '').localeCompare(b.subOrderId || '');
-    });
-    
-    groups.push(...allGroups);
 
-    // Finally, add events without Sub-Order-ID (sorted by timestamp, then actionId)
+    // Events without Sub-Order-ID (e.g. buffered Color before NFC) — merge chronologically, not at end
     if (eventsWithoutSubOrder.length > 0) {
       eventsWithoutSubOrder.sort((a, b) => {
         const timeDiff = new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
         if (timeDiff !== 0) return timeDiff;
         return (a.actionId || '').localeCompare(b.actionId || '');
       });
-      groups.push({
+      allGroups.push({
         subOrderId: 'no-sub-order',
         events: eventsWithoutSubOrder,
       });
     }
 
+    allGroups.sort((a, b) => {
+      const timeA = this.getGroupEarliestTimestampMs(a.events);
+      const timeB = this.getGroupEarliestTimestampMs(b.events);
+      if (timeA !== timeB) {
+        return timeA - timeB;
+      }
+      const numA = this.extractSubOrderNumber(a.subOrderId);
+      const numB = this.extractSubOrderNumber(b.subOrderId);
+      if (numA !== null && numB !== null) {
+        return numA - numB;
+      }
+      return (a.subOrderId || '').localeCompare(b.subOrderId || '');
+    });
+
+    groups.push(...allGroups);
+
     return groups;
+  }
+
+  /**
+   * Earliest timestamp in a sub-order group (ms). Used for chronological group order (C1).
+   */
+  private getGroupEarliestTimestampMs(events: TrackTraceEvent[]): number {
+    let min = Number.POSITIVE_INFINITY;
+    for (const event of events) {
+      const t = new Date(event.timestamp).getTime();
+      if (!Number.isNaN(t) && t < min) {
+        min = t;
+      }
+    }
+    return min === Number.POSITIVE_INFINITY ? 0 : min;
   }
 
   /**

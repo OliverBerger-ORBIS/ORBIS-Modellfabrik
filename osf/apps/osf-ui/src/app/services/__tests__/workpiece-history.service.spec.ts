@@ -445,7 +445,7 @@ describe('WorkpieceHistoryService', () => {
         workpieceId: 'wp-2',
         orderId: 'order-2',
         orderUpdateId: 4,
-        actionId: 'other-source-action',
+        actionId: 'action-xyz',
         stationId: 'AIQS',
         moduleId: 'SVR4H76530',
         location: 'SVR4H76530',
@@ -453,6 +453,33 @@ describe('WorkpieceHistoryService', () => {
 
       expect(svc.shouldAppendEvent('mock', 'wp-2', ftsLikeEvent)).toBe(true);
       expect(svc.shouldAppendEvent('mock', 'wp-2', moduleLikeEvent)).toBe(false);
+    });
+
+    it('deduplicates CHECK_QUALITY from NodeRed + direct module topics (same actionId, different orderUpdateId)', () => {
+      const svc = service as unknown as {
+        shouldAppendEvent: (environmentKey: string, workpieceId: string, event: TrackTraceEvent) => boolean;
+      };
+
+      const nodeRedEvent: TrackTraceEvent = {
+        timestamp: '2026-07-28T08:03:52.774Z',
+        eventType: 'CHECK_QUALITY',
+        workpieceId: '711f5fa991adb1',
+        orderId: 'fd488dcf-947c-4471-8472-7f1c552d9013',
+        orderUpdateId: 10,
+        actionId: 'e9792d9b-12e6-45c8-b097-633a6b0bea33',
+        stationId: 'AIQS',
+        location: 'SVR4H76530',
+        eventSource: 'MODULE',
+        details: { result: 'FAILED' },
+      };
+      const directModuleEvent: TrackTraceEvent = {
+        ...nodeRedEvent,
+        timestamp: '2026-07-28T08:03:53.948Z',
+        orderUpdateId: 0,
+      };
+
+      expect(svc.shouldAppendEvent('mock', '711f5fa991adb1', nodeRedEvent)).toBe(true);
+      expect(svc.shouldAppendEvent('mock', '711f5fa991adb1', directModuleEvent)).toBe(false);
     });
   });
 
@@ -525,10 +552,11 @@ describe('WorkpieceHistoryService', () => {
           stationId: 'DPS',
         })
       ).toBe(true);
+      // STORAGE: DPS DROP + HBW PICK (real flow; not DPS PICK / HBW DROP)
       expect(
         svc.shouldCaptureEnvironmentSnapshot({
           timestamp: '2026-05-01T10:00:04.000Z',
-          eventType: 'PICK',
+          eventType: 'DROP',
           orderType: 'STORAGE',
           stationId: 'DPS',
         })
@@ -536,11 +564,53 @@ describe('WorkpieceHistoryService', () => {
       expect(
         svc.shouldCaptureEnvironmentSnapshot({
           timestamp: '2026-05-01T10:00:05.000Z',
-          eventType: 'DROP',
+          eventType: 'PICK',
           orderType: 'STORAGE',
           stationId: 'HBW',
         })
       ).toBe(true);
+    });
+
+    it('keeps DRILL/MILL/CHECK_QUALITY as MQTT event types (not generic PROCESS)', () => {
+      const svc = service as unknown as {
+        mapModuleCommandToEventType: (command: string) => string;
+        isTrackableModuleCommand: (command: string) => boolean;
+        resolveLoadPosition: (
+          state: { loads?: Array<{ loadId?: string; loadType?: string; loadPosition?: string }> },
+          workpieceId: string
+        ) => string | null;
+        resolveModuleWorkpieceId: (
+          state: unknown,
+          action: { command?: string; metadata?: Record<string, unknown> },
+          result: unknown
+        ) => string | null;
+        resolveModuleWorkpieceType: (
+          state: unknown,
+          action: { metadata?: Record<string, unknown> }
+        ) => string | null;
+      };
+      expect(svc.mapModuleCommandToEventType('DRILL')).toBe('DRILL');
+      expect(svc.mapModuleCommandToEventType('MILL')).toBe('MILL');
+      expect(svc.mapModuleCommandToEventType('CHECK_QUALITY')).toBe('CHECK_QUALITY');
+      expect(svc.mapModuleCommandToEventType('INPUT_RGB')).toBe('INPUT_RGB');
+      expect(svc.isTrackableModuleCommand('DRILL')).toBe(true);
+      expect(svc.isTrackableModuleCommand('INPUT_RGB')).toBe(true);
+      expect(svc.isTrackableModuleCommand('RGB_NFC')).toBe(true);
+      expect(
+        svc.resolveLoadPosition(
+          {
+            loads: [
+              { loadId: '2b2c6dd469a47a', loadType: 'WHITE', loadPosition: 'A1' },
+              { loadId: '', loadPosition: 'A2' },
+            ],
+          },
+          '2b2c6dd469a47a'
+        )
+      ).toBe('A1');
+      expect(
+        svc.resolveModuleWorkpieceId({}, { command: 'RGB_NFC' }, '2b2c6dd469a47a')
+      ).toBe('2b2c6dd469a47a');
+      expect(svc.resolveModuleWorkpieceType({}, { metadata: { type: 'WHITE' } })).toBe('WHITE');
     });
 
     it('does not capture non-matrix events', () => {
@@ -557,26 +627,10 @@ describe('WorkpieceHistoryService', () => {
       ).toBe(false);
       expect(
         svc.shouldCaptureEnvironmentSnapshot({
-          timestamp: '2026-05-01T10:00:07.000Z',
-          eventType: 'DROP',
-          orderType: 'PRODUCTION',
-          stationId: 'AIQS',
-        })
-      ).toBe(false);
-      expect(
-        svc.shouldCaptureEnvironmentSnapshot({
           timestamp: '2026-05-01T10:00:08.000Z',
-          eventType: 'DROP',
-          orderType: 'STORAGE',
-          stationId: 'DPS',
-        })
-      ).toBe(false);
-      expect(
-        svc.shouldCaptureEnvironmentSnapshot({
-          timestamp: '2026-05-01T10:00:09.000Z',
           eventType: 'PICK',
           orderType: 'STORAGE',
-          stationId: 'HBW',
+          stationId: 'DPS',
         })
       ).toBe(false);
     });
@@ -677,6 +731,59 @@ describe('WorkpieceHistoryService', () => {
       expect(contexts.map((c) => c.orderId)).toEqual([storageId, productionId]);
     });
 
+    it('collapses multiple STORAGE orderIds into one card', () => {
+      const servicePrivate = service as unknown as {
+        generateOrderContext: (
+          workpieceType: string,
+          orders: { active: Record<string, unknown>; completed: Record<string, unknown> },
+          orderIds?: string | string[],
+          events?: TrackTraceEvent[],
+          previousContexts?: OrderContext[]
+        ) => OrderContext[];
+      };
+
+      const intakeId = 'intake-uuid';
+      const transportId = 'agv-storage-uuid';
+      const orders = {
+        active: {},
+        completed: {
+          [intakeId]: {
+            orderId: intakeId,
+            orderType: 'STORAGE',
+            state: 'FINISHED',
+            startedAt: '2026-07-28T07:50:00Z',
+          },
+        },
+      };
+
+      const events: TrackTraceEvent[] = [
+        {
+          timestamp: '2026-07-28T07:50:10Z',
+          eventType: 'INPUT_RGB',
+          orderId: intakeId,
+          orderType: 'STORAGE',
+          stationId: 'DPS',
+        },
+        {
+          timestamp: '2026-07-28T07:51:00Z',
+          eventType: 'DOCK',
+          orderId: transportId,
+          orderType: 'STORAGE',
+          stationId: 'HBW',
+        },
+      ];
+
+      const contexts = servicePrivate.generateOrderContext(
+        'RED',
+        orders,
+        [intakeId, transportId],
+        events
+      );
+
+      expect(contexts.filter((c) => c.orderType === 'STORAGE')).toHaveLength(1);
+      expect(contexts[0].orderId).toBe(intakeId);
+    });
+
     it('preserves previous ERP fields when rebuilding the same orderId', () => {
       const servicePrivate = service as unknown as {
         generateOrderContext: (
@@ -720,6 +827,44 @@ describe('WorkpieceHistoryService', () => {
       expect(contexts).toHaveLength(1);
       expect(contexts[0].customerOrderId).toBe('ERP-CO-KEEP');
       expect(contexts[0].customerId).toBe('CUST-KEEP');
+    });
+  });
+
+  describe('shouldCaptureEnvironmentSnapshot', () => {
+    const makeEvent = (overrides: Partial<{ stationId: string; orderType: string; eventType: string }>) => ({
+      stationId: overrides.stationId ?? '',
+      orderType: overrides.orderType ?? '',
+      eventType: overrides.eventType ?? '',
+    } as any);
+
+    it('captures HBW DROP in PRODUCTION', () => {
+      const sp = service as any;
+      expect(sp.shouldCaptureEnvironmentSnapshot(makeEvent({ stationId: 'HBW', orderType: 'PRODUCTION', eventType: 'DROP' }))).toBe(true);
+    });
+
+    it('captures DPS PICK in PRODUCTION', () => {
+      const sp = service as any;
+      expect(sp.shouldCaptureEnvironmentSnapshot(makeEvent({ stationId: 'DPS', orderType: 'PRODUCTION', eventType: 'PICK' }))).toBe(true);
+    });
+
+    it('captures HBW PICK in PRODUCTION (existing behaviour)', () => {
+      const sp = service as any;
+      expect(sp.shouldCaptureEnvironmentSnapshot(makeEvent({ stationId: 'HBW', orderType: 'PRODUCTION', eventType: 'PICK' }))).toBe(true);
+    });
+
+    it('captures HBW PICK in STORAGE', () => {
+      const sp = service as any;
+      expect(sp.shouldCaptureEnvironmentSnapshot(makeEvent({ stationId: 'HBW', orderType: 'STORAGE', eventType: 'PICK' }))).toBe(true);
+    });
+
+    it('captures DPS DROP in PRODUCTION', () => {
+      const sp = service as any;
+      expect(sp.shouldCaptureEnvironmentSnapshot(makeEvent({ stationId: 'DPS', orderType: 'PRODUCTION', eventType: 'DROP' }))).toBe(true);
+    });
+
+    it('does NOT capture unrelated events like DRILL PICK', () => {
+      const sp = service as any;
+      expect(sp.shouldCaptureEnvironmentSnapshot(makeEvent({ stationId: 'DRILL', orderType: 'PRODUCTION', eventType: 'PICK' }))).toBe(false);
     });
   });
 });

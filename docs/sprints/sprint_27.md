@@ -30,8 +30,13 @@
 ### Track&Trace *(Fokus)*
 
 - [x] **Track&Trace A1 Multi-Order (28.07.2026):** `WorkpieceHistoryService` rebuildet Auftragskontexte aus **allen** Event-Order-UUIDs → STORAGE **und** PRODUCTION als Business-Klammern. Unit-Tests grün. Verifikation: Replay `*-storage-production_20260728_*.log` + Live Demo (Hard-Reload).
-- [ ] **Track&Trace Live Demo Inhalt (Rest Phase 1: B1+C1, optional B3):** Event-Publisher (FTS vs. Modul); Sub-Order-Gruppen nach Timestamp. Arbeitsdoku [track-trace-live-content-fix-2026-07.md](../07-analysis/track-trace-live-content-fix-2026-07.md).
-- [ ] **Sensor-Matrix STORAGE korrigieren:** Umwelt-Snapshots an realen Storage-Events **DPS DROP** + **HBW PICK** (heute fälschlich DPS PICK / HBW DROP). Optional nice-to-have: DPS-Event mit Farbe + NFC-Lesung. *(28.07.2026, Replay-Befund)*
+- [x] **Track&Trace Live Demo Inhalt Phase 1 B1+C1+S1 (28.07.2026):** Publisher-Badge FTS/Module; Sub-Order-Gruppen nach `min(timestamp)`; STORAGE-Sensor an DPS DROP + HBW PICK. Replay-Check: `*-storage-production_20260728_*`.
+- [x] **Track&Trace Modul-Events erweitern (Antwort A, 28.07.2026):** Color/NFC; DRILL/MILL/CHECK_QUALITY als Event-Namen (nicht generisches PROCESS); HBW-Position als „Position in HBW: A1“. Fixes 28.07. abends: Color chronologisch zuerst, kein doppeltes NFC, Flush nur bei RGB_NFC.
+- [x] **Track&Trace Live Demo Inhalt Phase 2 B3 (28.07.2026):** FTS-Stationssynthese ab; Modul = SoT für PICK/DRILL/MILL/DROP. UI: Spalten **Station | Transport**; DPS-Besuch eine Gruppe; Order Context max. 1× STORAGE + 1× PRODUCTION.
+- [x] **Sensor-Matrix STORAGE korrigieren (28.07.2026):** Umwelt-Snapshots an **DPS DROP** + **HBW PICK** (S1 mit Phase-1-Bundle).
+- [x] **Track&Trace Phase 3 (29.07.2026):** Sensor-Matrix PRODUCTION erweitert: **HBW DROP** + **DPS PICK** → Environment-Snapshot. Transport-Events: **Intersection N**-Label + Location-Icon vor Position; Bucket-Slot mit Werkstück-Farbe (`Position: 1 (BLUE)`). `intersectionNumber` aus `AgvRouteService.resolveNodeRef` in FTS-Event-Details persistiert. CHECK_QUALITY: **Ergebnis-Badge** (OK/FAILED) aus `details.result` im Timeline-Event. Unit-Tests 77/77 grün.
+- [x] **Session Manager Replay Speed 10x/max (29.07.2026):** Replay Station Geschwindigkeit um **10x** und **max** (ohne Wartezeit) erweitert; Timeshift bleibt load-time (`now + ts_rel`), Speed skaliert nur Wall-Clock-Wartezeit. Version **1.8.0** (`session_manager/__init__.py`). Tag nach Commit: `session-manager-v1.8.0`.
+- [x] **Session Manager Replay Speed Fix/Diagnose (29.07.2026):** Speed wirkte nicht 10× — Ursachen: Selectbox/Rerun instabil + MQTT-QoS1-Backpressure (Burst dann ~50–80 msg/10s). Fix: stabile Speed-Labels, ab ≥5×/max **QoS0**, Queue/Retry, Publish-Rate-Diagnose in UI. Version **1.8.1**. **1.8.2:** zusätzlich **Gesamtzeit** (aktiv/Wanduhr) + **Ø-Rate** über den ganzen Lauf (Momentan-Rate schwankt bei V=1 stark).
 - [x] **Replay-Referenz-Sessions aufgenommen (28.07.2026):** `white|red|blue-storage-production_20260728_*.log`. Alte Single-Color-`20260303`-Paare **gelöscht** (28.07.). Parallel-Production (`production-wr-*`) ohne Storage in derselben Session ausreichend für Multi-AGV-Herausforderungen, sobald Multi-Order an den drei Referenzen steht.
 - *Hinweis Demo: Capture läuft in Live/Replay nach MQTT-Connect auch ohne offenen Tab; Header-Refresh leert die Historie — dazwischen nicht unnötig refreshen.*
 - *Replay-Hinweis (28.07.): `mixed-pw-…` zu komplex für Erstanalyse; `od_white_1` unvollständig (nur STORAGE). Details in Arbeitsdoku.*
@@ -39,7 +44,7 @@
 ### Shopfloor / Message Monitor
 
 - [x] **Module/AGV-Filter an Layout-Registry (28.07.2026):** Message-Monitor Dropdown aus `shopfloor_layout` (Serial→Typ); FTS als **AGV-1/AGV-2** + FTS-Langname; Live ohne `HBW-DEMO`/`*-MISSING`; case-insensitive Serial-Lookup. Verifikation: localhost Live + RPi Hard-Reload.
-- [x] **Layout-Cache-Bust (28.07.2026):** RPi zeigte keine FTS trotz Layout mit `fts[]` — nginx `application/json` max-age ~10y. Fix: nginx epoch + `shopfloor_layout.json?v=<VERSION>` (v1.1.12).
+- [x] **Layout-Cache-Bust (28.07.2026):** RPi zeigte keine FTS trotz Layout mit `fts[]` — nginx `application/json` max-age ~10y. Fix: nginx epoch + `shopfloor_layout.json?v=<VERSION>` (v1.1.12). **Verifiziert RPi Hard-Reload:** Shopfloor + Message-Monitor zeigen AGV-1/AGV-2.
 
 ### Router / Netzwerk-Setup
 
@@ -76,4 +81,4 @@
 
 ---
 
-*Stand: 28.07.2026 (nachmittag)* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 29.07.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)

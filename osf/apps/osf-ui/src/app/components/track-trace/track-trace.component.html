@@ -220,10 +220,11 @@
         </div>
       </div>
 
-      <!-- Column 2+3: Shopfloor Events + Environment timeline (aligned by row) -->
+      <!-- Business flow + Station | Transport + Environment -->
       <div class="shopfloor-environment-columns">
         <div class="column-title">Business flow</div>
-        <div class="column-title" i18n="@@trackTraceShopfloorEvents">Shopfloor Events</div>
+        <div class="column-title" i18n="@@trackTraceStationColumn">Station</div>
+        <div class="column-title" i18n="@@trackTraceTransportColumn">Transport</div>
         <div class="column-title" i18n="@@trackTraceEnvironmentColumn">Environment & sensors</div>
 
         <ng-container *ngFor="let group of groupEventsByOrder(history); trackBy: trackByOrder">
@@ -238,86 +239,63 @@
             <span class="order-group-id" *ngIf="group.order.orderId">{{ group.order.orderId }}</span>
           </div>
 
-          <ng-container *ngFor="let subOrderGroup of groupEventsBySubOrder(group.events, group.stationGroups); trackBy: trackBySubOrderGroup">
-            <div class="module-row-header" *ngIf="subOrderGroup.moduleId">
-              <img [src]="getStationIcon(subOrderGroup.moduleId)" alt="" width="18" height="18" />
-              <span class="module-name">{{ subOrderGroup.moduleName }}</span>
-              <span class="module-sub-order-id" *ngIf="subOrderGroup.subOrderId">{{ subOrderGroup.subOrderId }}</span>
+          <ng-container *ngFor="let item of buildShopfloorTimeline(group.events, group.order); trackBy: trackByTimelineItem">
+            <div class="module-row-header" *ngIf="item.kind === 'station-header'">
+              <img [src]="getStationIcon(item.stationId)" alt="" width="18" height="18" />
+              <span class="module-name">{{ item.stationName }}</span>
             </div>
 
-            <ng-container *ngFor="let event of subOrderGroup.events; trackBy: trackByEvent">
-              <ng-container *ngIf="isOrderScopedEvent(event)">
-                <div class="timeline-business-cell">
-                  <ng-container *ngIf="getBusinessFlowAccent(event, group.order) as flowAccent">
-                    <div class="flow-accent-chip">
-                      <img [src]="getStationIcon(flowAccent.station)" alt="" width="14" height="14" />
-                      <span class="flow-accent-station">{{ flowAccent.station }}</span>
-                    </div>
-                  </ng-container>
-                </div>
+            <ng-container *ngIf="item.kind === 'event'">
+              <div class="timeline-business-cell">
+                <ng-container *ngIf="item.showBusinessChip && getBusinessFlowAccent(item.event, group.order) as flowAccent">
+                  <div class="flow-accent-chip">
+                    <img [src]="getStationIcon(flowAccent.station)" alt="" width="14" height="14" />
+                    <span class="flow-accent-station">{{ flowAccent.station }}</span>
+                  </div>
+                </ng-container>
+              </div>
 
-                <div class="timeline-event-cell event-item" [class]="event.eventType.toLowerCase()">
-                  <img [src]="getEventIcon(event.eventType, event)" alt="" width="16" height="16" class="event-icon" />
-                  <div class="event-content">
-                    <div class="event-row">
-                      <div class="event-col-1">
-                        <div class="event-module-action">
-                          <span class="event-module-name" [ngClass]="getAgvAccentClass(getEventPrimaryActor(event))">{{ getEventPrimaryActor(event) }}</span>
-                          <span class="event-action-type">{{ getEventLabel(event.eventType, event) }}</span>
-                          <span class="event-transport-context" [ngClass]="getAgvAccentClass(transportContext)" *ngIf="getEventTransportContext(event) as transportContext">
-                            via {{ transportContext }}
-                          </span>
-                        </div>
-                        <div class="event-time">{{ formatTimestamp(event.timestamp) }}</div>
-                        <span class="event-duration" *ngIf="event.processDuration">
-                          {{ formatDuration(event.processDuration) }}
-                        </span>
-                      </div>
-                      <div class="event-col-2">
-                        <span class="event-ids-compact">
-                          <span class="event-sub-order-id" *ngIf="event.subOrderId">
-                            Sub-Order: {{ event.subOrderId }}
-                          </span>
-                        </span>
-                      </div>
+              <div class="timeline-station-cell">
+                <ng-container *ngIf="item.column === 'station'">
+                  <ng-container
+                    *ngTemplateOutlet="eventCard; context: { $implicit: item.event }"
+                  ></ng-container>
+                </ng-container>
+              </div>
+
+              <div class="timeline-transport-cell">
+                <ng-container *ngIf="item.column === 'transport'">
+                  <ng-container
+                    *ngTemplateOutlet="eventCard; context: { $implicit: item.event }"
+                  ></ng-container>
+                </ng-container>
+              </div>
+
+              <div class="timeline-environment-cell">
+                <ng-container *ngIf="getEventEnvironmentSnapshot(item.event) as sampledEnv">
+                  <div
+                    class="event-environment"
+                    [class.event-environment--warn]="isEnvironmentWarn(sampledEnv)"
+                    [class.event-environment--alarm]="isEnvironmentAlarm(sampledEnv)"
+                  >
+                    <div class="event-environment__header">
+                      <span i18n="@@trackTraceSampledEnvironmentTitle">Environment &#64; event</span>
+                      <span class="event-environment__timestamp">{{ formatTimestamp(sampledEnv.updatedAt) }}</span>
                     </div>
-                    <div class="event-location" *ngIf="event.location">
-                      <img src="assets/svg/shopfloor/shared/location-marker.svg" alt="" width="12" height="12" />
-                      <ng-container *ngIf="getLocationInfo(event.location) as locationInfo">
-                        <span class="location-module-type">{{ locationInfo.moduleType }}</span>
-                        <span class="location-full-name">({{ locationInfo.fullName }})</span>
-                        <span class="location-serial" *ngIf="locationInfo.serialNumber">({{ locationInfo.serialNumber }})</span>
-                      </ng-container>
+                    <div class="event-environment__rows">
+                      <div
+                        *ngFor="let row of sampledEnv.rows; trackBy: trackByEnvRow"
+                        class="event-environment__row"
+                        [class.event-environment__row--warn]="row.variant === 'warn'"
+                        [class.event-environment__row--alarm]="row.variant === 'alarm'"
+                      >
+                        <span class="event-environment__label">{{ row.label }}</span>
+                        <span class="event-environment__value">{{ row.value }}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                <div class="timeline-environment-cell">
-                  <ng-container *ngIf="getEventEnvironmentSnapshot(event) as sampledEnv">
-                    <div
-                      class="event-environment"
-                      [class.event-environment--warn]="isEnvironmentWarn(sampledEnv)"
-                      [class.event-environment--alarm]="isEnvironmentAlarm(sampledEnv)"
-                    >
-                      <div class="event-environment__header">
-                        <span i18n="@@trackTraceSampledEnvironmentTitle">Environment &#64; event</span>
-                        <span class="event-environment__timestamp">{{ formatTimestamp(sampledEnv.updatedAt) }}</span>
-                      </div>
-                      <div class="event-environment__rows">
-                        <div
-                          *ngFor="let row of sampledEnv.rows; trackBy: trackByEnvRow"
-                          class="event-environment__row"
-                          [class.event-environment__row--warn]="row.variant === 'warn'"
-                          [class.event-environment__row--alarm]="row.variant === 'alarm'"
-                        >
-                          <span class="event-environment__label">{{ row.label }}</span>
-                          <span class="event-environment__value">{{ row.value }}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </ng-container>
-                </div>
-              </ng-container>
+                </ng-container>
+              </div>
             </ng-container>
           </ng-container>
         </ng-container>
@@ -325,15 +303,72 @@
     </div>
   </div>
 
+  <ng-template #eventCard let-event>
+    <div class="timeline-event-cell event-item" [class]="event.eventType.toLowerCase()">
+      <img [src]="getEventIcon(event.eventType, event)" alt="" width="16" height="16" class="event-icon" />
+      <div class="event-content">
+        <div class="event-row">
+          <div class="event-col-1">
+            <div class="event-module-action">
+              <span class="event-module-name" [ngClass]="getAgvAccentClass(getEventPrimaryActor(event))">{{ getEventPrimaryActor(event) }}</span>
+              <span class="event-action-type">{{ getEventLabel(event.eventType, event) }}</span>
+              <span
+                class="event-source-badge"
+                *ngIf="getEventSourceLabel(event.eventSource) as sourceLabel"
+                [attr.data-source]="event.eventSource"
+              >{{ sourceLabel }}</span>
+            </div>
+            <div class="event-time">{{ formatTimestamp(event.timestamp) }}</div>
+            <div class="event-position" *ngIf="getEventPositionLabel(event) as positionLabel">
+              <!-- Bucket-icon for FTS transport slot, location-marker for station rack -->
+              <img
+                *ngIf="getBucketPositionIcon(event) as bucketIcon"
+                [src]="bucketIcon"
+                alt=""
+                width="14"
+                height="14"
+                class="position-bucket-icon"
+              />
+              <img
+                *ngIf="!getBucketPositionIcon(event) && event.eventSource !== 'FTS'"
+                src="assets/svg/shopfloor/shared/location-marker.svg"
+                alt=""
+                width="12"
+                height="12"
+                class="position-location-icon"
+              />
+              {{ positionLabel }}
+            </div>
+            <div
+              class="quality-result-badge"
+              *ngIf="getQualityResultBadge(event) as badge"
+              [ngClass]="getQualityResultClass(event)"
+            >{{ badge }}</div>
+            <span class="event-duration" *ngIf="event.processDuration">
+              {{ formatDuration(event.processDuration) }}
+            </span>
+          </div>
+        </div>
+        <div class="event-location" *ngIf="event.location">
+          <img src="assets/svg/shopfloor/shared/location-marker.svg" alt="" width="12" height="12" />
+          <ng-container *ngIf="getLocationInfo(event.location) as locationInfo">
+            <span class="location-module-type">{{ locationInfo.moduleType }}</span>
+            <span class="location-full-name">({{ locationInfo.fullName }})</span>
+            <span class="location-serial" *ngIf="locationInfo.serialNumber">({{ locationInfo.serialNumber }})</span>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
   <div class="info-banner" *ngIf="!selectedWorkpieceId">
     <p>
           <img src="assets/svg/ui/heading-info.svg" alt="" width="16" height="16" />
       <strong i18n="@@trackTraceInfoTitle">Track & Trace</strong>
     </p>
     <p i18n="@@trackTraceInfoDescription">
-      Choose a workpiece color, then select an NFC tag to view its journey. Order context, shopfloor events, and
-      environment data appear below. Manufacturing tasks are grouped by station (PICK → PROCESS → DROP) within Production
-      Orders.
+      Choose a workpiece color, then select an NFC tag to view its journey. Order context, station and transport
+      events, and environment data appear below.
     </p>
   </div>
 </div>

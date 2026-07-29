@@ -227,5 +227,22 @@ describe('ModuleNameService', () => {
       });
     });
   });
+
+  describe('getLocationDisplayText', () => {
+    it('shows short name and Intersection N for numeric node ids', () => {
+      const loc = service.getLocationDisplayText('1');
+      expect(loc.moduleType).toBe('1');
+      expect(loc.fullName).toMatch(/Intersection\s*1/i);
+      expect(loc.serialNumber).toBeNull();
+    });
+
+    it('shows station short name and speaking name for module serials', () => {
+      // Without layout registry, serial falls back to raw location handling;
+      // AIQS type name must still resolve when passed as module type.
+      const loc = service.getLocationDisplayText('AIQS');
+      expect(loc.moduleType).toBe('AIQS');
+      expect(loc.fullName).toMatch(/AI Quality Station/i);
+    });
+  });
 });
 

@@ -83,9 +83,6 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 | version1.1.6_20260511_134733 | | ✓ | ✓ | ✓ | 2 | ORBIS Live-Aufnahme (v1.1.6), 2 AGVs, Arduino/BME680/LDR vorhanden; Orders aus OSF-UI |
 | version1.1.6-test2_20260511_141131 | | ✓ | ✓ | ✓ | 2 | ORBIS Live-Aufnahme (v1.1.6-test2), 2 AGVs, Replay/Persistence/Grafana-Durchstich genutzt |
 | orbis-fulltopics-baseline_20260409_082701 | | ✓ | | | 2 | Full-Topics-Baseline (Cam+Sensorik+State), kurzer Produktionsimpuls mit zwei AGVs |
-| auftrag-blau_1.log | | ✓ | | | 0 | Mock/Synthetisch, keine FTS-Events |
-| auftrag-rot_1.log | | ✓ | | | 0 | Mock/Synthetisch, keine FTS-Events |
-| auftrag-weiss_1.log | | ✓ | | | 1 | Älteres Format, wenig FTS |
 
 ---
 
@@ -174,14 +171,12 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 | **two-agvs-mixed** (165108) | Beide AGVs, Prod+Storage. **Stillstand:** AGV-2 an DPS, DROP hängt (TXT sendet setStatusLED statt DROP FINISHED), AGV-1 blockiert. | **Analyse Stillstand zwei AGVs** – siehe [two-agvs-mixed-event-chain](../07-analysis/two-agvs-mixed-event-chain-fischertechnik-2026-03.md) |
 | **two-agvs-mixed_20260401_093149** | Zwei AGVs, parallele Production+Storage-Orders, Full-Topic-Aufnahme inkl. Kamera. | Gut als Mixed-Baseline mit hohem Topic-Volumen |
 | **two-agvs-mixed_20260409_084546** | Zwei AGVs, parallele Production+Storage-Orders, no_cam-Variante (Sensorik/States ohne Bildstream). | Gut als Vergleich zum Full-Topic-Mixed-Lauf bei reduzierter Topic-Last |
-| **two-agvs-mixed_20260409_090306** | Folge-Mixed-Lauf mit zwei AGVs (no_cam), Production+Storage parallel. | Gut fuer Reproduzierbarkeit/Varianzvergleich in no_cam-Konfiguration |
 
 ### Sonstige
 
 | Session | Ablauf | Eignung |
 |---------|--------|---------|
 | **vibration-sw420** | Kurze Aufnahme, Vibrationssensor SW-420, gemischter Kontext. | Sensor-Kontext |
-| **auftrag-*** | Mock/Synthetisch, keine echten FTS/Module-Events. | Ältere Testdaten |
 
 ---
 
@@ -210,4 +205,4 @@ Ergaenzende Feldbeobachtung zu WR+B-Serien: Unter CCU `1.3.0-osf.3` trat der bek
 
 ---
 
-*Stand: 2026-07-28. Bei neuen Sessions: Ablauf kurz beschreiben, in Schnellübersicht einordnen, Besonderheiten (Stillstand, ccu/set/park, etc.) vermerken. Gelöscht 28.07.: Single-Color `storage|production-{white,red,blue}_20260303_*` (ersetzt durch `*-storage-production_20260728_*`).*
+*Stand: 2026-07-29. Bei neuen Sessions: Ablauf kurz beschreiben, in Schnellübersicht einordnen, Besonderheiten (Stillstand, ccu/set/park, etc.) vermerken. Gelöscht 28.07.: Single-Color `storage|production-{white,red,blue}_20260303_*` (ersetzt durch `*-storage-production_20260728_*`). Gelöscht 29.07.: Sessions ohne Arduino/BME/LDR-ENV (`auftrag-*`, `two-agvs-mixed_20260409_090306`).*

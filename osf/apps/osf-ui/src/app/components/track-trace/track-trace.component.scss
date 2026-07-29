@@ -309,8 +309,12 @@
     .shopfloor-environment-columns {
       grid-column: 2 / -1;
       display: grid;
-      grid-template-columns: minmax(108px, 0.45fr) minmax(320px, 1.35fr) minmax(200px, 0.95fr);
-      gap: 0.5rem 1rem;
+      grid-template-columns:
+        minmax(88px, 0.35fr)
+        minmax(240px, 1.1fr)
+        minmax(240px, 1.1fr)
+        minmax(180px, 0.9fr);
+      gap: 0.5rem 0.75rem;
       align-content: start;
 
       @media (max-width: 1400px) {
@@ -388,6 +392,11 @@
         justify-content: center;
       }
 
+      .timeline-station-cell,
+      .timeline-transport-cell {
+        min-height: 74px;
+      }
+
       .flow-accent-chip {
         display: inline-flex;
         align-items: center;
@@ -409,6 +418,7 @@
 
       .timeline-event-cell {
         min-height: 74px;
+        height: 100%;
       }
 
       .timeline-environment-cell {
@@ -582,6 +592,30 @@
           color: var(--color-text, #333);
         }
 
+        .event-source-badge {
+          font-size: 0.58rem;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+          color: var(--color-text-secondary, #555);
+          padding: 0.05rem 0.28rem;
+          border-radius: 4px;
+          border: 1px solid rgba(0, 0, 0, 0.12);
+          background: rgba(0, 0, 0, 0.04);
+        }
+
+        .event-source-badge[data-source='FTS'] {
+          color: #1e4d7b;
+          border-color: rgba(30, 77, 123, 0.35);
+          background: rgba(30, 77, 123, 0.08);
+        }
+
+        .event-source-badge[data-source='MODULE'] {
+          color: #2d6a4f;
+          border-color: rgba(45, 106, 79, 0.35);
+          background: rgba(45, 106, 79, 0.08);
+        }
+
         .event-transport-context {
           font-size: 0.62rem;
           font-weight: 600;
@@ -608,6 +642,51 @@
           font-size: 0.65rem;
           color: var(--color-text-secondary, #666);
           font-family: monospace;
+        }
+
+        .event-position {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          font-size: 0.7rem;
+          color: var(--color-text-primary, #333);
+          font-weight: 500;
+
+          .position-location-icon {
+            flex-shrink: 0;
+            opacity: 0.7;
+          }
+
+          .position-bucket-icon {
+            flex-shrink: 0;
+            border-radius: 2px;
+          }
+        }
+
+        .quality-result-badge {
+          display: inline-block;
+          font-size: 0.65rem;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          padding: 0.1rem 0.375rem;
+          border-radius: 4px;
+          width: fit-content;
+          margin-top: 0.1rem;
+
+          &.quality-result--ok {
+            background: #e8f5e9;
+            color: #2e7d32;
+          }
+
+          &.quality-result--failed {
+            background: #ffebee;
+            color: #c62828;
+          }
+
+          &.quality-result--unknown {
+            background: #f5f5f5;
+            color: #555;
+          }
         }
 
         .event-duration {
