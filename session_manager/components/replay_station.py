@@ -38,6 +38,64 @@ logging.basicConfig(
 )
 logger = get_logger(__name__)
 
+# Replay speed options (UI). Use string labels for Streamlit widget stability
+# (float("inf") as selectbox value is unreliable across reruns).
+# Timeshift remains load-time (payload timestamps = now + original ts_rel);
+# speed only scales wall-clock wait between publishes: wait = Δt_rel / speed.
+REPLAY_SPEED_CHOICES: list[tuple[str, float]] = [
+    ("0.2x", 0.2),
+    ("0.33x", 0.33),
+    ("0.5x", 0.5),
+    ("1x", 1.0),
+    ("2x", 2.0),
+    ("3x", 3.0),
+    ("5x", 5.0),
+    ("10x", 10.0),
+    ("max", float("inf")),
+]
+REPLAY_SPEED_LABELS: list[str] = [label for label, _ in REPLAY_SPEED_CHOICES]
+REPLAY_SPEED_BY_LABEL: dict[str, float] = dict(REPLAY_SPEED_CHOICES)
+REPLAY_SPEED_DEFAULT_LABEL = "1x"
+# Above this factor, replay publishes with QoS 0 to avoid MQTT QoS1 backpressure.
+REPLAY_QOS0_SPEED_THRESHOLD = 5.0
+
+# Back-compat aliases used by tests / older imports
+REPLAY_SPEED_OPTIONS: list[float] = [value for _, value in REPLAY_SPEED_CHOICES]
+REPLAY_SPEED_DEFAULT_INDEX = REPLAY_SPEED_LABELS.index(REPLAY_SPEED_DEFAULT_LABEL)
+
+
+def format_replay_speed(speed: float) -> str:
+    """Human label for replay speed value."""
+    if speed == float("inf"):
+        return "max"
+    if speed >= 1:
+        return f"{speed:g}x"
+    return f"1/{int(round(1 / speed))}x"
+
+
+def normalize_replay_speed(speed: float) -> float:
+    """Clamp slow speeds; allow inf for max throughput."""
+    value = float(speed)
+    if value == float("inf"):
+        return value
+    return max(0.1, value)
+
+
+def label_for_replay_speed(speed: float) -> str:
+    """Map numeric speed to the closest UI label."""
+    normalized = normalize_replay_speed(speed)
+    for label, value in REPLAY_SPEED_CHOICES:
+        if value == normalized:
+            return label
+    return REPLAY_SPEED_DEFAULT_LABEL
+
+
+def effective_publish_qos(item_qos: int, speed: float) -> int:
+    """At high speed / max, force QoS 0 so the client does not stall on inflight ACKs."""
+    if speed == float("inf") or speed >= REPLAY_QOS0_SPEED_THRESHOLD:
+        return 0
+    return int(item_qos)
+
 
 def _is_local_mqtt_host(host: str) -> bool:
     normalized = (host or "").strip().lower()
@@ -223,18 +281,14 @@ def _mqtt_single_instance_preflight(host: str, port: int) -> tuple[bool, str]:
                 f"but websocket port 9001 is served by pid(s) {ws_pid_list}. "
                 "Use exactly one broker instance for replay."
             )
-        logger.warning(
-            "MQTT preflight: split mosquitto setup accepted (TCP and WS via separate mosquitto pids)."
-        )
+        logger.warning("MQTT preflight: split mosquitto setup accepted (TCP and WS via separate mosquitto pids).")
 
     mqtt_related_pids, related_err = _local_mqtt_related_pids()
     if related_err:
         return False, f"MQTT preflight failed: {related_err}"
     if len(mqtt_related_pids) > 1:
         if _allow_split_mosquitto_setup(broker_pid, ws_pids, mqtt_related_pids):
-            logger.warning(
-                "MQTT preflight: multiple MQTT listener pids accepted due to split mosquitto bridge setup."
-            )
+            logger.warning("MQTT preflight: multiple MQTT listener pids accepted due to split mosquitto bridge setup.")
             return True, ""
         pid_list = ", ".join(str(pid) for pid in sorted(mqtt_related_pids))
         return False, (
@@ -295,6 +349,32 @@ class ReplayController:
         self._worker: Optional[threading.Thread] = None
         self.started_at_mono: float = 0.0
         self._mqtt_client: Optional[SessionManagerMQTTClient] = None
+        # Publish diagnostics (thread-safe via _lock)
+        self._pub_ok = 0
+        self._pub_fail = 0
+        self._pub_retry = 0
+        self._window_started_mono = time.monotonic()
+        self._window_ok = 0
+        self._last_rate_msgs_per_s = 0.0
+        self._publish_wait_s = 0.0
+        # Wall-clock total for the whole run (stable comparison across speeds)
+        self._run_started_mono: float | None = None
+        self._run_finished_mono: float | None = None
+        self._pause_started_mono: float | None = None
+        self._paused_total_s = 0.0
+
+    def _reset_publish_stats_locked(self) -> None:
+        self._pub_ok = 0
+        self._pub_fail = 0
+        self._pub_retry = 0
+        self._window_started_mono = time.monotonic()
+        self._window_ok = 0
+        self._last_rate_msgs_per_s = 0.0
+        self._publish_wait_s = 0.0
+        self._run_started_mono = None
+        self._run_finished_mono = None
+        self._pause_started_mono = None
+        self._paused_total_s = 0.0
 
     # ---------- öffentlich ----------
     def load(self, items: List[Tuple[float, str, bytes, int, bool]]) -> None:
@@ -304,12 +384,17 @@ class ReplayController:
             self._idx = 0
             self._stop.clear()
             self._pause.clear()
+            self._reset_publish_stats_locked()
 
     def play(self, speed: float = 1.0) -> None:
         """Start replay or resume an active worker with updated speed."""
         with self._lock:
-            self._speed = max(0.1, float(speed))
+            self._speed = normalize_replay_speed(speed)
             if self._worker and self._worker.is_alive():
+                # Play/Resume while paused: count pause time toward totals
+                if self._pause_started_mono is not None:
+                    self._paused_total_s += time.monotonic() - self._pause_started_mono
+                    self._pause_started_mono = None
                 self._pause.clear()
                 return
 
@@ -320,6 +405,7 @@ class ReplayController:
             # Wenn das Replay bereits am Ende angekommen ist, bei Play sauber von vorne starten.
             if self._idx >= len(self._seq):
                 self._idx = 0
+                self._reset_publish_stats_locked()
 
             # MQTT-Client initialisieren falls nötig
             if not self._mqtt_client:
@@ -330,12 +416,23 @@ class ReplayController:
 
             self._stop.clear()
             self._pause.clear()
-            self.started_at_mono = time.monotonic() - (self._seq[self._idx].ts_rel / self._speed)
+            # inf speed → offset 0 (publish ASAP); finite → wall clock = ts_rel / speed
+            offset = 0.0 if self._speed == float("inf") else (self._seq[self._idx].ts_rel / self._speed)
+            self.started_at_mono = time.monotonic() - offset
+            if self._idx == 0:
+                self._reset_publish_stats_locked()
+            self._run_started_mono = time.monotonic()
+            self._run_finished_mono = None
+            self._pause_started_mono = None
+            self._paused_total_s = 0.0
             self._worker = threading.Thread(target=self._run, name="replay-worker", daemon=True)
             self._worker.start()
 
     def pause(self) -> None:
         """Pause replay processing without resetting position."""
+        with self._lock:
+            if self._pause_started_mono is None:
+                self._pause_started_mono = time.monotonic()
         self._pause.set()
 
     def resume(self) -> None:
@@ -343,10 +440,14 @@ class ReplayController:
         with self._lock:
             if not (self._worker and self._worker.is_alive()):
                 return
+            if self._pause_started_mono is not None:
+                self._paused_total_s += time.monotonic() - self._pause_started_mono
+                self._pause_started_mono = None
             # Startzeit für aktuelle Position neu ausrichten
             now = time.monotonic()
             current_rel = self._seq[self._idx].ts_rel if self._idx < len(self._seq) else 0.0
-            self.started_at_mono = now - current_rel / self._speed
+            offset = 0.0 if self._speed == float("inf") else (current_rel / self._speed)
+            self.started_at_mono = now - offset
             self._pause.clear()
 
     def stop(self) -> None:
@@ -360,19 +461,76 @@ class ReplayController:
                 self._worker.join(timeout=2.0)  # Max 2 Sekunden warten
 
     def set_speed(self, speed: float) -> None:
-        """Update replay speed and recompute timing base for current index."""
+        """Update replay speed and recompute timing base only when speed changes."""
+        new_speed = normalize_replay_speed(speed)
         with self._lock:
-            self._speed = max(0.1, float(speed))
+            if new_speed == self._speed:
+                return
+            old = self._speed
+            self._speed = new_speed
             if self._seq and self._idx < len(self._seq):
                 # Startzeit an neue Geschwindigkeit anpassen
                 now = time.monotonic()
                 current_rel = self._seq[self._idx].ts_rel
-                self.started_at_mono = now - current_rel / self._speed
+                offset = 0.0 if self._speed == float("inf") else (current_rel / self._speed)
+                self.started_at_mono = now - offset
+            logger.info(
+                "🏃 Replay speed %s → %s (idx=%s)",
+                format_replay_speed(old),
+                format_replay_speed(new_speed),
+                self._idx,
+            )
 
     def progress(self) -> tuple[int, int]:
         """Return current index and total replay items."""
         with self._lock:
             return self._idx, len(self._seq)
+
+    def get_speed(self) -> float:
+        with self._lock:
+            return self._speed
+
+    def get_publish_stats(self) -> dict[str, float | int | str]:
+        """Snapshot of publish throughput diagnostics for the UI."""
+        with self._lock:
+            now = time.monotonic()
+            window_elapsed = max(0.001, now - self._window_started_mono)
+            # Refresh rolling rate every ~2s in the snapshot path as well
+            if window_elapsed >= 2.0:
+                self._last_rate_msgs_per_s = self._window_ok / window_elapsed
+                self._window_started_mono = now
+                self._window_ok = 0
+
+            paused_extra = 0.0
+            if self._pause_started_mono is not None:
+                paused_extra = now - self._pause_started_mono
+            if self._run_started_mono is None:
+                total_elapsed_s = 0.0
+                active_elapsed_s = 0.0
+            else:
+                end = self._run_finished_mono if self._run_finished_mono is not None else now
+                total_elapsed_s = max(0.0, end - self._run_started_mono)
+                active_elapsed_s = max(0.0, total_elapsed_s - self._paused_total_s - paused_extra)
+            avg_rate = round(self._pub_ok / active_elapsed_s, 1) if active_elapsed_s > 0.001 and self._pub_ok else 0.0
+            done = self._run_finished_mono is not None or (bool(self._seq) and self._idx >= len(self._seq))
+            return {
+                "speed_label": format_replay_speed(self._speed),
+                "speed": self._speed,
+                "pub_ok": self._pub_ok,
+                "pub_fail": self._pub_fail,
+                "pub_retry": self._pub_retry,
+                "rate_msgs_per_s": round(self._last_rate_msgs_per_s, 1),
+                "avg_rate_msgs_per_s": avg_rate,
+                "elapsed_total_s": round(total_elapsed_s, 1),
+                "elapsed_active_s": round(active_elapsed_s, 1),
+                "finished": done,
+                "publish_wait_s": round(self._publish_wait_s, 3),
+                "qos_mode": (
+                    "qos0-forced"
+                    if self._speed == float("inf") or self._speed >= REPLAY_QOS0_SPEED_THRESHOLD
+                    else "session-qos"
+                ),
+            }
 
     def is_running(self) -> bool:
         """Return ``True`` while worker thread is active and not paused/stopped."""
@@ -380,6 +538,58 @@ class ReplayController:
         return bool(w and w.is_alive() and not self._pause.is_set() and not self._stop.is_set())
 
     # ---------- intern ----------
+    def _record_publish_locked(self, ok: bool, waited_s: float, retries: int) -> None:
+        if ok:
+            self._pub_ok += 1
+            self._window_ok += 1
+        else:
+            self._pub_fail += 1
+        self._pub_retry += retries
+        self._publish_wait_s += waited_s
+        now = time.monotonic()
+        elapsed = now - self._window_started_mono
+        if elapsed >= 2.0:
+            self._last_rate_msgs_per_s = self._window_ok / max(0.001, elapsed)
+            self._window_started_mono = now
+            self._window_ok = 0
+
+    def _publish_item(self, item: _ReplayItem, speed: float) -> None:
+        if not self._mqtt_client or not self._mqtt_client.is_connected():
+            logger.error("❌ MQTT-Client nicht verbunden")
+            with self._lock:
+                self._record_publish_locked(False, 0.0, 0)
+            return
+
+        payload_str = (
+            item.payload if isinstance(item.payload, (bytes, bytearray)) else str(item.payload).encode("utf-8")
+        )
+        qos = effective_publish_qos(item.qos, speed)
+        retries = 0
+        waited = 0.0
+        ok = False
+        # Short retry loop when outbound queue is temporarily full (QoS1 backpressure)
+        for attempt in range(8):
+            t0 = time.monotonic()
+            try:
+                ok, _rc = self._mqtt_client.publish_with_status(
+                    topic=item.topic, payload=payload_str, qos=qos, retain=item.retain
+                )
+            except Exception as e:
+                logger.error(f"❌ MQTT-Publish Exception: {e}")
+                ok = False
+            waited += time.monotonic() - t0
+            if ok:
+                break
+            retries += 1
+            # MQTT_ERR_QUEUE_SIZE is typically 4 in paho; also retry other failures briefly
+            time.sleep(0.01 * (attempt + 1))
+            if self._stop.is_set():
+                break
+        if not ok:
+            logger.warning(f"⚠️ MQTT-Publish fehlgeschlagen: {item.topic} (qos={qos}, retries={retries})")
+        with self._lock:
+            self._record_publish_locked(ok, waited, retries)
+
     def _run(self) -> None:
         """Background replay loop publishing queued messages at scaled timing."""
         while not self._stop.is_set():
@@ -394,32 +604,45 @@ class ReplayController:
                 time.sleep(0.05)
             if self._stop.is_set():
                 break
-            # Zeitpunkt (mit Speed) abwarten
-            due = start + (item.ts_rel / speed)
+            # Zeitpunkt (mit Speed) abwarten — max = no wait (due == start)
+            due_offset = 0.0 if speed == float("inf") else (item.ts_rel / speed)
+            due = start + due_offset
             now = time.monotonic()
             if due > now:
                 time.sleep(min(0.1, due - now))
                 continue
-            # Publish mit persistentem MQTT-Client
-            if self._mqtt_client and self._mqtt_client.is_connected():
-                try:
-                    payload_str = (
-                        item.payload
-                        if isinstance(item.payload, (bytes, bytearray))
-                        else str(item.payload).encode("utf-8")
-                    )
-                    success = self._mqtt_client.publish(
-                        topic=item.topic, payload=payload_str, qos=item.qos, retain=item.retain
-                    )
-                    if not success:
-                        logger.warning(f"⚠️ MQTT-Publish fehlgeschlagen: {item.topic}")
-                except Exception as e:
-                    logger.error(f"❌ MQTT-Publish Exception: {e}")
-            else:
-                logger.error("❌ MQTT-Client nicht verbunden")
+            self._publish_item(item, speed)
             # Index vorrücken
             with self._lock:
                 self._idx += 1
+
+        with self._lock:
+            if self._run_finished_mono is None:
+                self._run_finished_mono = time.monotonic()
+                if self._pause_started_mono is not None:
+                    self._paused_total_s += self._run_finished_mono - self._pause_started_mono
+                    self._pause_started_mono = None
+            logger.info(
+                "🏁 Replay finished: ok=%s fail=%s elapsed_active=%.1fs avg=%.1f msg/s speed=%s",
+                self._pub_ok,
+                self._pub_fail,
+                max(
+                    0.0,
+                    (self._run_finished_mono - (self._run_started_mono or self._run_finished_mono))
+                    - self._paused_total_s,
+                ),
+                (
+                    self._pub_ok
+                    / max(
+                        0.001,
+                        (self._run_finished_mono - (self._run_started_mono or self._run_finished_mono))
+                        - self._paused_total_s,
+                    )
+                    if self._pub_ok
+                    else 0.0
+                ),
+                format_replay_speed(self._speed),
+            )
 
     def cleanup(self):
         """Sauberes Cleanup des Controllers"""
@@ -626,9 +849,8 @@ def show_replay_station():
         with col1:
             st.selectbox(
                 "🏃 Geschwindigkeit",
-                [0.2, 0.33, 0.5, 1.0, 2.0, 3.0, 5.0],
-                index=3,
-                format_func=lambda x: f"{x}x" if x >= 1 else f"1/{int(1/x)}x",
+                REPLAY_SPEED_LABELS,
+                index=REPLAY_SPEED_DEFAULT_INDEX,
                 key="speed_disabled_placeholder",
                 disabled=True,
             )
@@ -1318,14 +1540,18 @@ def show_replay_controls(rerun_controller: RerunController):
     col1, col2 = st.columns(2)
 
     with col1:
-        speed = st.selectbox(
+        # String labels keep Streamlit widget state stable across auto-reruns
+        # (float("inf") as option value was unreliable).
+        if "replay_speed_label" not in st.session_state:
+            st.session_state.replay_speed_label = label_for_replay_speed(session.get("speed", 1.0))
+        speed_label = st.selectbox(
             "🏃 Geschwindigkeit",
-            [0.2, 0.33, 0.5, 1.0, 2.0, 3.0, 5.0],
-            index=3,
-            format_func=lambda x: f"{x}x" if x >= 1 else f"1/{int(1/x)}x",
+            REPLAY_SPEED_LABELS,
+            key="replay_speed_label",
         )
+        speed = REPLAY_SPEED_BY_LABEL[speed_label]
         session["speed"] = speed
-        # Speed ggf. im Controller aktualisieren
+        # Speed ggf. im Controller aktualisieren (Timeshift bleibt load-time / Realzeit-Offsets)
         replay_ctrl.set_speed(speed)
 
     with col2:
@@ -1341,13 +1567,28 @@ def show_replay_controls(rerun_controller: RerunController):
         st.progress(0.0)
         st.text("📊 Fortschritt: 0/0")
 
-    # Auto-Refresh für laufendes Replay (alle 10 Sekunden)
-    if replay_ctrl.is_running():
-        st.caption("🔄 Auto-Refresh aktiv (alle 10s).")
-        time.sleep(10)
-        st.rerun()
+    stats = replay_ctrl.get_publish_stats()
+    status_tag = "fertig" if stats["finished"] else "läuft"
+    st.caption(
+        f"Diagnose ({status_tag}): Speed={stats['speed_label']} · "
+        f"Gesamtzeit={stats['elapsed_active_s']}s (aktiv) / {stats['elapsed_total_s']}s (Wanduhr) · "
+        f"Ø={stats['avg_rate_msgs_per_s']} msg/s · "
+        f"Momentan≈{stats['rate_msgs_per_s']} msg/s · "
+        f"OK={stats['pub_ok']} Fail={stats['pub_fail']} Retry={stats['pub_retry']} · "
+        f"Publish-Wait={stats['publish_wait_s']}s · "
+        f"QoS={stats['qos_mode']}"
+    )
 
-    # (alte Replay-Logik entfernt - wird jetzt vom ReplayController gehandhabt)
+    # Nach Ende weiter anzeigen (kein Auto-Refresh), solange Session geladen bleibt
+    if replay_ctrl.is_running():
+        st.caption("🔄 Auto-Refresh aktiv (alle 2s).")
+        time.sleep(2)
+        st.rerun()
+    elif stats["finished"] and stats["pub_ok"]:
+        st.success(
+            f"🏁 Replay fertig in {stats['elapsed_active_s']}s aktiv "
+            f"(Ø {stats['avg_rate_msgs_per_s']} msg/s bei {stats['speed_label']})"
+        )
 
 
 def start_replay():

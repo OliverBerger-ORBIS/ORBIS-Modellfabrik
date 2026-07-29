@@ -67,6 +67,15 @@ class SessionManagerMQTTClient:
                 self._client.on_connect = self._on_connect
                 self._client.on_disconnect = self._on_disconnect
                 self._client.on_message = self._on_message
+                # High-speed replay: avoid QoS1 inflight / outbound queue stalls
+                try:
+                    self._client.max_inflight_messages_set(2000)
+                except Exception:
+                    pass
+                try:
+                    self._client.max_queued_messages_set(0)  # 0 = unlimited in paho
+                except Exception:
+                    pass
 
                 # Verbindung herstellen
                 self._client.connect(self.host, self.port, 60)
@@ -110,16 +119,26 @@ class SessionManagerMQTTClient:
         Returns:
             True wenn erfolgreich, False bei Fehler
         """
+        return self.publish_with_status(topic, payload, qos, retain)[0]
+
+    def publish_with_status(
+        self, topic: str, payload: str | bytes, qos: int = 0, retain: bool = False
+    ) -> tuple[bool, int]:
+        """
+        Publish and return ``(ok, rc)``.
+
+        ``rc`` is the paho return code (``MQTT_ERR_SUCCESS`` / queue / etc.).
+        """
         if not self.connected or not self._client:
-            return False
+            return False, -1
 
         try:
             if mqtt is None:
-                return False
+                return False, -1
             result = self._client.publish(topic, payload, qos, retain)
-            return result.rc == mqtt.MQTT_ERR_SUCCESS
+            return result.rc == mqtt.MQTT_ERR_SUCCESS, int(result.rc)
         except Exception:
-            return False
+            return False, -1
 
     def subscribe(self, topic: str, qos: int = 0) -> bool:
         """
