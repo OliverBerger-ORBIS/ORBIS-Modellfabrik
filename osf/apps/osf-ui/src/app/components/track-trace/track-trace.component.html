@@ -210,9 +210,16 @@
                   <span class="route-arrow">→</span>
                   <span class="route-to">{{ getLocationLabel(order.toLocation || '') }}</span>
                 </div>
-                <div class="order-field" *ngIf="order.plannedStationChain?.length">
+                <div class="order-field planned-stations" *ngIf="order.plannedStationChain?.length">
                   <span class="field-label" i18n="@@trackTracePlannedStations">Planned stations:</span>
-                  <span class="field-value">{{ formatPlannedStationChain(order.plannedStationChain) }}</span>
+                  <span class="planned-station-checklist">
+                    <span
+                      *ngFor="let step of getPlannedStationChecklist(history.events, order)"
+                      class="station-check"
+                      [class.station-check--done]="step.visited"
+                      [attr.title]="step.visited ? 'Visited' : 'Pending'"
+                    >{{ step.station }}</span>
+                  </span>
                 </div>
               </div>
             </div>
@@ -317,20 +324,29 @@
                 *ngIf="getEventSourceLabel(event.eventSource) as sourceLabel"
                 [attr.data-source]="event.eventSource"
               >{{ sourceLabel }}</span>
+              <span
+                class="ist-visit-badge"
+                *ngIf="getIstVisitBadge(event) as istBadge"
+              >{{ istBadge }}</span>
             </div>
             <div class="event-time">{{ formatTimestamp(event.timestamp) }}</div>
+            <div class="event-position" *ngIf="getTransportMetaLabel(event) as metaLabel">
+              {{ metaLabel }}
+            </div>
+            <div class="event-position-list" *ngIf="getTransportLoadRows(event).length">
+              <div class="event-position" *ngFor="let row of getTransportLoadRows(event)">
+                <img
+                  [src]="row.icon"
+                  alt=""
+                  width="14"
+                  height="14"
+                  class="position-bucket-icon"
+                />
+                {{ row.label }}
+              </div>
+            </div>
             <div class="event-position" *ngIf="getEventPositionLabel(event) as positionLabel">
-              <!-- Bucket-icon for FTS transport slot, location-marker for station rack -->
               <img
-                *ngIf="getBucketPositionIcon(event) as bucketIcon"
-                [src]="bucketIcon"
-                alt=""
-                width="14"
-                height="14"
-                class="position-bucket-icon"
-              />
-              <img
-                *ngIf="!getBucketPositionIcon(event) && event.eventSource !== 'FTS'"
                 src="assets/svg/shopfloor/shared/location-marker.svg"
                 alt=""
                 width="12"

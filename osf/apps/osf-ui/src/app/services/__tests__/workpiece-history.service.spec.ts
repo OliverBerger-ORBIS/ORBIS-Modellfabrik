@@ -866,5 +866,355 @@ describe('WorkpieceHistoryService', () => {
       const sp = service as any;
       expect(sp.shouldCaptureEnvironmentSnapshot(makeEvent({ stationId: 'DRILL', orderType: 'PRODUCTION', eventType: 'PICK' }))).toBe(false);
     });
+
+    it('captures DOCK at DRILL/MILL/AIQS in PRODUCTION (Ist arrival / co-passenger)', () => {
+      const sp = service as any;
+      expect(sp.shouldCaptureEnvironmentSnapshot(makeEvent({ stationId: 'DRILL', orderType: 'PRODUCTION', eventType: 'DOCK' }))).toBe(true);
+      expect(sp.shouldCaptureEnvironmentSnapshot(makeEvent({ stationId: 'MILL', orderType: 'PRODUCTION', eventType: 'DOCK' }))).toBe(true);
+      expect(sp.shouldCaptureEnvironmentSnapshot(makeEvent({ stationId: 'AIQS', orderType: 'PRODUCTION', eventType: 'DOCK' }))).toBe(true);
+    });
+
+    it('does NOT capture DOCK at DRILL in STORAGE', () => {
+      const sp = service as any;
+      expect(sp.shouldCaptureEnvironmentSnapshot(makeEvent({ stationId: 'DRILL', orderType: 'STORAGE', eventType: 'DOCK' }))).toBe(false);
+    });
+  });
+
+  describe('FTS Ist stops (same-node DOCK + co-passenger)', () => {
+    const drillSerial = 'SVR4H76449';
+
+    const makeFtsState = (
+      command: string,
+      actionId: string,
+      timestamp: string,
+      load: Array<{ loadId: string; loadType: 'RED' | 'WHITE' | 'BLUE'; loadPosition: string }>
+    ) => ({
+      serialNumber: '5iO4',
+      timestamp,
+      orderId: 'ord-co',
+      orderUpdateId: 1,
+      lastNodeId: drillSerial,
+      driving: false,
+      actionState: { id: actionId, command, state: 'FINISHED', timestamp },
+      load,
+      _moduleSerialId: '5iO4',
+    });
+
+    it('emits DOCK after PASS at the same manufacturing node', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+
+      sp.updateWorkpieceHistory(
+        env,
+        makeFtsState('PASS', 'act-pass', '2026-07-29T10:00:00.000Z', [
+          { loadId: 'nfc-red', loadType: 'RED', loadPosition: '2' },
+        ]),
+        { active: {}, completed: {} }
+      );
+      sp.updateWorkpieceHistory(
+        env,
+        makeFtsState('DOCK', 'act-dock', '2026-07-29T10:00:01.000Z', [
+          { loadId: 'nfc-red', loadType: 'RED', loadPosition: '2' },
+        ]),
+        { active: {}, completed: {} }
+      );
+
+      const history = service.getSnapshot(env).get('nfc-red');
+      expect(history).toBeDefined();
+      const types = history!.events.map((e) => e.eventType);
+      expect(types).toContain('PASS');
+      expect(types).toContain('DOCK');
+      const dock = history!.events.find((e) => e.eventType === 'DOCK');
+      expect(dock?.details?.['visitKind']).toBe('IST_ONLY');
+      expect(dock?.details?.['coPassenger']).toBe(true);
+      expect(dock?.stationId).toBe('DRILL');
+    });
+
+    it('marks WHITE at DRILL as PLANNED (not co-passenger)', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+
+      sp.updateWorkpieceHistory(
+        env,
+        makeFtsState('DOCK', 'act-w', '2026-07-29T10:00:00.000Z', [
+          { loadId: 'nfc-white', loadType: 'WHITE', loadPosition: '1' },
+        ]),
+        { active: {}, completed: {} }
+      );
+
+      const history = service.getSnapshot(env).get('nfc-white');
+      const dock = history!.events.find((e) => e.eventType === 'DOCK');
+      expect(dock?.details?.['visitKind']).toBe('PLANNED');
+      expect(dock?.details?.['coPassenger']).toBe(false);
+    });
+  });
+
+  describe('SOLL station completeness (BLUE module gate)', () => {
+    it('records MODULE DRILL/MILL/CHECK_QUALITY for BLUE production history', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+
+      const makeModule = (
+        serial: string,
+        command: string,
+        actionId: string,
+        timestamp: string
+      ) => ({
+        serialNumber: serial,
+        timestamp,
+        orderId: 'ord-blue',
+        orderUpdateId: 2,
+        actionState: {
+          id: actionId,
+          command,
+          state: 'FINISHED',
+          timestamp,
+          result: command === 'CHECK_QUALITY' ? 'OK' : undefined,
+        },
+        loads: [{ loadId: 'nfc-blue', loadType: 'BLUE' as const, loadPosition: '1' }],
+        _moduleSerialId: serial,
+        _topic: `module/v1/ff/${serial}/state`,
+      });
+
+      sp.updateWorkpieceHistoryFromModule(
+        env,
+        makeModule('SVR4H76449', 'DRILL', 'm-drill', '2026-07-29T11:00:00.000Z'),
+        { active: {}, completed: {} }
+      );
+      sp.updateWorkpieceHistoryFromModule(
+        env,
+        makeModule('SVR3QA2098', 'MILL', 'm-mill', '2026-07-29T11:01:00.000Z'),
+        { active: {}, completed: {} }
+      );
+      sp.updateWorkpieceHistoryFromModule(
+        env,
+        makeModule('SVR4H76530', 'CHECK_QUALITY', 'm-aiqs', '2026-07-29T11:02:00.000Z'),
+        { active: {}, completed: {} }
+      );
+
+      const history = service.getSnapshot(env).get('nfc-blue');
+      expect(history).toBeDefined();
+      const stations = new Set(
+        history!.events
+          .filter((e) => e.eventSource === 'MODULE')
+          .map((e) => (e.stationId || '').toUpperCase())
+      );
+      expect(stations.has('DRILL')).toBe(true);
+      expect(stations.has('MILL')).toBe(true);
+      expect(stations.has('AIQS')).toBe(true);
+    });
+  });
+
+  describe('module attribution (no Blue steal)', () => {
+    const drillSerial = 'SVR4H76449';
+    const whiteOrder = 'ord-white';
+    const blueOrder = 'ord-blue';
+
+    it('does not attribute White DRILL DROP (empty loads) to Blue via Map order', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+      const orders = {
+        active: {
+          [blueOrder]: { orderId: blueOrder, orderType: 'PRODUCTION', type: 'BLUE' },
+          [whiteOrder]: { orderId: whiteOrder, orderType: 'PRODUCTION', type: 'WHITE' },
+        },
+        completed: {},
+      };
+
+      // Insert BLUE first so naive Map.entries() would prefer it
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: 'leJ4',
+          timestamp: '2026-07-29T10:00:00.000Z',
+          orderId: blueOrder,
+          orderUpdateId: 1,
+          lastNodeId: drillSerial,
+          driving: false,
+          actionState: { id: 'b-dock', command: 'DOCK', state: 'FINISHED', timestamp: '2026-07-29T10:00:00.000Z' },
+          load: [{ loadId: 'nfc-blue', loadType: 'BLUE', loadPosition: '1' }],
+          _moduleSerialId: 'leJ4',
+        },
+        orders
+      );
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-07-29T10:01:00.000Z',
+          orderId: whiteOrder,
+          orderUpdateId: 1,
+          lastNodeId: drillSerial,
+          driving: false,
+          actionState: { id: 'w-dock', command: 'DOCK', state: 'FINISHED', timestamp: '2026-07-29T10:01:00.000Z' },
+          load: [
+            { loadId: 'nfc-white', loadType: 'WHITE', loadPosition: '1' },
+            { loadId: 'nfc-red', loadType: 'RED', loadPosition: '2' },
+          ],
+          _moduleSerialId: '5iO4',
+        },
+        orders
+      );
+
+      // Empty loads DROP for White's order at DRILL
+      sp.updateWorkpieceHistoryFromModule(
+        env,
+        {
+          serialNumber: drillSerial,
+          timestamp: '2026-07-29T10:02:00.000Z',
+          orderId: whiteOrder,
+          orderUpdateId: 2,
+          actionState: {
+            id: 'drill-drop',
+            command: 'DROP',
+            state: 'FINISHED',
+            timestamp: '2026-07-29T10:02:00.000Z',
+          },
+          loads: [],
+          _moduleSerialId: drillSerial,
+          _topic: `module/v1/ff/${drillSerial}/state`,
+        },
+        orders
+      );
+
+      const blue = service.getSnapshot(env).get('nfc-blue');
+      const white = service.getSnapshot(env).get('nfc-white');
+      const red = service.getSnapshot(env).get('nfc-red');
+
+      const blueModule = blue?.events.filter((e) => e.eventSource === 'MODULE') ?? [];
+      const whiteModule = white?.events.filter((e) => e.eventSource === 'MODULE') ?? [];
+      const redModule = red?.events.filter((e) => e.eventSource === 'MODULE') ?? [];
+
+      expect(blueModule.some((e) => e.eventType === 'DROP' && e.orderId === whiteOrder)).toBe(false);
+      expect(whiteModule.some((e) => e.eventType === 'DROP' && e.stationId === 'DRILL')).toBe(true);
+      // RED is co-passenger (not planned at DRILL) — must not steal White DROP
+      expect(redModule.some((e) => e.eventType === 'DROP')).toBe(false);
+    });
+
+    it('does not attribute RED MILL to BLUE co-passenger (both have MILL in SOLL)', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+      const millSerial = 'SVR3QA2098';
+      const redOrder = 'ord-red';
+      const orders = {
+        active: {
+          [redOrder]: { orderId: redOrder, orderType: 'PRODUCTION', type: 'RED' },
+          [blueOrder]: { orderId: blueOrder, orderType: 'PRODUCTION', type: 'BLUE' },
+        },
+        completed: {},
+      };
+
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-07-29T12:00:00.000Z',
+          orderId: redOrder,
+          orderUpdateId: 1,
+          lastNodeId: millSerial,
+          driving: false,
+          actionState: { id: 'dock', command: 'DOCK', state: 'FINISHED', timestamp: '2026-07-29T12:00:00.000Z' },
+          load: [
+            { loadId: 'nfc-blue', loadType: 'BLUE', loadPosition: '1' },
+            { loadId: 'nfc-red', loadType: 'RED', loadPosition: '2' },
+          ],
+          _moduleSerialId: '5iO4',
+        },
+        orders
+      );
+
+      sp.updateWorkpieceHistoryFromModule(
+        env,
+        {
+          serialNumber: millSerial,
+          timestamp: '2026-07-29T12:01:00.000Z',
+          orderId: redOrder,
+          orderUpdateId: 2,
+          actionState: {
+            id: 'mill',
+            command: 'MILL',
+            state: 'FINISHED',
+            timestamp: '2026-07-29T12:01:00.000Z',
+          },
+          loads: [],
+          _moduleSerialId: millSerial,
+        },
+        orders
+      );
+
+      expect(service.getSnapshot(env).get('nfc-red')?.events.some((e) => e.eventType === 'MILL')).toBe(true);
+      expect(service.getSnapshot(env).get('nfc-blue')?.events.some((e) => e.eventType === 'MILL')).toBe(
+        false
+      );
+      expect(
+        service.getSnapshot(env).get('nfc-blue')?.events.find((e) => e.eventType === 'DOCK')?.details?.[
+          'coPassenger'
+        ]
+      ).toBe(true);
+      expect(
+        service.getSnapshot(env).get('nfc-blue')?.events.find((e) => e.eventType === 'DOCK')?.details?.[
+          'agvLoads'
+        ]
+      ).toHaveLength(2);
+    });
+
+    it('keeps explicit NFC loadId even when Blue already exists for same orderId', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: 'leJ4',
+          timestamp: '2026-07-29T10:00:00.000Z',
+          orderId: whiteOrder,
+          orderUpdateId: 1,
+          lastNodeId: drillSerial,
+          driving: false,
+          actionState: { id: 'b-dock', command: 'DOCK', state: 'FINISHED', timestamp: '2026-07-29T10:00:00.000Z' },
+          load: [{ loadId: 'nfc-blue', loadType: 'BLUE', loadPosition: '1' }],
+          _moduleSerialId: 'leJ4',
+        },
+        {
+          active: { [whiteOrder]: { orderId: whiteOrder, orderType: 'PRODUCTION', type: 'WHITE' } },
+          completed: {},
+        }
+      );
+
+      sp.updateWorkpieceHistoryFromModule(
+        env,
+        {
+          serialNumber: drillSerial,
+          timestamp: '2026-07-29T10:01:00.000Z',
+          orderId: whiteOrder,
+          orderUpdateId: 2,
+          actionState: {
+            id: 'drill',
+            command: 'DRILL',
+            state: 'FINISHED',
+            timestamp: '2026-07-29T10:01:00.000Z',
+          },
+          loads: [{ loadId: 'nfc-white', loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: drillSerial,
+        },
+        {
+          active: { [whiteOrder]: { orderId: whiteOrder, orderType: 'PRODUCTION', type: 'WHITE' } },
+          completed: {},
+        }
+      );
+
+      expect(service.getSnapshot(env).get('nfc-white')?.events.some((e) => e.eventType === 'DRILL')).toBe(
+        true
+      );
+      expect(service.getSnapshot(env).get('nfc-blue')?.events.some((e) => e.eventType === 'DRILL')).toBe(
+        false
+      );
+    });
   });
 });

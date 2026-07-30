@@ -400,4 +400,5 @@ private extractDatesFromEvents(
 - `osf/apps/osf-ui/src/app/services/erp-order-data.service.ts` - ERP-Daten Service
 - `osf/apps/osf-ui/src/app/tabs/fts-tab.component.ts` - Referenz für TURN LEFT/RIGHT Logik
 - `docs/07-analysis/production-order-analysis-results.md`
+- **Aktuelle Attribution/Ist+SOLL+ENV (2026-07):** [osf-ui-track-trace-history-attribution.md](../04-howto/osf-ui-track-trace-history-attribution.md)
 - *(Schema/Topics: OMF2 registry entfernt – Referenz in `docs/06-integrations/00-REFERENCE/`)*

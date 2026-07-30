@@ -6,9 +6,19 @@ All notable changes to OSF Dashboard will be documented here.
 
 ## [Unreleased]
 
-### Project / sprint documentation
+## [1.2.0] - 2026-07-30
 
-- **Sprint 18** closed (LogiMAT, ORBIS Vertrieb OSF **02.04.2026**). **Sprint 19** opened — focus: Arduino sensor station (OSF, 24 V, box), backend/Grafana, blog, Hannover Messe prep (bird’s-eye camera, Konftel-20, OBS). See [sprint_19.md](docs/sprints/sprint_19.md), [PROJECT_STATUS.md](docs/PROJECT_STATUS.md).
+### OSF-UI – Track & Trace
+
+- **Ist + SOLL:** Same-node FTS **DOCK** after PASS; Mitfahrer-Stops as `visitKind: IST_ONLY` with UI badge; SOLL checklist (✓/○) in order context.
+- **Environment snapshots:** Also on **DOCK** at DRILL/MILL/AIQS (PRODUCTION); STORAGE matrix remains DPS DROP + HBW PICK (plus existing PRODUCTION HBW DROP / DPS PICK).
+- **Attribution:** NFC-first module binding; empty `loads[]` via CCU order type + docked workpiece; foreign-order / co-passenger guards (no Blue steal); multi-load UI as Position rows with workpiece icons.
+- **Publisher / timeline (1.1.x carry-in):** FTS vs Module badge; module events as SoT for PICK/DRILL/MILL/DROP; Intersection labels; quality result badge.
+- How-to: [osf-ui-track-trace-history-attribution.md](docs/04-howto/osf-ui-track-trace-history-attribution.md).
+
+### Docs / Sessions
+
+- T&T reference sessions `*-storage-production_20260728_*`; inventory notes on reused NFC in older mixed logs; Sprint 27 follow-ups: new NFC-unique recordings + RPi deploy of v1.2.0.
 
 ## [1.1.10] - 2026-07-21
 

@@ -154,6 +154,14 @@ interface ModuleState {
 // Includes manufacturing stations (MILL, DRILL, AIQS) and storage/processing stations (HBW, DPS)
 const MODULE_STATIONS = ['SVR3QA0022', 'SVR4H76449', 'SVR3QA2098', 'SVR4H76530', 'SVR4H73275'] as const;
 const MANUFACTURING_STATIONS = ['SVR4H76449', 'SVR3QA2098', 'SVR4H76530'] as const;
+/** Fallback when shopfloor layout is not loaded yet (tests / early boot). */
+const MODULE_SERIAL_TYPES: Record<string, string> = {
+  SVR3QA0022: 'HBW',
+  SVR4H76449: 'DRILL',
+  SVR3QA2098: 'MILL',
+  SVR4H76530: 'AIQS',
+  SVR4H73275: 'DPS',
+};
 
 /**
  * Production workflows: Which workpiece types go to which stations
@@ -639,26 +647,33 @@ export class WorkpieceHistoryService implements OnDestroy {
           state.lastNodeId as typeof MANUFACTURING_STATIONS[number]
         );
 
-        // Check if location changed to generate proper station events
-        // ALWAYS generate an event if location changed OR if this is the first event
+        // Emit on location change, or same-node DOCK after PASS/TURN (Ist arrival).
+        // B3: FTS only records transport (DOCK/PASS/TURN); station process stays MODULE SoT.
+        const eventType = this.mapActionCommandToEventType(state.actionState.command);
         const lastEvent = existingHistory.events[existingHistory.events.length - 1];
         const locationChanged = !lastEvent || lastEvent.location !== state.lastNodeId;
-        
-        if (locationChanged) {
-          // Debug: Log location change and order type determination
-          console.log('[WorkpieceHistoryService] Location changed for workpiece:', {
+        const lastFtsAtLocation = [...existingHistory.events]
+          .reverse()
+          .find((e) => e.eventSource === 'FTS' && e.location === state.lastNodeId);
+        const commandChangedAtSameNode =
+          !locationChanged &&
+          !!lastFtsAtLocation &&
+          (lastFtsAtLocation.eventType || '').toUpperCase() !== eventType;
+        const shouldEmitTransport =
+          locationChanged || (commandChangedAtSameNode && eventType === 'DOCK');
+
+        if (shouldEmitTransport) {
+          console.log('[WorkpieceHistoryService] Transport event for workpiece:', {
             workpieceId: loadItem.loadId,
             workpieceType: loadItem.loadType,
             oldLocation: lastEvent?.location,
             newLocation: state.lastNodeId,
             stationName,
             orderType,
+            eventType,
+            locationChanged,
+            commandChangedAtSameNode,
             isManufacturingStation,
-            wasAtHbw: existingHistory.events.some((e) => e.location === 'SVR3QA0022'),
-            wasAtManufacturingStation: existingHistory.events.some((e) => {
-              const moduleType = e.moduleName || this.getModuleNameFromSerial(e.location);
-              return moduleType === 'MILL' || moduleType === 'DRILL' || moduleType === 'AIQS';
-            }),
           });
           const baseEvent: Partial<TrackTraceEvent> = {
             timestamp: state.timestamp,
@@ -675,14 +690,9 @@ export class WorkpieceHistoryService implements OnDestroy {
             eventSource: 'FTS',
           };
 
-          // Generate sub-order ID for this event sequence
           const subOrderId = `${state.orderId}-${existingHistory.events.length + 1}`;
-          // Use action state ID as actionId for sorting
           const actionId = state.actionState.id;
 
-          // B3: FTS only records transport at stations (DOCK/PASS/TURN).
-          // Station PICK / process / DROP come from module MQTT (single source of truth).
-          const eventType = this.mapActionCommandToEventType(state.actionState.command);
           let turnDirection: string | undefined;
           if (eventType === 'TURN') {
             const actionStateMeta = (state.actionState as { metadata?: { direction?: string } })?.metadata;
@@ -693,11 +703,18 @@ export class WorkpieceHistoryService implements OnDestroy {
             }
           }
 
-          // Resolve intersection node → human-readable label ("1" → "intersection:1")
           const nodeRef = this.ftsRouteService.resolveNodeRef(state.lastNodeId);
           const intersectionNumber = nodeRef?.startsWith('intersection:')
             ? nodeRef.replace('intersection:', '')
             : null;
+
+          const agvLoads = (state.load ?? [])
+            .filter((l) => !!l.loadId && !!l.loadType)
+            .map((l) => ({
+              loadId: l.loadId as string,
+              loadType: l.loadType as string,
+              loadPosition: l.loadPosition,
+            }));
 
           const details: Record<string, unknown> = {
             actionState: state.actionState.state,
@@ -705,7 +722,28 @@ export class WorkpieceHistoryService implements OnDestroy {
             loadType: loadItem.loadType || undefined,
             direction: turnDirection,
             intersectionNumber,
+            agvLoads,
           };
+
+          // Ist-only: manufacturing stop not in this workpiece's planned workflow (e.g. RED @ DRILL),
+          // or co-passenger on another color's order (e.g. BLUE @ MILL while RED order is active).
+          const mfgStation = (stationName || '').toUpperCase();
+          const orderWorkpieceType = this.resolveOrderWorkpieceType(normalizedOrders, state.orderId);
+          const isForeignOrder =
+            !!orderWorkpieceType &&
+            !!loadItem.loadType &&
+            orderWorkpieceType !== String(loadItem.loadType).toUpperCase();
+          if (['DRILL', 'MILL', 'AIQS'].includes(mfgStation)) {
+            const inPlannedWorkflow = this.canWorkpieceBeProcessedAtStation(
+              loadItem.loadType,
+              stationName
+            );
+            details['visitKind'] = inPlannedWorkflow && !isForeignOrder ? 'PLANNED' : 'IST_ONLY';
+            details['coPassenger'] = !inPlannedWorkflow || isForeignOrder;
+          } else if (isForeignOrder) {
+            details['visitKind'] = 'IST_ONLY';
+            details['coPassenger'] = true;
+          }
 
           const transportEvent: TrackTraceEvent = {
             ...baseEvent,
@@ -722,6 +760,7 @@ export class WorkpieceHistoryService implements OnDestroy {
             workpieceId: loadItem.loadId,
             eventType,
             location: state.lastNodeId,
+            visitKind: details['visitKind'],
             eventsCount: existingHistory.events.length,
           });
         }
@@ -814,11 +853,22 @@ export class WorkpieceHistoryService implements OnDestroy {
       return; // No workpiece identity and no orderId to match against
     }
 
-    // Find workpiece history by NFC id, then orderId+type, then orderId alone
+    // Prefer explicit NFC from payload; never let orderId fallback override it.
     let matchingWorkpieceId: string | null = workpieceIdFromModule;
     let matchingHistory: WorkpieceHistory | null = matchingWorkpieceId
       ? historyMap.get(matchingWorkpieceId) ?? null
       : null;
+
+    if (workpieceIdFromModule && !matchingHistory) {
+      matchingHistory = {
+        workpieceId: workpieceIdFromModule,
+        workpieceType: workpieceType || 'UNKNOWN',
+        events: [],
+        orders: [],
+      };
+      historyMap.set(workpieceIdFromModule, matchingHistory);
+      matchingWorkpieceId = workpieceIdFromModule;
+    }
 
     if (!matchingHistory && workpieceType) {
       for (const [workpieceId, history] of historyMap.entries()) {
@@ -838,13 +888,38 @@ export class WorkpieceHistoryService implements OnDestroy {
       }
     }
 
-    if (!matchingWorkpieceId || !matchingHistory) {
-      for (const [workpieceId, history] of historyMap.entries()) {
-        const hasOrderMatch = history.events.some((event) => event.orderId === moduleState.orderId);
-        if (hasOrderMatch) {
-          matchingWorkpieceId = workpieceId;
-          matchingHistory = history;
-          break;
+    // Empty loads (DROP/process): bind by orderId, but prefer the workpiece that
+    // actually docked at this module (co-passengers share one FTS orderId).
+    if (!matchingHistory && canMatchByOrderId) {
+      const normalizedOrders =
+        orders && typeof orders === 'object' && 'active' in orders
+          ? (orders as { active: Record<string, unknown>; completed: Record<string, unknown> })
+          : { active: {}, completed: {} };
+      const orderWorkpieceType =
+        workpieceType ||
+        this.resolveOrderWorkpieceType(normalizedOrders, moduleState.orderId as string);
+      const docked = this.findWorkpieceDockedAtModule(
+        historyMap,
+        moduleState.orderId as string,
+        moduleSerialId,
+        orderWorkpieceType
+      );
+      if (docked) {
+        matchingWorkpieceId = docked.workpieceId;
+        matchingHistory = docked;
+      } else {
+        for (const [workpieceId, history] of historyMap.entries()) {
+          if (orderWorkpieceType && history.workpieceType !== orderWorkpieceType) {
+            continue;
+          }
+          const hasOrderMatch = history.events.some(
+            (event) => event.orderId === moduleState.orderId && event.orderId && event.orderId !== '0'
+          );
+          if (hasOrderMatch) {
+            matchingWorkpieceId = workpieceId;
+            matchingHistory = history;
+            break;
+          }
         }
       }
     }
@@ -1102,6 +1177,88 @@ export class WorkpieceHistoryService implements OnDestroy {
       'INPUT_RGB',
       'RGB_NFC',
     ].includes(normalized);
+  }
+
+  /**
+   * When module loads[] is empty, pick the workpiece that most recently FTS-docked
+   * at this module for the given order — avoids attributing co-passenger orderIds to
+   * the wrong color (e.g. BLUE stealing RED MILL while co-riding).
+   *
+   * Prefer: (1) order workpiece type filter, (2) non-coPassenger DOCK, (3) planned station,
+   * (4) latest DOCK timestamp.
+   */
+  private findWorkpieceDockedAtModule(
+    historyMap: Map<string, WorkpieceHistory>,
+    orderId: string,
+    moduleSerialId: string,
+    workpieceType: string | null
+  ): WorkpieceHistory | null {
+    const stationName = this.getStationName(moduleSerialId);
+    type Candidate = {
+      history: WorkpieceHistory;
+      ts: number;
+      planned: boolean;
+      coPassenger: boolean;
+    };
+    const candidates: Candidate[] = [];
+
+    for (const history of historyMap.values()) {
+      if (workpieceType && history.workpieceType.toUpperCase() !== workpieceType.toUpperCase()) {
+        continue;
+      }
+      for (const event of history.events) {
+        if (event.eventSource !== 'FTS' || (event.eventType || '').toUpperCase() !== 'DOCK') {
+          continue;
+        }
+        if (event.location !== moduleSerialId) {
+          continue;
+        }
+        if (event.orderId !== orderId) {
+          continue;
+        }
+        const ts = new Date(event.timestamp).getTime();
+        const planned = this.canWorkpieceBeProcessedAtStation(history.workpieceType, stationName);
+        const coPassenger = event.details?.['coPassenger'] === true;
+        candidates.push({ history, ts, planned, coPassenger });
+      }
+    }
+
+    if (candidates.length === 0) {
+      return null;
+    }
+
+    candidates.sort((a, b) => {
+      if (a.coPassenger !== b.coPassenger) {
+        return a.coPassenger ? 1 : -1;
+      }
+      if (a.planned !== b.planned) {
+        return a.planned ? -1 : 1;
+      }
+      return b.ts - a.ts;
+    });
+
+    return candidates[0]?.history ?? null;
+  }
+
+  /**
+   * CCU order color (`type`) for attribution — primary signal for empty-load module events.
+   */
+  private resolveOrderWorkpieceType(
+    orders: { active: Record<string, unknown>; completed: Record<string, unknown> },
+    orderId: string | undefined
+  ): 'BLUE' | 'WHITE' | 'RED' | null {
+    if (!orderId || orderId === '0') {
+      return null;
+    }
+    const raw = orders.active[orderId] ?? orders.completed[orderId];
+    if (!raw || typeof raw !== 'object') {
+      return null;
+    }
+    const type = String((raw as { type?: unknown }).type ?? '').toUpperCase();
+    if (type === 'BLUE' || type === 'WHITE' || type === 'RED') {
+      return type;
+    }
+    return null;
   }
 
   /**
@@ -1399,11 +1556,13 @@ export class WorkpieceHistoryService implements OnDestroy {
     }
     if (orderType === 'PRODUCTION') {
       if (['DRILL', 'MILL', 'AIQS'].includes(station)) {
+        // Process events (MODULE) + FTS DOCK arrival (incl. co-passenger Ist stops)
         return (
           type === 'PROCESS' ||
           type === 'DRILL' ||
           type === 'MILL' ||
-          type === 'CHECK_QUALITY'
+          type === 'CHECK_QUALITY' ||
+          type === 'DOCK'
         );
       }
       if (station === 'HBW') {
@@ -1447,6 +1606,11 @@ export class WorkpieceHistoryService implements OnDestroy {
     const moduleType = this.moduleNameService.getModuleTypeFromSerial(nodeId);
     if (moduleType) {
       return moduleType; // Returns DRILL, MILL, AIQS, HBW, DPS, etc.
+    }
+
+    const fallbackType = MODULE_SERIAL_TYPES[nodeId];
+    if (fallbackType) {
+      return fallbackType;
     }
     
     // Fallback: Try to get from module name service

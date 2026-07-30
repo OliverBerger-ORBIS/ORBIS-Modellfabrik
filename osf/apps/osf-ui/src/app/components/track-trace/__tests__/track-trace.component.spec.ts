@@ -383,39 +383,72 @@ describe('TrackTraceComponent', () => {
   });
 
   describe('Position label for FTS transport events', () => {
-    it('shows Intersection N for PASS events with intersectionNumber', () => {
-      const label = component.getEventPositionLabel({
+    it('shows Intersection N meta for PASS events', () => {
+      const meta = component.getTransportMetaLabel({
         timestamp: 't',
         eventType: 'PASS',
         eventSource: 'FTS',
         workpieceType: 'BLUE',
         details: { intersectionNumber: '2', loadPosition: '1' },
       });
-      expect(label).toContain('2');
-      expect(label).toContain('1');
-      expect(label).toContain('BLUE');
+      expect(meta).toContain('2');
     });
 
-    it('shows only bucket position when no intersectionNumber for TURN', () => {
-      const label = component.getEventPositionLabel({
+    it('shows Position row with icon for single load TURN', () => {
+      const rows = component.getTransportLoadRows({
         timestamp: 't',
         eventType: 'TURN',
         eventSource: 'FTS',
         workpieceType: 'WHITE',
         details: { loadPosition: '2' },
       });
-      expect(label).toContain('2');
-      expect(label).toContain('WHITE');
+      expect(rows).toHaveLength(1);
+      expect(rows[0].label).toContain('2');
+      expect(rows[0].label).toContain('WHITE');
+      expect(rows[0].icon).toBeTruthy();
     });
 
-    it('returns null for DOCK events without position', () => {
-      const label = component.getEventPositionLabel({
+    it('returns no load rows for DOCK without agvLoads/position', () => {
+      expect(
+        component.getTransportLoadRows({
+          timestamp: 't',
+          eventType: 'DOCK',
+          eventSource: 'FTS',
+          details: {},
+        })
+      ).toEqual([]);
+      expect(
+        component.getEventPositionLabel({
+          timestamp: 't',
+          eventType: 'DOCK',
+          eventSource: 'FTS',
+          details: {},
+        })
+      ).toBeNull();
+    });
+
+    it('shows Position rows with icons for multi-load DOCK', () => {
+      const rows = component.getTransportLoadRows({
         timestamp: 't',
         eventType: 'DOCK',
         eventSource: 'FTS',
-        details: {},
+        workpieceType: 'BLUE',
+        details: {
+          loadPosition: '1',
+          agvLoads: [
+            { loadId: 'a', loadType: 'BLUE', loadPosition: '1' },
+            { loadId: 'b', loadType: 'RED', loadPosition: '2' },
+          ],
+        },
       });
-      expect(label).toBeNull();
+      expect(rows).toHaveLength(2);
+      expect(rows[0].label).toContain('Position');
+      expect(rows[0].label).toContain('1');
+      expect(rows[0].label).toContain('BLUE');
+      expect(rows[0].icon).toBeTruthy();
+      expect(rows[1].label).toContain('2');
+      expect(rows[1].label).toContain('RED');
+      expect(rows[1].icon).toBeTruthy();
     });
   });
 
@@ -468,6 +501,61 @@ describe('TrackTraceComponent', () => {
       );
 
       expect(accent).toEqual({ station: 'DRILL', index: 2, total: 5 });
+    });
+
+    it('builds planned-station checklist with visited flags', () => {
+      const checklist = component.getPlannedStationChecklist(
+        [
+          {
+            timestamp: '2026-05-06T12:00:00.000Z',
+            eventType: 'DROP',
+            stationId: 'HBW',
+            orderId: 'order-prod-1',
+            orderType: 'PRODUCTION',
+          },
+          {
+            timestamp: '2026-05-06T12:01:00.000Z',
+            eventType: 'DRILL',
+            stationId: 'DRILL',
+            orderId: 'order-prod-1',
+            orderType: 'PRODUCTION',
+          },
+        ],
+        {
+          orderId: 'order-prod-1',
+          orderType: 'PRODUCTION',
+          plannedStationChain: ['HBW', 'DRILL', 'MILL', 'AIQS', 'DPS'],
+        }
+      );
+
+      expect(checklist.map((s) => s.station)).toEqual(['HBW', 'DRILL', 'MILL', 'AIQS', 'DPS']);
+      expect(checklist.find((s) => s.station === 'HBW')?.visited).toBe(true);
+      expect(checklist.find((s) => s.station === 'DRILL')?.visited).toBe(true);
+      expect(checklist.find((s) => s.station === 'MILL')?.visited).toBe(false);
+    });
+  });
+
+  describe('Ist visit badge', () => {
+    it('shows Ist stop badge for FTS DOCK with visitKind IST_ONLY', () => {
+      expect(
+        component.getIstVisitBadge({
+          timestamp: 't',
+          eventType: 'DOCK',
+          eventSource: 'FTS',
+          details: { visitKind: 'IST_ONLY', coPassenger: true },
+        })
+      ).toBeTruthy();
+    });
+
+    it('hides badge for planned FTS DOCK', () => {
+      expect(
+        component.getIstVisitBadge({
+          timestamp: 't',
+          eventType: 'DOCK',
+          eventSource: 'FTS',
+          details: { visitKind: 'PLANNED' },
+        })
+      ).toBeNull();
     });
   });
 });

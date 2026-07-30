@@ -289,32 +289,59 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     return eventType;
   }
 
-  /** HBW rack slot / FTS bucket position label. */
-  getEventPositionLabel(event: TrackTraceEvent): string | null {
+  /**
+   * Transport load rows: always "Position N (COLOR)" with workpiece icon (1 or many).
+   */
+  getTransportLoadRows(event: TrackTraceEvent): Array<{ icon: string; label: string }> {
+    if (event.eventSource !== 'FTS') {
+      return [];
+    }
     const eventType = (event.eventType || '').toUpperCase();
+    const agvLoads = this.getAgvLoadsFromEvent(event);
 
-    if (event.eventSource === 'FTS') {
-      const intersectionNum = event.details?.['intersectionNumber'];
-      const loadPos = event.details?.['loadPosition'];
-      const workpieceType = (event.workpieceType || '').toUpperCase();
-
-      const parts: string[] = [];
-      if (typeof intersectionNum === 'string' && intersectionNum.trim()) {
-        parts.push(
-          $localize`:@@trackTraceIntersection:Intersection ${intersectionNum}:number:`
-        );
-      }
-
-      // Bucket slot + color for non-DOCK FTS events
-      if (typeof loadPos === 'string' && loadPos.trim() && eventType !== 'DOCK') {
-        const slotLabel = $localize`:@@trackTracePosition:Position: ${loadPos}:position:`;
-        const colorSuffix = workpieceType ? ` (${workpieceType})` : '';
-        parts.push(`${slotLabel}${colorSuffix}`);
-      }
-      return parts.length > 0 ? parts.join(' · ') : null;
+    if (agvLoads.length >= 1) {
+      return agvLoads.map((load) => {
+        const pos = (load.loadPosition || '').trim() || '?';
+        const color = (load.loadType || '').toUpperCase();
+        const label = color
+          ? $localize`:@@trackTracePositionWithColor:Position ${pos}:position: (${color}:color:)`
+          : $localize`:@@trackTracePositionOnly:Position ${pos}:position:`;
+        return {
+          icon: this.getWorkpieceIcon(color || event.workpieceType || ''),
+          label,
+        };
+      });
     }
 
-    // Station events
+    // Legacy fallback: single loadPosition when agvLoads missing
+    const loadPos = event.details?.['loadPosition'];
+    if (typeof loadPos === 'string' && loadPos.trim() && eventType !== 'DOCK') {
+      const color = (event.workpieceType || '').toUpperCase();
+      const label = color
+        ? $localize`:@@trackTracePositionWithColor:Position ${loadPos}:position: (${color}:color:)`
+        : $localize`:@@trackTracePositionOnly:Position ${loadPos}:position:`;
+      return [{ icon: this.getWorkpieceIcon(color), label }];
+    }
+    return [];
+  }
+
+  /** Intersection meta for FTS (shown above load rows). */
+  getTransportMetaLabel(event: TrackTraceEvent): string | null {
+    if (event.eventSource !== 'FTS') {
+      return null;
+    }
+    const intersectionNum = event.details?.['intersectionNumber'];
+    if (typeof intersectionNum === 'string' && intersectionNum.trim()) {
+      return $localize`:@@trackTraceIntersection:Intersection ${intersectionNum}:number:`;
+    }
+    return null;
+  }
+
+  /** Station rack position label (non-FTS). */
+  getEventPositionLabel(event: TrackTraceEvent): string | null {
+    if (event.eventSource === 'FTS') {
+      return null;
+    }
     const pos = event.details?.['loadPosition'];
     if (typeof pos !== 'string' || !pos.trim()) {
       return null;
@@ -326,15 +353,27 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     return $localize`:@@trackTracePositionGeneric:Position: ${pos}:position:`;
   }
 
-  /** Icon for bucket slot in FTS transport events (colored workpiece or empty slot). */
+  /** Filled AGV bucket slots persisted on FTS transport events. */
+  getAgvLoadsFromEvent(
+    event: TrackTraceEvent
+  ): Array<{ loadId?: string; loadType?: string; loadPosition?: string }> {
+    const raw = event.details?.['agvLoads'];
+    if (!Array.isArray(raw)) {
+      return [];
+    }
+    return raw
+      .filter(
+        (item): item is { loadId?: string; loadType?: string; loadPosition?: string } =>
+          !!item && typeof item === 'object'
+      )
+      .filter((item) => !!item.loadId && !!item.loadType)
+      .sort((a, b) => String(a.loadPosition ?? '').localeCompare(String(b.loadPosition ?? '')));
+  }
+
+  /** Icon for single-slot FTS events (legacy helpers / tests). */
   getBucketPositionIcon(event: TrackTraceEvent): string | null {
-    if (event.eventSource !== 'FTS') return null;
-    const eventType = (event.eventType || '').toUpperCase();
-    if (eventType === 'DOCK') return null;
-    const loadPos = event.details?.['loadPosition'];
-    if (typeof loadPos !== 'string' || !loadPos.trim()) return null;
-    // Show colored workpiece icon or empty slot
-    return this.getWorkpieceIcon(event.workpieceType || '');
+    const rows = this.getTransportLoadRows(event);
+    return rows.length === 1 ? rows[0].icon : null;
   }
 
   /** Result badge for CHECK_QUALITY events (e.g. "OK", "FAILED"). */
@@ -460,6 +499,33 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
       return '';
     }
     return chain.join(' -> ');
+  }
+
+  /**
+   * SOLL checklist: planned stations with visited flag from module (or flow-anchor) events.
+   */
+  getPlannedStationChecklist(
+    events: TrackTraceEvent[] | undefined,
+    order: OrderContext | null | undefined
+  ): Array<{ station: string; visited: boolean }> {
+    return this.getOrderFlowAccents(events, order).map((accent) => ({
+      station: accent.station,
+      visited: accent.active,
+    }));
+  }
+
+  /** Co-passenger / foreign-station FTS DOCK (not in planned machining workflow). */
+  getIstVisitBadge(event: TrackTraceEvent): string | null {
+    if (event.eventSource !== 'FTS') {
+      return null;
+    }
+    if ((event.eventType || '').toUpperCase() !== 'DOCK') {
+      return null;
+    }
+    if (event.details?.['visitKind'] !== 'IST_ONLY') {
+      return null;
+    }
+    return $localize`:@@trackTraceIstStopBadge:Ist stop`;
   }
 
   isOrderScopedEvent(event: TrackTraceEvent): boolean {

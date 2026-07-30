@@ -74,7 +74,7 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 | storage-rwb-clean_20260513_141546 | | | ✓ | | 2 | ORBIS Retest (CCU osf.4): Storage RED->WHITE->BLUE, danach erfolgreicher Produktionslauf |
 | storage-white-agv2-clean_20260512_103825 | | | ✓ | | 2 | Storage WHITE mit AGV-2 (clean, no_cam, ohne retained); Sonderfall: AGV-2 navigierte von HBW nach DPS |
 | storage-red234_20260303_094003 | | ✓ | ✓ | ✓ | 1 | Storage überwiegend, wenig Prod |
-| mixed-pw-pr-sw-pb-sr-sb_20260303_092241 | | ✓ | ✓ | ✓ | 1 | Gemischt: White, Red, Blue Prod+Storage |
+| mixed-pw-pr-sw-pb-sr-sb_20260303_092241 | | ✓ | ✓ | ✓ | 1 | Gemischt: White, Red, Blue Prod+Storage; **NFC wiederverwendet** → T&T-Spuren oft „wild“; Ersatz durch neue Aufnahmen geplant |
 | mixed-sw-pw-sw-pwnok-pw_20260303_093559 | | ✓ | ✓ | ✓ | 1 | **Quality-Fail:** White prnok (CHECK_QUALITY FAILED), Ersatzauftrag |
 | mixed-sr-pr-prnok_20260305_121602 | | ✓ | ✓ | ✓ | 1 | **Quality-Fail:** Fixture mixed_pr_prnok |
 | calibrate_dps_1_20251202_101939 | | | ✓ | | 1 | DPS-Kalibrierung, Storage |
@@ -162,7 +162,7 @@ Abgleich: `python scripts/check_session_inventory.py` (listet fehlende/überzäh
 
 | Session | Ablauf | Eignung |
 |---------|--------|---------|
-| **mixed-pw-pr-sw-pb-sr-sb** | Gemischte Folge: White, Red, Blue – Prod und Storage. Ein AGV. | Typisches Mixed-Szenario |
+| **mixed-pw-pr-sw-pb-sr-sb** | Gemischte Folge: White, Red, Blue – Prod und Storage. Ein AGV. | Nur eingeschränkt (NFC-Wiederverwendung); neue Referenz-Aufnahmen geplant |
 | **mixed-sw-pw-sw-pwnok-pw** | White Prod, Quality-Fail (prnok), Ersatzauftrag. | Quality-Fail, Order ERROR, Ersatzauftrag |
 | **mixed-sr-pr-prnok** | Red+Purple Prod, Quality-Fail. Fixture `mixed_pr_prnok`. | Quality-Fail-Analyse |
 | **agv-1-mixed** (133313) | AGV-1, Prod+Storage parallel. | Ein-AGV Mixed |
