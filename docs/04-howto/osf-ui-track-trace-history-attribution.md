@@ -147,6 +147,7 @@ Flow-Anker (Checklist „visited“): z. B. PRODUCTION HBW←DROP, DRILL←DRI
 | DOCK fehlt nach PASS | nur Location-Change emittiert | Same-Node-DOCK-Zweig |
 | Kein ENV am Ist-Stop | Matrix ohne DOCK | `shouldCaptureEnvironmentSnapshot` |
 | Multi-Load unsichtbar | `agvLoads` fehlt / UI nur Single-Path | FTS `details.agvLoads`, `getTransportLoadRows` |
+| Multi-Load: alle FTS-Events bei einem Werkstück | Mapping `loadId`→Historie fehlerhaft (FTS liefert alle IDs) | `updateWorkpieceHistory` forEach; Regression `storage-production-ml-wrb|wbr_*` |
 | Doppelte Modul-Zeilen | NodeRed + Direct | Dedup `actionId` |
 | Station-Namen null | Layout noch nicht geladen | `MODULE_SERIAL_TYPES` Fallback |
 | „Wilde“ / doppelte Spuren über Sessions hinweg | NFC-TAGs wiederverwendet (vor eindeutigen Reads) | Neue Aufnahmen; alte Mixed-Logs nur begrenzt nutzen |
@@ -154,10 +155,11 @@ Flow-Anker (Checklist „visited“): z. B. PRODUCTION HBW←DROP, DRILL←DRI
 **Empfohlene Replay-Sessions:**
 
 - Referenz Storage→Production (eindeutige NFC, Arduino): `*-storage-production_20260728_*.log`
+- **Multi-Load 1 AGV (04.08.2026, eindeutige NFC):** `ml-wrb_…114227`, `ml-wbr_…115849`, `ml-brw_…121835` (Charge+RED-Fail), `ml-bwr_…131822` (OK), `ml-bwr_…130016` (Störfall DPS/FTS, behalten). **`ml-rrr_…133245`**, **`ml-bbb_…134700`**. Inventar-Cleanup 05.08.: alte vergleichbare Logs entfernt; **2-AGV-Lücke** bis AGV-2-Reparatur (Interim: Stillstand + ein osf.4-WR).
 - Parallel WR/RW/WB+R (Mai 2026): für Mitfahrt/Multi-AGV geeignet, aber **NFC-IDs können wiederverwendet** sein → Spuren teils „wild“
-- **Ab 30.07.2026:** Neue Referenz-Aufnahmen mit **eindeutigen NFC-TAGs** geplant (Sprint 27 Folge-Task); alte Mixed-Logs (`mixed-pw-*`, ältere `two-agvs-*`) nur noch begrenzt für Attribution nutzen
+- Alte Mixed-Logs (`mixed-pw-*`, ältere `two-agvs-*`) nur noch begrenzt für Attribution nutzen
 
-Unit-Regression: Specs `module attribution (no Blue steal)`, `FTS Ist stops`, ENV-Matrix, Multi-Load Position-Rows.
+Unit-Regression: Specs `module attribution (no Blue steal)`, `FTS Ist stops`, ENV-Matrix, Multi-Load Position-Rows; **offen:** Multi-Load FTS je `loadId`.
 
 ---
 

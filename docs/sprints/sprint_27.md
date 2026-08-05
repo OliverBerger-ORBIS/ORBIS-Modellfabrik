@@ -13,7 +13,7 @@
 | Datum | Event | Nutzen fuer OSF |
 |--------|--------|----------------|
 | **23.07.2026** | **Blog A2** veröffentlicht — [Track und Trace in der Fertigung](https://www.orbis-group.com/de-de/blog/branchen/manufacturing/track-und-trace-in-der-fertigung/) | Storytelling-Serie A2 live *(Sprint 26)* |
-| **geplant** | **Hochschulkooperation** — Kshitiz Bohara (Doktorand, Uni Magdeburg): GenAI / Agentic AI im Umfeld SmartFactory, MES, DSP | Möglicher erster Use Case: semantisch gestützte Analyse von Track-&-Trace- und Qualitätsereignissen. **Offen:** strategische Abstimmung innerhalb ORBIS nach dem ersten Kennenlerngespräch |
+| **03.08.2026** | **Hochschulkooperation** — Teams-Vorstellung OSF mit Kshitiz Bohara (Uni Magdeburg) | Setup + **osf-v1.2.0** erfolgreich getestet. **Next:** Kshitiz Proposal — Graphical DB am Edge (Linux), Daten über DSP, Graph-Aufbau, Einsatz von KI-Agenten |
 | **14.08.2026** | **Kundentermin Musashi** | Erstverifikation Router-/Netzwerk-Setup und Windows-Desktop-Praesentation (Follow-up LOM-Day; verschoben von 14.07.) |
 
 ---
@@ -36,8 +36,18 @@
 - [x] **Sensor-Matrix STORAGE korrigieren (28.07.2026):** Umwelt-Snapshots an **DPS DROP** + **HBW PICK** (S1 mit Phase-1-Bundle).
 - [x] **Track&Trace Phase 3 (29.07.2026):** Sensor-Matrix PRODUCTION erweitert: **HBW DROP** + **DPS PICK** → Environment-Snapshot. Transport-Events: **Intersection N**-Label + Location-Icon vor Position; Bucket-Slot mit Werkstück-Farbe (`Position: 1 (BLUE)`). `intersectionNumber` aus `AgvRouteService.resolveNodeRef` in FTS-Event-Details persistiert. CHECK_QUALITY: **Ergebnis-Badge** (OK/FAILED) aus `details.result` im Timeline-Event. Unit-Tests 77/77 grün.
 - [x] **Track&Trace Ist+SOLL (29.–30.07.2026):** Same-Node-**DOCK** nach PASS; Mitfahrer-Stops als `visitKind: IST_ONLY` + UI-Badge; ENV auch an **DOCK** (DRILL/MILL/AIQS, PRODUCTION); SOLL-Checklist ✓/○ im Order Context; Attribution/Mitfahrt/Multi-Load; Doku: [osf-ui-track-trace-history-attribution.md](../04-howto/osf-ui-track-trace-history-attribution.md). **Komplexe Replay-Serie 30.07. OK** (WR/RW/WB+R, mixed NOK, two-agvs-Stillstand, mixed-pw). Release **v1.2.0**.
-- [ ] **Neue T&T-Referenz-Sessions (eindeutige NFC):** Alte Logs (wiederverwendete NFC-TAGs vor Umschreiben) erzeugen „wilde“ Spuren → alte Mixed/Parallel-Sessions bereinigen bzw. ersetzen; neu aufnehmen mit **eindeutigen NFC-Reads** (Multi-AGV, Mitfahrt, RED Pass/Fail, Quality-NOK). Inventar + How-to Attribution aktualisieren. *(30.07.2026; Folge aus Replay-Verifikation)*
-- [ ] **OSF-UI Deploy RPi (v1.2.0):** Image `orbis-osf-ui:1.2.0` bauen und auf Shopfloor-RPi ausrollen (`npm run docker:osf-ui:deploy -- ff22@192.168.0.100`); Hard-Reload + Track&Trace Smoke (Referenz-Sessions / Live). How-to: [rpi-deployment.md](../04-howto/deployment/rpi-deployment.md). *(30.07.2026)*
+- [ ] **Neue T&T-Referenz-Sessions (eindeutige NFC):** Alte Logs (wiederverwendete NFC-TAGs) ersetzen; Inventar + How-to Attribution aktualisieren. *(30.07.2026)*
+  - [x] **Teil A – Multi-Load 1 AGV (04.08.2026):** Kern-Set aufgenommen (eindeutige NFC). **Storage** ohne Mitfahrt; **Production** Multi-Load. `rbw`/`rwb` **entfallen** (kein Mehrwert vs. `wbr`/`wrb`).
+    - OK: `ml-wrb_20260804_114227`, `ml-wbr_20260804_115849`, `ml-brw_20260804_121835` (Charge + RED Quality-Fail), `ml-bwr_20260804_131822` (erster Multi-Load nur B+W, danach 3 Loads — prinzipiell OK).
+    - Verworfen / Diagnose: `ml-bwr_20260804_130016` (DPS→FTS-Befehl fehlte, DPS blockiert, Prod stoppt nahe AIQS).
+  - [x] **Teil A+ – gleiche Farbe + Quality-Fail (04.08.2026):** Isoliert Fail-Attribution bei Multi-Load; BLUE liefert DRILL+MILL.
+    - [x] `storage-production-ml-rrr_20260804_133245` — drei RED Multi-Load; **2. R** (`f6caa206181682`, Pos2) **Quality-Fail** (CRACK)
+    - [x] `storage-production-ml-bbb_20260804_134700` — drei BLUE Multi-Load; **2. B** (`b7b84ce7ad920f`, Pos2) **Quality-Fail** (MIPO2); DRILL+MILL-Pfad
+  - [x] **Session-Inventar Cleanup (05.08.2026):** 57 alte Logs gelöscht; **14** behalten (Juli-Refs + ml-* inkl. Störfall `ml-bwr_130016` + `startup-clean` + synthetic + 2× 2-AGV-Diagnose). Startup: nur `startup-clean` (start-osf/startup-referenz entfernt).
+  - [ ] **Bug Multi-Load FTS→Werkstück-Mapping (04.08.2026):** Bei 3 Loads mit korrekten `loadId`s landen FTS-Events nicht je NFC in der eigenen Historie (Beobachtung Live während ml-Aufnahme). Soll: ein Transport-Event pro `loadId`. Fix + Regression an `storage-production-ml-wrb|wbr_*` (+ `ml-rrr`/`ml-bbb`). How-to: [osf-ui-track-trace-history-attribution.md](../04-howto/osf-ui-track-trace-history-attribution.md).
+  - [ ] **Teil B – 2-AGV-Referenz-Sessions (eindeutige NFC):** nach **Reparatur AGV-2 / Encoder-Motor** neu aufnehmen (Parallel WR/WB o. Ä.). Interim-Diagnose behalten: `two-agvs-mixed_20260312_165108` (Stillstand), `production-wr-agv2-b-agv1-clean_20260513_135600` (osf.4).
+  - [ ] Inventar + How-to Attribution bei Mapping-Fix / neuen 2-AGV-Sessions nachziehen.
+- [x] **OSF-UI Deploy RPi (v1.2.0):** Image `orbis-osf-ui:1.2.0` auf Shopfloor-RPi ausgerollt (`npm run docker:osf-ui:deploy -- ff22@192.168.0.100`); Style-Budget `anyComponentStyle` 48→56kb wegen Track&Trace-SCSS. **03.08.2026:** Container Up; Setup + **v1.2.0** in Teams-Session mit Kshitiz verifiziert. How-to: [rpi-deployment.md](../04-howto/deployment/rpi-deployment.md).
 - [x] **Session Manager Replay Speed 10x/max (29.07.2026):** Replay Station Geschwindigkeit um **10x** und **max** (ohne Wartezeit) erweitert; Timeshift bleibt load-time (`now + ts_rel`), Speed skaliert nur Wall-Clock-Wartezeit. Version **1.8.0** (`session_manager/__init__.py`). Tag nach Commit: `session-manager-v1.8.0`.
 - [x] **Session Manager Replay Speed Fix/Diagnose (29.07.2026):** Speed wirkte nicht 10× — Ursachen: Selectbox/Rerun instabil + MQTT-QoS1-Backpressure (Burst dann ~50–80 msg/10s). Fix: stabile Speed-Labels, ab ≥5×/max **QoS0**, Queue/Retry, Publish-Rate-Diagnose in UI. Version **1.8.1**. **1.8.2:** zusätzlich **Gesamtzeit** (aktiv/Wanduhr) + **Ø-Rate** über den ganzen Lauf (Momentan-Rate schwankt bei V=1 stark).
 - [x] **Replay-Referenz-Sessions aufgenommen (28.07.2026):** `white|red|blue-storage-production_20260728_*.log`. Alte Single-Color-`20260303`-Paare **gelöscht** (28.07.). Parallel-Production (`production-wr-*`) ohne Storage in derselben Session ausreichend für Multi-AGV-Herausforderungen, sobald Multi-Order an den drei Referenzen steht.
@@ -56,7 +66,7 @@
 
 ### ORBIS Feldbetrieb / Hardware
 
-- [ ] **Kontrolle FTS Nr. 2 (Folgeprüfungen):** RoboPro-Schnittstellen-Test (23.07.) → Multimeter-Test **27.07.2026**: **Encoder-Motor defekt** (nicht Kabelbruch). Nächster Schritt: **Ersatzteile oder Reparatur**, Rücksprache bei **fischertechnik**. *(Ursprung: Sprint 26; TXT-Projekte lokal unter `integrations/`)*
+- [ ] **Kontrolle FTS Nr. 2 (Folgeprüfungen):** RoboPro-Schnittstellen-Test (23.07.) → Multimeter-Test **27.07.2026**: **Encoder-Motor defekt** (nicht Kabelbruch). **30.07.2026:** fischertechnik sendet Ersatzmotor (Mail Herr Steiger). **03.08.2026:** Ersatzmotor eingetroffen; Austausch aufwendig. Öffentlich keine FTS-/AGV-Zerlege-Bauanleitung (fertig geliefert; Omniwheels-/Smarttech-PDFs betreffen nicht das APS-FTS). **04.08.2026:** Aufbau-Anleitung bei Herr Steiger angefragt. Weiter: Antwort abwarten → Einbau + RoboPro-/Schnittstellen-Nachtest. *(Ursprung: Sprint 26; TXT-Projekte lokal unter `integrations/`)*
 
 ### Integration & Tests
 
@@ -84,4 +94,4 @@
 
 ---
 
-*Stand: 30.07.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 05.08.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
