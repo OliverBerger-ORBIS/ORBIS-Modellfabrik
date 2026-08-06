@@ -24,10 +24,10 @@ export default {
   // Phase 1 + Phase 2 total: +230 tests, steady progress towards 60% target
   coverageThreshold: {
     global: {
-      branches: 30, // Current: 30.68%, Phase 1: 28.73%, Target: 35% → 40%
-      functions: 42, // Current: 42.29%, Phase 1: 37.66%, Target: 50% → 60%
-      lines: 47, // Current: 47.18%, Phase 1: 44.61%, Target: 55% → 60%
-      statements: 46, // Current: 46.08%, Phase 1: 43.56%, Target: 55% → 60%
+      branches: 42, // Gemessen 2026-08-06: 48.42%; Langziel 40%+
+      functions: 52, // Gemessen: 59.65%; Langziel ~60%
+      lines: 58, // Gemessen: 64.65%; Langziel 60%+
+      statements: 58, // Gemessen: 63.55%; Langziel ~60%
     },
   },
   collectCoverageFrom: [

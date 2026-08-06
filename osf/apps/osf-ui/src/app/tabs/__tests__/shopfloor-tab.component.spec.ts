@@ -1270,5 +1270,121 @@ Payload:
       expect(result.previousLight).toBe('#FF0000');
     });
   });
+
+  describe('Shopfloor preview / AGV legend / viewport helpers', () => {
+    it('toggles shopfloor preview expanded state and persists it', () => {
+      const component = createComponent();
+      const setItem = jest.spyOn(Storage.prototype, 'setItem');
+      const before = component.shopfloorPreviewExpanded;
+      component.toggleShopfloorPreview();
+      expect(component.shopfloorPreviewExpanded).toBe(!before);
+      expect(setItem).toHaveBeenCalled();
+      setItem.mockRestore();
+    });
+
+    it('updates followActiveStation from checkbox change events', () => {
+      const component = createComponent();
+      const setItem = jest.spyOn(Storage.prototype, 'setItem');
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.checked = true;
+      component.onFollowActiveStationChange({ target: input } as unknown as Event);
+      expect(component.followActiveStation).toBe(true);
+      expect(setItem).toHaveBeenCalled();
+      setItem.mockRestore();
+    });
+
+    it('updates grid columns from shopfloor viewport changes', () => {
+      const component = createComponent();
+      component.onShopfloorViewportChanged({ widthPx: 500, heightPx: 400, scale: 1 });
+      expect(component.shopfloorGridColsVar).toMatch(/^\d+px 1fr$/);
+      const cols = component.shopfloorGridColsVar;
+      expect(cols).toBeTruthy();
+      const left = Number(cols!.split('px')[0]);
+      expect(left).toBeGreaterThanOrEqual(420);
+      expect(left).toBeLessThanOrEqual(1400);
+    });
+
+    it('returns AGV legend label from mapping service or serial fallback', () => {
+      const component = createComponent();
+      const mapping = (component as any).mappingService as ShopfloorMappingService;
+      (mapping.getAgvLabel as jest.Mock).mockReturnValueOnce('AGV-1');
+      expect(component.shopfloorAgvLegendLabel('SVR123')).toBe('AGV-1');
+      (mapping.getAgvLabel as jest.Mock).mockReturnValueOnce(null);
+      expect(component.shopfloorAgvLegendLabel('SVR999')).toBe('SVR999');
+    });
+
+    it('ignores fixed-cell double-clicks for sidebar open', () => {
+      const component = createComponent();
+      const selected = jest.spyOn(component, 'onModuleCellSelected');
+      const open = jest.spyOn(component, 'openSidebarForSelected');
+      component.onModuleCellDoubleClicked({ id: 'CELL_X', kind: 'fixed' });
+      expect(selected).not.toHaveBeenCalled();
+      expect(open).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('DPS helper methods', () => {
+    it('reads current action and accumulates recent actions without duplicates', () => {
+      const component = createComponent();
+      const action = {
+        id: 'a1',
+        command: 'DROP',
+        state: 'FINISHED',
+        timestamp: '2026-08-06T10:00:00Z',
+        metadata: { workpiece: { type: 'BLUE', workpieceId: 'nfc-1', state: 'RAW' } },
+      };
+      const state = {
+        actionState: action,
+        actionStates: [action],
+      };
+      expect(component.getDpsCurrentAction(state as any)).toEqual(action);
+      const recent = component.getDpsRecentActions(state as any);
+      expect(recent).toHaveLength(1);
+      expect(component.getDpsRecentActions(state as any)).toHaveLength(1);
+    });
+
+    it('resolves workpiece color, NFC and state from actionStates metadata', () => {
+      const component = createComponent();
+      const state = {
+        actionStates: [
+          {
+            id: 'a2',
+            command: 'RGB_NFC',
+            state: 'FINISHED',
+            timestamp: '2026-08-06T10:01:00Z',
+            result: 'deadbeef',
+            metadata: { type: 'RED', workpiece: { type: 'RED', workpieceId: 'nfc-red', state: 'FINISHED' } },
+          },
+        ],
+      };
+      expect(component.getDpsWorkpieceColor(state as any)).toBe('RED');
+      expect(component.getDpsNfcCode(state as any)).toBe('nfc-red');
+      expect(component.getDpsWorkpieceState(state as any)).toBe('FINISHED');
+    });
+
+    it('maps DPS color/state labels and icons with safe defaults', () => {
+      const component = createComponent();
+      expect(component.getDpsColorLabel('WHITE')).toBeTruthy();
+      expect(component.getDpsColorLabel(null)).toBeTruthy();
+      expect(component.getDpsColorClass('BLUE')).toBe('blue');
+      expect(component.getDpsColorClass(null)).toBe('unknown');
+      expect(component.getDpsWorkpieceIcon('WHITE')).toContain('white');
+      expect(component.getDpsWorkpieceIcon(null)).toBeNull();
+      expect(component.getDpsStateLabel('RUNNING')).toContain('RUNNING');
+      expect(component.getDpsStateClass('FAILED')).toBe('failed');
+    });
+
+    it('falls back to loads[] for workpiece color when actionStates lack type', () => {
+      const component = createComponent();
+      expect(
+        component.getDpsWorkpieceColor({
+          loads: [{ type: 'WHITE' }],
+        } as any)
+      ).toBe('WHITE');
+      expect(component.getDpsWorkpieceColor(null)).toBeNull();
+      expect(component.getDpsNfcCode(null)).toBeNull();
+    });
+  });
 });
 

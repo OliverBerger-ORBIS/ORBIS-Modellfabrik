@@ -10,7 +10,7 @@
 
 Das Coverage Monitoring System überwacht automatisch die Test-Abdeckung und stellt sicher, dass die Coverage-Schwellenwerte eingehalten werden.
 
-**Ist-Stand (Messung 2026-08-06 nachmittag, `--runInBand`):** siehe [test-coverage-status.md](../../07-analysis/test-coverage-status.md) — Lines **64.65 %**, Branches **48.42 %**, Statements **63.55 %**, Functions **59.65 %**.
+**Ist-Stand (Messung 2026-08-06 Option D, `--runInBand`):** siehe [test-coverage-status.md](../../07-analysis/test-coverage-status.md) — Lines **66.67 %**, Branches **49.75 %**, Statements **65.58 %**, Functions **61.25 %**.
 
 ---
 
@@ -21,15 +21,15 @@ Das Coverage Monitoring System überwacht automatisch die Test-Abdeckung und ste
 ```typescript
 coverageThreshold: {
   global: {
-    branches: 30, // Gemessen 2026-08-06: 48.42%; Langziel 40%+ (erreicht)
-    functions: 42, // Gemessen: 59.65%; Langziel ~60%
-    lines: 47, // Gemessen: 64.65%; Langziel 60%+ (erreicht)
-    statements: 46, // Gemessen: 51.78% → 63.55%; Langziel ~60% (erreicht)
+    branches: 42, // Gemessen 2026-08-06: 49.75%; Langziel 40%+
+    functions: 52, // Gemessen: 61.25%; Langziel ~60%
+    lines: 58, // Gemessen: 66.67%; Langziel 60%+
+    statements: 58, // Gemessen: 65.58%; Langziel ~60%
   },
 }
 ```
 
-**Hinweis:** Jest-Schwellen liegen unter dem Ist-Stand (Puffer). Sinnvoll als Nächstes: Lines/Branches Thresholds anheben. Coverage-Läufe laufen standardmäßig mit **`--runInBand`** (`npm run test:coverage` / `test:coverage:check`), um Parallel-Last und Timeouts zu vermeiden. Details: [test-coverage-status.md](../../07-analysis/test-coverage-status.md).
+**Hinweis:** Jest-Schwellen mit Puffer unter dem Ist-Stand (Option D). Coverage-Läufe standardmäßig mit **`--runInBand`**. Details: [test-coverage-status.md](../../07-analysis/test-coverage-status.md).
 
 ---
 

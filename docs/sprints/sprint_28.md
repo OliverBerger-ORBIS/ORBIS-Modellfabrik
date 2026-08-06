@@ -26,15 +26,15 @@
 | Stand | Datum | Branches | Functions | Lines | Statements | Gates (B/F/L/S) | Gate-Margin (B/F/L/S) |
 |--------|--------|----------|-----------|-------|------------|------------------|------------------------|
 | Sprint-Start (Baseline aus Sprint-27-Endmessung) | 06.08.2026 | 46.42% | 52.82% | 52.66% | 51.78% | 30 / 42 / 47 / 46 | +16.42 / +10.82 / +5.66 / +5.78 pp |
-| Aktuell | 06.08.2026 | 48.42% | 59.65% | 64.65% | 63.55% | 30 / 42 / 47 / 46 | +18.42 / +17.65 / +17.65 / +17.55 pp |
+| Aktuell | 06.08.2026 | 49.75% | 61.25% | 66.67% | 65.58% | 42 / 52 / 58 / 58 | +7.75 / +9.25 / +8.67 / +7.58 pp |
 
 - **Messmethode:** `npm run test:coverage` (seit 06.08.2026 mit `--runInBand`) → `coverage/osf-ui/index.html`. Details: [test-coverage-status.md](../07-analysis/test-coverage-status.md).
-- **Top-3 Gaps (nach UC-Specs):**
-  1. `track-trace` Use-Case-Shell — noch **0 %** Lines
-  2. `three-data-pools` — ~41 % (Lanes-Generator / Page noch dünn)
-  3. DSP-/Customer-Pages — weiterhin oft **0 %**
+- **Top-3 Gaps (nach Option D):**
+  1. `shopfloor-tab` — ~50 % Lines (noch größter Tab-Hotspot; DPS/Preview-Helfer ergänzt)
+  2. DSP-/Customer-Pages — weiterhin oft **0 %**
+  3. Einzelne UI-Komponenten mit niedriger Abdeckung
 - **Pflege:** Baseline unverändert; nach Messung nur **Aktuell** + Top-Gaps aktualisieren. Am Sprintende Pflicht-Messung vor Abschluss.
-- **Hinweis:** Globales Lines-Langziel 60 %+ mit dieser Messung erreicht; Jest-Thresholds ggf. später nachziehen.
+- **Hinweis:** Jest-Gates 06.08. auf **42 / 52 / 58 / 58** angehoben; Langziel Lines 60 %+ weiter übertroffen.
 
 ---
 
@@ -60,6 +60,7 @@
 ### Integration & Tests
 
 - [x] **Use-Case-SVG/Pages — erste Specs (kein Fokus-Thema):** Smoke-/Unit-Tests für `applyStepToSvg`, UC-01…05/07 SVG-Generatoren, BaseUseCase via Interoperability, UseCaseControls, Selector-Page. Coverage runInBand 06.08.: Lines **64.65 %** (Baseline 52.66 %). *(Sprint 28; [test-coverage-status.md](../07-analysis/test-coverage-status.md))*
+- [x] **Coverage Option D (06.08.2026):** Jest-Gates → **42/52/58/58**; Shopfloor-Tab DPS/Preview-Helfer; Track&Trace-UC-Shell + UC-02 Lanes. Messung: Lines **66.67 %**, Branches **49.75 %**. *(Sprint 28)*
 - [ ] **UI-Test-Framework (Fortsetzung):** von 2 Pilot-Tests zu stabiler Abdeckung kritischer Flows mit Tier A + Tier B Nachweisen ausbauen. *(Ursprung: Sprint 21)*
 - [ ] **dsp/correlation/info** E2E (BLOCKED bis Team-Setup aktiv): End-to-End-Nachweis (Topic-Eingang + UI-Kontext) dokumentieren. *(Ursprung: Sprint 18)*
 - [ ] **ccu/order/request** E2E (Ersatzauftrag nach Quality-Fail, BLOCKED bis Team-Setup aktiv): E2E-Nachweis mit klarer Ereigniskette dokumentieren. *(Ursprung: Sprint 18)*
