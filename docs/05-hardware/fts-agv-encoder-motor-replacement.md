@@ -1,56 +1,71 @@
 # FTS / AGV: Encoder-Motor tauschen (APS-Trainingsmodell)
 
 **Stand:** 06.08.2026  
-**Kontext:** AGV-2 / FTS Nr. 2 — Encoder-Motor defekt (Multimeter 27.07.2026); Ersatzmotor von fischertechnik eingetroffen (03.08.2026).  
-**Quelle:** Mail fischertechnik (Herr Steiger), Antwort auf Anfrage Aufbau-/Zerlege-Anleitung (06.08.2026).
+**Kontext:** AGV-2 / FTS Nr. 2 — rechter Vorderradantrieb (M2/C2) ausgefallen; Ersatzmotor von fischertechnik (03.08.2026); **Tausch erfolgreich 06.08.2026**.
 
 ---
 
-## Kurzfassung
+## Reparatur FTS Nr. 2 – rechter Vorderradantrieb (06.08.2026) ✅
+
+### Fehlerbild
+
+Der rechte Vorderradantrieb (**M2/C2**) lief zunächst nur sehr langsam bei maximaler Ansteuerung und fiel anschließend vollständig aus. Die übrigen drei Antriebe funktionierten im ROBO Pro Coding-Schnittstellentest normal.
+
+### Antriebszuordnung (verifiziert)
+
+| Kanal | Position |
+|-------|----------|
+| M1/C1 | links vorne |
+| M2/C2 | rechts vorne |
+| M3/C3 | links hinten |
+| M4/C4 | rechts hinten |
+
+### Diagnose
+
+- Mechanische Blockade / Verspannung des rechten Vorderrads geprüft und **ausgeschlossen**.
+- Am vorhandenen Motorkabel von M2 bei maximaler Ansteuerung ca. **7,9–8,2 V** gemessen → TXT-Ausgang und Motorleitung grundsätzlich OK.
+- Ersatzmotor **vor Einbau** direkt an das vorhandene M2-Kabel angeschlossen → lief im Schnittstellentest **einwandfrei** (Fehler lokalisiert am alten Motor).
+
+### Maßnahme
+
+Defekter rechter Vordermotor durch Ersatzmotor ausgetauscht.
+
+### Ergebnis
+
+Schnittstellentest nach Einbau: **alle vier Antriebsmotoren** laufen. FTS Nr. 2 wieder funktionsfähig.
+
+**Nächster Schritt:** AGV-2 aufladen; danach wieder im Shopfloor einsetzen. Danach möglich: Sprint-28 **Session-Teil B (2-AGV)**.
+
+---
+
+## Hersteller-Hinweise (Mail Steiger, 06.08.2026)
 
 | Frage | Antwort (fischertechnik) |
 |-------|--------------------------|
-| Eigene Bauanleitung für APS-FTS / Trainingsmodelle? | **Nein** — Modelle werden von einem **externen Zulieferer** aufgebaut (eigene Konstruktionssoftware). |
-| Orientierung für Motortausch? | Aufbau **ähnlich Omniwheel-Modell**; in der Omniwheel-Bauanleitung ab **Seite 26** Montage der **Antriebseinheiten / Motoren**. |
-| Vor Demontage? | **Fotos** aus verschiedenen Perspektiven; zweites FTS als **Referenz**. |
-| Falls Umbau scheitert? | FTS an fischertechnik **einsenden** — Motortausch dort im Haus. |
+| Eigene Bauanleitung für APS-FTS / Trainingsmodelle? | **Nein** — Modelle von externem Zulieferer. |
+| Orientierung? | Ähnlich Omniwheel; PDF ab **S. 26** Antrieb — für APS-Zerlegeweg **wenig hilfreich** (Erfahrung 06.08.). |
+| Vor Demontage? | Fotos; zweites FTS als Referenz. |
+| Fallback | FTS an fischertechnik einsenden. |
+
+Omniwheel-PDF (nur Hintergrund): [BA_185600_BAUANLEITUNG_HIGHTECH.pdf](https://fiproductmedia.azureedge.net/media/Marketing%20Materials/Operating%20instructions/BA_185600_BAUANLEITUNG_HIGHTECH.pdf)
 
 ---
 
-## Referenz-Bauanleitung (Omniwheel / Hightech)
+## Empfohlenes Vorgehen (nächster Motortausch)
 
-Offizielle PDF (fischertechnik Product Media):
-
-[BA_185600_BAUANLEITUNG_HIGHTECH.pdf](https://fiproductmedia.azureedge.net/media/Marketing%20Materials/Operating%20instructions/BA_185600_BAUANLEITUNG_HIGHTECH.pdf)
-
-**Relevant für Motortausch:** ab **Seite 26** — Montage der Antriebseinheiten bzw. Motoren.
-
-> Das APS-FTS ist **nicht** identisch mit dem Omniwheel-Bausatz, aber laut Hersteller **grundsätzlich sehr ähnlich**. Omniwheels-/Smarttech-PDFs ersetzen keine APS-Zerlege-Doku — sie dienen nur als **Analogie** für den Antrieb.
-
----
-
-## Empfohlenes Vorgehen (vor Ort)
-
-1. **Dokumentieren vor Demontage**
-   - Fotos von mehreren Seiten (Gehäuse, Kabelwege, Motorlage, Encoder-Seite).
-   - Bei Bedarf kurze Notizen zu Steckerfarben / Kabelrouting.
-2. **Zweites FTS parallel**
-   - Das intakte FTS (AGV-1) als Orientierung für Zusammenbau und Lage der Teile nutzen — nicht demontieren.
-3. **Montage analog Omniwheel S. 26ff**
-   - Antriebseinheit / Motor gemäß PDF; APS-Abweichungen visuell am zweiten FTS abgleichen.
-4. **Nach Einbau**
-   - RoboPro-Schnittstellen-Test / Encoder-Prüfung (wie Sprint-26/27).
-   - Kurzfahrt und Pairing im FT-LAN verifizieren.
-5. **Fallback**
-   - Umbau nicht erfolgreich → FTS an fischertechnik zur Überprüfung / Motortausch einsenden (Angebot aus der Mail).
+1. Schnittstellentest: welcher Kanal (M×/C×) fällt aus? Zuordnung oben nutzen.
+2. Spannung am Motorkabel messen; Ersatzmotor **am vorhandenen Kabel** vor Einbau testen.
+3. Mechanik (Blockade/Verspannung) ausschließen.
+4. Motor tauschen; Schnittstellentest aller vier Antriebe.
+5. Aufladen → Shopfloor-Einsatz → ggf. 2-AGV-Sessions.
 
 ---
 
 ## Abgrenzung
 
-- **Kein** öffentliches Zerlege-Manual speziell für das APS-24V-FTS (Stand Mail 06.08.2026).
-- TXT-/MQTT-/VDA-5050-Software: siehe [TXT-FTS](../06-integrations/TXT-FTS/README.md) und `integrations/TXT-FTS/`.
-- Sprint-Status: [sprint_27.md](../sprints/sprint_27.md) — Aufgabe „Kontrolle FTS Nr. 2“.
+- Kein öffentliches APS-Zerlege-Manual (Stand Mail 06.08.2026); Praxis: Diagnose + Motortausch vor Ort.
+- Software: [TXT-FTS](../06-integrations/TXT-FTS/README.md), `integrations/TXT-FTS/`.
+- Sprint: [sprint_28.md](../sprints/sprint_28.md)
 
 ---
 
@@ -59,8 +74,9 @@ Offizielle PDF (fischertechnik Product Media):
 | Datum | Ereignis |
 |-------|----------|
 | 23.07.2026 | RoboPro-Schnittstellen-Test — Verdacht Kabelbruch oder Motor |
-| 27.07.2026 | Multimeter: **Encoder-Motor defekt** |
+| 27.07.2026 | Multimeter: Encoder-Motor defekt |
 | 30.07.2026 | fischertechnik sendet Ersatzmotor (Mail Steiger) |
 | 03.08.2026 | Ersatzmotor eingetroffen |
 | 04.08.2026 | Aufbau-Anleitung bei Herrn Steiger angefragt |
-| 06.08.2026 | Antwort: keine separate APS-Bauanleitung; Omniwheel-PDF ab S. 26; Fotos + 2. FTS; Einsende-Option |
+| 06.08.2026 | Antwort: keine APS-Bauanleitung; Omniwheel-PDF |
+| **06.08.2026** | **Reparatur OK:** M2/C2 (rechts vorne) getauscht; alle 4 Antriebe laufen; Aufladen → Wiedereinsatz |

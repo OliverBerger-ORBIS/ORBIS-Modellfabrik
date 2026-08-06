@@ -6,7 +6,7 @@
 > - **[APS Overview](../aps/README.md)** - Fischertechnik Agile Production Simulation
 > - **[Node-RED Integration](../node-red/README.md)** - Gateway zwischen OPC-UA und MQTT
 > - **[Architektur-Übersicht](../../02-architecture/README.md)** – Gesamtarchitektur
-> - **[FTS Encoder-Motor tauschen](../../05-hardware/fts-agv-encoder-motor-replacement.md)** – Hardware Motortausch (keine APS-Bauanleitung; Omniwheel-PDF ab S. 26)
+> - **[FTS Encoder-Motor tauschen](../../05-hardware/fts-agv-encoder-motor-replacement.md)** – AGV-2 / M2/C2 Tausch **06.08.2026** OK; Diagnose- und Zuordnungshinweise
 
 Die Steuerung des fahrerlosen Transportsystems (FTS) bzw. Automated Guided Vehicle (AGV) nach dem VDA 5050 Standard erfolgt über MQTT-Topics (`fts/v1/ff/5iO4/*`).
 

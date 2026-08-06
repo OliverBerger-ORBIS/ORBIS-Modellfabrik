@@ -47,7 +47,7 @@
   - Single-Color Quality-Matrix: **WHITE-NOK**, **BLUE-NOK**, **RED-OK** (Pass-Referenzen White/Red und Blue-nok Juli behalten; Lücken schließen / ergänzen).
   - Weitere **Multi-Load `ml-xyz`** nach Bedarf (bestehende Gaps: Red ohne NFC, Blue Storage ohne HBW-PICK, … — siehe [SOLL-by-color](../04-howto/osf-ui-track-trace-soll-by-color.md)).
   - *Hinweis `ml-wrb_114227`:* Aufnahme-Lücke Fertigungs-Modul-States — ggf. neu aufnehmen. *(Ursprung: Sprint 27)*
-- [ ] **Teil B – 2-AGV-Referenz-Sessions (eindeutige NFC):** nach **Reparatur AGV-2 / Encoder-Motor** neu aufnehmen (Parallel WR/WB o. Ä.). Interim-Diagnose behalten: `two-agvs-mixed_20260312_165108` (Stillstand), `production-wr-agv2-b-agv1-clean_20260513_135600` (osf.4). *(Ursprung: Sprint 27)*
+- [ ] **Teil B – 2-AGV-Referenz-Sessions (eindeutige NFC):** nach Aufladen / Wiedereinsatz AGV-2 (Motor M2/C2 getauscht **06.08.**) neu aufnehmen (Parallel WR/WB o. Ä.). Interim-Diagnose behalten: `two-agvs-mixed_20260312_165108` (Stillstand), `production-wr-agv2-b-agv1-clean_20260513_135600` (osf.4). *(Ursprung: Sprint 27)*
 - *Hinweis Demo: Capture läuft in Live/Replay nach MQTT-Connect auch ohne offenen Tab; Header-Refresh leert die Historie — dazwischen nicht unnötig refreshen.*
 
 ### Grafana Dashboard *(Fokus)*
@@ -67,7 +67,7 @@
 
 ### ORBIS Feldbetrieb / Hardware
 
-- [ ] **Kontrolle FTS Nr. 2 (Folgeprüfungen):** Ersatzmotor **03.08.**; **06.08. Mail Steiger:** keine separate APS-Bauanleitung; Omniwheel-PDF ab **S. 26** Antrieb; vor Demontage Fotos + 2. FTS als Referenz; Fallback Einsendung an fischertechnik. How-to: [fts-agv-encoder-motor-replacement.md](../05-hardware/fts-agv-encoder-motor-replacement.md). Weiter: Einbau + RoboPro-/Schnittstellen-Nachtest — **Voraussetzung für Session-Teil B (2-AGV)**. *(Ursprung: Sprint 26)*
+- [x] **Kontrolle FTS Nr. 2 — Motortausch (06.08.2026):** Rechter Vorderradantrieb **M2/C2** ausgefallen (langsam → Totalausfall); Mechanik OK; ~8 V am Kabel; Ersatzmotor vor Einbau am M2-Kabel OK → Tausch. Schnittstellentest: **alle 4 Antriebe** laufen. **Morgen:** aufladen, dann Wiedereinsatz → Session-Teil B. How-to: [fts-agv-encoder-motor-replacement.md](../05-hardware/fts-agv-encoder-motor-replacement.md). *(Ursprung: Sprint 26)*
 
 ### Router / Netzwerk-Setup
 
@@ -95,4 +95,4 @@
 
 ---
 
-*Stand: 06.08.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 06.08.2026 (FTS-2 Motor OK)* · Doku-Workflow: [sprints_README.md](sprints_README.md)
