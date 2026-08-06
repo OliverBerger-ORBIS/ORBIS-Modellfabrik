@@ -1,10 +1,11 @@
 # Track & Trace: Historie-Attribution (Ist + SOLL + ENV)
 
-**Stand:** 2026-07-30  
+**Stand:** 2026-08-06  
 **Scope:** Live-Demo Track & Trace (`WorkpieceHistoryService` + `TrackTraceComponent`)  
 **Architektur-Basis:** [DR-13 Track & Trace Architecture](../03-decision-records/13-track-trace-architecture.md)  
 **Code:** `osf/apps/osf-ui/src/app/services/workpiece-history.service.ts`,  
-`osf/apps/osf-ui/src/app/components/track-trace/`
+`osf/apps/osf-ui/src/app/components/track-trace/`  
+**SOLL-Checklisten je Farbe (visueller Test):** [osf-ui-track-trace-soll-by-color.md](osf-ui-track-trace-soll-by-color.md)
 
 Dieses How-to beschreibt die **aktuellen Regeln**, damit spätere Sonderfälle (Mitfahrt, leere `loads[]`, Multi-AGV) nicht „neu erfunden“ werden. Bei Fixes: Regeln hier und Unit-Tests unter `workpiece-history.service.spec.ts` / `track-trace.component.spec.ts` mitziehen.
 
@@ -25,10 +26,20 @@ Dieses How-to beschreibt die **aktuellen Regeln**, damit spätere Sonderfälle (
 
 | Stream | Topic-Muster | Was landet in der Historie |
 |--------|--------------|----------------------------|
-| FTS State | `fts/v1/ff/<serial>/state` | Pro beladenem Slot (`loadId` + `loadType`) Transport-Events |
+| FTS State | `fts/v1/ff/<serial>/state` | Pro beladenem Slot (`loadId` + Sticky) Transport-Events |
 | Modul State | `module/v1/ff/<serial>/state` (+ NodeRed) | PICK / DRILL / MILL / CHECK_QUALITY / DROP / Color / NFC |
-| Orders | `ccu/order/active` (+ completed) | Order-Kontext; Feld **`type`** = Werkstückfarbe (BLUE/WHITE/RED) |
+| Orders | **`ccu/order/active`** (+ completed) | **Phase** `orderType` STORAGE\|PRODUCTION je `orderId`; Feld **`type`** = Farbe; oft `workpieceId` = NFC |
 | Umwelt | Arduino / BME / LDR Streams | Globaler Snapshot → an Events angehängt (Matrix) |
+
+**Phase (Golden Path):** Event-`orderType` kommt primär aus CCU (`resolveCcuOrderType` / `orderId`).  
+Location-Heuristik (`wasAtHbw`) nur Fallback — vermeidet Doppel-Lagerauftrag-Karten.
+
+### Golden Path (Referenz: `white|red-storage-production_20260728_*` Pass; Fail: `blue-storage-production-nok_…`)
+
+**Storage:** DPS Color → DPS NFC (NFC = Historie-ID) → DPS DROP → FTS (DPS → Intersections → HBW) → HBW PICK  
+**Production:** HBW DROP → FTS → Modul PICK/PROCESS/DROP (DRILL/MILL/AIQS je Farbe) → FTS → DPS PICK  
+
+Dieselbe Systematik für alle Farben; Multi-Load = Spur **parallel je NFC**.
 
 Serial→Station-Fallback (ohne Layout): `SVR4H76449`→DRILL, `SVR3QA2098`→MILL, `SVR4H76530`→AIQS, `SVR3QA0022`→HBW, `SVR4H73275`→DPS.
 
@@ -41,6 +52,10 @@ Serial→Station-Fallback (ohne Layout): `SVR4H76449`→DRILL, `SVR3QA2098`→MI
 | RED | MILL → AIQS (kein DRILL) |
 
 Vollständige Kette im UI: `HBW` + Workflow + `DPS` (STORAGE: `DPS` → `HBW`).
+
+Schritt-für-Schritt inkl. UI-/gap-/session-Markern: **[SOLL by color](osf-ui-track-trace-soll-by-color.md)**.
+
+**Planned-Stations-Haken (Auftragskontext):** Modul-Flow-Anker auf der eigenen `orderId`. Zusätzlich für PRODUCTION **DRILL/MILL/AIQS**: realer **FTS-DOCK** am Werkstück (auch Mitfahrt) = physisch da — **kein** erfundenes MODULE/Quality.
 
 ---
 
@@ -71,11 +86,53 @@ Vollständige Kette im UI: `HBW` + Workflow + `DPS` (STORAGE: `DPS` → `HBW`).
 
 UI: Badge **Ist stop** (`getIstVisitBadge`). Location bleibt sichtbar; **kein** Modul-Prozess für den Mitfahrer.
 
-### Multi-Load-Anzeige
+### Multi-Load-Anzeige (AGV-Buckets)
 
-Wenn `agvLoads.length >= 1`: einheitliche Zeilen  
-`Position N (COLOR)` mit Werkstück-Icon (`getTransportLoadRows`).  
-Intersection-Meta getrennt (`getTransportMetaLabel`).
+Sobald MQTT mindestens einen befüllten Slot liefert (`agvLoads` oder Legacy-`loadPosition`): UI zeigt **immer Pos 1–3** horizontal (`getTransportLoadRows`). Fehlende Slots = **EMPTY** (`wp-slot-empty`).  
+DOCK ohne jegliche Load-Info → keine Buckets. Intersection-Meta getrennt (`getTransportMetaLabel`).
+
+FTS-Events: **zweispaltig** — links Load-Array, rechts kompakte Shopfloor-Preview (`getAgvEventShopfloorMiniMap`: Straßennetz + AGV-Punkt in AGV-Farbe).
+
+### DOCK an Intersection → TURN
+
+MQTT meldet oft `DOCK`, während `lastNodeId` noch I1–I4 ist (Anfahrt/Ausrichtung vor Rückwärts-Dock an die Station). Intersections können nicht docken → Historie speichert **TURN** (`remappedFromDockAtIntersection`, `originalCommand: DOCK`), **nur wenn** an dieser Intersection noch kein TURN existiert. Folge-`DOCK@I*` nach TURN wird unterdrückt (kein Doppel-TURN).
+
+Gleicher TURN-`actionId` bei wechselndem `lastNodeId` (Fahrt nach der Drehung) wird nicht erneut emittiert; neuer TURN an derselben Node bei neuem `actionId` + `FINISHED` schon.
+
+Drehrichtung LEFT/RIGHT kommt aus `fts/v1/ff/<serial>/order` (und optional `ccu/order/fts`) → `details.direction` → Icons `turnLeftEvent` / `turnRightEvent`.
+
+### HBW Mini-Matrix
+
+Bei MODULE **HBW PICK/DROP**: 3×3-Grid A1–C3 aus `details.hbwShelf` (Service speichert MQTT-`loads[]`-Snapshot; bei leerem DROP-FINISHED ggf. Last-Known-Shelf). Aktiver Slot (`loadPosition`) hervorgehoben; Text-`Position:`-Label entfällt.
+
+### Sticky Slot-Occupancy (Ist, Multi-Load)
+
+FTS liefert oft transient `loadId=null` bei weiterhin belegtem Slot (dabei bleibt `loadType` oft gesetzt).  
+Service merkt sich letzte bekannte Identity je `(Environment, FTS-Serial, loadPosition)` und füllt **nur fehlende `loadId`**, wenn `loadType` noch passt.
+
+| Situation | Verhalten |
+|-----------|-----------|
+| `loadId` + `loadType` gesetzt | Sticky lernen / ersetzen |
+| `loadType` gesetzt, `loadId` null | Sticky-`loadId` gleicher Farbe → Event |
+| Slot `(null, null)` | Sticky für Position **löschen**, **kein** Event |
+| Slot fehlt in späterem nicht-leerem `load[]` | Sticky löschen |
+| MODULE **HBW PICK** / **DPS PICK** FINISHED | Sticky für dieses NFC **überall** löschen |
+
+**Nicht** mehr: leere Slots mit alter NFC weiterattributieren („prefer too many“) — das erzeugte bei Multi-Load Fake-FTS nach HBW-Abladung und falsche Co-Passenger-Anzeige.
+
+### HBW Einlagerung / Auslagerung (Multi-Shelf)
+
+| Vorgang | Fachlogik | MQTT | Attribution |
+|---------|-----------|------|-------------|
+| **Einlagerung** (STORAGE PICK) | erste freie Position A1…C3 | `loads[]` = ganzes Regal; oft **kein** `result` | CCU `order.workpieceId` / `order.type` — **nicht** erste `loadId` im Regal |
+| **Auslagerung** (PRODUCTION DROP) | FIFO **pro Farbe** | `actionState.result` = bewegte NFC; `loads[]` = **Rest** im Regal | **`result` zuerst**; Position aus eigenem HBW-PICK / gemerktem Slot — **nie** Restregal-`loadPosition` |
+
+### CHRG (Ladestation)
+
+- Bestandteil des Shopfloors (`CHRG0`), **kein** Modul-MQTT.
+- Sichtbar nur über **FTS** `lastNodeId` (typisch `DOCK @ CHRG0`).
+- Immer **`visitKind: IST_ONLY`** (außerplanmäßig, nicht in SOLL-Kette).
+- UI: Station-Icon `chrg-station.svg` in Location-Zeile / `getStationIcon('CHRG')`.
 
 ---
 
@@ -106,18 +163,18 @@ Priorität beim Zuordnen eines Modul-Events zu einem Workpiece:
 
 ## 5. ENV-Snapshots
 
-Globaler Sensor-Stand (`TrackTraceEnvironmentService`) wird angehängt, wenn `shouldCaptureEnvironmentSnapshot` true ist:
+Globaler Sensor-Stand (`TrackTraceEnvironmentService`) wird angehängt, wenn `shouldCaptureEnvironmentSnapshot` true ist — **nur Anker-Events**:
 
 | Order | Station | Event-Typen |
 |-------|---------|-------------|
-| PRODUCTION | DRILL / MILL / AIQS | PROCESS, DRILL, MILL, CHECK_QUALITY, **DOCK** |
+| PRODUCTION | DRILL / MILL / AIQS | **DOCK**, **CHECK_QUALITY** |
 | PRODUCTION | HBW | PICK, DROP |
 | PRODUCTION | DPS | PICK, DROP |
 | STORAGE | DPS | DROP |
 | STORAGE | HBW | PICK |
 
-**Nicht:** PASS/TURN, DRILL-PICK, Intersection-only.  
-Sensoren sind vorerst **global** (Näherung); Location-Bezug später.
+**Nicht:** PASS/TURN, PROCESS/DRILL/MILL, Station-PICK an DRILL/MILL/AIQS, Intersection-only.  
+UI zeigt ENV nur für `DOCK|PICK|DROP|CHECK_QUALITY` (`shouldDisplayEnvironmentSnapshot`); Default **kollabiert** (`Env · OK/WARN/ALARM · Zeit`), Expand → volle Sensor-Rows.
 
 Mitfahrer: ENV hängt am **FTS-DOCK**-Event (Ist-Stop), nicht am fremden Modul-Prozess.
 
@@ -128,10 +185,10 @@ Mitfahrer: ENV hängt am **FTS-DOCK**-Event (Ist-Stop), nicht am fremden Modul-P
 | Bereich | Inhalt |
 |---------|--------|
 | Order Context | Status, ERP-Felder, Route, **SOLL-Checklist** ✓/○ (`getPlannedStationChecklist` / Flow-Anker) |
-| Business flow | Chip nur bei SOLL-Stationsbesuch (Modul-Anker) |
+| Business flow | SOLL-Chip (solid); ungeplante Ist-Stops als **dashed Chip** |
 | Station | Modul-Events (+ Intake Color/NFC) |
-| Transport | FTS DOCK/PASS/TURN (+ Ist-stop Badge) |
-| Environment | Snapshot @ Event |
+| Transport | FTS zwischen geplanten Stationen **gruppiert** (Default kollabiert: `AGV · N · HBW→MILL`) |
+| Environment | Snapshot @ Anker-Event (kollabiert) |
 
 Flow-Anker (Checklist „visited“): z. B. PRODUCTION HBW←DROP, DRILL←DRILL/PROCESS, … — siehe `isFlowAnchorEvent`.
 
@@ -146,20 +203,36 @@ Flow-Anker (Checklist „visited“): z. B. PRODUCTION HBW←DROP, DRILL←DRI
 | Extra SOLL-Station (z. B. MILL vor DRILL bei Blue) | Mitfahrt-Modul dem Co-Passenger zugeordnet | `coPassenger` + Order-Farbe |
 | DOCK fehlt nach PASS | nur Location-Change emittiert | Same-Node-DOCK-Zweig |
 | Kein ENV am Ist-Stop | Matrix ohne DOCK | `shouldCaptureEnvironmentSnapshot` |
-| Multi-Load unsichtbar | `agvLoads` fehlt / UI nur Single-Path | FTS `details.agvLoads`, `getTransportLoadRows` |
-| Multi-Load: alle FTS-Events bei einem Werkstück | Mapping `loadId`→Historie fehlerhaft (FTS liefert alle IDs) | `updateWorkpieceHistory` forEach; Regression `storage-production-ml-wrb|wbr_*` |
+| Multi-Load unsichtbar | `agvLoads` fehlt / UI nur Single-Path | FTS `details.agvLoads`, `getTransportLoadRows` (3 Buckets) |
+| DOCK an Intersection | MQTT `DOCK` bei `lastNodeId` I1–I4 | Remap → TURN (`remappedFromDockAtIntersection`) |
+| HBW ohne Regal-Übersicht | `hbwShelf` fehlt / UI nur Text-Position | MODULE `details.hbwShelf`, `getHbwMiniGrid` |
+| Multi-Load: alle FTS-Events bei einem Werkstück | Sticky füllt leere Slots mit alter NFC | Sticky nur bei Type-only; Clear bei `(null,null)` / HBW\|DPS PICK |
+| FTS nach HBW-Abladung in Storage | Sticky nicht geleert nach PICK / empty | `clearFtsStickyForLoadId` + empty-slot clear |
+| HBW DROP/PICK bei falscher Farbe | `loads[]` = Regal-Rest; `result` ignoriert | `result` / `order.workpieceId` vor multi-shelf `loadId` |
+| Storage-Transport fehlt (nur Type, kein Id) | FTS ohne `loadId` im Transit | Sticky bei gleichem `loadType` |
+| CHRG ohne Icon / als „unbekannt“ | kein Modul-MQTT; Serial `CHRG0` | `MODULE_SERIAL_TYPES` + `getStationIcon('CHRG')` |
+| Pflicht-Action fehlt trotz Shopfloor | Message fehlt in Session-Log (≠ Prozess) | Log/Message-Monitor; nicht als UI-Attribution werten |
+| 2× Lagerauftrag / Prod dazwischen | Location-Heuristik `wasAtHbw` statt CCU-`orderType` | `resolveEventOrderType` + `toOrderIdMap(ccu/order/active)` |
 | Doppelte Modul-Zeilen | NodeRed + Direct | Dedup `actionId` |
 | Station-Namen null | Layout noch nicht geladen | `MODULE_SERIAL_TYPES` Fallback |
 | „Wilde“ / doppelte Spuren über Sessions hinweg | NFC-TAGs wiederverwendet (vor eindeutigen Reads) | Neue Aufnahmen; alte Mixed-Logs nur begrenzt nutzen |
+| Production-Stationen fehlen trotz Pass-Lauf | Session ohne `DRILL`/`MILL`/`AIQS` `/state` (Aufnahme-Lücke) | Inventar prüfen; z. B. `ml-wrb_114227` unvollständig → Replay `ml-wbr_*` |
+
+**Abnahme-Regel (Pass, kein Quality-Fail):**  
+Pro Farbe sollen `storage-production-ml-*` Sessions **mindestens** so viele Station- und Transport-Events je Werkstück zeigen wie die Pass-Referenzen `white|red-storage-production_20260728_*` (Blue Pass noch offen; `blue-…-nok_100418` = Fail-Referenz). Zu viele Ist-Events (Mitfahrt) sind ok; zu wenige nicht.
+
+- Referenz Storage→Production Pass: `white|red-storage-production_20260728_*.log`
+- Referenz Storage→Production Fail (Blue): `blue-storage-production-nok_20260728_100418.log`
+- **Offen (Aufnahme):** Blue Pass; White Fail; Red Fail
 
 **Empfohlene Replay-Sessions:**
 
-- Referenz Storage→Production (eindeutige NFC, Arduino): `*-storage-production_20260728_*.log`
-- **Multi-Load 1 AGV (04.08.2026, eindeutige NFC):** `ml-wrb_…114227`, `ml-wbr_…115849`, `ml-brw_…121835` (Charge+RED-Fail), `ml-bwr_…131822` (OK), `ml-bwr_…130016` (Störfall DPS/FTS, behalten). **`ml-rrr_…133245`**, **`ml-bbb_…134700`**. Inventar-Cleanup 05.08.: alte vergleichbare Logs entfernt; **2-AGV-Lücke** bis AGV-2-Reparatur (Interim: Stillstand + ein osf.4-WR).
+- Referenz Storage→Production (eindeutige NFC, Arduino): `white|red-storage-production_20260728_*.log` (Pass); `blue-storage-production-nok_20260728_100418.log` (Fail)
+- **Multi-Load 1 AGV (04.08.2026, eindeutige NFC):** `ml-wbr_…115849` (Pass, vollständige Mfg-States — bevorzugte Mapping-Abnahme), `ml-wrb_…114227` (**unvollständig:** kaum DRILL/MILL/AIQS `/state`), `ml-brw_…121835` (Charge+RED-Fail), `ml-bwr_…131822` (OK), `ml-bwr_…130016` (Störfall DPS/FTS, behalten). **`ml-rrr_…133245`**, **`ml-bbb_…134700`**. Inventar-Cleanup 05.08.: alte vergleichbare Logs entfernt; **2-AGV-Lücke** bis AGV-2-Reparatur (Interim: Stillstand + ein osf.4-WR).
 - Parallel WR/RW/WB+R (Mai 2026): für Mitfahrt/Multi-AGV geeignet, aber **NFC-IDs können wiederverwendet** sein → Spuren teils „wild“
 - Alte Mixed-Logs (`mixed-pw-*`, ältere `two-agvs-*`) nur noch begrenzt für Attribution nutzen
 
-Unit-Regression: Specs `module attribution (no Blue steal)`, `FTS Ist stops`, ENV-Matrix, Multi-Load Position-Rows; **offen:** Multi-Load FTS je `loadId`.
+Unit-Regression: Specs `module attribution (no Blue steal)`, `FTS Ist stops`, ENV-Matrix, Multi-Load sticky (`loadId` omit mit Type; empty clear; HBW PICK clear).
 
 ---
 
@@ -176,6 +249,7 @@ Neue Sonderfälle: zuerst hier dokumentieren (Symptom → Regel → Test), dann 
 ## Referenzen
 
 - [DR-13 Track & Trace Architecture](../03-decision-records/13-track-trace-architecture.md)
+- [SOLL by color (visual / replay test)](osf-ui-track-trace-soll-by-color.md)
 - Temporäre Inhalts-Analyse: [track-trace-live-content-fix-2026-07.md](../07-analysis/track-trace-live-content-fix-2026-07.md)
 - Session-Inventar: `data/osf-data/sessions/INVENTORY.md`
 - Sprint 27 Track&Trace-Themen: [sprint_27.md](../sprints/sprint_27.md)

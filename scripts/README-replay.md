@@ -44,7 +44,7 @@ npx tsx scripts/replay-sessions.ts \
 #### 3. Replay once and exit
 ```bash
 npx tsx scripts/replay-sessions.ts \
-  --session data/osf-data/sessions/blue-storage-production_20260728_100418.log \
+  --session data/osf-data/sessions/blue-storage-production-nok_20260728_100418.log \
   --once
 ```
 

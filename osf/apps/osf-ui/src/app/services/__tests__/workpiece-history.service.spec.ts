@@ -11,7 +11,7 @@ import { MessageValidationService } from '../message-validation.service';
 import { MessagePersistenceService } from '../message-persistence.service';
 import { ShopfloorMappingService } from '../shopfloor-mapping.service';
 import { of } from 'rxjs';
-import type { TrackTraceEvent, OrderContext } from '../workpiece-history.service';
+import type { TrackTraceEvent, OrderContext, WorkpieceHistory } from '../workpiece-history.service';
 
 describe('WorkpieceHistoryService', () => {
   let service: WorkpieceHistoryService;
@@ -400,6 +400,192 @@ describe('WorkpieceHistoryService', () => {
 
       expect(event.details?.['direction']).toBe('LEFT');
     });
+
+    it('remaps MQTT DOCK at intersection to TURN (no dock at I*)', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+      jest.spyOn(ftsRouteService, 'resolveNodeRef').mockImplementation((id: string | undefined) =>
+        id === '1' || id === 'intersection:1' ? 'intersection:1' : id ?? null
+      );
+
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-08-06T09:04:08.000Z',
+          orderId: 'ord-w',
+          lastNodeId: '1',
+          driving: false,
+          actionState: {
+            id: 'act-pass',
+            command: 'PASS',
+            state: 'FINISHED',
+            timestamp: '2026-08-06T09:04:08.000Z',
+          },
+          load: [{ loadId: 'nfc-w', loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: '5iO4',
+        },
+        { active: {}, completed: {} }
+      );
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-08-06T09:04:08.100Z',
+          orderId: 'ord-w',
+          lastNodeId: '1',
+          driving: false,
+          actionState: {
+            id: 'act-dock-ix',
+            command: 'DOCK',
+            state: 'FINISHED',
+            timestamp: '2026-08-06T09:04:08.100Z',
+          },
+          load: [{ loadId: 'nfc-w', loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: '5iO4',
+        },
+        { active: {}, completed: {} }
+      );
+
+      const events = service.getSnapshot(env).get('nfc-w')?.events.filter((e) => e.eventSource === 'FTS') ?? [];
+      expect(events.map((e) => e.eventType)).toEqual(['PASS', 'TURN']);
+      const turn = events[1];
+      expect(turn?.details?.['intersectionNumber']).toBe('1');
+      expect(turn?.details?.['remappedFromDockAtIntersection']).toBe(true);
+      expect(turn?.details?.['originalCommand']).toBe('DOCK');
+      expect(turn?.details?.['direction']).toBeUndefined();
+    });
+
+    it('does not emit second TURN when DOCK follows TURN at same intersection', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+      jest.spyOn(ftsRouteService, 'resolveNodeRef').mockImplementation((id: string | undefined) =>
+        id === '2' || id === 'intersection:2' ? 'intersection:2' : id ?? null
+      );
+
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-08-06T09:34:30.000Z',
+          orderId: 'ord-w',
+          lastNodeId: '2',
+          driving: false,
+          actionState: {
+            id: 'act-turn-2',
+            command: 'TURN',
+            state: 'FINISHED',
+            timestamp: '2026-08-06T09:34:30.000Z',
+          },
+          load: [{ loadId: 'nfc-w', loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: '5iO4',
+        },
+        { active: {}, completed: {} }
+      );
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-08-06T09:34:33.000Z',
+          orderId: 'ord-w',
+          lastNodeId: '2',
+          driving: false,
+          actionState: {
+            id: 'act-dock-2',
+            command: 'DOCK',
+            state: 'RUNNING',
+            timestamp: '2026-08-06T09:34:33.000Z',
+          },
+          load: [{ loadId: 'nfc-w', loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: '5iO4',
+        },
+        { active: {}, completed: {} }
+      );
+
+      const events = service.getSnapshot(env).get('nfc-w')?.events.filter((e) => e.eventSource === 'FTS') ?? [];
+      expect(events.map((e) => e.eventType)).toEqual(['TURN']);
+      expect(events[0]?.actionId).toBe('act-turn-2');
+    });
+
+    it('emits new TURN when actionId changes at same intersection (FINISHED)', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+      (service as any).turnDirectionByActionId.set('turn-old', 'RIGHT');
+      (service as any).turnDirectionByActionId.set('turn-new', 'LEFT');
+      jest.spyOn(ftsRouteService, 'resolveNodeRef').mockImplementation((id: string | undefined) =>
+        id === '2' || id === 'intersection:2' ? 'intersection:2' : id ?? null
+      );
+
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-08-06T09:34:29.000Z',
+          orderId: 'ord-w',
+          lastNodeId: '1',
+          driving: true,
+          actionState: {
+            id: 'turn-old',
+            command: 'TURN',
+            state: 'FINISHED',
+            timestamp: '2026-08-06T09:34:29.000Z',
+          },
+          load: [{ loadId: 'nfc-w', loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: '5iO4',
+        },
+        { active: {}, completed: {} }
+      );
+      // Stale actionId while arriving at I2 — must not emit
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-08-06T09:34:30.000Z',
+          orderId: 'ord-w',
+          lastNodeId: '2',
+          driving: true,
+          actionState: {
+            id: 'turn-old',
+            command: 'TURN',
+            state: 'FINISHED',
+            timestamp: '2026-08-06T09:34:30.000Z',
+          },
+          load: [{ loadId: 'nfc-w', loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: '5iO4',
+        },
+        { active: {}, completed: {} }
+      );
+      // Real TURN at I2
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-08-06T09:34:31.000Z',
+          orderId: 'ord-w',
+          lastNodeId: '2',
+          driving: false,
+          actionState: {
+            id: 'turn-new',
+            command: 'TURN',
+            state: 'FINISHED',
+            timestamp: '2026-08-06T09:34:31.000Z',
+          },
+          load: [{ loadId: 'nfc-w', loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: '5iO4',
+        },
+        { active: {}, completed: {} }
+      );
+
+      const events = service.getSnapshot(env).get('nfc-w')?.events.filter((e) => e.eventSource === 'FTS') ?? [];
+      expect(events.map((e) => e.eventType)).toEqual(['TURN', 'TURN']);
+      expect(events[0]?.location).toBe('1');
+      expect(events[0]?.details?.['direction']).toBe('RIGHT');
+      expect(events[1]?.location).toBe('2');
+      expect(events[1]?.details?.['direction']).toBe('LEFT');
+    });
   });
 
   describe('Deduplication', () => {
@@ -502,7 +688,7 @@ describe('WorkpieceHistoryService', () => {
   });
 
   describe('Environment snapshot trigger matrix', () => {
-    it('captures production PROCESS events for DRILL/MILL/AIQS', () => {
+    it('does not capture PROCESS/DRILL/MILL — only CHECK_QUALITY + DOCK at mfg stations', () => {
       const svc = service as unknown as {
         shouldCaptureEnvironmentSnapshot: (event: TrackTraceEvent) => boolean;
       };
@@ -513,21 +699,29 @@ describe('WorkpieceHistoryService', () => {
           orderType: 'PRODUCTION',
           stationId: 'DRILL',
         })
-      ).toBe(true);
+      ).toBe(false);
       expect(
         svc.shouldCaptureEnvironmentSnapshot({
           timestamp: '2026-05-01T10:00:00.500Z',
-          eventType: 'PROCESS',
+          eventType: 'DRILL',
           orderType: 'PRODUCTION',
-          stationId: 'MILL',
+          stationId: 'DRILL',
+        })
+      ).toBe(false);
+      expect(
+        svc.shouldCaptureEnvironmentSnapshot({
+          timestamp: '2026-05-01T10:00:01.000Z',
+          eventType: 'CHECK_QUALITY',
+          orderType: 'PRODUCTION',
+          stationId: 'AIQS',
         })
       ).toBe(true);
       expect(
         svc.shouldCaptureEnvironmentSnapshot({
-          timestamp: '2026-05-01T10:00:01.000Z',
-          eventType: 'PROCESS',
+          timestamp: '2026-05-01T10:00:01.500Z',
+          eventType: 'DOCK',
           orderType: 'PRODUCTION',
-          stationId: 'AIQS',
+          stationId: 'DRILL',
         })
       ).toBe(true);
     });
@@ -576,13 +770,18 @@ describe('WorkpieceHistoryService', () => {
         mapModuleCommandToEventType: (command: string) => string;
         isTrackableModuleCommand: (command: string) => boolean;
         resolveLoadPosition: (
+          environmentKey: string,
           state: { loads?: Array<{ loadId?: string; loadType?: string; loadPosition?: string }> },
-          workpieceId: string
+          workpieceId: string,
+          history: { workpieceId: string; workpieceType: string; events: unknown[] },
+          stationName: string | null,
+          mappedCommand: string
         ) => string | null;
         resolveModuleWorkpieceId: (
           state: unknown,
           action: { command?: string; metadata?: Record<string, unknown> },
-          result: unknown
+          result: unknown,
+          orders: { active: Record<string, unknown>; completed: Record<string, unknown> }
         ) => string | null;
         resolveModuleWorkpieceType: (
           state: unknown,
@@ -598,17 +797,26 @@ describe('WorkpieceHistoryService', () => {
       expect(svc.isTrackableModuleCommand('RGB_NFC')).toBe(true);
       expect(
         svc.resolveLoadPosition(
+          'mock',
           {
             loads: [
               { loadId: '2b2c6dd469a47a', loadType: 'WHITE', loadPosition: 'A1' },
               { loadId: '', loadPosition: 'A2' },
             ],
           },
-          '2b2c6dd469a47a'
+          '2b2c6dd469a47a',
+          { workpieceId: '2b2c6dd469a47a', workpieceType: 'WHITE', events: [] },
+          'HBW',
+          'PICK'
         )
       ).toBe('A1');
       expect(
-        svc.resolveModuleWorkpieceId({}, { command: 'RGB_NFC' }, '2b2c6dd469a47a')
+        svc.resolveModuleWorkpieceId(
+          {},
+          { command: 'RGB_NFC' },
+          '2b2c6dd469a47a',
+          { active: {}, completed: {} }
+        )
       ).toBe('2b2c6dd469a47a');
       expect(svc.resolveModuleWorkpieceType({}, { metadata: { type: 'WHITE' } })).toBe('WHITE');
     });
@@ -828,6 +1036,111 @@ describe('WorkpieceHistoryService', () => {
       expect(contexts[0].customerOrderId).toBe('ERP-CO-KEEP');
       expect(contexts[0].customerId).toBe('CUST-KEEP');
     });
+
+    it('prefers own-color PRODUCTION over foreign co-passenger order when collapsing', () => {
+      const servicePrivate = service as unknown as {
+        generateOrderContext: (
+          workpieceType: string,
+          orders: { active: Record<string, unknown>; completed: Record<string, unknown> },
+          orderIds?: string | string[],
+          events?: TrackTraceEvent[],
+          previousContexts?: OrderContext[]
+        ) => OrderContext[];
+        rebuildOrderContexts: (
+          history: WorkpieceHistory,
+          orders: { active: Record<string, unknown>; completed: Record<string, unknown> }
+        ) => OrderContext[];
+      };
+
+      const foreignWhiteProd = 'a9325a20-foreign-white';
+      const ownBlueProd = '83700d76-own-blue';
+      const orders = {
+        active: {},
+        completed: {
+          [foreignWhiteProd]: {
+            orderId: foreignWhiteProd,
+            orderType: 'PRODUCTION',
+            type: 'WHITE',
+            state: 'FINISHED',
+            startedAt: '2026-08-04T09:50:00Z',
+            workpieceId: 'white-nfc',
+          },
+          [ownBlueProd]: {
+            orderId: ownBlueProd,
+            orderType: 'PRODUCTION',
+            type: 'BLUE',
+            state: 'FINISHED',
+            startedAt: '2026-08-04T09:50:50Z',
+            workpieceId: '78d10489b38ed8',
+          },
+        },
+      };
+
+      const events: TrackTraceEvent[] = [
+        // Many FTS Ist stops on foreign WHITE order (co-passenger)
+        ...[1, 2, 3, 4, 5, 6].map((i) => ({
+          timestamp: `2026-08-04T09:51:0${i}.000Z`,
+          eventType: 'DOCK',
+          eventSource: 'FTS' as const,
+          orderId: foreignWhiteProd,
+          orderType: 'PRODUCTION' as const,
+          stationId: 'MILL',
+          workpieceId: '78d10489b38ed8',
+          workpieceType: 'BLUE',
+          location: 'SVR3QA2098',
+          details: { coPassenger: true, visitKind: 'IST_ONLY' },
+        })),
+        // Own MODULE anchors on BLUE production
+        {
+          timestamp: '2026-08-04T09:50:50.000Z',
+          eventType: 'DROP',
+          eventSource: 'MODULE',
+          orderId: ownBlueProd,
+          orderType: 'PRODUCTION',
+          stationId: 'HBW',
+          workpieceId: '78d10489b38ed8',
+          workpieceType: 'BLUE',
+          location: 'SVR3QA0022',
+        },
+        {
+          timestamp: '2026-08-04T09:53:12.000Z',
+          eventType: 'DRILL',
+          eventSource: 'MODULE',
+          orderId: ownBlueProd,
+          orderType: 'PRODUCTION',
+          stationId: 'DRILL',
+          workpieceId: '78d10489b38ed8',
+          workpieceType: 'BLUE',
+          location: 'SVR4H76449',
+        },
+      ];
+
+      // Collapse path: both IDs requested (legacy / without coPassenger filter)
+      const collapsed = servicePrivate.generateOrderContext(
+        'BLUE',
+        orders,
+        [foreignWhiteProd, ownBlueProd],
+        events
+      );
+      const production = collapsed.find((c) => c.orderType === 'PRODUCTION');
+      expect(production?.orderId).toBe(ownBlueProd);
+
+      // rebuild path: coPassenger foreign UUID must not enter the request set
+      const rebuilt = servicePrivate.rebuildOrderContexts(
+        {
+          workpieceId: '78d10489b38ed8',
+          workpieceType: 'BLUE',
+          events,
+          orders: [
+            { orderId: foreignWhiteProd, orderType: 'PRODUCTION' },
+            { orderId: ownBlueProd, orderType: 'PRODUCTION' },
+          ],
+        },
+        orders
+      );
+      expect(rebuilt.filter((c) => c.orderType === 'PRODUCTION')).toHaveLength(1);
+      expect(rebuilt.find((c) => c.orderType === 'PRODUCTION')?.orderId).toBe(ownBlueProd);
+    });
   });
 
   describe('shouldCaptureEnvironmentSnapshot', () => {
@@ -948,6 +1261,349 @@ describe('WorkpieceHistoryService', () => {
       const dock = history!.events.find((e) => e.eventType === 'DOCK');
       expect(dock?.details?.['visitKind']).toBe('PLANNED');
       expect(dock?.details?.['coPassenger']).toBe(false);
+    });
+  });
+
+  describe('FTS multi-load mapping fallback (slot loadPosition)', () => {
+    const moduleSerialId = '5iO4';
+
+    const makeFtsState = (
+      command: string,
+      actionId: string,
+      timestamp: string,
+      lastNodeId: string,
+      load: Array<{
+        loadId: string | null;
+        loadType: 'RED' | 'WHITE' | 'BLUE' | null;
+        loadPosition: string;
+      }>
+    ) => ({
+      serialNumber: moduleSerialId,
+      timestamp,
+      orderId: 'ord-co',
+      orderUpdateId: 1,
+      lastNodeId,
+      driving: false,
+      actionState: { id: actionId, command, state: 'FINISHED', timestamp },
+      load,
+      _moduleSerialId: moduleSerialId,
+    });
+
+    it('emits transport events for all loads even when FTS omits loadId in a later state', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+
+      const location1 = 'SVR4H76449'; // manufacturing station => PRODUCTION context
+      const location2 = 'intersection:2';
+
+      // State 1: all loadIds known -> history created for all NFCs
+      sp.updateWorkpieceHistory(
+        env,
+        makeFtsState('PASS', 'act-pass', '2026-07-29T10:00:00.000Z', location1, [
+          { loadId: 'nfc-blue', loadType: 'BLUE', loadPosition: '1' },
+          { loadId: 'nfc-white', loadType: 'WHITE', loadPosition: '3' },
+          { loadId: 'nfc-red', loadType: 'RED', loadPosition: '2' },
+        ]),
+        { active: {}, completed: {} }
+      );
+
+      // State 2: FTS transiently omits loadId for two slots, but keeps loadType/loadPosition
+      sp.updateWorkpieceHistory(
+        env,
+        makeFtsState('DOCK', 'act-dock', '2026-07-29T10:00:01.000Z', location2, [
+          { loadId: 'nfc-blue', loadType: 'BLUE', loadPosition: '1' },
+          { loadId: null, loadType: 'RED', loadPosition: '2' },
+          { loadId: null, loadType: 'WHITE', loadPosition: '3' },
+        ]),
+        { active: {}, completed: {} }
+      );
+
+      const snapshot = service.getSnapshot(env);
+      const historyBlue = snapshot.get('nfc-blue');
+      const historyRed = snapshot.get('nfc-red');
+      const historyWhite = snapshot.get('nfc-white');
+
+      expect(historyBlue?.events.some((e) => e.eventSource === 'FTS' && e.eventType === 'TURN' && e.location === location2)).toBe(
+        true
+      );
+      expect(historyRed?.events.some((e) => e.eventSource === 'FTS' && e.eventType === 'TURN' && e.location === location2)).toBe(
+        true
+      );
+      expect(historyWhite?.events.some((e) => e.eventSource === 'FTS' && e.eventType === 'TURN' && e.location === location2)).toBe(
+        true
+      );
+      expect(
+        historyBlue?.events.find((e) => e.location === location2)?.details?.['remappedFromDockAtIntersection']
+      ).toBe(true);
+    });
+
+    it('clears sticky on fully empty slots (no post-unload attribution)', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+      const dps = 'SVR4H73275';
+      const intersection = '2';
+      const hbw = 'SVR3QA0022';
+
+      sp.updateWorkpieceHistory(
+        env,
+        makeFtsState('DOCK', 'act-dps', '2026-07-29T10:00:00.000Z', dps, [
+          { loadId: 'nfc-white', loadType: 'WHITE', loadPosition: '1' },
+        ]),
+        { active: {}, completed: {} }
+      );
+
+      // Empty after unload / next order approach — must not keep WHITE sticky
+      sp.updateWorkpieceHistory(
+        env,
+        makeFtsState('PASS', 'act-pass', '2026-07-29T10:00:01.000Z', intersection, [
+          { loadId: null, loadType: null, loadPosition: '1' },
+        ]),
+        { active: {}, completed: {} }
+      );
+      sp.updateWorkpieceHistory(
+        env,
+        makeFtsState('DOCK', 'act-hbw', '2026-07-29T10:00:02.000Z', hbw, [
+          { loadId: null, loadType: null, loadPosition: '1' },
+        ]),
+        { active: {}, completed: {} }
+      );
+
+      const history = service.getSnapshot(env).get('nfc-white');
+      expect(history).toBeDefined();
+      const locations = history!.events.filter((e) => e.eventSource === 'FTS').map((e) => e.location);
+      expect(locations).toContain(dps);
+      expect(locations).not.toContain(intersection);
+      expect(locations).not.toContain(hbw);
+    });
+
+    it('clears sticky after MODULE HBW PICK so later empty FTS is not attributed', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+      const hbw = 'SVR3QA0022';
+      const intersection = '2';
+      const orders = {
+        active: {
+          'ord-white-storage': {
+            orderId: 'ord-white-storage',
+            orderType: 'STORAGE',
+            type: 'WHITE',
+            workpieceId: 'nfc-white',
+          },
+        },
+        completed: {},
+      };
+
+      sp.updateWorkpieceHistory(
+        env,
+        makeFtsState('DOCK', 'act-hbw-dock', '2026-07-29T10:00:00.000Z', hbw, [
+          { loadId: 'nfc-white', loadType: 'WHITE', loadPosition: '1' },
+        ]),
+        orders
+      );
+
+      sp.updateWorkpieceHistoryFromModule(
+        env,
+        {
+          serialNumber: hbw,
+          timestamp: '2026-07-29T10:00:01.000Z',
+          orderId: 'ord-white-storage',
+          orderUpdateId: 1,
+          actionState: {
+            id: 'hbw-pick',
+            command: 'PICK',
+            state: 'FINISHED',
+            timestamp: '2026-07-29T10:00:01.000Z',
+          },
+          loads: [{ loadId: 'nfc-white', loadType: 'WHITE', loadPosition: 'A1' }],
+          _moduleSerialId: hbw,
+          _topic: `module/v1/ff/${hbw}/state`,
+        },
+        orders
+      );
+
+      sp.updateWorkpieceHistory(
+        env,
+        makeFtsState('PASS', 'act-empty', '2026-07-29T10:00:02.000Z', intersection, [
+          { loadId: null, loadType: null, loadPosition: '1' },
+          { loadId: null, loadType: null, loadPosition: '2' },
+          { loadId: null, loadType: null, loadPosition: '3' },
+        ]),
+        orders
+      );
+
+      const history = service.getSnapshot(env).get('nfc-white');
+      expect(history).toBeDefined();
+      expect(history!.events.some((e) => e.eventSource === 'MODULE' && e.eventType === 'PICK')).toBe(
+        true
+      );
+      expect(
+        history!.events.some(
+          (e) => e.eventSource === 'FTS' && e.location === intersection
+        )
+      ).toBe(false);
+    });
+  });
+
+  describe('Golden Path phases via CCU orderType (white storage→production)', () => {
+    const dps = 'SVR4H73275';
+    const hbw = 'SVR3QA0022';
+    const drill = 'SVR4H76449';
+    const storageOrderId = 'ord-storage-white';
+    const productionOrderId = 'ord-prod-white';
+    const nfc = 'nfc-white-golden';
+
+    const ccuOrders = {
+      active: {
+        [storageOrderId]: {
+          orderId: storageOrderId,
+          orderType: 'STORAGE',
+          type: 'WHITE',
+          workpieceId: nfc,
+        },
+        [productionOrderId]: {
+          orderId: productionOrderId,
+          orderType: 'PRODUCTION',
+          type: 'WHITE',
+          workpieceId: nfc,
+        },
+      },
+      completed: {},
+    };
+
+    it('keeps HBW dock in STORAGE when CCU orderType is STORAGE (no wasAtHbw flip)', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-07-28T07:49:08.000Z',
+          orderId: storageOrderId,
+          lastNodeId: dps,
+          driving: false,
+          actionState: {
+            id: 'a1',
+            command: 'DOCK',
+            state: 'FINISHED',
+            timestamp: '2026-07-28T07:49:08.000Z',
+          },
+          load: [{ loadId: nfc, loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: '5iO4',
+        },
+        ccuOrders
+      );
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-07-28T07:49:28.000Z',
+          orderId: storageOrderId,
+          lastNodeId: '1',
+          driving: true,
+          actionState: {
+            id: 'a2',
+            command: 'PASS',
+            state: 'FINISHED',
+            timestamp: '2026-07-28T07:49:28.000Z',
+          },
+          load: [{ loadId: nfc, loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: '5iO4',
+        },
+        ccuOrders
+      );
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-07-28T07:49:34.000Z',
+          orderId: storageOrderId,
+          lastNodeId: hbw,
+          driving: false,
+          actionState: {
+            id: 'a3',
+            command: 'DOCK',
+            state: 'FINISHED',
+            timestamp: '2026-07-28T07:49:34.000Z',
+          },
+          load: [{ loadId: nfc, loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: '5iO4',
+        },
+        ccuOrders
+      );
+
+      const history = service.getSnapshot(env).get(nfc);
+      expect(history).toBeDefined();
+      const fts = history!.events.filter((e) => e.eventSource === 'FTS');
+      expect(fts.every((e) => e.orderType === 'STORAGE')).toBe(true);
+      expect(fts.some((e) => e.location === hbw && e.orderType === 'STORAGE')).toBe(true);
+    });
+
+    it('marks production FTS as PRODUCTION via CCU orderId (same NFC)', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-07-28T07:51:05.000Z',
+          orderId: productionOrderId,
+          lastNodeId: hbw,
+          driving: false,
+          actionState: {
+            id: 'p1',
+            command: 'DOCK',
+            state: 'FINISHED',
+            timestamp: '2026-07-28T07:51:05.000Z',
+          },
+          load: [{ loadId: nfc, loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: '5iO4',
+        },
+        ccuOrders
+      );
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-07-28T07:51:23.000Z',
+          orderId: productionOrderId,
+          lastNodeId: drill,
+          driving: false,
+          actionState: {
+            id: 'p2',
+            command: 'DOCK',
+            state: 'FINISHED',
+            timestamp: '2026-07-28T07:51:23.000Z',
+          },
+          load: [{ loadId: nfc, loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: '5iO4',
+        },
+        ccuOrders
+      );
+
+      const history = service.getSnapshot(env).get(nfc);
+      const fts = history!.events.filter((e) => e.eventSource === 'FTS');
+      expect(fts.every((e) => e.orderType === 'PRODUCTION')).toBe(true);
+    });
+
+    it('normalizes ccu/order/active array payload into orderId map', () => {
+      const sp = service as any;
+      const map = sp.toOrderIdMap([
+        { orderId: storageOrderId, orderType: 'STORAGE', type: 'WHITE' },
+        { orderId: productionOrderId, orderType: 'PRODUCTION', type: 'WHITE' },
+      ]);
+      expect(map[storageOrderId].orderType).toBe('STORAGE');
+      expect(map[productionOrderId].orderType).toBe('PRODUCTION');
+      expect(sp.resolveCcuOrderType({ active: map, completed: {} }, storageOrderId)).toBe('STORAGE');
+      expect(sp.resolveCcuOrderType({ active: map, completed: {} }, productionOrderId)).toBe(
+        'PRODUCTION'
+      );
     });
   });
 
@@ -1215,6 +1871,535 @@ describe('WorkpieceHistoryService', () => {
       expect(service.getSnapshot(env).get('nfc-blue')?.events.some((e) => e.eventType === 'DRILL')).toBe(
         false
       );
+    });
+  });
+
+  describe('HBW multi-shelf attribution (result + order.workpieceId)', () => {
+    const hbw = 'SVR3QA0022';
+    const whiteNfc = '832a423afcb534';
+    const blueNfc = '78d10489b38ed8';
+    const redNfc = 'f5b58ca1a9f367';
+
+    it('attributes HBW DROP to actionState.result NFC, not remaining shelf loadId', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+      const whiteOrder = 'ord-white-prod';
+      const orders = {
+        active: {
+          [whiteOrder]: {
+            orderId: whiteOrder,
+            orderType: 'PRODUCTION',
+            type: 'WHITE',
+            workpieceId: whiteNfc,
+          },
+        },
+        completed: {},
+      };
+
+      // Seed histories so all three NFCs exist
+      for (const [nfc, type] of [
+        [whiteNfc, 'WHITE'],
+        [blueNfc, 'BLUE'],
+        [redNfc, 'RED'],
+      ] as const) {
+        sp.updateWorkpieceHistory(
+          env,
+          {
+            serialNumber: '5iO4',
+            timestamp: '2026-07-29T10:00:00.000Z',
+            orderId: whiteOrder,
+            orderUpdateId: 1,
+            lastNodeId: hbw,
+            driving: false,
+            actionState: {
+              id: `seed-${type}`,
+              command: 'DOCK',
+              state: 'FINISHED',
+              timestamp: '2026-07-29T10:00:00.000Z',
+            },
+            load: [{ loadId: nfc, loadType: type, loadPosition: '1' }],
+            _moduleSerialId: '5iO4',
+          },
+          orders
+        );
+      }
+
+      sp.updateWorkpieceHistoryFromModule(
+        env,
+        {
+          serialNumber: hbw,
+          timestamp: '2026-07-29T10:01:00.000Z',
+          orderId: whiteOrder,
+          orderUpdateId: 2,
+          actionState: {
+            id: 'hbw-drop-white',
+            command: 'DROP',
+            state: 'FINISHED',
+            timestamp: '2026-07-29T10:01:00.000Z',
+            result: whiteNfc,
+          },
+          // Remaining shelf — must not steal attribution
+          loads: [
+            { loadId: blueNfc, loadType: 'BLUE', loadPosition: 'B1' },
+            { loadId: redNfc, loadType: 'RED', loadPosition: 'C1' },
+          ],
+          _moduleSerialId: hbw,
+          _topic: `module/v1/ff/${hbw}/state`,
+        },
+        orders
+      );
+
+      expect(
+        service.getSnapshot(env).get(whiteNfc)?.events.some((e) => e.eventSource === 'MODULE' && e.eventType === 'DROP')
+      ).toBe(true);
+      expect(
+        service.getSnapshot(env).get(blueNfc)?.events.some((e) => e.eventSource === 'MODULE' && e.eventType === 'DROP')
+      ).toBe(false);
+    });
+
+    it('attributes HBW PICK (storage) via CCU order.workpieceId when shelf has multiple NFCs', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+      const redStorage = 'ord-red-storage';
+      const orders = {
+        active: {
+          [redStorage]: {
+            orderId: redStorage,
+            orderType: 'STORAGE',
+            type: 'RED',
+            workpieceId: redNfc,
+          },
+        },
+        completed: {},
+      };
+
+      sp.updateWorkpieceHistoryFromModule(
+        env,
+        {
+          serialNumber: hbw,
+          timestamp: '2026-07-29T10:02:00.000Z',
+          orderId: redStorage,
+          orderUpdateId: 1,
+          actionState: {
+            id: 'hbw-pick-red',
+            command: 'PICK',
+            state: 'FINISHED',
+            timestamp: '2026-07-29T10:02:00.000Z',
+          },
+          loads: [
+            { loadId: blueNfc, loadType: 'BLUE', loadPosition: 'B1' },
+            { loadId: redNfc, loadType: 'RED', loadPosition: 'C1' },
+            { loadId: whiteNfc, loadType: 'WHITE', loadPosition: 'A1' },
+          ],
+          _moduleSerialId: hbw,
+          _topic: `module/v1/ff/${hbw}/state`,
+        },
+        orders
+      );
+
+      expect(
+        service.getSnapshot(env).get(redNfc)?.events.some((e) => e.eventSource === 'MODULE' && e.eventType === 'PICK')
+      ).toBe(true);
+      expect(
+        service.getSnapshot(env).get(blueNfc)?.events.some((e) => e.eventSource === 'MODULE' && e.eventType === 'PICK') ??
+          false
+      ).toBe(false);
+    });
+
+    it('HBW DROP uses own shelf slot (PICK / remembered), not remaining loads', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+      const whiteOrder = 'ord-w-store';
+      const whiteProd = 'ord-w-prod';
+      const blueProd = 'ord-b-prod';
+      const redStorage = 'ord-r-store';
+      const orders = {
+        active: {
+          [whiteOrder]: {
+            orderId: whiteOrder,
+            orderType: 'STORAGE',
+            type: 'WHITE',
+            workpieceId: whiteNfc,
+          },
+          [whiteProd]: {
+            orderId: whiteProd,
+            orderType: 'PRODUCTION',
+            type: 'WHITE',
+            workpieceId: whiteNfc,
+          },
+          [blueProd]: {
+            orderId: blueProd,
+            orderType: 'PRODUCTION',
+            type: 'BLUE',
+            workpieceId: blueNfc,
+          },
+          [redStorage]: {
+            orderId: redStorage,
+            orderType: 'STORAGE',
+            type: 'RED',
+            workpieceId: redNfc,
+          },
+        },
+        completed: {},
+      };
+
+      // White Einlagerung A1
+      sp.updateWorkpieceHistoryFromModule(
+        env,
+        {
+          serialNumber: hbw,
+          timestamp: '2026-07-29T10:00:00.000Z',
+          orderId: whiteOrder,
+          orderUpdateId: 1,
+          actionState: {
+            id: 'pick-w',
+            command: 'PICK',
+            state: 'FINISHED',
+            timestamp: '2026-07-29T10:00:00.000Z',
+            metadata: { type: 'WHITE', workpieceId: whiteNfc },
+          },
+          loads: [{ loadId: whiteNfc, loadType: 'WHITE', loadPosition: 'A1' }],
+          _moduleSerialId: hbw,
+        },
+        orders
+      );
+
+      // Red Einlagerung — shelf already has Blue B1 + White A1 (learns Blue slot without Blue PICK event)
+      sp.updateWorkpieceHistoryFromModule(
+        env,
+        {
+          serialNumber: hbw,
+          timestamp: '2026-07-29T10:01:00.000Z',
+          orderId: redStorage,
+          orderUpdateId: 1,
+          actionState: {
+            id: 'pick-r',
+            command: 'PICK',
+            state: 'FINISHED',
+            timestamp: '2026-07-29T10:01:00.000Z',
+            metadata: { type: 'RED', workpieceId: redNfc },
+          },
+          loads: [
+            { loadId: blueNfc, loadType: 'BLUE', loadPosition: 'B1' },
+            { loadId: redNfc, loadType: 'RED', loadPosition: 'C1' },
+            { loadId: whiteNfc, loadType: 'WHITE', loadPosition: 'A1' },
+          ],
+          _moduleSerialId: hbw,
+        },
+        orders
+      );
+
+      // White Auslagerung — FINISHED loads are remainder only (Blue B1, Red C1)
+      sp.updateWorkpieceHistoryFromModule(
+        env,
+        {
+          serialNumber: hbw,
+          timestamp: '2026-07-29T10:02:00.000Z',
+          orderId: whiteProd,
+          orderUpdateId: 2,
+          actionState: {
+            id: 'drop-w',
+            command: 'DROP',
+            state: 'FINISHED',
+            timestamp: '2026-07-29T10:02:00.000Z',
+            result: whiteNfc,
+            metadata: { type: 'WHITE' },
+          },
+          loads: [
+            { loadId: blueNfc, loadType: 'BLUE', loadPosition: 'B1' },
+            { loadId: redNfc, loadType: 'RED', loadPosition: 'C1' },
+          ],
+          _moduleSerialId: hbw,
+        },
+        orders
+      );
+
+      const whiteDrop = service
+        .getSnapshot(env)
+        .get(whiteNfc)
+        ?.events.find((e) => e.eventType === 'DROP' && e.stationId === 'HBW');
+      expect(whiteDrop?.details?.['loadPosition']).toBe('A1');
+      const shelf = whiteDrop?.details?.['hbwShelf'] as
+        | Array<{ loadPosition: string; loadType: string | null; loadId: string | null }>
+        | undefined;
+      expect(shelf).toBeDefined();
+      expect(shelf).toHaveLength(9);
+      expect(shelf?.find((c) => c.loadPosition === 'B1')?.loadType).toBe('BLUE');
+      expect(shelf?.find((c) => c.loadPosition === 'C1')?.loadType).toBe('RED');
+      // DROP FINISHED remainder — vacated A1 empty in MQTT snapshot
+      expect(shelf?.find((c) => c.loadPosition === 'A1')?.loadId).toBeFalsy();
+
+      // Blue Auslagerung — no own HBW PICK; slot remembered from Red storage shelf snapshot
+      sp.updateWorkpieceHistoryFromModule(
+        env,
+        {
+          serialNumber: hbw,
+          timestamp: '2026-07-29T10:03:00.000Z',
+          orderId: blueProd,
+          orderUpdateId: 2,
+          actionState: {
+            id: 'drop-b',
+            command: 'DROP',
+            state: 'FINISHED',
+            timestamp: '2026-07-29T10:03:00.000Z',
+            result: blueNfc,
+            metadata: { type: 'BLUE' },
+          },
+          loads: [{ loadId: redNfc, loadType: 'RED', loadPosition: 'C1' }],
+          _moduleSerialId: hbw,
+        },
+        orders
+      );
+
+      const blueDrop = service
+        .getSnapshot(env)
+        .get(blueNfc)
+        ?.events.find((e) => e.eventType === 'DROP' && e.stationId === 'HBW');
+      expect(blueDrop?.details?.['loadPosition']).toBe('B1');
+    });
+  });
+
+  describe('CHRG as Ist station (FTS only, no module MQTT)', () => {
+    it('emits DOCK @ CHRG0 with stationId CHRG and visitKind IST_ONLY', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+      const nfc = 'nfc-white-chrg';
+      const orders = {
+        active: {
+          'ord-prod': {
+            orderId: 'ord-prod',
+            orderType: 'PRODUCTION',
+            type: 'WHITE',
+            workpieceId: nfc,
+          },
+        },
+        completed: {},
+      };
+
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-07-29T12:00:00.000Z',
+          orderId: 'ord-prod',
+          orderUpdateId: 1,
+          lastNodeId: 'CHRG0',
+          driving: false,
+          actionState: {
+            id: 'chrg-dock',
+            command: 'DOCK',
+            state: 'FINISHED',
+            timestamp: '2026-07-29T12:00:00.000Z',
+          },
+          load: [{ loadId: nfc, loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: '5iO4',
+        },
+        orders
+      );
+
+      const dock = service
+        .getSnapshot(env)
+        .get(nfc)
+        ?.events.find((e) => e.eventSource === 'FTS' && e.eventType === 'DOCK');
+      expect(dock?.stationId).toBe('CHRG');
+      expect(dock?.location).toBe('CHRG0');
+      expect(dock?.details?.['visitKind']).toBe('IST_ONLY');
+    });
+  });
+
+  describe('DPS production delivery (PASSED / MQTT gap)', () => {
+    const dps = 'SVR4H73275';
+    const nfc = '2b2c6dd469a47a';
+    const orderId = 'ord-white-prod';
+
+    it('attributes DPS PICK FINISHED PASSED via CCU workpieceId', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+
+      // Seed history so matching does not invent a blank workpiece
+      const historyMap = service.getSnapshot(env);
+      historyMap.set(nfc, {
+        workpieceId: nfc,
+        workpieceType: 'WHITE',
+        events: [
+          {
+            timestamp: '2026-07-29T10:00:00.000Z',
+            workpieceId: nfc,
+            workpieceType: 'WHITE',
+            location: dps,
+            moduleId: '5iO4',
+            moduleName: 'AGV-1',
+            orderId,
+            orderType: 'PRODUCTION',
+            stationId: 'DPS',
+            eventSource: 'FTS',
+            eventType: 'DOCK',
+            subOrderId: `${orderId}-1`,
+            actionId: 'dock-1',
+          },
+        ],
+        orders: [],
+      } as any);
+      (service as any).getStore(env).next(new Map(historyMap));
+
+      sp.updateWorkpieceHistoryFromModule(
+        env,
+        {
+          serialNumber: dps,
+          _moduleSerialId: dps,
+          timestamp: '2026-07-29T10:00:05.000Z',
+          orderId,
+          orderUpdateId: 11,
+          actionState: {
+            id: 'pick-1',
+            command: 'PICK',
+            state: 'FINISHED',
+            timestamp: '2026-07-29T10:00:05.000Z',
+            result: 'PASSED',
+          },
+          loads: null,
+        },
+        {
+          active: {
+            [orderId]: {
+              orderId,
+              orderType: 'PRODUCTION',
+              type: 'WHITE',
+              workpieceId: nfc,
+            },
+          },
+          completed: {},
+        }
+      );
+
+      const events = service.getSnapshot(env).get(nfc)?.events ?? [];
+      const pick = events.find(
+        (e) => e.eventSource === 'MODULE' && e.eventType === 'PICK' && e.stationId === 'DPS'
+      );
+      expect(pick).toBeDefined();
+      expect(pick?.orderId).toBe(orderId);
+      expect(pick?.workpieceId).toBe(nfc);
+    });
+
+    it('synthesizes DPS MODULE PICK when completed PRODUCTION has FTS DOCK but no MQTT PICK', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-07-29T10:00:00.000Z',
+          orderId,
+          orderUpdateId: 1,
+          lastNodeId: dps,
+          driving: false,
+          actionState: {
+            id: 'dock-dps',
+            command: 'DOCK',
+            state: 'FINISHED',
+            timestamp: '2026-07-29T10:00:00.000Z',
+          },
+          load: [{ loadId: nfc, loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: '5iO4',
+        },
+        {
+          active: {
+            [orderId]: { orderId, orderType: 'PRODUCTION', type: 'WHITE', workpieceId: nfc },
+          },
+          completed: {},
+        }
+      );
+
+      expect(
+        service
+          .getSnapshot(env)
+          .get(nfc)
+          ?.events.some((e) => e.eventSource === 'MODULE' && e.eventType === 'PICK')
+      ).toBe(false);
+
+      sp.refreshAllOrderContexts(env, {
+        active: {},
+        completed: {
+          [orderId]: {
+            orderId,
+            orderType: 'PRODUCTION',
+            type: 'WHITE',
+            workpieceId: nfc,
+            timestamp: '2026-07-29T10:00:10.000Z',
+            state: 'FINISHED',
+          },
+        },
+      });
+
+      const pick = service
+        .getSnapshot(env)
+        .get(nfc)
+        ?.events.find((e) => e.eventSource === 'MODULE' && e.eventType === 'PICK' && e.stationId === 'DPS');
+      expect(pick).toBeDefined();
+      expect(pick?.details?.['synthesizedFromFtsDock']).toBe(true);
+    });
+
+    it('emits FTS DOCK from sticky when firmware sends load: []', () => {
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+      const aiqs = 'SVR4H76530';
+
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-07-29T10:00:00.000Z',
+          orderId,
+          orderUpdateId: 1,
+          lastNodeId: aiqs,
+          driving: false,
+          actionState: {
+            id: 'dock-aiqs',
+            command: 'DOCK',
+            state: 'FINISHED',
+            timestamp: '2026-07-29T10:00:00.000Z',
+          },
+          load: [{ loadId: nfc, loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: '5iO4',
+        },
+        { active: {}, completed: {} }
+      );
+
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-07-29T10:00:05.000Z',
+          orderId,
+          orderUpdateId: 1,
+          lastNodeId: dps,
+          driving: false,
+          actionState: {
+            id: 'dock-dps',
+            command: 'DOCK',
+            state: 'FINISHED',
+            timestamp: '2026-07-29T10:00:05.000Z',
+          },
+          load: [],
+          _moduleSerialId: '5iO4',
+        },
+        { active: {}, completed: {} }
+      );
+
+      const dock = service
+        .getSnapshot(env)
+        .get(nfc)
+        ?.events.find((e) => e.eventSource === 'FTS' && e.eventType === 'DOCK' && e.location === dps);
+      expect(dock).toBeDefined();
+      expect(dock?.workpieceId).toBe(nfc);
     });
   });
 });

@@ -115,6 +115,24 @@ export class ModuleNameService {
       };
     }
 
+    // Layout may not be loaded yet (tests / early boot)
+    const serialFallback: Record<string, string> = {
+      SVR3QA0022: 'HBW',
+      SVR4H76449: 'DRILL',
+      SVR3QA2098: 'MILL',
+      SVR4H76530: 'AIQS',
+      SVR4H73275: 'DPS',
+      CHRG0: 'CHRG',
+    };
+    const fallbackType = serialFallback[location];
+    if (fallbackType) {
+      return {
+        moduleType: fallbackType,
+        fullName: this.getModuleFullName(fallbackType),
+        serialNumber: location,
+      };
+    }
+
     // Check if it's FTS
     if (location.toUpperCase() === 'FTS' || location.toUpperCase().includes('FTS')) {
       return {

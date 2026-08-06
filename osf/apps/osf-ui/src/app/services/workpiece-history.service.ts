@@ -161,6 +161,8 @@ const MODULE_SERIAL_TYPES: Record<string, string> = {
   SVR3QA2098: 'MILL',
   SVR4H76530: 'AIQS',
   SVR4H73275: 'DPS',
+  /** Charging: no module MQTT; FTS lastNodeId only. */
+  CHRG0: 'CHRG',
 };
 
 /**
@@ -207,6 +209,27 @@ export class WorkpieceHistoryService implements OnDestroy {
    * Keyed by environment -> workpieceId -> eventKey -> lastSeenEpochMs.
    */
   private readonly dedupSeen = new Map<string, Map<string, Map<string, number>>>();
+  /**
+   * Sticky FTS slot occupancy:
+   * FTS often omits `loadId` (sometimes with `loadType` still set) while the workpiece
+   * is still on the AGV. We remember last known identity per (env + FTS serial + position).
+   * Fully empty slots `(null,null)` clear occupancy — do not keep attributing after unload.
+   * Explicit clear also on HBW PICK (stored) / DPS PICK (delivered).
+   */
+  private readonly lastKnownFtsSlotLoadByPosition = new Map<
+    string,
+    Map<string, { loadId: string; loadType: string }>
+  >();
+  /**
+   * Last known HBW shelf slot per NFC (A1…C3). Learned from module loads[];
+   * used for DROP after the workpiece has left the shelf array.
+   */
+  private readonly lastKnownHbwSlotByLoadId = new Map<string, string>();
+  /** Full A1–C3 shelf snapshot per environment (last occupied/known MQTT loads[]). */
+  private readonly lastKnownHbwShelfByEnv = new Map<
+    string,
+    Array<{ loadPosition: string; loadType: string | null; loadId: string | null }>
+  >();
   /**
    * DPS intake before NFC id is known (INPUT_RGB). Flushed when RGB_NFC provides workpieceId.
    * Key: `${environmentKey}::${moduleSerialId}`
@@ -265,6 +288,17 @@ export class WorkpieceHistoryService implements OnDestroy {
     this.subscriptions.get(environmentKey)?.unsubscribe();
     this.subscriptions.delete(environmentKey);
     this.dedupSeen.delete(environmentKey);
+    for (const key of [...this.lastKnownFtsSlotLoadByPosition.keys()]) {
+      if (key.startsWith(`${environmentKey}::`)) {
+        this.lastKnownFtsSlotLoadByPosition.delete(key);
+      }
+    }
+    for (const key of [...this.lastKnownHbwSlotByLoadId.keys()]) {
+      if (key.startsWith(`${environmentKey}::`)) {
+        this.lastKnownHbwSlotByLoadId.delete(key);
+      }
+    }
+    this.lastKnownHbwShelfByEnv.delete(environmentKey);
     for (const key of [...this.pendingDpsIntake.keys()]) {
       if (key.startsWith(`${environmentKey}::`)) {
         this.pendingDpsIntake.delete(key);
@@ -314,27 +348,43 @@ export class WorkpieceHistoryService implements OnDestroy {
     );
     const ftsState$ = merge(...ftsStateStreams);
 
-    // Subscribe to active orders for order context
-    // Subscribe to FTS order stream to extract TURN direction information
-    const ftsOrder$ = this.messageMonitor.getLastMessage('ccu/order/fts').pipe(
-      map((msg) => msg?.payload ?? null),
-      filter((order) => order !== null)
-    );
-    
-    ftsOrder$.subscribe((order: any) => {
-      if (!order) return;
-      // Build actionId -> direction map for TURN actions (same logic as FTS-Tab)
-      // Order schema: nodes[].action.id / type / metadata.direction
-      if (Array.isArray(order.nodes)) {
-        order.nodes.forEach((node: any) => {
-          const action = node?.action;
-          if (action?.type === 'TURN' && action?.id && action?.metadata?.direction) {
-            this.turnDirectionByActionId.set(action.id, action.metadata.direction);
-          }
-        });
+    // Subscribe to FTS order streams for TURN direction (LEFT/RIGHT).
+    // Live CCU may publish ccu/order/fts; sessions / FTS firmware use fts/v1/ff/<serial>/order.
+    const ingestFtsOrderDirections = (order: unknown): void => {
+      if (!order || typeof order !== 'object') {
+        return;
       }
-    });
-    
+      const nodes = (order as { nodes?: unknown }).nodes;
+      if (!Array.isArray(nodes)) {
+        return;
+      }
+      for (const node of nodes) {
+        if (!node || typeof node !== 'object') {
+          continue;
+        }
+        const action = (node as { action?: { type?: string; id?: string; metadata?: { direction?: string } } })
+          .action;
+        if (action?.type === 'TURN' && action?.id && action?.metadata?.direction) {
+          this.turnDirectionByActionId.set(action.id, action.metadata.direction);
+        }
+      }
+    };
+
+    const ftsOrderTopics = [
+      'ccu/order/fts',
+      ...ftsTopics.map((serial) => `fts/v1/ff/${serial}/order`),
+    ];
+    const ftsOrder$ = merge(
+      ...ftsOrderTopics.map((topic) =>
+        this.messageMonitor.getLastMessage(topic).pipe(
+          map((msg) => msg?.payload ?? null),
+          filter((order): order is NonNullable<typeof order> => order !== null)
+        )
+      )
+    );
+    const ftsOrderSubscription = ftsOrder$.subscribe((order) => ingestFtsOrderDirections(order));
+
+    // Subscribe to active orders for order context (CCU: array of orders with orderType STORAGE|PRODUCTION)
     const activeOrders$ = this.messageMonitor.getLastMessage('ccu/order/active').pipe(
       map((msg) => {
         if (!msg?.valid || !msg.payload) return null;
@@ -417,14 +467,14 @@ export class WorkpieceHistoryService implements OnDestroy {
       })
     );
     
-    // Combine active and completed orders
+    // Combine active and completed orders (always keyed by orderId — CCU active is an array)
     const allOrders$ = combineLatest([
       activeOrders$.pipe(startWith(null)),
       completedOrders$.pipe(startWith({}))
     ]).pipe(
       map(([active, completed]) => ({
-        active: active || {},
-        completed: completed || {},
+        active: this.toOrderIdMap(active),
+        completed: this.toOrderIdMap(completed),
       }))
     );
     
@@ -478,6 +528,7 @@ export class WorkpieceHistoryService implements OnDestroy {
     combinedSubscription.add(ftsSubscription);
     combinedSubscription.add(moduleSubscription);
     combinedSubscription.add(correlationSubscription);
+    combinedSubscription.add(ftsOrderSubscription);
 
     this.subscriptions.set(environmentKey, combinedSubscription);
   }
@@ -507,6 +558,25 @@ export class WorkpieceHistoryService implements OnDestroy {
       }
     }
 
+    return null;
+  }
+
+  /**
+   * Intersection id ("1"…"4") when lastNodeId is an intersection node; else null.
+   */
+  private resolveIntersectionNumber(lastNodeId: string | null | undefined): string | null {
+    if (!lastNodeId) {
+      return null;
+    }
+    const nodeRef = this.ftsRouteService.resolveNodeRef(lastNodeId);
+    if (nodeRef?.startsWith('intersection:')) {
+      return nodeRef.replace('intersection:', '');
+    }
+    // Bare MQTT ids before layout aliases are ready
+    const bare = String(lastNodeId).trim();
+    if (/^[1-4]$/.test(bare)) {
+      return bare;
+    }
     return null;
   }
 
@@ -578,6 +648,11 @@ export class WorkpieceHistoryService implements OnDestroy {
       }
     }
 
+    const normalizedOrders = this.normalizeOrdersParam(orders);
+    if (this.ensureProductionDpsDeliveryPick(environmentKey, historyMap, normalizedOrders)) {
+      hasChanges = true;
+    }
+
     if (hasChanges) {
       this.getStore(environmentKey).next(historyMap);
     }
@@ -599,6 +674,14 @@ export class WorkpieceHistoryService implements OnDestroy {
     const moduleType = this.getModuleNameFromSerial(moduleSerialId);
     const moduleName =
       (moduleType === 'FTS' ? this.mappingService.getAgvLabel(moduleSerialId) : null) || moduleType || 'FTS';
+
+    // Multi-Load stabilizer (slot: loadPosition)
+    const ftsSlotKey = `${environmentKey}::${moduleSerialId}`;
+    const slotMap = this.getOrCreate(
+      this.lastKnownFtsSlotLoadByPosition,
+      ftsSlotKey,
+      () => new Map<string, { loadId: string; loadType: string }>()
+    );
 
     // Debug: Log FTS state
     if (state.load && state.load.length > 0) {
@@ -622,162 +705,298 @@ export class WorkpieceHistoryService implements OnDestroy {
       })) || [],
     });
 
-    state.load?.forEach((loadItem) => {
-      if (loadItem.loadId && loadItem.loadType) {
-        // Normalize orders parameter
-        const normalizedOrders = orders && typeof orders === 'object' && 'active' in orders
-          ? orders as { active: Record<string, any>; completed: Record<string, any> }
-          : { active: orders as any || {}, completed: {} };
-        
-        const existingHistory = historyMap.get(loadItem.loadId) || {
-          workpieceId: loadItem.loadId,
-          workpieceType: loadItem.loadType,
-          events: [],
-          currentLocation: state.lastNodeId,
-          currentState: 'IN_TRANSPORT',
-          orders: this.generateOrderContext(loadItem.loadType, normalizedOrders, state.orderId ? [state.orderId] : [], []),
+    // 1) Learn / replace slot occupancy when FTS provides a full identity
+    for (const loadItem of state.load ?? []) {
+      const loadId = typeof loadItem.loadId === 'string' ? loadItem.loadId.trim() : '';
+      const loadType = typeof loadItem.loadType === 'string' ? loadItem.loadType.trim() : '';
+      const pos = String(loadItem.loadPosition);
+      if (loadId && loadType) {
+        slotMap.set(pos, { loadId, loadType });
+      } else if (!loadId && !loadType) {
+        // Explicitly empty slot → clear sticky (AGV unloaded / unknown)
+        slotMap.delete(pos);
+      }
+    }
+
+    // 2) Drop sticky occupancy for slots omitted from a non-empty load[] (unloaded)
+    const positionsInMessage = new Set(
+      (state.load ?? []).map((l) => String(l.loadPosition)).filter((p) => p && p !== 'undefined')
+    );
+    if (positionsInMessage.size > 0) {
+      for (const pos of [...slotMap.keys()]) {
+        if (!positionsInMessage.has(pos)) {
+          slotMap.delete(pos);
+        }
+      }
+    }
+
+    // 3) Resolve effective loads: sticky fills missing loadId only when loadType is still present
+    type EffectiveLoad = {
+      loadId: string | null;
+      loadType: string | null;
+      loadPosition: string;
+      effectiveLoadId: string;
+      effectiveLoadType: string;
+    };
+    const effectiveLoads: EffectiveLoad[] = [];
+
+    for (const loadItem of state.load ?? []) {
+      const pos = String(loadItem.loadPosition);
+      const rawId = typeof loadItem.loadId === 'string' ? loadItem.loadId.trim() : '';
+      const rawType = typeof loadItem.loadType === 'string' ? loadItem.loadType.trim() : '';
+      const prev = slotMap.get(pos);
+
+      // Fully empty → no event (already cleared sticky above)
+      if (!rawId && !rawType) {
+        continue;
+      }
+
+      let effectiveLoadId = rawId || null;
+      let effectiveLoadType = rawType || null;
+
+      if (prev) {
+        if (!effectiveLoadId && effectiveLoadType && prev.loadType === effectiveLoadType) {
+          effectiveLoadId = prev.loadId;
+        } else if (!effectiveLoadId && effectiveLoadType && prev.loadType !== effectiveLoadType) {
+          // Type changed without id — do not keep old NFC
+          continue;
+        } else if (!effectiveLoadId && !effectiveLoadType) {
+          continue;
+        }
+      }
+
+      if (effectiveLoadId && effectiveLoadType) {
+        effectiveLoads.push({
+          loadId: rawId || null,
+          loadType: rawType || null,
+          loadPosition: pos,
+          effectiveLoadId,
+          effectiveLoadType,
+        });
+      }
+    }
+
+    // Firmware often publishes `load: []` (or omits slots) while the workpiece is still on the AGV.
+    // Keep sticky occupancy and emit transport from it — only explicit empty slots clear sticky.
+    const loadArray = state.load;
+    const loadOmittedOrEmpty =
+      loadArray == null || (Array.isArray(loadArray) && loadArray.length === 0);
+    if (effectiveLoads.length === 0 && loadOmittedOrEmpty && slotMap.size > 0) {
+      for (const [pos, occ] of slotMap.entries()) {
+        effectiveLoads.push({
+          loadId: occ.loadId,
+          loadType: occ.loadType,
+          loadPosition: pos,
+          effectiveLoadId: occ.loadId,
+          effectiveLoadType: occ.loadType,
+        });
+      }
+    }
+
+    effectiveLoads.forEach((loadItem) => {
+      const loadId = loadItem.effectiveLoadId;
+      const loadType = loadItem.effectiveLoadType;
+
+      // Normalize orders parameter (CCU active is an array → map by orderId)
+      const normalizedOrders = this.normalizeOrdersParam(orders);
+
+      const existingHistory = historyMap.get(loadId) || {
+        workpieceId: loadId,
+        workpieceType: loadType,
+        events: [],
+        currentLocation: state.lastNodeId,
+        currentState: 'IN_TRANSPORT',
+        orders: this.generateOrderContext(
+          loadType,
+          normalizedOrders,
+          state.orderId ? [state.orderId] : [],
+          []
+        ),
+      };
+
+      // Phase: CCU orderType for this orderId (Golden Path) — not location heuristics
+      const orderType = this.resolveEventOrderType(
+        normalizedOrders,
+        state.orderId,
+        existingHistory,
+        state.lastNodeId
+      );
+
+      // Get station info
+      const stationName = this.getStationName(state.lastNodeId);
+      const isManufacturingStation = MANUFACTURING_STATIONS.includes(
+        state.lastNodeId as typeof MANUFACTURING_STATIONS[number]
+      );
+
+      // Emit on location change, or same-node DOCK after PASS/TURN (Ist arrival).
+      // B3: FTS only records transport (DOCK/PASS/TURN); station process stays MODULE SoT.
+      const mqttEventType = this.mapActionCommandToEventType(state.actionState.command);
+      const intersectionNumber = this.resolveIntersectionNumber(state.lastNodeId);
+      // MQTT may report DOCK while still at an intersection (pre-station reverse approach).
+      // Intersections cannot dock — show as TURN only when no TURN exists yet at this node.
+      const remappedDockAtIntersection = mqttEventType === 'DOCK' && !!intersectionNumber;
+      const eventType = remappedDockAtIntersection ? 'TURN' : mqttEventType;
+      const lastEvent = existingHistory.events[existingHistory.events.length - 1];
+      const locationChanged = !lastEvent || lastEvent.location !== state.lastNodeId;
+      const lastFtsAtLocation = [...existingHistory.events]
+        .reverse()
+        .find((e) => e.eventSource === 'FTS' && e.location === state.lastNodeId);
+      const lastFtsAnywhere = [...existingHistory.events]
+        .reverse()
+        .find((e) => e.eventSource === 'FTS');
+      const commandChangedAtSameNode =
+        !locationChanged &&
+        !!lastFtsAtLocation &&
+        (lastFtsAtLocation.eventType || '').toUpperCase() !== eventType;
+      const actionIdChangedAtSameNode =
+        !locationChanged &&
+        !!lastFtsAtLocation &&
+        !!state.actionState.id &&
+        lastFtsAtLocation.actionId !== state.actionState.id;
+      const actionStateValue = String(state.actionState.state || '').toUpperCase();
+
+      // Same TURN actionId while lastNodeId advances (driving after turn) → no extra event
+      const staleTurnActionOnNewNode =
+        locationChanged &&
+        eventType === 'TURN' &&
+        !remappedDockAtIntersection &&
+        !!state.actionState.id &&
+        lastFtsAnywhere?.eventType?.toUpperCase() === 'TURN' &&
+        lastFtsAnywhere.actionId === state.actionState.id;
+
+      // DOCK@I* after a real TURN at this intersection → suppress (avoid duplicate TURN)
+      const hasTurnAtThisIntersection =
+        !!intersectionNumber &&
+        existingHistory.events.some(
+          (e) =>
+            e.eventSource === 'FTS' &&
+            (e.eventType || '').toUpperCase() === 'TURN' &&
+            (e.location === state.lastNodeId ||
+              String(e.details?.['intersectionNumber'] ?? '') === intersectionNumber)
+        );
+      const suppressRemappedDock = remappedDockAtIntersection && hasTurnAtThisIntersection;
+
+      const shouldEmitTransport =
+        !staleTurnActionOnNewNode &&
+        !suppressRemappedDock &&
+        (locationChanged ||
+          (commandChangedAtSameNode && mqttEventType === 'DOCK') ||
+          (actionIdChangedAtSameNode &&
+            mqttEventType === 'TURN' &&
+            actionStateValue === 'FINISHED'));
+
+      if (shouldEmitTransport) {
+        console.log('[WorkpieceHistoryService] Transport event for workpiece:', {
+          workpieceId: loadId,
+          workpieceType: loadType,
+          oldLocation: lastEvent?.location,
+          newLocation: state.lastNodeId,
+          stationName,
+          orderType,
+          eventType,
+          mqttEventType,
+          remappedDockAtIntersection,
+          locationChanged,
+          commandChangedAtSameNode,
+          actionIdChangedAtSameNode,
+          isManufacturingStation,
+        });
+        const baseEvent: Partial<TrackTraceEvent> = {
+          timestamp: state.timestamp,
+          workpieceId: loadId,
+          workpieceType: loadType,
+          location: state.lastNodeId,
+          moduleId: moduleSerialId,
+          moduleName: moduleName,
+          orderId: state.orderId,
+          orderUpdateId: state.orderUpdateId,
+          orderType: orderType,
+          stationId: stationName || undefined,
+          stationName: stationName ? this.getStationDisplayName(stationName) : undefined,
+          eventSource: 'FTS',
         };
 
-        // Determine order type based on location
-        const orderType = this.determineOrderType(state.lastNodeId, existingHistory.events);
+        const subOrderId = `${state.orderId}-${existingHistory.events.length + 1}`;
+        const actionId = state.actionState.id;
 
-        // Get station info
-        const stationName = this.getStationName(state.lastNodeId);
-        const isManufacturingStation = MANUFACTURING_STATIONS.includes(
-          state.lastNodeId as typeof MANUFACTURING_STATIONS[number]
-        );
-
-        // Emit on location change, or same-node DOCK after PASS/TURN (Ist arrival).
-        // B3: FTS only records transport (DOCK/PASS/TURN); station process stays MODULE SoT.
-        const eventType = this.mapActionCommandToEventType(state.actionState.command);
-        const lastEvent = existingHistory.events[existingHistory.events.length - 1];
-        const locationChanged = !lastEvent || lastEvent.location !== state.lastNodeId;
-        const lastFtsAtLocation = [...existingHistory.events]
-          .reverse()
-          .find((e) => e.eventSource === 'FTS' && e.location === state.lastNodeId);
-        const commandChangedAtSameNode =
-          !locationChanged &&
-          !!lastFtsAtLocation &&
-          (lastFtsAtLocation.eventType || '').toUpperCase() !== eventType;
-        const shouldEmitTransport =
-          locationChanged || (commandChangedAtSameNode && eventType === 'DOCK');
-
-        if (shouldEmitTransport) {
-          console.log('[WorkpieceHistoryService] Transport event for workpiece:', {
-            workpieceId: loadItem.loadId,
-            workpieceType: loadItem.loadType,
-            oldLocation: lastEvent?.location,
-            newLocation: state.lastNodeId,
-            stationName,
-            orderType,
-            eventType,
-            locationChanged,
-            commandChangedAtSameNode,
-            isManufacturingStation,
-          });
-          const baseEvent: Partial<TrackTraceEvent> = {
-            timestamp: state.timestamp,
-            workpieceId: loadItem.loadId,
-            workpieceType: loadItem.loadType,
-            location: state.lastNodeId,
-            moduleId: moduleSerialId,
-            moduleName: moduleName,
-            orderId: state.orderId,
-            orderUpdateId: state.orderUpdateId,
-            orderType: orderType,
-            stationId: stationName || undefined,
-            stationName: stationName ? this.getStationDisplayName(stationName) : undefined,
-            eventSource: 'FTS',
-          };
-
-          const subOrderId = `${state.orderId}-${existingHistory.events.length + 1}`;
-          const actionId = state.actionState.id;
-
-          let turnDirection: string | undefined;
-          if (eventType === 'TURN') {
-            const actionStateMeta = (state.actionState as { metadata?: { direction?: string } })?.metadata;
-            if (actionStateMeta?.direction) {
-              turnDirection = actionStateMeta.direction;
-            } else {
-              turnDirection = this.turnDirectionByActionId.get(state.actionState.id);
-            }
+        let turnDirection: string | undefined;
+        if (eventType === 'TURN' && !remappedDockAtIntersection) {
+          const actionStateMeta = (state.actionState as { metadata?: { direction?: string } })?.metadata;
+          if (actionStateMeta?.direction) {
+            turnDirection = actionStateMeta.direction;
+          } else {
+            turnDirection = this.turnDirectionByActionId.get(state.actionState.id);
           }
-
-          const nodeRef = this.ftsRouteService.resolveNodeRef(state.lastNodeId);
-          const intersectionNumber = nodeRef?.startsWith('intersection:')
-            ? nodeRef.replace('intersection:', '')
-            : null;
-
-          const agvLoads = (state.load ?? [])
-            .filter((l) => !!l.loadId && !!l.loadType)
-            .map((l) => ({
-              loadId: l.loadId as string,
-              loadType: l.loadType as string,
-              loadPosition: l.loadPosition,
-            }));
-
-          const details: Record<string, unknown> = {
-            actionState: state.actionState.state,
-            loadPosition: loadItem.loadPosition,
-            loadType: loadItem.loadType || undefined,
-            direction: turnDirection,
-            intersectionNumber,
-            agvLoads,
-          };
-
-          // Ist-only: manufacturing stop not in this workpiece's planned workflow (e.g. RED @ DRILL),
-          // or co-passenger on another color's order (e.g. BLUE @ MILL while RED order is active).
-          const mfgStation = (stationName || '').toUpperCase();
-          const orderWorkpieceType = this.resolveOrderWorkpieceType(normalizedOrders, state.orderId);
-          const isForeignOrder =
-            !!orderWorkpieceType &&
-            !!loadItem.loadType &&
-            orderWorkpieceType !== String(loadItem.loadType).toUpperCase();
-          if (['DRILL', 'MILL', 'AIQS'].includes(mfgStation)) {
-            const inPlannedWorkflow = this.canWorkpieceBeProcessedAtStation(
-              loadItem.loadType,
-              stationName
-            );
-            details['visitKind'] = inPlannedWorkflow && !isForeignOrder ? 'PLANNED' : 'IST_ONLY';
-            details['coPassenger'] = !inPlannedWorkflow || isForeignOrder;
-          } else if (isForeignOrder) {
-            details['visitKind'] = 'IST_ONLY';
-            details['coPassenger'] = true;
-          }
-
-          const transportEvent: TrackTraceEvent = {
-            ...baseEvent,
-            eventType,
-            timestamp: state.timestamp,
-            subOrderId,
-            actionId,
-            details,
-          } as TrackTraceEvent;
-          this.attachEnvironmentSnapshotIfRelevant(transportEvent);
-          this.tryAppendEvent(environmentKey, existingHistory, transportEvent);
-
-          console.log('[WorkpieceHistoryService] Generated event for workpiece:', {
-            workpieceId: loadItem.loadId,
-            eventType,
-            location: state.lastNodeId,
-            visitKind: details['visitKind'],
-            eventsCount: existingHistory.events.length,
-          });
         }
 
-        existingHistory.currentLocation = state.lastNodeId;
-        existingHistory.currentState = state.driving ? 'IN_TRANSPORT' : 'STATIONARY';
+        const agvLoads = effectiveLoads.map((l) => ({
+          loadId: l.effectiveLoadId,
+          loadType: l.effectiveLoadType,
+          loadPosition: l.loadPosition,
+        }));
 
-        // A1: rebuild STORAGE + PRODUCTION contexts from all distinct orderIds on this workpiece
-        existingHistory.orders = this.rebuildOrderContexts(
-          existingHistory,
-          normalizedOrders,
-          state.orderId
-        );
+        const details: Record<string, unknown> = {
+          actionState: state.actionState.state,
+          loadPosition: loadItem.loadPosition,
+          loadType: loadType,
+          direction: turnDirection,
+          intersectionNumber,
+          agvLoads,
+          ...(remappedDockAtIntersection
+            ? { originalCommand: 'DOCK', remappedFromDockAtIntersection: true }
+            : {}),
+        };
 
-        historyMap.set(loadItem.loadId, existingHistory);
+        // Ist-only: manufacturing stop not in this workpiece's planned workflow (e.g. RED @ DRILL),
+        // or co-passenger on another color's order (e.g. BLUE @ MILL while RED order is active).
+        const mfgStation = (stationName || '').toUpperCase();
+        const orderWorkpieceType = this.resolveOrderWorkpieceType(normalizedOrders, state.orderId);
+        const isForeignOrder =
+          !!orderWorkpieceType && orderWorkpieceType !== String(loadType).toUpperCase();
+        if (['DRILL', 'MILL', 'AIQS'].includes(mfgStation)) {
+          const inPlannedWorkflow = this.canWorkpieceBeProcessedAtStation(loadType, stationName);
+          details['visitKind'] = inPlannedWorkflow && !isForeignOrder ? 'PLANNED' : 'IST_ONLY';
+          details['coPassenger'] = !inPlannedWorkflow || isForeignOrder;
+        } else if (mfgStation === 'CHRG') {
+          // CHRG has no module MQTT; unplanned stop on the production path (Ist only).
+          details['visitKind'] = 'IST_ONLY';
+          details['coPassenger'] = false;
+        } else if (isForeignOrder) {
+          details['visitKind'] = 'IST_ONLY';
+          details['coPassenger'] = true;
+        }
+
+        const transportEvent: TrackTraceEvent = {
+          ...baseEvent,
+          eventType,
+          timestamp: state.timestamp,
+          subOrderId,
+          actionId,
+          details,
+        } as TrackTraceEvent;
+        this.attachEnvironmentSnapshotIfRelevant(transportEvent);
+        this.tryAppendEvent(environmentKey, existingHistory, transportEvent);
+
+        console.log('[WorkpieceHistoryService] Generated event for workpiece:', {
+          workpieceId: loadId,
+          eventType,
+          location: state.lastNodeId,
+          visitKind: details['visitKind'],
+          eventsCount: existingHistory.events.length,
+        });
       }
+
+      existingHistory.currentLocation = state.lastNodeId;
+      existingHistory.currentState = state.driving ? 'IN_TRANSPORT' : 'STATIONARY';
+
+      // A1: rebuild STORAGE + PRODUCTION contexts from all distinct orderIds on this workpiece
+      existingHistory.orders = this.rebuildOrderContexts(existingHistory, normalizedOrders, state.orderId);
+
+      historyMap.set(loadId, existingHistory);
     });
+
+    const normalizedOrders = this.normalizeOrdersParam(orders);
+    this.ensureProductionDpsDeliveryPick(environmentKey, historyMap, normalizedOrders);
 
     this.getStore(environmentKey).next(historyMap);
   }
@@ -818,12 +1037,18 @@ export class WorkpieceHistoryService implements OnDestroy {
     const mappedCommand = this.mapModuleCommandToEventType(command);
     const actionResult = resolvedActionState.result;
 
+    const normalizedOrdersForId = this.normalizeOrdersParam(orders);
     const workpieceIdFromModule = this.resolveModuleWorkpieceId(
       moduleState,
       { ...resolvedActionState, command },
-      actionResult
+      actionResult,
+      normalizedOrdersForId
     );
-    const workpieceType = this.resolveModuleWorkpieceType(moduleState, resolvedActionState);
+    const workpieceType = this.resolveModuleWorkpieceType(
+      moduleState,
+      resolvedActionState,
+      normalizedOrdersForId
+    );
 
     // Always buffer Color (INPUT_RGB) until NFC — never append with a late wall-clock time via PICK/DROP flush.
     if (command === 'INPUT_RGB') {
@@ -891,10 +1116,7 @@ export class WorkpieceHistoryService implements OnDestroy {
     // Empty loads (DROP/process): bind by orderId, but prefer the workpiece that
     // actually docked at this module (co-passengers share one FTS orderId).
     if (!matchingHistory && canMatchByOrderId) {
-      const normalizedOrders =
-        orders && typeof orders === 'object' && 'active' in orders
-          ? (orders as { active: Record<string, unknown>; completed: Record<string, unknown> })
-          : { active: {}, completed: {} };
+      const normalizedOrders = this.normalizeOrdersParam(orders);
       const orderWorkpieceType =
         workpieceType ||
         this.resolveOrderWorkpieceType(normalizedOrders, moduleState.orderId as string);
@@ -984,15 +1206,45 @@ export class WorkpieceHistoryService implements OnDestroy {
     // IMPORTANT: For module events, use stationName (DRILL, AIQS, etc.) as moduleName
     // This ensures that events in Level 3 show "DRILL PICK" instead of "FTS PICK"
     const eventModuleName = stationName || moduleName || 'UNKNOWN';
-    let eventOrderType = this.resolveModuleOrderType(matchingHistory, moduleState, moduleSerialId);
+    let eventOrderType = this.resolveModuleOrderType(
+      matchingHistory,
+      moduleState,
+      moduleSerialId,
+      this.normalizeOrdersParam(orders)
+    );
     // DPS intake is always STORAGE (MQTT often sends orderId "0" for RGB_NFC)
     if (command === 'RGB_NFC' || command === 'INPUT_RGB') {
       eventOrderType = 'STORAGE';
     }
     const loadPosition =
       mappedCommand === 'PICK' || mappedCommand === 'DROP'
-        ? this.resolveLoadPosition(moduleState, matchingWorkpieceId)
+        ? this.resolveLoadPosition(
+            environmentKey,
+            moduleState,
+            matchingWorkpieceId,
+            matchingHistory,
+            stationName,
+            mappedCommand
+          )
         : null;
+
+    let hbwShelf: Array<{
+      loadPosition: string;
+      loadType: string | null;
+      loadId: string | null;
+    }> | null = null;
+
+    // Learn / refresh HBW shelf map; keep event snapshot for mini-matrix UI
+    if ((stationName || '').toUpperCase() === 'HBW') {
+      hbwShelf = this.resolveHbwShelfForEvent(environmentKey, moduleState.loads, mappedCommand);
+      this.learnHbwSlotsFromLoads(environmentKey, moduleState.loads);
+      if (loadPosition) {
+        this.lastKnownHbwSlotByLoadId.set(
+          `${environmentKey}::${matchingWorkpieceId}`,
+          loadPosition
+        );
+      }
+    }
 
     // Prefer real storage order UUID from buffered Color over MQTT placeholder "0"
     const intakeOrderId =
@@ -1031,6 +1283,7 @@ export class WorkpieceHistoryService implements OnDestroy {
         command: command,
         originalCommand: command,
         ...(loadPosition ? { loadPosition } : {}),
+        ...(hbwShelf ? { hbwShelf } : {}),
         ...(typeof actionResult === 'string' ? { result: actionResult } : {}),
       },
     };
@@ -1074,6 +1327,15 @@ export class WorkpieceHistoryService implements OnDestroy {
     // Add event to history
     this.tryAppendEvent(environmentKey, matchingHistory, baseEvent as TrackTraceEvent);
 
+    // Workpiece left the AGV: clear sticky so later empty FTS states are not attributed
+    const stationUpper = (stationName || '').toUpperCase();
+    if (
+      (stationUpper === 'HBW' && mappedCommand === 'PICK') ||
+      (stationUpper === 'DPS' && mappedCommand === 'PICK')
+    ) {
+      this.clearFtsStickyForLoadId(environmentKey, matchingWorkpieceId);
+    }
+
     // Sort events by timestamp, then subOrderId, then actionId
     matchingHistory.events.sort((a, b) => {
       const timeA = new Date(a.timestamp).getTime();
@@ -1093,9 +1355,7 @@ export class WorkpieceHistoryService implements OnDestroy {
     });
 
     // A1: keep Production order context when module events carry a new orderId
-    const normalizedOrders = orders && typeof orders === 'object' && 'active' in orders
-      ? (orders as { active: Record<string, any>; completed: Record<string, any> })
-      : { active: (orders as any) || {}, completed: {} };
+    const normalizedOrders = this.normalizeOrdersParam(orders);
     matchingHistory.orders = this.rebuildOrderContexts(
       matchingHistory,
       normalizedOrders,
@@ -1103,6 +1363,7 @@ export class WorkpieceHistoryService implements OnDestroy {
     );
 
     historyMap.set(matchingWorkpieceId, matchingHistory);
+    this.ensureProductionDpsDeliveryPick(environmentKey, historyMap, normalizedOrders);
     this.getStore(environmentKey).next(historyMap);
   }
 
@@ -1241,6 +1502,97 @@ export class WorkpieceHistoryService implements OnDestroy {
   }
 
   /**
+   * Multi-load / MQTT gap: CCU may complete a PRODUCTION order without a DPS module PICK
+   * (only BLUE often publishes PICK; WHITE/RED may only have FTS DOCK at DPS).
+   * When completed order has workpieceId and a prior FTS DOCK at DPS, synthesize MODULE PICK.
+   * @returns true if any event was appended
+   */
+  private ensureProductionDpsDeliveryPick(
+    environmentKey: string,
+    historyMap: Map<string, WorkpieceHistory>,
+    orders: { active: Record<string, any>; completed: Record<string, any> }
+  ): boolean {
+    const dpsSerial = 'SVR4H73275';
+    let changed = false;
+
+    for (const [orderId, raw] of Object.entries(orders.completed ?? {})) {
+      if (!orderId || orderId === '0' || !raw || typeof raw !== 'object') {
+        continue;
+      }
+      const order = raw as {
+        orderType?: string;
+        workpieceId?: string;
+        timestamp?: string;
+      };
+      if (String(order.orderType || '').toUpperCase() !== 'PRODUCTION') {
+        continue;
+      }
+      const wpId = typeof order.workpieceId === 'string' ? order.workpieceId.trim() : '';
+      if (!wpId || !this.isNfcLikeId(wpId)) {
+        continue;
+      }
+      const history = historyMap.get(wpId);
+      if (!history) {
+        continue;
+      }
+
+      const hasModulePick = history.events.some(
+        (e) =>
+          e.orderId === orderId &&
+          (e.stationId || '').toUpperCase() === 'DPS' &&
+          (e.eventType || '').toUpperCase() === 'PICK' &&
+          e.eventSource === 'MODULE'
+      );
+      if (hasModulePick) {
+        continue;
+      }
+
+      const dock = [...history.events]
+        .reverse()
+        .find(
+          (e) =>
+            e.orderId === orderId &&
+            e.eventSource === 'FTS' &&
+            (e.eventType || '').toUpperCase() === 'DOCK' &&
+            (e.location === dpsSerial || (e.stationId || '').toUpperCase() === 'DPS')
+        );
+      if (!dock) {
+        continue;
+      }
+
+      const pickTs = order.timestamp || dock.timestamp;
+      const pickEvent: TrackTraceEvent = {
+        timestamp: pickTs,
+        workpieceId: wpId,
+        workpieceType: history.workpieceType,
+        location: dpsSerial,
+        moduleId: dpsSerial,
+        moduleName: 'DPS',
+        orderId,
+        orderUpdateId: dock.orderUpdateId,
+        orderType: 'PRODUCTION',
+        stationId: 'DPS',
+        stationName: this.getStationDisplayName('DPS'),
+        eventSource: 'MODULE',
+        eventType: 'PICK',
+        subOrderId: `${orderId}-dps-delivery`,
+        actionId: `synth-dps-pick-${orderId}`,
+        details: {
+          actionState: 'FINISHED',
+          result: 'PASSED',
+          synthesizedFromFtsDock: true,
+        },
+      };
+      this.attachEnvironmentSnapshotIfRelevant(pickEvent);
+      this.tryAppendEvent(environmentKey, history, pickEvent);
+      this.clearFtsStickyForLoadId(environmentKey, wpId);
+      changed = true;
+    }
+
+    return changed;
+  }
+
+  /**
    * CCU order color (`type`) for attribution — primary signal for empty-load module events.
    */
   private resolveOrderWorkpieceType(
@@ -1262,54 +1614,242 @@ export class WorkpieceHistoryService implements OnDestroy {
   }
 
   /**
-   * Keep MQTT command names for the timeline (DRILL/MILL/CHECK_QUALITY, not generic PROCESS).
+   * Shelf / carrier position for PICK/DROP.
+   * HBW DROP FINISHED: workpiece already removed from loads[] — never take another NFC's slot.
    */
+  private resolveLoadPosition(
+    environmentKey: string,
+    moduleState: ModuleState,
+    workpieceId: string,
+    history: WorkpieceHistory,
+    stationName: string | null,
+    mappedCommand: string
+  ): string | null {
+    const loads = moduleState.loads as
+      | Array<{ loadId?: string; loadType?: string; loadPosition?: string }>
+      | undefined;
+    if (Array.isArray(loads)) {
+      const byId = loads.find((load) => load?.loadId === workpieceId && !!load.loadPosition);
+      if (byId?.loadPosition) {
+        return String(byId.loadPosition);
+      }
+    }
+
+    const station = (stationName || '').toUpperCase();
+    if (station === 'HBW' && mappedCommand === 'DROP') {
+      const fromPick = [...history.events]
+        .reverse()
+        .find(
+          (e) =>
+            e.eventSource === 'MODULE' &&
+            (e.stationId || '').toUpperCase() === 'HBW' &&
+            (e.eventType || '').toUpperCase() === 'PICK' &&
+            typeof e.details?.['loadPosition'] === 'string'
+        );
+      if (fromPick?.details?.['loadPosition']) {
+        return String(fromPick.details['loadPosition']);
+      }
+      const remembered = this.resolveKnownHbwSlot(environmentKey, workpieceId);
+      if (remembered) {
+        return remembered;
+      }
+    }
+
+    // Manufacturing / DPS: only trust explicit loadId match (no "first other load" fallback)
+    return null;
+  }
+
+  private learnHbwSlotsFromLoads(
+    environmentKey: string,
+    loads:
+      | Array<{
+          loadId?: string | null;
+          loadType?: string | null;
+          loadPosition?: string | null;
+        }>
+      | undefined
+  ): void {
+    if (!Array.isArray(loads)) {
+      return;
+    }
+    for (const load of loads) {
+      const id = typeof load?.loadId === 'string' ? load.loadId.trim() : '';
+      const pos = load?.loadPosition ? String(load.loadPosition).trim() : '';
+      if (id.length >= 6 && pos) {
+        this.lastKnownHbwSlotByLoadId.set(`${environmentKey}::${id}`, pos);
+      }
+    }
+    const normalized = this.normalizeHbwShelfLoads(loads);
+    const hasOccupied = normalized.some((cell) => !!cell.loadId);
+    if (hasOccupied) {
+      this.lastKnownHbwShelfByEnv.set(environmentKey, normalized);
+    }
+  }
+
+  /**
+   * Shelf grid for the timeline event: MQTT loads when occupied; on empty DROP FINISHED
+   * reuse last known shelf so the vacated slot remains visible.
+   */
+  private resolveHbwShelfForEvent(
+    environmentKey: string,
+    loads:
+      | Array<{
+          loadId?: string | null;
+          loadType?: string | null;
+          loadPosition?: string | null;
+        }>
+      | undefined,
+    mappedCommand: string
+  ): Array<{ loadPosition: string; loadType: string | null; loadId: string | null }> {
+    const normalized = this.normalizeHbwShelfLoads(loads);
+    const hasOccupied = normalized.some((cell) => !!cell.loadId);
+    if (hasOccupied || mappedCommand === 'PICK') {
+      return normalized;
+    }
+    return this.lastKnownHbwShelfByEnv.get(environmentKey) ?? normalized;
+  }
+
+  private normalizeHbwShelfLoads(
+    loads:
+      | Array<{
+          loadId?: string | null;
+          loadType?: string | null;
+          loadPosition?: string | null;
+        }>
+      | undefined
+  ): Array<{ loadPosition: string; loadType: string | null; loadId: string | null }> {
+    const order = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
+    const byPos = new Map<string, { loadType: string | null; loadId: string | null }>();
+    if (Array.isArray(loads)) {
+      for (const load of loads) {
+        const pos = load?.loadPosition ? String(load.loadPosition).trim().toUpperCase() : '';
+        if (!pos) {
+          continue;
+        }
+        const id = typeof load.loadId === 'string' && load.loadId.trim() ? load.loadId.trim() : null;
+        const type =
+          typeof load.loadType === 'string' && load.loadType.trim()
+            ? load.loadType.trim().toUpperCase()
+            : null;
+        byPos.set(pos, { loadId: id, loadType: type });
+      }
+    }
+    return order.map((loadPosition) => {
+      const cell = byPos.get(loadPosition);
+      return {
+        loadPosition,
+        loadId: cell?.loadId ?? null,
+        loadType: cell?.loadType ?? null,
+      };
+    });
+  }
+
+  private resolveKnownHbwSlot(environmentKey: string, workpieceId: string): string | null {
+    return this.lastKnownHbwSlotByLoadId.get(`${environmentKey}::${workpieceId}`) ?? null;
+  }
+
+  /** Keep MQTT command names for the timeline (DRILL/MILL/CHECK_QUALITY, not generic PROCESS). */
   private mapModuleCommandToEventType(command: string): string {
     return command.toUpperCase();
   }
 
-  private resolveLoadPosition(moduleState: ModuleState, workpieceId: string): string | null {
-    const loads = moduleState.loads as
-      | Array<{ loadId?: string; loadType?: string; loadPosition?: string }>
-      | undefined;
-    if (!Array.isArray(loads)) {
-      return null;
+  /**
+   * NFC-like action result (HBW DROP / RGB_NFC). Rejects DPS quality tokens like PASSED/FAILED.
+   */
+  private isNfcLikeId(value: string): boolean {
+    const v = value.trim();
+    if (v.length < 6) {
+      return false;
     }
-    const byId = loads.find((load) => load?.loadId === workpieceId && !!load.loadPosition);
-    if (byId?.loadPosition) {
-      return String(byId.loadPosition);
+    const upper = v.toUpperCase();
+    if (
+      upper === 'PASSED' ||
+      upper === 'FAILED' ||
+      upper === 'OK' ||
+      upper === 'NOK' ||
+      upper === 'ERROR' ||
+      upper === 'SUCCESS'
+    ) {
+      return false;
     }
-    const byType = loads.find((load) => !!load?.loadType && !!load.loadPosition && !!load.loadId);
-    return byType?.loadPosition ? String(byType.loadPosition) : null;
+    return true;
   }
 
+  /**
+   * Workpiece NFC for module events.
+   * HBW Auslagerung: `result` = moved NFC; `loads[]` = remaining shelf (do not take first loadId).
+   * HBW Einlagerung: often no result → CCU `order.workpieceId` (FIFO/color order), not multi-shelf first id.
+   */
   private resolveModuleWorkpieceId(
     moduleState: ModuleState,
     resolvedActionState: { metadata?: Record<string, unknown>; command?: string },
-    result: unknown
+    result: unknown,
+    orders: { active: Record<string, any>; completed: Record<string, any> }
   ): string | null {
-    if (typeof result === 'string' && result.length >= 6 && resolvedActionState.command?.toUpperCase() === 'RGB_NFC') {
-      return result;
+    const command = (resolvedActionState.command || '').toUpperCase();
+    if (typeof result === 'string' && this.isNfcLikeId(result)) {
+      if (command === 'RGB_NFC' || command === 'PICK' || command === 'DROP') {
+        return result.trim();
+      }
     }
     const metaWp = resolvedActionState.metadata?.['workpiece'];
     if (metaWp && typeof metaWp === 'object') {
       const id = (metaWp as Record<string, unknown>)['workpieceId'];
-      if (typeof id === 'string' && id.length >= 6) {
-        return id;
+      if (typeof id === 'string' && this.isNfcLikeId(id)) {
+        return id.trim();
       }
     }
+    const fromOrder = this.resolveCcuOrderWorkpieceId(orders, moduleState.orderId);
+    if (fromOrder) {
+      return fromOrder;
+    }
     const loads = moduleState.loads as Array<{ loadId?: string }> | undefined;
-    const fromLoads = loads?.find((load) => !!load?.loadId)?.loadId;
-    return typeof fromLoads === 'string' && fromLoads.length >= 6 ? fromLoads : null;
+    const ids = (loads ?? [])
+      .map((load) => (typeof load?.loadId === 'string' ? load.loadId.trim() : ''))
+      .filter((id) => this.isNfcLikeId(id));
+    // Single shelf/carrier id only — never pick first of multi-shelf remainder
+    if (ids.length === 1) {
+      return ids[0];
+    }
+    return null;
+  }
+
+  private resolveCcuOrderWorkpieceId(
+    orders: { active: Record<string, any>; completed: Record<string, any> },
+    orderId: string | undefined
+  ): string | null {
+    if (!orderId || orderId === '0') {
+      return null;
+    }
+    const raw = orders.active[orderId] ?? orders.completed[orderId];
+    if (!raw || typeof raw !== 'object') {
+      return null;
+    }
+    const id = (raw as { workpieceId?: unknown }).workpieceId;
+    return typeof id === 'string' && this.isNfcLikeId(id) ? id.trim() : null;
   }
 
   private resolveModuleWorkpieceType(
     moduleState: ModuleState,
-    resolvedActionState: { metadata?: Record<string, unknown> }
+    resolvedActionState: { metadata?: Record<string, unknown> },
+    orders?: { active: Record<string, any>; completed: Record<string, any> }
   ): 'BLUE' | 'WHITE' | 'RED' | null {
-    const loadType = moduleState.loads?.find((load) => !!load?.loadType)?.loadType;
-    if (loadType === 'BLUE' || loadType === 'WHITE' || loadType === 'RED') {
-      return loadType;
+    const shelfTypes = [
+      ...new Set(
+        (moduleState.loads ?? [])
+          .map((load) => String(load?.loadType || '').toUpperCase())
+          .filter((t) => t === 'BLUE' || t === 'WHITE' || t === 'RED')
+      ),
+    ] as Array<'BLUE' | 'WHITE' | 'RED'>;
+    // Unique loadType only — multi-shelf HBW remainder must not steal order color
+    if (shelfTypes.length === 1) {
+      return shelfTypes[0];
+    }
+    if (orders) {
+      const fromOrder = this.resolveOrderWorkpieceType(orders, moduleState.orderId);
+      if (fromOrder) {
+        return fromOrder;
+      }
     }
 
     // DPS RGB_NFC: metadata.type = WHITE (flat, not nested under workpiece)
@@ -1354,16 +1894,110 @@ export class WorkpieceHistoryService implements OnDestroy {
     return null;
   }
 
+  /** Drop sticky FTS occupancy for a workpiece (all AGVs / slots in this environment). */
+  private clearFtsStickyForLoadId(environmentKey: string, loadId: string): void {
+    const prefix = `${environmentKey}::`;
+    for (const [key, slotMap] of this.lastKnownFtsSlotLoadByPosition) {
+      if (!key.startsWith(prefix)) {
+        continue;
+      }
+      for (const [pos, occ] of [...slotMap.entries()]) {
+        if (occ.loadId === loadId) {
+          slotMap.delete(pos);
+        }
+      }
+      if (slotMap.size === 0) {
+        this.lastKnownFtsSlotLoadByPosition.delete(key);
+      }
+    }
+  }
+
   private resolveModuleOrderType(
     history: WorkpieceHistory,
     moduleState: ModuleState,
-    moduleSerialId: string
+    moduleSerialId: string,
+    orders: { active: Record<string, any>; completed: Record<string, any> }
   ): 'STORAGE' | 'PRODUCTION' | string {
+    const fromCcu = this.resolveCcuOrderType(orders, moduleState.orderId);
+    if (fromCcu) {
+      return fromCcu;
+    }
     const fromOrderContext = history.orders?.find((order) => order.orderId === moduleState.orderId)?.orderType;
     if (fromOrderContext) {
       return fromOrderContext;
     }
     return this.determineOrderType(moduleSerialId, history.events);
+  }
+
+  /**
+   * Golden-Path phase: prefer CCU `orderType` for the event's `orderId`
+   * (`ccu/order/active` / completed). Location heuristics are fallback only.
+   */
+  private resolveEventOrderType(
+    orders: { active: Record<string, any>; completed: Record<string, any> },
+    orderId: string | undefined,
+    history: WorkpieceHistory,
+    location: string
+  ): 'STORAGE' | 'PRODUCTION' {
+    const fromCcu = this.resolveCcuOrderType(orders, orderId);
+    if (fromCcu) {
+      return fromCcu;
+    }
+    // Do not trust synthetic history.orders (often default STORAGE) — location fallback only
+    return this.determineOrderType(location, history.events);
+  }
+
+  private resolveCcuOrderType(
+    orders: { active: Record<string, any>; completed: Record<string, any> },
+    orderId: string | undefined
+  ): 'STORAGE' | 'PRODUCTION' | null {
+    if (!orderId || orderId === '0') {
+      return null;
+    }
+    const raw = orders.active[orderId] ?? orders.completed[orderId];
+    if (!raw || typeof raw !== 'object') {
+      return null;
+    }
+    const type = String((raw as { orderType?: unknown }).orderType ?? '').toUpperCase();
+    if (type === 'STORAGE' || type === 'PRODUCTION') {
+      return type;
+    }
+    return null;
+  }
+
+  /** CCU publishes `ccu/order/active` as an array; completed may be array or map. */
+  private toOrderIdMap(raw: unknown): Record<string, any> {
+    if (!raw) {
+      return {};
+    }
+    const list: unknown[] = Array.isArray(raw)
+      ? raw
+      : typeof raw === 'object'
+        ? Object.values(raw as Record<string, unknown>)
+        : [];
+    const map: Record<string, any> = {};
+    for (const item of list) {
+      if (item && typeof item === 'object' && 'orderId' in item) {
+        const id = String((item as { orderId: unknown }).orderId ?? '');
+        if (id && id !== '0') {
+          map[id] = item;
+        }
+      }
+    }
+    return map;
+  }
+
+  private normalizeOrdersParam(
+    orders: { active: Record<string, any>; completed: Record<string, any> } | unknown
+  ): { active: Record<string, any>; completed: Record<string, any> } {
+    if (orders && typeof orders === 'object' && 'active' in orders) {
+      const o = orders as { active: unknown; completed: unknown };
+      return {
+        active: this.toOrderIdMap(o.active),
+        completed: this.toOrderIdMap(o.completed),
+      };
+    }
+    return { active: this.toOrderIdMap(orders), completed: {} };
   }
 
   /** Flush buffered DPS INPUT_RGB (Color) once workpiece identity is known. */
@@ -1554,29 +2188,20 @@ export class WorkpieceHistoryService implements OnDestroy {
     if (!station || !orderType || !type) {
       return false;
     }
+    // Anchor events only (dense timeline): DOCK / PICK / DROP / CHECK_QUALITY
     if (orderType === 'PRODUCTION') {
       if (['DRILL', 'MILL', 'AIQS'].includes(station)) {
-        // Process events (MODULE) + FTS DOCK arrival (incl. co-passenger Ist stops)
-        return (
-          type === 'PROCESS' ||
-          type === 'DRILL' ||
-          type === 'MILL' ||
-          type === 'CHECK_QUALITY' ||
-          type === 'DOCK'
-        );
+        return type === 'CHECK_QUALITY' || type === 'DOCK';
       }
       if (station === 'HBW') {
-        // Both PICK (outbound/start of production) and DROP (return after quality fail) are relevant
         return type === 'PICK' || type === 'DROP';
       }
       if (station === 'DPS') {
-        // PICK = final delivery at DPS (end of production); DROP = storage drop
         return type === 'PICK' || type === 'DROP';
       }
       return false;
     }
     if (orderType === 'STORAGE') {
-      // Real storage flow: DPS DROP (into station / accept) then HBW PICK (into rack)
       if (station === 'DPS') {
         return type === 'DROP';
       }
@@ -1700,6 +2325,9 @@ export class WorkpieceHistoryService implements OnDestroy {
   /**
    * A1: Collect all distinct CCU/FTS orderIds for a workpiece and rebuild STORAGE + PRODUCTION contexts.
    * Preserves previously resolved ERP/correlation fields per orderId when rebuilding.
+   *
+   * Co-passenger / Ist-only events carry a *foreign* FTS orderId — do not let those UUIDs
+   * become this workpiece's order-context card (breaks planned-station checklist).
    */
   private rebuildOrderContexts(
     history: WorkpieceHistory,
@@ -1712,12 +2340,23 @@ export class WorkpieceHistoryService implements OnDestroy {
       return trimmed.length > 0 && trimmed !== '0';
     };
     for (const event of history.events ?? []) {
+      if (event.details?.['coPassenger'] === true) {
+        continue;
+      }
       if (event.orderId && isUsableOrderId(event.orderId)) {
         orderIds.add(event.orderId);
       }
     }
+    // Keep previous context IDs only when they still have at least one owned (non-coPassenger) event,
+    // or when they match a live module/FTS extraOrderId. Avoid re-promoting foreign shells.
     for (const order of history.orders ?? []) {
-      if (order.orderId && isUsableOrderId(order.orderId)) {
+      if (!order.orderId || !isUsableOrderId(order.orderId)) {
+        continue;
+      }
+      const stillOwned = (history.events ?? []).some(
+        (e) => e.orderId === order.orderId && e.details?.['coPassenger'] !== true
+      );
+      if (stillOwned) {
         orderIds.add(order.orderId);
       }
     }
@@ -1762,9 +2401,7 @@ export class WorkpieceHistoryService implements OnDestroy {
     }
 
     // Normalize orders parameter
-    const normalizedOrders = orders && typeof orders === 'object' && 'active' in orders
-      ? orders as { active: Record<string, any>; completed: Record<string, any> }
-      : { active: {}, completed: {} };
+    const normalizedOrders = this.normalizeOrdersParam(orders);
 
     // Helper functions to generate fake ERP IDs
     const generatePurchaseOrderId = (): string => {
@@ -1998,17 +2635,27 @@ export class WorkpieceHistoryService implements OnDestroy {
     });
 
     // Demo: one STORAGE + one PRODUCTION card (merge MQTT intake/transport UUID shells)
-    return this.collapseOrderContextsByBusinessType(sorted, events);
+    return this.collapseOrderContextsByBusinessType(
+      sorted,
+      events,
+      workpieceType,
+      normalizedOrders
+    );
   }
 
   /**
    * Keep at most one STORAGE and one PRODUCTION shell.
-   * Prefers CCU-matched contexts with the richest dates/ERP fields.
+   * Prefers the workpiece's own CCU order (matching color + MODULE anchors) over
+   * co-passenger foreign orderIds that only appear on FTS Ist stops.
    */
   private collapseOrderContextsByBusinessType(
     contexts: OrderContext[],
-    events?: TrackTraceEvent[]
+    events: TrackTraceEvent[] | undefined,
+    workpieceType: string,
+    ccuOrders: { active: Record<string, any>; completed: Record<string, any> }
   ): OrderContext[] {
+    const wpType = (workpieceType || '').toUpperCase();
+
     const score = (ctx: OrderContext): number => {
       let s = 0;
       if (ctx.deliveryDate) s += 3;
@@ -2020,8 +2667,23 @@ export class WorkpieceHistoryService implements OnDestroy {
       if (ctx.purchaseOrderId && !ctx.purchaseOrderId.startsWith('ERP-PO-')) s += 2;
       if (ctx.customerOrderId && !ctx.customerOrderId.startsWith('ERP-CO-')) s += 2;
       if (ctx.orderId && ctx.orderId.length > 8 && ctx.orderId !== '0') s += 1;
-      const eventHits = (events ?? []).filter((e) => e.orderId === ctx.orderId).length;
-      s += Math.min(eventHits, 5);
+
+      const ownedEvents = (events ?? []).filter(
+        (e) => e.orderId === ctx.orderId && e.details?.['coPassenger'] !== true
+      );
+      s += Math.min(ownedEvents.length, 5);
+
+      const moduleHits = ownedEvents.filter((e) => e.eventSource === 'MODULE').length;
+      s += Math.min(moduleHits, 8) * 4;
+
+      const raw = ccuOrders.active[ctx.orderId] ?? ccuOrders.completed[ctx.orderId];
+      const ccuType = raw && typeof raw === 'object' ? String((raw as { type?: unknown }).type ?? '').toUpperCase() : '';
+      if (ccuType && wpType && ccuType === wpType) {
+        s += 25;
+      } else if (ccuType && wpType && ccuType !== wpType) {
+        s -= 40;
+      }
+
       return s;
     };
 
@@ -2079,7 +2741,8 @@ export class WorkpieceHistoryService implements OnDestroy {
   }
 
   /**
-   * Determine order type based on current location and event history
+   * Fallback only: infer STORAGE vs PRODUCTION from location/history when CCU orderType
+   * is unavailable. Prefer {@link resolveEventOrderType} / {@link resolveCcuOrderType}.
    */
   private determineOrderType(location: string, events: TrackTraceEvent[]): 'STORAGE' | 'PRODUCTION' {
     // If at DPS (destination) or coming from DPS, it's a storage order (raw material inbound)

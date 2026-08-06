@@ -250,7 +250,79 @@
             <div class="module-row-header" *ngIf="item.kind === 'station-header'">
               <img [src]="getStationIcon(item.stationId)" alt="" width="18" height="18" />
               <span class="module-name">{{ item.stationName }}</span>
+              <span class="module-serial" *ngIf="item.serialNumber">{{ item.serialNumber }}</span>
             </div>
+
+            <ng-container *ngIf="item.kind === 'transport-group'">
+              <div class="timeline-business-cell">
+                <div
+                  class="ist-chip-stack"
+                  *ngIf="item.istStations.length && !isTransportGroupExpanded(item.id)"
+                >
+                  <div
+                    class="flow-accent-chip flow-accent-chip--ist"
+                    *ngFor="let istStation of item.istStations"
+                    [attr.title]="istStation"
+                  >
+                    <img [src]="getStationIcon(istStation)" alt="" width="14" height="14" />
+                    <span class="flow-accent-station">{{ istStation }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="timeline-station-cell"></div>
+              <div class="timeline-transport-cell">
+                <button
+                  type="button"
+                  class="transport-group__toggle"
+                  (click)="toggleTransportGroup(item.id)"
+                  [attr.aria-expanded]="isTransportGroupExpanded(item.id)"
+                >
+                  <span class="transport-group__chevron" aria-hidden="true">{{
+                    isTransportGroupExpanded(item.id) ? '▾' : '▸'
+                  }}</span>
+                  <span class="transport-group__label">{{ getTransportGroupSummaryLabel(item) }}</span>
+                </button>
+              </div>
+              <div class="timeline-environment-cell">
+                <ng-container *ngIf="getTransportGroupEnvironmentSummary(item) as sampledEnv">
+                  <div
+                    class="event-environment"
+                    [class.event-environment--warn]="isEnvironmentWarn(sampledEnv)"
+                    [class.event-environment--alarm]="isEnvironmentAlarm(sampledEnv)"
+                    [class.event-environment--expanded]="isEnvironmentExpanded(item.events[0])"
+                  >
+                    <button
+                      type="button"
+                      class="event-environment__summary"
+                      (click)="toggleEnvironmentExpanded(item.events[0])"
+                      [attr.aria-expanded]="isEnvironmentExpanded(item.events[0])"
+                    >
+                      <span class="event-environment__chevron" aria-hidden="true">{{
+                        isEnvironmentExpanded(item.events[0]) ? '▾' : '▸'
+                      }}</span>
+                      <span class="event-environment__summary-label" i18n="@@trackTraceEnvCollapsedLabel">Env</span>
+                      <span
+                        class="event-environment__status"
+                        [class.event-environment__status--warn]="isEnvironmentWarn(sampledEnv)"
+                        [class.event-environment__status--alarm]="isEnvironmentAlarm(sampledEnv)"
+                      >{{ getEnvironmentStatusLabel(sampledEnv) }}</span>
+                      <span class="event-environment__timestamp">{{ formatTimestamp(sampledEnv.updatedAt) }}</span>
+                    </button>
+                    <div class="event-environment__rows" *ngIf="isEnvironmentExpanded(item.events[0])">
+                      <div
+                        *ngFor="let row of sampledEnv.rows; trackBy: trackByEnvRow"
+                        class="event-environment__row"
+                        [class.event-environment__row--warn]="row.variant === 'warn'"
+                        [class.event-environment__row--alarm]="row.variant === 'alarm'"
+                      >
+                        <span class="event-environment__label">{{ row.label }}</span>
+                        <span class="event-environment__value">{{ row.value }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
 
             <ng-container *ngIf="item.kind === 'event'">
               <div class="timeline-business-cell">
@@ -260,6 +332,13 @@
                     <span class="flow-accent-station">{{ flowAccent.station }}</span>
                   </div>
                 </ng-container>
+                <div
+                  class="flow-accent-chip flow-accent-chip--ist"
+                  *ngIf="item.istStationChip as istStation"
+                >
+                  <img [src]="getStationIcon(istStation)" alt="" width="14" height="14" />
+                  <span class="flow-accent-station">{{ istStation }}</span>
+                </div>
               </div>
 
               <div class="timeline-station-cell">
@@ -279,17 +358,31 @@
               </div>
 
               <div class="timeline-environment-cell">
-                <ng-container *ngIf="getEventEnvironmentSnapshot(item.event) as sampledEnv">
+                <ng-container *ngIf="getDisplayedEnvironmentSnapshot(item.event) as sampledEnv">
                   <div
                     class="event-environment"
                     [class.event-environment--warn]="isEnvironmentWarn(sampledEnv)"
                     [class.event-environment--alarm]="isEnvironmentAlarm(sampledEnv)"
+                    [class.event-environment--expanded]="isEnvironmentExpanded(item.event)"
                   >
-                    <div class="event-environment__header">
-                      <span i18n="@@trackTraceSampledEnvironmentTitle">Environment &#64; event</span>
+                    <button
+                      type="button"
+                      class="event-environment__summary"
+                      (click)="toggleEnvironmentExpanded(item.event)"
+                      [attr.aria-expanded]="isEnvironmentExpanded(item.event)"
+                    >
+                      <span class="event-environment__chevron" aria-hidden="true">{{
+                        isEnvironmentExpanded(item.event) ? '▾' : '▸'
+                      }}</span>
+                      <span class="event-environment__summary-label" i18n="@@trackTraceEnvCollapsedLabel">Env</span>
+                      <span
+                        class="event-environment__status"
+                        [class.event-environment__status--warn]="isEnvironmentWarn(sampledEnv)"
+                        [class.event-environment__status--alarm]="isEnvironmentAlarm(sampledEnv)"
+                      >{{ getEnvironmentStatusLabel(sampledEnv) }}</span>
                       <span class="event-environment__timestamp">{{ formatTimestamp(sampledEnv.updatedAt) }}</span>
-                    </div>
-                    <div class="event-environment__rows">
+                    </button>
+                    <div class="event-environment__rows" *ngIf="isEnvironmentExpanded(item.event)">
                       <div
                         *ngFor="let row of sampledEnv.rows; trackBy: trackByEnvRow"
                         class="event-environment__row"
@@ -312,66 +405,100 @@
 
   <ng-template #eventCard let-event>
     <div class="timeline-event-cell event-item" [class]="event.eventType.toLowerCase()">
-      <img [src]="getEventIcon(event.eventType, event)" alt="" width="16" height="16" class="event-icon" />
       <div class="event-content">
-        <div class="event-row">
-          <div class="event-col-1">
-            <div class="event-module-action">
-              <span class="event-module-name" [ngClass]="getAgvAccentClass(getEventPrimaryActor(event))">{{ getEventPrimaryActor(event) }}</span>
-              <span class="event-action-type">{{ getEventLabel(event.eventType, event) }}</span>
-              <span
-                class="event-source-badge"
-                *ngIf="getEventSourceLabel(event.eventSource) as sourceLabel"
-                [attr.data-source]="event.eventSource"
-              >{{ sourceLabel }}</span>
-              <span
-                class="ist-visit-badge"
-                *ngIf="getIstVisitBadge(event) as istBadge"
-              >{{ istBadge }}</span>
-            </div>
-            <div class="event-time">{{ formatTimestamp(event.timestamp) }}</div>
-            <div class="event-position" *ngIf="getTransportMetaLabel(event) as metaLabel">
-              {{ metaLabel }}
-            </div>
-            <div class="event-position-list" *ngIf="getTransportLoadRows(event).length">
-              <div class="event-position" *ngFor="let row of getTransportLoadRows(event)">
-                <img
-                  [src]="row.icon"
-                  alt=""
-                  width="14"
-                  height="14"
-                  class="position-bucket-icon"
-                />
-                {{ row.label }}
+        <div class="event-headline">
+          <img [src]="getEventIcon(event.eventType, event)" alt="" width="16" height="16" class="event-icon" />
+          <span
+            class="event-module-name"
+            *ngIf="event.eventSource === 'FTS'"
+            [ngClass]="getAgvAccentClass(getEventPrimaryActor(event))"
+          >{{ getEventPrimaryActor(event) }}</span>
+          <span class="event-action-type">{{ getEventLabel(event.eventType, event) }}</span>
+          <span class="ist-visit-badge" *ngIf="getIstVisitBadge(event) as istBadge">{{ istBadge }}</span>
+          <span class="event-time">{{ formatTimestamp(event.timestamp) }}</span>
+          <span class="event-duration" *ngIf="event.processDuration">{{ formatDuration(event.processDuration) }}</span>
+          <div
+            class="quality-result-badge"
+            *ngIf="getQualityResultBadge(event) as badge"
+            [ngClass]="getQualityResultClass(event)"
+          >{{ badge }}</div>
+        </div>
+
+        <ng-container *ngIf="event.eventSource === 'FTS'">
+          <div class="agv-event-body">
+            <div class="event-section" *ngIf="getTransportLoadRows(event) as bucketRows">
+              <div class="event-section__title" *ngIf="bucketRows.length" i18n="@@trackTraceLoadsHeading">Loads</div>
+              <div class="agv-bucket-row" *ngIf="bucketRows.length">
+                <div
+                  class="agv-bucket"
+                  *ngFor="let row of bucketRows"
+                  [class.agv-bucket--empty]="row.empty"
+                  [attr.title]="row.label"
+                >
+                  <img [src]="row.icon" alt="" width="14" height="14" />
+                  <span class="agv-bucket__pos">{{ row.position }}</span>
+                </div>
               </div>
             </div>
-            <div class="event-position" *ngIf="getEventPositionLabel(event) as positionLabel">
-              <img
-                src="assets/svg/shopfloor/shared/location-marker.svg"
-                alt=""
-                width="12"
-                height="12"
-                class="position-location-icon"
-              />
-              {{ positionLabel }}
+            <div class="event-section event-section--position">
+              <div class="event-section__title" i18n="@@trackTracePositionHeading">Position</div>
+              <div class="event-position-line" *ngIf="getFtsPositionLine(event) as positionLine">
+                <img [src]="getLocationRowIcon(event)" alt="" width="12" height="12" />
+                <span>{{ positionLine }}</span>
+              </div>
+              <div
+                class="agv-shopfloor-mini"
+                *ngIf="getAgvEventShopfloorMiniMap(event) as miniMap"
+                [attr.title]="getFtsPositionLine(event) || event.location"
+              >
+                <svg
+                  class="agv-shopfloor-mini__svg"
+                  [attr.viewBox]="miniMap.viewBox"
+                  preserveAspectRatio="xMidYMid meet"
+                  aria-hidden="true"
+                >
+                  <line
+                    *ngFor="let road of miniMap.roads"
+                    [attr.x1]="road.x1"
+                    [attr.y1]="road.y1"
+                    [attr.x2]="road.x2"
+                    [attr.y2]="road.y2"
+                    class="agv-shopfloor-mini__road"
+                  />
+                  <circle
+                    [attr.cx]="miniMap.marker.x"
+                    [attr.cy]="miniMap.marker.y"
+                    [attr.r]="miniMap.marker.r"
+                    [attr.fill]="miniMap.marker.color"
+                    class="agv-shopfloor-mini__marker"
+                  />
+                </svg>
+              </div>
             </div>
-            <div
-              class="quality-result-badge"
-              *ngIf="getQualityResultBadge(event) as badge"
-              [ngClass]="getQualityResultClass(event)"
-            >{{ badge }}</div>
-            <span class="event-duration" *ngIf="event.processDuration">
-              {{ formatDuration(event.processDuration) }}
-            </span>
+          </div>
+        </ng-container>
+
+        <div class="hbw-mini-grid" *ngIf="getHbwMiniGrid(event) as hbwGrid">
+          <div
+            class="hbw-mini-grid__cell"
+            *ngFor="let cell of hbwGrid.cells"
+            [class.hbw-mini-grid__cell--active]="cell.active"
+            [class.hbw-mini-grid__cell--empty]="cell.empty"
+            [attr.title]="cell.loadPosition + (cell.loadType ? ' (' + cell.loadType + ')' : '')"
+          >
+            <img [src]="cell.icon" alt="" width="12" height="12" />
+            <span class="hbw-mini-grid__label">{{ cell.loadPosition }}</span>
           </div>
         </div>
-        <div class="event-location" *ngIf="event.location">
-          <img src="assets/svg/shopfloor/shared/location-marker.svg" alt="" width="12" height="12" />
-          <ng-container *ngIf="getLocationInfo(event.location) as locationInfo">
-            <span class="location-module-type">{{ locationInfo.moduleType }}</span>
-            <span class="location-full-name">({{ locationInfo.fullName }})</span>
-            <span class="location-serial" *ngIf="locationInfo.serialNumber">({{ locationInfo.serialNumber }})</span>
-          </ng-container>
+        <div class="event-position" *ngIf="getEventPositionLabel(event) as positionLabel">
+          <img
+            src="assets/svg/shopfloor/shared/location-marker.svg"
+            alt=""
+            width="12"
+            height="12"
+            class="position-location-icon"
+          />
+          {{ positionLabel }}
         </div>
       </div>
     </div>

@@ -11,6 +11,10 @@ import {
   type TrackTraceEnvironmentRow,
   type TrackTraceEnvironmentSnapshot,
 } from '../../services/track-trace-environment.service';
+import { AgvRouteService } from '../../services/agv-route.service';
+import { ShopfloorLayoutService } from '../../services/shopfloor-layout.service';
+import { ShopfloorMappingService } from '../../services/shopfloor-mapping.service';
+import type { ShopfloorLayoutConfig } from '../shopfloor-preview/shopfloor-layout.types';
 import { ICONS } from '../../shared/icons/icon.registry';
 
 /** Manufacturing event types that should be grouped by station */
@@ -32,6 +36,39 @@ export interface TrackTraceCascadeVm {
   stats: { WHITE: number; BLUE: number; RED: number; total: number };
 }
 
+/** Compact shopfloor map for FTS timeline events (roads + AGV marker). */
+export interface AgvEventShopfloorMiniMap {
+  viewBox: string;
+  roads: Array<{ x1: number; y1: number; x2: number; y2: number }>;
+  marker: { x: number; y: number; color: string; r: number };
+}
+
+/** Timeline rows for Station | Transport columns. */
+export type TrackTraceTimelineItem =
+  | {
+      kind: 'station-header';
+      stationId: string;
+      stationName: string;
+      serialNumber: string | null;
+    }
+  | {
+      kind: 'transport-group';
+      id: string;
+      fromStation: string | null;
+      toStation: string | null;
+      events: TrackTraceEvent[];
+      istStations: string[];
+      agvLabel: string;
+    }
+  | {
+      kind: 'event';
+      event: TrackTraceEvent;
+      column: 'station' | 'transport';
+      showBusinessChip: boolean;
+      /** Unplanned / Ist station chip (dashed) in business-flow column. */
+      istStationChip: string | null;
+    };
+
 /**
  * Track & Trace Component
  * Enables workpiece-based tracking through the entire production process
@@ -51,8 +88,17 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
   private readonly moduleNameService = inject(ModuleNameService);
   private readonly environmentService = inject(EnvironmentService);
   private readonly trackTraceEnvironment = inject(TrackTraceEnvironmentService);
+  private readonly agvRouteService = inject(AgvRouteService);
+  private readonly shopfloorLayout = inject(ShopfloorLayoutService);
+  private readonly shopfloorMapping = inject(ShopfloorMappingService);
   private readonly cdr = inject(ChangeDetectorRef);
   private subscription?: Subscription;
+  private layoutSubscription?: Subscription;
+  private layoutConfig: ShopfloorLayoutConfig | null = null;
+  /** Expanded environment panels (key = event identity). Default: collapsed. */
+  private readonly expandedEnvironmentKeys = new Set<string>();
+  /** Expanded transport groups between planned stations. Default: collapsed. */
+  private readonly expandedTransportGroupIds = new Set<string>();
 
   searchTerm = '';
   selectedWorkpieceId: string | null = null;
@@ -116,10 +162,19 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
       map(([id, snap]) => (id ? snap : null)),
       shareReplay({ bufferSize: 1, refCount: false })
     );
+
+    this.layoutSubscription = this.shopfloorLayout.config$.subscribe((config) => {
+      this.layoutConfig = config;
+      if (config) {
+        this.agvRouteService.initializeLayout(config);
+      }
+      this.cdr.markForCheck();
+    });
   }
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
+    this.layoutSubscription?.unsubscribe();
   }
 
   selectWorkpiece(workpieceId: string): void {
@@ -290,39 +345,102 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Transport load rows: always "Position N (COLOR)" with workpiece icon (1 or many).
+   * AGV load buckets: always Pos 1–3 (MQTT may omit empty slots → EMPTY).
    */
-  getTransportLoadRows(event: TrackTraceEvent): Array<{ icon: string; label: string }> {
+  getTransportLoadRows(event: TrackTraceEvent): Array<{
+    icon: string;
+    label: string;
+    position: string;
+    empty: boolean;
+  }> {
     if (event.eventSource !== 'FTS') {
       return [];
     }
-    const eventType = (event.eventType || '').toUpperCase();
-    const agvLoads = this.getAgvLoadsFromEvent(event);
+    const byPos = new Map<string, { loadId?: string; loadType?: string; loadPosition?: string }>();
+    for (const load of this.getAgvLoadsFromEvent(event)) {
+      const pos = String(load.loadPosition || '').trim();
+      if (pos) {
+        byPos.set(pos, load);
+      }
+    }
+    // Legacy single loadPosition when agvLoads missing
+    if (byPos.size === 0) {
+      const loadPos = event.details?.['loadPosition'];
+      const eventType = (event.eventType || '').toUpperCase();
+      if (typeof loadPos === 'string' && loadPos.trim() && eventType !== 'DOCK') {
+        byPos.set(loadPos.trim(), {
+          loadPosition: loadPos.trim(),
+          loadType: event.workpieceType,
+          loadId: event.workpieceId,
+        });
+      }
+    }
 
-    if (agvLoads.length >= 1) {
-      return agvLoads.map((load) => {
-        const pos = (load.loadPosition || '').trim() || '?';
-        const color = (load.loadType || '').toUpperCase();
-        const label = color
-          ? $localize`:@@trackTracePositionWithColor:Position ${pos}:position: (${color}:color:)`
-          : $localize`:@@trackTracePositionOnly:Position ${pos}:position:`;
+    if (byPos.size === 0) {
+      return [];
+    }
+
+    return ['1', '2', '3'].map((position) => {
+      const load = byPos.get(position);
+      const color = (load?.loadType || '').toUpperCase();
+      if (color === 'BLUE' || color === 'WHITE' || color === 'RED') {
         return {
-          icon: this.getWorkpieceIcon(color || event.workpieceType || ''),
-          label,
+          position,
+          empty: false,
+          icon: this.getWorkpieceIcon(color),
+          label: $localize`:@@trackTraceAgvBucketFilled:Pos ${position}:position: (${color}:color:)`,
         };
-      });
-    }
+      }
+      return {
+        position,
+        empty: true,
+        icon: ICONS.shopfloor.workpieces.slotEmpty,
+        label: $localize`:@@trackTraceAgvBucketEmpty:Pos ${position}:position: (EMPTY)`,
+      };
+    });
+  }
 
-    // Legacy fallback: single loadPosition when agvLoads missing
-    const loadPos = event.details?.['loadPosition'];
-    if (typeof loadPos === 'string' && loadPos.trim() && eventType !== 'DOCK') {
-      const color = (event.workpieceType || '').toUpperCase();
-      const label = color
-        ? $localize`:@@trackTracePositionWithColor:Position ${loadPos}:position: (${color}:color:)`
-        : $localize`:@@trackTracePositionOnly:Position ${loadPos}:position:`;
-      return [{ icon: this.getWorkpieceIcon(color), label }];
+  /**
+   * Compact shopfloor preview for FTS events: orthogonal road network + AGV marker in AGV color.
+   * Module endpoints use layout node positions (HBW/DPS = main subcell), not raw road centers.
+   */
+  getAgvEventShopfloorMiniMap(event: TrackTraceEvent): AgvEventShopfloorMiniMap | null {
+    if (event.eventSource !== 'FTS' || !event.location || !this.layoutConfig) {
+      return null;
     }
-    return [];
+    const pos =
+      this.agvRouteService.getAgvMarkerCenter(event.location) ??
+      this.agvRouteService.getNodePosition(event.location);
+    if (!pos) {
+      return null;
+    }
+    const canvas = this.layoutConfig.metadata?.canvas;
+    if (!canvas?.width || !canvas?.height) {
+      return null;
+    }
+    const serial = event.moduleId || '';
+    const color = this.shopfloorMapping.getAgvColor(serial);
+    const resolveEndpoint = (ref: string, fallback: { x: number; y: number }): { x: number; y: number } =>
+      this.agvRouteService.getNodePosition(ref) ?? fallback;
+
+    const roads: Array<{ x1: number; y1: number; x2: number; y2: number }> = [];
+    for (const road of this.layoutConfig.parsed_roads ?? []) {
+      const from = resolveEndpoint(road.from.ref, road.from.center);
+      const to = resolveEndpoint(road.to.ref, road.to.center);
+      // Orthogonalize non-axis-aligned segments (compound road centers vs main-cell nodes)
+      if (from.x === to.x || from.y === to.y) {
+        roads.push({ x1: from.x, y1: from.y, x2: to.x, y2: to.y });
+      } else {
+        // Prefer bend on shared intersection axis (horizontal then vertical)
+        roads.push({ x1: from.x, y1: from.y, x2: to.x, y2: from.y });
+        roads.push({ x1: to.x, y1: from.y, x2: to.x, y2: to.y });
+      }
+    }
+    return {
+      viewBox: `0 0 ${canvas.width} ${canvas.height}`,
+      roads,
+      marker: { x: pos.x, y: pos.y, color, r: 28 },
+    };
   }
 
   /** Intersection meta for FTS (shown above load rows). */
@@ -337,20 +455,105 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     return null;
   }
 
-  /** Station rack position label (non-FTS). */
+  /** Station rack position label (non-FTS); skipped for HBW when mini-grid is shown. */
   getEventPositionLabel(event: TrackTraceEvent): string | null {
     if (event.eventSource === 'FTS') {
+      return null;
+    }
+    if (this.getHbwMiniGrid(event)) {
       return null;
     }
     const pos = event.details?.['loadPosition'];
     if (typeof pos !== 'string' || !pos.trim()) {
       return null;
     }
-    const station = (event.stationId || event.moduleName || '').toUpperCase();
-    if (station === 'HBW') {
-      return $localize`:@@trackTracePositionInHbw:Position in HBW: ${pos}:position:`;
-    }
     return $localize`:@@trackTracePositionGeneric:Position: ${pos}:position:`;
+  }
+
+  /**
+   * Mini HBW 3×3 (A1–C3) for MODULE HBW PICK/DROP — MQTT shelf snapshot + active slot.
+   */
+  getHbwMiniGrid(event: TrackTraceEvent): {
+    cells: Array<{
+      loadPosition: string;
+      loadType: string | null;
+      icon: string;
+      active: boolean;
+      empty: boolean;
+    }>;
+    activePosition: string | null;
+  } | null {
+    if (event.eventSource !== 'MODULE') {
+      return null;
+    }
+    const station = (event.stationId || event.moduleName || '').toUpperCase();
+    if (station !== 'HBW') {
+      return null;
+    }
+    const eventType = (event.eventType || '').toUpperCase();
+    if (eventType !== 'PICK' && eventType !== 'DROP') {
+      return null;
+    }
+
+    const activeRaw = event.details?.['loadPosition'];
+    const activePosition =
+      typeof activeRaw === 'string' && activeRaw.trim() ? activeRaw.trim().toUpperCase() : null;
+
+    const order = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
+    const byPos = new Map<string, { loadType: string | null; loadId: string | null }>();
+    const rawShelf = event.details?.['hbwShelf'];
+    if (Array.isArray(rawShelf)) {
+      for (const cell of rawShelf) {
+        if (!cell || typeof cell !== 'object') {
+          continue;
+        }
+        const row = cell as { loadPosition?: unknown; loadType?: unknown; loadId?: unknown };
+        const pos = typeof row.loadPosition === 'string' ? row.loadPosition.trim().toUpperCase() : '';
+        if (!pos) {
+          continue;
+        }
+        const loadType =
+          typeof row.loadType === 'string' && row.loadType.trim()
+            ? row.loadType.trim().toUpperCase()
+            : null;
+        const loadId =
+          typeof row.loadId === 'string' && row.loadId.trim() ? row.loadId.trim() : null;
+        byPos.set(pos, { loadType, loadId });
+      }
+    }
+
+    // Ensure active slot is visible even if shelf snapshot omitted it
+    if (activePosition && !byPos.has(activePosition) && event.workpieceType) {
+      byPos.set(activePosition, {
+        loadType: String(event.workpieceType).toUpperCase(),
+        loadId: event.workpieceId || null,
+      });
+    }
+
+    const cells = order.map((loadPosition) => {
+      const cell = byPos.get(loadPosition);
+      const loadType = cell?.loadType ?? null;
+      const empty = !(loadType === 'BLUE' || loadType === 'WHITE' || loadType === 'RED');
+      // On DROP, active slot is the vacated one — show color highlight even if shelf emptied
+      const active = activePosition === loadPosition;
+      const showType =
+        !empty
+          ? loadType
+          : active && event.workpieceType
+            ? String(event.workpieceType).toUpperCase()
+            : null;
+      return {
+        loadPosition,
+        loadType: showType,
+        empty: !showType,
+        active,
+        icon: showType
+          ? this.getWorkpieceIcon(showType)
+          : ICONS.shopfloor.workpieces.slotEmpty,
+      };
+    });
+
+    return { cells, activePosition };
   }
 
   /** Filled AGV bucket slots persisted on FTS transport events. */
@@ -366,13 +569,13 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
         (item): item is { loadId?: string; loadType?: string; loadPosition?: string } =>
           !!item && typeof item === 'object'
       )
-      .filter((item) => !!item.loadId && !!item.loadType)
+      .filter((item) => !!item.loadType || !!item.loadId)
       .sort((a, b) => String(a.loadPosition ?? '').localeCompare(String(b.loadPosition ?? '')));
   }
 
   /** Icon for single-slot FTS events (legacy helpers / tests). */
   getBucketPositionIcon(event: TrackTraceEvent): string | null {
-    const rows = this.getTransportLoadRows(event);
+    const rows = this.getTransportLoadRows(event).filter((r) => !r.empty);
     return rows.length === 1 ? rows[0].icon : null;
   }
 
@@ -557,8 +760,65 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     };
   }
 
+  /**
+   * Snapshot for UI when event is an env anchor; otherwise null.
+   */
+  getDisplayedEnvironmentSnapshot(event: TrackTraceEvent): TrackTraceEnvironmentSnapshot | null {
+    if (!this.shouldDisplayEnvironmentSnapshot(event)) {
+      return null;
+    }
+    return this.getEventEnvironmentSnapshot(event);
+  }
+
+  /**
+   * Show env only on timeline anchor events (DOCK / PICK / DROP / CHECK_QUALITY).
+   * Hides snapshots on PASS/TURN/PROCESS even if present in older session data.
+   */
+  shouldDisplayEnvironmentSnapshot(event: TrackTraceEvent): boolean {
+    const type = (event.eventType || '').toUpperCase();
+    if (!['DOCK', 'PICK', 'DROP', 'CHECK_QUALITY'].includes(type)) {
+      return false;
+    }
+    return this.getEventEnvironmentSnapshot(event) !== null;
+  }
+
+  private environmentExpandKey(event: TrackTraceEvent): string {
+    return [
+      event.timestamp,
+      event.eventType,
+      event.actionId || '',
+      event.location || '',
+      event.stationId || '',
+    ].join('|');
+  }
+
+  isEnvironmentExpanded(event: TrackTraceEvent): boolean {
+    return this.expandedEnvironmentKeys.has(this.environmentExpandKey(event));
+  }
+
+  toggleEnvironmentExpanded(event: TrackTraceEvent): void {
+    const key = this.environmentExpandKey(event);
+    if (this.expandedEnvironmentKeys.has(key)) {
+      this.expandedEnvironmentKeys.delete(key);
+    } else {
+      this.expandedEnvironmentKeys.add(key);
+    }
+    this.cdr.markForCheck();
+  }
+
+  getEnvironmentStatusLabel(snapshot: TrackTraceEnvironmentSnapshot): string {
+    if (this.isEnvironmentAlarm(snapshot)) {
+      return $localize`:@@trackTraceEnvStatusAlarm:ALARM`;
+    }
+    if (this.isEnvironmentWarn(snapshot)) {
+      return $localize`:@@trackTraceEnvStatusWarn:WARN`;
+    }
+    return $localize`:@@trackTraceEnvStatusOk:OK`;
+  }
+
   isEnvironmentAlarm(snapshot: TrackTraceEnvironmentSnapshot): boolean {
-    return snapshot.hasAlarm || snapshot.rows.some((row) => row.variant === 'alarm');
+    // Prefer row severity so a stale hasAlarm latch cannot force ALARM on green rows.
+    return snapshot.rows.some((row) => row.variant === 'alarm');
   }
 
   isEnvironmentWarn(snapshot: TrackTraceEnvironmentSnapshot): boolean {
@@ -581,10 +841,7 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     const orderEvents = events.filter((event) => event.orderId === order.orderId);
 
     return plannedChain.map((station, idx) => {
-      const active = orderEvents.some((event) =>
-        this.isFlowAnchorEvent(orderType, station, (event.eventType || '').toUpperCase()) &&
-        (event.stationId || '').toUpperCase() === station
-      );
+      const active = this.isPlannedStationVisited(events, orderEvents, orderType, station);
       return {
         station,
         index: idx + 1,
@@ -592,6 +849,39 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
         active,
       };
     });
+  }
+
+  /**
+   * Planned-station checklist: MQTT-treu.
+   * 1) Classic flow anchors on this orderId (MODULE HBW DROP / DRILL / … / DPS PICK).
+   * 2) PRODUCTION mfg only: any FTS DOCK at that station on this workpiece (incl. Mitfahrt).
+   *    Physical stop is a real event; does not invent MODULE process / quality.
+   */
+  private isPlannedStationVisited(
+    allEvents: TrackTraceEvent[],
+    orderEvents: TrackTraceEvent[],
+    orderType: string,
+    station: string
+  ): boolean {
+    const byAnchor = orderEvents.some(
+      (event) =>
+        this.isFlowAnchorEvent(orderType, station, (event.eventType || '').toUpperCase()) &&
+        (event.stationId || '').toUpperCase() === station
+    );
+    if (byAnchor) {
+      return true;
+    }
+
+    if (orderType === 'PRODUCTION' && ['DRILL', 'MILL', 'AIQS'].includes(station)) {
+      return allEvents.some(
+        (event) =>
+          event.eventSource === 'FTS' &&
+          (event.eventType || '').toUpperCase() === 'DOCK' &&
+          (event.stationId || '').toUpperCase() === station
+      );
+    }
+
+    return false;
   }
 
   getBusinessFlowAccent(
@@ -645,21 +935,13 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Chronological shopfloor rows: station visits get one header + business chip;
-   * events go into Station or Transport column (B3 layout).
+   * Chronological shopfloor rows: station visits + collapsible transport groups
+   * between planned stations. Expanded transport groups flatten to event rows.
    */
   buildShopfloorTimeline(
     events: TrackTraceEvent[],
     order: OrderContext | null
-  ): Array<
-    | { kind: 'station-header'; stationId: string; stationName: string }
-    | {
-        kind: 'event';
-        event: TrackTraceEvent;
-        column: 'station' | 'transport';
-        showBusinessChip: boolean;
-      }
-  > {
+  ): TrackTraceTimelineItem[] {
     const sorted = [...events].sort((a, b) => {
       const timeDiff = new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
       if (timeDiff !== 0) {
@@ -668,17 +950,42 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
       return (a.actionId || '').localeCompare(b.actionId || '');
     });
 
-    const items: Array<
-      | { kind: 'station-header'; stationId: string; stationName: string }
-      | {
-          kind: 'event';
-          event: TrackTraceEvent;
-          column: 'station' | 'transport';
-          showBusinessChip: boolean;
-        }
-    > = [];
-
+    const planned = new Set((order?.plannedStationChain ?? []).map((s) => s.toUpperCase()));
+    const items: TrackTraceTimelineItem[] = [];
     let lastStationVisitId: string | null = null;
+    let lastPlannedStation: string | null = null;
+    let transportBuffer: TrackTraceEvent[] = [];
+    let transportGroupSeq = 0;
+
+    const flushTransport = (toStation: string | null): void => {
+      if (transportBuffer.length === 0) {
+        return;
+      }
+      transportGroupSeq += 1;
+      const groupId = `tg-${transportGroupSeq}-${transportBuffer[0]?.timestamp ?? transportGroupSeq}`;
+      const group: TrackTraceTimelineItem = {
+        kind: 'transport-group',
+        id: groupId,
+        fromStation: lastPlannedStation,
+        toStation,
+        events: [...transportBuffer],
+        istStations: this.extractIstStationsFromTransport(transportBuffer, planned),
+        agvLabel: this.resolveAgvLabelFromEvents(transportBuffer),
+      };
+      items.push(group);
+      if (this.isTransportGroupExpanded(groupId)) {
+        for (const ev of group.events) {
+          items.push({
+            kind: 'event',
+            event: ev,
+            column: 'transport',
+            showBusinessChip: false,
+            istStationChip: this.resolveIstStationChip(ev, planned),
+          });
+        }
+      }
+      transportBuffer = [];
+    };
 
     for (const event of sorted) {
       if (!this.isOrderScopedEvent(event)) {
@@ -690,41 +997,136 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
         const sid = (event.stationId || event.moduleName || '').toUpperCase();
         const isNewVisit = !!sid && sid !== lastStationVisitId;
         if (isNewVisit) {
+          flushTransport(sid || null);
           items.push({
             kind: 'station-header',
             stationId: sid,
             stationName: event.stationName || sid,
+            serialNumber: this.resolveStationSerial(event),
           });
           lastStationVisitId = sid;
+          if (sid && (planned.size === 0 || planned.has(sid))) {
+            lastPlannedStation = sid;
+          }
         }
         items.push({
           kind: 'event',
           event,
           column: 'station',
           showBusinessChip: isNewVisit && this.getBusinessFlowAccent(event, order) !== null,
+          istStationChip: null,
         });
       } else {
         lastStationVisitId = null;
-        items.push({
-          kind: 'event',
-          event,
-          column: 'transport',
-          showBusinessChip: false,
-        });
+        transportBuffer.push(event);
       }
     }
+    flushTransport(null);
 
     return items;
   }
 
-  trackByTimelineItem(
-    index: number,
-    item:
-      | { kind: 'station-header'; stationId: string }
-      | { kind: 'event'; event: TrackTraceEvent }
-  ): string {
+  isTransportGroupExpanded(groupId: string): boolean {
+    return this.expandedTransportGroupIds.has(groupId);
+  }
+
+  toggleTransportGroup(groupId: string): void {
+    if (this.expandedTransportGroupIds.has(groupId)) {
+      this.expandedTransportGroupIds.delete(groupId);
+    } else {
+      this.expandedTransportGroupIds.add(groupId);
+    }
+    this.cdr.markForCheck();
+  }
+
+  getTransportGroupSummaryLabel(item: Extract<TrackTraceTimelineItem, { kind: 'transport-group' }>): string {
+    const n = item.events.length;
+    const route =
+      item.fromStation && item.toStation
+        ? `${item.fromStation}→${item.toStation}`
+        : item.fromStation
+          ? `${item.fromStation}→…`
+          : item.toStation
+            ? `…→${item.toStation}`
+            : '';
+    const agv = item.agvLabel || 'AGV';
+    if (route) {
+      return $localize`:@@trackTraceTransportGroupSummary:${agv}:agv: · ${n}:count: · ${route}:route:`;
+    }
+    return $localize`:@@trackTraceTransportGroupSummaryNoRoute:${agv}:agv: · ${n}:count: events`;
+  }
+
+  /** Prefer alarm/warn snapshot among grouped transport events for collapsed env cell. */
+  getTransportGroupEnvironmentSummary(
+    item: Extract<TrackTraceTimelineItem, { kind: 'transport-group' }>
+  ): TrackTraceEnvironmentSnapshot | null {
+    let best: TrackTraceEnvironmentSnapshot | null = null;
+    let bestRank = -1;
+    for (const event of item.events) {
+      const snap = this.getDisplayedEnvironmentSnapshot(event);
+      if (!snap) {
+        continue;
+      }
+      const rank = this.isEnvironmentAlarm(snap) ? 2 : this.isEnvironmentWarn(snap) ? 1 : 0;
+      if (rank > bestRank) {
+        best = snap;
+        bestRank = rank;
+      }
+    }
+    return best;
+  }
+
+  private extractIstStationsFromTransport(
+    events: TrackTraceEvent[],
+    planned: Set<string>
+  ): string[] {
+    const found: string[] = [];
+    for (const event of events) {
+      const station = this.resolveIstStationChip(event, planned);
+      if (station && !found.includes(station)) {
+        found.push(station);
+      }
+    }
+    return found;
+  }
+
+  /** Unplanned / Ist DOCK station for dashed business-flow chip; else null. */
+  resolveIstStationChip(event: TrackTraceEvent, planned?: Set<string>): string | null {
+    if ((event.eventType || '').toUpperCase() !== 'DOCK') {
+      return null;
+    }
+    const station = (event.stationId || '').toUpperCase();
+    if (!station) {
+      return null;
+    }
+    if (event.details?.['visitKind'] === 'IST_ONLY' || event.details?.['coPassenger'] === true) {
+      return station;
+    }
+    const plannedSet =
+      planned ??
+      new Set<string>();
+    if (plannedSet.size > 0 && !plannedSet.has(station)) {
+      return station;
+    }
+    return null;
+  }
+
+  private resolveAgvLabelFromEvents(events: TrackTraceEvent[]): string {
+    for (const event of events) {
+      const actor = this.getEventPrimaryActor(event);
+      if (actor && /AGV/i.test(actor)) {
+        return actor;
+      }
+    }
+    return 'AGV';
+  }
+
+  trackByTimelineItem(index: number, item: TrackTraceTimelineItem): string {
     if (item.kind === 'station-header') {
       return `hdr-${item.stationId}-${index}`;
+    }
+    if (item.kind === 'transport-group') {
+      return item.id;
     }
     return `evt-${item.event.timestamp}-${item.event.eventType}-${item.event.actionId || index}`;
   }
@@ -775,9 +1177,25 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
         return ICONS.shopfloor.stations.aiqs;
       case 'DPS':
         return ICONS.shopfloor.stations.dps;
+      case 'CHRG':
+        return ICONS.shopfloor.stations.chrg;
       default:
         return ICONS.shopfloor.systems.factory;
     }
+  }
+
+  /** Location row icon: station SVG when known, else generic marker. */
+  getLocationRowIcon(event: TrackTraceEvent): string {
+    const station = (event.stationId || '').toUpperCase();
+    const known = new Set(['HBW', 'DRILL', 'MILL', 'AIQS', 'DPS', 'CHRG']);
+    if (known.has(station)) {
+      return this.getStationIcon(station);
+    }
+    const loc = (event.location || '').toUpperCase();
+    if (loc === 'CHRG0' || loc === 'CHRG') {
+      return ICONS.shopfloor.stations.chrg;
+    }
+    return 'assets/svg/shopfloor/shared/location-marker.svg';
   }
 
   formatTimestamp(timestamp: string): string {
@@ -803,6 +1221,36 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
 
   getLocationInfo(location: string): { moduleType: string; fullName: string; serialNumber: string | null } {
     return this.moduleNameService.getLocationDisplayText(location);
+  }
+
+  /** Compact FTS position line for the Position section (no serial — shown on station headers only). */
+  getFtsPositionLine(event: TrackTraceEvent): string | null {
+    if (event.eventSource !== 'FTS' || !event.location) {
+      return null;
+    }
+    const info = this.getLocationInfo(event.location);
+    if (info.moduleType && info.fullName) {
+      return `${info.moduleType} (${info.fullName})`;
+    }
+    return info.moduleType || info.fullName || event.location;
+  }
+
+  /** Module serial for station group header (from event location / moduleId). */
+  resolveStationSerial(event: TrackTraceEvent): string | null {
+    const candidates = [event.location, event.moduleId].filter(
+      (v): v is string => typeof v === 'string' && !!v.trim()
+    );
+    for (const candidate of candidates) {
+      const info = this.getLocationInfo(candidate);
+      if (info.serialNumber) {
+        return info.serialNumber;
+      }
+      // Bare module serial in location field
+      if (/^[A-Z0-9]{6,}$/i.test(candidate.trim()) && !/^(intersection:)?\d+$/i.test(candidate)) {
+        return candidate.trim();
+      }
+    }
+    return null;
   }
 
   getWorkpieceIcon(workpieceType: string): string {

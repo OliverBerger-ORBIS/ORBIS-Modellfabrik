@@ -16,18 +16,9 @@ import { OrderFixtureName } from '@osf/testing-fixtures';
   imports: [CommonModule, TrackTraceComponent],
   template: `
     <section class="track-trace-tab">
-      <header class="track-trace-tab__toolbar">
-        <div class="track-trace-tab__title">
-          <img src="assets/svg/ui/heading-track-trace.svg" alt="Track & Trace" class="track-trace-tab__icon" width="32" height="32" />
-          <div>
-            <h1 i18n="@@trackTraceTabHeadline">Track & Trace</h1>
-            <p class="track-trace-tab__subtitle" i18n="@@trackTraceTabDescription">
-              Complete workpiece genealogy with real-time traceability and quality correlation.
-            </p>
-          </div>
-        </div>
-
-        <div class="track-trace-tab__fixtures" *ngIf="isMockMode">
+      <header class="track-trace-tab__toolbar" *ngIf="isMockMode">
+        <!-- Title is rendered once in TrackTraceComponent card heading. -->
+        <div class="track-trace-tab__fixtures">
           <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
           <div class="fixture-switch">
             <button

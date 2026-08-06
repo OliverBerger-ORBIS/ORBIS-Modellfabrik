@@ -19,11 +19,14 @@ Abgleich: `python scripts/check_session_inventory.py`
 | Session | Start-up | Production | Storage | Mixed | AGVs | Besonderheiten |
 |---------|:--------:|:----------:|:-------:|:-----:|:----:|----------------|
 | startup-clean_20260512_102831 | ✓ | | | | 2 | **Startup-Referenz** (einzige): Factory-Reset + Re-Docking, `no_cam`, Sensoren, ohne retained Preload |
-| white-storage-production_20260728_095332 | | ✓ | ✓ | ✓ | 1 | **T&T-Referenz:** WHITE Storage→Production, Arduino; A1 Multi-Order; eindeutige NFC |
-| red-storage-production_20260728_095905 | | ✓ | ✓ | ✓ | 1 | **T&T-Referenz:** RED Storage→Production, Arduino; eindeutige NFC |
-| blue-storage-production_20260728_100418 | | ✓ | ✓ | ✓ | 1 | **T&T-Referenz:** BLUE Storage→Production, Arduino; eindeutige NFC |
-| storage-production-ml-wrb_20260804_114227 | | ✓ | ✓ | ✓ | 1 | Multi-Load W→R→B, 3 Loads, Pass; eindeutige NFC |
-| storage-production-ml-wbr_20260804_115849 | | ✓ | ✓ | ✓ | 1 | Multi-Load W→B→R, 3 Loads, Pass |
+| white-storage-production_20260728_095332 | | ✓ | ✓ | ✓ | 1 | **T&T-Referenz Pass:** WHITE Storage→Production, Arduino; A1 Multi-Order; eindeutige NFC |
+| red-storage-production_20260728_095905 | | ✓ | ✓ | ✓ | 1 | **T&T-Referenz Pass:** RED Storage→Production, Arduino; eindeutige NFC |
+| blue-storage-production-nok_20260728_100418 | | ✓ | ✓ | ✓ | 1 | **T&T-Referenz Quality-Fail:** BLUE Storage→Production; AIQS `CHECK_QUALITY` **FAILED** (`711f5fa991adb1`). *(umbenannt 05.08.2026; zuvor `blue-storage-production_…`)* |
+| *(offen)* blue-storage-production *(Pass)* | | ✓ | ✓ | ✓ | 1 | **Neu aufnehmen:** BLUE Pass als Gegenstück zu `…-nok_100418` |
+| *(offen)* white-storage-production-nok | | ✓ | ✓ | ✓ | 1 | **Morgen aufnehmen:** WHITE Quality-Fail |
+| *(offen)* red-storage-production-nok | | ✓ | ✓ | ✓ | 1 | **Morgen aufnehmen:** RED Quality-Fail |
+| storage-production-ml-wrb_20260804_114227 | | ✓ | ✓ | ✓ | 1 | Multi-Load W→R→B, Pass; **unvollständig für Mfg:** kaum DRILL/MILL/AIQS `/state` — T&T Production-Stationen nicht prüfbar; Mapping-Abnahme → `ml-wbr` |
+| storage-production-ml-wbr_20260804_115849 | | ✓ | ✓ | ✓ | 1 | Multi-Load W→B→R, 3 Loads, Pass; **bevorzugte** Mapping-/Event-Abnahme (volle Modul-States) |
 | storage-production-ml-brw_20260804_121835 | | ✓ | ✓ | ✓ | 1 | Multi-Load B→R→W; AGV laden zwischendurch; RED Quality-Fail |
 | storage-production-ml-bwr_20260804_130016 | | ✓ | ✓ | ✓ | 1 | **Störfall (behalten):** DPS→FTS-Befehl kam nicht an, DPS blockiert; Prod stoppt nahe AIQS |
 | storage-production-ml-bwr_20260804_131822 | | ✓ | ✓ | ✓ | 1 | bwr-Wiederholung OK; erster Multi-Load nur B+W, danach 3 Loads |
@@ -39,9 +42,11 @@ Abgleich: `python scripts/check_session_inventory.py`
 
 | Thema | Stand |
 |-------|--------|
-| 1-AGV Storage→Production (W/R/B) | ✓ Juli-Refs |
+| 1-AGV Storage→Production Pass (W/R) | ✓ Juli `white|red-storage-production_20260728_*` |
+| 1-AGV Storage→Production Fail (B) | ✓ `blue-storage-production-nok_20260728_100418` |
+| 1-AGV Blue Pass / White Fail / Red Fail | **Offen** — Blue Pass + W/R-Fail **morgen** aufnehmen |
 | Multi-Load 1 AGV (gemischt + rrr/bbb Fail) | ✓ Aug 2026 |
-| Quality-Fail isoliert (gleiche Farbe) | ✓ `ml-rrr`, `ml-bbb` |
+| Quality-Fail isoliert (gleiche Farbe, Multi-Load) | ✓ `ml-rrr`, `ml-bbb` |
 | Charge zwischendurch | ✓ `ml-brw` |
 | DPS/FTS-Störfall | ✓ `ml-bwr_130016` |
 | Startup clean | ✓ `startup-clean` |
@@ -61,7 +66,8 @@ Abgleich: `python scripts/check_session_inventory.py`
 
 | Session | Ablauf | Eignung |
 |---------|--------|---------|
-| **white\|red\|blue-storage-production_20260728_*** | Je Farbe Storage→Production, Arduino. | T&T Multi-Order (A1) + Sensor |
+| **white\|red-storage-production_20260728_*** | Pass: Storage→Production, Arduino. | T&T Multi-Order (A1) + Sensor |
+| **blue-storage-production-nok_20260728_100418** | BLUE Storage→Production; AIQS **FAILED**. | T&T Quality-Fail-Referenz (Single-Color) |
 | **storage-production-ml-*** | Multi-Load 1 AGV, eindeutige NFC (Teil A / A+). | T&T Mitfahrt / Attribution / Fail |
 
 ### 2-AGV (Interim bis Neuaufnahme)

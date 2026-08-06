@@ -7,6 +7,9 @@ import { WorkpieceHistoryService } from '../../../services/workpiece-history.ser
 import { ModuleNameService } from '../../../services/module-name.service';
 import { EnvironmentService } from '../../../services/environment.service';
 import { TrackTraceEnvironmentService } from '../../../services/track-trace-environment.service';
+import { AgvRouteService } from '../../../services/agv-route.service';
+import { ShopfloorLayoutService } from '../../../services/shopfloor-layout.service';
+import { ShopfloorMappingService } from '../../../services/shopfloor-mapping.service';
 import type { WorkpieceHistory, OrderContext, TrackTraceEvent } from '../../../services/workpiece-history.service';
 
 describe('TrackTraceComponent', () => {
@@ -53,6 +56,25 @@ describe('TrackTraceComponent', () => {
       }),
     };
 
+    const agvRouteServiceMock = {
+      initializeLayout: jest.fn(),
+      getAgvMarkerCenter: jest.fn(() => ({ x: 220, y: 120 })),
+      getNodePosition: jest.fn(() => ({ x: 220, y: 120 })),
+      resolveNodeRef: jest.fn((id: string | undefined) => id ?? null),
+    };
+
+    const shopfloorLayoutMock = {
+      config$: of(null),
+    };
+
+    const shopfloorMappingMock = {
+      getAgvColor: jest.fn(() => '#f97316'),
+      getAgvOptions: jest.fn(() => [{ serial: '5iO4', label: 'AGV-1' }]),
+      initializeLayout: jest.fn(),
+      isInitialized: jest.fn(() => true),
+      getModuleTypeFromSerial: jest.fn(() => null),
+    };
+
     await TestBed.configureTestingModule({
       imports: [TrackTraceComponent, FormsModule, HttpClientTestingModule],
       providers: [
@@ -60,6 +82,9 @@ describe('TrackTraceComponent', () => {
         { provide: WorkpieceHistoryService, useValue: workpieceHistoryServiceMock },
         { provide: EnvironmentService, useValue: environmentServiceMock },
         { provide: TrackTraceEnvironmentService, useValue: trackTraceEnvironmentMock },
+        { provide: AgvRouteService, useValue: agvRouteServiceMock },
+        { provide: ShopfloorLayoutService, useValue: shopfloorLayoutMock },
+        { provide: ShopfloorMappingService, useValue: shopfloorMappingMock },
       ],
     }).compileComponents();
 
@@ -98,7 +123,13 @@ describe('TrackTraceComponent', () => {
   });
 
   describe('Sampled event environment snapshot', () => {
-    it('renders sampled sensor rows on event entries', () => {
+    const envSnapshot = {
+      rows: [{ id: 'bme680', label: 'BME680', value: '22.3°C · 48% RH', variant: 'normal' as const }],
+      hasAlarm: false,
+      updatedAt: '2026-05-06T09:00:00.000Z',
+    };
+
+    it('shows collapsed Env summary on anchor events (default)', () => {
       const history: WorkpieceHistory = {
         workpieceId: 'wp-env-1',
         workpieceType: 'BLUE',
@@ -106,25 +137,16 @@ describe('TrackTraceComponent', () => {
         events: [
           {
             timestamp: '2026-05-06T09:00:00.000Z',
-            eventType: 'PROCESS',
+            eventType: 'DOCK',
+            eventSource: 'FTS',
             orderType: 'PRODUCTION',
-            moduleName: 'DRILL',
+            moduleName: 'AGV-1',
             stationId: 'DRILL',
-            details: {
-              environmentSnapshot: {
-                rows: [{ id: 'bme680', label: 'BME680', value: '22.3°C · 48% RH', variant: 'normal' }],
-                hasAlarm: false,
-                updatedAt: '2026-05-06T09:00:00.000Z',
-              },
-            },
+            location: 'SVR4H76449',
+            details: { environmentSnapshot: envSnapshot },
           },
         ],
-        orders: [
-          {
-            orderId: 'order-env-1',
-            orderType: 'PRODUCTION',
-          },
-        ],
+        orders: [{ orderId: 'order-env-1', orderType: 'PRODUCTION' }],
       };
 
       historyMap$.next(new Map([['wp-env-1', history]]));
@@ -133,9 +155,61 @@ describe('TrackTraceComponent', () => {
       fixture.detectChanges();
 
       const el = fixture.nativeElement as HTMLElement;
-      expect(el.textContent).toContain('Environment @ event');
+      expect(el.textContent).toMatch(/Env/i);
+      expect(el.textContent).toMatch(/OK/i);
+      expect(el.textContent).not.toContain('BME680');
+    });
+
+    it('expands sensor rows on toggle', () => {
+      const event = {
+        timestamp: '2026-05-06T09:00:00.000Z',
+        eventType: 'DROP',
+        eventSource: 'MODULE' as const,
+        orderType: 'PRODUCTION',
+        moduleName: 'HBW',
+        stationId: 'HBW',
+        location: 'SVR3QA0022',
+        details: { environmentSnapshot: envSnapshot },
+      };
+      const history: WorkpieceHistory = {
+        workpieceId: 'wp-env-1b',
+        workpieceType: 'BLUE',
+        currentLocation: 'SVR3QA0022',
+        events: [event],
+        orders: [{ orderId: 'order-env-1b', orderType: 'PRODUCTION' }],
+      };
+
+      historyMap$.next(new Map([['wp-env-1b', history]]));
+      component.selectColor('BLUE');
+      component.selectWorkpiece('wp-env-1b');
+      fixture.detectChanges();
+
+      component.toggleEnvironmentExpanded(event);
+      fixture.detectChanges();
+
+      const el = fixture.nativeElement as HTMLElement;
       expect(el.textContent).toContain('BME680');
       expect(el.textContent).toContain('22.3°C · 48% RH');
+    });
+
+    it('hides env on non-anchor events even if snapshot exists', () => {
+      expect(
+        component.shouldDisplayEnvironmentSnapshot({
+          timestamp: 't',
+          eventType: 'PASS',
+          eventSource: 'FTS',
+          details: { environmentSnapshot: envSnapshot },
+        })
+      ).toBe(false);
+      expect(
+        component.shouldDisplayEnvironmentSnapshot({
+          timestamp: 't',
+          eventType: 'PROCESS',
+          eventSource: 'MODULE',
+          stationId: 'DRILL',
+          details: { environmentSnapshot: envSnapshot },
+        })
+      ).toBe(false);
     });
 
     it('does not render sampled environment block when snapshot is missing', () => {
@@ -146,19 +220,15 @@ describe('TrackTraceComponent', () => {
         events: [
           {
             timestamp: '2026-05-06T09:05:00.000Z',
-            eventType: 'PROCESS',
+            eventType: 'DOCK',
+            eventSource: 'FTS',
             orderType: 'PRODUCTION',
-            moduleName: 'DRILL',
+            moduleName: 'AGV-1',
             stationId: 'DRILL',
             details: {},
           },
         ],
-        orders: [
-          {
-            orderId: 'order-env-2',
-            orderType: 'PRODUCTION',
-          },
-        ],
+        orders: [{ orderId: 'order-env-2', orderType: 'PRODUCTION' }],
       };
 
       historyMap$.next(new Map([['wp-env-2', history]]));
@@ -167,8 +237,7 @@ describe('TrackTraceComponent', () => {
       fixture.detectChanges();
 
       const el = fixture.nativeElement as HTMLElement;
-      expect(el.textContent).not.toContain('Environment @ event');
-      expect(el.textContent).not.toContain('No sampled sensor snapshot for this event.');
+      expect(el.querySelector('.event-environment')).toBeNull();
     });
   });
 
@@ -201,10 +270,48 @@ describe('TrackTraceComponent', () => {
       expect(component.getAgvAccentClass('DRILL')).toBe('');
     });
 
-    it('labels FTS vs Module event sources', () => {
+    it('labels FTS vs Module event sources (API retained; badges hidden in dense UI)', () => {
       expect(component.getEventSourceLabel('FTS')).toBeTruthy();
       expect(component.getEventSourceLabel('MODULE')).toBeTruthy();
       expect(component.getEventSourceLabel(undefined)).toBeNull();
+    });
+
+    it('puts module serial on station group header', () => {
+      const items = component.buildShopfloorTimeline(
+        [
+          {
+            timestamp: '2026-08-06T10:00:00.000Z',
+            eventType: 'PICK',
+            eventSource: 'MODULE',
+            stationId: 'DRILL',
+            stationName: 'DRILL (Drill Station)',
+            location: 'SVR4H76449',
+            orderType: 'PRODUCTION',
+          },
+        ],
+        { orderId: 'o1', orderType: 'PRODUCTION' }
+      );
+      const header = items.find((i) => i.kind === 'station-header');
+      expect(header?.kind).toBe('station-header');
+      if (header?.kind === 'station-header') {
+        expect(header.serialNumber).toBe('SVR4H76449');
+      }
+    });
+
+    it('builds compact FTS position line without serial', () => {
+      jest.spyOn(component, 'getLocationInfo').mockReturnValue({
+        moduleType: '2',
+        fullName: 'Intersection 2',
+        serialNumber: null,
+      });
+      expect(
+        component.getFtsPositionLine({
+          timestamp: 't',
+          eventType: 'TURN',
+          eventSource: 'FTS',
+          location: '2',
+        })
+      ).toBe('2 (Intersection 2)');
     });
 
     it('labels Color/NFC intake and shows HBW position separately', () => {
@@ -333,7 +440,76 @@ describe('TrackTraceComponent', () => {
       expect(dpsEvents[1]?.kind === 'event' && dpsEvents[1].showBusinessChip).toBe(false);
 
       const transport = timeline.filter((i) => i.kind === 'event' && i.column === 'transport');
-      expect(transport).toHaveLength(1);
+      expect(transport).toHaveLength(0);
+      const transportGroups = timeline.filter((i) => i.kind === 'transport-group');
+      expect(transportGroups).toHaveLength(1);
+      if (transportGroups[0]?.kind === 'transport-group') {
+        expect(transportGroups[0].events).toHaveLength(1);
+        expect(transportGroups[0].fromStation).toBe('DPS');
+        expect(transportGroups[0].toStation).toBe('HBW');
+      }
+    });
+
+    it('groups consecutive FTS events and collects Ist stations as dashed chips', () => {
+      const order: OrderContext = {
+        orderId: 'ord-red',
+        orderType: 'PRODUCTION',
+        plannedStationChain: ['HBW', 'MILL', 'AIQS', 'DPS'],
+      };
+      const events: TrackTraceEvent[] = [
+        {
+          timestamp: 't1',
+          eventType: 'DROP',
+          stationId: 'HBW',
+          stationName: 'HBW',
+          orderType: 'PRODUCTION',
+          eventSource: 'MODULE',
+        },
+        {
+          timestamp: 't2',
+          eventType: 'TURN',
+          orderType: 'PRODUCTION',
+          eventSource: 'FTS',
+          moduleName: 'AGV-1',
+          location: '1',
+        },
+        {
+          timestamp: 't3',
+          eventType: 'DOCK',
+          orderType: 'PRODUCTION',
+          eventSource: 'FTS',
+          moduleName: 'AGV-1',
+          stationId: 'DRILL',
+          details: { visitKind: 'IST_ONLY', coPassenger: true },
+        },
+        {
+          timestamp: 't4',
+          eventType: 'DOCK',
+          orderType: 'PRODUCTION',
+          eventSource: 'FTS',
+          moduleName: 'AGV-1',
+          stationId: 'MILL',
+          details: { visitKind: 'PLANNED' },
+        },
+        {
+          timestamp: 't5',
+          eventType: 'PICK',
+          stationId: 'MILL',
+          stationName: 'MILL',
+          orderType: 'PRODUCTION',
+          eventSource: 'MODULE',
+        },
+      ];
+
+      const timeline = component.buildShopfloorTimeline(events, order);
+      const groups = timeline.filter((i) => i.kind === 'transport-group');
+      expect(groups).toHaveLength(1);
+      if (groups[0]?.kind === 'transport-group') {
+        expect(groups[0].events).toHaveLength(3);
+        expect(groups[0].fromStation).toBe('HBW');
+        expect(groups[0].toStation).toBe('MILL');
+        expect(groups[0].istStations).toEqual(['DRILL']);
+      }
     });
   });
 
@@ -394,7 +570,7 @@ describe('TrackTraceComponent', () => {
       expect(meta).toContain('2');
     });
 
-    it('shows Position row with icon for single load TURN', () => {
+    it('shows 3 AGV buckets for single-load TURN (missing slots EMPTY)', () => {
       const rows = component.getTransportLoadRows({
         timestamp: 't',
         eventType: 'TURN',
@@ -402,10 +578,13 @@ describe('TrackTraceComponent', () => {
         workpieceType: 'WHITE',
         details: { loadPosition: '2' },
       });
-      expect(rows).toHaveLength(1);
-      expect(rows[0].label).toContain('2');
-      expect(rows[0].label).toContain('WHITE');
-      expect(rows[0].icon).toBeTruthy();
+      expect(rows).toHaveLength(3);
+      expect(rows[0].empty).toBe(true);
+      expect(rows[1].empty).toBe(false);
+      expect(rows[1].label).toContain('2');
+      expect(rows[1].label).toContain('WHITE');
+      expect(rows[1].icon).toBeTruthy();
+      expect(rows[2].empty).toBe(true);
     });
 
     it('returns no load rows for DOCK without agvLoads/position', () => {
@@ -427,7 +606,7 @@ describe('TrackTraceComponent', () => {
       ).toBeNull();
     });
 
-    it('shows Position rows with icons for multi-load DOCK', () => {
+    it('shows 3 AGV buckets for multi-load DOCK (Pos3 EMPTY)', () => {
       const rows = component.getTransportLoadRows({
         timestamp: 't',
         eventType: 'DOCK',
@@ -441,14 +620,105 @@ describe('TrackTraceComponent', () => {
           ],
         },
       });
-      expect(rows).toHaveLength(2);
-      expect(rows[0].label).toContain('Position');
+      expect(rows).toHaveLength(3);
+      expect(rows[0].empty).toBe(false);
       expect(rows[0].label).toContain('1');
       expect(rows[0].label).toContain('BLUE');
       expect(rows[0].icon).toBeTruthy();
+      expect(rows[1].empty).toBe(false);
       expect(rows[1].label).toContain('2');
       expect(rows[1].label).toContain('RED');
-      expect(rows[1].icon).toBeTruthy();
+      expect(rows[2].empty).toBe(true);
+      expect(rows[2].label).toContain('EMPTY');
+    });
+  });
+
+  describe('HBW mini grid', () => {
+    it('builds 3×3 cells with active PICK slot highlighted', () => {
+      const grid = component.getHbwMiniGrid({
+        timestamp: 't',
+        eventType: 'PICK',
+        eventSource: 'MODULE',
+        stationId: 'HBW',
+        workpieceType: 'WHITE',
+        workpieceId: 'nfc-w',
+        details: {
+          loadPosition: 'A2',
+          hbwShelf: [
+            { loadPosition: 'A1', loadType: 'BLUE', loadId: 'b' },
+            { loadPosition: 'A2', loadType: 'WHITE', loadId: 'nfc-w' },
+            { loadPosition: 'B1', loadType: null, loadId: null },
+          ],
+        },
+      });
+      expect(grid).not.toBeNull();
+      expect(grid!.cells).toHaveLength(9);
+      const a2 = grid!.cells.find((c) => c.loadPosition === 'A2');
+      expect(a2?.active).toBe(true);
+      expect(a2?.empty).toBe(false);
+      expect(a2?.loadType).toBe('WHITE');
+      const a1 = grid!.cells.find((c) => c.loadPosition === 'A1');
+      expect(a1?.loadType).toBe('BLUE');
+      expect(a1?.active).toBe(false);
+      expect(component.getEventPositionLabel({
+        timestamp: 't',
+        eventType: 'PICK',
+        eventSource: 'MODULE',
+        stationId: 'HBW',
+        details: { loadPosition: 'A2', hbwShelf: [] },
+      })).toBeNull();
+    });
+
+    it('returns null for non-HBW stations', () => {
+      expect(
+        component.getHbwMiniGrid({
+          timestamp: 't',
+          eventType: 'PICK',
+          eventSource: 'MODULE',
+          stationId: 'DRILL',
+          details: { loadPosition: '1' },
+        })
+      ).toBeNull();
+    });
+  });
+
+  describe('AGV shopfloor mini map', () => {
+    it('builds roads + AGV-colored marker for FTS events when layout is set', () => {
+      (component as unknown as { layoutConfig: unknown }).layoutConfig = {
+        metadata: { canvas: { width: 400, height: 300 } },
+        parsed_roads: [
+          {
+            from: { center: { x: 100, y: 100 } },
+            to: { center: { x: 200, y: 100 } },
+          },
+        ],
+      };
+      const mini = component.getAgvEventShopfloorMiniMap({
+        timestamp: 't',
+        eventType: 'PASS',
+        eventSource: 'FTS',
+        location: '1',
+        moduleId: '5iO4',
+        details: {},
+      });
+      expect(mini).not.toBeNull();
+      expect(mini!.viewBox).toBe('0 0 400 300');
+      expect(mini!.roads).toHaveLength(1);
+      expect(mini!.marker.color).toBe('#f97316');
+      expect(mini!.marker.x).toBe(220);
+      expect(mini!.marker.y).toBe(120);
+      expect(mini!.marker.r).toBeGreaterThanOrEqual(24);
+    });
+
+    it('returns null for MODULE events', () => {
+      expect(
+        component.getAgvEventShopfloorMiniMap({
+          timestamp: 't',
+          eventType: 'PICK',
+          eventSource: 'MODULE',
+          location: 'SVR3QA0022',
+        })
+      ).toBeNull();
     });
   });
 
@@ -532,6 +802,71 @@ describe('TrackTraceComponent', () => {
       expect(checklist.find((s) => s.station === 'HBW')?.visited).toBe(true);
       expect(checklist.find((s) => s.station === 'DRILL')?.visited).toBe(true);
       expect(checklist.find((s) => s.station === 'MILL')?.visited).toBe(false);
+    });
+
+    it('marks PRODUCTION AIQS visited from FTS DOCK Mitfahrt (no MODULE quality)', () => {
+      const checklist = component.getPlannedStationChecklist(
+        [
+          {
+            timestamp: '2026-08-04T09:50:50.000Z',
+            eventType: 'DROP',
+            eventSource: 'MODULE',
+            stationId: 'HBW',
+            orderId: 'order-blue-prod',
+            orderType: 'PRODUCTION',
+          },
+          {
+            timestamp: '2026-08-04T09:54:34.000Z',
+            eventType: 'DOCK',
+            eventSource: 'FTS',
+            stationId: 'AIQS',
+            orderId: 'order-white-foreign',
+            orderType: 'PRODUCTION',
+            details: { coPassenger: true, visitKind: 'IST_ONLY' },
+          },
+        ],
+        {
+          orderId: 'order-blue-prod',
+          orderType: 'PRODUCTION',
+          plannedStationChain: ['HBW', 'DRILL', 'MILL', 'AIQS', 'DPS'],
+        }
+      );
+
+      expect(checklist.find((s) => s.station === 'HBW')?.visited).toBe(true);
+      expect(checklist.find((s) => s.station === 'AIQS')?.visited).toBe(true);
+      expect(checklist.find((s) => s.station === 'DPS')?.visited).toBe(false);
+    });
+
+    it('does not mark STORAGE HBW from unrelated FTS DOCK (no speculative storage complete)', () => {
+      const checklist = component.getPlannedStationChecklist(
+        [
+          {
+            timestamp: '2026-08-04T09:46:00.000Z',
+            eventType: 'DROP',
+            eventSource: 'MODULE',
+            stationId: 'DPS',
+            orderId: 'order-blue-storage',
+            orderType: 'STORAGE',
+          },
+          {
+            timestamp: '2026-08-04T09:50:50.000Z',
+            eventType: 'DOCK',
+            eventSource: 'FTS',
+            stationId: 'HBW',
+            orderId: 'order-other',
+            orderType: 'PRODUCTION',
+            details: { coPassenger: true },
+          },
+        ],
+        {
+          orderId: 'order-blue-storage',
+          orderType: 'STORAGE',
+          plannedStationChain: ['DPS', 'HBW'],
+        }
+      );
+
+      expect(checklist.find((s) => s.station === 'DPS')?.visited).toBe(true);
+      expect(checklist.find((s) => s.station === 'HBW')?.visited).toBe(false);
     });
   });
 

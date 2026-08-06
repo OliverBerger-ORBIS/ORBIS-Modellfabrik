@@ -21,6 +21,7 @@
   - [LogiMAT: kurze Smoke-Checkliste (vor Messe)](osf-ui-logimat-smoke-checklist.md)
   - [SVG label text & line breaks (DSP-Architecture, Animation, UC-01)](osf-ui-svg-label-text-conventions.md)
   - [Track & Trace Historie-Attribution (Ist + SOLL + ENV)](osf-ui-track-trace-history-attribution.md)
+  - [Track & Trace SOLL by color (visual / replay test)](osf-ui-track-trace-soll-by-color.md)
 - Shopfloor
   - [Shopfloor Layout Guide](SHOPFLOOR_LAYOUT_GUIDE.md)
   - [Route & AGV overlay – visual gate before merge](osf-ui-shopfloor-route-agv-visual-gate.md) (mandatory for route/z-index/AGV UI changes)

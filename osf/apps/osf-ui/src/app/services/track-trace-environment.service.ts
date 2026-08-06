@@ -138,17 +138,19 @@ export class TrackTraceEnvironmentService {
     return s.rows.map((r) => `${r.id}:${r.value}:${r.variant}`).join('|');
   }
 
+  /**
+   * Alarm edge for immediate snapshot refresh.
+   * Detected alone (with green/unknown level) is not an alarm — firmware often latches
+   * `vibrationDetected` while `vibrationLevel` stays green.
+   */
   hasEnvironmentAlarm(s: {
     mpu: VibrationPayload | null;
     sw420: VibrationPayload | null;
     flame: FlamePayload | null;
     gas: GasPayload | null;
   }): boolean {
-    const mpuAlarm = s.mpu?.vibrationLevel === 'red' || s.mpu?.vibrationDetected === true;
-    const swAlarm =
-      s.sw420?.vibrationLevel === 'red' ||
-      s.sw420?.vibrationDetected === true ||
-      (s.sw420?.vibrationLevel === 'yellow' && s.sw420?.vibrationDetected);
+    const mpuAlarm = s.mpu?.vibrationLevel === 'red';
+    const swAlarm = s.sw420?.vibrationLevel === 'red';
     const flameAlarm = s.flame?.flameDetected === true;
     const gasAlarm = s.gas?.gasDetected === true || (s.gas?.gasLevel ?? 0) >= 2;
     return Boolean(mpuAlarm || swAlarm || flameAlarm || gasAlarm);
@@ -219,26 +221,33 @@ export class TrackTraceEnvironmentService {
       mpuLevel === 'red' ? 'alarm' : mpuLevel === 'yellow' ? 'warn' : 'normal';
     if (s.mpu && (mpuLevel || s.mpu.magnitude != null || s.mpu.vibrationDetected != null)) {
       const mag = s.mpu.magnitude != null ? `mag ${s.mpu.magnitude.toFixed(2)}` : '';
+      const detected =
+        s.mpu.vibrationDetected === true && mpuLevel !== 'red' && mpuLevel !== 'yellow'
+          ? 'detected'
+          : null;
       rows.push({
         id: 'vib-mpu',
         label: 'Vibration (MPU-6050)',
-        value: [mpuLevel?.toUpperCase() ?? '—', mag].filter(Boolean).join(' · '),
+        value: [mpuLevel?.toUpperCase() ?? '—', mag, detected].filter(Boolean).join(' · '),
         variant: mpuVariant,
       });
     }
 
     const swLevel = s.sw420?.vibrationLevel;
+    // Level drives severity; detected alone (green latch) stays normal / warn by level.
     const swVariant: TrackTraceEnvironmentRow['variant'] =
-      s.sw420?.vibrationDetected === true || swLevel === 'red'
-        ? 'alarm'
-        : swLevel === 'yellow'
-          ? 'warn'
-          : 'normal';
+      swLevel === 'red' ? 'alarm' : swLevel === 'yellow' ? 'warn' : 'normal';
     if (s.sw420) {
+      const swValue =
+        swLevel === 'red' || swLevel === 'yellow'
+          ? swLevel.toUpperCase()
+          : s.sw420.vibrationDetected
+            ? 'DETECTED'
+            : swLevel?.toUpperCase() ?? '—';
       rows.push({
         id: 'vib-sw420',
         label: 'Vibration (SW-420)',
-        value: s.sw420.vibrationDetected ? 'DETECTED' : swLevel?.toUpperCase() ?? '—',
+        value: swValue,
         variant: swVariant,
       });
     }
@@ -284,9 +293,12 @@ export class TrackTraceEnvironmentService {
       });
     }
 
+    // Chip status follows worst row variant (not a sticky detected latch).
+    const hasAlarm = rows.some((r) => r.variant === 'alarm') || alarm;
+
     return {
       rows,
-      hasAlarm: alarm,
+      hasAlarm,
       updatedAt: typeof t === 'string' ? t : new Date().toISOString(),
     };
   }

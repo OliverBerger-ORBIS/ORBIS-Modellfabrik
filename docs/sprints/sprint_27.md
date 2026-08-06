@@ -44,13 +44,18 @@
     - [x] `storage-production-ml-rrr_20260804_133245` — drei RED Multi-Load; **2. R** (`f6caa206181682`, Pos2) **Quality-Fail** (CRACK)
     - [x] `storage-production-ml-bbb_20260804_134700` — drei BLUE Multi-Load; **2. B** (`b7b84ce7ad920f`, Pos2) **Quality-Fail** (MIPO2); DRILL+MILL-Pfad
   - [x] **Session-Inventar Cleanup (05.08.2026):** 57 alte Logs gelöscht; **14** behalten (Juli-Refs + ml-* inkl. Störfall `ml-bwr_130016` + `startup-clean` + synthetic + 2× 2-AGV-Diagnose). Startup: nur `startup-clean` (start-osf/startup-referenz entfernt).
-  - [ ] **Bug Multi-Load FTS→Werkstück-Mapping (04.08.2026):** Bei 3 Loads mit korrekten `loadId`s landen FTS-Events nicht je NFC in der eigenen Historie (Beobachtung Live während ml-Aufnahme). Soll: ein Transport-Event pro `loadId`. Fix + Regression an `storage-production-ml-wrb|wbr_*` (+ `ml-rrr`/`ml-bbb`). How-to: [osf-ui-track-trace-history-attribution.md](../04-howto/osf-ui-track-trace-history-attribution.md).
+  - [x] **Bug Multi-Load FTS→Werkstück-Mapping (04.–06.08.2026):** Sticky Clear + CCU-Phase + **HBW `result`/`order.workpieceId`** + **CHRG** Ist; dense Timeline (Transport-Gruppen, ENV OK/WARN/ALARM, DPS-PICK Synth bei DOCK+completed, Planned-Haken inkl. FTS-DOCK Mitfahrt an DRILL/MILL/AIQS); Doku [osf-ui-track-trace-soll-by-color.md](../04-howto/osf-ui-track-trace-soll-by-color.md). Visuell `ml-*` OK 06.08. Release **v1.2.1**.
+  - [ ] **OSF-UI Deploy RPi (v1.2.1):** Image `orbis-osf-ui:1.2.1` auf Shopfloor-RPi (`npm run docker:osf-ui:deploy -- ff22@192.168.0.100`). How-to: [rpi-deployment.md](../04-howto/deployment/rpi-deployment.md).
+  - [ ] **Neue T&T-Sessions (nach Arduino-Schwellwerten):** Vor Aufnahme Vibration/ENV-Schwellwerte am Arduino **hochsetzen** (sonst Dauer-WARN). Dann:
+    - Single-Color Quality-Matrix: **WHITE-NOK**, **BLUE-NOK**, **RED-OK** (Pass-Referenzen White/Red und Blue-nok Juli behalten; Lücken schließen / ergänzen).
+    - Weitere **Multi-Load `ml-xyz`** nach Bedarf (bestehende Gaps: Red ohne NFC, Blue Storage ohne HBW-PICK, … — siehe SOLL-by-color).
   - [ ] **Teil B – 2-AGV-Referenz-Sessions (eindeutige NFC):** nach **Reparatur AGV-2 / Encoder-Motor** neu aufnehmen (Parallel WR/WB o. Ä.). Interim-Diagnose behalten: `two-agvs-mixed_20260312_165108` (Stillstand), `production-wr-agv2-b-agv1-clean_20260513_135600` (osf.4).
-  - [ ] Inventar + How-to Attribution bei Mapping-Fix / neuen 2-AGV-Sessions nachziehen.
+  - [x] Inventar + How-to Attribution / SOLL-by-color nach Mapping-Fix (06.08.2026).
+  - *Hinweis `ml-wrb_114227`:* Aufnahme-Lücke Fertigungs-Modul-States — ggf. neu aufnehmen.
 - [x] **OSF-UI Deploy RPi (v1.2.0):** Image `orbis-osf-ui:1.2.0` auf Shopfloor-RPi ausgerollt (`npm run docker:osf-ui:deploy -- ff22@192.168.0.100`); Style-Budget `anyComponentStyle` 48→56kb wegen Track&Trace-SCSS. **03.08.2026:** Container Up; Setup + **v1.2.0** in Teams-Session mit Kshitiz verifiziert. How-to: [rpi-deployment.md](../04-howto/deployment/rpi-deployment.md).
 - [x] **Session Manager Replay Speed 10x/max (29.07.2026):** Replay Station Geschwindigkeit um **10x** und **max** (ohne Wartezeit) erweitert; Timeshift bleibt load-time (`now + ts_rel`), Speed skaliert nur Wall-Clock-Wartezeit. Version **1.8.0** (`session_manager/__init__.py`). Tag nach Commit: `session-manager-v1.8.0`.
 - [x] **Session Manager Replay Speed Fix/Diagnose (29.07.2026):** Speed wirkte nicht 10× — Ursachen: Selectbox/Rerun instabil + MQTT-QoS1-Backpressure (Burst dann ~50–80 msg/10s). Fix: stabile Speed-Labels, ab ≥5×/max **QoS0**, Queue/Retry, Publish-Rate-Diagnose in UI. Version **1.8.1**. **1.8.2:** zusätzlich **Gesamtzeit** (aktiv/Wanduhr) + **Ø-Rate** über den ganzen Lauf (Momentan-Rate schwankt bei V=1 stark).
-- [x] **Replay-Referenz-Sessions aufgenommen (28.07.2026):** `white|red|blue-storage-production_20260728_*.log`. Alte Single-Color-`20260303`-Paare **gelöscht** (28.07.). Parallel-Production (`production-wr-*`) ohne Storage in derselben Session ausreichend für Multi-AGV-Herausforderungen, sobald Multi-Order an den drei Referenzen steht.
+- [x] **Replay-Referenz-Sessions aufgenommen (28.07.2026):** `white|red-storage-production_20260728_*.log` (Pass); Blue war Fail → **05.08. umbenannt** `blue-storage-production-nok_20260728_100418`. Alte Single-Color-`20260303`-Paare **gelöscht** (28.07.).
 - *Hinweis Demo: Capture läuft in Live/Replay nach MQTT-Connect auch ohne offenen Tab; Header-Refresh leert die Historie — dazwischen nicht unnötig refreshen.*
 - *Replay-Hinweis (28.07.): `mixed-pw-…` zu komplex für Erstanalyse; `od_white_1` unvollständig (nur STORAGE). Details in Arbeitsdoku. **30.07.:** Bestätigt — alte Mixed-Logs wegen NFC-Wiederverwendung nur eingeschränkt aussagekräftig.*
 
@@ -66,7 +71,7 @@
 
 ### ORBIS Feldbetrieb / Hardware
 
-- [ ] **Kontrolle FTS Nr. 2 (Folgeprüfungen):** RoboPro-Schnittstellen-Test (23.07.) → Multimeter-Test **27.07.2026**: **Encoder-Motor defekt** (nicht Kabelbruch). **30.07.2026:** fischertechnik sendet Ersatzmotor (Mail Herr Steiger). **03.08.2026:** Ersatzmotor eingetroffen; Austausch aufwendig. Öffentlich keine FTS-/AGV-Zerlege-Bauanleitung (fertig geliefert; Omniwheels-/Smarttech-PDFs betreffen nicht das APS-FTS). **04.08.2026:** Aufbau-Anleitung bei Herr Steiger angefragt. Weiter: Antwort abwarten → Einbau + RoboPro-/Schnittstellen-Nachtest. *(Ursprung: Sprint 26; TXT-Projekte lokal unter `integrations/`)*
+- [ ] **Kontrolle FTS Nr. 2 (Folgeprüfungen):** RoboPro (23.07.) → Multimeter **27.07.**: Encoder-Motor defekt. Ersatzmotor **03.08.**. **06.08. Mail Steiger:** keine separate APS-Bauanleitung (Zulieferer); Omniwheel-PDF ab **S. 26** Antrieb; vor Demontage Fotos + 2. FTS als Referenz; Fallback Einsendung an fischertechnik. How-to: [fts-agv-encoder-motor-replacement.md](../05-hardware/fts-agv-encoder-motor-replacement.md). Weiter: Einbau + RoboPro-/Schnittstellen-Nachtest. *(Ursprung: Sprint 26; TXT unter `integrations/TXT-FTS/`)*
 
 ### Integration & Tests
 
@@ -94,4 +99,4 @@
 
 ---
 
-*Stand: 05.08.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 06.08.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)

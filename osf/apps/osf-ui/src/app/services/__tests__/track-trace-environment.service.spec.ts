@@ -55,6 +55,18 @@ describe('TrackTraceEnvironmentService', () => {
     ).toBe(true);
   });
 
+  it('hasEnvironmentAlarm is false when only vibrationDetected latches (green level)', () => {
+    const svc = TestBed.inject(TrackTraceEnvironmentService);
+    expect(
+      svc.hasEnvironmentAlarm({
+        mpu: { vibrationLevel: 'green', vibrationDetected: true },
+        sw420: { vibrationLevel: 'green', vibrationDetected: true },
+        flame: null,
+        gas: null,
+      })
+    ).toBe(false);
+  });
+
   it('emits empty snapshot when no MQTT payloads', (done) => {
     const svc = TestBed.inject(TrackTraceEnvironmentService);
     svc.snapshot$.pipe(take(1)).subscribe((snap) => {
@@ -64,7 +76,7 @@ describe('TrackTraceEnvironmentService', () => {
     });
   });
 
-  it('emits alarm snapshot when SW-420 reports detection before first snapshot', (done) => {
+  it('emits alarm snapshot when SW-420 reports red level', (done) => {
     getSubject('osf/arduino/vibration/sw420-1/state').next(
       monitored(JSON.stringify({ vibrationDetected: true, vibrationLevel: 'red' }))
     );
@@ -73,6 +85,19 @@ describe('TrackTraceEnvironmentService', () => {
       expect(snap.hasAlarm).toBe(true);
       const sw = snap.rows.find((r) => r.id === 'vib-sw420');
       expect(sw?.variant).toBe('alarm');
+      done();
+    });
+  });
+
+  it('does not mark SW-420 row as alarm for detected-only green latch', (done) => {
+    getSubject('osf/arduino/vibration/sw420-1/state').next(
+      monitored(JSON.stringify({ vibrationDetected: true, vibrationLevel: 'green' }))
+    );
+    const svc = TestBed.inject(TrackTraceEnvironmentService);
+    svc.snapshot$.pipe(take(1)).subscribe((snap) => {
+      expect(snap.hasAlarm).toBe(false);
+      const sw = snap.rows.find((r) => r.id === 'vib-sw420');
+      expect(sw?.variant).toBe('normal');
       done();
     });
   });

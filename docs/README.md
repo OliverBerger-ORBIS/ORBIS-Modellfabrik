@@ -29,6 +29,7 @@
 ### 05-Hardware
 - [Messetisch-Spezifikation](05-hardware/messetisch-spezifikation.md) – für Messebauer (Beschaffung/Bau)
 - [Arduino R4 Multi-Sensor](05-hardware/arduino-r4-multisensor.md) – Verdrahtung, Konfiguration, MQTT
+- [FTS Encoder-Motor tauschen](05-hardware/fts-agv-encoder-motor-replacement.md) – APS-AGV Motortausch (Omniwheel-Analogie, Mail fischertechnik)
 
 ### 06-Integrations
 Einstieg: [00-REFERENCE](06-integrations/00-REFERENCE/README.md) – ORBIS-spezifische APS-Referenz  
