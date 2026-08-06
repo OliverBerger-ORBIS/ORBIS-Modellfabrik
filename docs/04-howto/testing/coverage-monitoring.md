@@ -1,37 +1,35 @@
 # Test Coverage Monitoring
 
 **Status:** ✅ Aktiv  
-**Datum:** 2025-12-13  
+**Datum:** 2026-08-06  
 **Ziel:** Automatisches Monitoring der Test-Abdeckung
 
 ---
 
-## 🎯 Übersicht
+## Übersicht
 
 Das Coverage Monitoring System überwacht automatisch die Test-Abdeckung und stellt sicher, dass die Coverage-Schwellenwerte eingehalten werden.
 
+**Ist-Stand (Messung 2026-08-06):** siehe [test-coverage-status.md](../../07-analysis/test-coverage-status.md) — Lines **52.66 %**, Branches **46.42 %**, Statements **51.78 %**, Functions **52.82 %**.
+
 ---
 
-## 📊 Aktuelle Coverage-Schwellenwerte
+## Aktuelle Coverage-Schwellenwerte
 
 **Konfiguration:** `osf/apps/osf-ui/jest.config.ts`
 
 ```typescript
 coverageThreshold: {
   global: {
-    branches: 16,    // Current: 16.34%, Target: 40%
-    functions: 23,   // Current: 23.65%, Target: 60%
-    lines: 29,       // Current: 29.09%, Target: 60%
-    statements: 28,  // Current: 28.39%, Target: 60%
+    branches: 30, // Gemessen 2026-08-06: 46.42%; Langziel 40%+ (erreicht)
+    functions: 42, // Gemessen: 52.82%; Langziel ~60%
+    lines: 47, // Gemessen: 52.66%; Langziel 60%+
+    statements: 46, // Gemessen: 51.78%; Langziel ~60%
   },
 }
 ```
 
-**Hinweis:** Die Schwellenwerte sind aktuell auf den **tatsächlichen aktuellen Stand** gesetzt und werden schrittweise erhöht, um das Ziel zu erreichen:
-- **Ziel:** 60% Lines, 40% Branches
-- **Aktuell:** 29.09% Lines, 16.34% Branches
-- **Strategie:** Wöchentlich +1-2% pro Metrik erhöhen
-
+**Hinweis:** Die Jest-Schwellen liegen unter dem Ist-Stand (Puffer gegen Flakes). Sinnvoll als Nächstes: Branches auf ~40 und Lines auf ~50 anheben. Details: [test-coverage-status.md](../../07-analysis/test-coverage-status.md).
 ---
 
 ## 🚀 Verwendung
@@ -160,12 +158,11 @@ Um die Schwellenwerte schrittweise zu erhöhen:
 
 ### Zielwerte erreichen
 
-**Ziel:** 60% Lines, 40% Branches
+**Langziel:** 60 % Lines, 40 % Branches (Branches bereits überschritten, Stand 2026-08-06)
 
 **Empfohlene Strategie:**
-- **Wöchentlich:** +1-2% pro Metrik
-- **Monatlich:** +5-10% pro Metrik
-- **Quarterly:** Zielwerte erreichen
+- Thresholds schrittweise an den Ist-Stand heranziehen (+1–2 % Puffer unter Messung)
+- Kernpfade (Services, Track & Trace, Shopfloor) priorisieren; UC/DSP-0 %-Pages bewusst entscheiden (testen vs. Scope)
 
 ---
 

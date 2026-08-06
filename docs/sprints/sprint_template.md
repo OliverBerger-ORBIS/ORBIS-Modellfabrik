@@ -15,13 +15,31 @@
 
 ---
 
-## Vor dem Sprint / Messe (optional)
-
-*Kurze Stichpunkte ohne Checkbox, wenn nötig.*
-
-### Externe Termine & Outreach (optional)
+## Externe Termine & Outreach (optional)
 
 *Tabelle: Datum, Event (Kundentermin / Messe / Demo / **Blog**), Nutzen für OSF. Blog-Artikel gleichrangig zu Terminen (externe Wirkung). Größere Ereignisse zusätzlich bei Sprint-Abschluss in **PROJECT_STATUS** → Spalte **Externe Events** eintragen.*
+
+| Datum | Event | Nutzen für OSF |
+|--------|--------|----------------|
+| … | … | … |
+
+---
+
+## Coverage Standing
+
+**Pflicht** in jedem Sprint (Position: nach Externe Termine, vor Aufgaben). Ohne Standing kein Sprint-Abschluss.
+
+| Stand | Datum | Branches | Functions | Lines | Statements | Gates (B/F/L/S) | Gate-Margin (B/F/L/S) |
+|--------|--------|----------|-----------|-------|------------|------------------|------------------------|
+| Sprint-Start (Baseline aus Vorgänger-Endmessung) | … | …% | …% | …% | …% | 30 / 42 / 47 / 46 | … |
+| Aktuell | … | …% | …% | …% | …% | 30 / 42 / 47 / 46 | … |
+
+- **Messmethode:** `npm run test:coverage` → `coverage/osf-ui/index.html` (Details: [test-coverage-status.md](../07-analysis/test-coverage-status.md))
+- **Top-3 Gaps (Test-Fokus):**
+  1. …
+  2. …
+  3. …
+- **Pflege:** Baseline unverändert; nach Messung nur **Aktuell** + Top-Gaps. Am Sprintende Pflicht-Messung vor Abschluss.
 
 ---
 
@@ -40,8 +58,9 @@ Unter **`### Thema`** nur Zeilen mit `- [ ]` oder `- [x]`. **Nicht** zwei Listen
 
 ### Sprint-Wechsel (am Ende des Sprints abarbeiten)
 
+- [ ] **Coverage Standing:** Endmessung (`npm run test:coverage`) → `Aktuell` + Top-Gaps; bei Bedarf [test-coverage-status.md](../07-analysis/test-coverage-status.md) aktualisieren
 - [ ] Sprint X: Status Abgeschlossen, Datum
-- [ ] Sprint X+1 anlegen, offene `[ ]` übernehmen
+- [ ] Sprint X+1 anlegen, offene `[ ]` übernehmen; Coverage-Baseline = Endmessung dieses Sprints
 - [ ] PROJECT_STATUS
 - [ ] Roadmap kurz prüfen
 

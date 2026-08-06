@@ -1,148 +1,71 @@
 # Test Coverage Status
 
-**Letzte Aktualisierung:** 2025-11-30  
-**Aktueller Stand:** Phase 4 abgeschlossen - Edge Cases für Services und Components hinzugefügt
+**Letzte Aktualisierung:** 2026-08-06  
+**Quelle:** `npm run test:coverage` → `coverage/osf-ui/index.html`  
+**Tests:** 1388 passed, 16 skipped (69 Suites, 2 skipped)  
+**Jest-Thresholds** (`osf/apps/osf-ui/jest.config.ts`): alle erfüllt
 
 ---
 
-## 📊 Aktuelle Test-Abdeckung
+## Aktuelle Test-Abdeckung (osf-ui)
 
-| Metrik | Aktuell | Ziel | Status | Gap |
-|--------|---------|------|--------|-----|
-| **Lines** | 43.84% | 60%+ | 🟡 73% erreicht | -16.16% |
-| **Branches** | 24.04% | 40%+ | 🟡 60% erreicht | -15.96% |
-| **Statements** | 43.88% | ~60% | 🟡 73% erreicht | -16.12% |
-| **Functions** | 40.81% | ~60% | 🟡 68% erreicht | -19.19% |
+| Metrik | Aktuell | Absolutzahlen | Jest-Threshold | Langziel | Status |
+|--------|---------|---------------|----------------|----------|--------|
+| **Lines** | **52.66 %** | 7527 / 14291 | 47 % ✅ | 60 %+ | Gap −7.34 % |
+| **Statements** | **51.78 %** | 7829 / 15117 | 46 % ✅ | ~60 % | Gap −8.22 % |
+| **Functions** | **52.82 %** | 1392 / 2635 | 42 % ✅ | ~60 % | Gap −7.18 % |
+| **Branches** | **46.42 %** | 5253 / 11315 | 30 % ✅ | 40 %+ | Ziel erreicht (+6.42 %) |
 
----
-
-## 📈 Fortschritt seit Plan-Start
-
-### Ausgangslage (vor Phase 1)
-- **Lines:** 49.29% (⚠️ Note: Dieser Wert scheint inkonsistent, möglicherweise andere Test-Konfiguration)
-- **Branches:** 16.97%
-- **Statements:** ~36%
-- **Functions:** ~28%
-
-### Aktueller Stand (nach Phase 4 - Edge Cases)
-- **Lines:** 43.84% (+7.96% seit Start)
-- **Branches:** 24.04% (+7.07% seit Start)
-- **Statements:** 43.88% (+7.88% seit Start)
-- **Functions:** 40.81% (+12.81% seit Start)
-
-### Verbesserung durch Edge Cases & Integration Tests
-- **Branches:** +5.06% (von 18.2% auf 23.34%)
-- **Statements:** +5.4% (von 37.2% auf 42.8%)
-- **Functions:** +8.79% (von 29.18% auf 38.37%)
-- **Lines:** +5.4% (von 37.12% auf 42.73%)
+Vergleich zur letzten Doku (2025-11-30): Lines ~+8.8 pp, Branches ~+22.4 pp.
 
 ---
 
-## 🎯 Verbleibende Lücke zum Ziel
+## Hotspots (Lines, 2026-08-06)
 
-### Lines Coverage
-- **Ziel:** 60%+
-- **Aktuell:** 43.84%
-- **Gap:** 16.16%
-- **Fortschritt:** 73% des Ziels erreicht
-- **Verbleibend:** ~27% des Weges zum Ziel
-
-### Branches Coverage
-- **Ziel:** 40%+
-- **Aktuell:** 24.04%
-- **Gap:** 15.96%
-- **Fortschritt:** 60% des Ziels erreicht
-- **Verbleibend:** ~40% des Weges zum Ziel
+| Bereich | Lines | Bemerkung |
+|---------|-------|-----------|
+| `app/services` | ~80 % | stark abgedeckt |
+| `workpiece-history.service` | ~81 % | Track & Trace Kernlogik |
+| `track-trace.component` | ~75 % | UI-Komponente |
+| `app/tabs` | ~59 % | gemischt |
+| `shopfloor-preview` | ~55 % | |
+| Use-Case-Pages / viele DSP-SVG-Pages | oft **0 %** | ziehen den Globalwert spürbar runter |
 
 ---
 
-## 📝 Abgeschlossene Phasen
+## Verbleibende Lücke zum Langziel
 
-### ✅ Phase 1: Kritische Code-Optimierungen
-- Memory Leaks behoben
-- Build Issues behoben
+### Lines / Statements / Functions → 60 %
+- Größter Hebel: bisher ungetestete Use-Case- und DSP-Pages (viele Dateien bei 0 % Lines).
+- Alternativ: Thresholds und Langziel für „Marketing/SVG-Pages“ von Kern-Shopfloor trennen (Coverage-Scope), statt alles auf 60 % zu pushen.
 
-### ✅ Phase 2: Test-Abdeckung Basis
-- Service Tests erstellt (ConnectionService, EnvironmentService, LanguageService, RoleService)
-- View Component Tests erstellt (OrdersView, FtsView, StockView, ModuleMap)
-- Tab Component Tests erstellt (alle 9 Tab Components)
-
-### ✅ Phase 3: Code-Optimierung & Refactoring
-- Service Refactoring (MessageMonitorService → 3 Services)
-- Fixtures aus Production Build entfernt
-- Lazy Loading bestätigt
-
-### ✅ Phase 4.1: Edge Cases
-- 107 Edge-Case-Tests für Services hinzugefügt
-- Branch Coverage von 18.2% auf 23.34% erhöht
-
-### ✅ Phase 4.2: Integration Tests
-- Component-Service Integration Tests erstellt
-- 3 Integration-Test-Suites (OrderTab, OverviewTab, MessageMonitorTab)
-
-### ✅ Phase 4.3: Weitere Edge Cases
-- Tests für 5 neue Services erstellt (InventoryState, SensorState, ModuleName, ModuleOverviewState, ExternalLinks)
-- 98 neue Service-Tests hinzugefügt
-- Edge Cases für View Components hinzugefügt (OrdersView, FtsView, StockView, ModuleMap)
-- 27 neue Component Edge-Case-Tests
-- **Gesamt: 134 Edge-Case-Tests hinzugefügt**
+### Branches → 40 %+
+- **Erreicht** (46.42 %). Nächster sinnvoller Schritt: Jest-Threshold von 30 % schrittweise anheben (z. B. 40–45 %), damit Regressionen greifen.
 
 ---
 
-## 🔄 Nächste Schritte
+## Nächste Schritte (Empfehlung für Sprint 28+)
 
-### Option 1: Weiter Edge Cases hinzufügen
-- **Ziel:** Branch Coverage auf 30%+ erhöhen
-- **Effort:** 4-6 Stunden
-- **Erwarteter Impact:** +5-7% Branch Coverage
-
-### Option 2: Weitere Integration Tests
-- **Ziel:** Weitere Component-Service Integrationen testen
-- **Effort:** 4-6 Stunden
-- **Erwarteter Impact:** +3-5% Coverage
-
-### Option 3: Fehlende Unit Tests
-- **Ziel:** Tests für bisher ungetestete Services/Components
-- **Effort:** 8-12 Stunden
-- **Erwarteter Impact:** +10-15% Coverage
-
-### Option 4: Kombination
-- **Empfehlung:** Kombination aus Edge Cases + fehlende Unit Tests
-- **Effort:** 12-18 Stunden
-- **Erwarteter Impact:** +15-20% Coverage (Ziel: 60% Lines, 40% Branches)
+1. **Thresholds nachziehen** – Jest `coverageThreshold` an den Ist-Stand annähern (z. B. Lines 50, Branches 40), ohne den Build unnötig fragil zu machen.
+2. **Kernpfade halten** – Track & Trace / Services / Shopfloor nicht unter die heutigen Hotspot-Werte fallen lassen.
+3. **Optional Coverage heben** – gezielte Specs für ungetestete UC-/DSP-Pages **oder** `collectCoverageFrom`-Ausschluss für reine Präsentationsseiten (Entscheidung nötig).
 
 ---
 
-## 📊 Coverage-Trend
+## Historie (Phasen 1–4, bis 2025-11-30)
 
-```
-Branches:  16.97% → 18.2% → 23.34%  (Ziel: 40%)
-           └─────┘ └─────┘ └─────┘
-           Start   Edge    Integr.
-           
-Lines:     49.29% → 37.12% → 42.73%  (Ziel: 60%)
-           └─────┘ └──────┘ └──────┘
-           Start    Edge     Integr.
-```
+Archiv – Ausgangslage der früheren Coverage-Kampagne; Zahlen unten sind **nicht** der aktuelle Stand.
 
-**Hinweis:** Die Lines-Coverage zeigt eine Diskrepanz zwischen Startwert (49.29%) und späteren Werten. Dies könnte auf unterschiedliche Test-Konfigurationen oder Test-Filter zurückzuführen sein.
+### Abgeschlossene Phasen
+- **Phase 1:** Memory Leaks / Build Issues
+- **Phase 2:** Service-, View- und Tab-Tests
+- **Phase 3:** MessageMonitor-Refactor, Fixtures aus Production, Lazy Loading
+- **Phase 4:** Edge Cases + Integration Tests (~134 Edge-Case-Tests)
 
----
-
-## 💡 Empfehlung
-
-Um die Zielwerte zu erreichen:
-
-1. **Kurzfristig (4-6 Stunden):**
-   - Weitere Edge Cases für bestehende Services
-   - Integration Tests für weitere Components
-
-2. **Mittelfristig (8-12 Stunden):**
-   - Unit Tests für fehlende Services/Components
-   - Erweiterte Test-Abdeckung für komplexe Business Logic
-
-3. **Langfristig (12-18 Stunden):**
-   - Vollständige Test-Abdeckung für kritische Pfade
-   - E2E Tests für kritische User Flows
-
-**Geschätzter Gesamtaufwand bis Ziel:** 20-30 Stunden
+### Stand damals (2025-11-30)
+| Metrik | Wert |
+|--------|------|
+| Lines | 43.84 % |
+| Branches | 24.04 % |
+| Statements | 43.88 % |
+| Functions | 40.81 % |

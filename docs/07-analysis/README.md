@@ -9,8 +9,8 @@ Sprint-bezogene und projektweite Analysen für OSF.
 
 ## Test Coverage & Build
 
-- [test-coverage-status.md](test-coverage-status.md) – Aktuelle Coverage-Metriken, Fortschritt
-- [test-coverage-summary.md](test-coverage-summary.md) – Zusammenfassung abgeschlossener Phasen
+- [test-coverage-status.md](test-coverage-status.md) – Aktuelle Coverage-Metriken (Stand 2026-08-06)
+- [test-coverage-summary.md](test-coverage-summary.md) – Kurzüberblick Ist + Historie Phasen 1–4
 - [build-commands-guide.md](build-commands-guide.md) – Build-Befehle für osf-ui (Production, Development, GitHub Pages)
 
 ---

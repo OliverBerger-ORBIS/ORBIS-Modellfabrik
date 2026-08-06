@@ -1,18 +1,18 @@
 # Sprint Documentation Index
 
-Version: 0.5  
-Letzte Aktualisierung: 2026-07-23  
+Version: 0.6  
+Letzte Aktualisierung: 2026-08-06  
 
 ---
 
-## 📑 Übersicht
+## Übersicht
 
 Dieses Verzeichnis enthält die Sprint-Dokumentationen des OSF-Projekts.  
 Jeder Sprint dokumentiert Ziele, Fortschritt (Checkliste) und offene Punkte.
 
 ---
 
-## 🔄 Dokumenten-Workflow (Aktualität sicherstellen)
+## Dokumenten-Workflow (Aktualität sicherstellen)
 
 ### Sprint-Dokument (sprint_XX.md)
 - **Wird erfasst:** Ziele, Tasks (Checkliste), Backlog (optional) für „Später“-Items
@@ -30,45 +30,48 @@ Jeder Sprint dokumentiert Ziele, Fortschritt (Checkliste) und offene Punkte.
 ### Sprint-Abschluss (Pflicht vor Neuanlage nächster Sprint)
 Diese Aufgaben sind **Teil des laufenden Sprints** und müssen erledigt sein, **bevor** der neue Sprint gestartet wird.
 
-1. **Sprint-Dokument:** Status → „Abgeschlossen“, Abschlussdatum setzen.
-2. **Neuer Sprint:** Aus Template anlegen (`sprint_XX.md`), offene `[ ]` aus dem alten Sprint übernehmen.
-3. **PROJECT_STATUS:** Neue Tabellenzeile für nächsten Sprint anlegen, Externe Events eintragen.
-4. **Roadmap prüfen:** Sind Phasen/Versionen/Daten noch aktuell? (bei Bedarf anpassen).
-5. **Backlog-Priorisierung (pragmatisch):** Vor Übernahme von Backlog-Punkten in den nächsten Sprint immer kurze Rücksprache mit Oliver, welche Punkte tatsächlich priorisiert werden.
+1. **Coverage Standing (Pflicht):** Coverage erneut messen (`npm run test:coverage`), finalen Wert als `Aktuell` eintragen, Top-Gaps aktualisieren; bei Bedarf [test-coverage-status.md](../07-analysis/test-coverage-status.md) / [test-coverage-summary.md](../07-analysis/test-coverage-summary.md) nachziehen. **Ohne Endmessung keinen Sprint abschließen.**
+2. **Sprint-Dokument:** Status → „Abgeschlossen“, Abschlussdatum setzen.
+3. **Neuer Sprint:** Aus Template anlegen (`sprint_XX.md`), offene `[ ]` aus dem alten Sprint übernehmen; **Coverage-Baseline** = Endmessung des Vorgängers.
+4. **PROJECT_STATUS:** Neue Tabellenzeile für nächsten Sprint anlegen, Externe Events eintragen.
+5. **Roadmap prüfen:** Sind Phasen/Versionen/Daten noch aktuell? (bei Bedarf anpassen).
+6. **Backlog-Priorisierung (pragmatisch):** Vor Übernahme von Backlog-Punkten in den nächsten Sprint immer kurze Rücksprache mit Oliver, welche Punkte tatsächlich priorisiert werden.
 
 *Hinweis: Der neue Sprint enthält dann wieder einen eigenen "Sprint-Abschluss"-Block für den darauf folgenden Wechsel.*
 
 ---
 
-## 📐 Sprint-Dokumentation (Neuanlage / Überarbeitung)
+## Sprint-Dokumentation (Neuanlage / Überarbeitung)
 
 **Eine Checkliste unter `## Aufgaben (thematisch, mit Haken)`:** Unter **`### Thema`** (z. B. OSF-UI, Hardware, Organisation) stehen **gemischt** `- [ ]` und `- [x]`. **Nicht** zwei Kapitel „Offen“ und „Erledigt“.
 
 | Element | Inhalt |
 |---------|--------|
+| **Coverage Standing** | **Pflicht** — Tabelle Baseline/`Aktuell` zwischen Externe Termine und Aufgaben (siehe unten) |
 | **Aufgaben** | Nur Checkbox-Zeilen; **Gruppierung nach Thema**, nicht nach Erledigt-Status |
 | **Releases** | Optional kurze Tabelle im Kopf; Details → [CHANGELOG.md](../../CHANGELOG.md) |
 | **Backlog** | Optional Abschnitt **ohne** Checkboxen, wenn noch keine klaren Tasks |
 | **Externe Events / Outreach** | Optional **`## Externe Termine & Outreach`** (Tabelle: Kundentermine, Demos, **Blog-Artikel**) + Tasks unter dem Thema; bei Sprint-Abschluss Zeile **PROJECT_STATUS** → Spalte **Externe Events** pflegen |
-| **Sprint-Wechsel** | Checkboxen am Ende von „Aufgaben“ oder eigene Thema-Überschrift |
+| **Sprint-Wechsel** | Checkboxen inkl. **Coverage-Endmessung**; am Ende von „Aufgaben“ |
 
-Template: [sprint_template.md](sprint_template.md) · Beispiele: [sprint_18.md](sprint_18.md), [sprint_19.md](sprint_19.md)
+Template: [sprint_template.md](sprint_template.md) · Beispiele: [sprint_21.md](sprint_21.md) (Coverage), [sprint_28.md](sprint_28.md)
 
 ---
 
-## 📊 Coverage Standing Standard
+## Coverage Standing Standard
 
 Für jeden Sprint gilt ein einheitlicher Ablauf, damit Coverage-Trends vergleichbar bleiben und die Sprint-Dateien schlank bleiben:
 
 - **Feste Position im Sprint-Dokument:** `## Coverage Standing` steht immer zwischen `## Externe Termine` / `## Externe Termine & Outreach` und `## Aufgaben`.
 - **Struktur:** kompakte Tabelle mit mindestens `Sprint-Start (Baseline)` und `Aktuell` (Branches / Functions / Lines / Statements, Gates, Gate-Margins).
 - **Pflege im laufenden Sprint:** Baseline bleibt unverändert, nur `Aktuell` + `Top-3 Gaps` werden nach Messung aktualisiert.
-- **Sprintwechsel-Prüfung (Pflicht):** Am Sprintende Coverage erneut messen und den finalen Wert als `Aktuell` eintragen; erst danach den Sprint abschliessen.
-- **Neuer Sprint (`sprint_XX.md`):** Coverage-Standing-Sektion aus dem Vorgänger übernehmen und den initialen Baseline-Wert aus der finalen Sprint-Ende-Messung des Vorgaengers setzen.
+- **Sprintwechsel-Prüfung (Pflicht):** Am Sprintende Coverage erneut messen und den finalen Wert als `Aktuell` eintragen; erst danach den Sprint abschliessen. Checkbox im Thema **Sprint-Wechsel**.
+- **Neuer Sprint (`sprint_XX.md`):** Coverage-Standing-Sektion aus dem Vorgänger übernehmen und den initialen Baseline-Wert aus der finalen Sprint-Ende-Messung des Vorgängers setzen.
+- **Lessons Learned (06.08.2026):** Standing war ab Sprint 23 oft ausgelassen → Drift bis Sprint 27. Deshalb Template + Abschluss-Checkliste + Wechsel-Checkbox verbindlich. Analyse-Doku: [test-coverage-status.md](../07-analysis/test-coverage-status.md).
 
 ---
 
-## 🔗 Sprint Links
+## Sprint Links
 - [Sprint 01](sprint_01.md) – Projekt-Initialisierung und Know-How Aufbau (24.07 - 06.08.2025)
 - [Sprint 02](sprint_02.md) – Aufbau und Inbetriebnahme der Modellfabrik (07.08 - 22.08.2025)
 - [Sprint 03](sprint_03.md) – MQTT-Schnittstelle und ORBIS Dashboard (23.08 - 03.09.2025)
@@ -95,22 +98,23 @@ Für jeden Sprint gilt ein einheitlicher Ablauf, damit Coverage-Trends vergleich
 - [Sprint 24](sprint_24.md) – LOM-Day Vorbereitung & AI-HUB Datenerfassung (12.06 - 25.06.2026) ✅
 - [Sprint 25](sprint_25.md) – LOM-Day Nachbereitung & Praesentationstechnik (26.06 - 09.07.2026) ✅
 - [Sprint 26](sprint_26.md) – NFC-Tags, Use-Case-Darstellung & Grafana Dashboard (10.07 - 23.07.2026) ✅
-- [Sprint 27](sprint_27.md) – Grafana-Dashboard-Analyse & Track&Trace (24.07 - 06.08.2026) ⏳ **AKTUELL**
+- [Sprint 27](sprint_27.md) – Grafana-Dashboard-Analyse & Track&Trace (24.07 - 06.08.2026) ✅
+- [Sprint 28](sprint_28.md) – Sessions komplettieren, 2. AGV & Grafana (07.08 - 20.08.2026; Urlaub 11.–14.08.) ⏳ **AKTUELL**
 
-## 📊 Berichte
+## Berichte
 - [ORBIS-Projekt-Abschlussbericht Sprints 1-12](ORBIS-Projekt-Abschlussbericht_sprints_01-12.md) – Erstes ORBIS-Projekt (ORBIS-Modellfabrik)
 - [Sprint 01-04 Report](stakeholder_report_sprints_01-04.md) – Umfassender Bericht für Management
 - [Sprint 05-06 Report](stakeholder_report_sprints_05-06.md) – OMF2-Migration und Architektur-Refactoring
 
 ---
 
-## 📌 Hinweise
+## Hinweise
 - **Schlanke Dokumentation:** Minimaler Overhead, fokussiert auf Stakeholder-Reporting
 - **2-Wochen-Zyklen:** Regelmäßige Fortschrittsdokumentation
 - **Templates:** `sprint_template.md` für neue Sprints, `stakeholder_report_template.md` für externe Berichte
 - **Decision Records:** Wichtige Entscheidungen in `docs/03-decision-records/`
 
-## 📋 Templates
+## Templates
 - **[Sprint Template](sprint_template.md)** - Für neue Sprints
 - **[Stakeholder Report Template](stakeholder_report_template.md)** - Für externe Berichte
 - **[Decision Record Template](../03-decision-records/decision_template.md)** - Für wichtige Entscheidungen

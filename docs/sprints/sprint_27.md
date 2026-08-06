@@ -1,8 +1,10 @@
 # Sprint 27 – Grafana-Dashboard-Analyse & Track&Trace
 
-**Zeitraum:** 24.07.2026 – 06.08.2026 · **Status:** Laufend · **Vorheriger Sprint:** [Sprint 26](./sprint_26.md)
+**Zeitraum:** 24.07.2026 – 06.08.2026 · **Status:** Abgeschlossen · **Vorheriger Sprint:** [Sprint 26](./sprint_26.md) · **Nächster Sprint:** [Sprint 28](./sprint_28.md)
 
 **Kurz:** Fokus **Grafana-Dashboard-Analyse** (Modus A / Panels / Persistenz-Pfad) in Kombination mit offenen **Track&Trace**-Tasks (Live-Demo Inhalt, Edge-Persistenz Option B); Carry-over Netzwerk, FTS Nr. 2, Blog A3/A4 und Integrations-Nachweise.
+
+**Retrospektive:** Track&Trace-Live-Demo und Multi-Load-Mapping stark vorangekommen (Release **v1.2.0** / **v1.2.1**). Grafana-Fokus weitgehend unberührt → Carry-over Sprint 28. Coverage Standing war im Sprint-Dokument **nicht** geführt (Lücke seit Sprint 23) — Abschlussmessung 06.08. nachgezogen; ab Sprint 28 wieder Pflicht.
 
 ---
 
@@ -14,7 +16,24 @@
 |--------|--------|----------------|
 | **23.07.2026** | **Blog A2** veröffentlicht — [Track und Trace in der Fertigung](https://www.orbis-group.com/de-de/blog/branchen/manufacturing/track-und-trace-in-der-fertigung/) | Storytelling-Serie A2 live *(Sprint 26)* |
 | **03.08.2026** | **Hochschulkooperation** — Teams-Vorstellung OSF mit Kshitiz Bohara (Uni Magdeburg) | Setup + **osf-v1.2.0** erfolgreich getestet. **Next:** Kshitiz Proposal — Graphical DB am Edge (Linux), Daten über DSP, Graph-Aufbau, Einsatz von KI-Agenten |
-| **14.08.2026** | **Kundentermin Musashi** | Erstverifikation Router-/Netzwerk-Setup und Windows-Desktop-Praesentation (Follow-up LOM-Day; verschoben von 14.07.) |
+| **14.08.2026** | **Kundentermin Musashi** | Erstverifikation Router-/Netzwerk-Setup und Windows-Desktop-Praesentation (Follow-up LOM-Day; verschoben von 14.07.) — **Vorführung: Sven Horras** (Oliver Urlaub); Termin liegt in Sprint 28 |
+
+---
+
+## Coverage Standing
+
+| Stand | Datum | Branches | Functions | Lines | Statements | Gates (B/F/L/S) | Gate-Margin (B/F/L/S) |
+|--------|--------|----------|-----------|-------|------------|------------------|------------------------|
+| Sprint-Start (Baseline) | — | *nicht erfasst* | *nicht erfasst* | *nicht erfasst* | *nicht erfasst* | 30 / 42 / 47 / 46 | — |
+| Aktuell (Sprint-Ende) | 06.08.2026 | 46.42% | 52.82% | 52.66% | 51.78% | 30 / 42 / 47 / 46 | +16.42 / +10.82 / +5.66 / +5.78 pp |
+
+- **Messmethode:** `npm run test:coverage` → `coverage/osf-ui/index.html` (HTML-Report All files). Details: [test-coverage-status.md](../07-analysis/test-coverage-status.md).
+- **Tests:** 1388 passed / 16 skipped.
+- **Top-3 Gaps (Test-Fokus):**
+  1. Use-Case-Pages (`app/pages/use-cases/*`) — oft **0 %** Lines
+  2. DSP-/Customer-Pages — oft **0 %** Lines
+  3. Einzelne UI-Komponenten (z. B. `dsp-architecture`, `module-details-sidebar`) — sehr niedrig
+- **Hinweis:** Standing fehlte im laufenden Sprint; Endmessung nachgezogen. Ab Sprint 28 wieder feste Sektion + Wechsel-Checkbox.
 
 ---
 
@@ -87,16 +106,17 @@
 
 ### Sprint-Wechsel (am Ende des Sprints abarbeiten)
 
-- [ ] Sprint 27: Status Abgeschlossen, Datum *(Ursprung: Sprint 27)*
-- [ ] Sprint 28 anlegen, offene `[ ]` uebernehmen *(Ursprung: Sprint 27)*
-- [ ] PROJECT_STATUS / Roadmap kurz *(Ursprung: Sprint 27)*
+- [x] **Coverage Standing:** Endmessung 06.08.2026 eintragen (Baseline fehlte — nachgezogen) *(Ursprung: Sprint 27)*
+- [x] Sprint 27: Status Abgeschlossen, Datum **06.08.2026** *(Ursprung: Sprint 27)*
+- [x] Sprint 28 anlegen, offene `[ ]` uebernehmen — Fokus Sessions (+2. AGV) & Grafana; Urlaub 11.–14.08.; Musashi → Sven Horras *(Ursprung: Sprint 27)*
+- [x] PROJECT_STATUS / Roadmap kurz *(Ursprung: Sprint 27)*
 
 ---
 
 ## Links
 
-- [Sprint 26](sprint_26.md) · [PROJECT_STATUS.md](../PROJECT_STATUS.md) · [sprints_README.md](sprints_README.md)
+- [Sprint 26](sprint_26.md) · [Sprint 28](sprint_28.md) · [PROJECT_STATUS.md](../PROJECT_STATUS.md) · [sprints_README.md](sprints_README.md)
 
 ---
 
-*Stand: 06.08.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 06.08.2026 (Abschluss)* · Doku-Workflow: [sprints_README.md](sprints_README.md)
