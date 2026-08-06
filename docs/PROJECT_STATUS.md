@@ -14,6 +14,7 @@
 
 ## 🔥 Aktuelle Schwerpunkte
 - **Sprint 28:** Referenz-Sessions (Quality-Matrix, Multi-Load, 2-AGV nach FTS-2) + Grafana; Deploy **v1.2.1**; Coverage Standing wieder Pflicht. Details: [sprint_28.md](sprints/sprint_28.md).
+- **07.08.2026:** Hochschulkontakt **Kaiserslautern** — Herr **Nusbaum** (genaue Institution folgt); Bachelorarbeit **Danil Wonkam** / **Object Detection**. Details: [sprint_28.md](sprints/sprint_28.md).
 - **14.08.2026:** Kundentermin **Musashi** — Vorführung **Sven Horras** (Oliver Urlaub 11.–14.08.).
 - **02.04.2026:** ORBIS-internes **Vertriebsmeeting** — **OSF-Präsentation** für Vertrieb durchgeführt (Start Sprint 19).
 - Letzter großer Außenauftritt: **Hannover Messe** + **ORBIS Customer-Connect** (siehe Roadmap).
@@ -73,7 +74,7 @@
 | 25 | 26.06 - 09.07.2026 | ORBIS-SmartFactory | Phase 5 | LOM-Day (26.06); Praesentationstechnik Windows-Desktops; Router/Netzwerk; OSF-UI v1.1.7 RPi-Deploy |
 | 26 | 10.07 - 23.07.2026 | ORBIS-SmartFactory | Phase 5 | Probelauf Präsentation (14.–15.07.); Blog A2 veröffentlicht (23.07., [Track und Trace in der Fertigung](https://www.orbis-group.com/de-de/blog/branchen/manufacturing/track-und-trace-in-der-fertigung/)); Office-Tower 3D-Druck; OSF-UI v1.1.10; NFC B-soft Live-Test |
 | 27 | 24.07 - 06.08.2026 | ORBIS-SmartFactory | Phase 5 | Track&Trace v1.2.0/v1.2.1; Hochschulkooperation Magdeburg Teams 03.08. (Proposal folgt); Grafana Carry-over; Coverage-Endmessung 06.08. |
-| 28 | 07.08 - 20.08.2026 | ORBIS-SmartFactory | Phase 5 | Sessions + 2. AGV & Grafana; Urlaub Oliver 11.–14.08.; Musashi 14.08. Vorführung Sven Horras; Coverage Standing wieder Pflicht |
+| 28 | 07.08 - 20.08.2026 | ORBIS-SmartFactory | Phase 5 | Sessions + 2. AGV & Grafana; Hochschulkontakt Kaiserslautern 07.08. (Nusbaum / BA Wonkam Object Detection; Institution folgt); Urlaub Oliver 11.–14.08.; Musashi 14.08. Vorführung Sven Horras; Coverage Standing wieder Pflicht |
 
 > **Spalten-Erläuterung:**  
 > - **ORBIS-Projekt:** Interne Projektzuordnung für Abrechnung (ORBIS-Modellfabrik bzw. ORBIS-SmartFactory).  
@@ -94,6 +95,7 @@
 - **19.06.2026:** **Blog A1** — [Skalierbare Smart Factory](https://www.orbis-group.com/de-de/blog/branchen/manufacturing/skalierbare-smart-factory/) (veröffentlicht)
 - **23.07.2026:** **Blog A2** — [Track und Trace in der Fertigung](https://www.orbis-group.com/de-de/blog/branchen/manufacturing/track-und-trace-in-der-fertigung/) (veröffentlicht)
 - **03.08.2026:** Hochschulkooperation **Kshitiz Bohara** (Uni Magdeburg) — Teams-Vorstellung OSF; Setup + **osf-v1.2.0** OK. **Next:** Proposal Graphical DB am Edge (Linux), Daten über DSP, Graph-Aufbau, KI-Agenten → [sprint_27.md](sprints/sprint_27.md)
+- **07.08.2026:** Hochschulkontakt **Kaiserslautern** — Herr **Nusbaum** (genaue Uni-/Hochschulbezeichnung folgt); Bachelorarbeit **Danil Wonkam** zu **Object Detection** → [sprint_28.md](sprints/sprint_28.md)
 - **11.–14.08.2026:** Urlaub Oliver (reduzierte Sprint-28-Kapazität)
 - **14.08.2026:** Kunde **Musashi** — OSF-Kundentermin (Router/Netzwerk + Windows-Desktop-Praesentation); **Vorführung: Sven Horras** → [sprint_28.md](sprints/sprint_28.md)
 

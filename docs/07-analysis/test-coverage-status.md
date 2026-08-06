@@ -1,9 +1,9 @@
 # Test Coverage Status
 
-**Letzte Aktualisierung:** 2026-08-06  
+**Letzte Aktualisierung:** 2026-08-06 (nach UC-Specs; `npm run test:coverage` = `--runInBand`)  
 **Quelle:** `npm run test:coverage` → `coverage/osf-ui/index.html`  
-**Tests:** 1388 passed, 16 skipped (69 Suites, 2 skipped)  
-**Jest-Thresholds** (`osf/apps/osf-ui/jest.config.ts`): alle erfüllt
+**Tests:** 79 Suites passed / 2 skipped (Full-Suite runInBand)  
+**Jest-Thresholds** (`osf/apps/osf-ui/jest.config.ts`): alle erfüllt (deutlich unter Ist)
 
 ---
 
@@ -11,61 +11,50 @@
 
 | Metrik | Aktuell | Absolutzahlen | Jest-Threshold | Langziel | Status |
 |--------|---------|---------------|----------------|----------|--------|
-| **Lines** | **52.66 %** | 7527 / 14291 | 47 % ✅ | 60 %+ | Gap −7.34 % |
-| **Statements** | **51.78 %** | 7829 / 15117 | 46 % ✅ | ~60 % | Gap −8.22 % |
-| **Functions** | **52.82 %** | 1392 / 2635 | 42 % ✅ | ~60 % | Gap −7.18 % |
-| **Branches** | **46.42 %** | 5253 / 11315 | 30 % ✅ | 40 %+ | Ziel erreicht (+6.42 %) |
+| **Lines** | **64.65 %** | 9240 / 14291 | 47 % ✅ | 60 %+ | Ziel erreicht (+4.65 %) |
+| **Statements** | **63.55 %** | 9607 / 15117 | 46 % ✅ | ~60 % | Ziel erreicht |
+| **Functions** | **59.65 %** | 1572 / 2635 | 42 % ✅ | ~60 % | Gap −0.35 % |
+| **Branches** | **48.42 %** | 5479 / 11315 | 30 % ✅ | 40 %+ | Ziel erreicht (+8.42 %) |
 
-Vergleich zur letzten Doku (2025-11-30): Lines ~+8.8 pp, Branches ~+22.4 pp.
+Vergleich Sprint-27-Ende (vormittag): Lines 52.66 % → **64.65 %** (~+12 pp) durch Use-Case SVG/shared Specs.
 
 ---
 
-## Hotspots (Lines, 2026-08-06)
+## Hotspots (Lines, 2026-08-06 nachmittag)
 
 | Bereich | Lines | Bemerkung |
 |---------|-------|-----------|
-| `app/services` | ~80 % | stark abgedeckt |
-| `workpiece-history.service` | ~81 % | Track & Trace Kernlogik |
-| `track-trace.component` | ~75 % | UI-Komponente |
-| `app/tabs` | ~59 % | gemischt |
-| `shopfloor-preview` | ~55 % | |
-| Use-Case-Pages / viele DSP-SVG-Pages | oft **0 %** | ziehen den Globalwert spürbar runter |
+| UC SVG-Generatoren (01–07) / Interop | ~72–92 % | neue Smokes |
+| `use-case-step-apply` | **100 %** | |
+| `use-case-controls` | **100 %** | |
+| `base-use-case` | ~62 % | via Interoperability-Smoke |
+| `three-data-pools` | ~41 % | Lanes-Pfad noch dünn |
+| `track-trace` Use-Case-Shell | **0 %** | noch offen |
+| DSP-/Customer-Pages | oft **0 %** | nächster optionaler Hebel |
 
 ---
 
-## Verbleibende Lücke zum Langziel
+## Verbleibende Lücke
 
-### Lines / Statements / Functions → 60 %
-- Größter Hebel: bisher ungetestete Use-Case- und DSP-Pages (viele Dateien bei 0 % Lines).
-- Alternativ: Thresholds und Langziel für „Marketing/SVG-Pages“ von Kern-Shopfloor trennen (Coverage-Scope), statt alles auf 60 % zu pushen.
+### Lines / Statements — Langziel 60 %+
+- **Erreicht** für Lines/Statements. Optional: Jest-Thresholds anheben (z. B. Lines 55–60), damit Regressionen greifen.
 
-### Branches → 40 %+
-- **Erreicht** (46.42 %). Nächster sinnvoller Schritt: Jest-Threshold von 30 % schrittweise anheben (z. B. 40–45 %), damit Regressionen greifen.
+### Functions → 60 %
+- Noch ~0.4 pp; UC-Shell Track&Trace / DSP-Pages oder Threshold-Puffer.
+
+### Branches — Langziel 40 %+
+- **Erreicht** (48.42 %). Threshold 30 % → schrittweise auf ~40–45.
 
 ---
 
-## Nächste Schritte (Empfehlung für Sprint 28+)
+## Nächste Schritte (optional)
 
-1. **Thresholds nachziehen** – Jest `coverageThreshold` an den Ist-Stand annähern (z. B. Lines 50, Branches 40), ohne den Build unnötig fragil zu machen.
-2. **Kernpfade halten** – Track & Trace / Services / Shopfloor nicht unter die heutigen Hotspot-Werte fallen lassen.
-3. **Optional Coverage heben** – gezielte Specs für ungetestete UC-/DSP-Pages **oder** `collectCoverageFrom`-Ausschluss für reine Präsentationsseiten (Entscheidung nötig).
+1. Jest `coverageThreshold` an Ist-Stand annähern (Puffer lassen).
+2. Rest-Gaps: Track&Trace-UC-Shell, UC-02 Lanes, DSP-Pages — nur bei Bedarf.
+3. Coverage-Läufe: `npm run test:coverage` (enthält `--runInBand`).
 
 ---
 
 ## Historie (Phasen 1–4, bis 2025-11-30)
 
-Archiv – Ausgangslage der früheren Coverage-Kampagne; Zahlen unten sind **nicht** der aktuelle Stand.
-
-### Abgeschlossene Phasen
-- **Phase 1:** Memory Leaks / Build Issues
-- **Phase 2:** Service-, View- und Tab-Tests
-- **Phase 3:** MessageMonitor-Refactor, Fixtures aus Production, Lazy Loading
-- **Phase 4:** Edge Cases + Integration Tests (~134 Edge-Case-Tests)
-
-### Stand damals (2025-11-30)
-| Metrik | Wert |
-|--------|------|
-| Lines | 43.84 % |
-| Branches | 24.04 % |
-| Statements | 43.88 % |
-| Functions | 40.81 % |
+Archiv — siehe frühere Commits / [test-coverage-summary.md](test-coverage-summary.md).

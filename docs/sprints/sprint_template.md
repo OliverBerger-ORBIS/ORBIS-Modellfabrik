@@ -34,7 +34,7 @@
 | Sprint-Start (Baseline aus Vorgänger-Endmessung) | … | …% | …% | …% | …% | 30 / 42 / 47 / 46 | … |
 | Aktuell | … | …% | …% | …% | …% | 30 / 42 / 47 / 46 | … |
 
-- **Messmethode:** `npm run test:coverage` → `coverage/osf-ui/index.html` (Details: [test-coverage-status.md](../07-analysis/test-coverage-status.md))
+- **Messmethode:** `npm run test:coverage` (Standard: `--runInBand`) → `coverage/osf-ui/index.html` (Details: [test-coverage-status.md](../07-analysis/test-coverage-status.md))
 - **Top-3 Gaps (Test-Fokus):**
   1. …
   2. …

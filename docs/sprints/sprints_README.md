@@ -30,7 +30,7 @@ Jeder Sprint dokumentiert Ziele, Fortschritt (Checkliste) und offene Punkte.
 ### Sprint-Abschluss (Pflicht vor Neuanlage nächster Sprint)
 Diese Aufgaben sind **Teil des laufenden Sprints** und müssen erledigt sein, **bevor** der neue Sprint gestartet wird.
 
-1. **Coverage Standing (Pflicht):** Coverage erneut messen (`npm run test:coverage`), finalen Wert als `Aktuell` eintragen, Top-Gaps aktualisieren; bei Bedarf [test-coverage-status.md](../07-analysis/test-coverage-status.md) / [test-coverage-summary.md](../07-analysis/test-coverage-summary.md) nachziehen. **Ohne Endmessung keinen Sprint abschließen.**
+1. **Coverage Standing (Pflicht):** Coverage erneut messen (`npm run test:coverage` — Standard `--runInBand`), finalen Wert als `Aktuell` eintragen, Top-Gaps aktualisieren; bei Bedarf [test-coverage-status.md](../07-analysis/test-coverage-status.md) / [test-coverage-summary.md](../07-analysis/test-coverage-summary.md) nachziehen. **Ohne Endmessung keinen Sprint abschließen.**
 2. **Sprint-Dokument:** Status → „Abgeschlossen“, Abschlussdatum setzen.
 3. **Neuer Sprint:** Aus Template anlegen (`sprint_XX.md`), offene `[ ]` aus dem alten Sprint übernehmen; **Coverage-Baseline** = Endmessung des Vorgängers.
 4. **PROJECT_STATUS:** Neue Tabellenzeile für nächsten Sprint anlegen, Externe Events eintragen.
@@ -65,7 +65,7 @@ Für jeden Sprint gilt ein einheitlicher Ablauf, damit Coverage-Trends vergleich
 - **Feste Position im Sprint-Dokument:** `## Coverage Standing` steht immer zwischen `## Externe Termine` / `## Externe Termine & Outreach` und `## Aufgaben`.
 - **Struktur:** kompakte Tabelle mit mindestens `Sprint-Start (Baseline)` und `Aktuell` (Branches / Functions / Lines / Statements, Gates, Gate-Margins).
 - **Pflege im laufenden Sprint:** Baseline bleibt unverändert, nur `Aktuell` + `Top-3 Gaps` werden nach Messung aktualisiert.
-- **Sprintwechsel-Prüfung (Pflicht):** Am Sprintende Coverage erneut messen und den finalen Wert als `Aktuell` eintragen; erst danach den Sprint abschliessen. Checkbox im Thema **Sprint-Wechsel**.
+- **Sprintwechsel-Prüfung (Pflicht):** Am Sprintende Coverage erneut messen (`npm run test:coverage`, Standard: `--runInBand`) und den finalen Wert als `Aktuell` eintragen; erst danach den Sprint abschliessen. Checkbox im Thema **Sprint-Wechsel**.
 - **Neuer Sprint (`sprint_XX.md`):** Coverage-Standing-Sektion aus dem Vorgänger übernehmen und den initialen Baseline-Wert aus der finalen Sprint-Ende-Messung des Vorgängers setzen.
 - **Lessons Learned (06.08.2026):** Standing war ab Sprint 23 oft ausgelassen → Drift bis Sprint 27. Deshalb Template + Abschluss-Checkliste + Wechsel-Checkbox verbindlich. Analyse-Doku: [test-coverage-status.md](../07-analysis/test-coverage-status.md).
 

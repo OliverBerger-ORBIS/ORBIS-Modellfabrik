@@ -10,7 +10,7 @@
 
 Das Coverage Monitoring System überwacht automatisch die Test-Abdeckung und stellt sicher, dass die Coverage-Schwellenwerte eingehalten werden.
 
-**Ist-Stand (Messung 2026-08-06):** siehe [test-coverage-status.md](../../07-analysis/test-coverage-status.md) — Lines **52.66 %**, Branches **46.42 %**, Statements **51.78 %**, Functions **52.82 %**.
+**Ist-Stand (Messung 2026-08-06 nachmittag, `--runInBand`):** siehe [test-coverage-status.md](../../07-analysis/test-coverage-status.md) — Lines **64.65 %**, Branches **48.42 %**, Statements **63.55 %**, Functions **59.65 %**.
 
 ---
 
@@ -21,28 +21,31 @@ Das Coverage Monitoring System überwacht automatisch die Test-Abdeckung und ste
 ```typescript
 coverageThreshold: {
   global: {
-    branches: 30, // Gemessen 2026-08-06: 46.42%; Langziel 40%+ (erreicht)
-    functions: 42, // Gemessen: 52.82%; Langziel ~60%
-    lines: 47, // Gemessen: 52.66%; Langziel 60%+
-    statements: 46, // Gemessen: 51.78%; Langziel ~60%
+    branches: 30, // Gemessen 2026-08-06: 48.42%; Langziel 40%+ (erreicht)
+    functions: 42, // Gemessen: 59.65%; Langziel ~60%
+    lines: 47, // Gemessen: 64.65%; Langziel 60%+ (erreicht)
+    statements: 46, // Gemessen: 51.78% → 63.55%; Langziel ~60% (erreicht)
   },
 }
 ```
 
-**Hinweis:** Die Jest-Schwellen liegen unter dem Ist-Stand (Puffer gegen Flakes). Sinnvoll als Nächstes: Branches auf ~40 und Lines auf ~50 anheben. Details: [test-coverage-status.md](../../07-analysis/test-coverage-status.md).
+**Hinweis:** Jest-Schwellen liegen unter dem Ist-Stand (Puffer). Sinnvoll als Nächstes: Lines/Branches Thresholds anheben. Coverage-Läufe laufen standardmäßig mit **`--runInBand`** (`npm run test:coverage` / `test:coverage:check`), um Parallel-Last und Timeouts zu vermeiden. Details: [test-coverage-status.md](../../07-analysis/test-coverage-status.md).
+
 ---
 
-## 🚀 Verwendung
+## Verwendung
 
 ### Coverage Report generieren
 
 ```bash
-# Coverage Report mit HTML-Output
+# Coverage Report mit HTML-Output (runInBand — Standard)
 npm run test:coverage
 
 # Coverage Report mit Threshold-Check (schlägt fehl wenn Thresholds nicht erreicht)
 npm run test:coverage:check
 ```
+
+**Warum `--runInBand`:** Ein Jest-Worker statt vieler paralleler — schonender für CPU/RAM, stabilere Hooks unter Last. Länger in der Wanduhr, dafür weniger Maschinenlast und weniger Flakes.
 
 ### Coverage Report anzeigen
 
