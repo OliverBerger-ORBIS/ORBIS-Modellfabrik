@@ -14,6 +14,7 @@ import shutil
 import subprocess
 import threading
 import time
+import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -21,7 +22,7 @@ from typing import List, Optional, Protocol, Tuple
 
 import streamlit as st
 
-from ..mqtt.mqtt_client import SessionManagerMQTTClient
+from ..mqtt.mqtt_client import SessionManagerMQTTClient, paho_rc_name
 from ..utils.logging_config import get_logger
 from ..utils.path_constants import PROJECT_ROOT
 from ..utils.ui_refresh import RerunController
@@ -58,6 +59,9 @@ REPLAY_SPEED_BY_LABEL: dict[str, float] = dict(REPLAY_SPEED_CHOICES)
 REPLAY_SPEED_DEFAULT_LABEL = "1x"
 # Above this factor, replay publishes with QoS 0 to avoid MQTT QoS1 backpressure.
 REPLAY_QOS0_SPEED_THRESHOLD = 5.0
+# After this many consecutive publish failures (post-retry), abort instead of
+# racing through the rest of the session as Fail=N (misleading "fertig").
+REPLAY_ABORT_AFTER_CONSECUTIVE_FAILS = 25
 
 # Back-compat aliases used by tests / older imports
 REPLAY_SPEED_OPTIONS: list[float] = [value for _, value in REPLAY_SPEED_CHOICES]
@@ -95,6 +99,44 @@ def effective_publish_qos(item_qos: int, speed: float) -> int:
     if speed == float("inf") or speed >= REPLAY_QOS0_SPEED_THRESHOLD:
         return 0
     return int(item_qos)
+
+
+def replay_run_valid_for_acceptance(stats: dict[str, float | int | str | bool]) -> bool:
+    """
+    True only when the run finished without publish failures / abort.
+    Use before judging OSF Track & Trace SOLL from a Session Manager replay.
+    """
+    if not stats.get("finished"):
+        return False
+    if stats.get("aborted"):
+        return False
+    pub_ok = int(stats.get("pub_ok") or 0)
+    pub_fail = int(stats.get("pub_fail") or 0)
+    total = int(stats.get("total") or 0)
+    if pub_fail != 0:
+        return False
+    if total <= 0 or pub_ok != total:
+        return False
+    return True
+
+
+def replay_acceptance_message(stats: dict[str, float | int | str | bool]) -> str:
+    """Short EN/DE-neutral status line for the Replay UI."""
+    if not stats.get("finished"):
+        return "Replay still running — wait for Diagnose finished before T&T checks."
+    if replay_run_valid_for_acceptance(stats):
+        return f"Publish OK ({stats.get('pub_ok')}/{stats.get('total')}) — " "valid for Track & Trace acceptance."
+    abort = str(stats.get("abort_reason") or "").strip()
+    last_rc = stats.get("last_rc_name") or stats.get("last_rc")
+    parts = [
+        f"INVALID for T&T acceptance: OK={stats.get('pub_ok')} Fail={stats.get('pub_fail')} "
+        f"total={stats.get('total')}"
+    ]
+    if abort:
+        parts.append(f"abort={abort}")
+    if last_rc not in (None, "", "SUCCESS"):
+        parts.append(f"last_rc={last_rc}")
+    return " · ".join(parts)
 
 
 def _is_local_mqtt_host(host: str) -> bool:
@@ -362,6 +404,11 @@ class ReplayController:
         self._run_finished_mono: float | None = None
         self._pause_started_mono: float | None = None
         self._paused_total_s = 0.0
+        self._consecutive_fails = 0
+        self._last_publish_rc = 0
+        self._abort_reason = ""
+        self._aborted = False
+        self._reconnect_attempts = 0
 
     def _reset_publish_stats_locked(self) -> None:
         self._pub_ok = 0
@@ -375,6 +422,11 @@ class ReplayController:
         self._run_finished_mono = None
         self._pause_started_mono = None
         self._paused_total_s = 0.0
+        self._consecutive_fails = 0
+        self._last_publish_rc = 0
+        self._abort_reason = ""
+        self._aborted = False
+        self._reconnect_attempts = 0
 
     # ---------- öffentlich ----------
     def load(self, items: List[Tuple[float, str, bytes, int, bool]]) -> None:
@@ -407,13 +459,25 @@ class ReplayController:
                 self._idx = 0
                 self._reset_publish_stats_locked()
 
-            # MQTT-Client initialisieren falls nötig
+            # MQTT-Client initialisieren falls nötig (unique client_id → no broker kick)
             if not self._mqtt_client:
-                self._mqtt_client = SessionManagerMQTTClient(self.host, self.port, "session_manager_replay")
-                if not self._mqtt_client.connect():
-                    logger.error("❌ MQTT-Client konnte nicht verbinden")
-                    return
+                client_id = f"session_manager_replay_{uuid.uuid4().hex[:10]}"
+                self._mqtt_client = SessionManagerMQTTClient(self.host, self.port, client_id)
 
+        # Connect outside lock (can block up to ~5s)
+        assert self._mqtt_client is not None
+        if not self._mqtt_client.ensure_connected():
+            with self._lock:
+                self._aborted = True
+                self._abort_reason = (
+                    f"MQTT connect failed ({self.host}:{self.port}); " f"connect_rc={self._mqtt_client.last_connect_rc}"
+                )
+                self._run_finished_mono = time.monotonic()
+                self._run_started_mono = self._run_finished_mono
+            logger.error("❌ MQTT-Client konnte nicht verbinden — Replay abgebrochen")
+            return
+
+        with self._lock:
             self._stop.clear()
             self._pause.clear()
             # inf speed → offset 0 (publish ASAP); finite → wall clock = ts_rel / speed
@@ -425,6 +489,8 @@ class ReplayController:
             self._run_finished_mono = None
             self._pause_started_mono = None
             self._paused_total_s = 0.0
+            self._aborted = False
+            self._abort_reason = ""
             self._worker = threading.Thread(target=self._run, name="replay-worker", daemon=True)
             self._worker.start()
 
@@ -490,7 +556,7 @@ class ReplayController:
         with self._lock:
             return self._speed
 
-    def get_publish_stats(self) -> dict[str, float | int | str]:
+    def get_publish_stats(self) -> dict[str, float | int | str | bool]:
         """Snapshot of publish throughput diagnostics for the UI."""
         with self._lock:
             now = time.monotonic()
@@ -512,7 +578,12 @@ class ReplayController:
                 total_elapsed_s = max(0.0, end - self._run_started_mono)
                 active_elapsed_s = max(0.0, total_elapsed_s - self._paused_total_s - paused_extra)
             avg_rate = round(self._pub_ok / active_elapsed_s, 1) if active_elapsed_s > 0.001 and self._pub_ok else 0.0
-            done = self._run_finished_mono is not None or (bool(self._seq) and self._idx >= len(self._seq))
+            done = (
+                self._aborted
+                or self._run_finished_mono is not None
+                or (bool(self._seq) and self._idx >= len(self._seq))
+            )
+            mqtt_connected = bool(self._mqtt_client and self._mqtt_client.is_connected())
             return {
                 "speed_label": format_replay_speed(self._speed),
                 "speed": self._speed,
@@ -530,6 +601,24 @@ class ReplayController:
                     if self._speed == float("inf") or self._speed >= REPLAY_QOS0_SPEED_THRESHOLD
                     else "session-qos"
                 ),
+                "total": len(self._seq),
+                "idx": self._idx,
+                "aborted": self._aborted,
+                "abort_reason": self._abort_reason,
+                "last_rc": self._last_publish_rc,
+                "last_rc_name": paho_rc_name(self._last_publish_rc),
+                "mqtt_connected": mqtt_connected,
+                "broker": f"{self.host}:{self.port}",
+                "reconnect_attempts": self._reconnect_attempts,
+                "valid_for_acceptance": replay_run_valid_for_acceptance(
+                    {
+                        "finished": done,
+                        "aborted": self._aborted,
+                        "pub_ok": self._pub_ok,
+                        "pub_fail": self._pub_fail,
+                        "total": len(self._seq),
+                    }
+                ),
             }
 
     def is_running(self) -> bool:
@@ -538,12 +627,15 @@ class ReplayController:
         return bool(w and w.is_alive() and not self._pause.is_set() and not self._stop.is_set())
 
     # ---------- intern ----------
-    def _record_publish_locked(self, ok: bool, waited_s: float, retries: int) -> None:
+    def _record_publish_locked(self, ok: bool, waited_s: float, retries: int, rc: int) -> None:
+        self._last_publish_rc = int(rc)
         if ok:
             self._pub_ok += 1
             self._window_ok += 1
+            self._consecutive_fails = 0
         else:
             self._pub_fail += 1
+            self._consecutive_fails += 1
         self._pub_retry += retries
         self._publish_wait_s += waited_s
         now = time.monotonic()
@@ -553,30 +645,67 @@ class ReplayController:
             self._window_started_mono = now
             self._window_ok = 0
 
-    def _publish_item(self, item: _ReplayItem, speed: float) -> None:
-        if not self._mqtt_client or not self._mqtt_client.is_connected():
-            logger.error("❌ MQTT-Client nicht verbunden")
-            with self._lock:
-                self._record_publish_locked(False, 0.0, 0)
-            return
+    def _abort_locked(self, reason: str) -> None:
+        self._aborted = True
+        self._abort_reason = reason
+        self._stop.set()
+        logger.error("🛑 Replay aborted: %s", reason)
 
-        payload_str = (
+    def _ensure_mqtt_connected(self) -> bool:
+        """Reconnect if needed. Returns False when connection cannot be restored."""
+        client = self._mqtt_client
+        if client is None:
+            return False
+        if client.is_connected():
+            return True
+        with self._lock:
+            self._reconnect_attempts += 1
+            attempt = self._reconnect_attempts
+        logger.warning("🔌 MQTT disconnected — reconnect attempt %s (%s:%s)", attempt, self.host, self.port)
+        ok = client.ensure_connected()
+        if not ok:
+            logger.error("❌ MQTT reconnect failed (connect_rc=%s)", client.last_connect_rc)
+        return ok
+
+    def _publish_item(self, item: _ReplayItem, speed: float) -> bool:
+        """
+        Publish one item. Returns False when the run must abort
+        (no connection / too many consecutive failures).
+        """
+        if not self._ensure_mqtt_connected():
+            with self._lock:
+                self._record_publish_locked(False, 0.0, 0, -1)
+                self._abort_locked(
+                    f"MQTT not connected after reconnect "
+                    f"(broker={self.host}:{self.port}, last_disconnect_rc="
+                    f"{getattr(self._mqtt_client, 'last_disconnect_rc', None)})"
+                )
+            return False
+
+        payload_bytes = (
             item.payload if isinstance(item.payload, (bytes, bytearray)) else str(item.payload).encode("utf-8")
         )
         qos = effective_publish_qos(item.qos, speed)
         retries = 0
         waited = 0.0
         ok = False
+        last_rc = -1
         # Short retry loop when outbound queue is temporarily full (QoS1 backpressure)
         for attempt in range(8):
+            if not self._mqtt_client or not self._mqtt_client.is_connected():
+                if not self._ensure_mqtt_connected():
+                    last_rc = -1
+                    break
             t0 = time.monotonic()
             try:
-                ok, _rc = self._mqtt_client.publish_with_status(
-                    topic=item.topic, payload=payload_str, qos=qos, retain=item.retain
+                assert self._mqtt_client is not None
+                ok, last_rc = self._mqtt_client.publish_with_status(
+                    topic=item.topic, payload=payload_bytes, qos=qos, retain=item.retain
                 )
             except Exception as e:
                 logger.error(f"❌ MQTT-Publish Exception: {e}")
                 ok = False
+                last_rc = -1
             waited += time.monotonic() - t0
             if ok:
                 break
@@ -585,15 +714,32 @@ class ReplayController:
             time.sleep(0.01 * (attempt + 1))
             if self._stop.is_set():
                 break
-        if not ok:
-            logger.warning(f"⚠️ MQTT-Publish fehlgeschlagen: {item.topic} (qos={qos}, retries={retries})")
         with self._lock:
-            self._record_publish_locked(ok, waited, retries)
+            self._record_publish_locked(ok, waited, retries, last_rc)
+            if ok:
+                return True
+            logger.warning(
+                "⚠️ MQTT-Publish fehlgeschlagen: %s (qos=%s, retries=%s, rc=%s/%s)",
+                item.topic,
+                qos,
+                retries,
+                last_rc,
+                paho_rc_name(last_rc),
+            )
+            if self._consecutive_fails >= REPLAY_ABORT_AFTER_CONSECUTIVE_FAILS:
+                self._abort_locked(
+                    f"{self._consecutive_fails} consecutive publish failures "
+                    f"(last_rc={paho_rc_name(last_rc)}, qos={qos}, broker={self.host}:{self.port})"
+                )
+                return False
+        return True
 
     def _run(self) -> None:
         """Background replay loop publishing queued messages at scaled timing."""
         while not self._stop.is_set():
             with self._lock:
+                if self._aborted:
+                    break
                 if self._idx >= len(self._seq):
                     break
                 item = self._seq[self._idx]
@@ -611,9 +757,12 @@ class ReplayController:
             if due > now:
                 time.sleep(min(0.1, due - now))
                 continue
-            self._publish_item(item, speed)
-            # Index vorrücken
+            if not self._publish_item(item, speed):
+                break
+            # Index vorrücken only when we attempted this item (success or counted fail)
             with self._lock:
+                if self._aborted:
+                    break
                 self._idx += 1
 
         with self._lock:
@@ -623,9 +772,12 @@ class ReplayController:
                     self._paused_total_s += self._run_finished_mono - self._pause_started_mono
                     self._pause_started_mono = None
             logger.info(
-                "🏁 Replay finished: ok=%s fail=%s elapsed_active=%.1fs avg=%.1f msg/s speed=%s",
+                "🏁 Replay finished: ok=%s fail=%s aborted=%s reason=%s elapsed_active=%.1fs "
+                "avg=%.1f msg/s speed=%s last_rc=%s",
                 self._pub_ok,
                 self._pub_fail,
+                self._aborted,
+                self._abort_reason or "-",
                 max(
                     0.0,
                     (self._run_finished_mono - (self._run_started_mono or self._run_finished_mono))
@@ -642,6 +794,7 @@ class ReplayController:
                     else 0.0
                 ),
                 format_replay_speed(self._speed),
+                paho_rc_name(self._last_publish_rc),
             )
 
     def cleanup(self):
@@ -1495,7 +1648,12 @@ def show_replay_controls(rerun_controller: RerunController):
                 return
             # Controller starten (mit aktueller Geschwindigkeit)
             replay_ctrl.play(speed=session.get("speed", 1.0))
-            session["is_playing"] = True
+            stats_after = replay_ctrl.get_publish_stats()
+            if stats_after.get("aborted") and not replay_ctrl.is_running():
+                session["is_playing"] = False
+                st.error(f"🛑 Replay konnte nicht starten: {stats_after.get('abort_reason') or 'MQTT error'}")
+            else:
+                session["is_playing"] = True
             rerun_controller.request_rerun()  # Sofortige UI-Aktualisierung
 
     with col2:
@@ -1571,24 +1729,40 @@ def show_replay_controls(rerun_controller: RerunController):
     status_tag = "fertig" if stats["finished"] else "läuft"
     st.caption(
         f"Diagnose ({status_tag}): Speed={stats['speed_label']} · "
+        f"Broker={stats['broker']} · connected={stats['mqtt_connected']} · "
         f"Gesamtzeit={stats['elapsed_active_s']}s (aktiv) / {stats['elapsed_total_s']}s (Wanduhr) · "
         f"Ø={stats['avg_rate_msgs_per_s']} msg/s · "
         f"Momentan≈{stats['rate_msgs_per_s']} msg/s · "
         f"OK={stats['pub_ok']} Fail={stats['pub_fail']} Retry={stats['pub_retry']} · "
         f"Publish-Wait={stats['publish_wait_s']}s · "
-        f"QoS={stats['qos_mode']}"
+        f"QoS={stats['qos_mode']} · "
+        f"last_rc={stats['last_rc_name']} · "
+        f"reconnects={stats['reconnect_attempts']}"
     )
+    if stats.get("aborted") and stats.get("abort_reason"):
+        st.error(f"🛑 Replay abgebrochen: {stats['abort_reason']}")
 
     # Nach Ende weiter anzeigen (kein Auto-Refresh), solange Session geladen bleibt
     if replay_ctrl.is_running():
         st.caption("🔄 Auto-Refresh aktiv (alle 2s).")
         time.sleep(2)
         st.rerun()
-    elif stats["finished"] and stats["pub_ok"]:
-        st.success(
-            f"🏁 Replay fertig in {stats['elapsed_active_s']}s aktiv "
-            f"(Ø {stats['avg_rate_msgs_per_s']} msg/s bei {stats['speed_label']})"
-        )
+    elif stats["finished"]:
+        acceptance = replay_acceptance_message(stats)
+        if stats.get("valid_for_acceptance"):
+            st.success(
+                f"🏁 Replay fertig in {stats['elapsed_active_s']}s aktiv "
+                f"(Ø {stats['avg_rate_msgs_per_s']} msg/s bei {stats['speed_label']}). "
+                f"{acceptance}"
+            )
+        else:
+            st.error(
+                f"🏁 Replay ended with publish losses — do not use for Track & Trace SOLL checks. " f"{acceptance}"
+            )
+            st.info(
+                "Tip: Check MQTT broker (localhost:1883), unique client, and Diagnose last_rc. "
+                "At ≥5x / max, QoS0 is forced — prefer 1x–2x for acceptance."
+            )
 
 
 def start_replay():

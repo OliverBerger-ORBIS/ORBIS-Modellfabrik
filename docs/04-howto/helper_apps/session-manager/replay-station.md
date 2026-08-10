@@ -159,12 +159,28 @@ sequenceDiagram
 
 ### **MQTT-Integration**
 - **Broker:** konfigurierbar; lokal meist `localhost:1883`, alternativ externer erreichbarer Broker
-- **QoS:** Level 1 für zuverlässige Übertragung
-- **Retain:** False (nur Live-Replay)
-- **Timeout:** 5 Sekunden pro Nachricht
+- **QoS:** Session-QoS bei langsamen Speeds; ab **5x / max** erzwungen **QoS 0** (kein ACK — Throughput, nicht Abnahme)
+- **Retain:** wie in der Session aufgezeichnet (Replay setzt die Flags aus dem Log)
+- **Reconnect:** Bei Disconnect versucht der Replay-Client einmal neu zu verbinden; bei anhaltendem Fehler **Abbruch** (kein stilles `Fail=N` bis Session-Ende)
 - **Preflight-Guard (Singleton):** Vor allen Sendepfaden (`Verbindung testen`, `Play`, `Preloads`, `Test-Topics`, `Test-Messages`) blockiert die Replay Station bei doppelten lokalen Broker-Instanzen
 - **Single-Broker-Regel:** Es darf lokal nur **eine** Broker-Instanz aktiv sein, die MQTT und optional WebSocket bedient
 - **Windows-Startpfad:** `mosquitto`-Dienst auf 1883 + `scripts/start-mosquitto-ws-bridge.ps1` fuer 9001; danach kann OSF mit `localhost:9001` verbinden
+
+### **Publish-Diagnose & Track-&-Trace-Abnahme**
+
+Nach jedem Lauf die Zeile **Diagnose (fertig)** lesen:
+
+| Feld | Bedeutung |
+|------|-----------|
+| `OK` / `Fail` | Erfolgreiche vs. fehlgeschlagene Publishes (Paho-`rc`) |
+| `last_rc` | Letzter Paho-Code (`SUCCESS`, `NOT_CONNECTED`, `QUEUE_SIZE`, …) |
+| `connected` | MQTT-Client aktuell verbunden? |
+| `reconnects` | Wie oft wurde neu verbunden |
+
+**Regel:** Track-&-Trace-SOLL nur bewerten, wenn die UI **„valid for Track & Trace acceptance“** zeigt — typisch `OK=total` und `Fail=0`.  
+Läuft mit `Fail>0` oder Abort (**„INVALID for T&T acceptance“**) sind **kein** T&T-Bug-Beweis.
+
+Für Abnahme bevorzugt **1x–2x**. **max** ist Burst/Throughput und mit QoS0 bewusst verlustanfällig.
 
 ### **Broker-Check (CLI)**
 

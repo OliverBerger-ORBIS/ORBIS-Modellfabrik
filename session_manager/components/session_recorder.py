@@ -7,14 +7,20 @@ import json
 import subprocess
 import threading
 import time
-from datetime import datetime
+import uuid
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Set
 
 import streamlit as st
 
 from ..utils.logging_config import get_logger
 from ..utils.path_constants import PROJECT_ROOT
+from ..utils.recording_retain_policy import (
+    RETAINED_STARTUP_GRACE_SEC,
+    should_skip_retained_message,
+    should_skip_stale_or_duplicate_payload,
+)
 from ..utils.recording_topic_filter import (
     CUSTOM_FILTER_MODE_EXCLUDE,
     CUSTOM_FILTER_MODE_INCLUDE,
@@ -66,10 +72,28 @@ message_buffer = ThreadSafeMessageBuffer()
 
 # Flags für on_message_received (Callback läuft im MQTT-Thread – kein st.session_state)
 _recording_active = False
+# Legacy checkbox: True = also keep broker retained dump at subscribe/start.
+# Default False: skip retain only during startup grace, then keep live retain=True publishes.
 _include_retained = False
+_recording_started_monotonic: float | None = None
+_recording_started_at_utc: datetime | None = None
+_seen_payload_ts: Set[str] = set()
 _recording_exclusion_preset = "none"
 _recording_custom_filter_mode = "none"
 _recording_custom_filter_topics: list[str] = []
+
+
+def _mark_recording_retain_grace_start() -> None:
+    """Reset grace window (start recording or re-subscribe after reconnect)."""
+    global _recording_started_monotonic
+    _recording_started_monotonic = time.monotonic()
+
+
+def _reset_recording_session_filters(*, clear_seen: bool = True) -> None:
+    global _recording_started_at_utc, _seen_payload_ts
+    _recording_started_at_utc = datetime.now(timezone.utc)
+    if clear_seen:
+        _seen_payload_ts = set()
 
 
 def _is_local_mqtt_host(host: str) -> bool:
@@ -361,7 +385,14 @@ def show_session_recorder():
                         st.session_state.session_recorder["recording"] = True
                         st.session_state.session_recorder["connected"] = True
                         st.session_state.session_recorder["start_time"] = datetime.now()
-                        success_msg = "🔴 Aufnahme gestartet!" + (" (inkl. retained)" if include_retained_flag else "")
+                        if include_retained_flag:
+                            success_msg = "🔴 Aufnahme gestartet! (inkl. Retained-Dump am Start)"
+                        else:
+                            success_msg = (
+                                "🔴 Aufnahme gestartet! "
+                                f"(Retained-Dump ~{int(RETAINED_STARTUP_GRACE_SEC)}s unterdrückt; "
+                                "Live-Retained z. B. quality_check werden aufgenommen)"
+                            )
                         st.success(success_msg)
                         rerun_controller.request_rerun()
                     else:
@@ -377,13 +408,21 @@ def show_session_recorder():
 
     with st.expander("🧩 Optionale Details (Retained, Topic-Filter, Meta)", expanded=False):
         include_retained = st.checkbox(
-            "Retained Messages am Start miterfassen",
+            "Auch alten Retained-Dump am Start miterfassen",
             value=st.session_state.session_recorder.get("include_retained", False),
-            help="State/Connection/Factsheet beim Subscribe – nur aktivieren, wenn initialer Stand nötig ist.",
+            help=(
+                "Standard aus: In den ersten Sekunden nach Start/Subscribe werden retain=True-Messages "
+                "(Broker-Dump) verworfen; danach werden auch Publishes mit retain=True aufgenommen "
+                "(wichtig z. B. für /j1/txt/1/i/quality_check). "
+                "Nur aktivieren, wenn der initiale Broker-Stand in der Session gebraucht wird."
+            ),
             key="session_recorder_include_retained",
         )
         st.session_state.session_recorder["include_retained"] = include_retained
-        st.caption("**Normal:** Nur Nachrichten während der Aufnahme. **Mit Retained:** Zusätzlich initialer Stand.")
+        st.caption(
+            f"**Default:** ~{int(RETAINED_STARTUP_GRACE_SEC)} s Grace gegen alten Retain-Dump; "
+            "aktuelle Retained-Publishes während der Aufnahme werden geloggt."
+        )
 
         preset_labels = (
             "Alle Topics (unfiltered)",
@@ -511,12 +550,15 @@ def show_session_recorder():
         with col3:
             st.metric("Status", "🔴 Aufnahme läuft")
 
-        # Letzte Nachrichten anzeigen
+        # Letzte Nachrichten anzeigen (große Payloads nur als Meta — kein base64-Spam in der UI)
         messages = message_buffer.get_messages()
         if messages:
             st.markdown("**Letzte Nachrichten:**")
-            for msg in messages[-5:]:  # Letzte 5 Nachrichten
-                st.code(f"{msg['topic']}: {msg['payload'][:100]}...")
+            for msg in messages[-5:]:
+                payload = msg.get("payload") or ""
+                plen = len(payload) if isinstance(payload, str) else 0
+                preview = payload[:80].replace("\n", " ") if plen <= 200 else f"<{plen} bytes>"
+                st.code(f"{msg['topic']}: {preview}")
 
         st.caption("🔄 Auto-Refresh aktiv (alle 10s).")
         time.sleep(10)
@@ -528,8 +570,10 @@ def connect_to_broker(mqtt_settings: Dict[str, Any]) -> bool:
     try:
         import paho.mqtt.client as mqtt
 
-        # MQTT Client erstellen
-        mqtt_client = mqtt.Client(client_id="session_manager_session_recorder")
+        # Unique client_id — shared fixed IDs cause kick/reconnect loops and
+        # repeated retained dumps (empirisch ~2s quality_check spam).
+        client_id = f"session_manager_recorder_{uuid.uuid4().hex[:10]}"
+        mqtt_client = mqtt.Client(client_id=client_id)
 
         # Callback-Funktionen setzen
         mqtt_client.on_connect = on_connect
@@ -562,9 +606,12 @@ def connect_to_broker(mqtt_settings: Dict[str, Any]) -> bool:
 
 def disconnect_from_broker():
     """Trennt MQTT Verbindung"""
-    global _recording_active
+    global _recording_active, _recording_started_monotonic, _recording_started_at_utc, _seen_payload_ts
     try:
         _recording_active = False
+        _recording_started_monotonic = None
+        _recording_started_at_utc = None
+        _seen_payload_ts = set()
         if st.session_state.session_recorder["mqtt_client"]:
             mqtt_client = st.session_state.session_recorder["mqtt_client"]
             mqtt_client.loop_stop()
@@ -579,6 +626,10 @@ def on_connect(client, userdata, flags, rc):
     """Callback für MQTT Verbindung – Subscribe muss NACH Verbindung erfolgen"""
     if rc == 0:
         logger.debug("✅ MQTT Broker verbunden")
+        # Re-subscribe dumps retained again — refresh grace while recording.
+        if _recording_active:
+            _mark_recording_retain_grace_start()
+            logger.info("🔁 MQTT (re)connected during recording — retain grace restarted")
         client.subscribe("#")
     else:
         logger.error(f"❌ MQTT Verbindung fehlgeschlagen: {rc}")
@@ -591,6 +642,7 @@ def start_recording(mqtt_settings=None, rerun_controller=None) -> bool:
     """
     global _recording_active, _include_retained, _recording_exclusion_preset
     global _recording_custom_filter_mode, _recording_custom_filter_topics
+    global _recording_started_monotonic, _recording_started_at_utc, _seen_payload_ts
     try:
         logger.info("🔴 Session-Aufnahme wird gestartet...")
 
@@ -600,6 +652,8 @@ def start_recording(mqtt_settings=None, rerun_controller=None) -> bool:
         # Flags für Callback setzen (läuft im MQTT-Thread)
         _recording_active = True
         _include_retained = st.session_state.session_recorder.get("include_retained", False)
+        _mark_recording_retain_grace_start()
+        _reset_recording_session_filters(clear_seen=True)
         from .settings_manager import SettingsManager
 
         settings_manager = SettingsManager()
@@ -614,6 +668,8 @@ def start_recording(mqtt_settings=None, rerun_controller=None) -> bool:
                 mqtt_settings = settings_manager.get_session_recorder_mqtt_settings()
             if not connect_to_broker(mqtt_settings):
                 _recording_active = False
+                _recording_started_monotonic = None
+                _recording_started_at_utc = None
                 return False
             just_connected = True
             if rerun_controller:
@@ -623,18 +679,28 @@ def start_recording(mqtt_settings=None, rerun_controller=None) -> bool:
         if mqtt_client:
             # Subscribe: bei frischem Connect in on_connect; bei erneutem Start (nach Stop) hier
             if not just_connected:
+                # Re-subscribe triggers retained dump → restart grace immediately before subscribe.
+                _mark_recording_retain_grace_start()
                 mqtt_client.subscribe("#")
-            logger.info(
-                "✅ Session-Aufnahme gestartet - nur Nachrichten während der Aufnahme"
-                + (" (inkl. retained)" if _include_retained else "")
-            )
+            if _include_retained:
+                logger.info("✅ Session-Aufnahme gestartet (inkl. Retained-Dump am Start)")
+            else:
+                logger.info(
+                    "✅ Session-Aufnahme gestartet "
+                    f"(Retained-Dump {RETAINED_STARTUP_GRACE_SEC:g}s unterdrückt; "
+                    "quality_check per Payload-ts + Dedupe)"
+                )
             return True
         _recording_active = False
+        _recording_started_monotonic = None
+        _recording_started_at_utc = None
         return False
 
     except Exception as e:
         logger.error(f"❌ Fehler beim Starten der Aufnahme: {e}")
         _recording_active = False
+        _recording_started_monotonic = None
+        _recording_started_at_utc = None
         return False
 
 
@@ -659,8 +725,11 @@ def pause_recording():
 
 def stop_recording() -> bool:
     """Beendet die Aufnahme und speichert. Setzt ``session_recorder['recording']`` immer zurück (finally)."""
-    global _recording_active
+    global _recording_active, _recording_started_monotonic, _recording_started_at_utc, _seen_payload_ts
     _recording_active = False
+    _recording_started_monotonic = None
+    _recording_started_at_utc = None
+    _seen_payload_ts = set()
     stopped_ok = True
     try:
         logger.info("⏹️ Session-Aufnahme wird gestoppt...")
@@ -700,14 +769,29 @@ def stop_recording() -> bool:
 
 
 def on_message_received(client, userdata, msg):
-    """Callback für empfangene MQTT-Nachrichten – nur während Aufnahme, optional ohne retained"""
+    """Callback für empfangene MQTT-Nachrichten – nur während Aufnahme.
+
+    Retained: Startup-Grace verwirft den Broker-Dump alter Retained; whitelisted
+    Topics (quality_check) zusätzlich nach Payload-ts und Dedupe gefiltert.
+    """
     global _recording_active, _include_retained, _recording_exclusion_preset
     global _recording_custom_filter_mode, _recording_custom_filter_topics
+    global _recording_started_monotonic, _recording_started_at_utc, _seen_payload_ts
     try:
         if not _recording_active:
             return
         is_retain = getattr(msg, "retain", False)
-        if is_retain and not _include_retained:
+        if should_skip_retained_message(
+            is_retain,
+            recording_started_monotonic=_recording_started_monotonic,
+            include_startup_retained=_include_retained,
+            topic=msg.topic,
+        ):
+            logger.info(
+                "⏭️ Retained Dump übersprungen (Grace): %s (%s bytes)",
+                msg.topic,
+                len(msg.payload) if msg.payload is not None else 0,
+            )
             return
         if not should_write_message_to_session_log(
             msg.topic,
@@ -717,9 +801,23 @@ def on_message_received(client, userdata, msg):
         ):
             return
 
+        payload_text = msg.payload.decode("utf-8")
+        if should_skip_stale_or_duplicate_payload(
+            msg.topic,
+            payload_text,
+            recording_started_at_utc=_recording_started_at_utc,
+            seen_payload_ts=_seen_payload_ts,
+        ):
+            logger.info(
+                "⏭️ quality/aiqs übersprungen (stale ts oder Duplikat): %s (%s bytes)",
+                msg.topic,
+                len(payload_text),
+            )
+            return
+
         message = {
             "topic": msg.topic,
-            "payload": msg.payload.decode("utf-8"),
+            "payload": payload_text,
             "timestamp": utc_iso_timestamp_ms(),
             "qos": getattr(msg, "qos", 0),
             "retain": is_retain,

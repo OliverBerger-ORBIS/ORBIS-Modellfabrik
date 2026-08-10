@@ -7,6 +7,7 @@ Thread-sichere Implementierung ohne Connection-Loops
 
 import threading
 import time
+import uuid
 from dataclasses import dataclass
 from typing import Any, Callable
 
@@ -17,6 +18,42 @@ try:
 except ImportError:
     MQTT_AVAILABLE = False
     mqtt = None
+
+# Paho return codes we care about in Replay diagnostics (names stable across versions).
+_PAHO_RC_NAMES: dict[int, str] = {
+    -1: "NOT_CONNECTED",
+    0: "SUCCESS",
+    1: "NOMEM",
+    2: "PROTOCOL",
+    3: "INVAL",
+    4: "NO_CONN",
+    5: "CONN_REFUSED",
+    6: "NOT_FOUND",
+    7: "CONN_LOST",
+    8: "TLS",
+    9: "PAYLOAD_SIZE",
+    10: "NOT_SUPPORTED",
+    11: "AUTH",
+    12: "ACL_DENIED",
+    13: "UNKNOWN",
+    14: "ERRNO",
+    15: "QUEUE_SIZE",
+    16: "KEEPALIVE",
+}
+
+
+def paho_rc_name(rc: int) -> str:
+    """Human-readable Paho publish/connect return code."""
+    if mqtt is not None:
+        known = {
+            int(mqtt.MQTT_ERR_SUCCESS): "SUCCESS",
+            int(getattr(mqtt, "MQTT_ERR_NO_CONN", 4)): "NO_CONN",
+            int(getattr(mqtt, "MQTT_ERR_QUEUE_SIZE", 15)): "QUEUE_SIZE",
+            int(getattr(mqtt, "MQTT_ERR_CONN_LOST", 7)): "CONN_LOST",
+        }
+        if int(rc) in known:
+            return known[int(rc)]
+    return _PAHO_RC_NAMES.get(int(rc), f"RC_{rc}")
 
 
 @dataclass
@@ -35,12 +72,16 @@ class SessionManagerMQTTClient:
     Verhindert Connection-Loops durch persistente Verbindung.
     """
 
-    def __init__(self, host: str = "localhost", port: int = 1883, client_id: str = "session_manager"):
+    def __init__(self, host: str = "localhost", port: int = 1883, client_id: str | None = None):
         self.host = host
         self.port = port
-        self.client_id = client_id
+        # Unique IDs avoid broker kicks when Streamlit reruns / second SM instance.
+        self.client_id = client_id or f"session_manager_{uuid.uuid4().hex[:10]}"
         self.connected = False
-        self._lock = threading.Lock()
+        self.last_disconnect_rc: int | None = None
+        self.last_connect_rc: int | None = None
+        # RLock: connect() may call disconnect() while already holding the lock.
+        self._lock = threading.RLock()
         self._client: Any = None
         self._message_callbacks: list[Callable[[MQTTMessage], None]] = []
 
@@ -58,7 +99,7 @@ class SessionManagerMQTTClient:
             try:
                 # Alte Verbindung sauber trennen
                 if self._client:
-                    self.disconnect()
+                    self._disconnect_unlocked()
 
                 # Neuen Client erstellen
                 if mqtt is None:
@@ -93,18 +134,29 @@ class SessionManagerMQTTClient:
                 self.connected = False
                 return False
 
+    def ensure_connected(self, timeout_s: float = 5.0) -> bool:
+        """Return True if connected; otherwise attempt one reconnect."""
+        if self.is_connected():
+            return True
+        # connect() has its own wait loop (~5s); timeout_s kept for API clarity.
+        _ = timeout_s
+        return self.connect()
+
     def disconnect(self):
         """Verbindung sauber trennen"""
         with self._lock:
-            if self._client:
-                try:
-                    self._client.loop_stop()
-                    self._client.disconnect()
-                except Exception:
-                    pass
-                finally:
-                    self._client = None
-                    self.connected = False
+            self._disconnect_unlocked()
+
+    def _disconnect_unlocked(self) -> None:
+        if self._client:
+            try:
+                self._client.loop_stop()
+                self._client.disconnect()
+            except Exception:
+                pass
+            finally:
+                self._client = None
+                self.connected = False
 
     def publish(self, topic: str, payload: str | bytes, qos: int = 0, retain: bool = False) -> bool:
         """
@@ -175,6 +227,7 @@ class SessionManagerMQTTClient:
 
     def _on_connect(self, client, userdata, flags, rc):
         """MQTT on_connect Callback"""
+        self.last_connect_rc = int(rc)
         if rc == 0:
             self.connected = True
         else:
@@ -182,6 +235,7 @@ class SessionManagerMQTTClient:
 
     def _on_disconnect(self, client, userdata, rc):
         """MQTT on_disconnect Callback"""
+        self.last_disconnect_rc = int(rc)
         self.connected = False
 
     def _on_message(self, client, userdata, msg):
@@ -208,4 +262,6 @@ class SessionManagerMQTTClient:
             "client_id": self.client_id,
             "connected": self.connected,
             "mqtt_available": MQTT_AVAILABLE,
+            "last_connect_rc": self.last_connect_rc,
+            "last_disconnect_rc": self.last_disconnect_rc,
         }

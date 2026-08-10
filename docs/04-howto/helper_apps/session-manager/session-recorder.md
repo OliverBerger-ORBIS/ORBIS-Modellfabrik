@@ -81,7 +81,7 @@ sequenceDiagram
 - **Protokoll:** paho-mqtt Python Client
 - **Topics:** Alle verfügbaren Topics abonnieren
 - **QoS:** Level 1 für zuverlässige Übertragung
-- **Retain:** Optional (Checkbox „Retained Messages am Start miterfassen“)
+- **Retain (Default):** Beim Start/Subscribe ~**2 s Grace** — Broker-Dump **alter** Retained wird verworfen; danach werden auch Publishes mit `retain=True` geloggt. **Immer behalten** (auch in der Grace): `/j1/txt/1/i/quality_check`, `dsp/aiqs/action`. Zusätzlich (ab **v1.8.4**): Payload-``ts`` vor Aufnahme-Start → skip; gleiches ``ts`` erneut → Dedupe (Reconnect-Spam). Unique MQTT-`client_id` pro Connect. AIQS-Repo: `quality_check` mit **`retain=False`**. Optionale Checkbox: alten Dump am Start trotzdem miterfassen.
 
 ### **Topic-Aufnahme (DR-25)**
 
