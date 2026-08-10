@@ -37,14 +37,14 @@ npx tsx scripts/replay-sessions.ts \
 #### 2. Replay 10x faster for quick smoke testing
 ```bash
 npx tsx scripts/replay-sessions.ts \
-  --session data/osf-data/sessions/white-storage-production_20260728_095332.log \
+  --session data/osf-data/sessions/white-storage-production_20260807_111716.log \
   --speedFactor 10
 ```
 
 #### 3. Replay once and exit
 ```bash
 npx tsx scripts/replay-sessions.ts \
-  --session data/osf-data/sessions/blue-storage-production-nok_20260728_100418.log \
+  --session data/osf-data/sessions/blue-storage-production-nok_20260807_110943.log \
   --once
 ```
 
@@ -96,7 +96,7 @@ Run a recorded session continuously to detect memory leaks or stability issues:
 
 ```bash
 npx tsx scripts/replay-sessions.ts \
-  --session data/osf-data/sessions/red-storage-production_20260728_095905.log \
+  --session data/osf-data/sessions/red-storage-production_20260807_113213.log \
   --speedFactor 2
 ```
 

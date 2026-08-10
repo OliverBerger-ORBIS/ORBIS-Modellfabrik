@@ -45,7 +45,7 @@ Die Mock-Fixtures in `osf/libs/testing-fixtures` und `osf/testing/fixtures/` lad
 
 **Neue Sessions (03.03.2026, Default; Stand Inventar siehe `INVENTORY.md`):**
 - `start-osf_20260303_075408.log` – frischer Connect, alle retained Topics
-- ~~`storage-{white,red,blue}_20260303_*.log` / `production-{white,red,blue}_20260303_*.log`~~ — **gelöscht 28.07.2026**, ersetzt durch `white|red-storage-production_20260728_*.log` (Pass) bzw. `blue-storage-production-nok_20260728_100418.log` (Fail, Rename 05.08.2026)
+- ~~`storage-{white,red,blue}_20260303_*.log` / `production-{white,red,blue}_20260303_*.log`~~ — **gelöscht 28.07.2026**, ersetzt durch Juli-Refs; Juli-Single-Color **gelöscht 10.08.2026**, ersetzt durch `*-storage-production(_nok)?_20260807_*.log`
 - `production-blue-part1_20260303_082030.log`, `production-blue-part2_20260303_090117.log` (falls noch vorhanden)
 - `mixed-pw-pr-sw-pb-sr-sb_20260303_092241.log`, `mixed-sw-pw-sw-pwnok-pw_20260303_093559.log`
 - `storage-red234_20260303_094003.log`, `vibration-sw420_20260303_094240.log`

@@ -26,8 +26,8 @@ Nach erfolgreichem NFC B-soft-Test und Live-Demo-UX:
 | `mixed-pw-pr-sw-pb-sr-sb_20260303_092241.log` | Zu komplex für Erstanalyse (Multi-Farbe, parallele Orders) — Fremd-Events in Weiß-Historie, doppelter Produktionsauftrag-Header |
 | `storage-white` + `production-white` (`20260303`) | **gelöscht 28.07.** — ersetzt durch `*-storage-production_20260728_*` |
 | `object-detection/od_white_1` | Nur STORAGE live; Capture unvollständig (kein PRODUCTION) |
-| **`white|red-storage-production_20260728_*.log`** | **Referenz Pass** für A1: je 1× STORAGE + 1× PRODUCTION, Sensorik vollständig |
-| **`blue-storage-production-nok_20260728_100418.log`** | **Referenz Fail:** BLUE AIQS `CHECK_QUALITY` FAILED (umbenannt 05.08.2026) |
+| **`white|red-storage-production_20260728_*.log`** | *(entfernt 10.08.2026)* früher Referenz Pass → jetzt `*_20260807_*` |
+| **`blue-storage-production-nok_20260728_100418.log`** | *(entfernt 10.08.2026)* früher Referenz Fail → jetzt `*_nok_20260807_*` |
 | **`production-wr-*` / `production-wb-*`** | Parallel-Production **ohne** Storage — ausreichend für Multi-AGV-/Parallel-Attribution, nachdem Multi-Order an den drei Referenzen verifiziert ist |
 
 ### Kernbefund Live/Replay: Events ok, Production-Klammer fehlt

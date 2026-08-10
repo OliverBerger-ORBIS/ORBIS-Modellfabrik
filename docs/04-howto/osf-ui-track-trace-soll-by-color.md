@@ -51,7 +51,7 @@ SOLL-Schritt am Ende jeder Production-Kette:
 ## WHITE — SOLL
 
 **Workflow Production:** `HBW → DRILL → AIQS → DPS`  
-**Referenz Pass:** `white-storage-production_20260728_*` · Multi-Load: `ml-*` NFC White
+**Referenz Pass:** `white-storage-production_20260807_*` · Multi-Load: `ml-*` NFC White
 
 ### STORAGE
 
@@ -88,7 +88,7 @@ SOLL-Schritt am Ende jeder Production-Kette:
 ## RED — SOLL
 
 **Workflow Production:** `HBW → MILL → AIQS → DPS` (**kein** DRILL)  
-**Referenz Pass:** `red-storage-production_20260728_*` · Multi-Load: `ml-*` NFC Red
+**Referenz Pass:** `red-storage-production_20260807_*` · Multi-Load: `ml-*` NFC Red
 
 ### STORAGE
 
@@ -124,7 +124,8 @@ SOLL-Schritt am Ende jeder Production-Kette:
 ## BLUE — SOLL
 
 **Workflow Production:** `HBW → DRILL → MILL → AIQS → DPS`  
-**Referenz Fail:** `blue-storage-production-nok_20260728_*` · Multi-Load: `ml-*` NFC Blue
+**Referenz Fail:** `blue-storage-production-nok_20260807_*` · Multi-Load: `ml-*` NFC Blue  
+**Referenz Pass:** `blue-storage-production_20260807_*`
 
 ### STORAGE
 
@@ -173,7 +174,7 @@ Empirie an `storage-production-ml-wbr_*` u. a. — **nicht** durch UI-Spekulat
 | CHRG fehlt in NFC-Historie | DOCK @ CHRG0 mit **leerem** AGV |
 | ENV durchgängig WARN | Sensorlage (z. B. MPU `yellow`) in der Aufnahme — kein Sticky-UI-Bug |
 
-Single-Color Pass-Sessions (`white|red-storage-production_20260728_*`) bleiben die sauberste SOLL-Referenz.
+Single-Color Pass-Sessions (`*-storage-production_20260807_*`) bleiben die sauberste SOLL-Referenz.
 
 ---
 

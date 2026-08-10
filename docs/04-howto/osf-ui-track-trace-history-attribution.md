@@ -34,7 +34,7 @@ Dieses How-to beschreibt die **aktuellen Regeln**, damit spätere Sonderfälle (
 **Phase (Golden Path):** Event-`orderType` kommt primär aus CCU (`resolveCcuOrderType` / `orderId`).  
 Location-Heuristik (`wasAtHbw`) nur Fallback — vermeidet Doppel-Lagerauftrag-Karten.
 
-### Golden Path (Referenz: `white|red-storage-production_20260728_*` Pass; Fail: `blue-storage-production-nok_…`)
+### Golden Path (Referenz: `*-storage-production_20260807_*` Pass; Fail: `*-storage-production-nok_20260807_*`)
 
 **Storage:** DPS Color → DPS NFC (NFC = Historie-ID) → DPS DROP → FTS (DPS → Intersections → HBW) → HBW PICK  
 **Production:** HBW DROP → FTS → Modul PICK/PROCESS/DROP (DRILL/MILL/AIQS je Farbe) → FTS → DPS PICK  
@@ -219,16 +219,16 @@ Flow-Anker (Checklist „visited“): z. B. PRODUCTION HBW←DROP, DRILL←DRI
 | Production-Stationen fehlen trotz Pass-Lauf | Session ohne `DRILL`/`MILL`/`AIQS` `/state` (Aufnahme-Lücke) | Inventar prüfen; z. B. `ml-wrb_114227` unvollständig → Replay `ml-wbr_*` |
 
 **Abnahme-Regel (Pass, kein Quality-Fail):**  
-Pro Farbe sollen `storage-production-ml-*` Sessions **mindestens** so viele Station- und Transport-Events je Werkstück zeigen wie die Pass-Referenzen `white|red-storage-production_20260728_*` (Blue Pass noch offen; `blue-…-nok_100418` = Fail-Referenz). Zu viele Ist-Events (Mitfahrt) sind ok; zu wenige nicht.
+Pro Farbe sollen `storage-production-ml-*` / `ml-*` Sessions **mindestens** so viele Station- und Transport-Events je Werkstück zeigen wie die Pass-Referenzen `*-storage-production_20260807_*`. Zu viele Ist-Events (Mitfahrt) sind ok; zu wenige nicht.
 
-- Referenz Storage→Production Pass: `white|red-storage-production_20260728_*.log`
-- Referenz Storage→Production Fail (Blue): `blue-storage-production-nok_20260728_100418.log`
-- **Offen (Aufnahme):** Blue Pass; White Fail; Red Fail
+- Referenz Storage→Production Pass: `white|red|blue-storage-production_20260807_*.log`
+- Referenz Storage→Production Fail: `white|red|blue-storage-production-nok_20260807_*.log`
 
 **Empfohlene Replay-Sessions:**
 
-- Referenz Storage→Production (eindeutige NFC, Arduino): `white|red-storage-production_20260728_*.log` (Pass); `blue-storage-production-nok_20260728_100418.log` (Fail)
-- **Multi-Load 1 AGV (04.08.2026, eindeutige NFC):** `ml-wbr_…115849` (Pass, vollständige Mfg-States — bevorzugte Mapping-Abnahme), `ml-wrb_…114227` (**unvollständig:** kaum DRILL/MILL/AIQS `/state`), `ml-brw_…121835` (Charge+RED-Fail), `ml-bwr_…131822` (OK), `ml-bwr_…130016` (Störfall DPS/FTS, behalten). **`ml-rrr_…133245`**, **`ml-bbb_…134700`**. Inventar-Cleanup 05.08.: alte vergleichbare Logs entfernt; **2-AGV-Lücke** bis AGV-2-Reparatur (Interim: Stillstand + ein osf.4-WR).
+- Referenz Storage→Production (eindeutige NFC, Arduino, Aug 2026): `*-storage-production_20260807_*.log` (Pass); `*-storage-production-nok_20260807_*.log` (Fail)
+- **Multi-Load 1 AGV (07.08.2026):** `ml-wbr_…125133` (Pass), `ml-wrb-red-nok_…`, `ml-rbw-blue-nok_…`, `ml-wrb-chrg-blue-nok_…`
+- **Multi-Load 1 AGV (04.08.2026, eindeutige NFC):** `ml-wbr_…115849` (Pass, vollständige Mfg-States — bevorzugte Mapping-Abnahme), `ml-wrb_…114227` (**unvollständig:** kaum DRILL/MILL/AIQS `/state`), `ml-brw_…121835` (Charge+RED-Fail), `ml-bwr_…131822` (OK), `ml-bwr_…130016` (Störfall DPS/FTS, behalten). **`ml-rrr_…133245`**, **`ml-bbb_…134700`**. Juli-Single-Color-Refs entfernt 10.08.2026; **2-AGV-Lücke** bis AGV-2-Reparatur (Interim: Stillstand + ein osf.4-WR).
 - Parallel WR/RW/WB+R (Mai 2026): für Mitfahrt/Multi-AGV geeignet, aber **NFC-IDs können wiederverwendet** sein → Spuren teils „wild“
 - Alte Mixed-Logs (`mixed-pw-*`, ältere `two-agvs-*`) nur noch begrenzt für Attribution nutzen
 
