@@ -28,6 +28,7 @@ rg "__version__|v[0-9]+\\.[0-9]+\\.[0-9]+" \
 ## 4) Commit erstellen
 - Nur relevante Dateien stagen.
 - Commit-Message mit Release-Bezug (z. B. `release(session-manager): vX.Y.Z`).
+- **Pre-commit:** Reine `session_manager/`-Commits (ohne `osf/`) überspringen die schweren OSF-Hooks (Tests/Lint/tsc). Es laufen nur Black/Ruff (+ Mermaid, falls `.md` gestaged).
 
 ## 5) Tag setzen (verbindlich namespaced)
 

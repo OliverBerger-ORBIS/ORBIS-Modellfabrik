@@ -1,8 +1,11 @@
 # .pre-commit-config.yaml
 # Pre-commit hooks for OSF (Angular) and Session Manager (Python)
+#
+# Heavy OSF hooks (tests/lint/tsc) only run when OSF-related paths are staged.
+# Pure session_manager / docs / data commits skip them (keeps Mac responsive).
 
 repos:
-  # Angular/TypeScript Validation
+  # Angular/TypeScript Validation — only when OSF tree (or shared NX/TS config) changes
   - repo: local
     hooks:
       # OSF Tests (CRITICAL - produktiver Code)
@@ -11,8 +14,9 @@ repos:
         entry: bash -c 'npx nx test osf-ui && npx nx test mqtt-client'
         language: system
         pass_filenames: false
+        files: ^(osf/|package\.json|package-lock\.json|nx\.json|tsconfig.*\.json|jest\.preset\.js|jest\.config\.)
         stages: [pre-commit]
-        description: Run OSF tests (osf-ui, mqtt-client)
+        description: Run OSF tests (osf-ui, mqtt-client) when OSF paths are staged
 
       # TypeScript/ESLint Linting
       - id: nx-lint-osf
@@ -20,8 +24,9 @@ repos:
         entry: npx nx lint osf-ui
         language: system
         pass_filenames: false
+        files: ^(osf/|package\.json|package-lock\.json|nx\.json|tsconfig.*\.json|jest\.preset\.js|jest\.config\.)
         stages: [pre-commit]
-        description: Run ESLint on OSF Angular code
+        description: Run ESLint on OSF Angular code when OSF paths are staged
 
       # TypeScript Type Check (via tsc - non-blocking)
       - id: nx-type-check
@@ -29,8 +34,9 @@ repos:
         entry: bash -c 'cd osf/apps/osf-ui && npx tsc --noEmit' || true
         language: system
         pass_filenames: false
+        files: ^(osf/|package\.json|package-lock\.json|nx\.json|tsconfig.*\.json)
         stages: [pre-commit]
-        description: TypeScript type checking (non-blocking, ESLint catches most issues)
+        description: TypeScript type checking when OSF paths are staged (non-blocking)
 
   # Python Validation (Session Manager only)
   - repo: local
