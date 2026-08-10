@@ -439,7 +439,7 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     return {
       viewBox: `0 0 ${canvas.width} ${canvas.height}`,
       roads,
-      marker: { x: pos.x, y: pos.y, color, r: 28 },
+      marker: { x: pos.x, y: pos.y, color, r: 56 },
     };
   }
 
@@ -607,6 +607,31 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
       return 'quality-result--failed';
     }
     return 'quality-result--unknown';
+  }
+
+  /** AIQS camera frame attached to CHECK_QUALITY (PASSED and FAILED). */
+  getQualityImageUrl(event: TrackTraceEvent): string | null {
+    if ((event.eventType || '').toUpperCase() !== 'CHECK_QUALITY') {
+      return null;
+    }
+    const raw = event.details?.['qualityImage'];
+    return typeof raw === 'string' && raw.startsWith('data:image/') ? raw : null;
+  }
+
+  getQualityClassificationLabel(event: TrackTraceEvent): string | null {
+    if ((event.eventType || '').toUpperCase() !== 'CHECK_QUALITY') {
+      return null;
+    }
+    const classification = event.details?.['qualityClassification'];
+    const desc = event.details?.['qualityClassificationDesc'];
+    const parts: string[] = [];
+    if (typeof classification === 'string' && classification.trim()) {
+      parts.push(classification.trim());
+    }
+    if (typeof desc === 'string' && desc.trim()) {
+      parts.push(desc.trim());
+    }
+    return parts.length > 0 ? parts.join(' — ') : null;
   }
 
   getEventPrimaryActor(event: TrackTraceEvent): string {

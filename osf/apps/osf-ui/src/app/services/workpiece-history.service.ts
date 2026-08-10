@@ -13,6 +13,13 @@ import {
   TrackTraceEnvironmentService,
   type TrackTraceEnvironmentSnapshot,
 } from './track-trace-environment.service';
+import {
+  parseQualityCheckPayload,
+  qualityResultsMatch,
+  qualityTimestampsWithinWindow,
+  QUALITY_CHECK_TOPIC,
+  type QualityCheckAttachment,
+} from '../utils/quality-check-image';
 
 /**
  * Track & Trace event for workpiece history
@@ -203,6 +210,8 @@ export class WorkpieceHistoryService implements OnDestroy {
   // TURN direction lookup (from order stream) - similar to FTS-Tab
   private readonly turnDirectionByActionId = new Map<string, 'LEFT' | 'RIGHT' | string>();
   private latestEnvironmentSnapshot: TrackTraceEnvironmentSnapshot | null = null;
+  /** Latest AIQS `/j1/txt/1/i/quality_check` frame (image may arrive before/after MODULE FINISHED). */
+  private latestQualityCheck: QualityCheckAttachment | null = null;
   private environmentSnapshotSub?: Subscription;
   /**
    * Dedup cache to avoid duplicate events in Track & Trace history.
@@ -304,6 +313,7 @@ export class WorkpieceHistoryService implements OnDestroy {
         this.pendingDpsIntake.delete(key);
       }
     }
+    this.latestQualityCheck = null;
   }
 
   /**
@@ -523,12 +533,53 @@ export class WorkpieceHistoryService implements OnDestroy {
       }
     });
 
+    // Catch-up: quality_check frames already in MessageMonitor (mid-pass / after replay burst)
+    for (const msg of this.messageMonitor.getHistory(QUALITY_CHECK_TOPIC)) {
+      if (!msg?.valid || msg.payload == null) {
+        continue;
+      }
+      try {
+        const attachment = parseQualityCheckPayload(msg.payload);
+        if (!attachment) {
+          continue;
+        }
+        if (!attachment.ts && typeof msg.timestamp === 'string') {
+          attachment.ts = msg.timestamp;
+        }
+        this.ingestQualityCheck(environmentKey, attachment);
+      } catch (error) {
+        console.error('[WorkpieceHistoryService] Buffer quality_check error:', error);
+      }
+    }
+
+    // AIQS quality image → attach to CHECK_QUALITY timeline events (PASSED and FAILED)
+    const qualityCheckSubscription = this.messageMonitor
+      .getLastMessage(QUALITY_CHECK_TOPIC)
+      .subscribe((msg) => {
+        if (!msg?.valid || msg.payload == null) {
+          return;
+        }
+        try {
+          const attachment = parseQualityCheckPayload(msg.payload);
+          if (!attachment) {
+            return;
+          }
+          if (!attachment.ts && typeof msg.timestamp === 'string') {
+            attachment.ts = msg.timestamp;
+          }
+          this.ingestQualityCheck(environmentKey, attachment);
+        } catch (error) {
+          console.error('[WorkpieceHistoryService] Error ingesting quality_check:', error);
+        }
+      });
+
     // Combine all subscriptions
     const combinedSubscription = new Subscription();
     combinedSubscription.add(ftsSubscription);
     combinedSubscription.add(moduleSubscription);
     combinedSubscription.add(correlationSubscription);
     combinedSubscription.add(ftsOrderSubscription);
+    combinedSubscription.add(qualityCheckSubscription);
 
     this.subscriptions.set(environmentKey, combinedSubscription);
   }
@@ -1323,6 +1374,7 @@ export class WorkpieceHistoryService implements OnDestroy {
     
     baseEvent.subOrderId = subOrderId;
     this.attachEnvironmentSnapshotIfRelevant(baseEvent as TrackTraceEvent);
+    this.attachQualityImageIfRelevant(baseEvent as TrackTraceEvent);
 
     // Add event to history
     this.tryAppendEvent(environmentKey, matchingHistory, baseEvent as TrackTraceEvent);
@@ -2178,6 +2230,100 @@ export class WorkpieceHistoryService implements OnDestroy {
     }
     const details = event.details ? { ...event.details } : {};
     details['environmentSnapshot'] = this.latestEnvironmentSnapshot;
+    event.details = details;
+  }
+
+  /**
+   * Store latest quality_check frame and attach it to matching CHECK_QUALITY events
+   * (image may arrive slightly before or after the module FINISHED state).
+   */
+  private ingestQualityCheck(environmentKey: string, attachment: QualityCheckAttachment): void {
+    this.latestQualityCheck = attachment;
+    const store = this.getStore(environmentKey);
+    const historyMap = new Map(store.value);
+    let changed = false;
+
+    for (const [workpieceId, history] of historyMap) {
+      const match = this.findBestQualityImageMatch(history.events, attachment);
+      if (!match) {
+        continue;
+      }
+      this.writeQualityImageDetails(match, attachment);
+      historyMap.set(workpieceId, { ...history, events: [...history.events] });
+      changed = true;
+    }
+
+    if (changed) {
+      store.next(historyMap);
+    }
+  }
+
+  private attachQualityImageIfRelevant(event: TrackTraceEvent): void {
+    if ((event.eventType || '').toUpperCase() !== 'CHECK_QUALITY') {
+      return;
+    }
+    if (event.details?.['qualityImage']) {
+      return;
+    }
+    const qc = this.latestQualityCheck;
+    if (!qc?.dataUrl) {
+      return;
+    }
+    if (!this.eventMatchesQualityAttachment(event, qc)) {
+      return;
+    }
+    this.writeQualityImageDetails(event, qc);
+  }
+
+  private findBestQualityImageMatch(
+    events: TrackTraceEvent[],
+    attachment: QualityCheckAttachment
+  ): TrackTraceEvent | null {
+    const candidates = events.filter(
+      (event) =>
+        (event.eventType || '').toUpperCase() === 'CHECK_QUALITY' &&
+        !event.details?.['qualityImage'] &&
+        this.eventMatchesQualityAttachment(event, attachment)
+    );
+    if (candidates.length === 0) {
+      return null;
+    }
+    if (candidates.length === 1 || !attachment.ts) {
+      return candidates[candidates.length - 1] ?? null;
+    }
+    const qualityMs = Date.parse(attachment.ts);
+    if (!Number.isFinite(qualityMs)) {
+      return candidates[candidates.length - 1] ?? null;
+    }
+    return candidates.reduce((best, current) => {
+      const bestDelta = Math.abs(Date.parse(best.timestamp) - qualityMs);
+      const currentDelta = Math.abs(Date.parse(current.timestamp) - qualityMs);
+      return currentDelta < bestDelta ? current : best;
+    });
+  }
+
+  private eventMatchesQualityAttachment(
+    event: TrackTraceEvent,
+    attachment: QualityCheckAttachment
+  ): boolean {
+    if (!qualityResultsMatch(event.details?.['result'], attachment.result)) {
+      return false;
+    }
+    return qualityTimestampsWithinWindow(event.timestamp, attachment.ts);
+  }
+
+  private writeQualityImageDetails(event: TrackTraceEvent, attachment: QualityCheckAttachment): void {
+    const details = event.details ? { ...event.details } : {};
+    details['qualityImage'] = attachment.dataUrl;
+    if (attachment.classification) {
+      details['qualityClassification'] = attachment.classification;
+    }
+    if (attachment.classificationDesc) {
+      details['qualityClassificationDesc'] = attachment.classificationDesc;
+    }
+    if (attachment.ts) {
+      details['qualityImageTs'] = attachment.ts;
+    }
     event.details = details;
   }
 

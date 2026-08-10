@@ -424,6 +424,20 @@
           >{{ badge }}</div>
         </div>
 
+        <div class="quality-image-block" *ngIf="getQualityImageUrl(event) as qualityImageUrl">
+          <img
+            class="quality-image-thumb"
+            [src]="qualityImageUrl"
+            alt=""
+            width="120"
+            height="90"
+            loading="lazy"
+          />
+          <div class="quality-image-meta" *ngIf="getQualityClassificationLabel(event) as label">
+            {{ label }}
+          </div>
+        </div>
+
         <ng-container *ngIf="event.eventSource === 'FTS'">
           <div class="agv-event-body">
             <div class="event-section" *ngIf="getTransportLoadRows(event) as bucketRows">

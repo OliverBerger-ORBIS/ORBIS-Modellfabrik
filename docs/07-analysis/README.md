@@ -27,6 +27,7 @@ Sprint-bezogene und projektweite Analysen für OSF.
 
 ## Order / Track & Trace
 
+- [track-trace-heuristic-session-matrix-2026-08.md](track-trace-heuristic-session-matrix-2026-08.md) – **2026-08:** Heuristik × Session (Keep/Drop nach SM-Fix); Testreihenfolge für zügige Replay-Abnahme
 - [nfc-logical-id-b-soft-plan-2026-07.md](nfc-logical-id-b-soft-plan-2026-07.md) – **temporär:** On-Site-Plan TXT-DPS logische workpieceId (B-soft); nach Abarbeitung löschbar
 - [track-trace-live-content-fix-2026-07.md](track-trace-live-content-fix-2026-07.md) – **temporär:** Live-Demo Inhalt (Multi-Order, Publisher, Zeit vs. Sub-Order); Replay/HomeOffice; nach Phase 1(+2) löschbar
 - **Pflege-Doku (verbindlich für Attribution):** [osf-ui-track-trace-history-attribution.md](../04-howto/osf-ui-track-trace-history-attribution.md) – Ist/SOLL/ENV, Mitfahrt, Modul-Zuordnung, Sonderfall-Checkliste

@@ -556,6 +556,31 @@ describe('TrackTraceComponent', () => {
         })
       ).toBeNull();
     });
+
+    it('returns quality image URL and classification for CHECK_QUALITY', () => {
+      const event = {
+        timestamp: 't',
+        eventType: 'CHECK_QUALITY',
+        details: {
+          result: 'FAILED',
+          qualityImage: 'data:image/png;base64,abc',
+          qualityClassification: 'CRACK',
+          qualityClassificationDesc: 'Crack detected',
+        },
+      };
+      expect(component.getQualityImageUrl(event)).toBe('data:image/png;base64,abc');
+      expect(component.getQualityClassificationLabel(event)).toBe('CRACK — Crack detected');
+    });
+
+    it('returns null image helpers when qualityImage missing', () => {
+      const event = {
+        timestamp: 't',
+        eventType: 'CHECK_QUALITY',
+        details: { result: 'PASSED' },
+      };
+      expect(component.getQualityImageUrl(event)).toBeNull();
+      expect(component.getQualityClassificationLabel(event)).toBeNull();
+    });
   });
 
   describe('Position label for FTS transport events', () => {
@@ -707,7 +732,7 @@ describe('TrackTraceComponent', () => {
       expect(mini!.marker.color).toBe('#f97316');
       expect(mini!.marker.x).toBe(220);
       expect(mini!.marker.y).toBe(120);
-      expect(mini!.marker.r).toBeGreaterThanOrEqual(24);
+      expect(mini!.marker.r).toBeGreaterThanOrEqual(48);
     });
 
     it('returns null for MODULE events', () => {

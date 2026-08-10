@@ -42,7 +42,8 @@
 
 ### Sessions / Track&Trace-Referenz *(Fokus)*
 
-- [ ] **OSF-UI Deploy RPi (v1.2.1):** Image `orbis-osf-ui:1.2.1` auf Shopfloor-RPi (`npm run docker:osf-ui:deploy -- ff22@192.168.0.100`). How-to: [rpi-deployment.md](../04-howto/deployment/rpi-deployment.md). *(Ursprung: Sprint 27)*
+- [ ] **OSF-UI Deploy RPi (v1.2.2):** Image `orbis-osf-ui:1.2.2` auf Shopfloor-RPi (`npm run docker:osf-ui:deploy -- ff22@192.168.0.100`). How-to: [rpi-deployment.md](../04-howto/deployment/rpi-deployment.md). *(nach v1.2.2 Release)*
+- [x] **T&T Replay-Abnahme (v1.2.2, 10.08.2026):** Quality-Check-Bild an `CHECK_QUALITY`; Session-Matrix Single/NOK/ml-* bei Replay **v=10** visuell OK (SM Fail=0). Matrix: [track-trace-heuristic-session-matrix-2026-08.md](../07-analysis/track-trace-heuristic-session-matrix-2026-08.md).
 - [ ] **Neue T&T-Sessions (nach Arduino-Schwellwerten):** Vor Aufnahme Vibration/ENV-Schwellwerte am Arduino **hochsetzen** (sonst Dauer-WARN). Dann:
   - Single-Color Quality-Matrix: **WHITE-NOK**, **BLUE-NOK**, **RED-OK** (Pass-Referenzen White/Red und Blue-nok Juli behalten; Lücken schließen / ergänzen).
   - Weitere **Multi-Load `ml-xyz`** nach Bedarf (bestehende Gaps: Red ohne NFC, Blue Storage ohne HBW-PICK, … — siehe [SOLL-by-color](../04-howto/osf-ui-track-trace-soll-by-color.md)).

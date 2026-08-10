@@ -669,6 +669,79 @@ describe('WorkpieceHistoryService', () => {
     });
   });
 
+  describe('Quality check image attachment', () => {
+    it('attaches quality image to CHECK_QUALITY when result and ts match', () => {
+      const svc = service as unknown as {
+        latestQualityCheck: {
+          dataUrl: string;
+          ts?: string;
+          result?: string;
+          classification?: string;
+          classificationDesc?: string;
+        } | null;
+        attachQualityImageIfRelevant: (event: TrackTraceEvent) => void;
+      };
+
+      svc.latestQualityCheck = {
+        dataUrl: 'data:image/png;base64,abc',
+        ts: '2026-08-07T09:08:36.886Z',
+        result: 'FAILED',
+        classification: 'CRACK',
+        classificationDesc: 'Crack',
+      };
+
+      const event: TrackTraceEvent = {
+        timestamp: '2026-08-07T09:08:37.175Z',
+        eventType: 'CHECK_QUALITY',
+        workpieceId: 'wp-blue-nok',
+        stationId: 'AIQS',
+        details: { result: 'FAILED' },
+      };
+      svc.attachQualityImageIfRelevant(event);
+      expect(event.details?.['qualityImage']).toBe('data:image/png;base64,abc');
+      expect(event.details?.['qualityClassification']).toBe('CRACK');
+      expect(event.details?.['qualityClassificationDesc']).toBe('Crack');
+    });
+
+    it('attaches when module result is OK and MQTT result is PASSED', () => {
+      const svc = service as unknown as {
+        latestQualityCheck: { dataUrl: string; ts?: string; result?: string } | null;
+        attachQualityImageIfRelevant: (event: TrackTraceEvent) => void;
+      };
+      svc.latestQualityCheck = {
+        dataUrl: 'data:image/png;base64,ok',
+        ts: '2026-08-07T09:15:25.701Z',
+        result: 'PASSED',
+      };
+      const event: TrackTraceEvent = {
+        timestamp: '2026-08-07T09:15:25.837Z',
+        eventType: 'CHECK_QUALITY',
+        details: { result: 'OK' },
+      };
+      svc.attachQualityImageIfRelevant(event);
+      expect(event.details?.['qualityImage']).toBe('data:image/png;base64,ok');
+    });
+
+    it('skips attach when result mismatches', () => {
+      const svc = service as unknown as {
+        latestQualityCheck: { dataUrl: string; ts?: string; result?: string } | null;
+        attachQualityImageIfRelevant: (event: TrackTraceEvent) => void;
+      };
+      svc.latestQualityCheck = {
+        dataUrl: 'data:image/png;base64,abc',
+        ts: '2026-08-07T09:08:36.886Z',
+        result: 'FAILED',
+      };
+      const event: TrackTraceEvent = {
+        timestamp: '2026-08-07T09:08:37.175Z',
+        eventType: 'CHECK_QUALITY',
+        details: { result: 'PASSED' },
+      };
+      svc.attachQualityImageIfRelevant(event);
+      expect(event.details?.['qualityImage']).toBeUndefined();
+    });
+  });
+
   describe('Planned station chain', () => {
     it('should return fixed storage chain DPS -> HBW', () => {
       const svc = service as unknown as {
