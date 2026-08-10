@@ -42,12 +42,9 @@
 
 ### Sessions / Track&Trace-Referenz *(Fokus)*
 
-- [ ] **OSF-UI Deploy RPi (v1.2.2):** Image `orbis-osf-ui:1.2.2` auf Shopfloor-RPi (`npm run docker:osf-ui:deploy -- ff22@192.168.0.100`). How-to: [rpi-deployment.md](../04-howto/deployment/rpi-deployment.md). *(nach v1.2.2 Release)*
+- [x] **OSF-UI Deploy RPi (v1.2.2):** Image `orbis-osf-ui:1.2.2` auf Shopfloor-RPi (`npm run docker:osf-ui:deploy -- ff22@192.168.0.100`). How-to: [rpi-deployment.md](../04-howto/deployment/rpi-deployment.md). *(deployed 10.08.2026; `osf-ui-prod` Up, Compose `orbis-osf-ui:1.2.2`, http://192.168.0.100:8080 → 302)*
 - [x] **T&T Replay-Abnahme (v1.2.2, 10.08.2026):** Quality-Check-Bild an `CHECK_QUALITY`; Session-Matrix Single/NOK/ml-* bei Replay **v=10** visuell OK (SM Fail=0). Matrix: [track-trace-heuristic-session-matrix-2026-08.md](../07-analysis/track-trace-heuristic-session-matrix-2026-08.md).
-- [ ] **Neue T&T-Sessions (nach Arduino-Schwellwerten):** Vor Aufnahme Vibration/ENV-Schwellwerte am Arduino **hochsetzen** (sonst Dauer-WARN). Dann:
-  - Single-Color Quality-Matrix: **WHITE-NOK**, **BLUE-NOK**, **RED-OK** (Pass-Referenzen White/Red und Blue-nok Juli behalten; Lücken schließen / ergänzen).
-  - Weitere **Multi-Load `ml-xyz`** nach Bedarf (bestehende Gaps: Red ohne NFC, Blue Storage ohne HBW-PICK, … — siehe [SOLL-by-color](../04-howto/osf-ui-track-trace-soll-by-color.md)).
-  - *Hinweis `ml-wrb_114227`:* Aufnahme-Lücke Fertigungs-Modul-States — ggf. neu aufnehmen. *(Ursprung: Sprint 27)*
+- [x] **Neue T&T-Sessions (Arduino-Schwellwerte + Aug-Set, 07./10.08.2026):** Vibration/ENV-Schwellwerte am Arduino hochgesetzt (kein Dauer-WARN). Single-Color **Pass+NOK W/R/B** und Multi-Load `ml-*_20260807_*` im Repo; Juli-Single-Color-Duplikate entfernt. Inventar: [INVENTORY.md](../../data/osf-data/sessions/INVENTORY.md); Matrix: [track-trace-heuristic-session-matrix-2026-08.md](../07-analysis/track-trace-heuristic-session-matrix-2026-08.md). *`ml-wrb_114227` bleibt als unvollständige Aufnahme dokumentiert — Abnahme über `ml-wbr_*`.*
 - [ ] **Teil B – 2-AGV-Referenz-Sessions (eindeutige NFC):** nach Aufladen / Wiedereinsatz AGV-2 (Motor M2/C2 getauscht **06.08.**) neu aufnehmen (Parallel WR/WB o. Ä.). Interim-Diagnose behalten: `two-agvs-mixed_20260312_165108` (Stillstand), `production-wr-agv2-b-agv1-clean_20260513_135600` (osf.4). *(Ursprung: Sprint 27)*
 - *Hinweis Demo: Capture läuft in Live/Replay nach MQTT-Connect auch ohne offenen Tab; Header-Refresh leert die Historie — dazwischen nicht unnötig refreshen.*
 
