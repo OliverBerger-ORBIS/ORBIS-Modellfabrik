@@ -1,6 +1,6 @@
 # Sprint 28 – Sessions komplettieren, 2. AGV & Grafana
 
-**Zeitraum:** 07.08.2026 – 20.08.2026 · **Status:** Laufend · **Vorheriger Sprint:** [Sprint 27](./sprint_27.md)
+**Zeitraum:** 07.08.2026 – 20.08.2026 · **Status:** Abgeschlossen · **Vorheriger Sprint:** [Sprint 27](./sprint_27.md) · **Nächster Sprint:** [Sprint 29](./sprint_29.md)
 
 **Kurz:** Fokus **Referenz-Sessions** (Quality-Matrix, Multi-Load, **2-AGV**) und **Grafana**; T&T Live/Replay abgenommen (v1.2.2). Outreach: Musashi OK; OD mit Daniel Wonkam (Workpiece-Tracking); Uni Magdeburg/Reggelin NDA → Deep-Dive SB Sept.
 
@@ -90,9 +90,9 @@
 ### Sprint-Wechsel (am Ende des Sprints abarbeiten)
 
 - [x] **Coverage Standing:** Endmessung 20.08.2026 (`npm run test:coverage`, runInBand) → B/F/L/S **49.8 / 61.3 / 66.5 / 65.5 %**, Gates 42/52/58/58 erfüllt; [test-coverage-status.md](../07-analysis/test-coverage-status.md) aktualisiert. *(Pflicht vor Abschluss)*
-- [ ] Sprint 28: Status Abgeschlossen, Datum
-- [ ] Sprint 29 anlegen, offene `[ ]` uebernehmen; Coverage-Baseline = Endmessung Sprint 28
-- [ ] PROJECT_STATUS / Roadmap kurz
+- [x] **Sprint 28: Status Abgeschlossen, Datum** — 20.08.2026
+- [x] **Sprint 29 anlegen:** offene `[ ]` übernommen; Coverage-Baseline = Endmessung Sprint 28 → [sprint_29.md](./sprint_29.md)
+- [x] **PROJECT_STATUS / Roadmap kurz** — Status auf Sprint 29; Roadmap Phase 5 unverändert (kein Versions-Bump nötig)
 
 ---
 
@@ -102,4 +102,4 @@
 
 ---
 
-*Stand: 20.08.2026 (Musashi OK; OD/NFC-Info Daniel; Uni-MD NDA→SB Sept; FTS DPD + 3D-Box)* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 20.08.2026 — **Abgeschlossen** (T&T v1.2.2; Sessions Aug-Set; 2-AGV Replay; Intake-Bridge im Repo; Musashi OK; Uni-MD→SB Sept)* · Doku-Workflow: [sprints_README.md](sprints_README.md)

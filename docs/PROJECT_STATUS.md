@@ -1,6 +1,6 @@
 # ORBIS SmartFactory – Projektstatus
 
-**Letzte Aktualisierung:** 2026-08-06
+**Letzte Aktualisierung:** 2026-08-20
 
 > **Workflow:** Die Sprint-Tabelle wird bei jedem Sprint-Abschluss aktualisiert (neue Zeile, Events).  
 > Details: [sprints_README.md – Dokumenten-Workflow](sprints/sprints_README.md#-dokumenten-workflow-aktualität-sicherstellen)
@@ -9,20 +9,14 @@
 - OSF (vormals OMF3) produktionsreif für Kunden-Demos; **LogiMAT 2026 durchgeführt** (Demo mit zwei AGVs erfolgreich).
 - **Messe-WLAN:** Nur **2,4 GHz** am Stand → **bekanntes Risiko** für Instabilität; angesichts der **ortsbedingten Einschränkung** keine zuverlässige technische „Lösung“ zu erwarten — **Lessons Learned** für weitere Events (Erwartungsmanagement). Siehe [sprint_18.md – Messe-Ergebnis](sprints/sprint_18.md).
 - OMF2 als Legacy eingefroren.
-- Aktuelle Entwicklung: **Phase 5** — **Sprint 28** (Sessions komplettieren / 2. AGV & Grafana; Urlaub 11.–14.08.; Musashi 14.08. durch Sven Horras).
+- Aktuelle Entwicklung: **Phase 5** — **Sprint 29** (Grafana/Persistenz, Workpiece-Intake Bridge live, OD-Anbindung).
 - **ORBIS-SmartFactory** ab Sprint 13 (Genehmigung ausstehend, Arbeit wird fortgeführt).
 
 ## 🔥 Aktuelle Schwerpunkte
-- **Sprint 28:** Referenz-Sessions (Quality-Matrix, Multi-Load, 2-AGV nach FTS-2) + Grafana; Deploy **v1.2.1**; Coverage Standing wieder Pflicht. Details: [sprint_28.md](sprints/sprint_28.md).
-- **07.08.2026:** Hochschulkontakt **Kaiserslautern** — Herr **Nusbaum** (genaue Institution folgt); Bachelorarbeit **Danil Wonkam** / **Object Detection**. Details: [sprint_28.md](sprints/sprint_28.md).
-- **14.08.2026:** Kundentermin **Musashi** — Vorführung **Sven Horras** (Oliver Urlaub 11.–14.08.).
-- **02.04.2026:** ORBIS-internes **Vertriebsmeeting** — **OSF-Präsentation** für Vertrieb durchgeführt (Start Sprint 19).
-- Letzter großer Außenauftritt: **Hannover Messe** + **ORBIS Customer-Connect** (siehe Roadmap).
-- **Phase 5 – MES/DSP-Integration:** ORBIS MES und DSP übernehmen zunehmend die Steuerung (QM-Check, Order-Entscheidungen). APS-CCU als Interim-Layer; Modifikationen: [integrations/APS-CCU/OSF-MODIFICATIONS.md](../integrations/APS-CCU/OSF-MODIFICATIONS.md).
-- MES-Integration: Prozessanpassungen (z.B. "2-mal Bohren").
-- Azure DevOps Migration.
-- Arduino: R4 Multi-Sensor-Station fertig (MPU-6050, SW-420, DHT11, Flamme, MQ-2, Ampel, Sirene). Doku konsolidiert.
-- Storytelling-Blog-Serie.
+- **Sprint 29:** Grafana / Edge-Persistenz; Intake-Bridge RPi-Deploy + OSF-UI-Subscribe `osf/workpiece/intake`; Uni Magdeburg SB Deep-Dive Vorb. (**21./22.09.**). Details: [sprint_29.md](sprints/sprint_29.md).
+- **Sprint 28 (abgeschlossen):** T&T **v1.2.2**; Aug-Session-Set; 2-AGV Replay-Abnahme; Intake-Facade (DR-30) im Repo; Musashi OK (Sven); AGV-2 → FT Reklamation/DPD. Details: [sprint_28.md](sprints/sprint_28.md).
+- **Phase 5 – MES/DSP-Integration:** ORBIS MES und DSP übernehmen zunehmend die Steuerung; APS-CCU Interim; Zielarchitektur DSP-Orchestrierung (CCU austauschbar).
+- Azure DevOps Migration · Blog-Serie (A3/A4 Review offen).
 
 ## 📅 Roadmap & Meilensteine
 
