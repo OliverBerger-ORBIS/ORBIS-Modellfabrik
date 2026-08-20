@@ -1,0 +1,20 @@
+# Workpiece intake bridge — add under APS docker-compose-prod on the RPi
+# (same network as mqtt-broker-prod).
+
+services:
+  osf-workpiece-intake-bridge:
+    image: orbis-workpiece-intake-bridge:1.0.0
+    container_name: osf-workpiece-intake-bridge-prod
+    restart: unless-stopped
+    networks:
+      - ff-future-factory-prod
+    environment:
+      MQTT_HOST: mqtt-broker
+      MQTT_PORT: "1883"
+      MQTT_USER: default
+      MQTT_PASS: default
+      DPS_SERIAL: SVR4H73275
+      PUBLISH_TOPIC: osf/workpiece/intake
+      LOG_LEVEL: INFO
+    depends_on:
+      - mqtt-broker

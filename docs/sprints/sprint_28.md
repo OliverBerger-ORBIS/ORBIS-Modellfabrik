@@ -28,15 +28,16 @@
 | Stand | Datum | Branches | Functions | Lines | Statements | Gates (B/F/L/S) | Gate-Margin (B/F/L/S) |
 |--------|--------|----------|-----------|-------|------------|------------------|------------------------|
 | Sprint-Start (Baseline aus Sprint-27-Endmessung) | 06.08.2026 | 46.42% | 52.82% | 52.66% | 51.78% | 30 / 42 / 47 / 46 | +16.42 / +10.82 / +5.66 / +5.78 pp |
-| Aktuell | 06.08.2026 | 49.75% | 61.25% | 66.67% | 65.58% | 42 / 52 / 58 / 58 | +7.75 / +9.25 / +8.67 / +7.58 pp |
+| Mid (Option D) | 06.08.2026 | 49.75% | 61.25% | 66.67% | 65.58% | 42 / 52 / 58 / 58 | +7.75 / +9.25 / +8.67 / +7.58 pp |
+| **Aktuell (Sprint-Ende)** | **20.08.2026** | **49.8%** | **61.3%** | **66.5%** | **65.5%** | **42 / 52 / 58 / 58** | **+7.8 / +9.3 / +8.5 / +7.5 pp** |
 
-- **Messmethode:** `npm run test:coverage` (seit 06.08.2026 mit `--runInBand`) → `coverage/osf-ui/index.html`. Details: [test-coverage-status.md](../07-analysis/test-coverage-status.md).
-- **Top-3 Gaps (nach Option D):**
-  1. `shopfloor-tab` — ~50 % Lines (noch größter Tab-Hotspot; DPS/Preview-Helfer ergänzt)
-  2. DSP-/Customer-Pages — weiterhin oft **0 %**
-  3. Einzelne UI-Komponenten mit niedriger Abdeckung
+- **Messmethode:** `npm run test:coverage` (seit 06.08.2026 mit `--runInBand`; bei Nx-Daemon-Fehler: `npx nx reset` + `NX_DAEMON=false`) → `coverage/osf-ui/index.html`. Details: [test-coverage-status.md](../07-analysis/test-coverage-status.md).
+- **Top-3 Gaps (Stand 20.08.):**
+  1. `shopfloor-tab` / `shopfloor-preview` — weiter größter Tab-/Preview-Hotspot
+  2. DSP-/Customer-Pages — oft niedrig / 0 %
+  3. Große Tabs (`agv-tab`) / `workpiece-history` — Restzweige
 - **Pflege:** Baseline unverändert; nach Messung nur **Aktuell** + Top-Gaps aktualisieren. Am Sprintende Pflicht-Messung vor Abschluss.
-- **Hinweis:** Jest-Gates 06.08. auf **42 / 52 / 58 / 58** angehoben; Langziel Lines 60 %+ weiter übertroffen.
+- **Hinweis:** Jest-Gates **42 / 52 / 58 / 58** beibehalten (Margins >5 pp); kein Gate-Bump vor Sprintwechsel. Endmessung praktisch flat vs. 06.08.
 
 ---
 
@@ -56,6 +57,11 @@
 - [ ] Grafana-Dashboards ausbauen (fachliche Panels schaerfen, offene Visualisierungs-/Abnahmepunkte systematisch schliessen). *(Ursprung: Sprint 22)*
 - [ ] Deployment vorbereiten: Grafana + Persistence-Stack auf DSP-Docker lauffaehig machen (neben local-dev als naechster Zielpfad). *(Ursprung: Sprint 22)*
 - [ ] **Track&Trace Persistenz (Option B):** UI-Historie bleibt session-/RAM-scoped; längere NFC-Spuren über Edge/Grafana (`osf-edge-persistence`, [DR-28](../03-decision-records/28-edge-persistence-stack-and-metrics-model.md)) — kein Browser-localStorage. *(Entscheidung 21.07.2026; Ursprung: Sprint 26)*
+
+### Object Detection / Workpiece-Intake
+
+- [x] **MQTT-Facade Workpiece-Intake (DR-30, 20.08.2026):** Topic `osf/workpiece/intake` (kein OD-Namespace); Bridge `osf-workpiece-intake-bridge` + Deploy-Skript. Partner: [workpiece-intake-event-partner.md](../04-howto/integrations/workpiece-intake-event-partner.md). Image `orbis-workpiece-intake-bridge:1.0.0` (armv7) lokal gebaut; **RPi-Load/Compose-up ausstehend** (SSH `192.168.0.100` 20.08. timeout — Shopfloor-Netz). Deploy: `node scripts/deploy-workpiece-intake-bridge-to-rpi.js`.
+- [ ] **OSF-UI subscribe `osf/workpiece/intake`:** optionale Nutzung für OD-View / NFC-Einstieg (Folge nach Bridge live).
 
 ### Integration & Tests
 
@@ -83,7 +89,7 @@
 
 ### Sprint-Wechsel (am Ende des Sprints abarbeiten)
 
-- [ ] **Coverage Standing:** Endmessung (`npm run test:coverage`) → `Aktuell` + Top-Gaps; Analyse-Doku bei Bedarf aktualisieren *(Pflicht vor Abschluss)*
+- [x] **Coverage Standing:** Endmessung 20.08.2026 (`npm run test:coverage`, runInBand) → B/F/L/S **49.8 / 61.3 / 66.5 / 65.5 %**, Gates 42/52/58/58 erfüllt; [test-coverage-status.md](../07-analysis/test-coverage-status.md) aktualisiert. *(Pflicht vor Abschluss)*
 - [ ] Sprint 28: Status Abgeschlossen, Datum
 - [ ] Sprint 29 anlegen, offene `[ ]` uebernehmen; Coverage-Baseline = Endmessung Sprint 28
 - [ ] PROJECT_STATUS / Roadmap kurz

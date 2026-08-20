@@ -35,6 +35,7 @@ integrations/APS-CCU/docker-images/
 
 # OSF-UI Docker images
 deploy/osf-ui/docker-images/
+deploy/osf-workpiece-intake-bridge/docker-images/
 
 # Mosquitto runtime (persistence)
 mosquitto.db

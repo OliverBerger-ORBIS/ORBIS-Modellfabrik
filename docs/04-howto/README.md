@@ -13,6 +13,10 @@
   - [ORBIS Shopfloor Netzwerk-Topologie (FT-LAN + OSF-Erweiterung)](setup/orbis-shopfloor-network-topology.md) — HTML: `bash scripts/export-network-topology-html.sh`
 - Deployment
   - [GitHub Pages Deployment](deployment/github-pages-deployment.md)
+  - [RPi CCU + OSF-UI](deployment/rpi-deployment.md)
+  - [Workpiece Intake Bridge (RPi)](deployment/workpiece-intake-bridge-rpi.md)
+- Integrations
+  - [Workpiece Intake Event (Partner)](integrations/workpiece-intake-event-partner.md)
 - MQTT
   - [MQTT WebSocket Debug Guide](mqtt-websocket-debug-guide.md)
 - OSF-UI

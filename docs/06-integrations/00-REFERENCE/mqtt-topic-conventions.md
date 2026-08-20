@@ -114,6 +114,12 @@ osf/arduino/<sensorTyp>/<deviceId>/<action>
 
 **Regel:** Neue ORBIS-Sensoren/Arduinos → `osf/arduino/...`. Details: [DR-18 OSF-Erweiterungen](../../03-decision-records/18-osf-extensions-ip-and-mqtt-topics.md).
 
+**Workpiece-Events (Facade, nicht Sensorik):**
+
+| Topic | Zweck |
+|-------|--------|
+| `osf/workpiece/intake` | Neues Werkstück an DPS (NFC + Farbe); Publisher: Intake-Bridge am RPi. [DR-30](../../03-decision-records/30-workpiece-intake-mqtt-facade.md) |
+
 ### Pattern 6: TXT Topics (Fischertechnik)
 ```
 /j1/txt/1/f/i/<category>  - Input (vom TXT)
