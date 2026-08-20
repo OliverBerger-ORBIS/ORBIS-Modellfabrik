@@ -45,7 +45,7 @@
 - [x] **OSF-UI Deploy RPi (v1.2.2):** Image `orbis-osf-ui:1.2.2` auf Shopfloor-RPi (`npm run docker:osf-ui:deploy -- ff22@192.168.0.100`). How-to: [rpi-deployment.md](../04-howto/deployment/rpi-deployment.md). *(deployed 10.08.2026; `osf-ui-prod` Up, Compose `orbis-osf-ui:1.2.2`, http://192.168.0.100:8080 → 302)*
 - [x] **T&T Replay-Abnahme (v1.2.2, 10.08.2026):** Quality-Check-Bild an `CHECK_QUALITY`; Session-Matrix Single/NOK/ml-* bei Replay **v=10** visuell OK (SM Fail=0). Matrix: [track-trace-heuristic-session-matrix-2026-08.md](../07-analysis/track-trace-heuristic-session-matrix-2026-08.md).
 - [x] **Neue T&T-Sessions (Arduino-Schwellwerte + Aug-Set, 07./10.08.2026):** Vibration/ENV-Schwellwerte am Arduino hochgesetzt (kein Dauer-WARN). Single-Color **Pass+NOK W/R/B** und Multi-Load `ml-*_20260807_*` im Repo; Juli-Single-Color-Duplikate entfernt. Inventar: [INVENTORY.md](../../data/osf-data/sessions/INVENTORY.md); Matrix: [track-trace-heuristic-session-matrix-2026-08.md](../07-analysis/track-trace-heuristic-session-matrix-2026-08.md). *`ml-wrb_114227` bleibt als unvollständige Aufnahme dokumentiert — Abnahme über `ml-wbr_*`.*
-- [ ] **Teil B – 2-AGV-Referenz-Sessions (eindeutige NFC):** nach Aufladen / Wiedereinsatz AGV-2 (Motor M2/C2 getauscht **06.08.**) neu aufnehmen (Parallel WR/WB o. Ä.). Interim-Diagnose behalten: `two-agvs-mixed_20260312_165108` (Stillstand), `production-wr-agv2-b-agv1-clean_20260513_135600` (osf.4). *(Ursprung: Sprint 27)*
+- [x] **Teil B – 2-AGV T&T-Abnahme (Replay, 10.08.2026):** Interim-Sessions `two-agvs-mixed_20260312_165108` / `production-wr-agv2-b-agv1-clean_20260513_135600` — Darstellung plausibel, **beide AGVs erkannt und richtig zugeordnet**. Neue Aufnahme mit eindeutiger NFC **blockiert**: AGV-2 dockt trotz Motortausch M2/C2 (06.08.) und positivem Schnittstellentest **nicht an DPS** → **Reklamation an Fischertechnik**. *(Ursprung: Sprint 27)*
 - *Hinweis Demo: Capture läuft in Live/Replay nach MQTT-Connect auch ohne offenen Tab; Header-Refresh leert die Historie — dazwischen nicht unnötig refreshen.*
 
 ### Grafana Dashboard *(Fokus)*
@@ -65,7 +65,7 @@
 
 ### ORBIS Feldbetrieb / Hardware
 
-- [x] **Kontrolle FTS Nr. 2 — Motortausch (06.08.2026):** Rechter Vorderradantrieb **M2/C2** ausgefallen (langsam → Totalausfall); Mechanik OK; ~8 V am Kabel; Ersatzmotor vor Einbau am M2-Kabel OK → Tausch. Schnittstellentest: **alle 4 Antriebe** laufen. **Morgen:** aufladen, dann Wiedereinsatz → Session-Teil B. How-to: [fts-agv-encoder-motor-replacement.md](../05-hardware/fts-agv-encoder-motor-replacement.md). *(Ursprung: Sprint 26)*
+- [x] **Kontrolle FTS Nr. 2 — Motortausch (06.08.2026):** Rechter Vorderradantrieb **M2/C2** ausgefallen (langsam → Totalausfall); Mechanik OK; ~8 V am Kabel; Ersatzmotor vor Einbau am M2-Kabel OK → Tausch. Schnittstellentest: **alle 4 Antriebe** laufen. **Nachtest (10.08.):** Andocken an DPS weiterhin **nicht** möglich → AGV-2 zur **Reklamation an Fischertechnik**. How-to: [fts-agv-encoder-motor-replacement.md](../05-hardware/fts-agv-encoder-motor-replacement.md). *(Ursprung: Sprint 26)*
 
 ### Router / Netzwerk-Setup
 
