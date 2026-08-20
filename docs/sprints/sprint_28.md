@@ -2,9 +2,9 @@
 
 **Zeitraum:** 07.08.2026 – 20.08.2026 · **Status:** Laufend · **Vorheriger Sprint:** [Sprint 27](./sprint_27.md)
 
-**Kurz:** Fokus **Referenz-Sessions** (Quality-Matrix, Multi-Load-Lücken, **2-AGV** nach FTS-2) und **Grafana** (Modus A / Panels / Persistenz). Arbeitszeit verkürzt durch **Urlaub 11.–14.08.**; Musashi-Vorführung durch **Sven Horras**.
+**Kurz:** Fokus **Referenz-Sessions** (Quality-Matrix, Multi-Load, **2-AGV**) und **Grafana**; T&T Live/Replay abgenommen (v1.2.2). Outreach: Musashi OK; OD mit Daniel Wonkam (Workpiece-Tracking); Uni Magdeburg/Reggelin NDA → Deep-Dive SB Sept.
 
-**Kapazität:** Urlaub Oliver **11.–14.08.2026** → weniger Umsetzungstage; Priorität auf Sessions + Grafana, Carry-over nur bei Bedarf anfassen.
+**Kapazität:** Urlaub Oliver **11.–14.08.2026**; Folgetermine/Abstimmung ab **20.08.**
 
 ---
 
@@ -14,10 +14,12 @@
 
 | Datum | Event | Nutzen fuer OSF |
 |--------|--------|----------------|
-| **07.08.2026** | **Hochschulkontakt Kaiserslautern** — Herr **Nussbaum** (genaue Uni-/Hochschulbezeichnung folgt); Bachelorarbeit **Danil Wonkam** zu **Object Detection** | Abstimmung / Einordnung der BA im OSF-/Shopfloor-Kontext (OD; Anknüpfung an AI-HUB-/Session-Manager-OD-Pfad) |
+| **07.08.2026** | **Hochschulkontakt Kaiserslautern** — Herr **Nussbaum**; Bachelorarbeit **Daniel Wonkam** (Object Detection) | BA im OSF-/Shopfloor-Kontext (OD; AI-HUB-/Session-Manager-OD-Pfad) |
 | **11.–14.08.2026** | **Urlaub Oliver** | Reduzierte Sprint-Kapazität |
-| **14.08.2026** | **Kundentermin Musashi** — Vorführung **Sven Horras** | Erstverifikation Router-/Netzwerk-Setup und Windows-Desktop-Praesentation (Follow-up LOM-Day); Oliver abwesend |
-| *(offen)* | Hochschulkooperation — Kshitiz Proposal (Graph-DB Edge/DSP/KI) | Follow-up Teams 03.08. *(Sprint 27)* |
+| **14.08.2026** | **Kundentermin Musashi** — Vorführung **Sven Horras** | **Gut verlaufen** (Router-/Netzwerk + Windows-Desktop-Präsentation; Follow-up LOM-Day) |
+| **~20.08.2026** | Abstimmung **Daniel Wonkam** (OD) | OD im Shopfloor-Layout seiner App vorhanden; Fokus jetzt: **Workpieces im 3er-FTS-Stack** + MQTT `RGB_NFC` (WebSocket). NFC-/Topic-Info an Daniel weitergeleitet (20.08.) |
+| **~20.08.2026** | **Uni Magdeburg / Dr. Reggelin** (+ Kishitz) | NDA prinzipiell abgenickt — Unterschrift noch **Frank Wilhelm**. Nächster Step: Meeting **Saarbrücken** Deep-Dive OSF/DSP (**21. oder 22.09.**, Abstimmung DSP-Truppe); Kishitz kommt nach SB |
+| *(offen)* | Hochschulkooperation — Kishitz/Kshitiz Proposal (Graph-DB Edge/DSP/KI) | Follow-up über SB-Termin Sept. |
 
 ---
 
@@ -66,6 +68,7 @@
 ### ORBIS Feldbetrieb / Hardware
 
 - [x] **Kontrolle FTS Nr. 2 — Motortausch (06.08.2026):** Rechter Vorderradantrieb **M2/C2** ausgefallen (langsam → Totalausfall); Mechanik OK; ~8 V am Kabel; Ersatzmotor vor Einbau am M2-Kabel OK → Tausch. Schnittstellentest: **alle 4 Antriebe** laufen. **Nachtest (10.08.):** Andocken an DPS weiterhin **nicht** möglich → AGV-2 zur **Reklamation an Fischertechnik**. How-to: [fts-agv-encoder-motor-replacement.md](../05-hardware/fts-agv-encoder-motor-replacement.md). *(Ursprung: Sprint 26)*
+- [x] **FTS Versand + Transportbox (20.08.2026):** AGV-2 per **DPD** an Fischertechnik versendet; **3D-gedruckte FTS-Transportbox** erstellt (erledigt).
 
 ### Router / Netzwerk-Setup
 
@@ -93,4 +96,4 @@
 
 ---
 
-*Stand: 06.08.2026 (FTS-2 Motor OK)* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 20.08.2026 (Musashi OK; OD/NFC-Info Daniel; Uni-MD NDA→SB Sept; FTS DPD + 3D-Box)* · Doku-Workflow: [sprints_README.md](sprints_README.md)
