@@ -22,7 +22,8 @@
 
 | Sprint | Zeitraum | Ereignis / Fokus | Status |
 |--------|----------|------------------|--------|
-| **28** | **07.08.26 - 20.08.26** | Sessions + 2. AGV & Grafana; Urlaub 11.–14.08.; Musashi 14.08. (Sven Horras); Coverage Standing ([sprint_28](sprints/sprint_28.md)) | **Laufend** |
+| **29** | **21.08.26 - 03.09.26** | Grafana/Persistenz; Intake-Bridge RPi + OD; Uni-MD SB Deep-Dive Vorb. 21./22.09. ([sprint_29](sprints/sprint_29.md)) | **Laufend** |
+| **28** | **07.08.26 - 20.08.26** | Sessions + 2. AGV & Grafana; T&T v1.2.2; Intake DR-30; Musashi OK; AGV-2 FT ([sprint_28](sprints/sprint_28.md)) | **Abgeschlossen** |
 | **27** | **24.07.26 - 06.08.26** | Grafana-Dashboard-Analyse & Track&Trace (v1.2.0/v1.2.1); Hochschulkooperation Teams 03.08. ([sprint_27](sprints/sprint_27.md)) | **Abgeschlossen** |
 | **26** | **10.07.26 - 23.07.26** | NFC-Tags Track&Trace; Use-Case-Darstellung Desktop 2/3; Grafana; Blog A2 online; Office-Tower; v1.1.10 ([sprint_26](sprints/sprint_26.md)) | **Abgeschlossen** |
 | **25** | **26.06.26 - 09.07.26** | LOM-Day Nachbereitung; Praesentationstechnik Windows-Desktops; Router/Netzwerk; OSF-UI v1.1.7 ([sprint_25](sprints/sprint_25.md)) | **Abgeschlossen** |
@@ -68,7 +69,8 @@
 | 25 | 26.06 - 09.07.2026 | ORBIS-SmartFactory | Phase 5 | LOM-Day (26.06); Praesentationstechnik Windows-Desktops; Router/Netzwerk; OSF-UI v1.1.7 RPi-Deploy |
 | 26 | 10.07 - 23.07.2026 | ORBIS-SmartFactory | Phase 5 | Probelauf Präsentation (14.–15.07.); Blog A2 veröffentlicht (23.07., [Track und Trace in der Fertigung](https://www.orbis-group.com/de-de/blog/branchen/manufacturing/track-und-trace-in-der-fertigung/)); Office-Tower 3D-Druck; OSF-UI v1.1.10; NFC B-soft Live-Test |
 | 27 | 24.07 - 06.08.2026 | ORBIS-SmartFactory | Phase 5 | Track&Trace v1.2.0/v1.2.1; Hochschulkooperation Magdeburg Teams 03.08. (Proposal folgt); Grafana Carry-over; Coverage-Endmessung 06.08. |
-| 28 | 07.08 - 20.08.2026 | ORBIS-SmartFactory | Phase 5 | Sessions + 2. AGV & Grafana; Hochschulkontakt Kaiserslautern 07.08. (Nusbaum / BA Wonkam Object Detection; Institution folgt); Urlaub Oliver 11.–14.08.; Musashi 14.08. Vorführung Sven Horras; Coverage Standing wieder Pflicht |
+| 28 | 07.08 - 20.08.2026 | ORBIS-SmartFactory | Phase 5 | Sessions Aug-Set + T&T v1.2.2; 2-AGV Replay; Intake-Facade DR-30; Kaiserslautern/Wonkam OD; Urlaub 11.–14.08.; Musashi 14.08. (Sven Horras) gut; Uni-MD NDA→SB 21./22.09.; AGV-2 DPD/FT; Coverage-Ende 20.08. |
+| 29 | 21.08 - 03.09.2026 | ORBIS-SmartFactory | Phase 5 | Grafana/Persistenz; Intake-Bridge RPi + OSF subscribe; OD Partner; Uni-MD/DSP Deep-Dive SB Vorb. |
 
 > **Spalten-Erläuterung:**  
 > - **ORBIS-Projekt:** Interne Projektzuordnung für Abrechnung (ORBIS-Modellfabrik bzw. ORBIS-SmartFactory).  
