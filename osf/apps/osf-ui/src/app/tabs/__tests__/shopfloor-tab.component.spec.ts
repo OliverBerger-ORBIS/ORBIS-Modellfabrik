@@ -117,6 +117,7 @@ const createComponent = () => {
     initializeLayout: jest.fn(),
     getNodePosition: jest.fn(() => null),
     resolveNodeRef: jest.fn(() => null),
+    getAgvMarkerCenter: jest.fn(() => null),
   } as unknown as AgvRouteService;
 
   const routeStub = {
@@ -1312,6 +1313,21 @@ Payload:
       expect(component.shopfloorAgvLegendLabel('SVR123')).toBe('AGV-1');
       (mapping.getAgvLabel as jest.Mock).mockReturnValueOnce(null);
       expect(component.shopfloorAgvLegendLabel('SVR999')).toBe('SVR999');
+    });
+
+    it('maps node ids to AGV marker centers', () => {
+      const component = createComponent();
+      const routes = (component as any).agvRouteService as AgvRouteService;
+      (routes.getAgvMarkerCenter as jest.Mock).mockReturnValueOnce({ x: 12, y: 34 });
+      expect((component as any).getPositionFromNodeId('SVR4H73275')).toEqual({ x: 12, y: 34 });
+      (routes.getAgvMarkerCenter as jest.Mock).mockReturnValueOnce(null);
+      expect((component as any).getPositionFromNodeId('missing')).toBeNull();
+    });
+
+    it('uses trackBy helpers for table rows and AGV serials', () => {
+      const component = createComponent();
+      expect(component.trackById(0, { id: 'row-1' } as never)).toBe('row-1');
+      expect(component.trackByAgvSerial(0, { serial: '5iO4' })).toBe('5iO4');
     });
 
     it('ignores fixed-cell double-clicks for sidebar open', () => {

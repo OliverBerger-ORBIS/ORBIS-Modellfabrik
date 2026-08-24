@@ -21,13 +21,13 @@
 | Stand | Datum | Branches | Functions | Lines | Statements | Gates (B/F/L/S) | Gate-Margin (B/F/L/S) |
 |--------|--------|----------|-----------|-------|------------|------------------|------------------------|
 | Sprint-Start (Baseline = Sprint-28-Ende) | 20.08.2026 | 49.8% | 61.3% | 66.5% | 65.5% | 42 / 52 / 58 / 58 | +7.8 / +9.3 / +8.5 / +7.5 pp |
-| Aktuell | 20.08.2026 | 49.8% | 61.3% | 66.5% | 65.5% | 42 / 52 / 58 / 58 | +7.8 / +9.3 / +8.5 / +7.5 pp |
+| Aktuell | 24.08.2026 | 51.2% | 62.8% | 67.8% | 66.7% | 48 / 59 / 64 / 63 | +3.2 / +3.8 / +3.8 / +3.7 pp |
 
 - **Messmethode:** `npm run test:coverage` (`--runInBand`; bei Nx-Daemon-Fehler: `npx nx reset` + `NX_DAEMON=false`) → `coverage/osf-ui/index.html`. Details: [test-coverage-status.md](../07-analysis/test-coverage-status.md).
 - **Top-3 Gaps:**
-  1. `shopfloor-tab` / `shopfloor-preview`
+  1. `shopfloor-tab` / `agv-tab` (große Dateien)
   2. DSP-/Customer-Pages
-  3. `agv-tab` / `workpiece-history`
+  3. Restzweige `shopfloor-preview` (Route/SVG)
 - **Pflege:** Baseline unverändert; nach Messung nur **Aktuell** + Top-Gaps. Am Sprintende Pflicht-Messung vor Abschluss.
 
 ---
@@ -58,6 +58,7 @@
 
 ### Integration & Tests
 
+- [x] **Coverage Gates + Shopfloor-Tests (24.08.2026):** Jest-Thresholds `48 / 59 / 64 / 63` (vorher `42 / 52 / 58 / 58`). Specs für Rotation/Layout-Service, Shopfloor-Preview (Zoom, Selection, Rotation, Route-Helfer, SVG), AGV-Viewport. Messung: B/F/L/S **51.2 / 62.8 / 67.8 / 66.7**; 1451 Tests passed. How-to + [test-coverage-status.md](../07-analysis/test-coverage-status.md).
 - [ ] **UI-Test-Framework (Fortsetzung):** von 2 Pilot-Tests zu stabiler Abdeckung kritischer Flows mit Tier A + Tier B Nachweisen ausbauen. *(Ursprung: Sprint 21)*
 - [ ] **dsp/correlation/info** E2E (BLOCKED bis Team-Setup aktiv): End-to-End-Nachweis (Topic-Eingang + UI-Kontext) dokumentieren. *(Ursprung: Sprint 18)*
 - [ ] **ccu/order/request** E2E (Ersatzauftrag nach Quality-Fail, BLOCKED bis Team-Setup aktiv): E2E-Nachweis mit klarer Ereigniskette dokumentieren. *(Ursprung: Sprint 18)*

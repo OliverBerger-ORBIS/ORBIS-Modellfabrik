@@ -31,8 +31,8 @@
 
 | Stand | Datum | Branches | Functions | Lines | Statements | Gates (B/F/L/S) | Gate-Margin (B/F/L/S) |
 |--------|--------|----------|-----------|-------|------------|------------------|------------------------|
-| Sprint-Start (Baseline aus Vorgänger-Endmessung) | … | …% | …% | …% | …% | 42 / 52 / 58 / 58 | … |
-| Aktuell | … | …% | …% | …% | …% | 42 / 52 / 58 / 58 | … |
+| Sprint-Start (Baseline aus Vorgänger-Endmessung) | … | …% | …% | …% | …% | 48 / 59 / 64 / 63 | … |
+| Aktuell | … | …% | …% | …% | …% | 48 / 59 / 64 / 63 | … |
 
 - **Messmethode:** `npm run test:coverage` (Standard: `--runInBand`) → `coverage/osf-ui/index.html` (Details: [test-coverage-status.md](../07-analysis/test-coverage-status.md))
 - **Top-3 Gaps (Test-Fokus):**

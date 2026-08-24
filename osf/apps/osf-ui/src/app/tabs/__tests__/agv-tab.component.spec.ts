@@ -125,6 +125,8 @@ describe('AgvTabComponent', () => {
       findRoadBetween: jest.fn(() => null),
       pathToRouteSegments: jest.fn(() => []),
       resolveNodeRef: jest.fn((nodeId: string) => nodeId),
+      computeStationaryPosition: jest.fn(() => ({ x: 10, y: 20 })),
+      getAgvMarkerCenter: jest.fn(() => ({ x: 10, y: 20 })),
     };
 
     const ftsAnimationServiceMock = {
@@ -919,6 +921,33 @@ describe('AgvTabComponent', () => {
         })
       ).toBe(false);
     });
+  });
+
+  it('updates grid columns from shopfloor viewport changes', () => {
+    component.presentationMode = false;
+    component.onShopfloorViewportChanged({ widthPx: 600, heightPx: 400, scale: 1 });
+    expect(component.ftsGridColsVar).toMatch(/^1fr \d+px 1fr$/);
+
+    component.presentationMode = true;
+    component.onShopfloorViewportChanged({ widthPx: 600, heightPx: 400, scale: 1 });
+    expect(component.ftsGridColsVar).toBe('1fr');
+  });
+
+  it('switches the selected AGV serial', () => {
+    component.onSelectedAgvChange('leJ4');
+    expect(component.selectedAgvSerial$.value).toBe('leJ4');
+    expect(component.getAgvLabel('leJ4')).toBe('AGV-2');
+    expect(component.ftsOrderTopic).toContain('leJ4');
+    expect(component.ftsInstantActionTopic).toContain('leJ4');
+  });
+
+  it('delegates stationary position and generates client ids', () => {
+    const pos = (
+      component as unknown as { computeStationaryPosition: (nodeId: string) => { x: number; y: number } | null }
+    ).computeStationaryPosition.call(component, 'SVR4H73275');
+    expect(pos).toEqual({ x: 10, y: 20 });
+    const id = (component as unknown as { uuid: () => string }).uuid.call(component);
+    expect(id).toMatch(/^[0-9a-f-]{36}$/i);
   });
 });
 

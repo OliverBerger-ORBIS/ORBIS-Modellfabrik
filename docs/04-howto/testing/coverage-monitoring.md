@@ -10,7 +10,7 @@
 
 Das Coverage Monitoring System überwacht automatisch die Test-Abdeckung und stellt sicher, dass die Coverage-Schwellenwerte eingehalten werden.
 
-**Ist-Stand (Messung 2026-08-06 Option D, `--runInBand`):** siehe [test-coverage-status.md](../../07-analysis/test-coverage-status.md) — Lines **66.67 %**, Branches **49.75 %**, Statements **65.58 %**, Functions **61.25 %**.
+**Ist-Stand (Messung 2026-08-24, `--runInBand`):** siehe [test-coverage-status.md](../../07-analysis/test-coverage-status.md) — Lines **67.8 %**, Branches **51.2 %**, Statements **66.7 %**, Functions **62.8 %**.
 
 ---
 
@@ -21,15 +21,15 @@ Das Coverage Monitoring System überwacht automatisch die Test-Abdeckung und ste
 ```typescript
 coverageThreshold: {
   global: {
-    branches: 42, // Gemessen 2026-08-06: 49.75%; Langziel 40%+
-    functions: 52, // Gemessen: 61.25%; Langziel ~60%
-    lines: 58, // Gemessen: 66.67%; Langziel 60%+
-    statements: 58, // Gemessen: 65.58%; Langziel ~60%
+    branches: 48, // Ist 24.08.2026: 51.2%; ~3 pp Puffer
+    functions: 59, // Ist: 62.8%
+    lines: 64, // Ist: 67.8%
+    statements: 63, // Ist: 66.7%
   },
 }
 ```
 
-**Hinweis:** Jest-Schwellen mit Puffer unter dem Ist-Stand (Option D). Coverage-Läufe standardmäßig mit **`--runInBand`**. Details: [test-coverage-status.md](../../07-analysis/test-coverage-status.md).
+**Hinweis:** Jest-Schwellen mit Puffer unter dem Ist-Stand. Coverage-Läufe standardmäßig mit **`--runInBand`**. Details: [test-coverage-status.md](../../07-analysis/test-coverage-status.md).
 
 ---
 
@@ -227,25 +227,7 @@ Im HTML Report:
 
 ## 📊 Coverage-Metriken
 
-### Lines Coverage
-- **Aktuell:** 29.09%
-- **Ziel:** 60%+
-- **Gap:** 30.91%
-
-### Branches Coverage
-- **Aktuell:** 16.34%
-- **Ziel:** 40%+
-- **Gap:** 23.66%
-
-### Functions Coverage
-- **Aktuell:** 23.65%
-- **Ziel:** 60%+
-- **Gap:** 36.35%
-
-### Statements Coverage
-- **Aktuell:** 28.39%
-- **Ziel:** 60%+
-- **Gap:** 31.61%
+Aktuelle Zahlen und Gates: [test-coverage-status.md](../../07-analysis/test-coverage-status.md). Nicht hier duplizieren.
 
 ---
 
@@ -256,5 +238,5 @@ Im HTML Report:
 
 ---
 
-**Letzte Aktualisierung:** 2025-12-13  
+**Letzte Aktualisierung:** 2026-08-24  
 **Status:** ✅ Aktiv - Coverage Monitoring eingerichtet
