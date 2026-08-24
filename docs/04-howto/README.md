@@ -15,6 +15,8 @@
   - [GitHub Pages Deployment](deployment/github-pages-deployment.md)
   - [RPi CCU + OSF-UI](deployment/rpi-deployment.md)
   - [Workpiece Intake Bridge (RPi)](deployment/workpiece-intake-bridge-rpi.md)
+  - [Edge Persistence Live FT-LAN](deployment/edge-persistence-live-ft-lan.md)
+  - [DSP-Edge: wo läuft was (OSF Persistence + Grafana)](deployment/dsp-edge-osf-persistence.md)
 - Integrations
   - [Workpiece Intake Event (Partner)](integrations/workpiece-intake-event-partner.md)
 - MQTT

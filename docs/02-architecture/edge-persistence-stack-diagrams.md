@@ -1,6 +1,6 @@
 # Edge Persistence Stack - Architekturueberblick (Mermaid)
 
-Diese Seite gibt einen kompakten Ueberblick ueber den neuen OSF Edge Persistence Stack aus [DR-28](../03-decision-records/28-edge-persistence-stack-and-metrics-model.md).
+Diese Seite gibt einen kompakten Ueberblick ueber den neuen OSF Edge Persistence Stack aus [DR-28](../03-decision-records/28-edge-persistence-stack-and-metrics-model.md). Hosts, Docker-Container und DSP-`.201`-Lücken: [DSP-Edge: wo läuft was](../04-howto/deployment/dsp-edge-osf-persistence.md).
 
 ---
 

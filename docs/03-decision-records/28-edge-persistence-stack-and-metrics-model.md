@@ -99,5 +99,10 @@ Arduino-/TXT-Payloads tragen keine NFC-ID. Die Kopplung Sensor ↔ Werkstück is
 - [ ] Grafana Provisioning (Datasource + Starter-Dashboards) versioniert
 - [ ] Legacy-Hinweis fuer Influx-Metrics-Doku gesetzt
 
+## Related
+
+- [DSP-Edge: wo läuft was](../04-howto/deployment/dsp-edge-osf-persistence.md) — Hosts, Container, Grafana/Postgres vs. SQL Server, Fragen an DSP
+- [Edge Persistence Stack-Diagramme](../02-architecture/edge-persistence-stack-diagrams.md)
+
 ---
 *Entscheidung getroffen von: Team OSF / ORBIS SmartFactory*

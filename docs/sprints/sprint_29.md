@@ -45,8 +45,9 @@
 - [x] **Soll-Topics (24.08.2026):** `ccu/order/request` + `ccu/order/response` + `module|fts/…/order` subscribed; Roharchiv + `shopfloor_event` (`REQUESTED`/`RESPONDED`, nicht im Grafana-Ist). Persistence-Image neu bauen.
 - [x] **Grafana MQTT Topics raw (24.08.2026):** Panel auf Dashboard **Systemstatus** (`osf-system-status`) — `mqtt_raw_message` nach Topic, Zeitfenster wie Workpiece Trace. Explore nicht mehr nötig für den Ingest-Check.
 - [x] **Live FT-LAN vorbereitet (24.08.2026):** How-to [edge-persistence-live-ft-lan.md](../04-howto/deployment/edge-persistence-live-ft-lan.md) — morgen Persistence auf dem Mac mit `env.live` (MQTT `.100`); OSF-UI armv7-Image bauen; Grafana/Timescale-Ziel bleibt **DSP `.201`**, nicht RPi (armv7, kein Timescale). Lokaler Alt-Container `osf-ui`:8080 gestoppt (`nx serve` :4200).
+- [x] **DSP-Edge Stack-Doku (24.08.2026):** [dsp-edge-osf-persistence.md](../04-howto/deployment/dsp-edge-osf-persistence.md) — Mermaid Hosts/Services, Compose-Container, bekannte vs. unklare `.201`-Fakten, Fragen an DSP (Inventar/Rechte, nicht Erreichbarkeit).
 - [ ] Grafana-Dashboards ausbauen (weitere fachliche Panels / DSP-Abnahme). *(Ursprung: Sprint 22)*
-- [ ] Deployment vorbereiten: Grafana + Persistence-Stack auf DSP-Docker (`.201`) lauffähig machen. RPi nur OSF-UI/Bridge, nicht Timescale. *(Ursprung: Sprint 22)*
+- [ ] Deployment vorbereiten: Grafana + Persistence-Stack auf DSP-Docker (`.201`) lauffähig machen. RPi nur OSF-UI/Bridge, nicht Timescale. How-to: [dsp-edge-osf-persistence.md](../04-howto/deployment/dsp-edge-osf-persistence.md). *(Ursprung: Sprint 22)*
 - [ ] **Track&Trace Persistenz (Option B):** UI-Historie bleibt session-/RAM-scoped; längere NFC-Spuren über Edge/Grafana (`osf-edge-persistence`, [DR-28](../03-decision-records/28-edge-persistence-stack-and-metrics-model.md)) — kein Browser-localStorage. *(Entscheidung 21.07.2026; Ursprung: Sprint 26)*
 
 ### Workpiece-Intake / Object Detection *(Fokus)*

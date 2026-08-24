@@ -84,6 +84,8 @@ Kleiner PC ohne Monitor (~20×20×5 cm). Darauf läuft die DSP-Edge-Komponente
 
 **OSF External Link:** `dspEdgeUrl` = Proxmox-UI (`.200:8006`). Analytics/Grafana weiter `.201:3000`.
 
+Was auf RPi vs. `.201` vs. Mac läuft (OSF Persistence/Grafana, Inventar-Lücken): [DSP-Edge: wo läuft was](../deployment/dsp-edge-osf-persistence.md).
+
 ---
 
 ## Rollen der Router / Geräte
