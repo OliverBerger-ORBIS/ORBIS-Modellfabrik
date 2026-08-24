@@ -7,8 +7,15 @@ import {
   ShopfloorEventRow,
   WorkpieceRow,
 } from './types';
-import { SensorPolicyState, resolveSensorReason, shouldPersistReason } from './sensorPolicy';
-import { asDate, extractPayload, pickNumber, pickString, stableHash, toRecord } from './utils';
+import {
+  SensorPolicyState,
+  effectiveSensorIntervalSeconds,
+  resolveSensorReason,
+  shouldPersistReason,
+  updateActiveOrdersFromPayload,
+} from './sensorPolicy';
+import { collectLoadNfcIds, resolveWorkpieceId, resolveWorkpieceType } from './nfc';
+import { asDate, extractPayload, pickString, stableHash, toRecord } from './utils';
 
 interface NormalizeOptions {
   config: ServiceConfig;
@@ -26,7 +33,57 @@ function eventSourceFromTopic(topic: string): string {
   if (topic.startsWith('fts/v1/ff/')) return 'fts';
   if (topic.startsWith('/j1/txt/')) return 'txt';
   if (topic.startsWith('osf/arduino/')) return 'arduino';
+  if (topic === 'osf/workpiece/intake') return 'osf';
   return 'unknown';
+}
+
+function workpieceRowFromId(
+  workpieceId: string | undefined,
+  type: string | undefined,
+  ts: Date,
+  location?: string,
+  state?: string
+): WorkpieceRow | undefined {
+  if (!workpieceId) {
+    return undefined;
+  }
+  return {
+    workpieceId,
+    type,
+    currentState: state,
+    lastLocation: location,
+    firstSeenAt: ts,
+    lastSeenAt: ts,
+  };
+}
+
+function parseWorkpieceIntake(
+  payload: Record<string, unknown>,
+  topic: string,
+  receivedAt: Date
+): { events: ShopfloorEventRow[]; workpieces: WorkpieceRow[] } {
+  const nfc = resolveWorkpieceId(payload);
+  if (!nfc) {
+    return { events: [], workpieces: [] };
+  }
+  const workpieceType = resolveWorkpieceType(payload);
+  const ts = asDate(payload.timestamp) ?? receivedAt;
+  const orderId = pickString(payload, 'orderId');
+  const event: ShopfloorEventRow = {
+    ts,
+    dedupKey: stableHash(['workpiece-intake', nfc, ts.toISOString(), orderId ?? '']),
+    eventType: 'WORKPIECE_INTAKE',
+    topic,
+    source: 'osf',
+    orderId,
+    workpieceId: nfc,
+    workpieceType,
+    action: 'intake',
+    actionState: 'FINISHED',
+    payload,
+  };
+  const workpiece = workpieceRowFromId(nfc, workpieceType, ts, 'DPS', 'INTAKE');
+  return { events: [event], workpieces: workpiece ? [workpiece] : [] };
 }
 
 function moduleFromTopic(topic: string): { moduleType?: string; moduleSerial?: string } {
@@ -40,6 +97,12 @@ function moduleFromTopic(topic: string): { moduleType?: string; moduleSerial?: s
     return { moduleType: 'FTS', moduleSerial: parts[3] };
   }
   return {};
+}
+
+function resolveActionCommand(payload: Record<string, unknown>): string | undefined {
+  const actionState = toRecord(payload.actionState);
+  const action = toRecord(payload.action);
+  return pickString(actionState, 'command') ?? pickString(action, 'command') ?? pickString(payload, 'command');
 }
 
 function parseOrderCompleted(payload: unknown, topic: string, receivedAt: Date): {
@@ -180,6 +243,7 @@ function parseSensorRows(
     { key: 'magnitude' },
     { key: 'impulseCount' },
     { key: 'vibrationDetected' },
+    { key: 'vibrationLevel' },
     { key: 'flameDetected' },
     { key: 'rawValue' }
   ];
@@ -193,10 +257,15 @@ function parseSensorRows(
     }
 
     const metricKey = `${source}:${stationId}:${sensorType}:${metric.key}`;
-    const reason = resolveSensorReason(payload, metricKey, ts, config.runtime.sensorIntervalSeconds, sensorPolicyState);
+    const intervalSeconds = effectiveSensorIntervalSeconds(
+      config.runtime.sensorIntervalSeconds,
+      config.runtime.sensorIdleIntervalSeconds,
+      sensorPolicyState
+    );
+    const reason = resolveSensorReason(payload, metricKey, ts, intervalSeconds, sensorPolicyState);
     const hasExplicitReason =
       payload.reason === 'EVENT' || payload.reason === 'THRESHOLD' || payload.reason === 'INTERVAL';
-    if (!hasExplicitReason && !shouldPersistReason(reason, ts, metricKey, config.runtime.sensorIntervalSeconds, sensorPolicyState)) {
+    if (!hasExplicitReason && !shouldPersistReason(reason, ts, metricKey, intervalSeconds, sensorPolicyState)) {
       continue;
     }
 
@@ -259,6 +328,39 @@ export function normalizeMessage({
     sensorSnapshots: [],
   };
 
+  if (topic === 'osf/workpiece/intake') {
+    const intake = parseWorkpieceIntake(payloadRecord, topic, receivedAt);
+    normalized.shopfloorEvents.push(...intake.events);
+    normalized.workpieces.push(...intake.workpieces);
+    return normalized;
+  }
+
+  if (topic === 'ccu/order/request' || topic === 'ccu/order/response') {
+    const isRequest = topic === 'ccu/order/request';
+    const orderId = pickString(payloadRecord, 'orderId');
+    const workpieceId = resolveWorkpieceId(payloadRecord) ?? pickString(payloadRecord, 'workpieceId');
+    const workpieceType = resolveWorkpieceType(payloadRecord);
+    const orderType = pickString(payloadRecord, 'orderType');
+    normalized.shopfloorEvents.push({
+      ts: baseEventTs,
+      dedupKey: stableHash([topic, baseEventTs.toISOString(), payload, workpieceId ?? '']),
+      eventType: isRequest ? 'ORDER_REQUEST' : 'ORDER_RESPONSE',
+      topic,
+      source: 'ccu',
+      orderId,
+      workpieceId,
+      workpieceType,
+      action: orderType ?? (isRequest ? 'REQUEST' : 'RESPONSE'),
+      actionState: isRequest ? 'REQUESTED' : 'RESPONDED',
+      payload: payloadRecord,
+    });
+    const wp = workpieceRowFromId(workpieceId, workpieceType, baseEventTs, orderType, isRequest ? 'REQUESTED' : 'RESPONDED');
+    if (wp) {
+      normalized.workpieces.push(wp);
+    }
+    return normalized;
+  }
+
   if (topic === 'ccu/order/completed') {
     const completed = parseOrderCompleted(payload, topic, receivedAt);
     normalized.productionOrders.push(...completed.orders);
@@ -269,6 +371,7 @@ export function normalizeMessage({
   }
 
   if (topic === 'ccu/order/active') {
+    updateActiveOrdersFromPayload(payload, sensorPolicyState);
     const activeOrders = Array.isArray(payload) ? payload : [payload];
     for (const orderItem of activeOrders) {
       const row = toRecord(orderItem);
@@ -276,15 +379,27 @@ export function normalizeMessage({
       if (!orderId) {
         continue;
       }
+      const workpieceId = pickString(row, 'workpieceId');
+      const workpieceType = pickString(row, 'type', 'workpieceType');
       normalized.productionOrders.push({
         orderId,
         orderType: pickString(row, 'orderType'),
-        workpieceId: pickString(row, 'workpieceId'),
-        workpieceType: pickString(row, 'type', 'workpieceType'),
+        workpieceId,
+        workpieceType,
         state: pickString(row, 'state'),
         receivedAt,
         startedAt: asDate(row.startedAt),
       });
+      const wp = workpieceRowFromId(
+        workpieceId,
+        workpieceType,
+        asDate(row.startedAt) ?? receivedAt,
+        pickString(row, 'target', 'location'),
+        pickString(row, 'state')
+      );
+      if (wp) {
+        normalized.workpieces.push(wp);
+      }
     }
   }
 
@@ -300,21 +415,44 @@ export function normalizeMessage({
     topic.startsWith('module/v1/ff/') ||
     topic.startsWith('fts/v1/ff/')
   ) {
-    normalized.shopfloorEvents.push({
-      ts: baseEventTs,
-      dedupKey: stableHash([topic, baseEventTs.toISOString(), payload]),
-      eventType: topic.split('/').slice(-1)[0]?.toUpperCase() ?? 'STATE',
-      topic,
-      source: eventSourceFromTopic(topic),
-      moduleType: pickString(payloadRecord, 'moduleType', 'type') ?? moduleContext.moduleType,
-      moduleSerial: pickString(payloadRecord, 'serialNumber') ?? moduleContext.moduleSerial,
-      orderId: pickString(payloadRecord, 'orderId'),
-      workpieceId: pickString(payloadRecord, 'workpieceId'),
-      workpieceType: pickString(payloadRecord, 'workpieceType', 'type'),
-      action: pickString(payloadRecord, 'command', 'action'),
-      actionState: pickString(payloadRecord, 'actionState', 'state'),
-      payload: payloadRecord,
-    });
+    const action = toRecord(payloadRecord.actionState);
+    const actionCommand = resolveActionCommand(payloadRecord);
+    const actionStateValue =
+      pickString(action, 'state') ??
+      (typeof payloadRecord.actionState === 'string' ? payloadRecord.actionState : undefined) ??
+      pickString(payloadRecord, 'state');
+    const orderId = pickString(payloadRecord, 'orderId');
+    const workpieceType = resolveWorkpieceType(payloadRecord);
+    const eventType = actionCommand?.toUpperCase() ?? topic.split('/').slice(-1)[0]?.toUpperCase() ?? 'STATE';
+    const source = eventSourceFromTopic(topic);
+    const moduleType = pickString(payloadRecord, 'moduleType', 'type') ?? moduleContext.moduleType;
+    const moduleSerial = pickString(payloadRecord, 'serialNumber') ?? moduleContext.moduleSerial;
+
+    const ftsLoadIds = source === 'fts' ? collectLoadNfcIds(payloadRecord) : [];
+    const workpieceIds =
+      ftsLoadIds.length > 1 ? ftsLoadIds : [resolveWorkpieceId(payloadRecord) ?? pickString(payloadRecord, 'workpieceId')];
+
+    for (const workpieceId of workpieceIds) {
+      normalized.shopfloorEvents.push({
+        ts: baseEventTs,
+        dedupKey: stableHash([topic, baseEventTs.toISOString(), payload, workpieceId ?? '']),
+        eventType,
+        topic,
+        source,
+        moduleType,
+        moduleSerial,
+        orderId,
+        workpieceId,
+        workpieceType,
+        action: actionCommand,
+        actionState: actionStateValue,
+        payload: payloadRecord,
+      });
+      const wp = workpieceRowFromId(workpieceId, workpieceType, baseEventTs, moduleType ?? moduleSerial, actionStateValue);
+      if (wp) {
+        normalized.workpieces.push(wp);
+      }
+    }
   }
 
   if (normalized.sensorSnapshots.length === 0 && normalized.shopfloorEvents.length === 0 && normalized.productionOrders.length === 0) {

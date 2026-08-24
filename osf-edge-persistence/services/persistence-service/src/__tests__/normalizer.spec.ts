@@ -9,7 +9,8 @@ const baseConfig: ServiceConfig = {
   runtime: {
     mode: 'replay',
     rawRetentionDays: 14,
-    sensorIntervalSeconds: 3600,
+    sensorIntervalSeconds: 5,
+    sensorIdleIntervalSeconds: 60,
     enableRawMessages: true,
     enableCameraTopic: false,
     logLevel: 'debug',
@@ -157,4 +158,196 @@ describe('normalizeMessage', () => {
     expect(first?.sensorSnapshots.length).toBeGreaterThan(0);
     expect(second?.sensorSnapshots.length).toBeGreaterThan(0);
   });
+
+  it('always persists Arduino flame/gas/vibration alarms even inside the idle window', () => {
+    const state = createSensorPolicyState();
+    const quiet = normalizeMessage({
+      config: baseConfig,
+      topic: 'osf/arduino/flame/flame-1/state',
+      payloadText: JSON.stringify({
+        flameDetected: false,
+        rawValue: 40,
+        timestamp: '2026-05-08T10:00:00.000Z',
+      }),
+      qos: 0,
+      retain: false,
+      receivedAt: new Date('2026-05-08T10:00:00.000Z'),
+      sensorPolicyState: state,
+    });
+    const alarm = normalizeMessage({
+      config: baseConfig,
+      topic: 'osf/arduino/flame/flame-1/state',
+      payloadText: JSON.stringify({
+        flameDetected: true,
+        rawValue: 12,
+        timestamp: '2026-05-08T10:00:02.000Z',
+      }),
+      qos: 0,
+      retain: false,
+      receivedAt: new Date('2026-05-08T10:00:02.000Z'),
+      sensorPolicyState: state,
+    });
+    expect(quiet?.sensorSnapshots.length).toBeGreaterThan(0);
+    expect(alarm?.sensorSnapshots.some((row) => row.reason === 'THRESHOLD')).toBe(true);
+  });
+
+  it('keeps 5s INTERVAL samples only while ccu/order/active is non-empty', () => {
+    const state = createSensorPolicyState();
+    const dht = (iso: string) =>
+      normalizeMessage({
+        config: baseConfig,
+        topic: 'osf/arduino/temperature/dht11-1/state',
+        payloadText: JSON.stringify({ temperature: 22.0, humidity: 40, timestamp: iso }),
+        qos: 0,
+        retain: false,
+        receivedAt: new Date(iso),
+        sensorPolicyState: state,
+      });
+
+    expect(dht('2026-05-08T10:00:00.000Z')?.sensorSnapshots.length).toBeGreaterThan(0);
+    expect(dht('2026-05-08T10:00:05.000Z')?.sensorSnapshots.length).toBe(0);
+
+    normalizeMessage({
+      config: baseConfig,
+      topic: 'ccu/order/active',
+      payloadText: JSON.stringify([{ orderId: 'ord-1', orderType: 'PRODUCTION' }]),
+      qos: 0,
+      retain: false,
+      receivedAt: new Date('2026-05-08T10:00:06.000Z'),
+      sensorPolicyState: state,
+    });
+    expect(dht('2026-05-08T10:00:11.000Z')?.sensorSnapshots.length).toBeGreaterThan(0);
+
+    normalizeMessage({
+      config: baseConfig,
+      topic: 'ccu/order/active',
+      payloadText: JSON.stringify([]),
+      qos: 0,
+      retain: false,
+      receivedAt: new Date('2026-05-08T10:00:12.000Z'),
+      sensorPolicyState: state,
+    });
+    expect(dht('2026-05-08T10:00:16.000Z')?.sensorSnapshots.length).toBe(0);
+  });
+
+  it('tags module RGB_NFC events with NFC from actionState.result (Replay)', () => {
+    const result = normalizeMessage({
+      config: baseConfig,
+      topic: 'module/v1/ff/NodeRed/SVR4H73275/state',
+      payloadText: JSON.stringify({
+        timestamp: '2026-08-07T09:11:46.905Z',
+        serialNumber: 'SVR4H73275',
+        moduleType: 'DPS',
+        actionState: {
+          command: 'RGB_NFC',
+          state: 'FINISHED',
+          result: '92e0ad91595f63',
+          metadata: { type: 'WHITE' },
+        },
+      }),
+      qos: 0,
+      retain: false,
+      receivedAt: new Date('2026-08-07T09:11:46.905Z'),
+      sensorPolicyState: createSensorPolicyState(),
+    });
+
+    expect(result?.shopfloorEvents).toHaveLength(1);
+    expect(result?.shopfloorEvents[0]?.workpieceId).toBe('92e0ad91595f63');
+    expect(result?.shopfloorEvents[0]?.workpieceType).toBe('WHITE');
+    expect(result?.shopfloorEvents[0]?.action).toBe('RGB_NFC');
+    expect(result?.workpieces[0]?.workpieceId).toBe('92e0ad91595f63');
+  });
+
+  it('fans out FTS state to one event per loaded NFC', () => {
+    const result = normalizeMessage({
+      config: baseConfig,
+      topic: 'fts/v1/ff/AGV1/state',
+      payloadText: JSON.stringify({
+        timestamp: '2026-08-07T09:12:00.000Z',
+        command: 'DOCK',
+        load: [
+          { loadId: 'nfcwhite1', loadType: 'WHITE', loadPosition: '1' },
+          { loadId: 'nfcred222', loadType: 'RED', loadPosition: '2' },
+        ],
+      }),
+      qos: 0,
+      retain: false,
+      receivedAt: new Date('2026-08-07T09:12:00.000Z'),
+      sensorPolicyState: createSensorPolicyState(),
+    });
+
+    const ids = result?.shopfloorEvents.map((row) => row.workpieceId).sort();
+    expect(ids).toEqual(['nfcred222', 'nfcwhite1']);
+  });
+
+  it('persists live-only intake facade when the topic is present', () => {
+    const result = normalizeMessage({
+      config: baseConfig,
+      topic: 'osf/workpiece/intake',
+      payloadText: JSON.stringify({
+        productRaw: 'WHITE',
+        nfc: '92e0ad91595f63',
+        timestamp: '2026-08-07T09:11:46.905Z',
+      }),
+      qos: 0,
+      retain: false,
+      receivedAt: new Date('2026-08-07T09:11:46.905Z'),
+      sensorPolicyState: createSensorPolicyState(),
+    });
+
+    expect(result?.shopfloorEvents[0]?.eventType).toBe('WORKPIECE_INTAKE');
+    expect(result?.shopfloorEvents[0]?.workpieceId).toBe('92e0ad91595f63');
+  });
+
+  it('persists ccu/order/request as Soll event with color and orderType', () => {
+    const result = normalizeMessage({
+      config: baseConfig,
+      topic: 'ccu/order/request',
+      payloadText: JSON.stringify({
+        type: 'WHITE',
+        orderType: 'PRODUCTION',
+        requestId: 'OSF-UI_aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+        timestamp: '2026-08-24T10:00:00.000Z',
+      }),
+      qos: 1,
+      retain: false,
+      receivedAt: new Date('2026-08-24T10:00:00.000Z'),
+      sensorPolicyState: createSensorPolicyState(),
+    });
+
+    expect(result?.raw?.topic).toBe('ccu/order/request');
+    expect(result?.shopfloorEvents).toHaveLength(1);
+    expect(result?.shopfloorEvents[0]?.eventType).toBe('ORDER_REQUEST');
+    expect(result?.shopfloorEvents[0]?.action).toBe('PRODUCTION');
+    expect(result?.shopfloorEvents[0]?.actionState).toBe('REQUESTED');
+    expect(result?.shopfloorEvents[0]?.workpieceType).toBe('WHITE');
+  });
+
+  it('reads module /order command from action.command (Soll)', () => {
+    const result = normalizeMessage({
+      config: baseConfig,
+      topic: 'module/v1/ff/SVR4H76449/order',
+      payloadText: JSON.stringify({
+        serialNumber: 'SVR4H76449',
+        orderId: 'ord-1',
+        timestamp: '2026-08-24T10:00:05.000Z',
+        action: {
+          id: 'act-1',
+          command: 'PICK',
+          metadata: { type: 'WHITE' },
+        },
+      }),
+      qos: 0,
+      retain: false,
+      receivedAt: new Date('2026-08-24T10:00:05.000Z'),
+      sensorPolicyState: createSensorPolicyState(),
+    });
+
+    expect(result?.raw?.topic).toBe('module/v1/ff/SVR4H76449/order');
+    expect(result?.shopfloorEvents[0]?.action).toBe('PICK');
+    expect(result?.shopfloorEvents[0]?.workpieceType).toBe('WHITE');
+    expect(result?.shopfloorEvents[0]?.orderId).toBe('ord-1');
+    expect(result?.shopfloorEvents[0]?.moduleSerial).toBe('SVR4H76449');
+  });
 });
+

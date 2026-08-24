@@ -52,4 +52,15 @@ describe('loadConfig runtime mode', () => {
       expect(cfg.runtime.mode).toBe('live');
     });
   });
+
+  it('defaults sensor intervals to 5s active and 60s idle', () => {
+    withEnv(
+      { SENSOR_INTERVAL_SECONDS: undefined, SENSOR_IDLE_INTERVAL_SECONDS: undefined },
+      () => {
+        const cfg = loadConfig();
+        expect(cfg.runtime.sensorIntervalSeconds).toBe(5);
+        expect(cfg.runtime.sensorIdleIntervalSeconds).toBe(60);
+      }
+    );
+  });
 });

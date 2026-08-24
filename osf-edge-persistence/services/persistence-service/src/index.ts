@@ -20,6 +20,7 @@ async function main(): Promise<void> {
     pgDb: config.postgres.db,
     rawEnabled: config.runtime.enableRawMessages,
     intervalSeconds: config.runtime.sensorIntervalSeconds,
+    idleIntervalSeconds: config.runtime.sensorIdleIntervalSeconds,
   });
 
   await db.connect();

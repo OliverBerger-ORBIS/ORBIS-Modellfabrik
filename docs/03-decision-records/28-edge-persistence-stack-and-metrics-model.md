@@ -26,7 +26,8 @@
    `sensor_snapshot` wird nicht mit festen Spalten pro Sensor aufgebaut, sondern als metric-orientiertes Schema (z. B. `sensor_type`, `metric_name`, `value_numeric`, `value_text`, `unit`), damit TXT- und Arduino-Sensorik gleichbehandelt und erweiterbar bleiben.
 
 6. **Sensordaten werden selektiv persistiert.**  
-   Persistenz nur bei `EVENT`, `THRESHOLD` oder konfiguriertem `INTERVAL`, nicht als ungefilterter Vollstream.
+   Persistenz nur bei `EVENT`, `THRESHOLD` oder konfiguriertem `INTERVAL`, nicht als ungefilterter Vollstream.  
+   **Aktive Orders (`ccu/order/active` nicht leer):** `INTERVAL = 5 s`. **Idle:** `INTERVAL = 60 s`. Warn/Alarm (Arduino `vibrationLevel` yellow/red, `flameDetected`, `gasLevel >= 1`) immer als `THRESHOLD`.
 
 7. **Topic-Konventionen bleiben kompatibel zu bestehenden OSF-Regeln.**  
    Bestehendes DR-18-Schema fuer OSF-Sensorik (`osf/arduino/<sensorTyp>/<deviceId>/<action>`) bleibt erhalten. Kein erzwungener Topic-Rename als Voraussetzung fuer den Persistence-Stack.
@@ -66,6 +67,24 @@
 - **Risiken:**
   - Doppelte Wahrheiten in Doku, falls Legacy- und Zielarchitektur nicht sauber markiert werden.
   - Inkonsistente Event-Keys ohne fruehe Idempotenzregeln.
+
+---
+
+## Nachtrag (20.08.2026) – NFC als Universal-ID, Replay vs Live
+
+**Live:** eindeutige NFC-Tags (B-soft) sind der Korrelationsschlüssel (`workpiece_id`). Intake-Topic `osf/workpiece/intake` ist eine **RPi-Bridge-Facade** und in Session-Logs **nicht** enthalten.
+
+**Replay (Home-Office):** NFC kommt aus denselben APS-Feldern wie Track&Trace (`RGB_NFC.result`, FTS `loadId`, CCU `workpieceId`). Eine lokale Intake-Bridge ist nicht nötig. Unterschiedliche Sessions mit unterschiedlichen NFC-IDs dürfen in der lokalen DB akkumulieren. Truncate nur **manuell** (`scripts/reset-replay-db.sh`), nicht bei jedem Replay.
+
+---
+
+## Nachtrag (24.08.2026) – Sensorik an Ist-Events
+
+Arduino-/TXT-Payloads tragen keine NFC-ID. Die Kopplung Sensor ↔ Werkstück ist **query-time** (as-of: letzter `sensor_snapshot` vor dem Ist-Event im konfigurierten Fenster), analog zur RAM-ENV-Snapshot-Logik in Track & Trace. `sensor_snapshot.related_event_id` / `workpiece_id` werden beim Ingest **nicht** befüllt. Auswertung: `db/queries/sensor_around_ist_event.sql` bzw. `scripts/sensor-around-ist.sh`.
+
+**Sensor-INTERVAL (24.08.2026, Korrektur):** Default war irrtümlich 3600 s. Fachlich: **5 s bei aktiven Orders**, **60 s idle**, Alarme/Warnungen immer. Volume bleibt unkritisch gegenüber Timescale-Retention (365 Tage Snapshots).
+
+**Soll-Topics (24.08.2026):** Zusätzlich subscribed: `ccu/order/request`, `ccu/order/response`, `module/v1/ff/+/order` (inkl. NodeRed), `fts/v1/ff/+/order`. Ablage in `mqtt_raw_message` und `shopfloor_event` (`REQUESTED` / `RESPONDED` bzw. Kommando ohne FINISHED). Grafana-Ist filtert weiter nur `FINISHED` — kein Vermischen von Soll und Ist.
 
 ---
 

@@ -71,6 +71,8 @@ docker compose down
 
 - `ccu/order/active`
 - `ccu/order/completed`
+- `ccu/order/request` (Soll: UI/DSP/DPS Auftrag)
+- `ccu/order/response` (CCU bestätigt `orderId` / `requestId`)
 - `ccu/state/stock`
 - `ccu/state/layout`
 - `ccu/state/config`
@@ -78,8 +80,21 @@ docker compose down
 - `ccu/pairing/state`
 - `module/v1/ff/+/state`
 - `module/v1/ff/+/connection`
+- `module/v1/ff/+/order`
+- `module/v1/ff/NodeRed/+/state`
+- `module/v1/ff/NodeRed/+/connection`
+- `module/v1/ff/NodeRed/+/order`
 - `fts/v1/ff/+/state`
 - `fts/v1/ff/+/connection`
+- `fts/v1/ff/+/order`
+
+NFC / Universal-ID is taken from **APS payloads that exist in session logs** (Replay + Live):
+
+- CCU `workpieceId` (often the NFC tag)
+- Module `actionState.result` on `RGB_NFC` / `PICK` / `DROP`
+- FTS `load[].loadId` (one event row per loaded NFC)
+
+`osf/workpiece/intake` is subscribed as a **live-only** bonus (RPi intake-bridge). Session recordings do not contain it. Replay does **not** need a local bridge — Grafana correlation uses the APS fields above.
 
 ### Sensor topics
 
@@ -118,6 +133,8 @@ Core tables:
 - `reason` (`EVENT`, `INTERVAL`, `THRESHOLD`)
 
 This keeps schema stable when adding new sensor types (MPU, current, voltage, etc.).
+
+Routine `INTERVAL` snapshots: **5 s while `ccu/order/active` is non-empty**, **60 s when idle**. Warn/alarm payloads (`vibrationLevel` yellow/red, `flameDetected`, `gasLevel >= 1`, plus explicit `warn`/`alarm`) are always stored as `THRESHOLD`. That is far below Timescale capacity (on the order of 10k snapshot rows per production hour; idle ~800/h). `mqtt_raw_message` remains the denser 14-day MQTT archive.
 
 ## Retention
 
@@ -213,13 +230,24 @@ streamlit run session_manager/app.py
 In Replay-Station:
 
 - choose a session from `data/osf-data/sessions/`
-- prefer newer recordings that already include `osf/arduino/...` topics
+- prefer newer recordings that already include `osf/arduino/...` topics **and unique NFC tags** (Aug 2026 T&T set)
 - run replay against local broker (`localhost:1883`)
+- **Do not** expect `osf/workpiece/intake` in Replay (bridge runs on the RPi, not during session playback)
+
+Different sessions with **different NFC ids** may accumulate in the local DB. Reset is **manual only** (not on every replay):
+
+```bash
+# clean slate
+bash osf-edge-persistence/scripts/reset-replay-db.sh
+
+# or drop one repeated NFC after replaying the same session twice
+bash osf-edge-persistence/scripts/reset-replay-db.sh --nfc 92e0ad91595f63
+```
 
 ### 5) Verify data arrival in Postgres
 
 ```bash
-docker exec -it osf-edge-postgres psql -U osf -d osf -c "SELECT count(*) FROM shopfloor_event;"
+docker exec -it osf-edge-postgres psql -U osf -d osf -c "SELECT workpiece_id, count(*) FROM shopfloor_event WHERE workpiece_id IS NOT NULL GROUP BY 1 ORDER BY 2 DESC LIMIT 20;"
 docker exec -it osf-edge-postgres psql -U osf -d osf -c "SELECT count(*) FROM sensor_snapshot;"
 docker exec -it osf-edge-postgres psql -U osf -d osf -c "SELECT source, sensor_type, metric_name, count(*) FROM sensor_snapshot GROUP BY 1,2,3 ORDER BY 4 DESC LIMIT 20;"
 ```
@@ -227,17 +255,31 @@ docker exec -it osf-edge-postgres psql -U osf -d osf -c "SELECT source, sensor_t
 Expected:
 
 - `shopfloor_event` grows with CCU/module/FTS topics
+- `workpiece_id` is filled from NFC on RGB_NFC / FTS load / CCU orders
 - `sensor_snapshot` grows with TXT + Arduino metrics
 - no camera payload flood by default (`/j1/txt/1/i/cam` excluded)
+- `osf/workpiece/intake` rows only if a live bridge is publishing (not in Replay)
+
+### 5b) Sensor values around Ist events (SQL, no Grafana)
+
+Query-time as-of join: last `sensor_snapshot` per metric at each Ist event (same FINISHED filter as Workpiece Trace). Does **not** write `related_event_id`. Window default is 30s (active sensor INTERVAL is 5s; idle 60s).
+
+```bash
+npm run persistence:sensor-around-ist
+npm run persistence:sensor-around-ist -- --nfc 92e0ad91595f63 --anchors
+npm run persistence:sensor-around-ist -- --long --limit 50
+```
+
+SQL: `osf-edge-persistence/db/queries/sensor_around_ist_event.sql`
 
 ### 6) Verify in Grafana
 
 - open `http://localhost:3000`
 - check folder `OSF Edge Persistence`
 - dashboards should show replayed data:
-  - Systemstatus
+  - Systemstatus — **MQTT Topics (raw)** (counts aus `mqtt_raw_message`, folgt dem Zeitfenster)
   - Auftraege
-  - Workpiece Trace
+  - Workpiece Trace — filter **NFC** / **Color** (All or multi); table follows the time picker
   - Sensor Snapshots
   - Modul-/FTS-Zustaende
 

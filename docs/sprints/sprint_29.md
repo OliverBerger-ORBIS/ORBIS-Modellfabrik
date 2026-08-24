@@ -36,8 +36,15 @@
 
 ### Grafana / Edge-Persistenz *(Fokus)*
 
-- [ ] **Modus A (Replay + Session):** Grafana `localhost:3000` mit Session-Replay erneut prüfen — Orders/Daten sichtbar; Abweichungen in Troubleshooting dokumentieren. *(Ursprung: Sprint 22; [runtime-modes-matrix.md](../04-howto/helper_apps/session-manager/runtime-modes-matrix.md))*
-- [ ] Grafana-Dashboards ausbauen (fachliche Panels schärfen, offene Visualisierungs-/Abnahmepunkte systematisch schließen). *(Ursprung: Sprint 22)*
+- *Replay-Politik (20.08.2026):* unterschiedliche Sessions mit **unterschiedlichen NFC-IDs** in der lokalen DB **akkumulieren**. Truncate **nicht** automatisch. Manuell: `bash osf-edge-persistence/scripts/reset-replay-db.sh` (optional `--nfc …`). NFC-Korrelation im Replay aus **APS-Payloads** (RGB_NFC / FTS `loadId` / CCU `workpieceId`) — `osf/workpiece/intake` ist Live-only (RPi-Bridge, nicht in Session-Logs).
+- [x] **NFC first-class im Ingest (20.08.2026):** `workpiece_id` aus APS-Feldern (RGB_NFC / FTS `loadId` / CCU) — Replay-fähig ohne Bridge. Intake-Topic nur zusätzlich wenn live. Manuelles Reset-Skript. Tests 19/19.
+- [x] **Modus A (Replay + Session, 24.08.2026):** Grafana `localhost:3000` mit Aug-Session `white-storage-production_20260807_111716` — NFC `92e0ad91595f63` in DB + Workpiece Trace sichtbar; weitere Sessions akkumulieren. Troubleshooting: Session Manager publisht TCP `:1883`, OSF-UI WS `:9001`, Persistence `host.docker.internal:1883`. *(Ursprung: Sprint 22)*
+- [x] **Workpiece Trace Filter (24.08.2026):** Grafana-Variablen Color zuerst, NFC abhängig (nur IDs der gewählten Farbe). Ist-Ansicht: Station-Label (DPS/HBW/DRILL/MILL/AIQS/FTS), nur `FINISHED`, ohne CANCELLED/NAVIGATION-Rauschen; Farbe in der Timeline.
+- [x] **Sensor um Ist-Event (24.08.2026):** Query-time SQL-Join (`sensor_snapshot` as-of, Fenster 30s), ohne Grafana und ohne `related_event_id`-Write. `npm run persistence:sensor-around-ist` (`--nfc`, `--anchors`, `--long`).
+- [x] **Sensor-INTERVAL (24.08.2026):** 5 s bei aktiven Orders (`ccu/order/active`), 60 s idle; Warn/Alarm immer (`THRESHOLD`). Default 3600 s war zu grob. Persistence-Image neu bauen nach Config-Änderung.
+- [x] **Soll-Topics (24.08.2026):** `ccu/order/request` + `ccu/order/response` + `module|fts/…/order` subscribed; Roharchiv + `shopfloor_event` (`REQUESTED`/`RESPONDED`, nicht im Grafana-Ist). Persistence-Image neu bauen.
+- [x] **Grafana MQTT Topics raw (24.08.2026):** Panel auf Dashboard **Systemstatus** (`osf-system-status`) — `mqtt_raw_message` nach Topic, Zeitfenster wie Workpiece Trace. Explore nicht mehr nötig für den Ingest-Check.
+- [ ] Grafana-Dashboards ausbauen (weitere fachliche Panels / DSP-Abnahme). *(Ursprung: Sprint 22)*
 - [ ] Deployment vorbereiten: Grafana + Persistence-Stack auf DSP-Docker lauffähig machen (neben local-dev als nächster Zielpfad). *(Ursprung: Sprint 22)*
 - [ ] **Track&Trace Persistenz (Option B):** UI-Historie bleibt session-/RAM-scoped; längere NFC-Spuren über Edge/Grafana (`osf-edge-persistence`, [DR-28](../03-decision-records/28-edge-persistence-stack-and-metrics-model.md)) — kein Browser-localStorage. *(Entscheidung 21.07.2026; Ursprung: Sprint 26)*
 

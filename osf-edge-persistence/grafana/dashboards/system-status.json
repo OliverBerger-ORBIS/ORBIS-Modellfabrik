@@ -2,9 +2,11 @@
   "title": "Systemstatus",
   "uid": "osf-system-status",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "timezone": "browser",
   "refresh": "10s",
+  "time": { "from": "now-6h", "to": "now" },
+  "tags": ["osf", "ingest"],
   "panels": [
     {
       "id": 1,
@@ -19,7 +21,24 @@
         {
           "format": "time_series",
           "refId": "A",
-          "rawSql": "SELECT date_trunc('minute', ts) AS time, count(*)::double precision AS value FROM shopfloor_event WHERE ts >= now() - interval '24 hours' GROUP BY 1 ORDER BY 1"
+          "rawSql": "SELECT date_trunc('minute', ts) AS time, count(*)::double precision AS value FROM shopfloor_event WHERE $__timeFilter(ts) GROUP BY 1 ORDER BY 1"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "MQTT Topics (raw)",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "PB856C894E7EBB34A"
+      },
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT topic, count(*) AS messages, max(received_at) AS last_seen FROM mqtt_raw_message WHERE $__timeFilter(received_at) GROUP BY topic ORDER BY messages DESC LIMIT 80"
         }
       ]
     }

@@ -17,6 +17,7 @@ export interface ServiceConfig {
     mode: 'live' | 'replay';
     rawRetentionDays: number;
     sensorIntervalSeconds: number;
+    sensorIdleIntervalSeconds: number;
     enableRawMessages: boolean;
     enableCameraTopic: boolean;
     logLevel: 'debug' | 'info' | 'warn' | 'error';
@@ -24,6 +25,9 @@ export interface ServiceConfig {
 }
 
 function asNumber(value: string | undefined, fallback: number): number {
+  if (value === undefined || value.trim() === '') {
+    return fallback;
+  }
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
 }
@@ -59,7 +63,8 @@ export function loadConfig(): ServiceConfig {
     runtime: {
       mode: asMode(process.env.PERSISTENCE_MODE),
       rawRetentionDays: asNumber(process.env.RAW_RETENTION_DAYS, 14),
-      sensorIntervalSeconds: asNumber(process.env.SENSOR_INTERVAL_SECONDS, 3600),
+      sensorIntervalSeconds: asNumber(process.env.SENSOR_INTERVAL_SECONDS, 5),
+      sensorIdleIntervalSeconds: asNumber(process.env.SENSOR_IDLE_INTERVAL_SECONDS, 60),
       enableRawMessages: asBoolean(process.env.ENABLE_RAW_MESSAGES, true),
       enableCameraTopic: asBoolean(process.env.ENABLE_CAMERA_TOPIC, false),
       logLevel: (process.env.LOG_LEVEL as ServiceConfig['runtime']['logLevel']) ?? 'info',
