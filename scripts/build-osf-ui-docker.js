@@ -70,7 +70,7 @@ if (!fs.existsSync(distPath)) {
 console.log('\nStep 2/2: Building Docker image...\n');
 try {
   execSync(
-    `docker buildx build --platform=${platform} -f ${dockerfilePath} -t ${imageName}:${tag} ${rootDir}`,
+    `docker buildx build --platform=${platform} --load -f ${dockerfilePath} -t ${imageName}:${tag} ${rootDir}`,
     { stdio: 'inherit' }
   );
   console.log(`\n✓ Built ${imageName}:${tag}`);

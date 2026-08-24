@@ -166,5 +166,6 @@ docker system prune -a
 ## 5. Referenzen
 
 - [rpi-deployment.md](./rpi-deployment.md) – Übersicht
+- [edge-persistence-live-ft-lan.md](./edge-persistence-live-ft-lan.md) – Live-Test im FT-LAN (Mac Grafana + RPi Broker/UI)
 - [integrations/APS-CCU/DEPLOYMENT.md](../../../integrations/APS-CCU/DEPLOYMENT.md) – CCU-Deployment
 - [deploy/README.md](../../../deploy/README.md) – Docker-Setup
