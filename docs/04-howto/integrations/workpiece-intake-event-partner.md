@@ -27,9 +27,9 @@ Port **9001** = MQTT over **WebSocket** (für Browser-Apps). TCP-MQTT für nativ
 
 | Feld | Bedeutung |
 |------|-----------|
-| `productRaw` | Farbe / Rohprodukt (`WHITE` \| `RED` \| `BLUE`) |
+| `productRaw` | Farbe / Rohprodukt (`WHITE` \| `RED` \| `BLUE`) — Bridge publiziert erst, wenn die Farbe aus APS bekannt ist (kein `UNKNOWN`) |
 | `nfc` | NFC-Tag-ID des Werkstücks |
 | `timestamp` | Zeitpunkt (ISO-8601) |
-| `orderId` | optional, nur wenn vorhanden |
 
-Eine Nachricht = ein neu erkanntes Werkstück. Weitere Shopfloor-Details sind nicht Teil dieses Vertrags.
+Kein `orderId` in diesem Event (Storage-/Produktionsauftrag kommt später über APS; Track&Trace/Persistenz korrelieren über NFC).
+

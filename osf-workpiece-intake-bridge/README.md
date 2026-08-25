@@ -18,8 +18,8 @@ Schlanker MQTT-Bridge-Container (Shopfloor-RPi): erkennt DPS **NFC-Abschluss** i
 }
 ```
 
-- `orderId` nur wenn gesetzt und nicht `"0"`
 - Abonnenten: OD-Apps, künftig OSF-UI, … — ohne APS-Topic-Kenntnis
+- Kein `orderId`: zum Intake-Zeitpunkt ist APS noch `"0"`; echte Order-UUID kommt später (FTS/CCU) und gehört nicht in dieses Facade-Event
 
 ## Intern (nur Bridge)
 
@@ -28,7 +28,9 @@ Subscribe (DPS Serial default `SVR4H73275`):
 - `module/v1/ff/NodeRed/<serial>/state` (primär)
 - `module/v1/ff/<serial>/state` (Fallback)
 
-Trigger: `actionState.command=RGB_NFC` + `state=FINISHED` + `result` (NFC-ID).
+Trigger: `actionState.command=RGB_NFC` + `state=FINISHED` + `result` (NFC-ID) **and** a known color
+(`metadata.type`, `metadata.workpiece.type`, or `loads[0].type`). APS often emits NFC first without
+color (~1 s later with type) — the bridge waits and does **not** publish `UNKNOWN`.
 
 ## Lokal testen
 

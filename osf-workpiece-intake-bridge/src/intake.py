@@ -14,9 +14,10 @@ def _action_state(payload: dict[str, Any]) -> dict[str, Any] | None:
 
 def build_intake_event(payload: dict[str, Any], *, now_iso: str | None = None) -> dict[str, Any] | None:
     """
-    Return intake payload when RGB_NFC finishes with an NFC id; otherwise None.
+    Return intake payload when RGB_NFC finishes with NFC id and known color.
 
-    Output keys: productRaw, nfc, timestamp; orderId only if present and not \"0\".
+    Output keys: productRaw, nfc, timestamp. orderId is not part of the contract
+    (at intake time APS still has \"0\"; real order UUID arrives later via FTS/CCU).
     """
     action = _action_state(payload)
     if not action:
@@ -36,29 +37,30 @@ def build_intake_event(payload: dict[str, Any], *, now_iso: str | None = None) -
     metadata = action.get("metadata") if isinstance(action.get("metadata"), dict) else {}
     product_raw = metadata.get("type")
     if product_raw is None or product_raw == "":
+        workpiece = metadata.get("workpiece")
+        if isinstance(workpiece, dict) and workpiece.get("type"):
+            product_raw = workpiece.get("type")
+    if product_raw is None or product_raw == "":
         # Fallback: some APS variants put color on loads[]
         loads = payload.get("loads")
         if isinstance(loads, list) and loads:
             first = loads[0]
             if isinstance(first, dict) and first.get("type"):
                 product_raw = first.get("type")
+    # Wait for a later RGB_NFC FINISHED that carries color — do not publish UNKNOWN.
+    # APS often emits NFC first (~1s), then the same NFC with metadata.type.
     if product_raw is None or product_raw == "":
-        product_raw = "UNKNOWN"
-    else:
-        product_raw = str(product_raw).upper()
+        return None
+    product_raw = str(product_raw).upper()
+    if product_raw in ("UNKNOWN", "NONE", "NULL"):
+        return None
 
     ts = action.get("timestamp") or payload.get("timestamp") or now_iso
     if not ts:
         return None
 
-    event: dict[str, Any] = {
+    return {
         "productRaw": product_raw,
         "nfc": nfc_str,
         "timestamp": str(ts),
     }
-
-    order_id = payload.get("orderId")
-    if order_id is not None and str(order_id) not in ("", "0"):
-        event["orderId"] = str(order_id)
-
-    return event

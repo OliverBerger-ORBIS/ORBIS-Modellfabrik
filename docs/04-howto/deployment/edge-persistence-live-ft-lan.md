@@ -19,12 +19,30 @@ Im FT-LAN, Persistence bleibt Replay-Container, Broker wird live:
 ```bash
 cd osf-edge-persistence
 cp env.live .env
-# Compose interpoliert die Shell — explizit setzen, sonst alter MQTT_HOST
-MQTT_HOST=192.168.0.100 SENSOR_INTERVAL_SECONDS=5 SENSOR_IDLE_INTERVAL_SECONDS=60 \
+```
+
+**Docker Desktop + Dual-Homed (Gemini Wi‑Fi + FT-LAN Ethernet):** Container erreichen `192.168.0.100:1883` oft nicht (ECONNREFUSED). Lokal läuft zudem häufig Mosquitto auf `:1883` (Replay). Workaround:
+
+```bash
+# Tunnel RPi-Broker → Mac:1884 (Terminal offen lassen / -f im Hintergrund)
+ssh -f -N -o ExitOnForwardFailure=yes -L 1884:127.0.0.1:1883 ff22@192.168.0.100
+
+MQTT_HOST=host.docker.internal MQTT_PORT=1884 \
+MQTT_USERNAME=default MQTT_PASSWORD=default \
+SENSOR_INTERVAL_SECONDS=5 SENSOR_IDLE_INTERVAL_SECONDS=60 \
   docker compose up -d --force-recreate --no-deps persistence-service
 ```
 
-Logs: `mode: live`, `mqttHost: 192.168.0.100`, `intervalSeconds: 5`.
+Wenn Docker LAN-Zugriff hat und `:1883` frei ist:
+
+```bash
+MQTT_HOST=192.168.0.100 MQTT_PORT=1883 \
+MQTT_USERNAME=default MQTT_PASSWORD=default \
+SENSOR_INTERVAL_SECONDS=5 SENSOR_IDLE_INTERVAL_SECONDS=60 \
+  docker compose up -d --force-recreate --no-deps persistence-service
+```
+
+Logs: `mode: live`, `mqttHost: host.docker.internal` (oder `.100`), `intervalSeconds: 5`, Subscribes inkl. `osf/workpiece/intake`.
 
 Grafana: `http://localhost:3000` → **Systemstatus** → **MQTT Topics (raw)** und **Workpiece Trace**. Zeitfenster auf „jetzt“.
 

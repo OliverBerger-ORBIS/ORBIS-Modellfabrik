@@ -60,4 +60,4 @@ Am DPS ein Werkstück einlesen → eine JSON-Zeile mit `productRaw` + `nfc`.
 
 - WebSocket: `ws://192.168.0.100:9001` (User/Pass `default`/`default`)
 - Subscribe: `osf/workpiece/intake`
-- Felder: `productRaw`, `nfc`, `timestamp` (optional `orderId`)
+- Felder: `productRaw`, `nfc`, `timestamp` (kein `orderId`)
