@@ -1,0 +1,3 @@
+-- Retention note (SQL Server): Timescale policies from db/init/004_retention.sql
+-- are replaced by application-side cleanup or SQL Agent jobs on .201.
+-- Defaults to mirror: mqtt_raw_message 14 days, sensor_snapshot 365 days.

@@ -47,9 +47,17 @@
 - [x] **Live FT-LAN vorbereitet (24.08.2026):** How-to [edge-persistence-live-ft-lan.md](../04-howto/deployment/edge-persistence-live-ft-lan.md) — morgen Persistence auf dem Mac mit `env.live` (MQTT `.100`); OSF-UI armv7-Image bauen; Grafana/Timescale-Ziel bleibt **DSP `.201`**, nicht RPi (armv7, kein Timescale). Lokaler Alt-Container `osf-ui`:8080 gestoppt (`nx serve` :4200).
 - [x] **DSP-Edge Stack-Doku (24.08.2026):** [dsp-edge-osf-persistence.md](../04-howto/deployment/dsp-edge-osf-persistence.md) — Mermaid Hosts/Services, Compose-Container, bekannte vs. unklare `.201`-Fakten, Fragen an DSP (Inventar/Rechte, nicht Erreichbarkeit).
 - [x] **Live-Ingest FT-LAN verifiziert (25.08.2026):** Dual-Homed Mac (Gemini Wi‑Fi + FT-LAN Ethernet); Intake-Bridge auf RPi; Persistence live via SSH-Tunnel `:1884` → RPi MQTT (Docker Desktop erreicht `.100:1883` nicht). Events in Grafana **und** OSF-UI Track&Trace sichtbar (z. B. NFC `93b29ba34a2334`). Follow-up: Bridge `productRaw` oft `UNKNOWN` obwohl UI weiß/blau korrekt — später. Zielhost `.201` weiter offen.
+- [x] **VE `.201` Inventar + Ziel-DB SQL Server (25.08.2026):** Docker/Compose/`pocadm` ok; SQL Host-Port **`:1433`** (`rittal_sqlserver`); Grafana-Alt gestoppt; Doku korrigiert. Ziel: neues OSF-Schema auf bestehender Instanz; Dev Option B = lokal SQL Server. DR-28 Nachtrag.
 - [ ] Grafana-Dashboards ausbauen (weitere fachliche Panels / DSP-Abnahme). *(Ursprung: Sprint 22)*
-- [ ] Deployment vorbereiten: Grafana + Persistence-Stack auf DSP-Docker (`.201`) lauffähig machen. RPi nur OSF-UI/Bridge, nicht Timescale. How-to: [dsp-edge-osf-persistence.md](../04-howto/deployment/dsp-edge-osf-persistence.md). *(Ursprung: Sprint 22)*
-- [ ] **Track&Trace Persistenz (Option B):** UI-Historie bleibt session-/RAM-scoped; längere NFC-Spuren über Edge/Grafana — Live-Pfad Mac+Grafana **gezeigt** (25.08.); Dauerbetrieb = Stack auf `.201`. *(Entscheidung 21.07.2026; Ursprung: Sprint 26)*
+- [x] **SQL Server lokal (Option B, Compose) (25.08.2026):** Profil `mssql` → Container `osf-edge-mssql` (2022, Host `:1433`, amd64/Rosetta); `scripts/mssql-smoke.sh`; Postgres parallel. Schema/Persistence-Anbindung = nächste Häppchen. How-to: README + [dsp-edge-osf-persistence.md](../04-howto/deployment/dsp-edge-osf-persistence.md).
+- [x] **Schema T-SQL (25.08.2026):** `db/mssql/` (DB `osf_edge`, Tabellen + Indizes, ohne Timescale); `scripts/mssql-init-schema.sh`. Unit-Tests: `utils.spec.ts` + `schemaContract.spec.ts` (Tabellen-Parität PG↔MSSQL).
+- [ ] **Mini: Tabellen-Präfixe UC-02:** Shopfloor-Tabellen **ohne** Präfix (Default). Umwelt: `env_*` (z. B. `env_sensor_snapshot`). Business: `biz_*` erst wenn Demo-Entities kommen. Zuerst MSSQL-`db/mssql/` (+ Contract-Test); Postgres-Init optional nachziehen. MQTT-first bleibt.
+- [ ] **Persistence → MSSQL:** DB-Adapter/`mssql`, Env; Smoke-Test Ingest gegen lokalen SQL Server.
+- [ ] **Grafana → MSSQL:** Datasource + Workpiece-Trace-/Systemstatus-Queries; kurze visuelle Abnahme lokal.
+- [ ] **Doku Option B:** How-to Dev SQL Server (Compose, Ports, Reset) + Verweise DR-28 / dsp-edge.
+- [ ] **`.201` OSF-DB + App-User:** nach DSP-OK auf `rittal_sqlserver` (`osf_edge`, kein `sa` dauerhaft). Nicht zeitkritisch — 1–5 starten ohne Antwort.
+- [ ] **Deploy `.201`:** Persistence + Grafana-Container; MQTT `.100`; SQL `:1433`. Mac-Tunnel nur Übergang. *(Ursprung: Sprint 22)*
+- [ ] **Live ohne Mac-Tunnel:** Ingest dauerhaft über `.201`; Checkliste [edge-persistence-live-ft-lan.md](../04-howto/deployment/edge-persistence-live-ft-lan.md) anpassen. Track&Trace-UI bleibt RAM-scoped. *(Entscheidung 21.07.2026; Ursprung: Sprint 26)*
 
 ### Workpiece-Intake / Object Detection *(Fokus)*
 

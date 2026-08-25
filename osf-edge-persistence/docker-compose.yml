@@ -20,6 +20,35 @@ services:
       timeout: 5s
       retries: 10
 
+  # Option B (Dev): SQL Server parallel to Postgres. Schema/Persistence wiring = later Häppchen.
+  # Apple Silicon: linux/amd64 via Docker Desktop Rosetta (same image family as VE .201).
+  mssql:
+    profiles: ["mssql"]
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    container_name: osf-edge-mssql
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_PID: Developer
+    ports:
+      - "${MSSQL_EXTERNAL_PORT:-1433}:1433"
+    volumes:
+      - ./data/mssql:/var/opt/mssql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q \"SELECT 1\" || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
   grafana:
     image: grafana/grafana:latest
     container_name: osf-edge-grafana

@@ -79,8 +79,8 @@ Kleiner PC ohne Monitor (~20×20×5 cm). Darauf läuft die DSP-Edge-Komponente
 | Feld | Wert |
 |------|------|
 | **SSH** | `pocadm` / `$ompv$` · `dsp-agent` / `sibro01` |
-| **SQL Server (Container)** | `192.168.0.201:1443` · User `sa` · PW `5KpcDHa9GEoR*3osiE` |
-| **Grafana (Ziel)** | `http://192.168.0.201:3000/…` (Dienst ggf. noch starten — Stand 15.07./21.07. oft refused) |
+| **SQL Server (Container)** | Name `rittal_sqlserver` · Host **`192.168.0.201:1433`** (nicht 1443) · Image `mssql/server:2022` · User `sa` · PW `5KpcDHa9GEoR*3osiE` · OSF: **eigene DB/Schema**, Instanz mit DSP abstimmen |
+| **Grafana (Ziel)** | `http://192.168.0.201:3000/…` — Alt-Container gestoppt (25.08.2026); Port frei für OSF-Grafana |
 
 **OSF External Link:** `dspEdgeUrl` = Proxmox-UI (`.200:8006`). Analytics/Grafana weiter `.201:3000`.
 
@@ -220,7 +220,7 @@ flowchart TB
 | `192.168.0.100` | ✅ | MQTT **1883**; OSF-UI **:8080** 200 | RPi / OSF-UI v1.1.9 |
 | `192.168.0.95` | ✅ | — | Arduino |
 | `192.168.0.200` | ✅ | Proxmox **:8006** 200 | DSP-Edge-Hardware |
-| `192.168.0.201` | ✅ | Ping OK; Grafana **:3000** refused; SQL **:1443** geschlossen (Stand Test) | Linux-VE |
+| `192.168.0.201` | ✅ | Ping OK; Grafana **:3000** oft refused (Container gestoppt); SQL Host-Port **:1433** (Doku früher fälschlich `:1443`) | Linux-VE · Inventar 25.08.2026: [dsp-edge-osf-persistence.md](../deployment/dsp-edge-osf-persistence.md) |
 | DHCP `.101–.199` | variabel | — | Laptops, TXT — **keine** Fix-Tabelle |
 
 ### ORBIS-LAN `10.251.0.0/27`
@@ -277,7 +277,7 @@ Kanonical: [hardware-architecture.md § Netzwerk-Architektur](../../06-integrati
 
 - [x] **Omada-Port-Pinout** (P1/P3/P4/P5) + Fotos *(21.07.2026)*
 - [ ] **ORBIS-LAN:** vollständige Adressliste, DNS, stabiler MES/SAP-Pfad zur Demo (mit Netzwerk-Kollegen) — **Tests nur mit ORBIS-VPN / Firmennetz**, nicht vom reinen FT-LAN-Mac
-- [ ] **Grafana auf `.201`:** Dienst dauerhaft starten/öffentlichen (Persistence-Stack); SQL **:1443** bei Bedarf prüfen
+- [ ] **Grafana + Persistence auf `.201`:** OSF-Compose deployen; SQL **:1433** (`rittal_sqlserver`) + neues OSF-Schema — [dsp-edge-osf-persistence.md](../deployment/dsp-edge-osf-persistence.md)
 - [ ] Omada **Management-IP / Admin-UI-URL** und exaktes Modell notieren (Aufkleber/UI)
 - [x] HTML-Export nach Doc-Update: `bash scripts/export-network-topology-html.sh` *(21.07.2026)*
 - ~~Warum `10.251.0.1` von FT-LAN oft timeout~~ → **erwartbar ohne ORBIS-VPN** (kein Pinout-Fehler)

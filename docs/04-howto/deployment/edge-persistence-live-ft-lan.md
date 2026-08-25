@@ -1,6 +1,6 @@
 # Edge Persistence – Live im FT-LAN (Checkliste)
 
-**Zielbetrieb:** Grafana + Postgres/Timescale + Persistence-Service auf dem **DSP-Edge** (Linux-VE `192.168.0.201`, Host Proxmox `.200`). Siehe [wo läuft was](./dsp-edge-osf-persistence.md), [Netzwerk-Topologie](../setup/orbis-shopfloor-network-topology.md) und [DR-28](../../03-decision-records/28-edge-persistence-stack-and-metrics-model.md).
+**Zielbetrieb:** Grafana + Persistence-Service auf dem **DSP-Edge** (Linux-VE `192.168.0.201`, Host Proxmox `.200`); **DB = SQL Server** auf bestehendem Container **`:1433`** (neues OSF-Schema). Lokal bis dahin Docker (Dev-Option B: SQL Server; Übergang: Postgres/Timescale). Siehe [wo läuft was](./dsp-edge-osf-persistence.md), [Netzwerk-Topologie](../setup/orbis-shopfloor-network-topology.md) und [DR-28](../../03-decision-records/28-edge-persistence-stack-and-metrics-model.md).
 
 **Platte ist nicht der Engpass für einen RPi-Versuch.** Der APS-RPi (`192.168.0.100`) ist **armv7 / 32-bit** (CCU-Stack, [DR-23](../../03-decision-records/23-rpi-osf-ui-platform-armv7.md)). Offizielle `timescale/timescaledb` und aktuelle Grafana-Images sind **amd64/arm64**, nicht armv7. Timescale auf dem Shopfloor-Pi ist deshalb kein sinnvoller Zwischenstopp — CPU/Architektur, nicht GB.
 
@@ -94,4 +94,4 @@ Ohne Bridge kommt NFC weiter aus APS-Payloads (RGB_NFC / FTS `loadId` / CCU).
 
 ## 4) DSP-Edge (nächster Schritt, nicht RPi)
 
-Denselben Stack `osf-edge-persistence/` (`env.live`, `MQTT_HOST=192.168.0.100`) auf **`.201`** bringen (amd64 oder arm64). Grafana-Ziel laut Topologie: `http://192.168.0.201:3000`. Architektur, Container und DSP-Fragen: [dsp-edge-osf-persistence.md](./dsp-edge-osf-persistence.md).
+Persistence + Grafana auf **`.201`** (amd64); DB an SQL Server **`.201:1433`**. Grafana: `http://192.168.0.201:3000`. Architektur und VE-Inventar: [dsp-edge-osf-persistence.md](./dsp-edge-osf-persistence.md).

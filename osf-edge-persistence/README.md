@@ -59,11 +59,36 @@ docker compose up -d
 - Grafana: `http://localhost:3000`
 - Postgres: `localhost:5432`
 
+## Option B — local SQL Server (Dev, parallel to Postgres)
+
+Target on DSP `.201` is **SQL Server**, not Postgres. Until Persistence/Grafana are ported, run a local MSSQL container **alongside** the existing Timescale stack:
+
+```bash
+# ensure MSSQL_* vars are in .env (see env.live / .env.example)
+docker compose --profile mssql up -d mssql
+bash scripts/mssql-smoke.sh
+```
+
+- Host port: `localhost:1433` (override `MSSQL_EXTERNAL_PORT`)
+- SA password: `MSSQL_SA_PASSWORD` (must meet SQL Server complexity)
+- Apple Silicon: image runs as `linux/amd64` (Docker Desktop Rosetta)
+- Schema (DB `osf_edge`): `bash scripts/mssql-init-schema.sh` — T-SQL under `db/mssql/`
+- Postgres/Grafana/Persistence stay on the default compose path until Persistence → MSSQL Häppchen
+
+Stop only MSSQL:
+
+```bash
+docker compose --profile mssql stop mssql
+```
+
 ## Stop
 
 ```bash
 docker compose down
 ```
+
+# To also remove the mssql profile container:
+# docker compose --profile mssql down
 
 ## Topics
 

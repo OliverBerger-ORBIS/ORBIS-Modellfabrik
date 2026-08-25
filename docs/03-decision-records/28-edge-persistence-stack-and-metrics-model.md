@@ -99,9 +99,19 @@ Arduino-/TXT-Payloads tragen keine NFC-ID. Die Kopplung Sensor ↔ Werkstück is
 - [ ] Grafana Provisioning (Datasource + Starter-Dashboards) versioniert
 - [ ] Legacy-Hinweis fuer Influx-Metrics-Doku gesetzt
 
+## Nachtrag (25.08.2026) – Prod-DB SQL Server auf `.201`
+
+**Abstimmung Zielarchitektur (OSF ↔ DSP):**
+
+1. Persistence + Grafana als Docker auf Linux-VE **`.201`**.
+2. **Prod-Datenbank = Microsoft SQL Server** auf dem **bestehenden** Container (Host-Port **`:1433`**, Name `rittal_sqlserver`) — **neues** OSF-DB/Schema. **Kein** Postgres/Timescale auf der VE.
+3. Entwicklung zuerst **localhost/Docker**; **Option B:** lokal ebenfalls SQL Server, bis Anforderungen stabil, dann Deploy `.201`.
+
+PostgreSQL + Timescale bleibt gültig als **bisheriger Dev/Replay-Stack** und Übergangsbasis; Timescale-Features (Hypertables/Retention) sind auf SQL Server durch Index + Retention-Job zu ersetzen. Details/Inventar: [dsp-edge-osf-persistence.md](../04-howto/deployment/dsp-edge-osf-persistence.md).
+
 ## Related
 
-- [DSP-Edge: wo läuft was](../04-howto/deployment/dsp-edge-osf-persistence.md) — Hosts, Container, Grafana/Postgres vs. SQL Server, Fragen an DSP
+- [DSP-Edge: wo läuft was](../04-howto/deployment/dsp-edge-osf-persistence.md) — Hosts, VE-Inventar, SQL `:1433`, Option B
 - [Edge Persistence Stack-Diagramme](../02-architecture/edge-persistence-stack-diagrams.md)
 
 ---
