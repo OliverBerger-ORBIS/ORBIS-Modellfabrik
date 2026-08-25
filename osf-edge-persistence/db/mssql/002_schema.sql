@@ -26,10 +26,10 @@ BEGIN
 END
 GO
 
-IF OBJECT_ID(N'dbo.production_order', N'U') IS NULL
+IF OBJECT_ID(N'dbo.shopfloor_order', N'U') IS NULL
 BEGIN
-  CREATE TABLE dbo.production_order (
-    order_id NVARCHAR(128) NOT NULL CONSTRAINT PK_production_order PRIMARY KEY,
+  CREATE TABLE dbo.shopfloor_order (
+    order_id NVARCHAR(128) NOT NULL CONSTRAINT PK_shopfloor_order PRIMARY KEY,
     order_type NVARCHAR(64) NULL,
     workpiece_id NVARCHAR(128) NULL,
     workpiece_type NVARCHAR(64) NULL,
@@ -37,7 +37,7 @@ BEGIN
     received_at DATETIMEOFFSET NULL,
     started_at DATETIMEOFFSET NULL,
     stopped_at DATETIMEOFFSET NULL,
-    updated_at DATETIMEOFFSET NOT NULL CONSTRAINT DF_production_order_updated_at DEFAULT (SYSUTCDATETIME())
+    updated_at DATETIMEOFFSET NOT NULL CONSTRAINT DF_shopfloor_order_updated_at DEFAULT (SYSUTCDATETIME())
   );
 END
 GO
@@ -79,10 +79,11 @@ BEGIN
 END
 GO
 
-IF OBJECT_ID(N'dbo.sensor_snapshot', N'U') IS NULL
+-- UC-02 Umwelt-Topf (env_*). Shopfloor tables stay unprefixed.
+IF OBJECT_ID(N'dbo.env_sensor_snapshot', N'U') IS NULL
 BEGIN
-  CREATE TABLE dbo.sensor_snapshot (
-    id BIGINT IDENTITY(1, 1) NOT NULL CONSTRAINT PK_sensor_snapshot PRIMARY KEY,
+  CREATE TABLE dbo.env_sensor_snapshot (
+    id BIGINT IDENTITY(1, 1) NOT NULL CONSTRAINT PK_env_sensor_snapshot PRIMARY KEY,
     ts DATETIMEOFFSET NOT NULL,
     source NVARCHAR(64) NOT NULL,
     station_id NVARCHAR(128) NULL,
@@ -97,10 +98,10 @@ BEGIN
     workpiece_id NVARCHAR(128) NULL,
     payload_json NVARCHAR(MAX) NOT NULL,
     dedup_key NVARCHAR(512) NOT NULL,
-    created_at DATETIMEOFFSET NOT NULL CONSTRAINT DF_sensor_snapshot_created_at DEFAULT (SYSUTCDATETIME()),
-    CONSTRAINT UQ_sensor_snapshot_dedup_key UNIQUE (dedup_key),
-    CONSTRAINT CK_sensor_snapshot_reason CHECK (reason IN (N'EVENT', N'INTERVAL', N'THRESHOLD')),
-    CONSTRAINT FK_sensor_snapshot_related_event
+    created_at DATETIMEOFFSET NOT NULL CONSTRAINT DF_env_sensor_snapshot_created_at DEFAULT (SYSUTCDATETIME()),
+    CONSTRAINT UQ_env_sensor_snapshot_dedup_key UNIQUE (dedup_key),
+    CONSTRAINT CK_env_sensor_snapshot_reason CHECK (reason IN (N'EVENT', N'INTERVAL', N'THRESHOLD')),
+    CONSTRAINT FK_env_sensor_snapshot_related_event
       FOREIGN KEY (related_event_id) REFERENCES dbo.shopfloor_event (id) ON DELETE SET NULL
   );
 END

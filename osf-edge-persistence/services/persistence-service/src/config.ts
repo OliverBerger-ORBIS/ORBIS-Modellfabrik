@@ -6,12 +6,14 @@ export interface ServiceConfig {
     password?: string;
     clientId: string;
   };
-  postgres: {
+  mssql: {
     host: string;
     port: number;
     db: string;
     user: string;
     password: string;
+    encrypt: boolean;
+    trustServerCertificate: boolean;
   };
   runtime: {
     mode: 'live' | 'replay';
@@ -53,12 +55,14 @@ export function loadConfig(): ServiceConfig {
       password: process.env.MQTT_PASSWORD || undefined,
       clientId: process.env.MQTT_CLIENT_ID ?? 'osf-persistence-edge',
     },
-    postgres: {
-      host: process.env.POSTGRES_HOST ?? 'localhost',
-      port: asNumber(process.env.POSTGRES_PORT, 5432),
-      db: process.env.POSTGRES_DB ?? 'osf',
-      user: process.env.POSTGRES_USER ?? 'osf',
-      password: process.env.POSTGRES_PASSWORD ?? 'osf_dev',
+    mssql: {
+      host: process.env.MSSQL_HOST ?? 'localhost',
+      port: asNumber(process.env.MSSQL_PORT, 1433),
+      db: process.env.MSSQL_DB ?? 'osf_edge',
+      user: process.env.MSSQL_USER ?? 'osf_edge',
+      password: process.env.MSSQL_PASSWORD ?? process.env.MSSQL_SA_PASSWORD ?? 'Osf_Edge_Dev1!',
+      encrypt: asBoolean(process.env.MSSQL_ENCRYPT, false),
+      trustServerCertificate: asBoolean(process.env.MSSQL_TRUST_SERVER_CERTIFICATE, true),
     },
     runtime: {
       mode: asMode(process.env.PERSISTENCE_MODE),

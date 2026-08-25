@@ -1,4 +1,4 @@
--- Indexes mirroring db/init/002_indexes.sql (Postgres).
+-- Indexes for OSF edge MSSQL schema.
 USE osf_edge;
 GO
 
@@ -15,11 +15,14 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_shopfloor_event_topi
   CREATE INDEX idx_shopfloor_event_topic ON dbo.shopfloor_event (topic);
 GO
 
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_production_order_state' AND object_id = OBJECT_ID(N'dbo.production_order'))
-  CREATE INDEX idx_production_order_state ON dbo.production_order (state);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_shopfloor_order_state' AND object_id = OBJECT_ID(N'dbo.shopfloor_order'))
+  CREATE INDEX idx_shopfloor_order_state ON dbo.shopfloor_order (state);
 GO
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_production_order_stopped_at' AND object_id = OBJECT_ID(N'dbo.production_order'))
-  CREATE INDEX idx_production_order_stopped_at ON dbo.production_order (stopped_at DESC);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_shopfloor_order_stopped_at' AND object_id = OBJECT_ID(N'dbo.shopfloor_order'))
+  CREATE INDEX idx_shopfloor_order_stopped_at ON dbo.shopfloor_order (stopped_at DESC);
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_shopfloor_order_type' AND object_id = OBJECT_ID(N'dbo.shopfloor_order'))
+  CREATE INDEX idx_shopfloor_order_type ON dbo.shopfloor_order (order_type);
 GO
 
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_production_step_order_id' AND object_id = OBJECT_ID(N'dbo.production_step'))
@@ -32,23 +35,23 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_production_step_stop
   CREATE INDEX idx_production_step_stopped_at ON dbo.production_step (stopped_at DESC);
 GO
 
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_sensor_snapshot_ts' AND object_id = OBJECT_ID(N'dbo.sensor_snapshot'))
-  CREATE INDEX idx_sensor_snapshot_ts ON dbo.sensor_snapshot (ts DESC);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_env_sensor_snapshot_ts' AND object_id = OBJECT_ID(N'dbo.env_sensor_snapshot'))
+  CREATE INDEX idx_env_sensor_snapshot_ts ON dbo.env_sensor_snapshot (ts DESC);
 GO
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_sensor_snapshot_metric' AND object_id = OBJECT_ID(N'dbo.sensor_snapshot'))
-  CREATE INDEX idx_sensor_snapshot_metric ON dbo.sensor_snapshot (metric_name);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_env_sensor_snapshot_metric' AND object_id = OBJECT_ID(N'dbo.env_sensor_snapshot'))
+  CREATE INDEX idx_env_sensor_snapshot_metric ON dbo.env_sensor_snapshot (metric_name);
 GO
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_sensor_snapshot_station' AND object_id = OBJECT_ID(N'dbo.sensor_snapshot'))
-  CREATE INDEX idx_sensor_snapshot_station ON dbo.sensor_snapshot (station_id);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_env_sensor_snapshot_station' AND object_id = OBJECT_ID(N'dbo.env_sensor_snapshot'))
+  CREATE INDEX idx_env_sensor_snapshot_station ON dbo.env_sensor_snapshot (station_id);
 GO
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_sensor_snapshot_source' AND object_id = OBJECT_ID(N'dbo.sensor_snapshot'))
-  CREATE INDEX idx_sensor_snapshot_source ON dbo.sensor_snapshot (source);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_env_sensor_snapshot_source' AND object_id = OBJECT_ID(N'dbo.env_sensor_snapshot'))
+  CREATE INDEX idx_env_sensor_snapshot_source ON dbo.env_sensor_snapshot (source);
 GO
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_sensor_snapshot_order_id' AND object_id = OBJECT_ID(N'dbo.sensor_snapshot'))
-  CREATE INDEX idx_sensor_snapshot_order_id ON dbo.sensor_snapshot (order_id);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_env_sensor_snapshot_order_id' AND object_id = OBJECT_ID(N'dbo.env_sensor_snapshot'))
+  CREATE INDEX idx_env_sensor_snapshot_order_id ON dbo.env_sensor_snapshot (order_id);
 GO
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_sensor_snapshot_workpiece_id' AND object_id = OBJECT_ID(N'dbo.sensor_snapshot'))
-  CREATE INDEX idx_sensor_snapshot_workpiece_id ON dbo.sensor_snapshot (workpiece_id);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_env_sensor_snapshot_workpiece_id' AND object_id = OBJECT_ID(N'dbo.env_sensor_snapshot'))
+  CREATE INDEX idx_env_sensor_snapshot_workpiece_id ON dbo.env_sensor_snapshot (workpiece_id);
 GO
 
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_mqtt_raw_received_at' AND object_id = OBJECT_ID(N'dbo.mqtt_raw_message'))

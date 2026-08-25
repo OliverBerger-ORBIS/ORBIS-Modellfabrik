@@ -1,11 +1,10 @@
--- Environment at Ist events (query-time, no Grafana, no related_event_id write).
---
--- As-of join: latest sensor_snapshot per metric with ts <= event.ts + grace,
+-- LEGACY (Postgres). Active DB is MSSQL table env_sensor_snapshot.
+-- Not executed by current tooling; keep until T-SQL port.
 -- inside [event.ts - window, event.ts + grace]. Same idea as Track & Trace
 -- (last known ENV at an event), not a spatial sensor-to-station map.
 --
 -- TXT BME680 snapshots often store only metric `iaq`; t/h live in payload_json.
--- LDR is usually absent from sensor_snapshot — last mqtt_raw_message is used.
+-- LDR is usually absent from env_sensor_snapshot — last mqtt_raw_message is used.
 --
 -- psql variables (set by scripts/sensor-around-ist.sh, or by hand):
 --   window_seconds  default 30
@@ -64,7 +63,7 @@ ist AS (
 ist_f AS (
   SELECT i.*, po.order_type
   FROM ist i
-  LEFT JOIN production_order po ON po.order_id = i.order_id
+  LEFT JOIN shopfloor_order po ON po.order_id = i.order_id
   CROSS JOIN params p
   WHERE p.anchors_only = 0
     OR CASE
@@ -95,7 +94,7 @@ nearest AS (
     s.payload_json
   FROM ist_f e
   CROSS JOIN params p
-  INNER JOIN sensor_snapshot s
+  INNER JOIN env_sensor_snapshot s
     ON s.ts <= e.ts + make_interval(secs => p.grace_seconds)
    AND s.ts >= e.ts - make_interval(secs => p.window_seconds)
   ORDER BY e.id, s.source, s.station_id, s.sensor_type, s.metric_name, s.ts DESC

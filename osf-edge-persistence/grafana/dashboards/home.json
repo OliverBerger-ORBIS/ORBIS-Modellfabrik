@@ -1,0 +1,306 @@
+{
+  "title": "OSF Edge Home",
+  "uid": "osf-home",
+  "schemaVersion": 39,
+  "version": 1,
+  "timezone": "browser",
+  "refresh": "10s",
+  "graphTooltip": 0,
+  "tags": ["osf", "home", "demo"],
+  "time": { "from": "now-2h", "to": "now" },
+  "links": [
+    {
+      "title": "Workpiece Trace",
+      "type": "link",
+      "url": "/d/osf-workpiece-trace/workpiece-trace",
+      "icon": "dashboard",
+      "targetBlank": false
+    },
+    {
+      "title": "Orders",
+      "type": "link",
+      "url": "/d/osf-orders/orders",
+      "icon": "dashboard",
+      "targetBlank": false
+    },
+    {
+      "title": "Sensors",
+      "type": "link",
+      "url": "/d/osf-sensor-snapshots/sensor-snapshots",
+      "icon": "dashboard",
+      "targetBlank": false
+    },
+    {
+      "title": "FTS / AGV",
+      "type": "link",
+      "url": "/d/osf-fts/fts-agv",
+      "icon": "dashboard",
+      "targetBlank": false
+    },
+    {
+      "title": "Systemstatus",
+      "type": "link",
+      "url": "/d/osf-system-status/systemstatus",
+      "icon": "dashboard",
+      "targetBlank": false
+    }
+  ],
+  "panels": [
+    {
+      "id": 1,
+      "title": "Events (last minute)",
+      "type": "stat",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 1 },
+              { "color": "green", "value": 5 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "format": "time_series",
+          "refId": "A",
+          "rawSql": "SELECT DATETRUNC(minute, ts) AS time, CAST(COUNT(*) AS FLOAT) AS value FROM shopfloor_event WHERE ts >= DATEADD(minute, -15, SYSUTCDATETIME()) GROUP BY DATETRUNC(minute, ts) ORDER BY 1"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Orders (24h)",
+      "type": "stat",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT CAST(COUNT(*) AS FLOAT) AS orders_24h FROM shopfloor_order WHERE received_at >= DATEADD(hour, -24, SYSUTCDATETIME())"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "NFCs in window",
+      "type": "stat",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{ "color": "purple", "value": null }]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT CAST(COUNT(DISTINCT workpiece_id) AS FLOAT) AS nfcs FROM shopfloor_event WHERE workpiece_id IS NOT NULL AND $__timeFilter(ts)"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "FTS battery %",
+      "type": "gauge",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 30 },
+              { "color": "green", "value": 50 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT TOP 1 CAST(JSON_VALUE(payload_json, '$.batteryState.percentage') AS FLOAT) AS battery_pct FROM shopfloor_event WHERE topic LIKE N'fts/%/state' AND JSON_VALUE(payload_json, '$.batteryState.percentage') IS NOT NULL ORDER BY ts DESC"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Orders by State × Color (24h)",
+      "type": "barchart",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 4 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "fillOpacity": 80, "gradientMode": "none", "lineWidth": 1 }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "BLUE" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#1E88E5", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "WHITE" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#E0E0E0", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "RED" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#E53935", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "UNKNOWN" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#9E9E9E", "mode": "fixed" } }]
+          }
+        ]
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "stacking": "normal",
+        "orientation": "vertical",
+        "xTickLabelRotation": 0
+      },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT ISNULL(state, N'?') AS state, CAST(SUM(CASE WHEN workpiece_type = N'BLUE' THEN 1 ELSE 0 END) AS FLOAT) AS BLUE, CAST(SUM(CASE WHEN workpiece_type = N'WHITE' THEN 1 ELSE 0 END) AS FLOAT) AS WHITE, CAST(SUM(CASE WHEN workpiece_type = N'RED' THEN 1 ELSE 0 END) AS FLOAT) AS RED, CAST(SUM(CASE WHEN workpiece_type IS NULL OR workpiece_type NOT IN (N'BLUE', N'WHITE', N'RED') THEN 1 ELSE 0 END) AS FLOAT) AS UNKNOWN FROM shopfloor_order WHERE received_at >= DATEADD(hour, -24, SYSUTCDATETIME()) GROUP BY state ORDER BY state"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Recent workpieces",
+      "type": "table",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 11 },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT TOP 15 workpiece_id AS nfc, type AS color, current_state AS state, last_location AS location, last_seen_at FROM workpiece ORDER BY last_seen_at DESC"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "FTS snapshot",
+      "type": "table",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 11 },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT module_serial AS serial, ts, JSON_VALUE(payload_json, '$.lastNodeId') AS last_node, JSON_VALUE(payload_json, '$.driving') AS driving, JSON_VALUE(payload_json, '$.paused') AS paused, JSON_VALUE(payload_json, '$.batteryState.percentage') AS battery_pct, JSON_VALUE(payload_json, '$.batteryState.charging') AS charging FROM (SELECT module_serial, ts, payload_json, ROW_NUMBER() OVER (PARTITION BY module_serial ORDER BY ts DESC) AS rn FROM shopfloor_event WHERE topic LIKE N'fts/%/state' AND module_serial IS NOT NULL) x WHERE rn = 1 ORDER BY serial"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Sensor alerts (THRESHOLD, window)",
+      "type": "stat",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 19 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 1 },
+              { "color": "red", "value": 10 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT CAST(COUNT(*) AS FLOAT) AS threshold_alerts FROM env_sensor_snapshot WHERE reason = N'THRESHOLD' AND $__timeFilter(ts)"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Latest sensor alerts",
+      "type": "table",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 6, "w": 18, "x": 6, "y": 19 },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT TOP 8 ts, station_id, sensor_type, metric_name, value_numeric, reason FROM env_sensor_snapshot WHERE reason = N'THRESHOLD' AND $__timeFilter(ts) ORDER BY ts DESC"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Demo story / deep links",
+      "type": "text",
+      "gridPos": { "h": 5, "w": 24, "x": 0, "y": 25 },
+      "options": {
+        "mode": "markdown",
+        "content": "## OSF Edge — demo path\n\n1. **Factory alive?** Stats above (events · orders · NFCs · FTS battery)\n2. **What is produced?** Orders by color\n3. **Where is the workpiece?** → [Workpiece Trace](/d/osf-workpiece-trace/workpiece-trace)\n4. **Environment & AGV?** Sensor alerts · [Sensors](/d/osf-sensor-snapshots/sensor-snapshots) · [FTS / AGV](/d/osf-fts/fts-agv)\n5. **Ingest health?** → [Systemstatus](/d/osf-system-status/systemstatus) (MQTT raw)\n\nAlso: [Orders](/d/osf-orders/orders) · top dashboard links in the header."
+      }
+    }
+  ]
+}

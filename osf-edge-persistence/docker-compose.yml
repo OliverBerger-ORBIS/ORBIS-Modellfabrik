@@ -1,29 +1,7 @@
 services:
-  postgres:
-    image: timescale/timescaledb:latest-pg16
-    container_name: osf-edge-postgres
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "${POSTGRES_EXTERNAL_PORT:-5432}:5432"
-    volumes:
-      - ./data/postgres:/var/lib/postgresql/data
-      - ./db/init:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
-  # Option B (Dev): SQL Server parallel to Postgres. Schema/Persistence wiring = later Häppchen.
-  # Apple Silicon: linux/amd64 via Docker Desktop Rosetta (same image family as VE .201).
+  # Dev/local SQL Server (same dialect as DSP VE .201 / rittal_sqlserver).
+  # Apple Silicon: linux/amd64 via Docker Desktop Rosetta.
   mssql:
-    profiles: ["mssql"]
     image: mcr.microsoft.com/mssql/server:2022-latest
     platform: linux/amd64
     container_name: osf-edge-mssql
@@ -60,15 +38,23 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
+      # Local/demo: no login form (anonymous Admin). Starred needs a real user — use Home default instead.
       GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/home.json
+      MSSQL_DB: ${MSSQL_DB:-osf_edge}
+      MSSQL_USER: ${MSSQL_USER:-osf_edge}
+      MSSQL_PASSWORD: ${MSSQL_PASSWORD:-OsfEdge_App9#}
+      MSSQL_GRAFANA_URL: ${MSSQL_GRAFANA_URL:-host.docker.internal:1433}
     ports:
       - "${GRAFANA_EXTERNAL_PORT:-3000}:3000"
     volumes:
       - ./data/grafana:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/var/lib/grafana/dashboards
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
-      postgres:
+      mssql:
         condition: service_healthy
 
   persistence-service:
@@ -84,20 +70,22 @@ services:
       MQTT_USERNAME: ${MQTT_USERNAME}
       MQTT_PASSWORD: ${MQTT_PASSWORD}
       MQTT_CLIENT_ID: ${MQTT_CLIENT_ID}
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      MSSQL_HOST: mssql
+      MSSQL_PORT: 1433
+      MSSQL_DB: ${MSSQL_DB:-osf_edge}
+      MSSQL_USER: ${MSSQL_USER:-osf_edge}
+      MSSQL_PASSWORD: ${MSSQL_PASSWORD:-OsfEdge_App9#}
+      MSSQL_ENCRYPT: "false"
+      MSSQL_TRUST_SERVER_CERTIFICATE: "true"
       RAW_RETENTION_DAYS: ${RAW_RETENTION_DAYS}
       SENSOR_INTERVAL_SECONDS: ${SENSOR_INTERVAL_SECONDS}
       SENSOR_IDLE_INTERVAL_SECONDS: ${SENSOR_IDLE_INTERVAL_SECONDS}
       ENABLE_RAW_MESSAGES: ${ENABLE_RAW_MESSAGES}
       ENABLE_CAMERA_TOPIC: ${ENABLE_CAMERA_TOPIC}
       LOG_LEVEL: ${LOG_LEVEL}
+      PERSISTENCE_MODE: ${PERSISTENCE_MODE:-replay}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
-      postgres:
+      mssql:
         condition: service_healthy
-

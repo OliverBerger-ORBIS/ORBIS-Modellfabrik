@@ -5,7 +5,15 @@ import { createSensorPolicyState } from '../sensorPolicy';
 
 const baseConfig: ServiceConfig = {
   mqtt: { host: 'localhost', port: 1883, clientId: 'test-client' },
-  postgres: { host: 'localhost', port: 5432, db: 'osf', user: 'osf', password: 'osf' },
+  mssql: {
+    host: 'localhost',
+    port: 1433,
+    db: 'osf_edge',
+    user: 'osf_edge',
+    password: 'OsfEdge_App9#',
+    encrypt: false,
+    trustServerCertificate: true,
+  },
   runtime: {
     mode: 'replay',
     rawRetentionDays: 14,
@@ -31,8 +39,17 @@ describe('normalizeMessage', () => {
     expect(result).toBeUndefined();
   });
 
-  it('normalizes order completed into order + steps + events', () => {
+  it('normalizes order completed only for known orderIds (ignores CCU history dump)', () => {
+    const state = createSensorPolicyState();
+    state.knownOrderIds.add('order-1');
     const payload = [
+      {
+        orderId: 'order-legacy',
+        orderType: 'STORAGE',
+        type: 'RED',
+        state: 'FINISHED',
+        workpieceId: 'wp-old',
+      },
       {
         orderId: 'order-1',
         orderType: 'PRODUCTION',
@@ -62,14 +79,37 @@ describe('normalizeMessage', () => {
       qos: 0,
       retain: false,
       receivedAt: new Date('2026-05-08T10:01:00.000Z'),
-      sensorPolicyState: createSensorPolicyState(),
+      sensorPolicyState: state,
     });
 
     expect(result).toBeDefined();
-    expect(result?.productionOrders.length).toBe(1);
+    expect(result?.shopfloorOrders.length).toBe(1);
+    expect(result?.shopfloorOrders[0]?.orderId).toBe('order-1');
     expect(result?.productionSteps.length).toBe(1);
     expect(result?.shopfloorEvents.length).toBe(2);
     expect(result?.workpieces[0]?.workpieceId).toBe('wp-1');
+  });
+
+  it('registers shopfloor_order from ccu/order/response', () => {
+    const state = createSensorPolicyState();
+    const result = normalizeMessage({
+      config: baseConfig,
+      topic: 'ccu/order/response',
+      payloadText: JSON.stringify({
+        orderId: 'ord-resp-1',
+        orderType: 'STORAGE',
+        type: 'WHITE',
+        workpieceId: 'nfc-1',
+        timestamp: '2026-05-08T10:00:00.000Z',
+      }),
+      qos: 0,
+      retain: false,
+      receivedAt: new Date('2026-05-08T10:00:00.000Z'),
+      sensorPolicyState: state,
+    });
+    expect(result?.shopfloorOrders).toHaveLength(1);
+    expect(result?.shopfloorOrders[0]?.orderType).toBe('STORAGE');
+    expect(state.knownOrderIds.has('ord-resp-1')).toBe(true);
   });
 
   it('normalizes active orders from array payloads', () => {
@@ -94,8 +134,8 @@ describe('normalizeMessage', () => {
     });
 
     expect(result).toBeDefined();
-    expect(result?.productionOrders.length).toBe(1);
-    expect(result?.productionOrders[0]?.orderId).toBe('order-active-1');
+    expect(result?.shopfloorOrders.length).toBe(1);
+    expect(result?.shopfloorOrders[0]?.orderId).toBe('order-active-1');
     expect(result?.raw?.payloadJson).toEqual(payload);
   });
 
@@ -348,6 +388,25 @@ describe('normalizeMessage', () => {
     expect(result?.shopfloorEvents[0]?.workpieceType).toBe('WHITE');
     expect(result?.shopfloorEvents[0]?.orderId).toBe('ord-1');
     expect(result?.shopfloorEvents[0]?.moduleSerial).toBe('SVR4H76449');
+    expect(result?.shopfloorEvents[0]?.moduleType).toBe('DRILL');
+  });
+
+  it('resolves module_type from topic serial when payload has no moduleType', () => {
+    const result = normalizeMessage({
+      config: baseConfig,
+      topic: 'module/v1/ff/SVR3QA0022/connection',
+      payloadText: JSON.stringify({
+        timestamp: '2026-08-25T10:00:00.000Z',
+        connected: true,
+      }),
+      qos: 0,
+      retain: false,
+      receivedAt: new Date('2026-08-25T10:00:00.000Z'),
+      sensorPolicyState: createSensorPolicyState(),
+    });
+
+    expect(result?.shopfloorEvents[0]?.moduleSerial).toBe('SVR3QA0022');
+    expect(result?.shopfloorEvents[0]?.moduleType).toBe('HBW');
   });
 });
 

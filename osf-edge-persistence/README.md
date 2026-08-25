@@ -2,9 +2,13 @@
 
 Docker-based persistence and dashboard stack for OSF:
 
-- PostgreSQL + TimescaleDB
+- **Microsoft SQL Server** (local Compose = same dialect as DSP VE `.201`)
 - Grafana
 - Read-only MQTT persistence service
+
+Postgres/Timescale was removed from the active stack (still in git history).
+
+**Dev how-to (Option B):** [docs/04-howto/deployment/edge-persistence-dev-mssql.md](../docs/04-howto/deployment/edge-persistence-dev-mssql.md)
 
 ## Deployment targets
 
@@ -38,6 +42,8 @@ The stack now uses two explicit runtime profiles:
 
 - Use **LIVE** (`env.live`) when the stack runs on RPi / future edge node.
 - Use **REPLAY** (`env.replay`) only for local tests on Mac with Replay-Station + local broker.
+  - `PERSISTENCE_MODE=replay` refuses non-local DB hosts (e.g. `.201`) — live VE is `env.live` only.
+  - Session-gate: Replay Station publishes `osf/persistence/replay/session` (`begin`/`commit` + log filename). Already committed sessions are not re-persisted until full reset.
 - Do not use REPLAY profile on production-like deployments.
 
 ## Quick start (default = LIVE)
@@ -57,38 +63,23 @@ docker compose up -d
 3. Verify:
 
 - Grafana: `http://localhost:3000`
-- Postgres: `localhost:5432`
-
-## Option B — local SQL Server (Dev, parallel to Postgres)
-
-Target on DSP `.201` is **SQL Server**, not Postgres. Until Persistence/Grafana are ported, run a local MSSQL container **alongside** the existing Timescale stack:
+- SQL Server: `localhost:1433` (DB `osf_edge`)
 
 ```bash
-# ensure MSSQL_* vars are in .env (see env.live / .env.example)
-docker compose --profile mssql up -d mssql
 bash scripts/mssql-smoke.sh
+bash scripts/mssql-init-schema.sh   # once / after schema changes
+bash scripts/mssql-create-app-user.sh
 ```
 
-- Host port: `localhost:1433` (override `MSSQL_EXTERNAL_PORT`)
-- SA password: `MSSQL_SA_PASSWORD` (must meet SQL Server complexity)
-- Apple Silicon: image runs as `linux/amd64` (Docker Desktop Rosetta)
-- Schema (DB `osf_edge`): `bash scripts/mssql-init-schema.sh` — T-SQL under `db/mssql/`
-- Postgres/Grafana/Persistence stay on the default compose path until Persistence → MSSQL Häppchen
-
-Stop only MSSQL:
-
-```bash
-docker compose --profile mssql stop mssql
-```
+- App user: `osf_edge` (reader/writer/execute; Dev-Passwort `OsfEdge_App9#`)
+- Smoke without MQTT: `MSSQL_HOST=localhost MSSQL_PASSWORD='OsfEdge_App9#' npx tsx scripts/mssql-persist-smoke.ts`
+- Grafana datasource: **OSF SQL Server** only
 
 ## Stop
 
 ```bash
 docker compose down
 ```
-
-# To also remove the mssql profile container:
-# docker compose --profile mssql down
 
 ## Topics
 
@@ -139,15 +130,16 @@ NFC / Universal-ID is taken from **APS payloads that exist in session logs** (Re
 Core tables:
 
 - `shopfloor_event`
-- `production_order`
+- `shopfloor_order` (STORAGE + PRODUCTION via `order_type`; upsert from `ccu/order/response|active`, completed only for known `orderId`s — not the CCU completed history dump)
 - `production_step`
 - `workpiece`
-- `sensor_snapshot` (generic metric model)
+- `env_sensor_snapshot` (UC-02 Umwelt-Topf; generic metric model)
 - `mqtt_raw_message` (retention-limited)
+- `replay_session_ingest` (local replay session-gate)
 
 ### Generic sensor model
 
-`sensor_snapshot` is metric-oriented:
+`env_sensor_snapshot` is metric-oriented:
 
 - `source` (`arduino`, `txt`, `module`)
 - `station_id`
@@ -159,30 +151,17 @@ Core tables:
 
 This keeps schema stable when adding new sensor types (MPU, current, voltage, etc.).
 
-Routine `INTERVAL` snapshots: **5 s while `ccu/order/active` is non-empty**, **60 s when idle**. Warn/alarm payloads (`vibrationLevel` yellow/red, `flameDetected`, `gasLevel >= 1`, plus explicit `warn`/`alarm`) are always stored as `THRESHOLD`. That is far below Timescale capacity (on the order of 10k snapshot rows per production hour; idle ~800/h). `mqtt_raw_message` remains the denser 14-day MQTT archive.
+Routine `INTERVAL` snapshots: **5 s while `ccu/order/active` is non-empty**, **60 s when idle**. Warn/alarm payloads (`vibrationLevel` yellow/red, `flameDetected`, `gasLevel >= 1`, plus explicit `warn`/`alarm`) are always stored as `THRESHOLD`.
 
 ## Retention
 
-- Timescale policies are created in `db/init/004_retention.sql`
-- Default:
-  - `mqtt_raw_message`: 14 days
-  - `sensor_snapshot`: 365 days
-
-Adjust SQL policy or env values for your deployment profile.
+- Documented in `db/mssql/004_retention_note.sql` (no Timescale)
+  - `mqtt_raw_message`: 14 days (service cleanup)
+  - `env_sensor_snapshot`: 365 days (ops / SQL Agent on `.201`)
 
 ## Backup and restore
 
-### Backup (Postgres)
-
-```bash
-docker exec -t osf-edge-postgres pg_dump -U osf -d osf > backup_osf.sql
-```
-
-### Restore
-
-```bash
-cat backup_osf.sql | docker exec -i osf-edge-postgres psql -U osf -d osf
-```
+Use SQL Server backup tools against DB `osf_edge` (local Compose or `.201`).
 
 ## Local test framework
 
@@ -209,7 +188,7 @@ Goal:
 
 - run broker + persistence stack locally
 - replay existing session logs (including Arduino topics in newer sessions)
-- verify inserts in Postgres and panels in Grafana
+- verify inserts in SQL Server and panels in Grafana
 
 ### 1) Start local Mosquitto
 
@@ -259,35 +238,39 @@ In Replay-Station:
 - run replay against local broker (`localhost:1883`)
 - **Do not** expect `osf/workpiece/intake` in Replay (bridge runs on the RPi, not during session playback)
 
-Different sessions with **different NFC ids** may accumulate in the local DB. Reset is **manual only** (not on every replay):
+Different sessions with **different NFC ids** may accumulate in the local DB. Reset is **manual only** (not on every replay). The same session **filename** is not re-persisted after a successful run (session-gate) until full truncate clears `replay_session_ingest`.
 
 ```bash
-# clean slate
+# clean slate (also clears replay_session_ingest)
 bash osf-edge-persistence/scripts/reset-replay-db.sh
+# MSSQL Option B:
+bash osf-edge-persistence/scripts/reset-replay-db.sh --dialect mssql
 
-# or drop one repeated NFC after replaying the same session twice
+# or drop one repeated NFC (session-gate list unchanged)
 bash osf-edge-persistence/scripts/reset-replay-db.sh --nfc 92e0ad91595f63
 ```
 
-### 5) Verify data arrival in Postgres
+### 5) Verify data arrival in SQL Server
 
 ```bash
-docker exec -it osf-edge-postgres psql -U osf -d osf -c "SELECT workpiece_id, count(*) FROM shopfloor_event WHERE workpiece_id IS NOT NULL GROUP BY 1 ORDER BY 2 DESC LIMIT 20;"
-docker exec -it osf-edge-postgres psql -U osf -d osf -c "SELECT count(*) FROM sensor_snapshot;"
-docker exec -it osf-edge-postgres psql -U osf -d osf -c "SELECT source, sensor_type, metric_name, count(*) FROM sensor_snapshot GROUP BY 1,2,3 ORDER BY 4 DESC LIMIT 20;"
+docker exec -it osf-edge-mssql /opt/mssql-tools18/bin/sqlcmd -S localhost -U osf_edge -P 'OsfEdge_App9#' -C -d osf_edge \
+  -Q "SELECT TOP 20 workpiece_id, COUNT(*) AS n FROM dbo.shopfloor_event WHERE workpiece_id IS NOT NULL GROUP BY workpiece_id ORDER BY n DESC;"
+docker exec -it osf-edge-mssql /opt/mssql-tools18/bin/sqlcmd -S localhost -U osf_edge -P 'OsfEdge_App9#' -C -d osf_edge \
+  -Q "SELECT COUNT(*) AS sensor_rows FROM dbo.env_sensor_snapshot;"
 ```
 
 Expected:
 
 - `shopfloor_event` grows with CCU/module/FTS topics
 - `workpiece_id` is filled from NFC on RGB_NFC / FTS load / CCU orders
-- `sensor_snapshot` grows with TXT + Arduino metrics
+- `env_sensor_snapshot` grows with TXT + Arduino metrics
 - no camera payload flood by default (`/j1/txt/1/i/cam` excluded)
 - `osf/workpiece/intake` rows only if a live bridge is publishing (not in Replay)
 
 ### 5b) Sensor values around Ist events (SQL, no Grafana)
 
-Query-time as-of join: last `sensor_snapshot` per metric at each Ist event (same FINISHED filter as Workpiece Trace). Does **not** write `related_event_id`. Window default is 30s (active sensor INTERVAL is 5s; idle 60s).
+Query-time as-of join: last `env_sensor_snapshot` per metric at each Ist event (same FINISHED filter as Workpiece Trace). Does **not** write `related_event_id`. Window default is 30s (active sensor INTERVAL is 5s; idle 60s).  
+`scripts/sensor-around-ist.sh` / `db/queries/sensor_around_*.sql` are **legacy Postgres** (not wired to MSSQL yet) — use Grafana sensor panels until ported.
 
 ```bash
 npm run persistence:sensor-around-ist
@@ -304,7 +287,9 @@ SQL: `osf-edge-persistence/db/queries/sensor_around_ist_event.sql`
 - dashboards should show replayed data:
   - Systemstatus — **MQTT Topics (raw)** (counts aus `mqtt_raw_message`, folgt dem Zeitfenster)
   - Auftraege
+  - **OSF Edge Home** (`osf-home`) — Demo-Einstieg (KPIs + Links)
   - Workpiece Trace — filter **NFC** / **Color** (All or multi); table follows the time picker
+  - **FTS / AGV** (`osf-fts`) — filter **FTS serial**; battery, loads, actions, last node
   - Sensor Snapshots
   - Modul-/FTS-Zustaende
 

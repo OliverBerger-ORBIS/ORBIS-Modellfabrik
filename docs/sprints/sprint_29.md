@@ -10,8 +10,8 @@
 
 | Datum | Event | Nutzen für OSF |
 |--------|--------|----------------|
-| **21./22.09.2026** *(geplant)* | **Uni Magdeburg / Dr. Reggelin** — Meeting Saarbrücken Deep-Dive OSF/DSP; Kishitz; NDA-Unterschrift **Frank Wilhelm** noch offen | Hochschulkooperation / DSP-Story |
-| *(offen)* | Abstimmung DSP-Truppe für SB-Termin | Terminfixierung Deep-Dive |
+| **21.09.2026** *(bestätigt)* | **Uni Magdeburg / Dr. Reggelin** — **Ganztägiger Workshop Saarbrücken** Deep-Dive OSF/DSP; Termin-Einladung an **Kishitz** raus; **DSP-Team informiert** und unterstützt Deep Dive; NDA-Unterschrift **Frank Wilhelm** noch offen | Hochschulkooperation / DSP-Story |
+| *(erledigt 25.08.2026)* | Abstimmung DSP-Truppe für SB-Termin — Team informiert, Unterstützung Deep Dive zugesagt | Terminfixierung Deep-Dive |
 | *(Follow-up)* | **Daniel Wonkam** (OD) — Intake-Topic nutzen; Workpiece-Tracking 3er-Stack | Partner über `osf/workpiece/intake` |
 
 ---
@@ -37,7 +37,7 @@
 ### Grafana / Edge-Persistenz *(Fokus)*
 
 - *Replay-Politik (20.08.2026):* unterschiedliche Sessions mit **unterschiedlichen NFC-IDs** in der lokalen DB **akkumulieren**. Truncate **nicht** automatisch. Manuell: `bash osf-edge-persistence/scripts/reset-replay-db.sh` (optional `--nfc …`). NFC-Korrelation im Replay aus **APS-Payloads** (RGB_NFC / FTS `loadId` / CCU `workpieceId`) — `osf/workpiece/intake` ist Live-only (RPi-Bridge, nicht in Session-Logs).
-- [x] **NFC first-class im Ingest (20.08.2026):** `workpiece_id` aus APS-Feldern (RGB_NFC / FTS `loadId` / CCU) — Replay-fähig ohne Bridge. Intake-Topic nur zusätzlich wenn live. Manuelles Reset-Skript. Tests 19/19.
+- [x] **Replay-Gate lokal + kein Replay→`.201` (25.08.2026):** `PERSISTENCE_MODE=replay` nur Allowlist-DB-Hosts; Session-Gate via `osf/persistence/replay/session` + Tabelle `replay_session_ingest`; Truncate leert die Liste. Live ignoriert Control-Topics.- [x] **NFC first-class im Ingest (20.08.2026):** `workpiece_id` aus APS-Feldern (RGB_NFC / FTS `loadId` / CCU) — Replay-fähig ohne Bridge. Intake-Topic nur zusätzlich wenn live. Manuelles Reset-Skript. Tests 19/19.
 - [x] **Modus A (Replay + Session, 24.08.2026):** Grafana `localhost:3000` mit Aug-Session `white-storage-production_20260807_111716` — NFC `92e0ad91595f63` in DB + Workpiece Trace sichtbar; weitere Sessions akkumulieren. Troubleshooting: Session Manager publisht TCP `:1883`, OSF-UI WS `:9001`, Persistence `host.docker.internal:1883`. *(Ursprung: Sprint 22)*
 - [x] **Workpiece Trace Filter (24.08.2026):** Grafana-Variablen Color zuerst, NFC abhängig (nur IDs der gewählten Farbe). Ist-Ansicht: Station-Label (DPS/HBW/DRILL/MILL/AIQS/FTS), nur `FINISHED`, ohne CANCELLED/NAVIGATION-Rauschen; Farbe in der Timeline.
 - [x] **Sensor um Ist-Event (24.08.2026):** Query-time SQL-Join (`sensor_snapshot` as-of, Fenster 30s), ohne Grafana und ohne `related_event_id`-Write. `npm run persistence:sensor-around-ist` (`--nfc`, `--anchors`, `--long`).
@@ -48,14 +48,19 @@
 - [x] **DSP-Edge Stack-Doku (24.08.2026):** [dsp-edge-osf-persistence.md](../04-howto/deployment/dsp-edge-osf-persistence.md) — Mermaid Hosts/Services, Compose-Container, bekannte vs. unklare `.201`-Fakten, Fragen an DSP (Inventar/Rechte, nicht Erreichbarkeit).
 - [x] **Live-Ingest FT-LAN verifiziert (25.08.2026):** Dual-Homed Mac (Gemini Wi‑Fi + FT-LAN Ethernet); Intake-Bridge auf RPi; Persistence live via SSH-Tunnel `:1884` → RPi MQTT (Docker Desktop erreicht `.100:1883` nicht). Events in Grafana **und** OSF-UI Track&Trace sichtbar (z. B. NFC `93b29ba34a2334`). Follow-up: Bridge `productRaw` oft `UNKNOWN` obwohl UI weiß/blau korrekt — später. Zielhost `.201` weiter offen.
 - [x] **VE `.201` Inventar + Ziel-DB SQL Server (25.08.2026):** Docker/Compose/`pocadm` ok; SQL Host-Port **`:1433`** (`rittal_sqlserver`); Grafana-Alt gestoppt; Doku korrigiert. Ziel: neues OSF-Schema auf bestehender Instanz; Dev Option B = lokal SQL Server. DR-28 Nachtrag.
-- [ ] Grafana-Dashboards ausbauen (weitere fachliche Panels / DSP-Abnahme). *(Ursprung: Sprint 22)*
+- [x] **Grafana Orders Farbe + Sensor-Skalen (25.08.2026):** Orders stacked by State×Color (BLUE/WHITE/RED); Completed-Serie nach Farbe; Recent-Orders-Tabelle. Sensor-Dashboards: getrennte Panels Vibration / Climate / Gas mit eigener Y-Achse.
+- [x] **Grafana FTS/AGV Dashboard (25.08.2026):** `osf-fts` — Serial-Filter, Akku %/V + Verlauf, Loads-Timeline, Action-Bars DOCK/PASS/TURN/PICK/DROP, Last-Node, Driving/Paused; Shared Cursor.
+- [x] **Grafana Overview-Home (25.08.2026):** `osf-home` — KPI-Stats, Orders×Color, Recent WP, FTS-Snapshot, Sensor-THRESHOLD-Alerts, Demo-Markdown + Deep-Links; Default-Home via Compose.
 - [x] **SQL Server lokal (Option B, Compose) (25.08.2026):** Profil `mssql` → Container `osf-edge-mssql` (2022, Host `:1433`, amd64/Rosetta); `scripts/mssql-smoke.sh`; Postgres parallel. Schema/Persistence-Anbindung = nächste Häppchen. How-to: README + [dsp-edge-osf-persistence.md](../04-howto/deployment/dsp-edge-osf-persistence.md).
 - [x] **Schema T-SQL (25.08.2026):** `db/mssql/` (DB `osf_edge`, Tabellen + Indizes, ohne Timescale); `scripts/mssql-init-schema.sh`. Unit-Tests: `utils.spec.ts` + `schemaContract.spec.ts` (Tabellen-Parität PG↔MSSQL).
-- [ ] **Mini: Tabellen-Präfixe UC-02:** Shopfloor-Tabellen **ohne** Präfix (Default). Umwelt: `env_*` (z. B. `env_sensor_snapshot`). Business: `biz_*` erst wenn Demo-Entities kommen. Zuerst MSSQL-`db/mssql/` (+ Contract-Test); Postgres-Init optional nachziehen. MQTT-first bleibt.
-- [ ] **Persistence → MSSQL:** DB-Adapter/`mssql`, Env; Smoke-Test Ingest gegen lokalen SQL Server.
-- [ ] **Grafana → MSSQL:** Datasource + Workpiece-Trace-/Systemstatus-Queries; kurze visuelle Abnahme lokal.
-- [ ] **Doku Option B:** How-to Dev SQL Server (Compose, Ports, Reset) + Verweise DR-28 / dsp-edge.
-- [ ] **`.201` OSF-DB + App-User:** nach DSP-OK auf `rittal_sqlserver` (`osf_edge`, kein `sa` dauerhaft). Nicht zeitkritisch — 1–5 starten ohne Antwort.
+- [x] **Mini: Tabellen-Präfixe UC-02 (25.08.2026):** Shopfloor unprefixed; Umwelt `env_sensor_snapshot`; kein `biz_*`. Postgres/Timescale aus aktivem Compose entfernt (Legacy nur Git-History). Contract-Test MSSQL-only.
+- [x] **`shopfloor_order` + Ingest ohne Completed-Dump (25.08.2026):** Rename `production_order` → `shopfloor_order` (`order_type` STORAGE|PRODUCTION); Orders aus response/active; `ccu/order/completed` nur für `knownOrderIds`. CCU-HBW-Reset → mögliche STORAGE-Leichen in DB akzeptiert.
+- [x] **module_type via Serial-Map (25.08.2026):** APS-Serial→DPS/HBW/DRILL/MILL/AIQS im Normalizer; Grafana Modul/FTS-Panel COALESCE-Fallback für Altzeilen.
+- [x] **Persistence → MSSQL (25.08.2026):** `DB_DIALECT=mssql` + `MssqlPersistenceDb`; Factory; Compose `persistence-service-mssql`; Smoke `scripts/mssql-persist-smoke.ts`. Postgres-Pfad bleibt Default für Grafana.
+- [x] **Grafana → MSSQL (25.08.2026):** Default-DS `OSF SQL Server` (`POSFMSQL001`); alle Dashboards T-SQL; Postgres als Zweit-DS. Compose übergibt `MSSQL_*` an Grafana (`host.docker.internal:1433`).
+- [x] **Doku Option B (25.08.2026):** How-to [edge-persistence-dev-mssql.md](../04-howto/deployment/edge-persistence-dev-mssql.md) — Compose, Ports, Reset, Verweise README / DR-28 / dsp-edge. *(Postgres-Parallelpfad entfällt.)*
+- [x] **`.201` OSF-DB + App-User (Skript 25.08.2026):** DSP-OK für DB/`osf_edge` + App-User (nicht sa). T-SQL `db/mssql/010_app_user.sql`, `scripts/mssql-create-app-user.sh` (reader/writer/execute). Lokal anlegbar; **auf `rittal_sqlserver` noch ausführen** sobald FT-LAN (Home-Office: `.201` nicht erreichbar).
+- [ ] **`.201` App-User live anlegen:** Skript gegen `rittal_sqlserver` mit sa ausführen; Compose auf `.201` mit `MSSQL_USER=osf_edge` (nicht sa).
 - [ ] **Deploy `.201`:** Persistence + Grafana-Container; MQTT `.100`; SQL `:1433`. Mac-Tunnel nur Übergang. *(Ursprung: Sprint 22)*
 - [ ] **Live ohne Mac-Tunnel:** Ingest dauerhaft über `.201`; Checkliste [edge-persistence-live-ft-lan.md](../04-howto/deployment/edge-persistence-live-ft-lan.md) anpassen. Track&Trace-UI bleibt RAM-scoped. *(Entscheidung 21.07.2026; Ursprung: Sprint 26)*
 

@@ -2,42 +2,312 @@
   "title": "Sensor Snapshots",
   "uid": "osf-sensor-snapshots",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 5,
   "timezone": "browser",
   "refresh": "10s",
-  "time": { "from": "now-1h", "to": "now" },
+  "graphTooltip": 2,
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
   "panels": [
+    {
+      "id": 2,
+      "title": "Vibration (magnitude / impulse)",
+      "description": "High-range metrics on their own Y-scale so climate/gas stay readable.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "mssql",
+        "uid": "POSFMSQL001"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": true
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "magnitude"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#E53935",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "left"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "impulseCount"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#FB8C00",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "format": "time_series",
+          "refId": "A",
+          "rawSql": "SELECT DATETRUNC(second, ts) AS time, metric_name AS metric, CAST(AVG(value_numeric) AS FLOAT) AS value FROM env_sensor_snapshot WHERE value_numeric IS NOT NULL AND metric_name IN (N'magnitude', N'impulseCount') AND $__timeFilter(ts) GROUP BY DATETRUNC(second, ts), metric_name ORDER BY 1"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Climate (temperature / humidity / iaq)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "mssql",
+        "uid": "POSFMSQL001"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "temperature"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#43A047",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "left"
+              },
+              {
+                "id": "unit",
+                "value": "celsius"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "humidity"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#FDD835",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "unit",
+                "value": "humidity"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "iaq"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#1E88E5",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "format": "time_series",
+          "refId": "A",
+          "rawSql": "SELECT DATETRUNC(second, ts) AS time, metric_name AS metric, CAST(AVG(value_numeric) AS FLOAT) AS value FROM env_sensor_snapshot WHERE value_numeric IS NOT NULL AND metric_name IN (N'temperature', N'humidity', N'iaq') AND $__timeFilter(ts) GROUP BY DATETRUNC(second, ts), metric_name ORDER BY 1"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Gas / Flame (gasLevel / rawValue)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "mssql",
+        "uid": "POSFMSQL001"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "gasLevel"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#8E24AA",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "left"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "rawValue"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#5E35B1",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "format": "time_series",
+          "refId": "A",
+          "rawSql": "SELECT DATETRUNC(second, ts) AS time, metric_name AS metric, CAST(AVG(value_numeric) AS FLOAT) AS value FROM env_sensor_snapshot WHERE value_numeric IS NOT NULL AND metric_name IN (N'gasLevel', N'rawValue') AND $__timeFilter(ts) GROUP BY DATETRUNC(second, ts), metric_name ORDER BY 1"
+        }
+      ]
+    },
     {
       "id": 1,
       "title": "Latest Numeric Snapshots",
       "type": "table",
       "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "PB856C894E7EBB34A"
+        "type": "mssql",
+        "uid": "POSFMSQL001"
       },
-      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 0 },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
       "targets": [
         {
           "format": "table",
           "refId": "A",
-          "rawSql": "SELECT ts, source, station_id, sensor_type, metric_name, value_numeric, reason FROM sensor_snapshot WHERE value_numeric IS NOT NULL ORDER BY ts DESC LIMIT 200"
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "title": "Numeric Metrics (Last 24h)",
-      "type": "timeseries",
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "PB856C894E7EBB34A"
-      },
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 10 },
-      "targets": [
-        {
-          "format": "time_series",
-          "refId": "A",
-          "rawSql": "SELECT date_trunc('second', ts) AS time, metric_name AS metric, avg(value_numeric)::double precision AS value FROM sensor_snapshot WHERE value_numeric IS NOT NULL AND ts BETWEEN now() - interval '24 hours' AND now() GROUP BY 1,2 ORDER BY 1"
+          "rawSql": "SELECT TOP 200 ts, source, station_id, sensor_type, metric_name, value_numeric, reason FROM env_sensor_snapshot WHERE value_numeric IS NOT NULL ORDER BY ts DESC"
         }
       ]
     }

@@ -2,27 +2,24 @@
   "title": "Workpiece Trace",
   "uid": "osf-workpiece-trace",
   "schemaVersion": 39,
-  "version": 5,
+  "version": 8,
   "timezone": "browser",
   "refresh": "10s",
   "tags": ["osf", "nfc"],
-  "time": { "from": "now-15m", "to": "now" },
+  "time": { "from": "now-6h", "to": "now" },
   "templating": {
     "list": [
       {
         "name": "color",
         "label": "Color",
         "type": "query",
-        "datasource": {
-          "type": "grafana-postgresql-datasource",
-          "uid": "PB856C894E7EBB34A"
-        },
-        "definition": "SELECT DISTINCT workpiece_type FROM shopfloor_event WHERE workpiece_type IN ('WHITE', 'RED', 'BLUE') AND $__timeFilter(ts) ORDER BY 1",
-        "query": "SELECT DISTINCT workpiece_type FROM shopfloor_event WHERE workpiece_type IN ('WHITE', 'RED', 'BLUE') AND $__timeFilter(ts) ORDER BY 1",
+        "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+        "definition": "SELECT DISTINCT workpiece_type FROM shopfloor_event WHERE workpiece_type IN (N'WHITE', N'RED', N'BLUE') AND $__timeFilter(ts) ORDER BY 1",
+        "query": "SELECT DISTINCT workpiece_type FROM shopfloor_event WHERE workpiece_type IN (N'WHITE', N'RED', N'BLUE') AND $__timeFilter(ts) ORDER BY 1",
         "refresh": 2,
         "includeAll": true,
         "multi": true,
-        "allValue": ".*",
+        "allValue": "N'__ALL__'",
         "sort": 1,
         "current": { "selected": true, "text": "All", "value": "$__all" }
       },
@@ -30,16 +27,13 @@
         "name": "nfc",
         "label": "NFC",
         "type": "query",
-        "datasource": {
-          "type": "grafana-postgresql-datasource",
-          "uid": "PB856C894E7EBB34A"
-        },
-        "definition": "SELECT DISTINCT workpiece_id FROM shopfloor_event WHERE workpiece_id IS NOT NULL AND $__timeFilter(ts) AND ('${color:regex}' = '.*' OR workpiece_type ~ '${color:regex}') ORDER BY 1",
-        "query": "SELECT DISTINCT workpiece_id FROM shopfloor_event WHERE workpiece_id IS NOT NULL AND $__timeFilter(ts) AND ('${color:regex}' = '.*' OR workpiece_type ~ '${color:regex}') ORDER BY 1",
+        "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+        "definition": "SELECT DISTINCT workpiece_id FROM shopfloor_event WHERE workpiece_id IS NOT NULL AND $__timeFilter(ts) AND (N'__ALL__' IN (${color:sqlstring}) OR workpiece_type IN (${color:sqlstring})) ORDER BY 1",
+        "query": "SELECT DISTINCT workpiece_id FROM shopfloor_event WHERE workpiece_id IS NOT NULL AND $__timeFilter(ts) AND (N'__ALL__' IN (${color:sqlstring}) OR workpiece_type IN (${color:sqlstring})) ORDER BY 1",
         "refresh": 2,
         "includeAll": true,
         "multi": true,
-        "allValue": ".*",
+        "allValue": "N'__ALL__'",
         "sort": 1,
         "current": { "selected": true, "text": "All", "value": "$__all" }
       }
@@ -50,16 +44,13 @@
       "id": 2,
       "title": "Ist timeline (station / action)",
       "type": "state-timeline",
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "PB856C894E7EBB34A"
-      },
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
       "gridPos": { "h": 9, "w": 24, "x": 0, "y": 0 },
       "targets": [
         {
           "format": "table",
           "refId": "A",
-          "rawSql": "SELECT ts AS time, workpiece_id || ' · ' || COALESCE(NULLIF(workpiece_type, ''), '?') AS metric, CASE WHEN topic LIKE 'fts/%' OR module_type = 'FTS' THEN 'FTS' WHEN module_serial = 'SVR4H73275' OR module_type = 'DPS' THEN 'DPS' WHEN module_serial = 'SVR3QA0022' OR module_type = 'HBW' THEN 'HBW' WHEN module_serial = 'SVR4H76449' OR module_type = 'DRILL' THEN 'DRILL' WHEN module_serial = 'SVR3QA2098' OR module_type = 'MILL' THEN 'MILL' WHEN module_serial = 'SVR4H76530' OR module_type IN ('AIQS', 'QUALITY') THEN 'AIQS' ELSE COALESCE(module_type, '—') END || ' / ' || action AS value FROM shopfloor_event WHERE workpiece_id IS NOT NULL AND $__timeFilter(ts) AND action_state = 'FINISHED' AND (topic LIKE 'module/%' OR topic LIKE 'fts/%' OR (topic = 'ccu/order/completed' AND action IN ('MANUFACTURE', 'completed'))) AND workpiece_id ~ '${nfc:regex}' AND ('${color:regex}' = '.*' OR workpiece_id IN (SELECT DISTINCT s.workpiece_id FROM shopfloor_event s WHERE s.workpiece_type ~ '${color:regex}' AND s.workpiece_id IS NOT NULL AND s.ts >= $__timeFrom() AND s.ts <= $__timeTo())) ORDER BY ts LIMIT 2000"
+          "rawSql": "SELECT TOP 2000 CAST(ts AS datetime2) AS time, CONCAT(workpiece_id, N' · ', COALESCE(NULLIF(workpiece_type, N''), N'?')) AS metric, CONCAT(CASE WHEN topic LIKE N'fts/%' OR module_type = N'FTS' THEN N'FTS' WHEN module_serial = N'SVR4H73275' OR module_type = N'DPS' THEN N'DPS' WHEN module_serial = N'SVR3QA0022' OR module_type = N'HBW' THEN N'HBW' WHEN module_serial = N'SVR4H76449' OR module_type = N'DRILL' THEN N'DRILL' WHEN module_serial = N'SVR3QA2098' OR module_type = N'MILL' THEN N'MILL' WHEN module_serial = N'SVR4H76530' OR module_type IN (N'AIQS', N'QUALITY') THEN N'AIQS' ELSE COALESCE(module_type, N'—') END, N' / ', ISNULL(action, N'')) AS value FROM shopfloor_event WHERE workpiece_id IS NOT NULL AND $__timeFilter(ts) AND action_state = N'FINISHED' AND (topic LIKE N'module/%' OR topic LIKE N'fts/%' OR (topic = N'ccu/order/completed' AND action IN (N'MANUFACTURE', N'completed'))) AND (N'__ALL__' IN (${nfc:sqlstring}) OR workpiece_id IN (${nfc:sqlstring})) AND (N'__ALL__' IN (${color:sqlstring}) OR workpiece_id IN (SELECT DISTINCT s.workpiece_id FROM shopfloor_event s WHERE s.workpiece_type IN (${color:sqlstring}) AND s.workpiece_id IS NOT NULL AND s.ts >= $__timeFrom() AND s.ts <= $__timeTo())) ORDER BY ts"
         }
       ],
       "options": {
@@ -75,16 +66,13 @@
       "id": 1,
       "title": "Ist events",
       "type": "table",
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "PB856C894E7EBB34A"
-      },
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
       "gridPos": { "h": 13, "w": 24, "x": 0, "y": 9 },
       "targets": [
         {
           "format": "table",
           "refId": "A",
-          "rawSql": "SELECT ts, workpiece_id AS nfc, workpiece_type AS color, CASE WHEN topic LIKE 'fts/%' OR module_type = 'FTS' THEN 'FTS' WHEN module_serial = 'SVR4H73275' OR module_type = 'DPS' THEN 'DPS' WHEN module_serial = 'SVR3QA0022' OR module_type = 'HBW' THEN 'HBW' WHEN module_serial = 'SVR4H76449' OR module_type = 'DRILL' THEN 'DRILL' WHEN module_serial = 'SVR3QA2098' OR module_type = 'MILL' THEN 'MILL' WHEN module_serial = 'SVR4H76530' OR module_type IN ('AIQS', 'QUALITY') THEN 'AIQS' ELSE COALESCE(module_type, '—') END AS station, action, action_state, order_id FROM shopfloor_event WHERE workpiece_id IS NOT NULL AND $__timeFilter(ts) AND action_state = 'FINISHED' AND (topic LIKE 'module/%' OR topic LIKE 'fts/%' OR (topic = 'ccu/order/completed' AND action IN ('MANUFACTURE', 'completed'))) AND workpiece_id ~ '${nfc:regex}' AND ('${color:regex}' = '.*' OR workpiece_id IN (SELECT DISTINCT s.workpiece_id FROM shopfloor_event s WHERE s.workpiece_type ~ '${color:regex}' AND s.workpiece_id IS NOT NULL AND s.ts >= $__timeFrom() AND s.ts <= $__timeTo())) ORDER BY ts, workpiece_id LIMIT 500"
+          "rawSql": "SELECT TOP 500 CAST(ts AS datetime2) AS ts, workpiece_id AS nfc, workpiece_type AS color, CASE WHEN topic LIKE N'fts/%' OR module_type = N'FTS' THEN N'FTS' WHEN module_serial = N'SVR4H73275' OR module_type = N'DPS' THEN N'DPS' WHEN module_serial = N'SVR3QA0022' OR module_type = N'HBW' THEN N'HBW' WHEN module_serial = N'SVR4H76449' OR module_type = N'DRILL' THEN N'DRILL' WHEN module_serial = N'SVR3QA2098' OR module_type = N'MILL' THEN N'MILL' WHEN module_serial = N'SVR4H76530' OR module_type IN (N'AIQS', N'QUALITY') THEN N'AIQS' ELSE COALESCE(module_type, N'—') END AS station, action, action_state, order_id FROM shopfloor_event WHERE workpiece_id IS NOT NULL AND $__timeFilter(ts) AND action_state = N'FINISHED' AND (topic LIKE N'module/%' OR topic LIKE N'fts/%' OR (topic = N'ccu/order/completed' AND action IN (N'MANUFACTURE', N'completed'))) AND (N'__ALL__' IN (${nfc:sqlstring}) OR workpiece_id IN (${nfc:sqlstring})) AND (N'__ALL__' IN (${color:sqlstring}) OR workpiece_id IN (SELECT DISTINCT s.workpiece_id FROM shopfloor_event s WHERE s.workpiece_type IN (${color:sqlstring}) AND s.workpiece_id IS NOT NULL AND s.ts >= $__timeFrom() AND s.ts <= $__timeTo())) ORDER BY ts, workpiece_id"
         }
       ]
     }

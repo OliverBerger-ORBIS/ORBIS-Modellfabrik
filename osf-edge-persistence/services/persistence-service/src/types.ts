@@ -16,7 +16,7 @@ export interface ShopfloorEventRow {
   payload: Record<string, unknown>;
 }
 
-export interface ProductionOrderRow {
+export interface ShopfloorOrderRow {
   orderId: string;
   orderType?: string;
   workpieceId?: string;
@@ -26,6 +26,9 @@ export interface ProductionOrderRow {
   startedAt?: Date;
   stoppedAt?: Date;
 }
+
+/** @deprecated Use ShopfloorOrderRow — STORAGE and PRODUCTION share one table. */
+export type ProductionOrderRow = ShopfloorOrderRow;
 
 export interface ProductionStepRow {
   dedupKey: string;
@@ -84,7 +87,7 @@ export interface RawMessageRow {
 export interface NormalizedMessage {
   raw?: RawMessageRow;
   shopfloorEvents: ShopfloorEventRow[];
-  productionOrders: ProductionOrderRow[];
+  shopfloorOrders: ShopfloorOrderRow[];
   productionSteps: ProductionStepRow[];
   workpieces: WorkpieceRow[];
   sensorSnapshots: SensorSnapshotRow[];

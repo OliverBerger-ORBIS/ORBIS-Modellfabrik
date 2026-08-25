@@ -43,6 +43,10 @@ logger = get_logger(__name__)
 # (float("inf") as selectbox value is unreliable across reruns).
 # Timeshift remains load-time (payload timestamps = now + original ts_rel);
 # speed only scales wall-clock wait between publishes: wait = Δt_rel / speed.
+#
+# Persistence session-gate (local DB only): on play begin / successful finish the
+# controller publishes osf/persistence/replay/session {action, sessionId}.
+REPLAY_SESSION_CONTROL_TOPIC = "osf/persistence/replay/session"
 REPLAY_SPEED_CHOICES: list[tuple[str, float]] = [
     ("0.2x", 0.2),
     ("0.33x", 0.33),
@@ -391,6 +395,7 @@ class ReplayController:
         self._worker: Optional[threading.Thread] = None
         self.started_at_mono: float = 0.0
         self._mqtt_client: Optional[SessionManagerMQTTClient] = None
+        self._session_id: Optional[str] = None
         # Publish diagnostics (thread-safe via _lock)
         self._pub_ok = 0
         self._pub_fail = 0
@@ -438,6 +443,27 @@ class ReplayController:
             self._pause.clear()
             self._reset_publish_stats_locked()
 
+    def set_session_id(self, session_id: Optional[str]) -> None:
+        """Session basename for persistence gate (osf/persistence/replay/session)."""
+        with self._lock:
+            self._session_id = (session_id or "").strip() or None
+
+    def _publish_session_control(self, action: str) -> None:
+        """Notify local persistence of replay begin/commit (best-effort)."""
+        session_id = self._session_id
+        client = self._mqtt_client
+        if not session_id or not client:
+            return
+        payload = json.dumps({"action": action, "sessionId": session_id}, separators=(",", ":"))
+        try:
+            ok = client.publish(REPLAY_SESSION_CONTROL_TOPIC, payload, qos=0, retain=False)
+            if ok:
+                logger.info("📡 Replay session control %s → %s", action, session_id)
+            else:
+                logger.warning("⚠️ Replay session control publish failed (%s, %s)", action, session_id)
+        except Exception as exc:  # pylint: disable=broad-exception-caught
+            logger.warning("⚠️ Replay session control error (%s): %s", action, exc)
+
     def play(self, speed: float = 1.0) -> None:
         """Start replay or resume an active worker with updated speed."""
         with self._lock:
@@ -459,6 +485,8 @@ class ReplayController:
                 self._idx = 0
                 self._reset_publish_stats_locked()
 
+            starting_from_begin = self._idx == 0
+
             # MQTT-Client initialisieren falls nötig (unique client_id → no broker kick)
             if not self._mqtt_client:
                 client_id = f"session_manager_replay_{uuid.uuid4().hex[:10]}"
@@ -476,6 +504,9 @@ class ReplayController:
                 self._run_started_mono = self._run_finished_mono
             logger.error("❌ MQTT-Client konnte nicht verbinden — Replay abgebrochen")
             return
+
+        if starting_from_begin:
+            self._publish_session_control("begin")
 
         with self._lock:
             self._stop.clear()
@@ -765,12 +796,14 @@ class ReplayController:
                     break
                 self._idx += 1
 
+        commit_ok = False
         with self._lock:
             if self._run_finished_mono is None:
                 self._run_finished_mono = time.monotonic()
                 if self._pause_started_mono is not None:
                     self._paused_total_s += self._run_finished_mono - self._pause_started_mono
                     self._pause_started_mono = None
+            commit_ok = (not self._aborted) and bool(self._seq) and self._idx >= len(self._seq)
             logger.info(
                 "🏁 Replay finished: ok=%s fail=%s aborted=%s reason=%s elapsed_active=%.1fs "
                 "avg=%.1f msg/s speed=%s last_rc=%s",
@@ -797,6 +830,9 @@ class ReplayController:
                 paho_rc_name(self._last_publish_rc),
             )
 
+        if commit_ok:
+            self._publish_session_control("commit")
+
     def cleanup(self):
         """Sauberes Cleanup des Controllers"""
         self.stop()
@@ -811,8 +847,12 @@ def _get_replay_controller(mqtt_host: str, mqtt_port: int) -> ReplayController:
     rc: Optional[ReplayController] = st.session_state.get(key)
 
     # Alten Controller sauber stoppen falls Host/Port geändert
-    if rc and (rc.host != mqtt_host or int(rc.port) != int(mqtt_port)):
-        logger.info("🔄 Alten ReplayController stoppen (Host/Port geändert)")
+    # oder Code-Reload (Streamlit hält sonst eine veraltete Klassen-Instanz).
+    stale = bool(rc) and not hasattr(rc, "set_session_id")
+    host_changed = bool(rc) and (rc.host != mqtt_host or int(rc.port) != int(mqtt_port))
+    if rc and (host_changed or stale):
+        reason = "veraltete Instanz nach Code-Reload" if stale else "Host/Port geändert"
+        logger.info("🔄 Alten ReplayController stoppen (%s)", reason)
         rc.cleanup()
         rc = None
         del st.session_state[key]
@@ -1561,6 +1601,7 @@ def load_session(session_file, replay_ctrl: ReplayController, apply_timeshift: b
                     items.append((ts_rel, topic, payload_b, qos, retain))
 
             # in Controller laden
+            replay_ctrl.set_session_id(session_file.name)
             replay_ctrl.load(items)
             st.session_state.loaded_session = {
                 "file": session_file,
@@ -1575,6 +1616,10 @@ def load_session(session_file, replay_ctrl: ReplayController, apply_timeshift: b
                 st.info("🕒 Timeshift aktiv: Session-Timestamps werden relativ zu 'jetzt' gesendet.")
             else:
                 st.info("🕒 Timeshift deaktiviert: originale Session-Timestamps bleiben unverändert.")
+            st.caption(
+                "Persistence: Session-Gate nutzt den Dateinamen; erneutes vollständiges Replay "
+                "derselben Datei wird lokal nicht erneut persistiert (Reset leert die Liste)."
+            )
         else:
             st.error(f"❌ Session '{session_file.name}' konnte nicht geladen werden")
     except Exception as e:

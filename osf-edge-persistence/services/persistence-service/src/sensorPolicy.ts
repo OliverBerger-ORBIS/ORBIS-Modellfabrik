@@ -3,12 +3,15 @@ import { SensorReason } from './types';
 export interface SensorPolicyState {
   lastIntervalByKey: Map<string, number>;
   activeOrderIds: Set<string>;
+  /** Orders seen via response/active — used to ignore CCU completed-history dumps. */
+  knownOrderIds: Set<string>;
 }
 
 export function createSensorPolicyState(): SensorPolicyState {
   return {
     lastIntervalByKey: new Map(),
     activeOrderIds: new Set(),
+    knownOrderIds: new Set(),
   };
 }
 

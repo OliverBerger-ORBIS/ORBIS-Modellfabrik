@@ -2,58 +2,116 @@
   "title": "Orders",
   "uid": "osf-orders",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 3,
   "timezone": "browser",
   "refresh": "15s",
+  "time": { "from": "now-6h", "to": "now" },
   "panels": [
     {
       "id": 10,
-      "title": "Orders by State (Last 24h)",
+      "title": "Orders by State × Color (Last 24h)",
       "type": "barchart",
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "PB856C894E7EBB34A"
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "fillOpacity": 80, "gradientMode": "none", "lineWidth": 1 }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "BLUE" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#1E88E5", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "WHITE" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#E0E0E0", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "RED" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#E53935", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "UNKNOWN" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#9E9E9E", "mode": "fixed" } }]
+          }
+        ]
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "stacking": "normal",
+        "xTickLabelRotation": 0,
+        "orientation": "vertical"
+      },
       "targets": [
         {
           "format": "table",
           "refId": "A",
-          "rawSql": "SELECT state, count(*)::double precision AS value FROM production_order WHERE received_at >= now() - interval '24 hours' GROUP BY state ORDER BY state"
+          "rawSql": "SELECT ISNULL(state, N'?') AS state, CAST(SUM(CASE WHEN workpiece_type = N'BLUE' THEN 1 ELSE 0 END) AS FLOAT) AS BLUE, CAST(SUM(CASE WHEN workpiece_type = N'WHITE' THEN 1 ELSE 0 END) AS FLOAT) AS WHITE, CAST(SUM(CASE WHEN workpiece_type = N'RED' THEN 1 ELSE 0 END) AS FLOAT) AS RED, CAST(SUM(CASE WHEN workpiece_type IS NULL OR workpiece_type NOT IN (N'BLUE', N'WHITE', N'RED') THEN 1 ELSE 0 END) AS FLOAT) AS UNKNOWN FROM shopfloor_order WHERE received_at >= DATEADD(hour, -24, SYSUTCDATETIME()) GROUP BY state ORDER BY state"
         }
       ]
     },
     {
       "id": 11,
       "title": "Active Orders (Latest)",
+      "description": "Empty when all replay/live orders are already FINISHED/ERROR — expected after completed sessions.",
       "type": "table",
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "PB856C894E7EBB34A"
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 0 },
       "targets": [
         {
           "format": "table",
           "refId": "A",
-          "rawSql": "SELECT received_at, order_id, order_type, workpiece_id, state FROM production_order WHERE state IN ('IN_PROGRESS', 'RUNNING', 'ENQUEUED') AND received_at >= now() - interval '24 hours' ORDER BY received_at DESC LIMIT 50"
+          "rawSql": "SELECT TOP 50 received_at, order_id, order_type, workpiece_type AS color, workpiece_id AS nfc, state FROM shopfloor_order WHERE state IN (N'IN_PROGRESS', N'RUNNING', N'ENQUEUED') AND received_at >= DATEADD(hour, -24, SYSUTCDATETIME()) ORDER BY received_at DESC"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Recent Orders (any state)",
+      "type": "table",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 9 },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT TOP 40 received_at, order_type, workpiece_type AS color, workpiece_id AS nfc, state, order_id FROM shopfloor_order WHERE received_at >= DATEADD(hour, -24, SYSUTCDATETIME()) ORDER BY received_at DESC"
         }
       ]
     },
     {
       "id": 1,
-      "title": "Completed Orders (Last 24h)",
+      "title": "Completed Orders by Color (Last 24h)",
       "type": "timeseries",
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "PB856C894E7EBB34A"
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 17 },
+      "fieldConfig": {
+        "defaults": { "custom": { "drawStyle": "line", "lineWidth": 2, "fillOpacity": 15, "spanNulls": true } },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "BLUE" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#1E88E5", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "WHITE" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#BDBDBD", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "RED" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#E53935", "mode": "fixed" } }]
+          }
+        ]
       },
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "none" }
+      },
       "targets": [
         {
           "format": "time_series",
           "refId": "A",
-          "rawSql": "SELECT date_trunc('minute', stopped_at) AS time, count(*)::double precision AS value FROM production_order WHERE stopped_at IS NOT NULL AND stopped_at >= now() - interval '24 hours' GROUP BY 1 ORDER BY 1"
+          "rawSql": "SELECT DATETRUNC(minute, stopped_at) AS time, COALESCE(workpiece_type, N'UNKNOWN') AS metric, CAST(COUNT(*) AS FLOAT) AS value FROM shopfloor_order WHERE stopped_at IS NOT NULL AND stopped_at >= DATEADD(hour, -24, SYSUTCDATETIME()) GROUP BY DATETRUNC(minute, stopped_at), COALESCE(workpiece_type, N'UNKNOWN') ORDER BY 1"
         }
       ]
     }

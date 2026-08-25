@@ -1,5 +1,7 @@
+-- LEGACY (Postgres). Active DB is MSSQL table env_sensor_snapshot.
+-- Not executed by current tooling; keep until T-SQL port.
 -- Long format: one row per Ist event × sensor metric (as-of).
--- Same join rules as sensor_around_ist_event.sql. See that file for comments.
+-- Same join rules as sensor_around_ist_event.sql.
 
 WITH params AS (
   SELECT
@@ -50,7 +52,7 @@ ist AS (
 ist_f AS (
   SELECT i.*, po.order_type
   FROM ist i
-  LEFT JOIN production_order po ON po.order_id = i.order_id
+  LEFT JOIN shopfloor_order po ON po.order_id = i.order_id
   CROSS JOIN params p
   WHERE p.anchors_only = 0
     OR CASE
@@ -94,7 +96,7 @@ INNER JOIN LATERAL (
     sn.value_text,
     sn.unit,
     sn.ts
-  FROM sensor_snapshot sn
+  FROM env_sensor_snapshot sn
   WHERE sn.ts <= e.ts + make_interval(secs => p.grace_seconds)
     AND sn.ts >= e.ts - make_interval(secs => p.window_seconds)
   ORDER BY sn.source, sn.station_id, sn.sensor_type, sn.metric_name, sn.ts DESC

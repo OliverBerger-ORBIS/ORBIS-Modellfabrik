@@ -1,17 +1,22 @@
 apiVersion: 1
 
 datasources:
-  - name: OSF Timescale
-    type: grafana-postgresql-datasource
+  # SQL Server — same dialect as DSP .201
+  # Note: Grafana provisioning supports ${VAR} only (no bash :-defaults).
+  - name: OSF SQL Server
+    uid: POSFMSQL001
+    type: mssql
     access: proxy
     isDefault: true
-    url: postgres:5432
-    database: ${POSTGRES_DB}
-    user: ${POSTGRES_USER}
+    url: ${MSSQL_GRAFANA_URL}
+    user: ${MSSQL_USER}
     jsonData:
-      database: ${POSTGRES_DB}
-      postgresVersion: 1600
-      sslmode: disable
-      timescaledb: true
+      database: ${MSSQL_DB}
+      maxOpenConns: 10
+      maxIdleConns: 10
+      connMaxLifetime: 14400
+      encrypt: "false"
     secureJsonData:
-      password: ${POSTGRES_PASSWORD}
+      password: ${MSSQL_PASSWORD}
+    editable: false
+    version: 4

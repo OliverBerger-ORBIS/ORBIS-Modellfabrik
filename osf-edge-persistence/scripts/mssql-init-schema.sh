@@ -41,7 +41,10 @@ run_sql() {
 
 run_sql db/mssql/001_create_database.sql
 run_sql db/mssql/002_schema.sql
+run_sql db/mssql/012_env_sensor_snapshot_rename.sql
+run_sql db/mssql/013_shopfloor_order_rename.sql
 run_sql db/mssql/003_indexes.sql
+run_sql db/mssql/011_replay_session_ingest.sql
 
 docker exec "$NAME" /opt/mssql-tools18/bin/sqlcmd \
   -S localhost -U sa -P "$PASS" -C -d "$DB" \

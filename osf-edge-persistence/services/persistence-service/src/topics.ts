@@ -33,6 +33,9 @@ export const SUBSCRIBE_TOPICS: string[] = [
   // comes from module RGB_NFC / FTS loadId / CCU workpieceId.
   'osf/workpiece/intake',
 
+  // Local replay session gate (begin/commit). Ignored in PERSISTENCE_MODE=live.
+  'osf/persistence/replay/session',
+
   // Optional compatibility patterns (future sources)
   'osf/+/sensor/+',
   'osf/+/sensor/+/+',

@@ -6,7 +6,7 @@ Shopfloor-Steuerung bleibt auf dem **APS-RPi**. Längere Historie (NFC-Spur, Sen
 
 **Grafana:** eine Installation — **unsere** Dashboards ersetzen die bisherige Instanz auf `:3000` (alter Container gestoppt).  
 **Datenbank (Ziel Prod):** **Microsoft SQL Server** auf dem **bestehenden** Container der VE — **neues** OSF-DB/Schema (nicht Postgres/Timescale auf `.201`).  
-**Entwicklung:** zuerst **localhost / Docker** bis Anforderungen stabil; **Option B:** lokal ebenfalls SQL Server (gleicher Dialekt wie Prod), parallel kann der bestehende Postgres/Timescale-Stack für Replay weiterlaufen, bis die Portierung fertig ist.
+**Entwicklung:** zuerst **localhost / Docker** bis Anforderungen stabil — lokal **derselbe Dialekt** (SQL Server Compose). Kurz-How-to: [edge-persistence-dev-mssql.md](./edge-persistence-dev-mssql.md). Postgres/Timescale ist aus dem aktiven Stack entfernt (nur noch Git-History).
 
 Zugänge Proxmox / VE / SQL, siehe: [Netzwerk-Topologie – DSP Edge](../setup/orbis-shopfloor-network-topology.md#dsp-edge--proxmox--ve).
 
@@ -94,8 +94,9 @@ Der Container-Name klingt nach einer **Kunden-/Demo-Instanz (Rittal)**, nicht na
 
 | Offen | Wer |
 |-------|-----|
-| Freigabe: OSF-DB auf Instanz `rittal_sqlserver` + Name/Owner der DB | DSP kurz bestätigen |
-| App-User (nicht dauerhaft `sa`) für Persistence/Grafana | DSP / OSF gemeinsam |
+| Freigabe: OSF-DB auf Instanz `rittal_sqlserver` + Name/Owner der DB | **DSP ja (25.08.2026):** DB `osf_edge` |
+| App-User (nicht dauerhaft `sa`) für Persistence/Grafana | **DSP ja:** Login/User `osf_edge` (reader/writer/execute). Skript: `db/mssql/010_app_user.sql` / `scripts/mssql-create-app-user.sh`. Anlegen auf `.201` wenn FT-LAN erreichbar (sa einmalig). |
+| Replay in Live-DB `.201` | **Nein:** nur `PERSISTENCE_MODE=live` auf VE; Replay + Session-Gate nur lokal (`env.replay`). |
 | Compose-Deploy Persistence + Grafana auf `.201` (Images, Env, MQTT) | OSF |
 | Schema-Portierung Postgres → T-SQL + Persistence-Treiber `mssql` | OSF (nach stabilem lokalen SQL-Server-Dev) |
 | Inhalt/Zweck von `rittal_sqlserver` (nur Name vs. Kundendaten) | DSP |
@@ -105,18 +106,18 @@ Der Container-Name klingt nach einer **Kunden-/Demo-Instanz (Rittal)**, nicht na
 
 ## Container: lokal heute vs. Ziel `.201`
 
-**Lokal (aktueller Compose, Übergang):** Postgres/Timescale + Grafana + Persistence — funktioniert für Replay/Live-Mac.
-
-**Lokal Option B (Dev, parallel):** SQL Server 2022 Container `osf-edge-mssql` (Compose-Profil `mssql`, Host **`:1433`**). Start:
+**Lokal (Compose, MSSQL-only):** SQL Server 2022 Container `osf-edge-mssql` (Host **`:1433`**) + Grafana + Persistence. Start:
 
 ```bash
 cd osf-edge-persistence
-# MSSQL_* in .env (siehe env.live)
-docker compose --profile mssql up -d mssql
+cp env.replay .env   # oder env.live
+docker compose up -d
 bash scripts/mssql-smoke.sh
+bash scripts/mssql-init-schema.sh
+bash scripts/mssql-create-app-user.sh
 ```
 
-Apple Silicon: Image `linux/amd64` (Rosetta). Schema: `bash scripts/mssql-init-schema.sh` → DB `osf_edge` (`db/mssql/`). Persistence-/Grafana-Anbindung folgen; Postgres-Stack bleibt bis dahin der Demo-Pfad.
+Apple Silicon: Image `linux/amd64` (Rosetta). Schema: DB `osf_edge` (`db/mssql/`), Umwelt-Tabelle `env_sensor_snapshot`. App-User `osf_edge`. Grafana Default-DS **OSF SQL Server**.
 
 **Ziel `.201`:**
 
@@ -132,6 +133,5 @@ Datenfluss Ziel: **MQTT `.100` → Persistence → SQL Server → Grafana**.
 
 ## Phasen
 
-1. **Jetzt:** Mac localhost/Docker; Live FT-LAN optional via Tunnel; Postgres-Stack noch ok für Demo.  
-2. **Option B (Dev):** lokaler SQL-Server-Container; Schema + Queries + Persistence auf MSSQL portieren.  
-3. **`.201`:** Persistence + Grafana deployen; an bestehende SQL-Instanz `:1433` (OSF-DB); kein Mac-Tunnel mehr.
+1. **Jetzt (Option B):** Mac localhost/Docker SQL Server — [edge-persistence-dev-mssql.md](./edge-persistence-dev-mssql.md).  
+2. **`.201`:** Persistence + Grafana deployen; an bestehende SQL-Instanz `:1433` (OSF-DB); kein Mac-Tunnel mehr.

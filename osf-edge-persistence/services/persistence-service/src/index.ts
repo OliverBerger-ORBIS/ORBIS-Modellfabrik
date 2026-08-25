@@ -1,23 +1,37 @@
 import mqtt from 'mqtt';
 import { loadConfig } from './config';
-import { PersistenceDb } from './db';
+import { createPersistenceStore } from './db.factory';
 import { Logger } from './logger';
 import { normalizeMessage } from './normalizer';
+import { ReplaySessionGate } from './replaySessionGate';
+import { assertReplayTargetAllowed } from './replayTargetGuard';
 import { createSensorPolicyState } from './sensorPolicy';
 import { SUBSCRIBE_TOPICS } from './topics';
 
 async function main(): Promise<void> {
   const config = loadConfig();
+  assertReplayTargetAllowed(config);
+
   const logger = new Logger(config.runtime.logLevel);
-  const db = new PersistenceDb(config, logger);
+  const db = createPersistenceStore(config, logger);
   const sensorPolicyState = createSensorPolicyState();
+  const replayGate = new ReplaySessionGate(config.runtime.mode, db, logger, {
+    // Truncate clears DB but not in-memory INTERVAL throttle; timeshifted replays
+    // would otherwise skip env_sensor_snapshot until process restart.
+    onBeginPersist: () => {
+      sensorPolicyState.lastIntervalByKey.clear();
+      sensorPolicyState.activeOrderIds.clear();
+      sensorPolicyState.knownOrderIds.clear();
+      logger.info('Cleared sensor INTERVAL throttle for new replay ingest');
+    },
+  });
 
   logger.info('Starting OSF edge persistence service', {
     mode: config.runtime.mode,
     mqttHost: config.mqtt.host,
     mqttPort: config.mqtt.port,
-    pgHost: config.postgres.host,
-    pgDb: config.postgres.db,
+    mssqlHost: config.mssql.host,
+    mssqlDb: config.mssql.db,
     rawEnabled: config.runtime.enableRawMessages,
     intervalSeconds: config.runtime.sensorIntervalSeconds,
     idleIntervalSeconds: config.runtime.sensorIdleIntervalSeconds,
@@ -56,6 +70,16 @@ async function main(): Promise<void> {
     const receivedAt = new Date();
     const payloadText = buffer.toString();
     try {
+      if (replayGate.isControlTopic(topic)) {
+        await replayGate.handleControlMessage(payloadText);
+        return;
+      }
+
+      if (!replayGate.shouldPersistShopfloor()) {
+        logger.debug('Skipping persist (replay session gate)', { topic });
+        return;
+      }
+
       const normalized = normalizeMessage({
         config,
         topic,
@@ -73,7 +97,7 @@ async function main(): Promise<void> {
         topic,
         events: normalized.shopfloorEvents.length,
         sensors: normalized.sensorSnapshots.length,
-        orders: normalized.productionOrders.length,
+        orders: normalized.shopfloorOrders.length,
       });
     } catch (error) {
       logger.error('Message processing failed', {

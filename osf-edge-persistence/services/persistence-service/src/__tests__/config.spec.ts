@@ -63,4 +63,10 @@ describe('loadConfig runtime mode', () => {
       }
     );
   });
+
+  it('defaults MSSQL user to osf_edge', () => {
+    withEnv({ MSSQL_USER: undefined }, () => {
+      expect(loadConfig().mssql.user).toBe('osf_edge');
+    });
+  });
 });

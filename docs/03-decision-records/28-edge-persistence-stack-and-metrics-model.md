@@ -76,11 +76,17 @@
 
 **Replay (Home-Office):** NFC kommt aus denselben APS-Feldern wie Track&Trace (`RGB_NFC.result`, FTS `loadId`, CCU `workpieceId`). Eine lokale Intake-Bridge ist nicht nötig. Unterschiedliche Sessions mit unterschiedlichen NFC-IDs dürfen in der lokalen DB akkumulieren. Truncate nur **manuell** (`scripts/reset-replay-db.sh`), nicht bei jedem Replay.
 
+**Replay-Idempotenz + Live-Schutz (25.08.2026):**
+
+1. **`PERSISTENCE_MODE=replay`** darf nur gegen **lokale** DB-Hosts laufen (Allowlist: `localhost`, Compose-Service-Namen, … — nicht `192.168.0.201`). Sonst Startup-Abbruch.
+2. **Lokales Session-Gate:** Replay Station publisht `osf/persistence/replay/session` (`begin`/`commit` + Dateiname). Persistence schreibt nur nach `begin`; nach erfolgreichem `commit` steht der Name in `replay_session_ingest` — erneutes Replay derselben Datei wird übersprungen. Full-Truncate leert die Liste mit.
+3. **`PERSISTENCE_MODE=live` (Ziel `.201`):** kein Session-Gate; Control-Messages werden ignoriert. Kein Replay-Ingest in die Live-DB.
+
 ---
 
 ## Nachtrag (24.08.2026) – Sensorik an Ist-Events
 
-Arduino-/TXT-Payloads tragen keine NFC-ID. Die Kopplung Sensor ↔ Werkstück ist **query-time** (as-of: letzter `sensor_snapshot` vor dem Ist-Event im konfigurierten Fenster), analog zur RAM-ENV-Snapshot-Logik in Track & Trace. `sensor_snapshot.related_event_id` / `workpiece_id` werden beim Ingest **nicht** befüllt. Auswertung: `db/queries/sensor_around_ist_event.sql` bzw. `scripts/sensor-around-ist.sh`.
+Arduino-/TXT-Payloads tragen keine NFC-ID. Die Kopplung Sensor ↔ Werkstück ist **query-time** (as-of: letzter `env_sensor_snapshot` vor dem Ist-Event im konfigurierten Fenster), analog zur RAM-ENV-Snapshot-Logik in Track & Trace. `related_event_id` / `workpiece_id` werden beim Ingest **nicht** befüllt. Grafana-Panels nutzen `env_sensor_snapshot`; das alte `sensor-around-ist.sh` (Postgres) ist deaktiviert bis T-SQL-Port.
 
 **Sensor-INTERVAL (24.08.2026, Korrektur):** Default war irrtümlich 3600 s. Fachlich: **5 s bei aktiven Orders**, **60 s idle**, Alarme/Warnungen immer. Volume bleibt unkritisch gegenüber Timescale-Retention (365 Tage Snapshots).
 
@@ -105,9 +111,10 @@ Arduino-/TXT-Payloads tragen keine NFC-ID. Die Kopplung Sensor ↔ Werkstück is
 
 1. Persistence + Grafana als Docker auf Linux-VE **`.201`**.
 2. **Prod-Datenbank = Microsoft SQL Server** auf dem **bestehenden** Container (Host-Port **`:1433`**, Name `rittal_sqlserver`) — **neues** OSF-DB/Schema. **Kein** Postgres/Timescale auf der VE.
-3. Entwicklung zuerst **localhost/Docker**; **Option B:** lokal ebenfalls SQL Server, bis Anforderungen stabil, dann Deploy `.201`.
+3. Entwicklung zuerst **localhost/Docker** mit SQL Server; Postgres/Timescale-Stack aus dem aktiven Compose **entfernt** (25.08.2026, Legacy nur Git-History).
+4. UC-02: Shopfloor-Tabellen unprefixed; Umwelt **`env_sensor_snapshot`**; `biz_*` später.
 
-PostgreSQL + Timescale bleibt gültig als **bisheriger Dev/Replay-Stack** und Übergangsbasis; Timescale-Features (Hypertables/Retention) sind auf SQL Server durch Index + Retention-Job zu ersetzen. Details/Inventar: [dsp-edge-osf-persistence.md](../04-howto/deployment/dsp-edge-osf-persistence.md).
+PostgreSQL + Timescale war der frühere Dev/Replay-Stack; Retention auf SQL Server über Index + Job (siehe `db/mssql/004_retention_note.sql`). Details: [dsp-edge-osf-persistence.md](../04-howto/deployment/dsp-edge-osf-persistence.md).
 
 ## Related
 

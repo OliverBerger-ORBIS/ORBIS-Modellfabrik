@@ -2,7 +2,7 @@
   "title": "Systemstatus",
   "uid": "osf-system-status",
   "schemaVersion": 39,
-  "version": 2,
+  "version": 3,
   "timezone": "browser",
   "refresh": "10s",
   "time": { "from": "now-6h", "to": "now" },
@@ -12,16 +12,13 @@
       "id": 1,
       "title": "Events per Minute",
       "type": "timeseries",
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "PB856C894E7EBB34A"
-      },
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
       "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
       "targets": [
         {
           "format": "time_series",
           "refId": "A",
-          "rawSql": "SELECT date_trunc('minute', ts) AS time, count(*)::double precision AS value FROM shopfloor_event WHERE $__timeFilter(ts) GROUP BY 1 ORDER BY 1"
+          "rawSql": "SELECT DATETRUNC(minute, CAST(ts AS datetime2)) AS time, CAST(COUNT(*) AS FLOAT) AS value FROM shopfloor_event WHERE $__timeFilter(ts) GROUP BY DATETRUNC(minute, CAST(ts AS datetime2)) ORDER BY 1"
         }
       ]
     },
@@ -29,16 +26,13 @@
       "id": 2,
       "title": "MQTT Topics (raw)",
       "type": "table",
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "PB856C894E7EBB34A"
-      },
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
       "gridPos": { "h": 12, "w": 24, "x": 0, "y": 8 },
       "targets": [
         {
           "format": "table",
           "refId": "A",
-          "rawSql": "SELECT topic, count(*) AS messages, max(received_at) AS last_seen FROM mqtt_raw_message WHERE $__timeFilter(received_at) GROUP BY topic ORDER BY messages DESC LIMIT 80"
+          "rawSql": "SELECT TOP 80 topic, COUNT(*) AS messages, MAX(received_at) AS last_seen FROM mqtt_raw_message WHERE $__timeFilter(received_at) GROUP BY topic ORDER BY messages DESC"
         }
       ]
     }

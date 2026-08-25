@@ -1,7 +1,7 @@
 import { ServiceConfig } from './config';
 import {
   NormalizedMessage,
-  ProductionOrderRow,
+  ShopfloorOrderRow,
   ProductionStepRow,
   SensorSnapshotRow,
   ShopfloorEventRow,
@@ -15,6 +15,7 @@ import {
   updateActiveOrdersFromPayload,
 } from './sensorPolicy';
 import { collectLoadNfcIds, resolveWorkpieceId, resolveWorkpieceType } from './nfc';
+import { resolveModuleType } from './moduleSerialMap';
 import { asDate, extractPayload, pickString, stableHash, toRecord } from './utils';
 
 interface NormalizeOptions {
@@ -105,14 +106,19 @@ function resolveActionCommand(payload: Record<string, unknown>): string | undefi
   return pickString(actionState, 'command') ?? pickString(action, 'command') ?? pickString(payload, 'command');
 }
 
-function parseOrderCompleted(payload: unknown, topic: string, receivedAt: Date): {
-  orders: ProductionOrderRow[];
+function parseOrderCompleted(
+  payload: unknown,
+  topic: string,
+  receivedAt: Date,
+  knownOrderIds: Set<string>
+): {
+  orders: ShopfloorOrderRow[];
   steps: ProductionStepRow[];
   events: ShopfloorEventRow[];
   workpieces: WorkpieceRow[];
 } {
   const ordersInput = Array.isArray(payload) ? payload : [payload];
-  const orders: ProductionOrderRow[] = [];
+  const orders: ShopfloorOrderRow[] = [];
   const steps: ProductionStepRow[] = [];
   const events: ShopfloorEventRow[] = [];
   const workpieces: WorkpieceRow[] = [];
@@ -120,11 +126,12 @@ function parseOrderCompleted(payload: unknown, topic: string, receivedAt: Date):
   for (const item of ordersInput) {
     const row = toRecord(item);
     const orderId = pickString(row, 'orderId');
-    if (!orderId) {
+    // Ignore CCU completed-history dump entries we never saw via response/active.
+    if (!orderId || !knownOrderIds.has(orderId)) {
       continue;
     }
 
-    const order: ProductionOrderRow = {
+    const order: ShopfloorOrderRow = {
       orderId,
       orderType: pickString(row, 'orderType'),
       workpieceId: pickString(row, 'workpieceId'),
@@ -322,7 +329,7 @@ export function normalizeMessage({
         }
       : undefined,
     shopfloorEvents: [],
-    productionOrders: [],
+    shopfloorOrders: [],
     productionSteps: [],
     workpieces: [],
     sensorSnapshots: [],
@@ -354,6 +361,19 @@ export function normalizeMessage({
       actionState: isRequest ? 'REQUESTED' : 'RESPONDED',
       payload: payloadRecord,
     });
+    // Response carries orderId — register + upsert shopfloor_order (STORAGE|PRODUCTION).
+    if (orderId) {
+      sensorPolicyState.knownOrderIds.add(orderId);
+      normalized.shopfloorOrders.push({
+        orderId,
+        orderType,
+        workpieceId,
+        workpieceType,
+        state: isRequest ? 'REQUESTED' : pickString(payloadRecord, 'state') ?? 'RESPONDED',
+        receivedAt: baseEventTs,
+        startedAt: asDate(payloadRecord.startedAt) ?? baseEventTs,
+      });
+    }
     const wp = workpieceRowFromId(workpieceId, workpieceType, baseEventTs, orderType, isRequest ? 'REQUESTED' : 'RESPONDED');
     if (wp) {
       normalized.workpieces.push(wp);
@@ -362,8 +382,8 @@ export function normalizeMessage({
   }
 
   if (topic === 'ccu/order/completed') {
-    const completed = parseOrderCompleted(payload, topic, receivedAt);
-    normalized.productionOrders.push(...completed.orders);
+    const completed = parseOrderCompleted(payload, topic, receivedAt, sensorPolicyState.knownOrderIds);
+    normalized.shopfloorOrders.push(...completed.orders);
     normalized.productionSteps.push(...completed.steps);
     normalized.shopfloorEvents.push(...completed.events);
     normalized.workpieces.push(...completed.workpieces);
@@ -379,14 +399,15 @@ export function normalizeMessage({
       if (!orderId) {
         continue;
       }
+      sensorPolicyState.knownOrderIds.add(orderId);
       const workpieceId = pickString(row, 'workpieceId');
       const workpieceType = pickString(row, 'type', 'workpieceType');
-      normalized.productionOrders.push({
+      normalized.shopfloorOrders.push({
         orderId,
         orderType: pickString(row, 'orderType'),
         workpieceId,
         workpieceType,
-        state: pickString(row, 'state'),
+        state: pickString(row, 'state') ?? 'IN_PROGRESS',
         receivedAt,
         startedAt: asDate(row.startedAt),
       });
@@ -425,8 +446,12 @@ export function normalizeMessage({
     const workpieceType = resolveWorkpieceType(payloadRecord);
     const eventType = actionCommand?.toUpperCase() ?? topic.split('/').slice(-1)[0]?.toUpperCase() ?? 'STATE';
     const source = eventSourceFromTopic(topic);
-    const moduleType = pickString(payloadRecord, 'moduleType', 'type') ?? moduleContext.moduleType;
     const moduleSerial = pickString(payloadRecord, 'serialNumber') ?? moduleContext.moduleSerial;
+    const moduleType = resolveModuleType({
+      payloadModuleType: pickString(payloadRecord, 'moduleType', 'type'),
+      topicModuleType: moduleContext.moduleType,
+      moduleSerial,
+    });
 
     const ftsLoadIds = source === 'fts' ? collectLoadNfcIds(payloadRecord) : [];
     const workpieceIds =
@@ -455,7 +480,7 @@ export function normalizeMessage({
     }
   }
 
-  if (normalized.sensorSnapshots.length === 0 && normalized.shopfloorEvents.length === 0 && normalized.productionOrders.length === 0) {
+  if (normalized.sensorSnapshots.length === 0 && normalized.shopfloorEvents.length === 0 && normalized.shopfloorOrders.length === 0) {
     return normalized.raw ? normalized : undefined;
   }
   return normalized;

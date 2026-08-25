@@ -2,39 +2,38 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-/** Logical tables shared by Postgres init and MSSQL T-SQL (Häppchen 2). */
+/** Logical tables for MSSQL OSF edge schema (UC-02: env_* for Umwelt). */
 const EXPECTED_TABLES = [
   'shopfloor_event',
-  'production_order',
+  'shopfloor_order',
   'production_step',
   'workpiece',
-  'sensor_snapshot',
+  'env_sensor_snapshot',
   'mqtt_raw_message',
+  'replay_session_ingest',
 ] as const;
 
 const ROOT = resolve(__dirname, '../../../../');
 
-function tablesFromSql(sql: string, dialect: 'postgres' | 'mssql'): string[] {
-  const pattern =
-    dialect === 'postgres'
-      ? /CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS\s+(\w+)/gi
-      : /CREATE\s+TABLE\s+dbo\.(\w+)/gi;
+function tablesFromSqlFiles(paths: string[]): string[] {
+  const pattern = /CREATE\s+TABLE\s+dbo\.(\w+)/gi;
   const found = new Set<string>();
-  for (const match of sql.matchAll(pattern)) {
-    found.add(match[1]!.toLowerCase());
+  for (const rel of paths) {
+    const sql = readFileSync(resolve(ROOT, rel), 'utf8');
+    for (const match of sql.matchAll(pattern)) {
+      found.add(match[1]!.toLowerCase());
+    }
   }
   return [...found].sort();
 }
 
-describe('schema contract Postgres ↔ MSSQL', () => {
-  it('lists the same core tables in both dialects', () => {
-    const pg = readFileSync(resolve(ROOT, 'db/init/001_schema.sql'), 'utf8');
-    const ms = readFileSync(resolve(ROOT, 'db/mssql/002_schema.sql'), 'utf8');
+describe('schema contract MSSQL', () => {
+  it('lists core + env + replay tables', () => {
+    const msTables = tablesFromSqlFiles([
+      'db/mssql/002_schema.sql',
+      'db/mssql/011_replay_session_ingest.sql',
+    ]);
 
-    const pgTables = tablesFromSql(pg, 'postgres');
-    const msTables = tablesFromSql(ms, 'mssql');
-
-    expect(pgTables).toEqual([...EXPECTED_TABLES].sort());
     expect(msTables).toEqual([...EXPECTED_TABLES].sort());
   });
 
@@ -44,8 +43,9 @@ describe('schema contract Postgres ↔ MSSQL', () => {
     expect(ms).not.toMatch(/JSONB/i);
   });
 
-  it('MSSQL schema keeps sensor reason check values', () => {
+  it('MSSQL schema keeps sensor reason check values on env_sensor_snapshot', () => {
     const ms = readFileSync(resolve(ROOT, 'db/mssql/002_schema.sql'), 'utf8');
+    expect(ms).toMatch(/env_sensor_snapshot/);
     expect(ms).toMatch(/EVENT/);
     expect(ms).toMatch(/INTERVAL/);
     expect(ms).toMatch(/THRESHOLD/);

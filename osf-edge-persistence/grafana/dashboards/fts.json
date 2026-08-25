@@ -1,0 +1,280 @@
+{
+  "title": "FTS / AGV",
+  "uid": "osf-fts",
+  "schemaVersion": 39,
+  "version": 1,
+  "timezone": "browser",
+  "refresh": "10s",
+  "graphTooltip": 2,
+  "tags": ["osf", "fts", "agv"],
+  "time": { "from": "now-2h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "fts",
+        "label": "FTS serial",
+        "type": "query",
+        "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+        "definition": "SELECT DISTINCT module_serial FROM shopfloor_event WHERE topic LIKE N'fts/%' AND module_serial IS NOT NULL AND $__timeFilter(ts) ORDER BY 1",
+        "query": "SELECT DISTINCT module_serial FROM shopfloor_event WHERE topic LIKE N'fts/%' AND module_serial IS NOT NULL AND $__timeFilter(ts) ORDER BY 1",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "allValue": "N'__ALL__'",
+        "sort": 1,
+        "current": { "selected": true, "text": "All", "value": "$__all" }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Battery % (latest)",
+      "type": "gauge",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 7, "w": 8, "x": 0, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 30 },
+              { "color": "green", "value": 50 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT module_serial AS metric, CAST(JSON_VALUE(payload_json, '$.batteryState.percentage') AS FLOAT) AS value FROM (SELECT module_serial, payload_json, ROW_NUMBER() OVER (PARTITION BY module_serial ORDER BY ts DESC) AS rn FROM shopfloor_event WHERE topic LIKE N'fts/%/state' AND module_serial IS NOT NULL AND JSON_VALUE(payload_json, '$.batteryState.percentage') IS NOT NULL AND (N'__ALL__' IN (${fts:sqlstring}) OR module_serial IN (${fts:sqlstring}))) x WHERE rn = 1"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Battery voltage (latest)",
+      "type": "stat",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 7, "w": 8, "x": 8, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "volt",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 8.0 },
+              { "color": "green", "value": 8.4 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT module_serial AS metric, CAST(JSON_VALUE(payload_json, '$.batteryState.currentVoltage') AS FLOAT) AS value FROM (SELECT module_serial, payload_json, ROW_NUMBER() OVER (PARTITION BY module_serial ORDER BY ts DESC) AS rn FROM shopfloor_event WHERE topic LIKE N'fts/%/state' AND module_serial IS NOT NULL AND JSON_VALUE(payload_json, '$.batteryState.currentVoltage') IS NOT NULL AND (N'__ALL__' IN (${fts:sqlstring}) OR module_serial IN (${fts:sqlstring}))) x WHERE rn = 1"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Charging / last node (latest)",
+      "type": "table",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 7, "w": 8, "x": 16, "y": 0 },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT module_serial AS serial, ts, JSON_VALUE(payload_json, '$.batteryState.charging') AS charging, JSON_VALUE(payload_json, '$.lastNodeId') AS last_node, JSON_VALUE(payload_json, '$.driving') AS driving, JSON_VALUE(payload_json, '$.paused') AS paused FROM (SELECT module_serial, ts, payload_json, ROW_NUMBER() OVER (PARTITION BY module_serial ORDER BY ts DESC) AS rn FROM shopfloor_event WHERE topic LIKE N'fts/%/state' AND module_serial IS NOT NULL AND (N'__ALL__' IN (${fts:sqlstring}) OR module_serial IN (${fts:sqlstring}))) x WHERE rn = 1 ORDER BY serial"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Battery % over time",
+      "type": "timeseries",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 7 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "custom": { "drawStyle": "line", "lineWidth": 2, "fillOpacity": 15, "spanNulls": true, "axisPlacement": "left" }
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "none" }
+      },
+      "targets": [
+        {
+          "format": "time_series",
+          "refId": "A",
+          "rawSql": "SELECT DATETRUNC(second, ts) AS time, module_serial AS metric, CAST(AVG(CAST(JSON_VALUE(payload_json, '$.batteryState.percentage') AS FLOAT)) AS FLOAT) AS value FROM shopfloor_event WHERE topic LIKE N'fts/%/state' AND module_serial IS NOT NULL AND JSON_VALUE(payload_json, '$.batteryState.percentage') IS NOT NULL AND $__timeFilter(ts) AND (N'__ALL__' IN (${fts:sqlstring}) OR module_serial IN (${fts:sqlstring})) GROUP BY DATETRUNC(second, ts), module_serial ORDER BY 1"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Battery voltage over time",
+      "type": "timeseries",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 15 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "volt",
+          "decimals": 2,
+          "custom": { "drawStyle": "line", "lineWidth": 2, "fillOpacity": 10, "spanNulls": true }
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "none" }
+      },
+      "targets": [
+        {
+          "format": "time_series",
+          "refId": "A",
+          "rawSql": "SELECT DATETRUNC(second, ts) AS time, module_serial AS metric, CAST(AVG(CAST(JSON_VALUE(payload_json, '$.batteryState.currentVoltage') AS FLOAT)) AS FLOAT) AS value FROM shopfloor_event WHERE topic LIKE N'fts/%/state' AND module_serial IS NOT NULL AND JSON_VALUE(payload_json, '$.batteryState.currentVoltage') IS NOT NULL AND $__timeFilter(ts) AND (N'__ALL__' IN (${fts:sqlstring}) OR module_serial IN (${fts:sqlstring})) GROUP BY DATETRUNC(second, ts), module_serial ORDER BY 1"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Loads over time (NFC on FTS)",
+      "description": "One series per NFC seen in FTS state load[]; value = lastNodeId when present.",
+      "type": "state-timeline",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 22 },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi" },
+        "alignValue": "left",
+        "mergeValues": true,
+        "rowHeight": 0.9
+      },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT TOP 4000 CAST(ts AS datetime2) AS time, CONCAT(workpiece_id, N' · ', COALESCE(workpiece_type, N'?')) AS metric, COALESCE(NULLIF(JSON_VALUE(payload_json, '$.lastNodeId'), N''), N'on-FTS') AS value FROM shopfloor_event WHERE topic LIKE N'fts/%/state' AND workpiece_id IS NOT NULL AND $__timeFilter(ts) AND (N'__ALL__' IN (${fts:sqlstring}) OR module_serial IN (${fts:sqlstring})) ORDER BY ts"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Recent loads",
+      "type": "table",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 30 },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT TOP 50 ts, module_serial AS serial, workpiece_id AS nfc, workpiece_type AS color, JSON_VALUE(payload_json, '$.lastNodeId') AS last_node, order_id FROM shopfloor_event WHERE topic LIKE N'fts/%/state' AND workpiece_id IS NOT NULL AND $__timeFilter(ts) AND (N'__ALL__' IN (${fts:sqlstring}) OR module_serial IN (${fts:sqlstring})) ORDER BY ts DESC"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Actions FINISHED (DOCK / PASS / TURN / PICK / DROP)",
+      "description": "Current sessions are mostly DOCK/TURN/PASS on FTS state; PICK/DROP often appear on modules during dock.",
+      "type": "barchart",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 30 },
+      "fieldConfig": {
+        "defaults": { "unit": "short", "custom": { "fillOpacity": 80 } },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": false },
+        "orientation": "horizontal",
+        "xTickLabelRotation": 0
+      },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT a.action, CAST(ISNULL(c.n, 0) AS FLOAT) AS value FROM (VALUES (N'DOCK'), (N'PASS'), (N'TURN'), (N'PICK'), (N'DROP')) AS a(action) LEFT JOIN (SELECT action, COUNT(*) AS n FROM shopfloor_event WHERE topic LIKE N'fts/%' AND action_state = N'FINISHED' AND action IN (N'DOCK', N'PASS', N'TURN', N'PICK', N'DROP') AND $__timeFilter(ts) AND (N'__ALL__' IN (${fts:sqlstring}) OR module_serial IN (${fts:sqlstring})) GROUP BY action) c ON c.action = a.action ORDER BY a.action"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Last node over time",
+      "type": "state-timeline",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 38 },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi" },
+        "alignValue": "left",
+        "mergeValues": true,
+        "rowHeight": 0.9
+      },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT TOP 4000 CAST(ts AS datetime2) AS time, module_serial AS metric, JSON_VALUE(payload_json, '$.lastNodeId') AS value FROM shopfloor_event WHERE topic LIKE N'fts/%/state' AND module_serial IS NOT NULL AND NULLIF(JSON_VALUE(payload_json, '$.lastNodeId'), N'') IS NOT NULL AND $__timeFilter(ts) AND (N'__ALL__' IN (${fts:sqlstring}) OR module_serial IN (${fts:sqlstring})) ORDER BY ts"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Driving vs paused (pulse)",
+      "type": "timeseries",
+      "datasource": { "type": "mssql", "uid": "POSFMSQL001" },
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 45 },
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "drawStyle": "bars", "lineWidth": 1, "fillOpacity": 60, "spanNulls": false },
+          "max": 1,
+          "min": 0
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byRegexp", "options": "/driving/" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#43A047", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byRegexp", "options": "/paused/" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#FB8C00", "mode": "fixed" } }]
+          }
+        ]
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "none" }
+      },
+      "targets": [
+        {
+          "format": "time_series",
+          "refId": "A",
+          "rawSql": "SELECT DATETRUNC(second, ts) AS time, CONCAT(module_serial, N' driving') AS metric, CAST(MAX(CASE WHEN LOWER(JSON_VALUE(payload_json, '$.driving')) IN (N'true', N'1') THEN 1.0 ELSE 0.0 END) AS FLOAT) AS value FROM shopfloor_event WHERE topic LIKE N'fts/%/state' AND module_serial IS NOT NULL AND $__timeFilter(ts) AND (N'__ALL__' IN (${fts:sqlstring}) OR module_serial IN (${fts:sqlstring})) GROUP BY DATETRUNC(second, ts), module_serial UNION ALL SELECT DATETRUNC(second, ts) AS time, CONCAT(module_serial, N' paused') AS metric, CAST(MAX(CASE WHEN LOWER(JSON_VALUE(payload_json, '$.paused')) IN (N'true', N'1') THEN 1.0 ELSE 0.0 END) AS FLOAT) AS value FROM shopfloor_event WHERE topic LIKE N'fts/%/state' AND module_serial IS NOT NULL AND $__timeFilter(ts) AND (N'__ALL__' IN (${fts:sqlstring}) OR module_serial IN (${fts:sqlstring})) GROUP BY DATETRUNC(second, ts), module_serial ORDER BY 1"
+        }
+      ]
+    }
+  ]
+}
