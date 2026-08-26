@@ -60,9 +60,10 @@
 - [x] **Grafana → MSSQL (25.08.2026):** Default-DS `OSF SQL Server` (`POSFMSQL001`); alle Dashboards T-SQL; Postgres als Zweit-DS. Compose übergibt `MSSQL_*` an Grafana (`host.docker.internal:1433`).
 - [x] **Doku Option B (25.08.2026):** How-to [edge-persistence-dev-mssql.md](../04-howto/deployment/edge-persistence-dev-mssql.md) — Compose, Ports, Reset, Verweise README / DR-28 / dsp-edge. *(Postgres-Parallelpfad entfällt.)*
 - [x] **`.201` OSF-DB + App-User (Skript 25.08.2026):** DSP-OK für DB/`osf_edge` + App-User (nicht sa). T-SQL `db/mssql/010_app_user.sql`, `scripts/mssql-create-app-user.sh` (reader/writer/execute). Lokal anlegbar; **auf `rittal_sqlserver` noch ausführen** sobald FT-LAN (Home-Office: `.201` nicht erreichbar).
-- [ ] **`.201` App-User live anlegen:** Skript gegen `rittal_sqlserver` mit sa ausführen; Compose auf `.201` mit `MSSQL_USER=osf_edge` (nicht sa).
-- [ ] **Deploy `.201`:** Persistence + Grafana-Container; MQTT `.100`; SQL `:1433`. Mac-Tunnel nur Übergang. *(Ursprung: Sprint 22)*
-- [ ] **Live ohne Mac-Tunnel:** Ingest dauerhaft über `.201`; Checkliste [edge-persistence-live-ft-lan.md](../04-howto/deployment/edge-persistence-live-ft-lan.md) anpassen. Track&Trace-UI bleibt RAM-scoped. *(Entscheidung 21.07.2026; Ursprung: Sprint 26)*
+- [x] **`.201` App-User + Schema live (26.08.2026):** Gegen `rittal_sqlserver` (`192.168.0.201:1433`) — DB `osf_edge`, Login/User `osf_edge` (reader/writer), 7 Tabellen inkl. `shopfloor_order` / `env_sensor_snapshot` / `replay_session_ingest`. Dev-PW wie lokal (`OsfEdge_App9#`). Compose-Deploy Persistence/Grafana = nächster Schritt.
+- [x] **Deploy `.201` (26.08.2026):** `docker-compose.dsp.yml` + `env.dsp` auf VE (`~/osf-edge-persistence`); Persistence live → MQTT `.100` + SQL `host.docker.internal:1433`; Grafana `:3000` (Home `osf-home`). Verifiziert: DB wächst (Events/Raw/Sensoren), `http://192.168.0.201:3000` health OK.
+- [x] **Arduino NTP v1.1.14 flashen (26.08.2026):** Sketch ORBIS: UDP→RPi zuerst. Flash OK; Serial `Zeit OK UDP idx=0`; MQTT `timestamp` ≈ wall UTC; factsheet `1.1.14`.
+- [x] **Live ohne Mac-Tunnel (26.08.2026):** Checkliste [edge-persistence-live-ft-lan.md](../04-howto/deployment/edge-persistence-live-ft-lan.md) / [dsp-edge-osf-persistence.md](../04-howto/deployment/dsp-edge-osf-persistence.md) — Zielbetrieb `.201`; Tunnel nur Fallback.
 
 ### Workpiece-Intake / Object Detection *(Fokus)*
 

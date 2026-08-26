@@ -166,6 +166,7 @@ Ohne Common Ground kann die Relais-Logik fehlschlagen.
 **Upgrade Notes v1.1.11:** Fix: `lastPublishedGasLevel` korrekt initialisiert (kein doppeltes Gas-State Publish direkt nach Boot). Debug-Print nutzt eigenes Tracking und funktioniert damit auch im Serial-only Modus (`USE_MQTT=0`).
 **Upgrade Notes v1.1.12:** Periodische Telemetrie-Publishes wieder aktiv (MPU ~1s, DHT ~5s, Flame/Gas ~2s) zusätzlich zu sofortigen Zustandswechsel-Events – wichtig für Event-Korrelation.
 **Upgrade Notes v1.1.13:** Pin-Remap zur saubereren Verkabelung: SW-420 `D3` (grau), DHT11 `D2` (weiss), Flamme `A2` (lila), MQ-2 `A3` (grau). Serial-Test nach Umbau erfolgreich (22.06.2026).
+**Upgrade Notes v1.1.14:** ORBIS-NTP: **UDP zum Shopfloor-RPi (`192.168.0.100`) zuerst**; `WiFi.getTime()` nur noch Fallback (und überschreibt eine gute Basis nicht periodisch). Behebt falsche Payload-`timestamp` (~1 Tag Versatz) trotz funktionierendem chrony.
 
 ---
 
@@ -203,7 +204,7 @@ mosquitto_sub -h 192.168.178.65 -t "osf/arduino/#" -v
 - **MPU-6050** bestimmt Gelb/Rot über `mpuMagnitudeYellow` / `mpuMagnitudeRed`.
 - **SW-420** ist ein binärer Vibrationsschalter und wird als **Gelb-Warnung** verwendet (kein Rot-Alarm); Signal wird moderat entprellt (ca. 50 ms Confirm + kurzer Hold).
 
-**`timestamp` in State-Payloads (Sketch v1.1.4+):** ISO-8601 **UTC**. **v1.1.6:** mit **Millisekunden** (`YYYY-MM-DDThh:mm:ss.sssZ`), aus **Sync-Zeit (Sekunden)** plus **Offset aus `millis()`** seit letztem Sync. Ohne UTC bleibt der Wert `""`. **v1.1.7:** In **`WIFI_MODE_ORBIS`** wird **NTP** zuerst gegen den **Shopfloor-RPi** (`192.168.0.100`, **chrony**) versucht, danach Gateway und öffentliche Pools — siehe [rpi-chrony-ntp-server.md](../04-howto/rpi-chrony-ntp-server.md). **v1.1.5+:** Kein **NTPClient**; Zeit über **`WiFi.getTime()`** + **rohes UDP-NTP** zu Gateway/Öffentlich; **`gUtcEpochBase` + `millis()`** zwischen Syncs; alle 2 s **`WiFi.getTime()`** zur Driftkorrektur. **UDP-Port 123** ausgehend zur NTP-Ziel-IP beachten.
+**`timestamp` in State-Payloads (Sketch v1.1.4+):** ISO-8601 **UTC**. **v1.1.6:** mit **Millisekunden** (`YYYY-MM-DDThh:mm:ss.sssZ`), aus **Sync-Zeit (Sekunden)** plus **Offset aus `millis()`** seit letztem Sync. Ohne UTC bleibt der Wert `""`. **v1.1.7 / v1.1.14:** In **`WIFI_MODE_ORBIS`** **UDP-NTP zuerst** gegen den **Shopfloor-RPi** (`192.168.0.100`, **chrony**), danach Gateway/Pools; **`WiFi.getTime()`** nur Fallback — siehe [rpi-chrony-ntp-server.md](../04-howto/rpi-chrony-ntp-server.md). **v1.1.14:** Periodischer Refresh ORBIS ebenfalls über RPi-UDP (~60 s), nicht mehr blind `WiFi.getTime()` (kann falsche Epoch halten). **DAHEIM:** weiter `WiFi.getTime()` + UDP. **UDP-Port 123** ausgehend zur NTP-Ziel-IP beachten.
 
 **ORBIS / Firmennetz — leere `timestamp`:** Steht im Serial Monitor z. B. `WARN: keine UTC – timestamp leer (NTP: UDP 123 ausgehend?)`, sind **WLAN und MQTT** oft trotzdem in Ordnung; es scheitert nur die **UTC-Synchronisation**. Häufig: **`WiFi.getTime()`** liefert vom Access Point keine Zeit; **UDP 123** ausgehend ist zu **öffentlichen** NTP-Servern oder zum **Gateway** gesperrt; oder der **Router** antwortet nicht auf NTP.
 

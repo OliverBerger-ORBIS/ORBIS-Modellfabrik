@@ -1,7 +1,7 @@
 /*
  * Projekt: OSF Multi-Sensor – Arduino R4 WiFi
  * Sketch: OSF_MultiSensor_R4WiFi
- * Version: 1.1.13  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
+ * Version: 1.1.14  (SemVer: MAJOR.MINOR.PATCH – bei Deployment anpassen)
  * Hardware: Arduino Uno R4 WiFi, MPU-6050 (I2C), SW-420 (D3), DHT11 (D2), Flamme (A2), MQ-2 Gas (A3), 4-Ch Relais, 12V Ampel
  * Quelle: docs/05-hardware/arduino-r4-multisensor.md
  *
@@ -13,11 +13,13 @@
  * - Periodic telemetry publishes for correlation with shopfloor events (keep immediate state changes).
  * Release notes (v1.1.13):
  * - Sensor pin remap for cleaner wiring: SW-420 D3, DHT11 D2, Flame A2, MQ-2 A3.
+ * Release notes (v1.1.14):
+ * - ORBIS NTP: prefer Shopfloor-RPi UDP chrony first; do not let WiFi.getTime() lock a wrong epoch.
  *
  * Sensoren: MPU-6050 + SW-420 + DHT11 + Flammensensor + MQ-2 Gas. Gemeinsame Ampel (OR-Logik).
  * USE_MQTT: 0 = nur Serial, 1 = MQTT über WiFi
  */
-#define SKETCH_VERSION "1.1.13"
+#define SKETCH_VERSION "1.1.14"
 #define USE_MQTT 1
 
 /** Relais-Logik: 1 = aktiv-niedrig (LOW=ein, typisch). 0 = aktiv-hoch (HIGH=ein, manche Module). */
@@ -106,8 +108,13 @@ const unsigned long MQTT_GAS_TELEMETRY_INTERVAL = 2000;    // raw + level time s
 
 unsigned long lastReconnectAttempt = 0;
 const unsigned long RECONNECT_INTERVAL = 5000;
-unsigned long lastNtpUpdate = 0;  // WiFi-Zeit neu abfragen (Modem), drift mit UTC-Basis korrigieren
+unsigned long lastNtpUpdate = 0;  // periodische UTC-Korrektur (ORBIS: RPi UDP; DAHEIM: WiFi.getTime)
+#if WIFI_MODE == WIFI_MODE_ORBIS
+/** ORBIS: UDP-NTP zum RPi – nicht alle 2 s hammern. */
+const unsigned long NTP_UPDATE_INTERVAL = 60000;
+#else
 const unsigned long NTP_UPDATE_INTERVAL = 2000;
+#endif
 /** Letzter bekannter UTC-Epoch (s) zum Zeitpunkt gMillisAtUtcBase (WiFi.getTime oder UDP-NTP). */
 unsigned long gUtcEpochBase = 0;
 unsigned long gMillisAtUtcBase = 0;
@@ -331,9 +338,50 @@ unsigned long ntpRawUnixFromServer(const IPAddress& server) {
   return 0;
 }
 
-/** Modem-Zeit + UDP-NTP (Gateway, öffentliche IPs). Kein NTPClient – WiFiS3 inkompatibel in der Praxis. */
+/**
+ * UTC am Boot.
+ * ORBIS: zuerst UDP-NTP (RPi chrony) – WiFi.getTime() kann eine plausible, aber falsche Epoch liefern
+ * und würde sonst den RPi-Pfad nie erreichen bzw. periodisch überschreiben.
+ * DAHEIM: weiterhin getTime zuerst, dann UDP.
+ */
 bool syncNetworkTimeAtBoot() {
   delay(1000);
+
+#if WIFI_MODE == WIFI_MODE_ORBIS
+  /** ORBIS: Shopfloor-RPi chrony first (same host as MQTT_BROKER), then gateway + public pools. */
+  IPAddress servers[] = {
+    IPAddress(192, 168, 0, 100),
+    gatewayIP,
+    IPAddress(162, 159, 200, 123),
+    IPAddress(216, 239, 35, 12),
+    IPAddress(129, 6, 15, 29)
+  };
+  const int NTP_SERVER_COUNT = 5;
+  Serial.println(F("Zeit: UDP-NTP (ORBIS RPi first)..."));
+  for (int s = 0; s < NTP_SERVER_COUNT; s++) {
+    for (int attempt = 0; attempt < 4; attempt++) {
+      unsigned long e = ntpRawUnixFromServer(servers[s]);
+      if (e > NTP_SYNC_THRESHOLD) {
+        setUtcBaseFromEpoch(e);
+        Serial.print(F("Zeit OK UDP idx="));
+        Serial.println(s);
+        return true;
+      }
+      delay(250);
+    }
+  }
+  Serial.println(F("Zeit: WiFi.getTime fallback (ORBIS)..."));
+  for (int i = 0; i < 10; i++) {
+    unsigned long wt = WiFi.getTime();
+    if (wt > NTP_SYNC_THRESHOLD) {
+      setUtcBaseFromEpoch(wt);
+      Serial.print(F("Zeit OK WiFi.getTime "));
+      Serial.println(wt);
+      return true;
+    }
+    delay(400);
+  }
+#else
   Serial.println(F("Zeit: WiFi.getTime..."));
   for (int i = 0; i < 35; i++) {
     unsigned long wt = WiFi.getTime();
@@ -346,17 +394,6 @@ bool syncNetworkTimeAtBoot() {
     delay(400);
   }
 
-#if WIFI_MODE == WIFI_MODE_ORBIS
-  /** ORBIS: Shopfloor-RPi chrony NTP first (same host as MQTT_BROKER), then gateway + public pools. */
-  IPAddress servers[] = {
-    IPAddress(192, 168, 0, 100),
-    gatewayIP,
-    IPAddress(162, 159, 200, 123),
-    IPAddress(216, 239, 35, 12),
-    IPAddress(129, 6, 15, 29)
-  };
-  const int NTP_SERVER_COUNT = 5;
-#else
   IPAddress servers[] = {
     gatewayIP,
     IPAddress(162, 159, 200, 123),
@@ -364,7 +401,6 @@ bool syncNetworkTimeAtBoot() {
     IPAddress(129, 6, 15, 29)
   };
   const int NTP_SERVER_COUNT = 4;
-#endif
   Serial.println(F("Zeit: UDP-NTP..."));
   for (int s = 0; s < NTP_SERVER_COUNT; s++) {
     for (int attempt = 0; attempt < 4; attempt++) {
@@ -378,16 +414,37 @@ bool syncNetworkTimeAtBoot() {
       delay(250);
     }
   }
+#endif
   Serial.println(F("WARN: keine UTC – timestamp leer (NTP: UDP 123 ausgehend?)."));
   return false;
 }
 
 void refreshUtcPeriodic() {
   if (WiFi.status() != WL_CONNECTED) return;
+#if WIFI_MODE == WIFI_MODE_ORBIS
+  /** Prefer RPi chrony; do not overwrite a good base with a wrong WiFi.getTime(). */
+  unsigned long e = ntpRawUnixFromServer(IPAddress(192, 168, 0, 100));
+  if (e > NTP_SYNC_THRESHOLD) {
+    setUtcBaseFromEpoch(e);
+    return;
+  }
+  e = ntpRawUnixFromServer(gatewayIP);
+  if (e > NTP_SYNC_THRESHOLD) {
+    setUtcBaseFromEpoch(e);
+    return;
+  }
+  if (gUtcEpochBase == 0) {
+    unsigned long wt = WiFi.getTime();
+    if (wt > NTP_SYNC_THRESHOLD) {
+      setUtcBaseFromEpoch(wt);
+    }
+  }
+#else
   unsigned long wt = WiFi.getTime();
   if (wt > NTP_SYNC_THRESHOLD) {
     setUtcBaseFromEpoch(wt);
   }
+#endif
 }
 
 unsigned long resolveUtcEpochForPayload() {
@@ -398,11 +455,6 @@ unsigned long resolveUtcEpochForPayload() {
   unsigned long now = millis();
   if (now - lastWifiTimeAttemptMs > 5000UL) {
     lastWifiTimeAttemptMs = now;
-    unsigned long wt = WiFi.getTime();
-    if (wt > NTP_SYNC_THRESHOLD) {
-      setUtcBaseFromEpoch(wt);
-      return wt;
-    }
     unsigned long u;
 #if WIFI_MODE == WIFI_MODE_ORBIS
     u = ntpRawUnixFromServer(IPAddress(192, 168, 0, 100));
@@ -410,12 +462,28 @@ unsigned long resolveUtcEpochForPayload() {
       setUtcBaseFromEpoch(u);
       return u;
     }
-#endif
     u = ntpRawUnixFromServer(gatewayIP);
     if (u > NTP_SYNC_THRESHOLD) {
       setUtcBaseFromEpoch(u);
       return u;
     }
+    unsigned long wt = WiFi.getTime();
+    if (wt > NTP_SYNC_THRESHOLD) {
+      setUtcBaseFromEpoch(wt);
+      return wt;
+    }
+#else
+    unsigned long wt = WiFi.getTime();
+    if (wt > NTP_SYNC_THRESHOLD) {
+      setUtcBaseFromEpoch(wt);
+      return wt;
+    }
+    u = ntpRawUnixFromServer(gatewayIP);
+    if (u > NTP_SYNC_THRESHOLD) {
+      setUtcBaseFromEpoch(u);
+      return u;
+    }
+#endif
   }
   return 0;
 }

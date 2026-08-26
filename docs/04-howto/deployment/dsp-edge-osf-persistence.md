@@ -129,9 +129,28 @@ Apple Silicon: Image `linux/amd64` (Rosetta). Schema: DB `osf_edge` (`db/mssql/`
 
 Datenfluss Ziel: **MQTT `.100` → Persistence → SQL Server → Grafana**.
 
+### Deploy auf der VE (26.08.2026)
+
+Voraussetzung: DB/`osf_edge` + App-User angelegt (siehe Skripte / einmalig sa).
+
+```bash
+# auf dem Mac: Tree ohne data/node_modules packen, nach ~/osf-edge-persistence auf .201 kopieren
+# auf der VE:
+cd ~/osf-edge-persistence
+cp env.dsp .env
+# macOS-Artefakte entfernen (sonst Grafana-Provisioning bricht):
+find . -name '._*' -delete
+docker compose -f docker-compose.dsp.yml up -d --build
+```
+
+- Grafana: `http://192.168.0.201:3000` (Default-Home `osf-home`)
+- SQL vom Container: `host.docker.internal:1433` → Host-Port von `rittal_sqlserver`
+- MQTT: `192.168.0.100:1883`, `PERSISTENCE_MODE=live`
+- Kein lokaler SQL-Container auf der VE
+
 ---
 
 ## Phasen
 
-1. **Jetzt (Option B):** Mac localhost/Docker SQL Server — [edge-persistence-dev-mssql.md](./edge-persistence-dev-mssql.md).  
-2. **`.201`:** Persistence + Grafana deployen; an bestehende SQL-Instanz `:1433` (OSF-DB); kein Mac-Tunnel mehr.
+1. **Dev (Option B):** Mac localhost/Docker SQL Server — [edge-persistence-dev-mssql.md](./edge-persistence-dev-mssql.md).  
+2. **`.201` (live):** Persistence + Grafana via `docker-compose.dsp.yml` — erledigt 26.08.2026.

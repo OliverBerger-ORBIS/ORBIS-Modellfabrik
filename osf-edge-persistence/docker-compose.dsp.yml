@@ -1,32 +1,11 @@
-services:
-  # Dev/local SQL Server (same dialect as DSP VE .201 / rittal_sqlserver).
-  # Apple Silicon: linux/amd64 via Docker Desktop Rosetta.
-  mssql:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    platform: linux/amd64
-    container_name: osf-edge-mssql
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
-      MSSQL_PID: Developer
-    ports:
-      - "${MSSQL_EXTERNAL_PORT:-1433}:1433"
-    volumes:
-      - ./data/mssql:/var/opt/mssql
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q \"SELECT 1\" || exit 1",
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 20
-      start_period: 30s
+# DSP-Edge VE .201 — Grafana + Persistence only (SQL = existing rittal_sqlserver).
+# Usage on the VE:
+#   cp env.dsp .env
+#   docker compose -f docker-compose.dsp.yml up -d --build
+#
+# Does NOT start a local SQL container. Reach host-published :1433 via host.docker.internal.
 
+services:
   grafana:
     image: grafana/grafana:latest
     container_name: osf-edge-grafana
@@ -38,24 +17,20 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
-      # Local/demo: no login form (anonymous Admin). Starred needs a real user — use Home default instead.
       GF_AUTH_DISABLE_LOGIN_FORM: "true"
       GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/dashboards/home.json
       MSSQL_DB: ${MSSQL_DB:-osf_edge}
       MSSQL_USER: ${MSSQL_USER:-osf_edge}
-      MSSQL_PASSWORD: ${MSSQL_PASSWORD:-OsfEdge_App9#}
+      MSSQL_PASSWORD: ${MSSQL_PASSWORD}
       MSSQL_GRAFANA_URL: ${MSSQL_GRAFANA_URL:-host.docker.internal:1433}
     ports:
       - "${GRAFANA_EXTERNAL_PORT:-3000}:3000"
     volumes:
-      - ./data/grafana:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning
-      - ./grafana/dashboards:/etc/grafana/dashboards
+      - osf_grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/etc/grafana/dashboards:ro
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    depends_on:
-      mssql:
-        condition: service_healthy
 
   persistence-service:
     build:
@@ -70,11 +45,11 @@ services:
       MQTT_USERNAME: ${MQTT_USERNAME}
       MQTT_PASSWORD: ${MQTT_PASSWORD}
       MQTT_CLIENT_ID: ${MQTT_CLIENT_ID}
-      MSSQL_HOST: ${MSSQL_HOST:-mssql}
+      MSSQL_HOST: ${MSSQL_HOST:-host.docker.internal}
       MSSQL_PORT: ${MSSQL_PORT:-1433}
       MSSQL_DB: ${MSSQL_DB:-osf_edge}
       MSSQL_USER: ${MSSQL_USER:-osf_edge}
-      MSSQL_PASSWORD: ${MSSQL_PASSWORD:-OsfEdge_App9#}
+      MSSQL_PASSWORD: ${MSSQL_PASSWORD}
       MSSQL_ENCRYPT: ${MSSQL_ENCRYPT:-false}
       MSSQL_TRUST_SERVER_CERTIFICATE: ${MSSQL_TRUST_SERVER_CERTIFICATE:-true}
       RAW_RETENTION_DAYS: ${RAW_RETENTION_DAYS}
@@ -83,9 +58,9 @@ services:
       ENABLE_RAW_MESSAGES: ${ENABLE_RAW_MESSAGES}
       ENABLE_CAMERA_TOPIC: ${ENABLE_CAMERA_TOPIC}
       LOG_LEVEL: ${LOG_LEVEL}
-      PERSISTENCE_MODE: ${PERSISTENCE_MODE:-replay}
+      PERSISTENCE_MODE: ${PERSISTENCE_MODE:-live}
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    depends_on:
-      mssql:
-        condition: service_healthy
+
+volumes:
+  osf_grafana_data:

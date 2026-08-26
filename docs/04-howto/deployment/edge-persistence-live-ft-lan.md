@@ -92,6 +92,6 @@ Ohne Bridge kommt NFC weiter aus APS-Payloads (RGB_NFC / FTS `loadId` / CCU).
 
 ---
 
-## 4) DSP-Edge (nächster Schritt, nicht RPi)
+## 4) DSP-Edge (Zielbetrieb, 26.08.2026)
 
-Persistence + Grafana auf **`.201`** (amd64); DB an SQL Server **`.201:1433`**. Grafana: `http://192.168.0.201:3000`. Architektur und VE-Inventar: [dsp-edge-osf-persistence.md](./dsp-edge-osf-persistence.md).
+Persistence + Grafana laufen auf **`.201`** (`docker-compose.dsp.yml` / `env.dsp`). DB = `rittal_sqlserver` **`:1433`** / `osf_edge`. Grafana: `http://192.168.0.201:3000`. Mac-MQTT-Tunnel nur noch Fallback, wenn die VE offline ist. Details: [dsp-edge-osf-persistence.md](./dsp-edge-osf-persistence.md).
