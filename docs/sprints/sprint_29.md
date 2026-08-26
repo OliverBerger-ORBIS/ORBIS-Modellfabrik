@@ -70,8 +70,9 @@
 - [x] **Intake-Bridge auf RPi deployen (25.08.2026):** Image `orbis-workpiece-intake-bridge:1.0.0` geladen; Service in Pi-`docker-compose-prod.yml` ergänzt (**CCU `v1.3.0-osf.4` / OSF-UI `1.2.2` unverändert**). Logs: subscribed `module/v1/ff/NodeRed/SVR4H73275/state`. Verifikation Topic `osf/workpiece/intake` am DPS-NFC. How-to: [workpiece-intake-bridge-rpi.md](../04-howto/deployment/workpiece-intake-bridge-rpi.md). *(Sprint 28: Image gebaut)*
 - [x] **Intake wartet auf Farbe (25.08.2026):** kein Publish bei fehlendem/`UNKNOWN` `productRaw`; erst wenn `metadata.type` / `workpiece.type` / `loads[0].type` gesetzt. Tests 8/8; Image neu auf RPi (`--no-deps`). Live verifiziert: `productRaw":"BLUE"` NFC `59a42cb15f9e1f` (kein UNKNOWN mehr).
 - [x] **Intake ohne orderId (25.08.2026):** `orderId` aus Vertrag/Code entfernt (DR-30, Partner-How-to); Storage-Order kommt später über APS, Korrelation über NFC. Redeploy Bridge.
-- [x] **OSF-UI Intake als T&T-Einstieg ([DR-30](../03-decision-records/30-workpiece-intake-mqtt-facade.md) Nachtrag 26.08.):** Subscribe + History-Bootstrap; APS-Intake nicht trackable; Live + RPi **1.3.0**. (3) Recorder/Doku: Intake nicht excluden. (4) Storage-Logs gepatcht (`patch_session_intake_events.py`, +38); Rest behalten (Startup / 2-AGV / synthetic).
+- [x] **OSF-UI Intake als T&T-Einstieg ([DR-30](../03-decision-records/30-workpiece-intake-mqtt-facade.md) Nachtrag 26.08.):** Subscribe + Live-Bootstrap; APS-Intake nicht trackable; Live + RPi **1.3.0**. (3) Recorder/Doku: Intake nicht excluden. (4) Storage-Logs gepatcht (`patch_session_intake_events.py`, +38); Rest behalten (Startup / 2-AGV / synthetic).
 - [x] **T&T NFC-Kacheln (26.08.2026):** Grid neueste links oben; ohne Farbe alle; 2 Zeilen + Y-Scroll; Events in Zeile 1; Ort ohne Serial. **1.3.1** RPi-Deploy.
+- [x] **Intake nicht im Browser-Archiv (26.08.2026):** `osf/workpiece/intake` → `NO_PERSIST_TOPICS`; kein `getHistory`-Catch-up in T&T (DR-28/30). **1.3.2** lokal; RPi-Deploy wenn wieder FT-LAN.
 - *Partner-Hinweis an Daniel:* [workpiece-intake-event-partner.md](../04-howto/integrations/workpiece-intake-event-partner.md)
 
 ### Integration & Tests

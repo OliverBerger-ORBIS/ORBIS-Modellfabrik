@@ -366,6 +366,10 @@ describe('MessagePersistenceService', () => {
       expect(service.shouldPersist('/j1/txt/1/i/cam')).toBe(false);
     });
 
+    it('should return false for workpiece intake (no browser genealogy archive)', () => {
+      expect(service.shouldPersist('osf/workpiece/intake')).toBe(false);
+    });
+
     it('should return true for quality_check topic (last image after reload)', () => {
       expect(service.shouldPersist('/j1/txt/1/i/quality_check')).toBe(true);
     });

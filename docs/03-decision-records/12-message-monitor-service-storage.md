@@ -75,10 +75,10 @@ const retention = messageMonitor.getRetention('ccu/state/stock');
 Topics, die **nicht** in localStorage persistiert werden:
 
 ```typescript
-const NO_PERSIST_TOPICS = ['/j1/txt/1/i/cam'];
+const NO_PERSIST_TOPICS = ['/j1/txt/1/i/cam', 'osf/workpiece/intake'];
 ```
 
-**Grund:** Camera-Daten sind zu groß für localStorage (mehrere MB pro Frame).
+**Grund:** Camera-Daten sind zu groß für localStorage. **`osf/workpiece/intake`:** Ereignisfolge für T&T — darf Genealogie nicht aus dem Browser-Archiv wiederaufbauen (DR-28/DR-30; Persistenz = Edge).
 
 ### Persistierungs-Strategie
 
@@ -122,7 +122,7 @@ const NO_PERSIST_TOPICS = ['/j1/txt/1/i/cam'];
 const DEFAULT_RETENTION = 50;
 const STORAGE_SIZE_LIMIT = 5 * 1024 * 1024; // 5MB
 const STORAGE_KEY_PREFIX = 'omf3.message-monitor';
-const NO_PERSIST_TOPICS = ['/j1/txt/1/i/cam'];
+const NO_PERSIST_TOPICS = ['/j1/txt/1/i/cam', 'osf/workpiece/intake'];
 const RETENTION_CONFIG: Record<string, number> = {
   '/j1/txt/1/i/cam': 10,
   '/j1/txt/1/i/bme680': 100,

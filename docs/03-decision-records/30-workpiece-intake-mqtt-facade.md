@@ -22,7 +22,9 @@
 
 ## Nachtrag 26.08.2026 — Intake als kanonischer Einstieg (UI + Replay)
 
-**Entscheidung:** Replay und fehlende historische Zeilen dürfen **keine Dual-Pfad-Architektur** in OSF-UI erzwingen. Die Bridge bleibt der Publisher; **OSF-UI subscribed** `osf/workpiece/intake` als Einstieg für Track&Trace (History-Bootstrap). APS-`INPUT_RGB`/`RGB_NFC`-Sonderlogik in T&T wird **abgebaut**, nicht parallel gepflegt.
+**Entscheidung:** Replay und fehlende historische Zeilen dürfen **keine Dual-Pfad-Architektur** in OSF-UI erzwingen. Die Bridge bleibt der Publisher; **OSF-UI subscribed** `osf/workpiece/intake` als Einstieg für Track&Trace (Live-Bootstrap; kein Browser-Archiv). APS-`INPUT_RGB`/`RGB_NFC`-Sonderlogik in T&T wird **abgebaut**, nicht parallel gepflegt.
+
+**Browser:** Intake wird **nicht** im MessageMonitor-localStorage archiviert und **nicht** per `getHistory`-Catch-up in T&T zurückgespielt (DR-28: Genealogie session-/RAM-scoped; Langzeit = Edge). Nur Live-MQTT (plus ggf. letzter In-Memory-Wert der offenen Session).
 
 **Reihenfolge:**
 1. Dieses DR (Nachtrag) + Sprint-Task scharf formulieren.

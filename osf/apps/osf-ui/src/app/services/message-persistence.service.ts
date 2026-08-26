@@ -4,8 +4,10 @@ import type { MonitoredMessage } from './message-monitor.service';
 const STORAGE_KEY_PREFIX = 'OSF.message-monitor';
 const STORAGE_SIZE_LIMIT = 5 * 1024 * 1024; // 5MB
 
-// Topics that should NOT be persisted (only high-frequency live streams — e.g. DPS cam ~1/s)
-const NO_PERSIST_TOPICS = ['/j1/txt/1/i/cam'];
+// Topics that should NOT be persisted:
+// - DPS cam: high-frequency / large payloads
+// - Workpiece intake: event stream (DR-28 / DR-30) — must not rebuild T&T genealogy from browser archive
+const NO_PERSIST_TOPICS = ['/j1/txt/1/i/cam', 'osf/workpiece/intake'];
 
 /** True if topic should never be written to localStorage (explicit list only — topic names differ per station). */
 function isExcludedFromPersistence(topic: string): boolean {
