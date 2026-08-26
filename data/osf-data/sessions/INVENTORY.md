@@ -14,6 +14,8 @@ Abgleich: `python scripts/check_session_inventory.py`
 
 **Geplant (DR-30 Nachtrag 26.08.2026):** ~~Alle Sessions mit **Storage** um `osf/workpiece/intake`-Zeilen anreichern.~~ **Erledigt 26.08.2026:** `python scripts/patch_session_intake_events.py` (+38 Intake-Zeilen). Ohne Storage-Intake belassen: `startup-clean` (Startup-Referenz), `production-wr-agv2-…` (2-AGV Interim, kein DPS-RGB_NFC), `synthetic-arduino-sensors` (Sensor-only) — weiterhin Mehrwert, **nicht gelöscht**.
 
+**Intake-Vollständigkeit:** Patch erzeugt **eine Intake-Zeile pro NFC**, nur wenn im Log ein DPS-`RGB_NFC` FINISHED **mit Farbe** vorkommt (wie die Bridge). Manche `storage-production-ml-*` (04.08.) haben im Recording nur **2** komplette DPS-Zyklen → nur 2 Intakes (3. WP: z. B. `INPUT_RGB` gestartet, kein NFC+Farbe). Für **3 Intakes** die Aug-07-`ml-*`-Sessions nutzen (z. B. `ml-wbr_20260807_125133`).
+
 ---
 
 ## Schnellübersicht
@@ -32,10 +34,10 @@ Abgleich: `python scripts/check_session_inventory.py`
 | ml-rbw-blue-nok_20260807_135854 | | ✓ | ✓ | ✓ | 1 | Multi-Load R→B→W; BLUE Quality-Fail |
 | ml-wrb-chrg-blue-nok_20260807_142119 | | ✓ | ✓ | ✓ | 1 | Multi-Load W→R→B + Charge; BLUE Quality-Fail |
 | storage-production-ml-wrb_20260804_114227 | | ✓ | ✓ | ✓ | 1 | Multi-Load W→R→B, Pass; **unvollständig für Mfg:** kaum DRILL/MILL/AIQS `/state` — Mapping-Abnahme → `ml-wbr` |
-| storage-production-ml-wbr_20260804_115849 | | ✓ | ✓ | ✓ | 1 | Multi-Load W→B→R, 3 Loads, Pass; **bevorzugte** Mapping-/Event-Abnahme (volle Modul-States) |
-| storage-production-ml-brw_20260804_121835 | | ✓ | ✓ | ✓ | 1 | Multi-Load B→R→W; AGV laden zwischendurch; RED Quality-Fail |
-| storage-production-ml-bwr_20260804_130016 | | ✓ | ✓ | ✓ | 1 | **Störfall (behalten):** DPS→FTS-Befehl kam nicht an, DPS blockiert; Prod stoppt nahe AIQS |
-| storage-production-ml-bwr_20260804_131822 | | ✓ | ✓ | ✓ | 1 | bwr-Wiederholung OK; erster Multi-Load nur B+W, danach 3 Loads |
+| storage-production-ml-wbr_20260804_115849 | | ✓ | ✓ | ✓ | 1 | Multi-Load W→B→R; **nur 2 Intakes** (3. DPS-NFC fehlt im Log); Mapping-/Modul-States; T&T-3er → `ml-wbr_20260807` |
+| storage-production-ml-brw_20260804_121835 | | ✓ | ✓ | ✓ | 1 | Multi-Load B→R→W; **nur 2 Intakes**; AGV laden; RED Quality-Fail |
+| storage-production-ml-bwr_20260804_130016 | | ✓ | ✓ | ✓ | 1 | **Störfall (behalten):** DPS→FTS-Befehl kam nicht an, DPS blockiert; Prod stoppt nahe AIQS; 3 Intakes |
+| storage-production-ml-bwr_20260804_131822 | | ✓ | ✓ | ✓ | 1 | bwr-Wiederholung; **nur 2 Intakes** (B+R), danach Rest ohne 3. DPS-NFC |
 | storage-production-ml-rrr_20260804_133245 | | ✓ | ✓ | ✓ | 1 | 3× RED Multi-Load; **2. RED** Pos2 Quality-Fail (CRACK, `f6caa206181682`) |
 | storage-production-ml-bbb_20260804_134700 | | ✓ | ✓ | ✓ | 1 | 3× BLUE Multi-Load; **2. BLUE** Pos2 Quality-Fail (MIPO2, `b7b84ce7ad920f`); DRILL+MILL |
 | production-wr-agv2-b-agv1-clean_20260513_135600 | | ✓ | | | 2 | **2-AGV-Referenz (Interim):** osf.4 WR+B; T&T Replay-Abnahme 10.08. OK (beide AGVs). NFC ggf. wiederverwendet — Neuaufnahme blockiert (AGV-2 → FT) |

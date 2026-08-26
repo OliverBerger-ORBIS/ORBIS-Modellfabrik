@@ -70,7 +70,7 @@ describe('AppComponent', () => {
         RoleService,
         ConnectionService,
         MessageMonitorService,
-        { provide: WorkpieceHistoryService, useValue: { initialize: jest.fn() } },
+        { provide: WorkpieceHistoryService, useValue: { initialize: jest.fn(), clear: jest.fn() } },
       ],
     }).compileComponents();
   });
@@ -92,5 +92,25 @@ describe('AppComponent', () => {
     // Navigation items are now dynamic and i18n, so we just check that nav exists
     const navLinks = Array.from(compiled.querySelectorAll('nav a'));
     expect(navLinks.length).toBeGreaterThan(0);
+  });
+
+  it('should re-initialize Track & Trace after soft refresh (non-mock)', () => {
+    const history = TestBed.inject(WorkpieceHistoryService) as unknown as {
+      clear: jest.Mock;
+      initialize: jest.Mock;
+    };
+    const monitor = TestBed.inject(MessageMonitorService);
+    jest.spyOn(monitor, 'clearAll').mockImplementation(() => undefined);
+    const connection = TestBed.inject(ConnectionService);
+    jest.spyOn(connection, 'resubscribeRequiredTopics').mockImplementation(() => undefined);
+
+    const env = TestBed.inject(EnvironmentService);
+    env.setEnvironment('replay');
+
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.componentInstance.refresh();
+
+    expect(history.clear).toHaveBeenCalledWith('replay');
+    expect(history.initialize).toHaveBeenCalledWith('replay');
   });
 });

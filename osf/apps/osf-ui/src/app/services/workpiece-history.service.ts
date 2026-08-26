@@ -559,7 +559,17 @@ export class WorkpieceHistoryService implements OnDestroy {
       });
 
     // Workpiece intake facade (Bridge) — T&T bootstrap (DR-30).
-    // Live only: do NOT replay MessageMonitor getHistory / localStorage (DR-28 — no browser genealogy).
+    // Catch-up from MessageMonitor RAM buffer only (topic is NO_PERSIST — DR-28, no browser genealogy).
+    for (const msg of this.messageMonitor.getHistory(WORKPIECE_INTAKE_TOPIC)) {
+      if (!msg?.valid || msg.payload == null) {
+        continue;
+      }
+      try {
+        this.ingestWorkpieceIntake(environmentKey, msg.payload);
+      } catch (error) {
+        console.error('[WorkpieceHistoryService] Buffer workpiece intake error:', error);
+      }
+    }
     const workpieceIntakeSubscription = this.messageMonitor
       .getLastMessage(WORKPIECE_INTAKE_TOPIC)
       .subscribe((msg) => {
