@@ -44,6 +44,8 @@ import { AgvRouteService } from '../services/agv-route.service';
 import { ICONS } from '../shared/icons/icon.registry';
 import { isOsfConsoleDebugEnabled } from '../utils/osf-console-debug';
 import { buildFtsPreviewPositionsFromStates, type FtsPreviewPositionInput } from '../utils/build-fts-preview-positions';
+import { countModuleMessagesForSerial } from '../utils/count-module-messages';
+import { extractHbwStockColumn, extractHbwStockRow } from '../utils/hbw-stock-metadata';
 import type { FtsPositionItem } from '../components/shopfloor-preview/shopfloor-preview.component';
 
 // DPS/AIQS Serial Numbers
@@ -2288,53 +2290,11 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
    */
   private getModuleMessageCount(serialNumber: string): number {
     try {
-      const allTopics = this.messageMonitor.getTopics();
-      let count = 0;
-
-      // Patterns for module topics:
-      // - module/v1/ff/<serial>/...
-      // - module/v1/ff/NodeRed/<serial>/...
-      // - module/<serial>/...
-      // - fts/v1/ff/<serial>/... (for FTS)
-      // - fts/<serial>/... (for FTS)
-
-      allTopics.forEach((topic) => {
-        // Module topics
-        if (topic.startsWith('module/')) {
-          const parts = topic.split('/');
-          // Check for NodeRed pattern: module/v1/ff/NodeRed/<serial>/...
-          if (parts.length >= 5 && parts[3] === 'NodeRed' && parts[4] === serialNumber) {
-            const history = this.messageMonitor.getHistory(topic);
-            count += history.length;
-          }
-          // Check for direct pattern: module/v1/ff/<serial>/...
-          else if (parts.length >= 4 && parts[1] === 'v1' && parts[2] === 'ff' && parts[3] === serialNumber) {
-            const history = this.messageMonitor.getHistory(topic);
-            count += history.length;
-          }
-          // Check for generic pattern: module/<serial>/...
-          else if (parts.length >= 2 && parts[1] === serialNumber) {
-            const history = this.messageMonitor.getHistory(topic);
-            count += history.length;
-          }
-        }
-        // FTS topics
-        else if (topic.startsWith('fts/')) {
-          const parts = topic.split('/');
-          // Check for pattern: fts/v1/ff/<serial>/...
-          if (parts.length >= 4 && parts[1] === 'v1' && parts[2] === 'ff' && parts[3] === serialNumber) {
-            const history = this.messageMonitor.getHistory(topic);
-            count += history.length;
-          }
-          // Check for generic pattern: fts/<serial>/...
-          else if (parts.length >= 2 && parts[1] === serialNumber) {
-            const history = this.messageMonitor.getHistory(topic);
-            count += history.length;
-          }
-        }
-      });
-
-      return count;
+      return countModuleMessagesForSerial(
+        serialNumber,
+        this.messageMonitor.getTopics(),
+        (topic) => this.messageMonitor.getHistory(topic).length
+      );
     } catch (error) {
       console.warn(`[ModuleTab] Failed to get message count for ${serialNumber}:`, error);
       return 0;
@@ -2821,30 +2781,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
    * Checks loads array for loadPosition matching current workpieceId
    */
   private extractStockRow(payload: any): string | number | undefined {
-    // First try metadata.row
-    if (payload.actionState?.metadata?.row !== undefined) {
-      return payload.actionState.metadata.row;
-    }
-    
-    // Try to extract from loads array based on workpieceId
-    const workpieceId = payload.actionState?.metadata?.workpieceId || payload.actionState?.metadata?.workpiece?.workpieceId;
-    if (workpieceId && payload.loads && Array.isArray(payload.loads)) {
-      const matchingLoad = payload.loads.find((l: any) => l.loadId === workpieceId && l.loadPosition);
-      if (matchingLoad?.loadPosition) {
-        // loadPosition is like "A1", "B2", etc. - extract first character (row)
-        return matchingLoad.loadPosition.charAt(0);
-      }
-    }
-    
-    // Fallback: try to parse from slot
-    if (payload.actionState?.metadata?.slot) {
-      const slot = String(payload.actionState.metadata.slot);
-      if (slot.length > 0) {
-        return slot.charAt(0);
-      }
-    }
-    
-    return undefined;
+    return extractHbwStockRow(payload);
   }
 
   /**
@@ -2852,33 +2789,7 @@ export class ShopfloorTabComponent implements OnInit, OnDestroy {
    * Checks loads array for loadPosition matching current workpieceId
    */
   private extractStockColumn(payload: any): string | number | undefined {
-    // First try metadata.column
-    if (payload.actionState?.metadata?.column !== undefined) {
-      return payload.actionState.metadata.column;
-    }
-    
-    // Try to extract from loads array based on workpieceId
-    const workpieceId = payload.actionState?.metadata?.workpieceId || payload.actionState?.metadata?.workpiece?.workpieceId;
-    if (workpieceId && payload.loads && Array.isArray(payload.loads)) {
-      const matchingLoad = payload.loads.find((l: any) => l.loadId === workpieceId && l.loadPosition);
-      if (matchingLoad?.loadPosition) {
-        // loadPosition is like "A1", "B2", etc. - extract rest (column)
-        const pos = matchingLoad.loadPosition;
-        if (pos.length > 1) {
-          return pos.substring(1);
-        }
-      }
-    }
-    
-    // Fallback: try to parse from slot
-    if (payload.actionState?.metadata?.slot) {
-      const slot = String(payload.actionState.metadata.slot);
-      if (slot.length > 1) {
-        return slot.substring(1);
-      }
-    }
-    
-    return undefined;
+    return extractHbwStockColumn(payload);
   }
 
   /**

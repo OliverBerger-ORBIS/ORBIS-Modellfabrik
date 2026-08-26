@@ -25,6 +25,15 @@ import {
   type FtsCommandAvailabilityInput,
   type OrderActive,
 } from '@osf/entities';
+import {
+  detectUnknownAgvSerialsFromTopics,
+  flattenFtsOrderGraphPath,
+  sameAgvRouteOverlayLayers,
+  type AgvMapRouteSegment,
+  type AgvRouteOverlayLayers,
+} from '../utils/agv-route-overlay.utils';
+
+export type { AgvMapRouteSegment, AgvRouteOverlayLayers } from '../utils/agv-route-overlay.utils';
 
 // FTS Types (from example app - will be moved to @osf/entities later)
 interface FtsBatteryState {
@@ -84,20 +93,6 @@ const FTS_SERIAL_FALLBACK = '5iO4';
  */
 const AGV_ROUTE_PLANNED_DASH = '3 14';
 
-/** Drawable AGV route segment (shopfloor preview + legend). */
-export interface AgvMapRouteSegment {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  stroke?: string;
-  strokeDasharray?: string;
-}
-
-export interface AgvRouteOverlayLayers {
-  planned: AgvMapRouteSegment[];
-  traveled: AgvMapRouteSegment[];
-}
 const CCU_SET_CHARGE_TOPIC = 'ccu/set/charge';
 const ftsStateTopic = (serial: string) => `fts/v1/ff/${serial}/state`;
 const ftsOrderTopic = (serial: string) => `fts/v1/ff/${serial}/order`;
@@ -432,36 +427,11 @@ export class AgvTabComponent implements OnInit, OnDestroy {
    * Concatenated graph node sequence for the full FTS order (BFS legs), for progress along the route.
    */
   private flattenOrderGraphPath(order: unknown): string[] | null {
-    if (!order || typeof order !== 'object') {
-      return null;
-    }
-    const nodes = (order as { nodes?: Array<{ id?: string }> }).nodes;
-    if (!Array.isArray(nodes) || nodes.length < 2) {
-      return null;
-    }
-    const ids = nodes.map((n) => n?.id).filter((id): id is string => Boolean(id));
-    if (ids.length < 2) {
-      return null;
-    }
-    const flat: string[] = [];
-    for (let i = 0; i < ids.length - 1; i += 1) {
-      const path = this.agvRouteService.findRoutePath(ids[i], ids[i + 1]);
-      if (!path || path.length < 2) {
-        continue;
-      }
-      if (flat.length === 0) {
-        flat.push(...path);
-      } else {
-        const join = this.canonicalNodeIdForRouteCompare(path[0]);
-        const tail = this.canonicalNodeIdForRouteCompare(flat[flat.length - 1]);
-        if (join === tail) {
-          flat.push(...path.slice(1));
-        } else {
-          flat.push(...path);
-        }
-      }
-    }
-    return flat.length >= 2 ? flat : null;
+    return flattenFtsOrderGraphPath(
+      order,
+      (start, target) => this.agvRouteService.findRoutePath(start, target),
+      (id) => this.canonicalNodeIdForRouteCompare(id)
+    );
   }
 
   private firstFlatIndexOnOrderPath(flat: string[], nodeId: string): number {
@@ -521,28 +491,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   }
 
   private sameAgvRouteLayers(a: AgvRouteOverlayLayers, b: AgvRouteOverlayLayers): boolean {
-    return this.sameStyledSegmentList(a.planned, b.planned) && this.sameStyledSegmentList(a.traveled, b.traveled);
-  }
-
-  private sameStyledSegmentList(
-    a: AgvMapRouteSegment[],
-    b: AgvMapRouteSegment[]
-  ): boolean {
-    if (a.length !== b.length) {
-      return false;
-    }
-    return a.every((item, i) => {
-      const o = b[i];
-      return (
-        o &&
-        item.stroke === o.stroke &&
-        item.strokeDasharray === o.strokeDasharray &&
-        Math.abs(item.x1 - o.x1) < 0.5 &&
-        Math.abs(item.y1 - o.y1) < 0.5 &&
-        Math.abs(item.x2 - o.x2) < 0.5 &&
-        Math.abs(item.y2 - o.y2) < 0.5
-      );
-    });
+    return sameAgvRouteOverlayLayers(a, b);
   }
 
   /**
@@ -1148,18 +1097,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
 
   private detectUnknownAgvOptions(): AgvOption[] {
     const configured = new Set(this.mappingService.getAgvOptions().map((o) => o.serial));
-    const topics = this.messageMonitor.getTopics();
-    const serials = new Set<string>();
-    for (const topic of topics) {
-      const m = /^fts\/v1\/ff\/([^/]+)\/state$/.exec(topic);
-      if (m?.[1]) {
-        serials.add(m[1]);
-      }
-    }
-    return [...serials]
-      .filter((s) => !configured.has(s))
-      .sort()
-      .map((serial) => ({ serial, label: `AGV-? (${serial})` }));
+    return detectUnknownAgvSerialsFromTopics(this.messageMonitor.getTopics(), configured);
   }
 
   /** Helper: resolve lastNodeId to shopfloor coordinates */

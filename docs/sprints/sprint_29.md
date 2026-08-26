@@ -21,7 +21,7 @@
 | Stand | Datum | Branches | Functions | Lines | Statements | Gates (B/F/L/S) | Gate-Margin (B/F/L/S) |
 |--------|--------|----------|-----------|-------|------------|------------------|------------------------|
 | Sprint-Start (Baseline = Sprint-28-Ende) | 20.08.2026 | 49.8% | 61.3% | 66.5% | 65.5% | 42 / 52 / 58 / 58 | +7.8 / +9.3 / +8.5 / +7.5 pp |
-| Aktuell | 26.08.2026 | 51.7% | 63.3% | 68.3% | 67.2% | 48 / 59 / 64 / 63 | +3.7 / +4.3 / +4.3 / +4.2 pp |
+| Aktuell | 27.08.2026 | 54.8% | 66.8% | 72.1% | 71.0% | 48 / 59 / 64 / 63 | +6.8 / +7.8 / +8.1 / +8.0 pp |
 
 - **Messmethode:** `npm run test:coverage` (`--runInBand`; bei Nx-Daemon-Fehler: `npx nx reset` + `NX_DAEMON=false`) → `coverage/osf-ui/index.html`. Details: [test-coverage-status.md](../07-analysis/test-coverage-status.md).
 - **Top-3 Gaps:**
@@ -84,7 +84,7 @@
 - [x] **Coverage A – DSP/Use-Case Smokes (Tier A, 26.08.2026):** Render-Specs für `dsp-page`, DSP-Sections (Overview/Methodology/Use-Cases + Architecture mit Mock-Animation), 6 Base-Use-Case-Pages (UC-01/02/03/04/06/07). +23 Tests; B/F/L/S **51.8 / 65.3 / 70.6 / 69.5** (vorher 51.7 / 63.3 / 68.3 / 67.2).
 - [x] **Coverage B – Shopfloor/AGV Helper (Tier A, 26.08.2026):** Helper-Specs für Transport-Row Dock/Charge, `getModuleMessageCount`, HBW/DRILL-MQTT-Parser, `build-fts-preview-positions`, AGV Command-Availability, `handleFtsStateChange`, `detectUnknownAgvOptions`. +20 Tests; B/F/L/S **54.2 / 66.2 / 71.5 / 70.4** (vorher 51.8 / 65.3 / 70.6 / 69.5).
 - [x] **Coverage C – Shopfloor/AGV Interaktion (Tier A, 27.08.2026):** Selection/Modul-Wechsel (`selectModuleByType`, DPS→DRILL), Double-Click→Sidebar, `white_step3`-Fixture-Kette, AGV Serial-Wechsel + `sendNavigateToTarget`, Preview Highlight/Viewport/Follow-Scroll. +14 Tests; B/F/L/S **54.6 / 66.7 / 72.0 / 70.9** (vorher 54.2 / 66.2 / 71.5 / 70.4). **Tier B (Replay/Visual Gate):** manuell gem. [visual gate](../04-howto/osf-ui-shopfloor-route-agv-visual-gate.md) — nicht automatisierbar.
-- [ ] **Coverage D – Tab-Logik → Services (Tier A-Vorbereitung):** Testbare Teile aus Shopfloor/AGV in Services/Helper extrahieren; Specs am extrahierten Code (wartbarer als 3000-Zeilen-Tab-Specs).
+- [x] **Coverage D – Tab-Logik → Services (Tier A-Vorbereitung, 27.08.2026):** Extrahiert `count-module-messages`, `hbw-stock-metadata`, `agv-route-overlay.utils` (+ Specs); Tabs delegieren. +11 Tests; B/F/L/S **54.8 / 66.8 / 72.1 / 71.0** (leicht ↑, Schwerpunkt Wartbarkeit).
 - [ ] **dsp/correlation/info** E2E (BLOCKED bis Team-Setup aktiv): End-to-End-Nachweis (Topic-Eingang + UI-Kontext) dokumentieren. *(Ursprung: Sprint 18)*
 - [ ] **ccu/order/request** E2E (Ersatzauftrag nach Quality-Fail, BLOCKED bis Team-Setup aktiv): E2E-Nachweis mit klarer Ereigniskette dokumentieren. *(Ursprung: Sprint 18)*
 
