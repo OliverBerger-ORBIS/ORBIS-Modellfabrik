@@ -80,7 +80,11 @@
 
 - [x] **Coverage Gates + Shopfloor-Tests (24.08.2026):** Jest-Thresholds `48 / 59 / 64 / 63` (vorher `42 / 52 / 58 / 58`). Specs für Rotation/Layout-Service, Shopfloor-Preview (Zoom, Selection, Rotation, Route-Helfer, SVG), AGV-Viewport. Messung: B/F/L/S **51.2 / 62.8 / 67.8 / 66.7**; 1451 Tests passed. How-to + [test-coverage-status.md](../07-analysis/test-coverage-status.md).
 - [x] **Coverage Zwischenmessung (26.08.2026):** `npm run test:coverage` → B/F/L/S **51.7 / 63.3 / 68.3 / 67.2**; +13 Tests (Intake-RAM, Soft-Refresh/Resubscribe, Persistence-Cleanup). Gates unverändert (Margin ~3.7–4.3 pp).
-- [ ] **UI-Test-Framework (Fortsetzung):** von 2 Pilot-Tests zu stabiler Abdeckung kritischer Flows mit Tier A + Tier B Nachweisen ausbauen. *(Ursprung: Sprint 21)*
+- *UI-Test-Framework (Sprint 21 → 29):* [testing-strategy.md](../04-howto/testing/testing-strategy.md) Tier A/B; [test-framework-replay-comparison-2026-03.md](../07-analysis/test-framework-replay-comparison-2026-03.md). Stufen A–D = Fortsetzung des Framework-Ausbaus (nicht nur Coverage-Zahl, sondern kritische Flows absichern).*
+- [ ] **Coverage A – DSP/Use-Case Smokes (Tier A):** Render-Specs für `dsp-page`, DSP-Sections, Use-Case-Pages (derzeit ~0 % Lines); schnelle Smoke-Tests (`createComponent` + `detectChanges`). Ziel ~+1–2 pp Lines.
+- [ ] **Coverage B – Shopfloor/AGV Helper (Tier A):** Größte uncovered Blöcke in `shopfloor-tab` / `agv-tab` (Helper, private Methoden, Fehlerpfade) — ohne volle UI-Interaktion. Ziel ~+1–2 pp.
+- [ ] **Coverage C – Shopfloor/AGV Interaktion (Tier A + B):** Kern-Interaktionen (Selection, Modul-Wechsel, AGV-Viewport); **Tier B:** Replay-Abnahme mit Referenz-Session + [visual gate Shopfloor/AGV](../04-howto/osf-ui-shopfloor-route-agv-visual-gate.md). Ziel ~+2–4 pp.
+- [ ] **Coverage D – Tab-Logik → Services (Tier A-Vorbereitung):** Testbare Teile aus Shopfloor/AGV in Services/Helper extrahieren; Specs am extrahierten Code (wartbarer als 3000-Zeilen-Tab-Specs).
 - [ ] **dsp/correlation/info** E2E (BLOCKED bis Team-Setup aktiv): End-to-End-Nachweis (Topic-Eingang + UI-Kontext) dokumentieren. *(Ursprung: Sprint 18)*
 - [ ] **ccu/order/request** E2E (Ersatzauftrag nach Quality-Fail, BLOCKED bis Team-Setup aktiv): E2E-Nachweis mit klarer Ereigniskette dokumentieren. *(Ursprung: Sprint 18)*
 
