@@ -51,6 +51,7 @@ describe('AgvTabComponent', () => {
     lastNodeId: 'SVR4H73275',
     lastNodeSequenceId: 0,
     lastCode: 'DPS',
+    lastModuleSerialNumber: 'SVR4H73275',
     driving: false,
     paused: false,
     waitingForLoadHandling: false,
@@ -86,11 +87,13 @@ describe('AgvTabComponent', () => {
     const messageMonitorMock = {
       getLastMessage: jest.fn(() => of({ valid: false, payload: null })),
       getHistory: jest.fn(() => []),
+      getTopics: jest.fn(() => []),
       addMessage: jest.fn(),
     };
 
     const connectionServiceMock = {
       state$: new BehaviorSubject<'connected'>('connected'),
+      publish: jest.fn().mockResolvedValue(undefined),
     };
 
     const moduleNameServiceMock = {
@@ -144,6 +147,7 @@ describe('AgvTabComponent', () => {
       })),
       stopAnimation: jest.fn(),
       startAnimation: jest.fn(),
+      animateBetweenNodes: jest.fn(),
     };
 
     const languageServiceMock = {
@@ -948,6 +952,179 @@ describe('AgvTabComponent', () => {
     expect(pos).toEqual({ x: 10, y: 20 });
     const id = (component as unknown as { uuid: () => string }).uuid.call(component);
     expect(id).toMatch(/^[0-9a-f-]{36}$/i);
+  });
+
+  describe('FTS command availability (Coverage B)', () => {
+    function setLastFtsState(partial: Partial<typeof mockFtsState>): void {
+      (component as unknown as { lastFtsState: typeof mockFtsState | null }).lastFtsState = {
+        ...mockFtsState,
+        ...partial,
+      };
+    }
+
+    it('canOfferInitialDock when position unknown and idle', () => {
+      setLastFtsState({
+        lastNodeId: 'UNKNOWN',
+        lastModuleSerialNumber: 'UNKNOWN',
+        driving: false,
+        waitingForLoadHandling: false,
+      });
+      expect(component.canOfferInitialDock()).toBe(true);
+      expect(component.getDockInitialDisabledReason()).toBeNull();
+    });
+
+    it('getDockInitialDisabledReason when driving or position known', () => {
+      setLastFtsState({ lastNodeId: 'UNKNOWN', driving: true });
+      expect(component.canOfferInitialDock()).toBe(false);
+      expect(component.getDockInitialDisabledReason()).toBeTruthy();
+
+      setLastFtsState({
+        lastNodeId: 'SVR4H73275',
+        lastModuleSerialNumber: 'SVR4H73275',
+        driving: false,
+      });
+      expect(component.canOfferInitialDock()).toBe(false);
+      expect(component.getDockInitialDisabledReason()).toBeTruthy();
+    });
+
+    it('canChargeCommandClick toggles start vs stop charge rules', () => {
+      setLastFtsState({
+        lastNodeId: 'SVR4H73275',
+        driving: false,
+        waitingForLoadHandling: false,
+        batteryState: { ...mockFtsState.batteryState, charging: false },
+      });
+      expect(component.canChargeCommandClick()).toBe(true);
+      expect(component.getChargeCommandDisabledReason()).toBeNull();
+
+      setLastFtsState({
+        batteryState: { ...mockFtsState.batteryState, charging: true },
+      });
+      expect(component.canChargeCommandClick()).toBe(true);
+
+      setLastFtsState({
+        driving: true,
+        batteryState: { ...mockFtsState.batteryState, charging: false },
+      });
+      expect(component.canChargeCommandClick()).toBe(false);
+      expect(component.getChargeCommandDisabledReason()).toBeTruthy();
+    });
+
+    it('getDockInitialDisabledReason when no telemetry', () => {
+      (component as unknown as { lastFtsState: null }).lastFtsState = null;
+      expect(component.canOfferInitialDock()).toBe(false);
+      expect(component.getDockInitialDisabledReason()).toBeTruthy();
+    });
+  });
+
+  describe('FTS state animation handler (Coverage B)', () => {
+    it('handleFtsStateChange starts animation when node changes while driving', () => {
+      (component as unknown as { previousNodeId: string }).previousNodeId = 'NODE_A';
+      ftsAnimationService.getState.mockReturnValue({
+        isAnimating: false,
+        animatedPosition: null,
+        animationPath: [],
+        activeRouteSegments: [],
+      });
+      (component as unknown as { handleFtsStateChange: (s: typeof mockFtsState) => void }).handleFtsStateChange({
+        ...mockFtsState,
+        lastNodeId: 'NODE_B',
+        driving: true,
+      });
+      expect(ftsAnimationService.animateBetweenNodes).toHaveBeenCalledWith(
+        'NODE_A',
+        'NODE_B',
+        expect.objectContaining({ onAnimationComplete: expect.any(Function) })
+      );
+    });
+
+    it('handleFtsStateChange stops animation when driving ends during active path', () => {
+      ftsAnimationService.getState.mockReturnValue({
+        isAnimating: true,
+        animatedPosition: null,
+        animationPath: ['A', 'B', 'C'],
+        activeRouteSegments: [],
+      });
+      (component as unknown as { handleFtsStateChange: (s: typeof mockFtsState) => void }).handleFtsStateChange({
+        ...mockFtsState,
+        driving: false,
+      });
+      expect(ftsAnimationService.stopAnimation).toHaveBeenCalled();
+      expect(ftsAnimationService.animateBetweenNodes).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('unknown serial detection (Coverage B)', () => {
+    it('detectUnknownAgvOptions lists FTS state topics not in layout config', () => {
+      messageMonitor.getTopics.mockReturnValue([
+        'fts/v1/ff/5iO4/state',
+        'fts/v1/ff/leJ4/state',
+        'fts/v1/ff/stray/state',
+        'module/v1/ff/SVR4H73275/state',
+      ]);
+      const unknown = (
+        component as unknown as { detectUnknownAgvOptions: () => Array<{ serial: string; label: string }> }
+      ).detectUnknownAgvOptions.call(component);
+      expect(unknown.map((o) => o.serial)).toEqual(['stray']);
+      expect(unknown[0]?.label).toContain('stray');
+    });
+  });
+
+  describe('AGV tab interaction (Coverage C)', () => {
+    it('onSelectedAgvChange resets animation context and rebinds streams', () => {
+      const initSpy = jest.spyOn(component as unknown as { initializeStreams: () => void }, 'initializeStreams');
+      (component as unknown as { previousNodeId: string }).previousNodeId = 'NODE_A';
+      component.onSelectedAgvChange('leJ4');
+      expect(component.selectedAgvSerial$.value).toBe('leJ4');
+      expect((component as unknown as { previousNodeId: string | null }).previousNodeId).toBeNull();
+      expect(initSpy).toHaveBeenCalled();
+    });
+
+    it('sendNavigateToTarget publishes FTS order when route exists', async () => {
+      (component as unknown as { lastFtsState: typeof mockFtsState }).lastFtsState = {
+        ...mockFtsState,
+        lastNodeId: 'SVR4H73275',
+      };
+      component.selectedNavTargetModule = 'HBW';
+      (ftsRouteService.findRoutePath as jest.Mock).mockReturnValue(['SVR4H73275', '2', 'SVR3QA0022']);
+      await component.sendNavigateToTarget();
+      expect(connectionService.publish).toHaveBeenCalledWith(
+        expect.stringContaining('5iO4'),
+        expect.objectContaining({ orderId: expect.any(String) }),
+        { qos: 1 }
+      );
+    });
+
+    it('sendCharge and sendDockInitial delegate to dashboard commands', async () => {
+      const dashboard = (component as unknown as {
+        dashboard: { commands: { setFtsCharge: jest.Mock; dockFts: jest.Mock } };
+      }).dashboard;
+      dashboard.commands = {
+        setFtsCharge: jest.fn().mockResolvedValue(undefined),
+        dockFts: jest.fn().mockResolvedValue(undefined),
+      };
+      await component.sendCharge(true);
+      expect(dashboard.commands.setFtsCharge).toHaveBeenCalledWith('5iO4', true);
+      await component.sendDockInitial();
+      expect(dashboard.commands.dockFts).toHaveBeenCalledWith('5iO4', expect.any(String));
+    });
+
+    it('isAgvAtModule matches module serial and resolved node ref', () => {
+      expect(component.isAgvAtModule({ ...mockFtsState, lastModuleSerialNumber: 'SVR3QA0022' } as never, 'SVR3QA0022')).toBe(
+        true
+      );
+      (ftsRouteService.resolveNodeRef as jest.Mock).mockReturnValueOnce('serial:SVR4H73275');
+      expect(
+        component.isAgvAtModule({ ...mockFtsState, lastNodeId: 'SVR4H73275', lastModuleSerialNumber: undefined } as never, 'SVR4H73275')
+      ).toBe(true);
+    });
+
+    it('updates navigate button label when nav target module changes', () => {
+      component.onNavTargetModuleChange('MILL');
+      expect(component.getNavigateToTargetButtonLabel()).toMatch(/MILL/i);
+      component.onNavTargetModuleChange('DRILL');
+      expect(component.getNavigateToTargetButtonLabel()).toMatch(/DRILL/i);
+    });
   });
 });
 

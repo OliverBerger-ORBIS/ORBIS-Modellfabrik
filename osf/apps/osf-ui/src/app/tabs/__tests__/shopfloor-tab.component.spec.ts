@@ -1404,3 +1404,294 @@ Payload:
   });
 });
 
+describe('Shopfloor transport row commands (Coverage B)', () => {
+  const baseTransport = {
+    connected: true,
+    availability: 'READY' as const,
+    messageCount: 0,
+    lastUpdate: 'N/A',
+    driving: false,
+    waitingForLoadHandling: false,
+    charging: false,
+  };
+
+  it('offers dock action when FTS position is unknown and idle', () => {
+    const component = createComponent();
+    const row = (component as any).createTransportRow({
+      id: '5iO4',
+      ...baseTransport,
+      lastNodeId: 'UNKNOWN',
+      lastModuleSerialNumber: 'UNKNOWN',
+    });
+    const dockAction = row.actions.find((a: { label: string; handler: () => void }) =>
+      String(a.label).toLowerCase().includes('dock')
+    );
+    expect(dockAction).toBeDefined();
+    dockAction.handler();
+    const { getDashboardController } = require('../../mock-dashboard');
+    expect(getDashboardController().commands.dockFts).toHaveBeenCalledWith('5iO4', 'UNKNOWN');
+  });
+
+  it('offers charge and stop-charging actions based on charging flag', () => {
+    const component = createComponent();
+    const chargeRow = (component as any).createTransportRow({
+      id: '5iO4',
+      ...baseTransport,
+      lastNodeId: 'SVR4H73275',
+      lastModuleSerialNumber: 'SVR4H73275',
+      charging: false,
+    });
+    const chargeAction = chargeRow.actions.find((a: { label: string }) =>
+      String(a.label).toLowerCase().includes('charge') && !String(a.label).toLowerCase().includes('stop')
+    );
+    expect(chargeAction).toBeDefined();
+    chargeAction.handler();
+    const { getDashboardController } = require('../../mock-dashboard');
+    expect(getDashboardController().commands.setFtsCharge).toHaveBeenCalledWith('5iO4', true);
+
+    const stopRow = (component as any).createTransportRow({
+      id: '5iO4',
+      ...baseTransport,
+      lastNodeId: 'SVR4H73275',
+      lastModuleSerialNumber: 'SVR4H73275',
+      charging: true,
+    });
+    const stopAction = stopRow.actions.find((a: { label: string }) =>
+      String(a.label).toLowerCase().includes('stop')
+    );
+    expect(stopAction).toBeDefined();
+    stopAction.handler();
+    expect(getDashboardController().commands.setFtsCharge).toHaveBeenCalledWith('5iO4', false);
+  });
+
+  it('omits dock/charge actions when transport is disconnected', () => {
+    const component = createComponent();
+    const row = (component as any).createTransportRow({
+      id: '5iO4',
+      ...baseTransport,
+      connected: false,
+      lastNodeId: 'UNKNOWN',
+    });
+    expect(row.actions).toHaveLength(0);
+  });
+});
+
+describe('Shopfloor module message counting (Coverage B)', () => {
+  it('counts module and FTS topic histories for a serial', () => {
+    const component = createComponent();
+    (component as any).messageMonitor = {
+      getTopics: jest.fn(() => [
+        'module/v1/ff/SVR_HBW/state',
+        'module/v1/ff/NodeRed/SVR_HBW/connection',
+        'fts/v1/ff/5iO4/state',
+        'module/v1/ff/OTHER/state',
+      ]),
+      getHistory: jest.fn((topic: string) => {
+        if (topic === 'module/v1/ff/SVR_HBW/state') {
+          return [{}, {}];
+        }
+        if (topic === 'module/v1/ff/NodeRed/SVR_HBW/connection') {
+          return [{}];
+        }
+        return [];
+      }),
+    };
+    expect((component as any).getModuleMessageCount('SVR_HBW')).toBe(3);
+  });
+
+  it('returns 0 when topic enumeration fails', () => {
+    const component = createComponent();
+    (component as any).messageMonitor = {
+      getTopics: jest.fn(() => {
+        throw new Error('monitor unavailable');
+      }),
+      getHistory: jest.fn(),
+    };
+    expect((component as any).getModuleMessageCount('5iO4')).toBe(0);
+  });
+});
+
+describe('Shopfloor HBW and module MQTT parsers (Coverage B)', () => {
+  const hbwSerial = 'SVR3QA2091';
+
+  function mockHbwHistory(payload: object) {
+    return {
+      getHistory: jest.fn((topic: string) =>
+        topic === `module/v1/ff/${hbwSerial}/state`
+          ? [{ timestamp: '2026-01-01T00:00:00Z', payload }]
+          : []
+      ),
+    };
+  }
+
+  it('getHbwData extracts stock metadata and recent actions', () => {
+    const component = createComponent();
+    (component as any).messageMonitor = mockHbwHistory({
+      orderId: 'ord-42',
+      actionState: {
+        command: 'STORE',
+        state: 'FINISHED',
+        timestamp: '2026-01-01T00:00:00Z',
+        metadata: { slot: 'B3', row: 2, column: 3, workpieceId: 'wp-1' },
+      },
+    });
+    const data = (component as any).getHbwData(hbwSerial);
+    expect(data?.orderId).toBe('ord-42');
+    expect(data?.stockRow).toBe(2);
+    expect(data?.stockColumn).toBe(3);
+    expect(data?.workpieceId).toBe('wp-1');
+    expect(data?.recentActions?.[0]?.command).toBe('STORE');
+  });
+
+  it('extractStockRow falls back to loads loadPosition and slot prefix', () => {
+    const component = createComponent();
+    const extractRow = (component as any).extractStockRow.bind(component);
+    expect(
+      extractRow({
+        actionState: { metadata: { workpieceId: 'wp-9' } },
+        loads: [{ loadId: 'wp-9', loadPosition: 'C4' }],
+      })
+    ).toBe('C');
+    expect(
+      extractRow({
+        actionState: { metadata: { slot: 'A2' } },
+      })
+    ).toBe('A');
+  });
+
+  it('getDrillData reads processingTime from action duration', () => {
+    const component = createComponent();
+    const drillSerial = 'SVR4H76449';
+    (component as any).messageMonitor = {
+      getHistory: jest.fn((topic: string) =>
+        topic === `module/v1/ff/${drillSerial}/state`
+          ? [
+              {
+                timestamp: '2026-01-01T00:00:00Z',
+                payload: {
+                  actionState: { command: 'DRILL', state: 'FINISHED', duration: 12.5 },
+                },
+              },
+            ]
+          : []
+      ),
+    };
+    const data = (component as any).getDrillData(drillSerial);
+    expect(data?.processingTime).toBe(12.5);
+    expect(data?.currentAction?.command).toBe('DRILL');
+  });
+});
+
+describe('Shopfloor module interaction (Coverage C)', () => {
+  function attachSelectionLayout(component: ShopfloorTabComponent): void {
+    (component as any).layoutConfig = {
+      cells: [
+        {
+          id: 'CELL_DPS',
+          name: 'DPS',
+          serial: 'SVR4H73275',
+          role: 'module',
+          position: { x: 0, y: 0 },
+          size: { w: 10, h: 10 },
+        },
+        {
+          id: 'CELL_DRILL',
+          name: 'DRILL',
+          serial: 'SVR4H76449',
+          role: 'module',
+          position: { x: 10, y: 0 },
+          size: { w: 10, h: 10 },
+        },
+        {
+          id: 'CELL_MILL',
+          name: 'MILL',
+          serial: 'SVR3QA2091',
+          role: 'module',
+          position: { x: 20, y: 0 },
+          size: { w: 10, h: 10 },
+        },
+      ],
+    };
+    const mapping = (component as any).mappingService;
+    mapping.getCellById = jest.fn((id: string) =>
+      (component as any).layoutConfig.cells.find((c: { id: string }) => c.id === id)
+    );
+    mapping.getSerialFromCellId = jest.fn((id: string) => mapping.getCellById(id)?.serial ?? null);
+    mapping.getModuleTypeFromSerial = jest.fn((serial: string) => {
+      const cell = (component as any).layoutConfig.cells.find((c: { serial: string }) => c.serial === serial);
+      return cell?.name ?? null;
+    });
+    mapping.isInitialized = jest.fn(() => true);
+    (component as any).moduleOverviewState.getSnapshot = jest.fn(() => ({
+      modules: {
+        SVR4H73275: { id: 'SVR4H73275', subType: 'DPS', connected: true, availability: 'READY' },
+        SVR4H76449: { id: 'SVR4H76449', subType: 'DRILL', connected: true, availability: 'READY' },
+        SVR3QA2091: { id: 'SVR3QA2091', subType: 'MILL', connected: true, availability: 'BUSY' },
+      },
+      transports: {},
+    }));
+    (component as any).dpsState$ = of(null);
+    (component as any).aiqsState$ = of(null);
+    jest.spyOn(component as any, 'loadSequenceCommands').mockResolvedValue(undefined);
+  }
+
+  it('selectModuleByType selects layout cell by module name', () => {
+    const component = createComponent();
+    attachSelectionLayout(component);
+    (component as any).selectModuleByType('MILL');
+    expect(component.selectedModuleSerialNumber).toBe('SVR3QA2091');
+    expect(component.selectedModuleMeta?.moduleType).toBe('MILL');
+  });
+
+  it('switching modules updates sidebar meta and clears DPS action history', () => {
+    const component = createComponent();
+    attachSelectionLayout(component);
+    component.onModuleCellSelected({ id: 'CELL_DPS', kind: 'module' });
+    (component as any).allDpsActions = [{ id: 'a1', command: 'PICK', state: 'FINISHED', timestamp: 't' }];
+    expect(component.selectedModuleSerialNumber).toBe('SVR4H73275');
+
+    component.onModuleCellSelected({ id: 'CELL_DRILL', kind: 'module' });
+    expect(component.selectedModuleSerialNumber).toBe('SVR4H76449');
+    expect(component.selectedModuleMeta?.moduleType).toBe('DRILL');
+    expect((component as any).allDpsActions).toEqual([]);
+  });
+
+  it('double-click selects module and opens sidebar', () => {
+    const component = createComponent();
+    attachSelectionLayout(component);
+    component.onModuleCellDoubleClicked({ id: 'CELL_DRILL', kind: 'module' });
+    expect(component.selectedModuleSerialNumber).toBe('SVR4H76449');
+    expect(component.sidebarOpen).toBe(true);
+  });
+
+  it('loadFixture white_step3 chains order fixture for mock replay prep', async () => {
+    const component = createComponent();
+    const loadTabFixture = jest.fn().mockResolvedValue(undefined);
+    const { getDashboardController } = require('../../mock-dashboard');
+    getDashboardController.mockReturnValue({
+      streams: { moduleOverview$: of(null) },
+      commands: { calibrateModule: jest.fn(), setFtsCharge: jest.fn(), dockFts: jest.fn() },
+      loadFixture: jest.fn(),
+      loadTabFixture,
+      getCurrentFixture: jest.fn(() => 'startup'),
+    });
+    jest.spyOn(component as any, 'loadModuleStatusFixture').mockResolvedValue(undefined);
+    jest.spyOn(component as any, 'loadQualityCheckFixture').mockResolvedValue(undefined);
+    jest.spyOn(component as any, 'bindModuleOverviewStream').mockImplementation(() => {});
+    jest.spyOn(component as any, 'bindCacheOutputs').mockImplementation(() => {});
+
+    await component.loadFixture('white_step3');
+    expect(loadTabFixture).toHaveBeenCalledWith('module-status-test');
+    expect(loadTabFixture).toHaveBeenCalledWith('order-white-step3');
+    expect(component.activeFixture).toBe('white_step3');
+  });
+
+  it('onShopfloorViewportChanged clamps sidebar width in normal mode', () => {
+    const component = createComponent();
+    component.onShopfloorViewportChanged({ widthPx: 2000, heightPx: 900, scale: 1.2 });
+    const left = Number(component.shopfloorGridColsVar!.split('px')[0]);
+    expect(left).toBeLessThanOrEqual(1400);
+    expect(left).toBeGreaterThanOrEqual(420);
+  });
+});
+

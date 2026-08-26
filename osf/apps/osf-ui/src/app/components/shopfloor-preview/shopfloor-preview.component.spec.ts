@@ -400,3 +400,107 @@ describe('ShopfloorPreviewComponent', () => {
     expect(component.infoLabel).toContain('DRILL');
   });
 });
+
+describe('ShopfloorPreview interaction (Coverage C)', () => {
+  let fixture: ComponentFixture<ShopfloorPreviewComponent>;
+  let component: ShopfloorPreviewComponent;
+  const rotation$ = new BehaviorSubject<'none' | 'cw90' | 'ccw90' | 'rot180'>('none');
+
+  const layoutConfig = {
+    metadata: { canvas: { width: 200, height: 120 } },
+    scaling: { default_percent: 60 },
+    icon_sizing_rules: { by_role: { default: 0.75, intersection: 0.5 } },
+    parsed_roads: [],
+    modules_by_serial: { SVR3QA0022: { cell_id: 'hbw-cell' } },
+    intersection_map: {},
+    cells: [
+      {
+        id: 'hbw-cell',
+        name: 'HBW',
+        role: 'module',
+        serial: 'SVR3QA0022',
+        position: { x: 20, y: 20 },
+        size: { w: 40, h: 40 },
+        show_name: true,
+      },
+      {
+        id: 'mill-cell',
+        name: 'MILL',
+        role: 'module',
+        serial: 'SVR3QA2091',
+        position: { x: 100, y: 20 },
+        size: { w: 40, h: 40 },
+        show_name: true,
+      },
+    ],
+  } as const;
+
+  beforeEach(async () => {
+    rotation$.next('none');
+    await TestBed.configureTestingModule({
+      imports: [ShopfloorPreviewComponent],
+      providers: [
+        { provide: HttpClient, useValue: { get: jest.fn(() => of('<svg/>')) } },
+        {
+          provide: ModuleNameService,
+          useValue: {
+            getModuleFullName: (key: string) => key,
+            getModuleDisplayName: (key: string) => ({ fullName: key, shortName: key }),
+          },
+        },
+        { provide: ShopfloorMappingService, useValue: { initializeLayout: jest.fn(), getAgvColor: jest.fn(() => '#f97316') } },
+        { provide: ShopfloorLayoutService, useValue: { config$: of(layoutConfig) } },
+        { provide: ShopfloorRotationService, useValue: { current: 'none' as const, rotation$: rotation$.asObservable() } },
+      ],
+    }).compileComponents();
+    fixture = TestBed.createComponent(ShopfloorPreviewComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('applies highlightModulesOverride to rendered module cells', () => {
+    component.highlightModulesOverride = ['hbw-cell'];
+    component.ngOnChanges({
+      highlightModulesOverride: new SimpleChange(null, component.highlightModulesOverride, false),
+    });
+    const vm = component.viewModel as { modules: Array<{ id: string; highlighted: boolean }> };
+    const hbw = vm.modules.find((m) => m.id === 'hbw-cell');
+    const mill = vm.modules.find((m) => m.id === 'mill-cell');
+    expect(hbw?.highlighted).toBe(true);
+    expect(mill?.highlighted).toBe(false);
+  });
+
+  it('marks current position modules from override list', () => {
+    component.currentPositionModulesOverride = ['serial:SVR3QA2091'];
+    component.ngOnChanges({
+      currentPositionModulesOverride: new SimpleChange(null, component.currentPositionModulesOverride, false),
+    });
+    const vm = component.viewModel as { modules: Array<{ id: string; isCurrentPosition?: boolean }> };
+    const mill = vm.modules.find((m) => m.id === 'mill-cell');
+    expect(mill?.isCurrentPosition).toBe(true);
+  });
+
+  it('emits viewportChanged when zoom changes', () => {
+    const viewportSpy = jest.spyOn(component.viewportChanged, 'emit');
+    component.zoomIn();
+    expect(viewportSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ widthPx: expect.any(Number), heightPx: expect.any(Number), scale: expect.any(Number) })
+    );
+  });
+
+  it('schedules follow-scroll when followActiveStation is enabled', () => {
+    const schedule = jest.spyOn(
+      component as unknown as { scheduleFollowActiveStationScroll: () => void },
+      'scheduleFollowActiveStationScroll'
+    );
+    component.moduleStatusMap = new Map([
+      ['hbw-cell', { availability: 'BUSY', connected: true } as never],
+    ]);
+    component.followActiveStation = true;
+    component.ngOnChanges({
+      moduleStatusMap: new SimpleChange(null, component.moduleStatusMap, false),
+      followActiveStation: new SimpleChange(false, true, false),
+    });
+    expect(schedule).toHaveBeenCalled();
+  });
+});
