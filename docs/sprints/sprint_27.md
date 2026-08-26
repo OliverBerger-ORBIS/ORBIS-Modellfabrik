@@ -59,6 +59,7 @@
   - [x] **Teil A – Multi-Load 1 AGV (04.08.2026):** Kern-Set aufgenommen (eindeutige NFC). **Storage** ohne Mitfahrt; **Production** Multi-Load. `rbw`/`rwb` **entfallen** (kein Mehrwert vs. `wbr`/`wrb`).
     - OK: `ml-wrb_20260804_114227`, `ml-wbr_20260804_115849`, `ml-brw_20260804_121835` (Charge + RED Quality-Fail), `ml-bwr_20260804_131822` (erster Multi-Load nur B+W, danach 3 Loads — prinzipiell OK).
     - Verworfen / Diagnose: `ml-bwr_20260804_130016` (DPS→FTS-Befehl fehlte, DPS blockiert, Prod stoppt nahe AIQS).
+    - *Nachzug 26.08.2026:* `…115849` / `…121835` / `…131822` gelöscht (nur 2 DPS-Intakes; Name vor Aufnahme nicht korrigiert). Ersatz: Aug-07-`ml-*`.
   - [x] **Teil A+ – gleiche Farbe + Quality-Fail (04.08.2026):** Isoliert Fail-Attribution bei Multi-Load; BLUE liefert DRILL+MILL.
     - [x] `storage-production-ml-rrr_20260804_133245` — drei RED Multi-Load; **2. R** (`f6caa206181682`, Pos2) **Quality-Fail** (CRACK)
     - [x] `storage-production-ml-bbb_20260804_134700` — drei BLUE Multi-Load; **2. B** (`b7b84ce7ad920f`, Pos2) **Quality-Fail** (MIPO2); DRILL+MILL-Pfad

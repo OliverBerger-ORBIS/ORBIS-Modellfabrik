@@ -163,7 +163,7 @@ SOLL-Schritt am Ende jeder Production-Kette:
 
 ## Bekannte Multi-Load-Gaps (`ml-*`, Stand 2026-08-06)
 
-Empirie an `storage-production-ml-wbr_*` u. a. — **nicht** durch UI-Spekulation schließen:
+Empirie an Aug-07-`ml-*` und verbleibenden `storage-production-ml-*` — **nicht** durch UI-Spekulation schließen:
 
 | Symptom | Typische Ursache |
 |---------|------------------|

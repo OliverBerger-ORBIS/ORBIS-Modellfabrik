@@ -73,6 +73,7 @@
 - [x] **OSF-UI Intake als T&T-Einstieg ([DR-30](../03-decision-records/30-workpiece-intake-mqtt-facade.md) Nachtrag 26.08.):** Subscribe + Live-Bootstrap; APS-Intake nicht trackable; Live + RPi **1.3.0**. (3) Recorder/Doku: Intake nicht excluden. (4) Storage-Logs gepatcht (`patch_session_intake_events.py`, +38); Rest behalten (Startup / 2-AGV / synthetic).
 - [x] **T&T NFC-Kacheln (26.08.2026):** Grid neueste links oben; ohne Farbe alle; 2 Zeilen + Y-Scroll; Events in Zeile 1; Ort ohne Serial. **1.3.1** RPi-Deploy.
 - [x] **Intake nicht im Browser-Archiv (26.08.2026):** `osf/workpiece/intake` → `NO_PERSIST_TOPICS`; Catch-up nur RAM-`getHistory`. Soft-Refresh re-`initialize` T&T. **1.3.3** lokal; RPi wenn FT-LAN.
+- [x] **Unvollständige ml-Sessions entfernt (26.08.2026):** `storage-production-ml-wbr_…115849`, `…-brw_…121835`, `…-bwr_…131822` (Name vor Aufnahme, nur 2 DPS-Intakes); INVENTORY bereinigt.
 - *Partner-Hinweis an Daniel:* [workpiece-intake-event-partner.md](../04-howto/integrations/workpiece-intake-event-partner.md)
 
 ### Integration & Tests

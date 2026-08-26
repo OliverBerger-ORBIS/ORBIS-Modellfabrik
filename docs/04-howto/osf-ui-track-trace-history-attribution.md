@@ -228,7 +228,7 @@ Pro Farbe sollen `storage-production-ml-*` / `ml-*` Sessions **mindestens** so v
 
 - Referenz Storage→Production (eindeutige NFC, Arduino, Aug 2026): `*-storage-production_20260807_*.log` (Pass); `*-storage-production-nok_20260807_*.log` (Fail)
 - **Multi-Load 1 AGV (07.08.2026):** `ml-wbr_…125133` (Pass), `ml-wrb-red-nok_…`, `ml-rbw-blue-nok_…`, `ml-wrb-chrg-blue-nok_…`
-- **Multi-Load 1 AGV (04.08.2026, eindeutige NFC):** `ml-wbr_…115849` (Pass, vollständige Mfg-States — bevorzugte Mapping-Abnahme), `ml-wrb_…114227` (**unvollständig:** kaum DRILL/MILL/AIQS `/state`), `ml-brw_…121835` (Charge+RED-Fail), `ml-bwr_…131822` (OK), `ml-bwr_…130016` (Störfall DPS/FTS, behalten). **`ml-rrr_…133245`**, **`ml-bbb_…134700`**. Juli-Single-Color-Refs entfernt 10.08.2026; **2-AGV-Lücke** bis AGV-2-Reparatur (Interim: Stillstand + ein osf.4-WR).
+- **Multi-Load 1 AGV (04.08.2026, eindeutige NFC):** `storage-production-ml-wrb_…114227` (**unvollständig:** kaum DRILL/MILL/AIQS `/state` — Mapping → Aug-07 `ml-wbr`), `…-bwr_…130016` (Störfall DPS/FTS, behalten), `…-rrr_…133245`, `…-bbb_…134700`. Unvollständige 2-Intake-Logs (`wbr_…115849`, `brw_…121835`, `bwr_…131822`) **entfernt 26.08.2026**. Juli-Single-Color-Refs entfernt 10.08.2026; **2-AGV-Lücke** bis AGV-2-Reparatur (Interim: Stillstand + ein osf.4-WR).
 - Parallel WR/RW/WB+R (Mai 2026): für Mitfahrt/Multi-AGV geeignet, aber **NFC-IDs können wiederverwendet** sein → Spuren teils „wild“
 - Alte Mixed-Logs (`mixed-pw-*`, ältere `two-agvs-*`) nur noch begrenzt für Attribution nutzen
 
