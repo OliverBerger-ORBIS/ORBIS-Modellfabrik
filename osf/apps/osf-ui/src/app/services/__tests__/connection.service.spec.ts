@@ -503,5 +503,68 @@ describe('ConnectionService', () => {
       connectSpy.mockRestore();
     });
   });
+
+  describe('Resubscribe', () => {
+    afterEach(() => {
+      (service as any)._mqttClient = undefined;
+    });
+
+    it('should no-op resubscribe when not connected', () => {
+      const mockClient = {
+        subscribe: jest.fn().mockResolvedValue(undefined),
+        disconnect: jest.fn().mockResolvedValue(undefined),
+      };
+      (service as any)._mqttClient = mockClient;
+      (service as any).stateSubject.next('disconnected');
+
+      service.resubscribe(['ccu/order/active']);
+
+      expect(mockClient.subscribe).not.toHaveBeenCalled();
+    });
+
+    it('should resubscribe topics when connected', async () => {
+      const mockClient = {
+        subscribe: jest.fn().mockResolvedValue(undefined),
+        disconnect: jest.fn().mockResolvedValue(undefined),
+      };
+      (service as any)._mqttClient = mockClient;
+      (service as any).stateSubject.next('connected');
+
+      service.resubscribe(['ccu/order/active', 'osf/#']);
+      await Promise.resolve();
+
+      expect(mockClient.subscribe).toHaveBeenCalledTimes(2);
+      expect(mockClient.subscribe).toHaveBeenCalledWith('ccu/order/active', { qos: 0 });
+      expect(mockClient.subscribe).toHaveBeenCalledWith('osf/#', { qos: 0 });
+    });
+
+    it('should delegate resubscribeRequiredTopics to subscribeToRequiredTopics', () => {
+      const spy = jest.spyOn(service as any, 'subscribeToRequiredTopics');
+      service.resubscribeRequiredTopics();
+      expect(spy).toHaveBeenCalled();
+      spy.mockRestore();
+    });
+
+    it('should subscribe required topics when mqtt client is present', async () => {
+      const mockClient = {
+        subscribe: jest.fn().mockResolvedValue(undefined),
+        disconnect: jest.fn().mockResolvedValue(undefined),
+      };
+      (service as any)._mqttClient = mockClient;
+
+      (service as any).subscribeToRequiredTopics();
+      await Promise.resolve();
+
+      expect(mockClient.subscribe).toHaveBeenCalled();
+      const topics = mockClient.subscribe.mock.calls.map((call: unknown[]) => call[0]);
+      expect(topics).toContain('osf/#');
+      expect(topics).toContain('ccu/order/#');
+    });
+
+    it('should no-op subscribeToRequiredTopics without mqtt client', () => {
+      (service as any)._mqttClient = undefined;
+      expect(() => (service as any).subscribeToRequiredTopics()).not.toThrow();
+    });
+  });
 });
 

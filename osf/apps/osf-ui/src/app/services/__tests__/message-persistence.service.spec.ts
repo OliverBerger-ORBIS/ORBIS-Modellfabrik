@@ -378,5 +378,19 @@ describe('MessagePersistenceService', () => {
       expect(service.shouldPersist('module/v1/ff/SVR4H73275/factsheet')).toBe(true);
     });
   });
+
+  describe('obsolete persisted keys', () => {
+    it('removes NO_PERSIST topic keys from localStorage on service construction', () => {
+      localStorage.setItem('OSF.message-monitor.osf/workpiece/intake', '[]');
+      localStorage.setItem('OSF.message-monitor.test/topic', '[]');
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({ providers: [MessagePersistenceService] });
+      TestBed.inject(MessagePersistenceService);
+
+      expect(localStorage.getItem('OSF.message-monitor.osf/workpiece/intake')).toBeNull();
+      expect(localStorage.getItem('OSF.message-monitor.test/topic')).toBeTruthy();
+    });
+  });
 });
 

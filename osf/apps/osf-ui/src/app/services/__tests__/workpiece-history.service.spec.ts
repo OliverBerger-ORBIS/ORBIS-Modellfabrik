@@ -124,6 +124,48 @@ describe('WorkpieceHistoryService', () => {
       // (First initialization already called it)
       expect(spy).not.toHaveBeenCalledTimes(2);
     });
+
+    it('bootstraps intake from MessageMonitor getHistory on initialize', () => {
+      service.clear('replay');
+      jest.spyOn(messageMonitor, 'getHistory').mockImplementation((topic: string) => {
+        if (topic !== 'osf/workpiece/intake') {
+          return [];
+        }
+        return [
+          {
+            topic: 'osf/workpiece/intake',
+            payload: JSON.stringify({
+              productRaw: 'WHITE',
+              nfc: '832a423afcb534',
+              timestamp: '2026-08-04T09:45:27.290373Z',
+            }),
+            timestamp: '2026-08-04T09:45:28.278Z',
+            valid: true,
+          },
+          {
+            topic: 'osf/workpiece/intake',
+            payload: JSON.stringify({
+              productRaw: 'BLUE',
+              nfc: '78d10489b38ed8',
+              timestamp: '2026-08-04T09:46:32.799367Z',
+            }),
+            timestamp: '2026-08-04T09:46:33.794Z',
+            valid: true,
+          },
+        ];
+      });
+
+      service.initialize('replay');
+
+      const snapshot = service.getSnapshot('replay');
+      expect(snapshot.size).toBe(2);
+      expect(snapshot.get('832a423afcb534')?.workpieceType).toBe('WHITE');
+      expect(snapshot.get('78d10489b38ed8')?.workpieceType).toBe('BLUE');
+      expect(snapshot.get('832a423afcb534')?.events.map((e) => e.eventType)).toEqual([
+        'INPUT_RGB',
+        'RGB_NFC',
+      ]);
+    });
   });
 
   describe('ngOnDestroy', () => {

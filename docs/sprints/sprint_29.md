@@ -12,7 +12,7 @@
 |--------|--------|----------------|
 | **21.09.2026** *(bestätigt)* | **Uni Magdeburg / Dr. Reggelin** — **Ganztägiger Workshop Saarbrücken** Deep-Dive OSF/DSP; Termin-Einladung an **Kishitz** raus; **DSP-Team informiert** und unterstützt Deep Dive; NDA-Unterschrift **Frank Wilhelm** noch offen | Hochschulkooperation / DSP-Story |
 | *(erledigt 25.08.2026)* | Abstimmung DSP-Truppe für SB-Termin — Team informiert, Unterstützung Deep Dive zugesagt | Terminfixierung Deep-Dive |
-| *(Follow-up)* | **Daniel Wonkam** (OD) — Intake-Topic nutzen; Workpiece-Tracking 3er-Stack | Partner über `osf/workpiece/intake` |
+| *(erledigt 26.08.2026)* | **Daniel Wonkam** (OD) — Intake-Topic nutzen; Workpiece-Tracking 3er-Stack | [workpiece-intake-event-partner.md](../04-howto/integrations/workpiece-intake-event-partner.md) an Daniel |
 
 ---
 
@@ -21,7 +21,7 @@
 | Stand | Datum | Branches | Functions | Lines | Statements | Gates (B/F/L/S) | Gate-Margin (B/F/L/S) |
 |--------|--------|----------|-----------|-------|------------|------------------|------------------------|
 | Sprint-Start (Baseline = Sprint-28-Ende) | 20.08.2026 | 49.8% | 61.3% | 66.5% | 65.5% | 42 / 52 / 58 / 58 | +7.8 / +9.3 / +8.5 / +7.5 pp |
-| Aktuell | 24.08.2026 | 51.2% | 62.8% | 67.8% | 66.7% | 48 / 59 / 64 / 63 | +3.2 / +3.8 / +3.8 / +3.7 pp |
+| Aktuell | 26.08.2026 | 51.7% | 63.3% | 68.3% | 67.2% | 48 / 59 / 64 / 63 | +3.7 / +4.3 / +4.3 / +4.2 pp |
 
 - **Messmethode:** `npm run test:coverage` (`--runInBand`; bei Nx-Daemon-Fehler: `npx nx reset` + `NX_DAEMON=false`) → `coverage/osf-ui/index.html`. Details: [test-coverage-status.md](../07-analysis/test-coverage-status.md).
 - **Top-3 Gaps:**
@@ -74,11 +74,12 @@
 - [x] **T&T NFC-Kacheln (26.08.2026):** Grid neueste links oben; ohne Farbe alle; 2 Zeilen + Y-Scroll; Events in Zeile 1; Ort ohne Serial. **1.3.1** RPi-Deploy.
 - [x] **Intake nicht im Browser-Archiv (26.08.2026):** `osf/workpiece/intake` → `NO_PERSIST_TOPICS`; Catch-up nur RAM-`getHistory`. Soft-Refresh re-`initialize` T&T. **1.3.3** lokal; RPi wenn FT-LAN.
 - [x] **Unvollständige ml-Sessions entfernt (26.08.2026):** `storage-production-ml-wbr_…115849`, `…-brw_…121835`, `…-bwr_…131822` (Name vor Aufnahme, nur 2 DPS-Intakes); INVENTORY bereinigt.
-- *Partner-Hinweis an Daniel:* [workpiece-intake-event-partner.md](../04-howto/integrations/workpiece-intake-event-partner.md)
+- [x] **Partner-Hinweis Daniel (26.08.2026):** [workpiece-intake-event-partner.md](../04-howto/integrations/workpiece-intake-event-partner.md) an Daniel Wonkam (OD) — Intake-Topic / 3er-Stack.
 
 ### Integration & Tests
 
 - [x] **Coverage Gates + Shopfloor-Tests (24.08.2026):** Jest-Thresholds `48 / 59 / 64 / 63` (vorher `42 / 52 / 58 / 58`). Specs für Rotation/Layout-Service, Shopfloor-Preview (Zoom, Selection, Rotation, Route-Helfer, SVG), AGV-Viewport. Messung: B/F/L/S **51.2 / 62.8 / 67.8 / 66.7**; 1451 Tests passed. How-to + [test-coverage-status.md](../07-analysis/test-coverage-status.md).
+- [x] **Coverage Zwischenmessung (26.08.2026):** `npm run test:coverage` → B/F/L/S **51.7 / 63.3 / 68.3 / 67.2**; +13 Tests (Intake-RAM, Soft-Refresh/Resubscribe, Persistence-Cleanup). Gates unverändert (Margin ~3.7–4.3 pp).
 - [ ] **UI-Test-Framework (Fortsetzung):** von 2 Pilot-Tests zu stabiler Abdeckung kritischer Flows mit Tier A + Tier B Nachweisen ausbauen. *(Ursprung: Sprint 21)*
 - [ ] **dsp/correlation/info** E2E (BLOCKED bis Team-Setup aktiv): End-to-End-Nachweis (Topic-Eingang + UI-Kontext) dokumentieren. *(Ursprung: Sprint 18)*
 - [ ] **ccu/order/request** E2E (Ersatzauftrag nach Quality-Fail, BLOCKED bis Team-Setup aktiv): E2E-Nachweis mit klarer Ereigniskette dokumentieren. *(Ursprung: Sprint 18)*

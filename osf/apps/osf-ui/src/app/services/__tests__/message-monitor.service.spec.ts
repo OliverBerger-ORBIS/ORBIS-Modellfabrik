@@ -477,4 +477,21 @@ describe('MessageMonitorService', () => {
       expect(topics).not.toContain(cameraTopic);
     });
   });
+
+  describe('Workpiece intake topic (no localStorage persistence)', () => {
+    it('should buffer intake in RAM but not persist to localStorage', async () => {
+      const intakeTopic = 'osf/workpiece/intake';
+      const payload = { productRaw: 'BLUE', nfc: '59a42cb15f9e1f', timestamp: '2026-08-26T11:00:00.000Z' };
+
+      service.addMessage(intakeTopic, payload);
+
+      const history = service.getHistory(intakeTopic);
+      expect(history.length).toBe(1);
+      expect(history[0]?.payload).toEqual(payload);
+
+      const last = await firstValueFrom(service.getLastMessage(intakeTopic));
+      expect(last?.payload).toEqual(payload);
+      expect(localStorage.getItem('OSF.message-monitor.osf/workpiece/intake')).toBeNull();
+    });
+  });
 });
