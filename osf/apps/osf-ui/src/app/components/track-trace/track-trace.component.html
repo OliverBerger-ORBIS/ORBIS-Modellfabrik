@@ -5,7 +5,7 @@
       <span i18n="@@trackTraceTitle">Track & Trace</span>
     </h3>
 
-    <div class="search-inline" *ngIf="(selectedColor$ | async) !== null">
+    <div class="search-inline" *ngIf="(workpieces$ | async)?.length">
       <input
         type="text"
         [ngModel]="searchTerm"
@@ -62,25 +62,21 @@
       </button>
     </div>
 
-    <p class="cascade-hint" *ngIf="vm.color === null && vm.stats.total > 0" i18n="@@trackTraceSelectColorHint">
-      Select a color to list NFC tags for that workpiece family.
-    </p>
-
     <div class="empty-state global-empty" *ngIf="vm.stats.total === 0">
       <p i18n="@@trackTraceNoWorkpieces">No workpieces tracked yet.</p>
       <p class="hint" i18n="@@trackTraceNoWorkpiecesHint">Workpieces will appear here as they are loaded on the AGV.</p>
     </div>
 
-    <div class="nfc-section" *ngIf="vm.color !== null">
+    <div class="nfc-section" *ngIf="vm.stats.total > 0">
       <div class="section-title">
         <span i18n="@@trackTraceNfcTagsTitle">NFC tags</span>
         <span class="title-count">({{ vm.tags.length }})</span>
       </div>
 
-      <div class="workpiece-items" *ngIf="vm.tags.length > 0">
+      <div class="workpiece-items workpiece-tiles" *ngIf="vm.tags.length > 0">
         <div
           *ngFor="let wp of vm.tags; trackBy: trackByWorkpieceId"
-          class="workpiece-item"
+          class="workpiece-item workpiece-tile"
           [class.selected]="selectedWorkpieceId === wp.workpieceId"
           [ngClass]="getTypeClass(wp.workpieceType)"
           (click)="selectWorkpiece(wp.workpieceId)"
@@ -88,18 +84,20 @@
           tabindex="0"
           role="button"
         >
-          <img [src]="getWorkpieceIcon(wp.workpieceType)" alt="" width="24" height="24" class="workpiece-icon" />
-
-          <div class="workpiece-info">
+          <div class="tile-row tile-row-primary">
+            <img [src]="getWorkpieceIcon(wp.workpieceType)" alt="" width="20" height="20" class="workpiece-icon" />
             <span class="workpiece-id" i18n-title="@@trackTraceNfcTagIdTitle" title="NFC tag ID">{{ wp.workpieceId }}</span>
+            <span class="workpiece-events">{{ wp.events.length }} events</span>
+          </div>
+          <div class="tile-row tile-row-meta">
             <span class="nfc-first-seen" *ngIf="firstSeenTimestamp(wp) as seen">
               <span i18n="@@trackTraceNfcFirstSeenPrefix">First seen:</span>
               {{ seen }}
             </span>
-            <span class="workpiece-location">{{ getLocationLabel(wp.currentLocation || '') }}</span>
+            <span class="workpiece-location" *ngIf="wp.currentLocation">{{
+              getTileLocationLabel(wp.currentLocation)
+            }}</span>
           </div>
-
-          <div class="workpiece-events">{{ wp.events.length }} events</div>
         </div>
       </div>
 
@@ -524,7 +522,7 @@
       <strong i18n="@@trackTraceInfoTitle">Track & Trace</strong>
     </p>
     <p i18n="@@trackTraceInfoDescription">
-      Choose a workpiece color, then select an NFC tag to view its journey. Order context, station and transport
+      Choose an NFC tag (optionally filter by color) to view its journey. Order context, station and transport
       events, and environment data appear below.
     </p>
   </div>

@@ -71,6 +71,7 @@
 - [x] **Intake wartet auf Farbe (25.08.2026):** kein Publish bei fehlendem/`UNKNOWN` `productRaw`; erst wenn `metadata.type` / `workpiece.type` / `loads[0].type` gesetzt. Tests 8/8; Image neu auf RPi (`--no-deps`). Live verifiziert: `productRaw":"BLUE"` NFC `59a42cb15f9e1f` (kein UNKNOWN mehr).
 - [x] **Intake ohne orderId (25.08.2026):** `orderId` aus Vertrag/Code entfernt (DR-30, Partner-How-to); Storage-Order kommt später über APS, Korrelation über NFC. Redeploy Bridge.
 - [x] **OSF-UI Intake als T&T-Einstieg ([DR-30](../03-decision-records/30-workpiece-intake-mqtt-facade.md) Nachtrag 26.08.):** Subscribe + History-Bootstrap; APS-Intake nicht trackable; Live + RPi **1.3.0**. (3) Recorder/Doku: Intake nicht excluden. (4) Storage-Logs gepatcht (`patch_session_intake_events.py`, +38); Rest behalten (Startup / 2-AGV / synthetic).
+- [x] **T&T NFC-Kacheln (26.08.2026):** Grid neueste links oben; ohne Farbe alle; 2 Zeilen + Y-Scroll; Events in Zeile 1; Ort ohne Serial. **1.3.1** RPi-Deploy.
 - *Partner-Hinweis an Daniel:* [workpiece-intake-event-partner.md](../04-howto/integrations/workpiece-intake-event-partner.md)
 
 ### Integration & Tests

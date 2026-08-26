@@ -140,7 +140,7 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     ]).pipe(
       map(([wps, color, term]) => ({
         color,
-        tags: color ? this.buildNfcTagList(wps, color, term) : [],
+        tags: this.buildNfcTagList(wps, color, term),
         stats: this.buildColorStats(wps),
       })),
       shareReplay({ bufferSize: 1, refCount: false })
@@ -196,7 +196,7 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     this.selectedWorkpieceId$.next(null);
   }
 
-  /** Search / filter input for NFC tag IDs within the selected color */
+  /** Search / filter input for NFC tag IDs (within selected color, or all when no color) */
   onSearchFilterChange(value: string): void {
     this.searchTerm = value;
     this.filterTerm$.next(value);
@@ -251,16 +251,23 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     return { WHITE: w, BLUE: b, RED: r, total: wps.length };
   }
 
-  private buildNfcTagList(wps: WorkpieceHistory[], color: TrackTraceWorkpieceColor, termRaw: string): WorkpieceHistory[] {
+  private buildNfcTagList(
+    wps: WorkpieceHistory[],
+    color: TrackTraceWorkpieceColor | null,
+    termRaw: string
+  ): WorkpieceHistory[] {
     const term = termRaw.trim().toLowerCase();
-    let list = wps.filter((wp) => this.normalizeWorkpieceColor(wp.workpieceType) === color);
+    let list = color
+      ? wps.filter((wp) => this.normalizeWorkpieceColor(wp.workpieceType) === color)
+      : [...wps];
     if (term) {
       list = list.filter((wp) => wp.workpieceId.toLowerCase().includes(term));
     }
+    // Newest first (top-left → right → next row)
     return [...list].sort((a, b) => {
       const ta = this.earliestEventTimestampMs(a);
       const tb = this.earliestEventTimestampMs(b);
-      if (ta !== tb) return ta - tb;
+      if (ta !== tb) return tb - ta;
       return a.workpieceId.localeCompare(b.workpieceId);
     });
   }
@@ -1242,6 +1249,18 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
       return `${locationInfo.moduleType} (${locationInfo.fullName}) (${locationInfo.serialNumber})`;
     }
     return `${locationInfo.moduleType} (${locationInfo.fullName})`;
+  }
+
+  /** Compact location for NFC tiles — module name only, no serial (saves space). */
+  getTileLocationLabel(location: string): string {
+    if (!location?.trim()) {
+      return '';
+    }
+    const info = this.moduleNameService.getLocationDisplayText(location);
+    if (info.moduleType && info.fullName) {
+      return `${info.moduleType} (${info.fullName})`;
+    }
+    return info.moduleType || info.fullName || location;
   }
 
   getLocationInfo(location: string): { moduleType: string; fullName: string; serialNumber: string | null } {

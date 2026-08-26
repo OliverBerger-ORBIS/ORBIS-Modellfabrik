@@ -97,6 +97,36 @@ describe('TrackTraceComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('NFC tile list', () => {
+    it('lists all colors when no color filter; newest first; tile location omits serial', (done) => {
+      const older: WorkpieceHistory = {
+        workpieceId: 'nfc-old',
+        workpieceType: 'WHITE',
+        events: [{ timestamp: '2026-08-26T10:00:00.000Z', eventType: 'RGB_NFC' }],
+        currentLocation: 'SVR3QA0022',
+      };
+      const newer: WorkpieceHistory = {
+        workpieceId: 'nfc-new',
+        workpieceType: 'BLUE',
+        events: [{ timestamp: '2026-08-26T12:00:00.000Z', eventType: 'RGB_NFC' }],
+        currentLocation: 'SVR4H73275',
+      };
+      historyMap$.next(
+        new Map([
+          [older.workpieceId, older],
+          [newer.workpieceId, newer],
+        ])
+      );
+      component.clearColorSelection();
+      component.cascadeVm$.subscribe((vm) => {
+        expect(vm.color).toBeNull();
+        expect(vm.tags.map((t) => t.workpieceId)).toEqual(['nfc-new', 'nfc-old']);
+        expect(component.getTileLocationLabel('SVR3QA0022')).not.toContain('SVR3QA0022');
+        done();
+      });
+    });
+  });
+
   describe('Order Status FAILED/ERROR display', () => {
     it('should display Failed status when order has status ERROR', () => {
       const history = createHistoryWithOrderStatus('ERROR');
