@@ -88,7 +88,7 @@ sequenceDiagram
 Im Tab **Session Recorder** (und unter **Einstellungen → Session Recorder → Recording**): **Topic-Aufnahme**
 
 - **Alle Topics (unfiltered):** jede empfangene Message landet im `.log` (Baseline / volle Topic-Union).
-- **Analyse: ohne Arduino / BME680 / Kamera / LDR:** Messages zu `osf/arduino/…`, TXT `…/i/cam`, `…/i/bme680`, `…/i/ldr` (u. a.) werden **nicht** geschrieben — `subscribe("#")` bleibt unverändert; nur der **Schreibpfad** filtert.
+- **Analyse: ohne Arduino / BME680 / Kamera / LDR:** Messages zu `osf/arduino/…`, TXT `…/i/cam`, `…/i/bme680`, `…/i/ldr` (u. a.) werden **nicht** geschrieben — `subscribe("#")` bleibt unverändert; nur der **Schreibpfad** filtert. **`osf/workpiece/intake` wird nicht ausgeschlossen** (DR-30 — für T&T/Replay nötig; Bridge am Shopfloor während der Aufnahme laufen lassen).
 
 Persistenz: `session_manager_settings.json` → `session_recorder.recording.recording_exclusion_preset` (`none` | `analysis`).
 

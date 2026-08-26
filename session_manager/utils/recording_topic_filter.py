@@ -30,6 +30,7 @@ def topic_excluded_for_analysis_preset(topic: str) -> bool:
     True, wenn die Nachricht bei Preset „analysis“ nicht ins Session-Log soll.
 
     Siehe DR-25: Arduino-Multisensor, BME680, Kamera, LDR (TXT).
+    Do **not** exclude ``osf/workpiece/intake`` (DR-30 — required for T&T / Replay).
     """
     if topic.startswith("osf/arduino/"):
         return True

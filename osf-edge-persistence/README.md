@@ -110,7 +110,7 @@ NFC / Universal-ID is taken from **APS payloads that exist in session logs** (Re
 - Module `actionState.result` on `RGB_NFC` / `PICK` / `DROP`
 - FTS `load[].loadId` (one event row per loaded NFC)
 
-`osf/workpiece/intake` is subscribed as a **live-only** bonus (RPi intake-bridge). Session recordings do not contain it. Replay does **not** need a local bridge — Grafana correlation uses the APS fields above.
+`osf/workpiece/intake` is subscribed live (RPi intake-bridge) and should also appear in **new** session recordings (and patched reference logs via `scripts/patch_session_intake_events.py`). Replay does **not** need a local bridge — OSF-UI / Grafana can use the facade lines in the log; APS fields remain available for station correlation.
 
 ### Sensor topics
 
@@ -236,7 +236,7 @@ In Replay-Station:
 - choose a session from `data/osf-data/sessions/`
 - prefer newer recordings that already include `osf/arduino/...` topics **and unique NFC tags** (Aug 2026 T&T set)
 - run replay against local broker (`localhost:1883`)
-- **Do not** expect `osf/workpiece/intake` in Replay (bridge runs on the RPi, not during session playback)
+- Expect `osf/workpiece/intake` in Replay when the session log contains it (patched references / new recordings with Bridge live)
 
 Different sessions with **different NFC ids** may accumulate in the local DB. Reset is **manual only** (not on every replay). The same session **filename** is not re-persisted after a successful run (session-gate) until full truncate clears `replay_session_ingest`.
 
@@ -265,7 +265,7 @@ Expected:
 - `workpiece_id` is filled from NFC on RGB_NFC / FTS load / CCU orders
 - `env_sensor_snapshot` grows with TXT + Arduino metrics
 - no camera payload flood by default (`/j1/txt/1/i/cam` excluded)
-- `osf/workpiece/intake` rows only if a live bridge is publishing (not in Replay)
+- `osf/workpiece/intake` rows when the log (or live bridge) provides them
 
 ### 5b) Sensor values around Ist events (SQL, no Grafana)
 

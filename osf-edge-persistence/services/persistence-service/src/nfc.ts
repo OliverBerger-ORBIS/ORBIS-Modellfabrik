@@ -53,7 +53,7 @@ export function collectLoadNfcIds(payload: Record<string, unknown>): string[] {
  * Stateless NFC resolution for a single MQTT payload (Replay + Live).
  * Primary sources are APS fields that exist in session logs:
  * CCU workpieceId, RGB_NFC/PICK/DROP result, FTS loadId.
- * `nfc` on osf/workpiece/intake is live-only (RPi bridge, not in Replay logs).
+ * `nfc` on osf/workpiece/intake — live bridge and/or session logs (patched references).
  * No sticky maps / cross-message order lookup (those stay in OSF-UI T&T).
  */
 export function resolveWorkpieceId(payload: Record<string, unknown>): string | undefined {

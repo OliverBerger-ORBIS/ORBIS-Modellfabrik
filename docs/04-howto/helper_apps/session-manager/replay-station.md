@@ -9,7 +9,7 @@ Die **Replay Station** ermöglicht das Einspielen von aufgezeichneten MQTT-Sessi
 > - **REPLAY-Modus auf macOS**: Persistence-Service nutzt `env.replay` (localhost-Broker via Docker Host Gateway) wie bisher.
 > - **REPLAY-Modus auf Windows**: Mosquitto laeuft lokal auf `localhost:1883`; die WebSocket-Bridge fuer den Browser wird mit `scripts/start-mosquitto-ws-bridge.ps1` auf `ws://localhost:9001` gestartet.
 > - Replay ist ein Testmodus und nicht fuer produktionsnahe Deployments gedacht.
-> - Grafana/Persistenz: NFC kommt aus APS-Payloads in den Session-Logs. `osf/workpiece/intake` erscheint im Replay **nicht** (Bridge nur RPi). Lokale DB darf mehrere Sessions akkumulieren; Truncate nur manuell (`npm run persistence:reset-replay`). Sensorwerte um Ist-Events: `npm run persistence:sensor-around-ist` (SQL, ohne Grafana).
+> - Grafana/Persistenz: NFC aus APS-Payloads **und** (Zielbild) `osf/workpiece/intake` in den Session-Logs. Alte Logs ohne Intake wurden per `scripts/patch_session_intake_events.py` angereichert (DR-30 Nachtrag 26.08.). Neue Aufnahmen: Bridge live am RPi; Topic **nicht** in Exclusion-Presets (nur `osf/arduino/…` etc., DR-25). Lokale DB darf mehrere Sessions akkumulieren; Truncate nur manuell (`npm run persistence:reset-replay`). Sensorwerte um Ist-Events: `npm run persistence:sensor-around-ist` (SQL, ohne Grafana).
 
 **Vorteile:**
 - **Definierte Abfolge** von Nachrichten

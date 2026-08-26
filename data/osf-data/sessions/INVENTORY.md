@@ -12,7 +12,7 @@
 
 Abgleich: `python scripts/check_session_inventory.py`
 
-**Geplant (DR-30 Nachtrag 26.08.2026):** Alle Sessions mit **Storage** (`Storage`-Spalte ✓) um `osf/workpiece/intake`-Zeilen anreichern. Übrige (`startup-clean`, `production-wr-agv2-…` ohne Storage, `synthetic-arduino-sensors`): Mehrwert prüfen → behalten oder löschen.
+**Geplant (DR-30 Nachtrag 26.08.2026):** ~~Alle Sessions mit **Storage** um `osf/workpiece/intake`-Zeilen anreichern.~~ **Erledigt 26.08.2026:** `python scripts/patch_session_intake_events.py` (+38 Intake-Zeilen). Ohne Storage-Intake belassen: `startup-clean` (Startup-Referenz), `production-wr-agv2-…` (2-AGV Interim, kein DPS-RGB_NFC), `synthetic-arduino-sensors` (Sensor-only) — weiterhin Mehrwert, **nicht gelöscht**.
 
 ---
 

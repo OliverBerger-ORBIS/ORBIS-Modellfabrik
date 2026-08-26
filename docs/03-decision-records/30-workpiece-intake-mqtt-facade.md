@@ -51,8 +51,8 @@
 - [x] Service `osf-workpiece-intake-bridge/`
 - [x] How-to Deploy RPi
 - [x] Image auf RPi laden + Compose-Service aktiv (25.08.2026)
-- [x] OSF-UI subscribed Intake als T&T-Einstieg; APS-Bootstrap abgebaut (26.08.2026) — visuelle Abnahme + Version/RPi-Deploy offen
-- [ ] Session-Logs mit Storage-Orders um Intake patchen; Rest inventarisieren/löschen
+- [x] OSF-UI subscribed Intake als T&T-Einstieg; APS-Bootstrap abgebaut; RPi **1.3.0** (26.08.2026)
+- [x] Session-Logs mit Storage-Orders um Intake patchen; Rest inventarisieren (26.08.2026: Script + 38 Zeilen; Startup/2-AGV/synthetic behalten)
 
 ---
 *Entscheidung getroffen von: Oliver Berger*
