@@ -44,6 +44,7 @@ describe('WorkpieceHistoryService', () => {
 
     // Mock necessary methods
     jest.spyOn(messageMonitor, 'getLastMessage').mockReturnValue(of(null));
+    jest.spyOn(messageMonitor, 'getHistory').mockReturnValue([]);
   });
 
   afterEach(() => {
@@ -866,8 +867,8 @@ describe('WorkpieceHistoryService', () => {
       expect(svc.mapModuleCommandToEventType('CHECK_QUALITY')).toBe('CHECK_QUALITY');
       expect(svc.mapModuleCommandToEventType('INPUT_RGB')).toBe('INPUT_RGB');
       expect(svc.isTrackableModuleCommand('DRILL')).toBe(true);
-      expect(svc.isTrackableModuleCommand('INPUT_RGB')).toBe(true);
-      expect(svc.isTrackableModuleCommand('RGB_NFC')).toBe(true);
+      expect(svc.isTrackableModuleCommand('INPUT_RGB')).toBe(false);
+      expect(svc.isTrackableModuleCommand('RGB_NFC')).toBe(false);
       expect(
         svc.resolveLoadPosition(
           'mock',
@@ -892,6 +893,44 @@ describe('WorkpieceHistoryService', () => {
         )
       ).toBe('2b2c6dd469a47a');
       expect(svc.resolveModuleWorkpieceType({}, { metadata: { type: 'WHITE' } })).toBe('WHITE');
+    });
+
+    it('bootstraps Color+NFC history from osf/workpiece/intake', () => {
+      const svc = service as unknown as {
+        ingestWorkpieceIntake: (environmentKey: string, payload: unknown) => void;
+      };
+      svc.ingestWorkpieceIntake('mock', {
+        productRaw: 'BLUE',
+        nfc: '59a42cb15f9e1f',
+        timestamp: '2026-08-26T11:00:00.000Z',
+      });
+      const history = service.getSnapshot('mock').get('59a42cb15f9e1f');
+      expect(history).toBeDefined();
+      expect(history?.workpieceType).toBe('BLUE');
+      expect(history?.events.map((e) => e.eventType)).toEqual(['INPUT_RGB', 'RGB_NFC']);
+      expect(history?.events.every((e) => e.details?.['sourceTopic'] === 'osf/workpiece/intake')).toBe(
+        true
+      );
+
+      // Dedup on second publish
+      svc.ingestWorkpieceIntake('mock', {
+        productRaw: 'BLUE',
+        nfc: '59a42cb15f9e1f',
+        timestamp: '2026-08-26T11:00:01.000Z',
+      });
+      expect(service.getSnapshot('mock').get('59a42cb15f9e1f')?.events.length).toBe(2);
+    });
+
+    it('ignores intake without known color', () => {
+      const svc = service as unknown as {
+        ingestWorkpieceIntake: (environmentKey: string, payload: unknown) => void;
+      };
+      svc.ingestWorkpieceIntake('mock', {
+        productRaw: 'UNKNOWN',
+        nfc: 'deadbeef',
+        timestamp: '2026-08-26T11:00:00.000Z',
+      });
+      expect(service.getSnapshot('mock').size).toBe(0);
     });
 
     it('does not capture non-matrix events', () => {

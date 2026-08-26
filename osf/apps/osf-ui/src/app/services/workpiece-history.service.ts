@@ -160,6 +160,10 @@ interface ModuleState {
 // All modules that can have grouped events (PICK → PROCESS → DROP)
 // Includes manufacturing stations (MILL, DRILL, AIQS) and storage/processing stations (HBW, DPS)
 const MODULE_STATIONS = ['SVR3QA0022', 'SVR4H76449', 'SVR3QA2098', 'SVR4H76530', 'SVR4H73275'] as const;
+/** DPS serial — intake facade events are attributed to this station. */
+const DPS_MODULE_SERIAL = 'SVR4H73275';
+/** ORBIS workpiece intake facade (Bridge on RPi). DR-30. */
+const WORKPIECE_INTAKE_TOPIC = 'osf/workpiece/intake';
 const MANUFACTURING_STATIONS = ['SVR4H76449', 'SVR3QA2098', 'SVR4H76530'] as const;
 /** Fallback when shopfloor layout is not loaded yet (tests / early boot). */
 const MODULE_SERIAL_TYPES: Record<string, string> = {
@@ -239,20 +243,6 @@ export class WorkpieceHistoryService implements OnDestroy {
     string,
     Array<{ loadPosition: string; loadType: string | null; loadId: string | null }>
   >();
-  /**
-   * DPS intake before NFC id is known (INPUT_RGB). Flushed when RGB_NFC provides workpieceId.
-   * Key: `${environmentKey}::${moduleSerialId}`
-   */
-  private readonly pendingDpsIntake = new Map<
-    string,
-    Array<{
-      timestamp: string;
-      actionId: string;
-      orderId?: string;
-      orderUpdateId?: number;
-      command: string;
-    }>
-  >();
   private static readonly DEDUP_TTL_MS = 30 * 60 * 1000; // 30 min is enough for reconnect/replay duplicates
   private static readonly DEDUP_MAX_KEYS_PER_WORKPIECE = 400;
 
@@ -308,11 +298,6 @@ export class WorkpieceHistoryService implements OnDestroy {
       }
     }
     this.lastKnownHbwShelfByEnv.delete(environmentKey);
-    for (const key of [...this.pendingDpsIntake.keys()]) {
-      if (key.startsWith(`${environmentKey}::`)) {
-        this.pendingDpsIntake.delete(key);
-      }
-    }
     this.latestQualityCheck = null;
   }
 
@@ -573,6 +558,30 @@ export class WorkpieceHistoryService implements OnDestroy {
         }
       });
 
+    // Workpiece intake facade (Bridge) — T&T history bootstrap (DR-30). Catch-up + live.
+    for (const msg of this.messageMonitor.getHistory(WORKPIECE_INTAKE_TOPIC)) {
+      if (!msg?.valid || msg.payload == null) {
+        continue;
+      }
+      try {
+        this.ingestWorkpieceIntake(environmentKey, msg.payload);
+      } catch (error) {
+        console.error('[WorkpieceHistoryService] Buffer workpiece intake error:', error);
+      }
+    }
+    const workpieceIntakeSubscription = this.messageMonitor
+      .getLastMessage(WORKPIECE_INTAKE_TOPIC)
+      .subscribe((msg) => {
+        if (!msg?.valid || msg.payload == null) {
+          return;
+        }
+        try {
+          this.ingestWorkpieceIntake(environmentKey, msg.payload);
+        } catch (error) {
+          console.error('[WorkpieceHistoryService] Error ingesting workpiece intake:', error);
+        }
+      });
+
     // Combine all subscriptions
     const combinedSubscription = new Subscription();
     combinedSubscription.add(ftsSubscription);
@@ -580,6 +589,7 @@ export class WorkpieceHistoryService implements OnDestroy {
     combinedSubscription.add(correlationSubscription);
     combinedSubscription.add(ftsOrderSubscription);
     combinedSubscription.add(qualityCheckSubscription);
+    combinedSubscription.add(workpieceIntakeSubscription);
 
     this.subscriptions.set(environmentKey, combinedSubscription);
   }
@@ -1084,7 +1094,7 @@ export class WorkpieceHistoryService implements OnDestroy {
       return;
     }
 
-    // Antwort A refined: keep real MQTT names (DRILL/MILL/CHECK_QUALITY/INPUT_RGB/RGB_NFC)
+    // Antwort A refined: keep real MQTT names (DRILL/MILL/CHECK_QUALITY). Intake via osf/workpiece/intake.
     const mappedCommand = this.mapModuleCommandToEventType(command);
     const actionResult = resolvedActionState.result;
 
@@ -1100,27 +1110,6 @@ export class WorkpieceHistoryService implements OnDestroy {
       resolvedActionState,
       normalizedOrdersForId
     );
-
-    // Always buffer Color (INPUT_RGB) until NFC — never append with a late wall-clock time via PICK/DROP flush.
-    if (command === 'INPUT_RGB') {
-      const bufKey = `${environmentKey}::${moduleSerialId}`;
-      const list = this.pendingDpsIntake.get(bufKey) ?? [];
-      // Keep a single pending Color sample (first FINISHED wins chronologically)
-      if (list.length === 0) {
-        list.push({
-          timestamp:
-            resolvedActionState.timestamp ||
-            moduleState.timestamp ||
-            utcIsoTimestampMs(),
-          actionId: resolvedActionState.id,
-          orderId: moduleState.orderId,
-          orderUpdateId: moduleState.orderUpdateId,
-          command,
-        });
-        this.pendingDpsIntake.set(bufKey, list);
-      }
-      return;
-    }
 
     // DROP events at manufacturing stations have loads=[] after release —
     // allow matching via orderId if present, even without workpiece identity in payload.
@@ -1197,17 +1186,7 @@ export class WorkpieceHistoryService implements OnDestroy {
       }
     }
 
-    // RGB_NFC: create history early so Color/NFC appear before first FTS DOCK
-    if ((!matchingWorkpieceId || !matchingHistory) && command === 'RGB_NFC' && workpieceIdFromModule) {
-      matchingWorkpieceId = workpieceIdFromModule;
-      matchingHistory = {
-        workpieceId: matchingWorkpieceId,
-        workpieceType: workpieceType || 'UNKNOWN',
-        events: [],
-        orders: [],
-      };
-      historyMap.set(matchingWorkpieceId, matchingHistory);
-    }
+    // History for DPS Color/NFC is created by osf/workpiece/intake (not APS RGB_NFC).
 
     if (!matchingWorkpieceId || !matchingHistory) {
       console.warn('[WorkpieceHistoryService] No matching workpiece found for module state:', {
@@ -1225,48 +1204,16 @@ export class WorkpieceHistoryService implements OnDestroy {
       matchingHistory.workpieceType = workpieceType;
     }
 
-    // Flush Color only when NFC arrives (keeps Color timestamp before NFC / AGV)
-    let intakeOrderIdFromBuffer: string | undefined;
-    if (command === 'RGB_NFC') {
-      // Capture storage order UUID before flush clears the buffer (RGB_NFC often has orderId "0")
-      const pendingBeforeFlush = this.pendingDpsIntake.get(`${environmentKey}::${moduleSerialId}`);
-      intakeOrderIdFromBuffer = pendingBeforeFlush?.[0]?.orderId;
-      this.flushPendingDpsIntake(
-        environmentKey,
-        moduleSerialId,
-        matchingHistory,
-        matchingWorkpieceId,
-        stationName
-      );
-      // MQTT often publishes RGB_NFC twice (id only, then + type) — keep one NFC row
-      const alreadyHasNfc = matchingHistory.events.some((e) => e.eventType === 'RGB_NFC');
-      if (alreadyHasNfc) {
-        matchingHistory.events.sort((a, b) => {
-          const timeA = new Date(a.timestamp).getTime();
-          const timeB = new Date(b.timestamp).getTime();
-          if (timeA !== timeB) return timeA - timeB;
-          return (a.actionId || '').localeCompare(b.actionId || '');
-        });
-        historyMap.set(matchingWorkpieceId, matchingHistory);
-        this.getStore(environmentKey).next(historyMap);
-        return;
-      }
-    }
-
     // Generate event
     // IMPORTANT: For module events, use stationName (DRILL, AIQS, etc.) as moduleName
     // This ensures that events in Level 3 show "DRILL PICK" instead of "FTS PICK"
     const eventModuleName = stationName || moduleName || 'UNKNOWN';
-    let eventOrderType = this.resolveModuleOrderType(
+    const eventOrderType = this.resolveModuleOrderType(
       matchingHistory,
       moduleState,
       moduleSerialId,
       this.normalizeOrdersParam(orders)
     );
-    // DPS intake is always STORAGE (MQTT often sends orderId "0" for RGB_NFC)
-    if (command === 'RGB_NFC' || command === 'INPUT_RGB') {
-      eventOrderType = 'STORAGE';
-    }
     const loadPosition =
       mappedCommand === 'PICK' || mappedCommand === 'DROP'
         ? this.resolveLoadPosition(
@@ -1297,14 +1244,7 @@ export class WorkpieceHistoryService implements OnDestroy {
       }
     }
 
-    // Prefer real storage order UUID from buffered Color over MQTT placeholder "0"
-    const intakeOrderId =
-      command === 'RGB_NFC' && (!moduleState.orderId || moduleState.orderId === '0')
-        ? intakeOrderIdFromBuffer ||
-          matchingHistory.events.find((e) => e.eventType === 'INPUT_RGB' && e.orderId && e.orderId !== '0')
-            ?.orderId
-        : undefined;
-    const resolvedOrderId = intakeOrderId || moduleState.orderId;
+    const resolvedOrderId = moduleState.orderId;
 
     const baseEvent: Partial<TrackTraceEvent> = {
       timestamp: moduleState.timestamp || resolvedActionState.timestamp || utcIsoTimestampMs(),
@@ -1353,12 +1293,7 @@ export class WorkpieceHistoryService implements OnDestroy {
     // If we found a DOCK event, use its subOrderId
     // Otherwise, try to find any event with matching orderId and orderUpdateId
     let subOrderId: string;
-    if (command === 'RGB_NFC') {
-      const colorEvent = matchingHistory.events.find((e) => e.eventType === 'INPUT_RGB' && e.subOrderId);
-      subOrderId =
-        colorEvent?.subOrderId ||
-        `${resolvedOrderId || moduleState.orderId || 'dps-intake'}-intake`;
-    } else if (ftsDockEvent?.subOrderId) {
+    if (ftsDockEvent?.subOrderId) {
       subOrderId = ftsDockEvent.subOrderId;
     } else {
       // Fallback: find the most recent event with matching orderId and orderUpdateId
@@ -1487,8 +1422,7 @@ export class WorkpieceHistoryService implements OnDestroy {
       'CHECK_QUALITY',
       'DRILL',
       'MILL',
-      'INPUT_RGB',
-      'RGB_NFC',
+      // DPS Color/NFC intake: osf/workpiece/intake (not APS INPUT_RGB / RGB_NFC)
     ].includes(normalized);
   }
 
@@ -2052,47 +1986,116 @@ export class WorkpieceHistoryService implements OnDestroy {
     return { active: this.toOrderIdMap(orders), completed: {} };
   }
 
-  /** Flush buffered DPS INPUT_RGB (Color) once workpiece identity is known. */
-  private flushPendingDpsIntake(
-    environmentKey: string,
-    moduleSerialId: string,
-    history: WorkpieceHistory,
-    workpieceId: string,
-    stationName: string | null
-  ): void {
-    const bufKey = `${environmentKey}::${moduleSerialId}`;
-    const pending = this.pendingDpsIntake.get(bufKey);
-    if (!pending?.length) {
+  /**
+   * Bootstrap Track&Trace history from ORBIS intake facade (Bridge).
+   * Emits Color (INPUT_RGB) + NFC (RGB_NFC) rows for UI labels; APS module intake is ignored.
+   */
+  private ingestWorkpieceIntake(environmentKey: string, payload: unknown): void {
+    let record: Record<string, unknown>;
+    try {
+      const parsed =
+        typeof payload === 'string' ? (JSON.parse(payload) as unknown) : payload;
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        return;
+      }
+      record = parsed as Record<string, unknown>;
+    } catch {
       return;
     }
-    this.pendingDpsIntake.delete(bufKey);
-    const intakeSubOrderId = `${pending[0]?.orderId || 'dps-intake'}-intake`;
-    for (const item of pending) {
-      const colorEvent: TrackTraceEvent = {
-        timestamp: item.timestamp,
-        eventType: 'INPUT_RGB',
-        workpieceId,
-        workpieceType: history.workpieceType,
-        location: moduleSerialId,
-        moduleId: moduleSerialId,
-        moduleName: stationName || 'DPS',
-        orderId: item.orderId,
-        orderUpdateId: item.orderUpdateId,
-        orderType: 'STORAGE',
-        stationId: stationName || 'DPS',
-        stationName: stationName ? this.getStationDisplayName(stationName) : 'DPS',
-        actionId: item.actionId,
-        subOrderId: intakeSubOrderId,
-        eventSource: 'MODULE',
-        details: {
-          actionState: 'FINISHED',
-          command: 'INPUT_RGB',
-          originalCommand: 'INPUT_RGB',
-        },
-      };
-      this.attachEnvironmentSnapshotIfRelevant(colorEvent);
-      this.tryAppendEvent(environmentKey, history, colorEvent);
+
+    const nfcRaw = record['nfc'];
+    const productRaw = record['productRaw'];
+    const nfc = typeof nfcRaw === 'string' ? nfcRaw.trim() : '';
+    const color =
+      typeof productRaw === 'string' ? productRaw.trim().toUpperCase() : '';
+    if (!nfc || !color || color === 'UNKNOWN') {
+      return;
     }
+
+    const tsRaw = record['timestamp'];
+    const timestamp =
+      typeof tsRaw === 'string' && tsRaw.trim().length > 0
+        ? tsRaw.trim()
+        : utcIsoTimestampMs();
+
+    const historyMap = new Map(this.getStore(environmentKey).value);
+    let history = historyMap.get(nfc);
+    if (!history) {
+      history = {
+        workpieceId: nfc,
+        workpieceType: color,
+        events: [],
+        orders: [],
+      };
+      historyMap.set(nfc, history);
+    } else if (history.workpieceType === 'UNKNOWN') {
+      history.workpieceType = color;
+    }
+
+    const intakeSubOrderId = `${nfc}-intake`;
+    const stationDisplay = this.getStationDisplayName('DPS');
+
+    const colorEvent: TrackTraceEvent = {
+      timestamp,
+      eventType: 'INPUT_RGB',
+      workpieceId: nfc,
+      workpieceType: history.workpieceType,
+      location: DPS_MODULE_SERIAL,
+      moduleId: DPS_MODULE_SERIAL,
+      moduleName: 'DPS',
+      orderType: 'STORAGE',
+      stationId: 'DPS',
+      stationName: stationDisplay,
+      actionId: `intake-color-${nfc}`,
+      subOrderId: intakeSubOrderId,
+      eventSource: 'MODULE',
+      details: {
+        actionState: 'FINISHED',
+        command: 'INPUT_RGB',
+        originalCommand: 'INPUT_RGB',
+        sourceTopic: WORKPIECE_INTAKE_TOPIC,
+        productRaw: color,
+      },
+    };
+    this.attachEnvironmentSnapshotIfRelevant(colorEvent);
+    this.tryAppendEvent(environmentKey, history, colorEvent);
+
+    const nfcEvent: TrackTraceEvent = {
+      timestamp,
+      eventType: 'RGB_NFC',
+      workpieceId: nfc,
+      workpieceType: history.workpieceType,
+      location: DPS_MODULE_SERIAL,
+      moduleId: DPS_MODULE_SERIAL,
+      moduleName: 'DPS',
+      orderType: 'STORAGE',
+      stationId: 'DPS',
+      stationName: stationDisplay,
+      actionId: `intake-nfc-${nfc}`,
+      subOrderId: intakeSubOrderId,
+      eventSource: 'MODULE',
+      details: {
+        actionState: 'FINISHED',
+        command: 'RGB_NFC',
+        originalCommand: 'RGB_NFC',
+        result: nfc,
+        sourceTopic: WORKPIECE_INTAKE_TOPIC,
+        productRaw: color,
+      },
+    };
+    this.attachEnvironmentSnapshotIfRelevant(nfcEvent);
+    this.tryAppendEvent(environmentKey, history, nfcEvent);
+
+    history.events.sort((a, b) => {
+      const timeA = new Date(a.timestamp).getTime();
+      const timeB = new Date(b.timestamp).getTime();
+      if (timeA !== timeB) return timeA - timeB;
+      return (a.actionId || '').localeCompare(b.actionId || '');
+    });
+
+    history.orders = this.rebuildOrderContexts(history, { active: {}, completed: {} }, undefined);
+    historyMap.set(nfc, history);
+    this.getStore(environmentKey).next(historyMap);
   }
 
   private tryAppendEvent(environmentKey: string, history: WorkpieceHistory, event: TrackTraceEvent): void {

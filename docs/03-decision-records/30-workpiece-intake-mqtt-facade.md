@@ -20,6 +20,18 @@
 - Live: `orderId` am DPS-Intake praktisch nie gesetzt → aus Vertrag entfernt (kein zweites Topic nur für Storage-`orderId`).
 - Live: Farbe-Wait-Logik in der Bridge bestätigt.
 
+## Nachtrag 26.08.2026 — Intake als kanonischer Einstieg (UI + Replay)
+
+**Entscheidung:** Replay und fehlende historische Zeilen dürfen **keine Dual-Pfad-Architektur** in OSF-UI erzwingen. Die Bridge bleibt der Publisher; **OSF-UI subscribed** `osf/workpiece/intake` als Einstieg für Track&Trace (History-Bootstrap). APS-`INPUT_RGB`/`RGB_NFC`-Sonderlogik in T&T wird **abgebaut**, nicht parallel gepflegt.
+
+**Reihenfolge:**
+1. Dieses DR (Nachtrag) + Sprint-Task scharf formulieren.
+2. OSF-UI: Subscribe + History aus Intake; APS-Intake-Bootstrap schrumpfen.
+3. Session Manager / Doku: neue Aufnahmen erwarten Intake (Bridge live; Topic nicht in Exclusion-Presets).
+4. Session-Logs: **alle relevanten mit Storage-Orders** um Intake-Zeilen anreichern (ASCII, nahe dem bisherigen `RGB_NFC`/`INPUT_RGB`). Übrige Sessions: Mehrwert prüfen → behalten oder löschen (`INVENTORY.md`).
+
+**Konsequenz Doku:** Formulierungen „Intake nur live / nicht in Replay“ (ältere How-tos, DR-28-Kontext) gelten als **Übergangszustand**, nicht als Zielbild.
+
 ## Alternativen
 
 - **APS-Topics an Partner:** leakt Steuerungsdetails — verworfen.
@@ -39,7 +51,8 @@
 - [x] Service `osf-workpiece-intake-bridge/`
 - [x] How-to Deploy RPi
 - [x] Image auf RPi laden + Compose-Service aktiv (25.08.2026)
-- [ ] Optional: OSF-UI subscribed dasselbe Topic (Folge)
+- [x] OSF-UI subscribed Intake als T&T-Einstieg; APS-Bootstrap abgebaut (26.08.2026) — visuelle Abnahme + Version/RPi-Deploy offen
+- [ ] Session-Logs mit Storage-Orders um Intake patchen; Rest inventarisieren/löschen
 
 ---
 *Entscheidung getroffen von: Oliver Berger*
