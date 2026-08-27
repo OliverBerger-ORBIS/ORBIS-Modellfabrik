@@ -1,4 +1,4 @@
-FROM node:18.17.1-alpine3.18 as builder
+FROM node:18.17.1-alpine3.18 AS builder
 
 RUN apk --no-cache --update add git make clang build-base python3
 
