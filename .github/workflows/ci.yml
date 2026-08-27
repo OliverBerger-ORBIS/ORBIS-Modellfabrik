@@ -43,18 +43,13 @@ jobs:
       run: |
         npm ci
     
-    # IMPORTANT: Use 'npm test' (NOT 'npx nx test --all')
-    # See .github/WORKFLOW_GUIDELINES.md for details
-    - name: Run OSF tests
-      run: |
-        npm test
+    # A1: each project once — libs via run-many, osf-ui once with coverage+gates (runInBand).
+    # Do not also run `npm test` (would re-run osf-ui). See .github/WORKFLOW_GUIDELINES.md
+    - name: Run OSF tests (libs + osf-ui coverage)
+      run: npm run test:ci
 
     - name: Check OSF icon mappings
       run: npm run check:osf-ui-icons
-    
-    - name: Test Coverage Check
-      run: npm run test:coverage:check
-      continue-on-error: true
     
     - name: Upload Coverage
       uses: codecov/codecov-action@v4

@@ -8,6 +8,7 @@
     "serve:osf-ui": "cross-env BASELINE_BROWSER_MAPPING_IGNORE_OLD_DATA=true nx run osf-ui:serve",
     "graph": "nx graph",
     "test": "cross-env BASELINE_BROWSER_MAPPING_IGNORE_OLD_DATA=true nx run-many -t test",
+    "test:ci": "cross-env BASELINE_BROWSER_MAPPING_IGNORE_OLD_DATA=true nx run-many -t test --exclude=osf-ui && cross-env BASELINE_BROWSER_MAPPING_IGNORE_OLD_DATA=true nx test osf-ui --coverage --coverageThreshold --runInBand",
     "test:osf-ui": "cross-env BASELINE_BROWSER_MAPPING_IGNORE_OLD_DATA=true nx test osf-ui",
     "check:osf-ui-icons": "cross-env BASELINE_BROWSER_MAPPING_IGNORE_OLD_DATA=true nx test osf-ui --testPathPattern='(icon-registry|custom-icon-paths|layout\\.occ-bp-lane)\\.spec\\.ts'",
     "test:mqtt-client": "nx test mqtt-client",

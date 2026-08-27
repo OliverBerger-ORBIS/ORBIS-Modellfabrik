@@ -2,76 +2,68 @@
 
 Diese Richtlinien dokumentieren wichtige Standards für GitHub Actions Workflows in diesem Repository.
 
-## ⚠️ WICHTIG: Test-Befehle
+## ⚠️ WICHTIG: Test-Befehle (CI)
 
-### ✅ RICHTIG: Test-Befehl für Workflows
+### ✅ RICHTIG: Haupt-CI (`ci.yml`)
 
-**Verwende immer:**
+**Ein Durchlauf pro Projekt (A1 — keine Doppel-Suite für osf-ui):**
+
 ```yaml
-- name: Run tests
-  run: npm test
+- name: Run OSF tests (libs + osf-ui coverage)
+  run: npm run test:ci
 ```
 
-### ❌ FALSCH: Diese Befehle funktionieren nicht
+`package.json`:
+
+```json
+"test:ci": "nx run-many -t test --exclude=osf-ui && nx test osf-ui --coverage --coverageThreshold --runInBand"
+```
+
+- Libraries (mqtt-client, gateway, …) einmal parallel
+- `osf-ui` einmal mit Coverage + Gates, `--runInBand` (bewusst; lokal Coverage ebenfalls runInBand)
+- **Nicht** zusätzlich `npm test` im selben Job (würde osf-ui nochmal fahren)
+
+### Lokal / alle Projekte ohne Coverage
+
+```bash
+npm test   # nx run-many -t test  (alle Projekte, parallel)
+```
+
+### ❌ FALSCH
 
 ```yaml
-# ❌ NICHT verwenden - ungültige Syntax
+# ❌ ungültige Syntax
 npx nx test --all
 
-# ❌ NICHT verwenden - funktioniert nicht für alle Projekte
+# ❌ ohne Projekt / run-many
 npx nx test
-
-# ❌ NICHT verwenden - falsche Syntax
-nx test --all
 ```
 
-### Warum `npm test`?
+### Pre-commit (B2)
 
-1. **Definiert in package.json**: Der Befehl `npm test` ist in `package.json` definiert als:
-   ```json
-   "scripts": {
-     "test": "nx run-many -t test"
-   }
-   ```
-
-2. **Führt alle Tests aus**: `nx run-many -t test` führt Tests für alle Projekte aus
-
-3. **Konsistent**: Alle Workflows (ci.yml, shopfloor-check.yml, structure-validation.yml) verwenden denselben Befehl
-
-4. **Bewährt**: Dieser Befehl funktioniert zuverlässig in CI/CD
+Lokal: `scripts/pre-commit-osf-affected-tests.sh` → `nx affected -t test --files=<staged>`.  
+Volle Suite + Coverage-Gates: **CI** (`npm run test:ci`). Bei Problemen: Hook wieder auf volle `nx test osf-ui` (+ mqtt-client) zurückstellen.
 
 ## Workflow-Dateien
 
-Folgende Workflow-Dateien führen Tests aus:
-
-- `.github/workflows/ci.yml` - Haupt-CI Pipeline
-- `.github/workflows/shopfloor-check.yml` - Shopfloor Component Tests
-- `.github/workflows/structure-validation.yml` - Struktur-Validierung
-
-**Alle verwenden `npm test` ✅**
+- `.github/workflows/ci.yml` – Haupt-CI → `npm run test:ci`
+- `.github/workflows/pull-request.yml` – affected tests/lint
+- Pre-commit → affected tests (siehe `.pre-commit-config.yaml`)
 
 ## Historie
 
-### Problem (behoben)
+### 2026-08-27 — A1 + B2
 
-- **Symptom**: Workflow "Shopfloor Component Tests (OMF3)" schlug fehl
-- **Ursache**: Verwendung von `npx nx test --all` (ungültige Syntax)
-- **Lösung**: Geändert zu `npm test`
-- **Commit**: b4e130c
-- **Datum**: 2025-11-16
+- CI: Doppel-Lauf (`npm test` + `test:coverage:check`) ersetzt durch `test:ci`
+- Pre-commit: volle Suite → `nx affected` auf gestagte Dateien
+- Rollback: siehe vorherige Commits / diese Datei vor dem Change
 
-### Prävention
+### Problem (behoben, 2025-11-16)
 
-Um zu verhindern, dass dieser Fehler erneut auftritt:
-
-1. ✅ Diese Dokumentation wurde erstellt
-2. ✅ Alle Workflows wurden überprüft und verwenden `npm test`
-3. ⚠️ Bei Workflow-Änderungen immer diese Richtlinien beachten
-4. ⚠️ Bei Pull Requests Workflows auf korrekte Test-Befehle prüfen
+- **Symptom**: Workflow schlug fehl wegen `npx nx test --all`
+- **Lösung**: gültige Nx-/npm-Scripts (`run-many` / explizite Projekte)
 
 ## Weitere Nx-Befehle
-
-Wenn du spezifische Nx-Befehle in Workflows verwenden musst:
 
 ### Einzelnes Projekt testen
 ```yaml
@@ -79,44 +71,20 @@ Wenn du spezifische Nx-Befehle in Workflows verwenden musst:
   run: npx nx test <project-name>
 ```
 
-Beispiel:
-```yaml
-- name: Test ccu-ui
-  run: npx nx test ccu-ui
+### Alle Projekte (lokal, ohne Coverage-Gates)
+```bash
+npm test
 ```
 
-### Mehrere Projekte testen
-```yaml
-- name: Test multiple projects
-  run: npx nx run-many -t test --projects=project1,project2
+### Coverage lokal (Mac: runInBand)
+```bash
+npm run test:coverage
+npm run test:coverage:check
 ```
 
-### Build-Befehle
-```yaml
-- name: Build for production
-  run: npm run build:github-pages
-```
+## Checkliste für neue/geänderte Workflows
 
-## Checkliste für Workflow-Änderungen
-
-Bevor du einen Workflow committest, prüfe:
-
-- [ ] Verwendet der Workflow `npm test` für Test-Befehle?
-- [ ] Sind alle Nx-Befehle korrekt (mit `npx nx` oder npm script)?
-- [ ] Wurde die Änderung lokal getestet?
-- [ ] Wurden diese Richtlinien befolgt?
-
-## Bei Problemen
-
-Falls ein Workflow fehlschlägt:
-
-1. Prüfe, ob `npm test` verwendet wird
-2. Prüfe diese Dokumentation
-3. Vergleiche mit anderen funktionierenden Workflows
-4. Teste den Befehl lokal: `npm test`
-
-## Referenzen
-
-- **package.json**: Definiert npm scripts
-- **nx.json**: Nx Workspace Konfiguration
-- **CI Workflow**: `.github/workflows/ci.yml` (Referenz-Implementation)
+- [ ] CI-Hauptpfad nutzt `npm run test:ci` (kein doppeltes osf-ui)
+- [ ] Kein `nx test --all`
+- [ ] Coverage-Gates hard-failen im `test:ci`-Schritt (kein `continue-on-error` auf dem Test-Step)
+- [ ] Deploy weiterhin nur nach erfolgreichem CI

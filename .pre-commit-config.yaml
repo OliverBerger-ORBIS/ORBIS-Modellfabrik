@@ -8,15 +8,15 @@ repos:
   # Angular/TypeScript Validation — only when OSF tree (or shared NX/TS config) changes
   - repo: local
     hooks:
-      # OSF Tests (CRITICAL - produktiver Code)
+      # OSF Tests (B2: nx affected on staged files — full suite remains on CI via test:ci)
       - id: nx-test-osf
-        name: OSF Tests
-        entry: bash -c 'npx nx test osf-ui && npx nx test mqtt-client'
+        name: OSF Tests (affected)
+        entry: bash scripts/pre-commit-osf-affected-tests.sh
         language: system
         pass_filenames: false
         files: ^(osf/|package\.json|package-lock\.json|nx\.json|tsconfig.*\.json|jest\.preset\.js|jest\.config\.)
         stages: [pre-commit]
-        description: Run OSF tests (osf-ui, mqtt-client) when OSF paths are staged
+        description: Run nx affected tests for staged OSF/Nx paths (CI runs full test:ci)
 
       # TypeScript/ESLint Linting
       - id: nx-lint-osf

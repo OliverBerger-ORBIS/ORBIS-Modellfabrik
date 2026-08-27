@@ -44,4 +44,4 @@ Danach deployt nur noch unser Workflow **Deploy to GitHub Pages**. pages-build-d
 | **pages-build-deployment** | GitHub-System-Workflow – nur bei „Deploy from a branch“ aktiv; Source auf „GitHub Actions“ stellen (siehe oben) |
 | **Heading Icons QA (OMF3)** | Script `check_heading_svgs_omf3.py` existiert nicht; `osf/apps/ccu-ui` existiert nicht |
 | **Projekt-Struktur Validierung** | Script `omf/scripts/validate_project_structure.py` existiert nicht; verweist auf alte omf/omf2-Struktur |
-| **Shopfloor Component Tests** | Redundant – CI führt bereits `npm test` (inkl. Shopfloor) bei jedem Push aus |
+| **Shopfloor Component Tests** | Redundant – CI führt bereits `npm run test:ci` (inkl. Shopfloor / osf-ui Coverage) bei jedem Push aus |

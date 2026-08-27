@@ -28,21 +28,20 @@ GitHub Actions Workflows für CI/CD:
 **Vor jeder Änderung an Workflows:**
 
 1. Lies `WORKFLOW_GUIDELINES.md`
-2. Verwende `npm test` für Test-Befehle (nicht `npx nx test --all`)
+2. CI-Hauptpfad: `npm run test:ci` (nicht `npx nx test --all`, nicht zusätzlich `npm test` im selben Job)
 3. Teste Änderungen lokal
 
 ### Test-Befehle
 
 ```yaml
-# ✅ RICHTIG
-- name: Run tests
-  run: npm test
+# ✅ RICHTIG (Haupt-CI)
+- name: Run OSF tests (libs + osf-ui coverage)
+  run: npm run test:ci
 
 # ❌ FALSCH
 - name: Run tests
   run: npx nx test --all
 ```
-
 ## 📚 Weitere Ressourcen
 
 - [GitHub Actions Dokumentation](https://docs.github.com/en/actions)
