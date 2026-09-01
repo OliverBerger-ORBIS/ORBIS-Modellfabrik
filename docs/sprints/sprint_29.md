@@ -78,12 +78,13 @@
 - [x] **T&T NFC-Kacheln (26.08.2026):** Grid neueste links oben; ohne Farbe alle; 2 Zeilen + Y-Scroll; Events in Zeile 1; Ort ohne Serial. **1.3.1** RPi-Deploy.
 - [x] **Intake nicht im Browser-Archiv (26.08.2026):** `osf/workpiece/intake` → `NO_PERSIST_TOPICS`; Catch-up nur RAM-`getHistory`. Soft-Refresh re-`initialize` T&T. **1.3.4** RPi-Deploy 01.09.2026 (kein `clearAll()`; `replayBufferedHistory()`). Live verifiziert: NFC `164c81af4b0d11` COLOR+NFC in T&T; Bridge publish OK.
 - [x] **AGV-2 Serial `xkI4` (01.09.2026):** FT-Reset zweites FTS; Layout + `FTS_SERIALS_FALLBACK`, Tests/Fixtures/Sessions von `leJ4` → `xkI4`. **1.3.5** RPi-Deploy.
+- [x] **Dual-AGV T&T Replay + Resolver (01.09.2026):** Shared `getEffectiveFtsSerials()` (`fts-serial-resolver.ts`) — Layout + Fallback `5iO4`/`xkI4` + MessageMonitor-Topics; Fixes T&T/Orders/AGV-Tab wenn Layout beim Replay noch nicht geladen. Referenz-Session `storage-blue-dual-agv-bwr_20260901_124524.log`; Commit `a1e3b57a`, Tag **v1.3.6**, RPi-Deploy. Pre-commit: `order-tab` Spec-Mock `getTopics` ergänzt (Test-Kompatibilität, kein Live-Bug).
 - [x] **Unvollständige ml-Sessions entfernt (26.08.2026):** `storage-production-ml-wbr_…115849`, `…-brw_…121835`, `…-bwr_…131822` (Name vor Aufnahme, nur 2 DPS-Intakes); INVENTORY bereinigt.
 - [x] **Partner-Hinweis Daniel (26.08.2026):** [workpiece-intake-event-partner.md](../04-howto/integrations/workpiece-intake-event-partner.md) an Daniel Wonkam (OD) — Intake-Topic / 3er-Stack.
 
 ### Demo & Session-Aufnahmen
 
-- [ ] **Dual-AGV Referenz-Sessions aufnehmen:** CCU **Step-Dispatch** (kein Order↔AGV); parallel **PRODUCTION** (Pflicht: WR `production-dual-wr-clean_*`, optional WB); HBW vorbestückt, OSF-UI **1.3.5**; Plan [dual-agv-session-plan-2026-09.md](../07-analysis/dual-agv-session-plan-2026-09.md); [INVENTORY.md](../../data/osf-data/sessions/INVENTORY.md); Bühler **14.09.** / Welcome Days **17.09.**
+- [x] **Dual-AGV Referenz-Sessions aufnehmen (01.09.2026):** CCU **Step-Dispatch** (kein Order↔AGV); Session `storage-blue-dual-agv-bwr_20260901_124524` (STORAGE BLUE → PROD BLUE+WHITE parallel → PROD RED; beide FTS `5iO4`/`xkI4`). Plan [dual-agv-session-plan-2026-09.md](../07-analysis/dual-agv-session-plan-2026-09.md); [INVENTORY.md](../../data/osf-data/sessions/INVENTORY.md). Replay-Abnahme T&T: offen nach **1.3.6**-Deploy.
 
 ### Integration & Tests
 
