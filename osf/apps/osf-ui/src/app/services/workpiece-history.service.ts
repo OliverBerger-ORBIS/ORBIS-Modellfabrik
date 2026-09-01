@@ -2,7 +2,7 @@ import { Injectable, OnDestroy, inject } from '@angular/core';
 import { utcIsoTimestampMs } from '@osf/entities';
 import { BehaviorSubject, Observable, combineLatest, Subscription, merge } from 'rxjs';
 import { map, distinctUntilChanged, shareReplay, startWith, filter } from 'rxjs/operators';
-import { MessageMonitorService } from './message-monitor.service';
+import { MessageMonitorService, type MonitoredMessage } from './message-monitor.service';
 import { ModuleNameService } from './module-name.service';
 import { ShopfloorMappingService } from './shopfloor-mapping.service';
 import { EnvironmentService } from './environment.service';
@@ -302,6 +302,203 @@ export class WorkpieceHistoryService implements OnDestroy {
   }
 
   /**
+   * Rebuild Track & Trace genealogy from MessageMonitor circular buffers (live session RAM).
+   * Used on initialize and after soft refresh — intake is NO_PERSIST and must not rely on clearAll().
+   */
+  private replayBufferedHistory(environmentKey: string): void {
+    const orders = this.getOrdersSnapshotFromMonitor();
+
+    const ftsSerials = this.mappingService.getAgvOptions().map((o) => o.serial);
+    const ftsTopics = ftsSerials.length > 0 ? ftsSerials : ['5iO4'];
+    const ftsOrderTopics = [
+      'ccu/order/fts',
+      ...ftsTopics.map((serial) => `fts/v1/ff/${serial}/order`),
+    ];
+
+    for (const topic of ftsOrderTopics) {
+      for (const msg of this.messageMonitor.getHistory(topic)) {
+        if (!msg?.valid || msg.payload == null) {
+          continue;
+        }
+        try {
+          const order = typeof msg.payload === 'string' ? JSON.parse(msg.payload) : msg.payload;
+          this.ingestFtsOrderDirections(order);
+        } catch {
+          // ignore malformed FTS order payloads during replay
+        }
+      }
+    }
+
+    type ReplayStep = { ts: number; run: () => void };
+    const steps: ReplayStep[] = [];
+
+    const queueMsg = (msg: MonitoredMessage, run: () => void): void => {
+      steps.push({ ts: this.messageMonitorTimestampMs(msg), run });
+    };
+
+    for (const msg of this.messageMonitor.getHistory(WORKPIECE_INTAKE_TOPIC)) {
+      if (!msg?.valid || msg.payload == null) {
+        continue;
+      }
+      queueMsg(msg, () => {
+        try {
+          this.ingestWorkpieceIntake(environmentKey, msg.payload);
+        } catch (error) {
+          console.error('[WorkpieceHistoryService] Replay workpiece intake error:', error);
+        }
+      });
+    }
+
+    for (const msg of this.messageMonitor.getHistory(QUALITY_CHECK_TOPIC)) {
+      if (!msg?.valid || msg.payload == null) {
+        continue;
+      }
+      queueMsg(msg, () => {
+        try {
+          const attachment = parseQualityCheckPayload(msg.payload);
+          if (!attachment) {
+            return;
+          }
+          if (!attachment.ts && typeof msg.timestamp === 'string') {
+            attachment.ts = msg.timestamp;
+          }
+          this.ingestQualityCheck(environmentKey, attachment);
+        } catch (error) {
+          console.error('[WorkpieceHistoryService] Replay quality_check error:', error);
+        }
+      });
+    }
+
+    for (const serial of ftsTopics) {
+      const topic = `fts/v1/ff/${serial}/state`;
+      for (const msg of this.messageMonitor.getHistory(topic)) {
+        const state = this.parseFtsStateMessage(msg, serial);
+        if (!state) {
+          continue;
+        }
+        queueMsg(msg, () => {
+          try {
+            this.updateWorkpieceHistory(environmentKey, state, orders);
+          } catch (error) {
+            console.error('[WorkpieceHistoryService] Replay FTS state error:', error);
+          }
+        });
+      }
+    }
+
+    for (const serial of MODULE_STATIONS) {
+      for (const topic of [
+        `module/v1/ff/${serial}/state`,
+        `module/v1/ff/NodeRed/${serial}/state`,
+      ]) {
+        for (const msg of this.messageMonitor.getHistory(topic)) {
+          const state = this.parseModuleStateMessage(msg, serial);
+          if (!state) {
+            continue;
+          }
+          queueMsg(msg, () => {
+            try {
+              this.updateWorkpieceHistoryFromModule(environmentKey, state, orders);
+            } catch (error) {
+              console.error('[WorkpieceHistoryService] Replay module state error:', error);
+            }
+          });
+        }
+      }
+    }
+
+    steps.sort((a, b) => a.ts - b.ts);
+    for (const step of steps) {
+      step.run();
+    }
+  }
+
+  private getOrdersSnapshotFromMonitor(): {
+    active: Record<string, unknown>;
+    completed: Record<string, unknown>;
+  } {
+    const parseLast = (topic: string): unknown => {
+      const history = this.messageMonitor.getHistory(topic);
+      const msg = history.length > 0 ? history[history.length - 1] : null;
+      if (!msg?.valid || msg.payload == null) {
+        return null;
+      }
+      try {
+        return typeof msg.payload === 'string' ? JSON.parse(msg.payload) : msg.payload;
+      } catch {
+        return null;
+      }
+    };
+    return {
+      active: this.toOrderIdMap(parseLast('ccu/order/active')),
+      completed: this.toOrderIdMap(parseLast('ccu/order/completed')),
+    };
+  }
+
+  private messageMonitorTimestampMs(msg: MonitoredMessage): number {
+    const parsed = msg.timestamp ? Date.parse(msg.timestamp) : Number.NaN;
+    return Number.isNaN(parsed) ? 0 : parsed;
+  }
+
+  private parseFtsStateMessage(msg: MonitoredMessage, serial: string): FtsState | null {
+    if (!msg.valid || msg.payload == null) {
+      return null;
+    }
+    try {
+      const payload = typeof msg.payload === 'string' ? JSON.parse(msg.payload) : msg.payload;
+      const moduleSerialId = this.extractModuleSerialFromTopic(msg.topic) || serial;
+      return {
+        ...(payload as object),
+        _topic: msg.topic,
+        _moduleSerialId: moduleSerialId,
+      } as FtsState;
+    } catch {
+      return null;
+    }
+  }
+
+  private parseModuleStateMessage(msg: MonitoredMessage, serial: string): ModuleState | null {
+    if (!msg.valid || msg.payload == null) {
+      return null;
+    }
+    try {
+      const payload = typeof msg.payload === 'string' ? JSON.parse(msg.payload) : msg.payload;
+      const moduleSerialId = this.extractModuleSerialFromTopic(msg.topic) || serial;
+      const state = {
+        ...(payload as object),
+        _topic: msg.topic,
+        _moduleSerialId: moduleSerialId,
+      } as ModuleState;
+      if (state.actionState == null) {
+        return null;
+      }
+      return state;
+    } catch {
+      return null;
+    }
+  }
+
+  private ingestFtsOrderDirections(order: unknown): void {
+    if (!order || typeof order !== 'object') {
+      return;
+    }
+    const nodes = (order as { nodes?: unknown }).nodes;
+    if (!Array.isArray(nodes)) {
+      return;
+    }
+    for (const node of nodes) {
+      if (!node || typeof node !== 'object') {
+        continue;
+      }
+      const action = (node as { action?: { type?: string; id?: string; metadata?: { direction?: string } } })
+        .action;
+      if (action?.type === 'TURN' && action?.id && action?.metadata?.direction) {
+        this.turnDirectionByActionId.set(action.id, action.metadata.direction);
+      }
+    }
+  }
+
+  /**
    * Initialize tracking for an environment
    * Subscribes to relevant MQTT topics and aggregates events
    */
@@ -314,6 +511,8 @@ export class WorkpieceHistoryService implements OnDestroy {
         this.latestEnvironmentSnapshot = snapshot;
       });
     }
+
+    this.replayBufferedHistory(environmentKey);
 
     const historyMap = this.getStore(environmentKey);
 
@@ -344,27 +543,6 @@ export class WorkpieceHistoryService implements OnDestroy {
     const ftsState$ = merge(...ftsStateStreams);
 
     // Subscribe to FTS order streams for TURN direction (LEFT/RIGHT).
-    // Live CCU may publish ccu/order/fts; sessions / FTS firmware use fts/v1/ff/<serial>/order.
-    const ingestFtsOrderDirections = (order: unknown): void => {
-      if (!order || typeof order !== 'object') {
-        return;
-      }
-      const nodes = (order as { nodes?: unknown }).nodes;
-      if (!Array.isArray(nodes)) {
-        return;
-      }
-      for (const node of nodes) {
-        if (!node || typeof node !== 'object') {
-          continue;
-        }
-        const action = (node as { action?: { type?: string; id?: string; metadata?: { direction?: string } } })
-          .action;
-        if (action?.type === 'TURN' && action?.id && action?.metadata?.direction) {
-          this.turnDirectionByActionId.set(action.id, action.metadata.direction);
-        }
-      }
-    };
-
     const ftsOrderTopics = [
       'ccu/order/fts',
       ...ftsTopics.map((serial) => `fts/v1/ff/${serial}/order`),
@@ -377,7 +555,7 @@ export class WorkpieceHistoryService implements OnDestroy {
         )
       )
     );
-    const ftsOrderSubscription = ftsOrder$.subscribe((order) => ingestFtsOrderDirections(order));
+    const ftsOrderSubscription = ftsOrder$.subscribe((order) => this.ingestFtsOrderDirections(order));
 
     // Subscribe to active orders for order context (CCU: array of orders with orderType STORAGE|PRODUCTION)
     const activeOrders$ = this.messageMonitor.getLastMessage('ccu/order/active').pipe(
@@ -518,25 +696,6 @@ export class WorkpieceHistoryService implements OnDestroy {
       }
     });
 
-    // Catch-up: quality_check frames already in MessageMonitor (mid-pass / after replay burst)
-    for (const msg of this.messageMonitor.getHistory(QUALITY_CHECK_TOPIC)) {
-      if (!msg?.valid || msg.payload == null) {
-        continue;
-      }
-      try {
-        const attachment = parseQualityCheckPayload(msg.payload);
-        if (!attachment) {
-          continue;
-        }
-        if (!attachment.ts && typeof msg.timestamp === 'string') {
-          attachment.ts = msg.timestamp;
-        }
-        this.ingestQualityCheck(environmentKey, attachment);
-      } catch (error) {
-        console.error('[WorkpieceHistoryService] Buffer quality_check error:', error);
-      }
-    }
-
     // AIQS quality image → attach to CHECK_QUALITY timeline events (PASSED and FAILED)
     const qualityCheckSubscription = this.messageMonitor
       .getLastMessage(QUALITY_CHECK_TOPIC)
@@ -558,18 +717,7 @@ export class WorkpieceHistoryService implements OnDestroy {
         }
       });
 
-    // Workpiece intake facade (Bridge) — T&T bootstrap (DR-30).
-    // Catch-up from MessageMonitor RAM buffer only (topic is NO_PERSIST — DR-28, no browser genealogy).
-    for (const msg of this.messageMonitor.getHistory(WORKPIECE_INTAKE_TOPIC)) {
-      if (!msg?.valid || msg.payload == null) {
-        continue;
-      }
-      try {
-        this.ingestWorkpieceIntake(environmentKey, msg.payload);
-      } catch (error) {
-        console.error('[WorkpieceHistoryService] Buffer workpiece intake error:', error);
-      }
-    }
+    // Workpiece intake facade (Bridge) — live subscription (buffer replay in replayBufferedHistory).
     const workpieceIntakeSubscription = this.messageMonitor
       .getLastMessage(WORKPIECE_INTAKE_TOPIC)
       .subscribe((msg) => {

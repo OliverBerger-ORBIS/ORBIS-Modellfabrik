@@ -100,7 +100,7 @@ describe('AppComponent', () => {
       initialize: jest.Mock;
     };
     const monitor = TestBed.inject(MessageMonitorService);
-    jest.spyOn(monitor, 'clearAll').mockImplementation(() => undefined);
+    const clearAllSpy = jest.spyOn(monitor, 'clearAll');
     const connection = TestBed.inject(ConnectionService);
     jest.spyOn(connection, 'resubscribeRequiredTopics').mockImplementation(() => undefined);
 
@@ -110,6 +110,7 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.componentInstance.refresh();
 
+    expect(clearAllSpy).not.toHaveBeenCalled();
     expect(history.clear).toHaveBeenCalledWith('replay');
     expect(history.initialize).toHaveBeenCalledWith('replay');
   });
