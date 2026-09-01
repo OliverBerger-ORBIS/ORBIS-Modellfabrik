@@ -87,25 +87,25 @@ describe('MessageMonitorTabComponent', () => {
       getAllModules: jest.fn(() => [
         { moduleType: 'DPS', serialNumber: 'SVR4H73275' },
         { moduleType: 'FTS', serialNumber: '5iO4', icon: 'FTS' },
-        { moduleType: 'FTS', serialNumber: 'leJ4', icon: 'FTS' },
+        { moduleType: 'FTS', serialNumber: 'xkI4', icon: 'FTS' },
       ]),
-      getShopfloorTableRowSerialOrder: jest.fn(() => ['SVR4H73275', '5iO4', 'leJ4']),
+      getShopfloorTableRowSerialOrder: jest.fn(() => ['SVR4H73275', '5iO4', 'xkI4']),
       getModuleTypeFromSerial: jest.fn((serial: string) => {
         if (serial === 'SVR4H73275') return 'DPS';
-        if (serial === '5iO4' || serial === 'leJ4' || serial.toLowerCase() === '5io4') return 'FTS';
+        if (serial === '5iO4' || serial === 'xkI4' || serial.toLowerCase() === '5io4') return 'FTS';
         return null;
       }),
       getModuleBySerial: jest.fn((serial: string) => {
         if (serial === 'SVR4H73275') return { moduleType: 'DPS', serialNumber: 'SVR4H73275' };
         if (serial.toLowerCase() === '5io4')
           return { moduleType: 'FTS', serialNumber: '5iO4', icon: 'FTS' };
-        if (serial === 'leJ4') return { moduleType: 'FTS', serialNumber: 'leJ4', icon: 'FTS' };
+        if (serial === 'xkI4') return { moduleType: 'FTS', serialNumber: 'xkI4', icon: 'FTS' };
         return null;
       }),
       getAgvLabel: jest.fn((serial: string) =>
         serial === '5iO4' || serial.toLowerCase() === '5io4'
           ? 'AGV-1'
-          : serial === 'leJ4'
+          : serial === 'xkI4'
             ? 'AGV-2'
             : null
       ),
@@ -118,7 +118,7 @@ describe('MessageMonitorTabComponent', () => {
         modules_by_serial: {},
         fts: [
           { id: 'AGV-1', label: 'AGV-1', serial: '5iO4' },
-          { id: 'AGV-2', label: 'AGV-2', serial: 'leJ4' },
+          { id: 'AGV-2', label: 'AGV-2', serial: 'xkI4' },
         ],
       }),
     };
@@ -195,7 +195,7 @@ describe('MessageMonitorTabComponent', () => {
   it('should list AGV-1 and AGV-2 from layout with serial filter values', () => {
     component.updateAvailableModules();
     const agv1 = component.availableModules.find((m) => m.serial === '5iO4');
-    const agv2 = component.availableModules.find((m) => m.serial === 'leJ4');
+    const agv2 = component.availableModules.find((m) => m.serial === 'xkI4');
     expect(agv1?.name).toContain('AGV-1');
     expect(agv2?.name).toContain('AGV-2');
     expect(component.availableModules.some((m) => m.serial === 'HBW-DEMO')).toBe(false);
@@ -214,7 +214,7 @@ describe('MessageMonitorTabComponent', () => {
     expect(component.availableModules.map((m) => m.serial).sort()).toEqual([
       '5iO4',
       'SVR4H73275',
-      'leJ4',
+      'xkI4',
     ]);
   });
 

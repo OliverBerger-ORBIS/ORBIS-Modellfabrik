@@ -41,7 +41,7 @@ Sprint-bezogene und projektweite Analysen für OSF.
 
 **Referenz / Pflege:** [second-agv-2026-03.md](second-agv-2026-03.md) (Konsolidat), [fts-navigation-how-it-works-2026-03.md](fts-navigation-how-it-works-2026-03.md) (Navigation, manuell → HBW / clearLoadHandler).
 
-- [second-agv-2026-03.md](second-agv-2026-03.md) – Zweites AGV (leJ4), Dual-UI, Gateway `fts$`, Layout `fts[]`; Sprint 17→18
+- [second-agv-2026-03.md](second-agv-2026-03.md) – Zweites AGV (**xkI4**, AGV-2; vorher leJ4/jp93), Dual-UI, Gateway `fts$`, Layout `fts[]`; Sprint 17→18
 - [fts-navigation-how-it-works-2026-03.md](fts-navigation-how-it-works-2026-03.md) – FTS/AGV-Navigation (CCU, Topics, osf-ui)
 - [two-agvs-mixed-session-data-inventory-2026-03.md](two-agvs-mixed-session-data-inventory-2026-03.md) – two-agvs-mixed: Topic-Inventar, jp93→leJ4 (empirisch)
 - [order-agv-mapping-without-mod3-2026-03.md](order-agv-mapping-without-mod3-2026-03.md) – Order↔AGV ohne Mod-3 in Steps (`fts/order`-Ableitung)
@@ -50,7 +50,7 @@ Sprint-bezogene und projektweite Analysen für OSF.
 - [agv-order-tab-color-analysis-2026-03.md](agv-order-tab-color-analysis-2026-03.md) – **historisch** → maßgeblich [DR-24](../03-decision-records/24-shopfloor-highlight-colors.md)
 - [order-tab-active-module-highlight-analysis-2026-03.md](order-tab-active-module-highlight-analysis-2026-03.md) – **historisch** → [DR-24](../03-decision-records/24-shopfloor-highlight-colors.md)
 
-**Tiefergehend (Session-Forensik März 2026, teils `jp93`):** für CCU/TXT/MES-Stillsitze, nicht als aktuelle UI-Spezifikation lesen — Serien heute **leJ4**.
+**Tiefergehend (Session-Forensik März 2026, teils `jp93` / `leJ4`):** für CCU/TXT/MES-Stillsitze, nicht als aktuelle UI-Spezifikation lesen — Serien heute **xkI4** (AGV-2).
 
 - [two-agvs-mixed-event-chain-fischertechnik-2026-03.md](two-agvs-mixed-event-chain-fischertechnik-2026-03.md) – Ursachenkette DPS busy / parallele Orders
 - [two-agvs-mixed-agv2-dps-busy-2026-03.md](two-agvs-mixed-agv2-dps-busy-2026-03.md) – DROP FINISHED / State-Serial NodeRed vs. TXT

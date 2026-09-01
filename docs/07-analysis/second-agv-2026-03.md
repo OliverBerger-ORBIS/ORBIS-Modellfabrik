@@ -1,9 +1,11 @@
-# Zweites AGV (leJ4) – Implementierung & Referenz
+# Zweites AGV (xkI4) – Implementierung & Referenz
 
-**Sprint:** 17 → 18 | **Stand:** 30.03.2026  
-**Kontext:** LogiMAT-Vorbereitung, zweites FTS mit MQTT-Serial **`leJ4`** (Ersatzgerät; zuvor jp93).
+**Sprint:** 17 → 18 | **Stand:** 01.09.2026  
+**Kontext:** Zweites FTS; MQTT-Serial-Kette **jp93** (historisch) → **leJ4** (LogiMAT-Ersatz) → **xkI4** (FT-Reset 01.09.2026, zweites FTS zurückgesendet).
 
-**Serial-Schreibweise:** Offiziell **`leJ4`** – erstes Zeichen = **kleines L** (`U+006C`), nicht großes **I** (`U+0049`). Fälschlich **`IeJ4`** in Layout/Pairing führt zu keinem Match mit `fts/v1/ff/leJ4/…` und Placeholder-Zeilen in der UI.
+**Serial-Schreibweise (AGV-2 aktuell):** **`xkI4`** — drittes Zeichen = **großes I** (`U+0049`), **nicht** kleines **l** (`U+006C`). Visuell oft nicht von `xkl4` unterscheidbar → kanonisch aus MQTT-Topic oder Message-Monitor `serialNumber` kopieren, nicht abtippen.
+
+**Vorgänger leJ4:** erstes Zeichen = **kleines L** (`U+006C`) — gleiche I/l-Falle, anderes Zeichen.
 
 ---
 
@@ -13,40 +15,39 @@
 |---------|--------|
 | **AGV-Tab** | Dropdown AGV-1/AGV-2; Status/Battery/Loads/Commands pro Auswahl; **Route & Position** mit beiden AGVs und Routen in AGV-Farben; Legende Route (AGV-1)/(AGV-2) |
 | **Presentation** | Gleiche `app-agv-tab`-Karte wie AGV-Tab (beide AGVs + Routen) |
-| **Shopfloor-Tab** | Layout-Preview mit **AGV-Overlay** (`showFtsOverlay=true`), farbige Marker + Legende (AGV-1/AGV-2); Modul-Tabelle: **Name** wie Stationen im Format **Kurz (Lang)** (`id-full` via `ModuleNameService`) — für eingetragene FTS **`AGV-1 (Automated Guided Vehicle)`** / **`AGV-2 (…)`** (`getModuleFullName('FTS')`), nicht nur „AGV-1“ ohne Klammern |
+| **Shopfloor-Tab** | Layout-Preview mit **AGV-Overlay** (`showFtsOverlay=true`), farbige Marker + Legende (AGV-1/AGV-2); Modul-Tabelle: **Name** wie Stationen im Format **Kurz (Lang)** |
 | **Orders-Tab** | Aktive Karten: Multi-AGV-Overlays (orange/gelb) |
 | **Gateway / Business** | `fts$` liefert nur **`fts/v1/.../state`** (kein `/order` im Stream) → `ftsStates$` bleibt pro Serial konsistent |
-| **Track & Trace** | WorkpieceHistoryService dynamisch für beide Serials; Fixtures mit leJ4 |
-| **Fixtures** | u. a. `storage_blue_agv2`, `storage_blue_parallel`; **Review Dual-AGV+Routes:** `production_blue_dual_agv_step15` / Preset `order-production-blue-dual-agv-step15` |
-| **Layout** | `shopfloor_layout.json` – `fts[]`: **5iO4 (AGV-1)**, **leJ4 (AGV-2)**; erste `fts`-Position = orange, zweite = warmes Gelb |
+| **Track & Trace** | WorkpieceHistoryService dynamisch für beide Serials |
+| **Layout** | `shopfloor_layout.json` – `fts[]`: **5iO4 (AGV-1)**, **xkI4 (AGV-2)**; erste `fts`-Position = orange, zweite = warmes Gelb |
 
 ---
 
 ## 2. Architektur (Kurz)
 
 - **Business ftsStates$:** Key `ftsId ?? serialNumber` – beide AGVs; gebaut aus Gateway-**`fts$`**, das nur **`…/state`**-Topics mapped (Orders laufen nicht mehr durch `fts$`)
-- **Topics:** Am Broker weiterhin `fts/v1/ff/<serial>/state` | `/order` | `/instantAction`; nur **`/state`** speist `fts$` / `ftsStates$`
+- **Topics:** Am Broker `fts/v1/ff/<serial>/state` | `/order` | `/instantAction`
 - **Dock/Charge:** Topic bzw. Payload enthalten Serial – pro AGV korrekt adressiert
 
 ---
 
 ## 3. Offen / Optional
 
-- **Shopfloor-Tabelle:** Modul-Status (READY/BUSY/…) auf AGV-Zeilen – Sprint 18 Follow-up (Namen ✓: `AGV-n` + `getModuleFullName('FTS')`; siehe §1)
-- **E2E live** mit beiden AGVs (Mock-Fixture `production_blue_dual_agv_step15` verifiziert)
-- **Order-Steps ↔ FTS (AGV-1/AGV-2):** [OSF-MODIFICATIONS.md](../../integrations/APS-CCU/OSF-MODIFICATIONS.md) **Mod 3** — optionales `serialNumber` in **NAVIGATION**-Steps ist **zurückgenommen** (2026-03); die CCU spiegelt die gewählte FTS-Seriennummer nicht in `ccu/order/active` / `completed` wider. **osf-ui:** Zuordnung `(orderId, stepId) → ftsSerial` über **`fts/v1/ff/<serial>/order`** ([`FtsOrderAssignmentService`](../../osf/apps/osf-ui/src/app/services/fts-order-assignment.service.ts)); **OrderCard** nutzt `step.serialNumber ?? getFtsSerialForStep(...)` (serverseitiges Feld bleibt optional/kompatibel). Details: [order-agv-mapping-without-mod3-2026-03.md](order-agv-mapping-without-mod3-2026-03.md).
+- **Shopfloor-Tabelle:** Modul-Status (READY/BUSY/…) auf AGV-Zeilen – Sprint 18 Follow-up
+- **Fixtures / Sessions:** Alte Logs mit `jp93` oder `leJ4` bleiben historisch; Replay nutzt Topic-Serial aus der Session, nicht das aktuelle Layout
 
 ---
 
-## 4. Referenzen
+## 4. Verifikation Serial
 
-- [sprint_17.md](../sprints/sprint_17.md) · [sprint_18.md](../sprints/sprint_18.md) – Messe / Dual-AGV-UI
-- [order-agv-mapping-without-mod3-2026-03.md](order-agv-mapping-without-mod3-2026-03.md) – NAVIGATION ohne Mod 3, Option A (`fts/order`)
-- [OSF-MODIFICATIONS.md](../../integrations/APS-CCU/OSF-MODIFICATIONS.md) – Mod 3 (NAVIGATION `serialNumber`) zurückgenommen
-- [DR-24](../03-decision-records/24-shopfloor-highlight-colors.md) – Farben, beide AGVs, Gateway `fts$`
-- [shopfloor_layout.json](../../osf/apps/osf-ui/public/shopfloor/shopfloor_layout.json) – `fts`-Array
-- [Fischertechnik APS Add-On AGV](https://www.fischertechnik.de/en/industry-and-universities/technical-documents/simulate/agile-production-simulation) – Betriebsanleitung
+```bash
+# Broker (RPi): exakte Topic-Segmente
+docker exec mqtt-broker-prod mosquitto_sub -h localhost -u default -P default \
+  -t 'fts/v1/ff/+/connection' -v -W 30
+```
+
+Oder OSF-UI **Message Monitor** → `fts/v1/ff/xkI4/…` → `"serialNumber": "xkI4"`.
 
 ---
 
-*Konsolidiert aus second-agv-integration-analysis und second-agv-extensions-design. Historische Analysen mit Topic `fts/v1/ff/jp93/…` beziehen sich auf die frühere Hardware.*
+*Historische Analysen mit `jp93` / `leJ4`: nur als Session-Bezug lesen; aktuelles Layout = **5iO4** / **xkI4**.*

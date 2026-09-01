@@ -91,7 +91,7 @@
 
 - **AGV-1** nutzt **`agv1`** (orange), **AGV-2** nutzt **`agv2`** (warmes Gelb) über `ShopfloorMappingService.getAgvColor()` (Index 0 vs. ≥1).
 - **Shopfloor-Tab** und **aktive** Order-Cards zeigen **mehrere FTS-Positionen** (`ftsPositions`), nicht nur ein einzelnes Highlight.
-- **Review-Fixture:** `production_blue_dual_agv_step15` / Preset `order-production-blue-dual-agv-step15` – Production BLUE, bis ca. Schritt 15, zwei aktive Orders mit **5iO4** und **leJ4** sichtbar; in **Shopfloor-**, **Orders-** und **AGV-Tab** wählbar.
+- **Review-Fixture:** `production_blue_dual_agv_step15` / Preset `order-production-blue-dual-agv-step15` – Production BLUE, bis ca. Schritt 15, zwei aktive Orders mit **5iO4** und **xkI4** sichtbar; in **Shopfloor-**, **Orders-** und **AGV-Tab** wählbar.
 
 **Begründung:** Zweifarbigkeit verbessert die Unterscheidbarkeit bei zwei Fahrzeugen; die Order-Route kann weiterhin orange dominieren – Nutzerakzeptanz wurde explizit für diese Überlappung bestätigt.
 

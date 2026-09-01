@@ -185,18 +185,18 @@ describe('ModuleTabComponent registry metadata', () => {
     const component = createComponent();
     (component as any).mappingService = {
       isInitialized: () => true,
-      getModuleTypeFromSerial: (id: string) => (id === 'leJ4' || id === '5iO4' ? 'FTS' : null),
-      getAgvLabel: (id: string) => (id === 'leJ4' ? 'AGV-2' : id === '5iO4' ? 'AGV-1' : null),
+      getModuleTypeFromSerial: (id: string) => (id === 'xkI4' || id === '5iO4' ? 'FTS' : null),
+      getAgvLabel: (id: string) => (id === 'xkI4' ? 'AGV-2' : id === '5iO4' ? 'AGV-1' : null),
     };
     (component as any).moduleRegistry = [
       { id: '5iO4', type: 'FTS', kind: 'transport' },
-      { id: 'leJ4', type: 'FTS', kind: 'transport' },
+      { id: 'xkI4', type: 'FTS', kind: 'transport' },
     ];
     (component as any).moduleRegistryLookup = new Map([
       ['5iO4', { id: '5iO4', type: 'FTS', kind: 'transport' }],
-      ['leJ4', { id: 'leJ4', type: 'FTS', kind: 'transport' }],
+      ['xkI4', { id: 'xkI4', type: 'FTS', kind: 'transport' }],
     ]);
-    (component as any).moduleRegistryOrder = ['5iO4', 'leJ4'];
+    (component as any).moduleRegistryOrder = ['5iO4', 'xkI4'];
 
     const baseTransport = {
       connected: false,
@@ -208,13 +208,13 @@ describe('ModuleTabComponent registry metadata', () => {
       modules: {},
       transports: {
         stray: { id: 'stray', ...baseTransport, connected: true },
-        leJ4: { id: 'leJ4', ...baseTransport, connected: true, messageCount: 3 },
+        xkI4: { id: 'xkI4', ...baseTransport, connected: true, messageCount: 3 },
       },
     };
 
     const rows = (component as any).buildRows(state) as Array<{ id: string; kind: string }>;
     const transportIds = rows.filter((r) => r.kind === 'transport').map((r) => r.id);
-    expect(transportIds).toEqual(['5iO4', 'leJ4']);
+    expect(transportIds).toEqual(['5iO4', 'xkI4']);
     expect(transportIds).not.toContain('stray');
   });
 });
@@ -232,19 +232,19 @@ describe('Shopfloor module table — AGV display names & registry row order', ()
     const modules = [
       { serialNumber: 'SVR_DRILL', moduleType: 'DRILL' },
       { serialNumber: '5iO4', moduleType: 'FTS' },
-      { serialNumber: 'leJ4', moduleType: 'FTS' },
+      { serialNumber: 'xkI4', moduleType: 'FTS' },
     ];
-    const order = ['SVR_DRILL', '5iO4', 'leJ4'];
+    const order = ['SVR_DRILL', '5iO4', 'xkI4'];
     (component as any).mappingService = {
       initializeLayout: jest.fn(),
       getAllModules: jest.fn(() => modules),
       getShopfloorTableRowSerialOrder: jest.fn(() => order),
       getAgvLabel: jest.fn((serial: string) =>
-        serial === '5iO4' ? 'AGV-1' : serial === 'leJ4' ? 'AGV-2' : null
+        serial === '5iO4' ? 'AGV-1' : serial === 'xkI4' ? 'AGV-2' : null
       ),
       isInitialized: jest.fn(() => true),
       getModuleTypeFromSerial: jest.fn((id: string) =>
-        id === '5iO4' || id === 'leJ4' ? 'FTS' : null
+        id === '5iO4' || id === 'xkI4' ? 'FTS' : null
       ),
     };
     (component as any).initializeRegistry();
@@ -254,7 +254,7 @@ describe('Shopfloor module table — AGV display names & registry row order', ()
     const component = createComponent();
     attachRegistryFromLayout(component);
     const transport: TransportOverviewStatus = {
-      id: 'leJ4',
+      id: 'xkI4',
       ...baseTransport,
     };
     const row = (component as any).createTransportRow(transport);
@@ -292,11 +292,11 @@ describe('Shopfloor module table — AGV display names & registry row order', ()
     const modules = [
       { serialNumber: 'Z_MILL', moduleType: 'MILL' },
       { serialNumber: 'A_DRILL', moduleType: 'DRILL' },
-      { serialNumber: 'leJ4', moduleType: 'FTS' },
+      { serialNumber: 'xkI4', moduleType: 'FTS' },
       { serialNumber: '5iO4', moduleType: 'FTS' },
       { serialNumber: 'EXTRA', moduleType: 'HBW' },
     ];
-    const canonical = ['A_DRILL', 'Z_MILL', '5iO4', 'leJ4'];
+    const canonical = ['A_DRILL', 'Z_MILL', '5iO4', 'xkI4'];
     (component as any).mappingService = {
       initializeLayout: jest.fn(),
       getAllModules: jest.fn(() => modules),

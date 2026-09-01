@@ -391,12 +391,12 @@ describe('WorkpieceHistoryService', () => {
     });
   });
 
-  describe('multi-AGV (5iO4 and leJ4)', () => {
+  describe('multi-AGV (5iO4 and xkI4)', () => {
     it('should subscribe to FTS state topics for both AGVs when layout has two FTS', () => {
       const mappingMock = {
         getAgvOptions: jest.fn(() => [
           { serial: '5iO4', label: 'AGV-1' },
-          { serial: 'leJ4', label: 'AGV-2' },
+          { serial: 'xkI4', label: 'AGV-2' },
         ]),
       };
 
@@ -423,7 +423,7 @@ describe('WorkpieceHistoryService', () => {
       svc.initialize('mock');
 
       expect(mm.getLastMessage).toHaveBeenCalledWith('fts/v1/ff/5iO4/state');
-      expect(mm.getLastMessage).toHaveBeenCalledWith('fts/v1/ff/leJ4/state');
+      expect(mm.getLastMessage).toHaveBeenCalledWith('fts/v1/ff/xkI4/state');
 
       svc.ngOnDestroy();
     });
@@ -1839,7 +1839,7 @@ describe('WorkpieceHistoryService', () => {
       sp.updateWorkpieceHistory(
         env,
         {
-          serialNumber: 'leJ4',
+          serialNumber: 'xkI4',
           timestamp: '2026-07-29T10:00:00.000Z',
           orderId: blueOrder,
           orderUpdateId: 1,
@@ -1847,7 +1847,7 @@ describe('WorkpieceHistoryService', () => {
           driving: false,
           actionState: { id: 'b-dock', command: 'DOCK', state: 'FINISHED', timestamp: '2026-07-29T10:00:00.000Z' },
           load: [{ loadId: 'nfc-blue', loadType: 'BLUE', loadPosition: '1' }],
-          _moduleSerialId: 'leJ4',
+          _moduleSerialId: 'xkI4',
         },
         orders
       );
@@ -1981,7 +1981,7 @@ describe('WorkpieceHistoryService', () => {
       sp.updateWorkpieceHistory(
         env,
         {
-          serialNumber: 'leJ4',
+          serialNumber: 'xkI4',
           timestamp: '2026-07-29T10:00:00.000Z',
           orderId: whiteOrder,
           orderUpdateId: 1,
@@ -1989,7 +1989,7 @@ describe('WorkpieceHistoryService', () => {
           driving: false,
           actionState: { id: 'b-dock', command: 'DOCK', state: 'FINISHED', timestamp: '2026-07-29T10:00:00.000Z' },
           load: [{ loadId: 'nfc-blue', loadType: 'BLUE', loadPosition: '1' }],
-          _moduleSerialId: 'leJ4',
+          _moduleSerialId: 'xkI4',
         },
         {
           active: { [whiteOrder]: { orderId: whiteOrder, orderType: 'PRODUCTION', type: 'WHITE' } },

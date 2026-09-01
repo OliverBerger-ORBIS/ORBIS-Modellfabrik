@@ -802,7 +802,7 @@ export class WorkpieceHistoryService implements OnDestroy {
       return null; // Intersections are handled separately
     }
 
-    // Try to resolve via ModuleNameService (uses layout: 5iO4→FTS, leJ4→FTS, etc.)
+    // Try to resolve via ModuleNameService (uses layout: 5iO4→FTS, xkI4→FTS, etc.)
     const moduleType = this.moduleNameService.getModuleTypeFromSerial(serialNumber);
     if (moduleType) {
       return moduleType;

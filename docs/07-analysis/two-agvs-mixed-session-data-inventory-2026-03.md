@@ -14,15 +14,16 @@ Session-Logs liegen unter `data/osf-data/sessions/` als **JSON-Zeilen** (`*.log`
 
 ---
 
-## 2. Serial-Mapping AGV-2: `jp93` (historisch) → `leJ4` (aktuell)
+## 2. Serial-Mapping AGV-2: `jp93` (historisch) → `leJ4` (LogiMAT) → **`xkI4`** (FT-Reset 01.09.2026, aktuell)
 
 | Rolle   | MQTT-Serial | Zeitraum / Quelle |
 |---------|-------------|-------------------|
 | AGV-1   | `5iO4`      | Erstes `fts[]`-Element im Layout; Label **AGV-1** (orange) |
-| AGV-2   | `leJ4`      | Zweites `fts[]`-Element; seit Hardware-Austausch / Messe statt `jp93` |
+| AGV-2   | **`xkI4`**  | Zweites `fts[]`-Element; seit FT-Reset 01.09.2026 (vorher `leJ4`, davor `jp93`) |
+| AGV-2   | `leJ4`      | Nur in älteren Sessions/Fixtures vor 01.09.2026 |
 | AGV-2   | `jp93`      | Sessions **2026-03-12** unter diesem Topic-Segment (historisch) |
 
-**Topics:** Struktur `fts/v1/ff/<serial>/state|order|…` ist für beide Serien gleich — bei Literatur/älteren Logs **`jp93` durch `leJ4` ersetzen**, wenn es um aktuelle OSF-Konfiguration geht.
+**Topics:** Struktur `fts/v1/ff/<serial>/state|order|…` ist für beide Serien gleich — bei Literatur/älteren Logs **`jp93`/`leJ4` als historisch** lesen; aktuelles Layout = **`xkI4`**.
 
 ---
 

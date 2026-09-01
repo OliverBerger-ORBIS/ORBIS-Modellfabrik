@@ -63,7 +63,7 @@ describe('agv-route-overlay.utils', () => {
     it('lists FTS state topics not in layout config', () => {
       const result = detectUnknownAgvSerialsFromTopics(
         ['fts/v1/ff/5iO4/state', 'fts/v1/ff/stray/state', 'module/v1/ff/X/state'],
-        new Set(['5iO4', 'leJ4'])
+        new Set(['5iO4', 'xkI4'])
       );
       expect(result).toEqual([{ serial: 'stray', label: 'AGV-? (stray)' }]);
     });

@@ -105,16 +105,16 @@ describe('AgvTabComponent', () => {
       getAgvOptions: jest.fn(() =>
         [
           { serial: '5iO4', label: 'AGV-1' },
-          { serial: 'leJ4', label: 'AGV-2' },
+          { serial: 'xkI4', label: 'AGV-2' },
         ] as const
       ),
       getAgvLabel: jest.fn((serial: string) =>
-        serial === '5iO4' ? 'AGV-1' : serial === 'leJ4' ? 'AGV-2' : null
+        serial === '5iO4' ? 'AGV-1' : serial === 'xkI4' ? 'AGV-2' : null
       ),
       getAgvColor: jest.fn((serial: string) =>
         serial === '5iO4'
           ? ORBIS_COLORS.agv.agv1
-          : serial === 'leJ4'
+          : serial === 'xkI4'
             ? ORBIS_COLORS.agv.agv2
             : ORBIS_COLORS.orbisGrey.medium
       ),
@@ -231,19 +231,19 @@ describe('AgvTabComponent', () => {
   describe('Dual AGV labels (shopfloor fts[] order)', () => {
     it('maps MQTT serials to AGV-1 and AGV-2', () => {
       expect(component.getAgvLabel('5iO4')).toBe('AGV-1');
-      expect(component.getAgvLabel('leJ4')).toBe('AGV-2');
+      expect(component.getAgvLabel('xkI4')).toBe('AGV-2');
       expect(component.getAgvLabel('unknown-serial')).toBeNull();
     });
 
     it('exposes both AGVs in layout order (AGV-1 first)', () => {
-      expect(component.agvOptions.map((o) => o.serial)).toEqual(['5iO4', 'leJ4']);
+      expect(component.agvOptions.map((o) => o.serial)).toEqual(['5iO4', 'xkI4']);
       expect(component.agvOptions.map((o) => o.label)).toEqual(['AGV-1', 'AGV-2']);
     });
 
     it('maps AGV colors by serial like ShopfloorMappingService', () => {
       const mapping = TestBed.inject(ShopfloorMappingService);
       expect(mapping.getAgvColor('5iO4')).toBe(ORBIS_COLORS.agv.agv1);
-      expect(mapping.getAgvColor('leJ4')).toBe(ORBIS_COLORS.agv.agv2);
+      expect(mapping.getAgvColor('xkI4')).toBe(ORBIS_COLORS.agv.agv2);
       expect(mapping.getAgvColor('other')).toBe(ORBIS_COLORS.orbisGrey.medium);
     });
   });
@@ -750,10 +750,10 @@ describe('AgvTabComponent', () => {
       const orders = [
         {
           orderId: 'x1',
-          productionSteps: [{ id: '1', type: 'MANUFACTURE', state: 'RUNNING', serialNumber: 'leJ4' }],
+          productionSteps: [{ id: '1', type: 'MANUFACTURE', state: 'RUNNING', serialNumber: 'xkI4' }],
         },
       ];
-      const r = component.filterCcuActiveOrdersForAgv(orders as never, 'leJ4', fts as never);
+      const r = component.filterCcuActiveOrdersForAgv(orders as never, 'xkI4', fts as never);
       expect(r).toHaveLength(1);
       expect(r[0].orderId).toBe('x1');
     });
@@ -938,11 +938,11 @@ describe('AgvTabComponent', () => {
   });
 
   it('switches the selected AGV serial', () => {
-    component.onSelectedAgvChange('leJ4');
-    expect(component.selectedAgvSerial$.value).toBe('leJ4');
-    expect(component.getAgvLabel('leJ4')).toBe('AGV-2');
-    expect(component.ftsOrderTopic).toContain('leJ4');
-    expect(component.ftsInstantActionTopic).toContain('leJ4');
+    component.onSelectedAgvChange('xkI4');
+    expect(component.selectedAgvSerial$.value).toBe('xkI4');
+    expect(component.getAgvLabel('xkI4')).toBe('AGV-2');
+    expect(component.ftsOrderTopic).toContain('xkI4');
+    expect(component.ftsInstantActionTopic).toContain('xkI4');
   });
 
   it('delegates stationary position and generates client ids', () => {
@@ -1058,7 +1058,7 @@ describe('AgvTabComponent', () => {
     it('detectUnknownAgvOptions lists FTS state topics not in layout config', () => {
       messageMonitor.getTopics.mockReturnValue([
         'fts/v1/ff/5iO4/state',
-        'fts/v1/ff/leJ4/state',
+        'fts/v1/ff/xkI4/state',
         'fts/v1/ff/stray/state',
         'module/v1/ff/SVR4H73275/state',
       ]);
@@ -1074,8 +1074,8 @@ describe('AgvTabComponent', () => {
     it('onSelectedAgvChange resets animation context and rebinds streams', () => {
       const initSpy = jest.spyOn(component as unknown as { initializeStreams: () => void }, 'initializeStreams');
       (component as unknown as { previousNodeId: string }).previousNodeId = 'NODE_A';
-      component.onSelectedAgvChange('leJ4');
-      expect(component.selectedAgvSerial$.value).toBe('leJ4');
+      component.onSelectedAgvChange('xkI4');
+      expect(component.selectedAgvSerial$.value).toBe('xkI4');
       expect((component as unknown as { previousNodeId: string | null }).previousNodeId).toBeNull();
       expect(initSpy).toHaveBeenCalled();
     });

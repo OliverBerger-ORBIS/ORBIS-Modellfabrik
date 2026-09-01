@@ -33,12 +33,12 @@ describe('buildFtsPreviewPositionsFromStates', () => {
 
   it('resolves state when keyed by different map entry but matching serialNumber', () => {
     const positions = buildFtsPreviewPositionsFromStates(
-      { alias: baseState('leJ4', 'NODE_B') },
-      ['leJ4'],
+      { alias: baseState('xkI4', 'NODE_B') },
+      ['xkI4'],
       () => ({ x: 1, y: 2 }),
-      (serial) => (serial === 'leJ4' ? '#eab308' : '#ccc')
+      (serial) => (serial === 'xkI4' ? '#eab308' : '#ccc')
     );
-    expect(positions[0]?.serial).toBe('leJ4');
+    expect(positions[0]?.serial).toBe('xkI4');
     expect(positions[0]?.color).toBe('#eab308');
   });
 
@@ -59,7 +59,7 @@ describe('buildFtsPreviewPositionsFromStates', () => {
   it('skips AGVs without lastNodeId or resolvable position', () => {
     const positions = buildFtsPreviewPositionsFromStates(
       { '5iO4': baseState('5iO4', '') },
-      ['5iO4', 'leJ4'],
+      ['5iO4', 'xkI4'],
       () => null,
       () => '#000'
     );
@@ -69,14 +69,14 @@ describe('buildFtsPreviewPositionsFromStates', () => {
   it('preserves agvSerialsOrdered sequence', () => {
     const ftsStates = {
       '5iO4': baseState('5iO4', 'A'),
-      leJ4: baseState('leJ4', 'B'),
+      xkI4: baseState('xkI4', 'B'),
     };
     const positions = buildFtsPreviewPositionsFromStates(
       ftsStates,
-      ['leJ4', '5iO4'],
+      ['xkI4', '5iO4'],
       (nodeId) => ({ x: nodeId === 'A' ? 1 : 2, y: 0 }),
       (serial) => serial
     );
-    expect(positions.map((p) => p.serial)).toEqual(['leJ4', '5iO4']);
+    expect(positions.map((p) => p.serial)).toEqual(['xkI4', '5iO4']);
   });
 });

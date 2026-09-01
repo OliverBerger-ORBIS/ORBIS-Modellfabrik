@@ -37,7 +37,7 @@ describe('FtsOrderAssignmentService', () => {
           useValue: {
             getAgvOptions: () => [
               { serial: '5iO4', label: 'AGV-1' },
-              { serial: 'leJ4', label: 'AGV-2' },
+              { serial: 'xkI4', label: 'AGV-2' },
             ],
           },
         },
@@ -77,11 +77,11 @@ describe('FtsOrderAssignmentService', () => {
         { id: 'n2', action: { type: 'DOCK', id: 'step-nav' } },
       ],
     };
-    historyByTopic.set('fts/v1/ff/leJ4/order', [{ valid: true, payload }]);
-    lastMessageSubjects.get('fts/v1/ff/leJ4/order')?.next({ valid: true, payload });
+    historyByTopic.set('fts/v1/ff/xkI4/order', [{ valid: true, payload }]);
+    lastMessageSubjects.get('fts/v1/ff/xkI4/order')?.next({ valid: true, payload });
 
     service.getFtsSerialForStep$('order-2', 'step-nav').subscribe((serial) => {
-      expect(serial).toBe('leJ4');
+      expect(serial).toBe('xkI4');
       done();
     });
   });

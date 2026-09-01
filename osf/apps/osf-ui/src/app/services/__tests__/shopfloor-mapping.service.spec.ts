@@ -296,13 +296,13 @@ describe('ShopfloorMappingService', () => {
         modules_by_serial: {},
         fts: [
           { id: 'fts-1', label: 'AGV-1', serial: '5iO4' },
-          { id: 'fts-2', label: 'AGV-2', serial: 'leJ4' },
+          { id: 'fts-2', label: 'AGV-2', serial: 'xkI4' },
         ],
       });
       service.initializeLayout(config);
 
       expect(service.getAgvColor('5iO4')).toBe(ORBIS_COLORS.agv.agv1);
-      expect(service.getAgvColor('leJ4')).toBe(ORBIS_COLORS.agv.agv2);
+      expect(service.getAgvColor('xkI4')).toBe(ORBIS_COLORS.agv.agv2);
       expect(service.getAgvLabel('5IO4')).toBe('AGV-1');
       expect(service.getAgvColor('5IO4')).toBe(ORBIS_COLORS.agv.agv1);
       // Serial not listed in fts[] → no label / grey (not treated as a configured AGV)
@@ -338,7 +338,7 @@ describe('ShopfloorMappingService', () => {
         },
         fts: [
           { id: 'fts-1', label: 'AGV-1', serial: '5iO4' },
-          { id: 'fts-2', label: 'AGV-2', serial: 'leJ4' },
+          { id: 'fts-2', label: 'AGV-2', serial: 'xkI4' },
         ],
       });
       service.initializeLayout(config);
@@ -350,7 +350,7 @@ describe('ShopfloorMappingService', () => {
         'SVR_DPS',
         'CHRG0',
         '5iO4',
-        'leJ4',
+        'xkI4',
       ]);
     });
   });

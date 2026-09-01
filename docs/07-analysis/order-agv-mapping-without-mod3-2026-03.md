@@ -25,7 +25,7 @@
 
 Die FTS-Zuordnung passiert intern in `chooseReadyFtsForStep()` → `sendNavigationRequest()` → Publish an `fts/v1/ff/<ftsSerial>/order`, wird aber **nicht** in die Order-Steps zurückgeschrieben.
 
-**Abgestimmt mit Dual-AGV:** Welches physische FTS „AGV-1“ / „AGV-2“ ist, leitet die osf-ui aus `shopfloor_layout.json` (`fts[]`-Reihenfolge, z. B. **5iO4** / **leJ4**) ab — siehe [second-agv-2026-03.md](second-agv-2026-03.md). Die Step-Zuordnung über `fts/order` liefert die **Seriennummer**; die Label-Zuordnung zu AGV-1/AGV-2 erfolgt über `ShopfloorMappingService` / `getAgvLabel`.
+**Abgestimmt mit Dual-AGV:** Welches physische FTS „AGV-1“ / „AGV-2“ ist, leitet die osf-ui aus `shopfloor_layout.json` (`fts[]`-Reihenfolge, z. B. **5iO4** / **xkI4**) ab — siehe [second-agv-2026-03.md](second-agv-2026-03.md). Die Step-Zuordnung über `fts/order` liefert die **Seriennummer**; die Label-Zuordnung zu AGV-1/AGV-2 erfolgt über `ShopfloorMappingService` / `getAgvLabel`.
 
 ---
 
@@ -51,7 +51,7 @@ if (step.type === 'NAVIGATION') {
 
 - `(orderId, stepId)` → `ftsSerialNumber`
 - `stepId` = `productionSteps[].id` des NAVIGATION-Steps
-- `ftsSerialNumber` = z.B. `5iO4`, `leJ4` (für AGV-1, AGV-2)
+- `ftsSerialNumber` = z.B. `5iO4`, `xkI4` (für AGV-1, AGV-2)
 
 ---
 
@@ -175,7 +175,7 @@ if (step.type === 'NAVIGATION') {
    - Bei NAVIGATION-Steps: nutzt `step.serialNumber ?? service.getFtsSerialForStep(...)` für Anzeige
 
 3. **MessageMonitor / Topic-Subscription:**
-   - `getLastMessage(topic)` arbeitet mit exaktem Topic-Match (kein Wildcard). Pro FTS-Serial muss separat subscribet werden: `fts/v1/ff/5iO4/order`, `fts/v1/ff/leJ4/order`.
+   - `getLastMessage(topic)` arbeitet mit exaktem Topic-Match (kein Wildcard). Pro FTS-Serial muss separat subscribet werden: `fts/v1/ff/5iO4/order`, `fts/v1/ff/xkI4/order`.
    - FTS-Seriennummern können aus Konfiguration stammen (z. B. AGV-Mapping, `docs/05-hardware/arduino-r4-multisensor.md` oder second-agv-Referenz) oder dynamisch aus `getTopics()` gefiltert werden (Topics mit Pattern `fts/v1/ff/*/order`), sobald mindestens eine Message angekommen ist.
 
 ### FTS-Order-Payload (Referenz)
@@ -206,7 +206,7 @@ Die NAVIGATION-Step-Id steht im **letzten** Node (`action.id` des DOCK-Actions).
 
 ### Track & Trace
 
-- **Shopfloor Events (linke Spalte):** Events werden aus FTS-State und Modul-State gebaut. Jedes Event hat eine Quelle (Topic): `fts/v1/ff/5iO4/state` oder `fts/v1/ff/leJ4/state` → Serial ist im Topic bzw. im Payload. `WorkpieceHistoryService` setzt `moduleName = getAgvLabel(moduleSerialId)` für FTS-Events. **AGV-1/AGV-2 wird bereits angezeigt** – keine Änderung nötig.
+- **Shopfloor Events (linke Spalte):** Events werden aus FTS-State und Modul-State gebaut. Jedes Event hat eine Quelle (Topic): `fts/v1/ff/5iO4/state` oder `fts/v1/ff/xkI4/state` → Serial ist im Topic bzw. im Payload. `WorkpieceHistoryService` setzt `moduleName = getAgvLabel(moduleSerialId)` für FTS-Events. **AGV-1/AGV-2 wird bereits angezeigt** – keine Änderung nötig.
 - **Order Context (rechte Spalte):** Zeigt Order-Metadaten (orderId, Status, ERP-Links). Keine Darstellung von Steps mit AGV-Zuordnung – das ist bewusst so (Order-Ebene, nicht Step-Ebene).
 
 **Fazit:** Track & Trace zeigt FTS/AGV pro Event schon korrekt (Quelle = FTS-Topic). **Option A** ergänzt die Zuordnung dort, wo sie aus **ccu/order/active** allein fehlt: im **Orders Tab** bei den Steps; Shopfloor-Vorschau/Badges können dieselbe effektive Seriennummer nutzen.
@@ -215,7 +215,7 @@ Die NAVIGATION-Step-Id steht im **letzten** Node (`action.id` des DOCK-Actions).
 
 ## 7. Referenzen
 
-- [second-agv-2026-03.md](second-agv-2026-03.md) – Dual-AGV, Layout `fts[]`, Serien **5iO4** / **leJ4**
+- [second-agv-2026-03.md](second-agv-2026-03.md) – Dual-AGV, Layout `fts[]`, Serien **5iO4** / **xkI4**
 - [OSF-MODIFICATIONS.md](../../integrations/APS-CCU/OSF-MODIFICATIONS.md) – Mod 3 Status
 - [order-card.component.ts](../../osf/apps/osf-ui/src/app/components/order-card/order-card.component.ts) – AGV-Label-Nutzung
 - [fts-order-assignment.service.ts](../../osf/apps/osf-ui/src/app/services/fts-order-assignment.service.ts) – Option A (`fts/.../order`)
