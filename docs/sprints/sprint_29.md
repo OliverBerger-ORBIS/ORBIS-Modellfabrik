@@ -2,7 +2,7 @@
 
 **Zeitraum:** 21.08.2026 – 03.09.2026 · **Status:** Laufend · **Vorheriger Sprint:** [Sprint 28](./sprint_28.md)
 
-**Kurz:** Fokus **Grafana / Edge-Persistenz** und **Workpiece-Intake live** (Bridge auf RPi + optional OSF-UI-Subscribe); Carry-over Netzwerk/Blog/E2E; Vorbereitung Uni Magdeburg Deep-Dive SB (**21./22.09.**).
+**Kurz:** Fokus **Grafana / Edge-Persistenz** und **Workpiece-Intake live** (Bridge auf RPi + optional OSF-UI-Subscribe); Carry-over Netzwerk/Blog/E2E; Demos **Bühler (14.09.)**, **Welcome Days (17.09.)**, Uni Magdeburg Deep-Dive SB (**21./22.09.**).
 
 ---
 
@@ -10,6 +10,8 @@
 
 | Datum | Event | Nutzen für OSF |
 |--------|--------|----------------|
+| **14.09.2026** | **Firma Bühler** — OSF-Präsentation **live** am Shopfloor | Kunden-Demo / Use-Case-Story |
+| **17.09.2026** | **ORBIS Welcome Days** — OSF-Präsentation für neue ORBIS-Mitarbeiter | Onboarding / interne DSP-Story |
 | **21.09.2026** *(bestätigt)* | **Uni Magdeburg / Dr. Reggelin** — **Ganztägiger Workshop Saarbrücken** Deep-Dive OSF/DSP; Termin-Einladung an **Kishitz** raus; **DSP-Team informiert** und unterstützt Deep Dive; NDA-Unterschrift **Frank Wilhelm** noch offen | Hochschulkooperation / DSP-Story |
 | *(erledigt 25.08.2026)* | Abstimmung DSP-Truppe für SB-Termin — Team informiert, Unterstützung Deep Dive zugesagt | Terminfixierung Deep-Dive |
 | *(erledigt 26.08.2026)* | **Daniel Wonkam** (OD) — Intake-Topic nutzen; Workpiece-Tracking 3er-Stack | [workpiece-intake-event-partner.md](../04-howto/integrations/workpiece-intake-event-partner.md) an Daniel |
@@ -79,6 +81,10 @@
 - [x] **Unvollständige ml-Sessions entfernt (26.08.2026):** `storage-production-ml-wbr_…115849`, `…-brw_…121835`, `…-bwr_…131822` (Name vor Aufnahme, nur 2 DPS-Intakes); INVENTORY bereinigt.
 - [x] **Partner-Hinweis Daniel (26.08.2026):** [workpiece-intake-event-partner.md](../04-howto/integrations/workpiece-intake-event-partner.md) an Daniel Wonkam (OD) — Intake-Topic / 3er-Stack.
 
+### Demo & Session-Aufnahmen
+
+- [ ] **Dual-AGV Referenz-Sessions aufnehmen:** AGV-1 (`5iO4`) + AGV-2 (`xkI4`), OSF-UI **1.3.5**; Szenarien z. B. Parallel-Transport, Production mit beiden FTS, `startup-clean`; [INVENTORY.md](../../data/osf-data/sessions/INVENTORY.md) pflegen; Material für Bühler (**14.09.**) und Welcome Days (**17.09.**).
+
 ### Integration & Tests
 
 - [x] **Coverage Gates + Shopfloor-Tests (24.08.2026):** Jest-Thresholds `48 / 59 / 64 / 63` (vorher `42 / 52 / 58 / 58`). Specs für Rotation/Layout-Service, Shopfloor-Preview (Zoom, Selection, Rotation, Route-Helfer, SVG), AGV-Viewport. Messung: B/F/L/S **51.2 / 62.8 / 67.8 / 66.7**; 1451 Tests passed. How-to + [test-coverage-status.md](../07-analysis/test-coverage-status.md).
@@ -117,4 +123,4 @@
 
 ---
 
-*Stand: 20.08.2026 (Sprintwechsel)* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 01.09.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
