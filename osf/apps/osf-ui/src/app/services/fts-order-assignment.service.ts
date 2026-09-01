@@ -3,14 +3,13 @@ import { Observable, combineLatest, of, BehaviorSubject } from 'rxjs';
 import { map, shareReplay, startWith } from 'rxjs/operators';
 import { MessageMonitorService } from './message-monitor.service';
 import { ShopfloorMappingService } from './shopfloor-mapping.service';
+import { getEffectiveFtsSerials } from '../utils/fts-serial-resolver';
 
 /** FTS order payload (from fts/v1/ff/<serial>/order) */
 interface FtsOrderPayload {
   orderId?: string;
   nodes?: Array<{ id?: string; action?: { id?: string; type?: string }; linkedEdges?: string[] }>;
 }
-
-const FTS_SERIALS_FALLBACK = ['5iO4', 'xkI4'];
 
 /**
  * Derives orderId + stepId → ftsSerial mapping from fts/v1/ff/+/order messages.
@@ -57,8 +56,10 @@ export class FtsOrderAssignmentService {
   }
 
   private getFtsSerials(): string[] {
-    const opts = this.mappingService.getAgvOptions();
-    return opts.length > 0 ? opts.map((o) => o.serial) : FTS_SERIALS_FALLBACK;
+    return getEffectiveFtsSerials({
+      getAgvOptions: () => this.mappingService.getAgvOptions(),
+      getTopics: () => this.messageMonitor.getTopics?.() ?? [],
+    });
   }
 
   /** Extract orderId and stepId (NAV step id) from FTS order payload. stepId = last node with action.id */

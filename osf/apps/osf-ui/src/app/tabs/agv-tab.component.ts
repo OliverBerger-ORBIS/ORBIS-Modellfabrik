@@ -32,6 +32,10 @@ import {
   type AgvMapRouteSegment,
   type AgvRouteOverlayLayers,
 } from '../utils/agv-route-overlay.utils';
+import {
+  FTS_SERIALS_FALLBACK,
+  getFtsFallbackAgvOptions,
+} from '../utils/fts-serial-resolver';
 
 export type { AgvMapRouteSegment, AgvRouteOverlayLayers } from '../utils/agv-route-overlay.utils';
 
@@ -83,8 +87,8 @@ interface FtsState {
   errors: unknown[];
 }
 
-// Fallback serial when layout has no FTS config (Phase A: AGV selection via dropdown)
-const FTS_SERIAL_FALLBACK = '5iO4';
+// Default selected AGV before layout load (first canonical FTS serial)
+const FTS_SERIAL_DEFAULT = FTS_SERIALS_FALLBACK[0];
 
 /**
  * Planned route stroke-dasharray in **layout pixel units** (same as segment x/y).
@@ -157,7 +161,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   readonly ccuSetChargeTopic = CCU_SET_CHARGE_TOPIC;
 
   /** Selected AGV serial for state/order/commands (Phase A: dropdown selection) */
-  readonly selectedAgvSerial$ = new BehaviorSubject<string>(FTS_SERIAL_FALLBACK);
+  readonly selectedAgvSerial$ = new BehaviorSubject<string>(FTS_SERIAL_DEFAULT);
 
   get ftsOrderTopic(): string {
     return ftsOrderTopic(this.selectedAgvSerial$.value);
@@ -358,7 +362,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   /** AGV options for dropdown (AGV-1, AGV-2); fallback if layout not loaded */
   get agvOptions(): AgvOption[] {
     const opts = this.mappingService.getAgvOptions();
-    const base = opts.length > 0 ? opts : [{ serial: FTS_SERIAL_FALLBACK, label: 'AGV-1' }];
+    const base = opts.length > 0 ? opts : getFtsFallbackAgvOptions();
     return [...base, ...this.unknownAgvOptions];
   }
 
@@ -822,7 +826,7 @@ export class AgvTabComponent implements OnInit, OnDestroy {
     // Warm up order stream so direction map is populated
     this.subscriptions.add(this.ftsOrder$.subscribe());
 
-    const agvOpts = this.agvOptions.length > 0 ? this.agvOptions : [{ serial: FTS_SERIAL_FALLBACK, label: 'AGV-1' }];
+    const agvOpts = this.agvOptions.length > 0 ? this.agvOptions : getFtsFallbackAgvOptions();
 
     const perAgvOrderStreams = agvOpts.map((opt) =>
       this.messageMonitor.getLastMessage<any>(ftsOrderTopic(opt.serial)).pipe(
@@ -1096,7 +1100,8 @@ export class AgvTabComponent implements OnInit, OnDestroy {
   }
 
   private detectUnknownAgvOptions(): AgvOption[] {
-    const configured = new Set(this.mappingService.getAgvOptions().map((o) => o.serial));
+    const layoutSerials = this.mappingService.getAgvOptions().map((o) => o.serial);
+    const configured = new Set(layoutSerials.length > 0 ? layoutSerials : [...FTS_SERIALS_FALLBACK]);
     return detectUnknownAgvSerialsFromTopics(this.messageMonitor.getTopics(), configured);
   }
 

@@ -20,6 +20,7 @@ import {
   QUALITY_CHECK_TOPIC,
   type QualityCheckAttachment,
 } from '../utils/quality-check-image';
+import { getEffectiveFtsSerials } from '../utils/fts-serial-resolver';
 
 /**
  * Track & Trace event for workpiece history
@@ -308,8 +309,7 @@ export class WorkpieceHistoryService implements OnDestroy {
   private replayBufferedHistory(environmentKey: string): void {
     const orders = this.getOrdersSnapshotFromMonitor();
 
-    const ftsSerials = this.mappingService.getAgvOptions().map((o) => o.serial);
-    const ftsTopics = ftsSerials.length > 0 ? ftsSerials : ['5iO4'];
+    const ftsTopics = this.resolveEffectiveFtsSerials();
     const ftsOrderTopics = [
       'ccu/order/fts',
       ...ftsTopics.map((serial) => `fts/v1/ff/${serial}/order`),
@@ -516,9 +516,7 @@ export class WorkpieceHistoryService implements OnDestroy {
 
     const historyMap = this.getStore(environmentKey);
 
-    // FTS serials from layout (AGV-1, AGV-2, …); fallback to 5iO4 if layout not loaded
-    const ftsSerials = this.mappingService.getAgvOptions().map((o) => o.serial);
-    const ftsTopics = ftsSerials.length > 0 ? ftsSerials : ['5iO4'];
+    const ftsTopics = this.resolveEffectiveFtsSerials();
 
     // Subscribe to FTS state messages (all configured AGVs)
     const ftsStateStreams = ftsTopics.map((serial) =>
@@ -743,6 +741,13 @@ export class WorkpieceHistoryService implements OnDestroy {
     this.subscriptions.set(environmentKey, combinedSubscription);
   }
 
+  private resolveEffectiveFtsSerials(): string[] {
+    return getEffectiveFtsSerials({
+      getAgvOptions: () => this.mappingService.getAgvOptions(),
+      getTopics: () => this.messageMonitor.getTopics(),
+    });
+  }
+
   /**
    * Extract module serial ID from MQTT topic
    * Patterns: fts/v1/ff/<serial>/state, module/v1/ff/<serial>/state, module/v1/ff/NodeRed/<serial>/state
@@ -808,9 +813,8 @@ export class WorkpieceHistoryService implements OnDestroy {
       return moduleType;
     }
 
-    // Fallback: FTS from layout getAgvOptions, or known serials if layout not yet loaded
-    const agvSerials = this.mappingService.getAgvOptions().map((o) => o.serial);
-    const knownFtsSerials = agvSerials.length > 0 ? agvSerials : ['5iO4'];
+    // Fallback: FTS from layout + canonical fallback + topics seen in MessageMonitor
+    const knownFtsSerials = this.resolveEffectiveFtsSerials();
     if (knownFtsSerials.includes(serialNumber) || serialNumber.toLowerCase().includes('fts')) {
       return 'FTS';
     }

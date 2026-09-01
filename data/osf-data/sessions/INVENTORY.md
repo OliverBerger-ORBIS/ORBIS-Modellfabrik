@@ -37,8 +37,9 @@ Abgleich: `python scripts/check_session_inventory.py`
 | storage-production-ml-bwr_20260804_130016 | | ✓ | ✓ | ✓ | 1 | **Störfall (behalten):** DPS→FTS-Befehl kam nicht an, DPS blockiert; Prod stoppt nahe AIQS; 3 Intakes |
 | storage-production-ml-rrr_20260804_133245 | | ✓ | ✓ | ✓ | 1 | 3× RED Multi-Load; **2. RED** Pos2 Quality-Fail (CRACK, `f6caa206181682`) |
 | storage-production-ml-bbb_20260804_134700 | | ✓ | ✓ | ✓ | 1 | 3× BLUE Multi-Load; **2. BLUE** Pos2 Quality-Fail (MIPO2, `b7b84ce7ad920f`); DRILL+MILL |
-| production-wr-agv2-b-agv1-clean_20260513_135600 | | ✓ | | | 2 | **2-AGV-Referenz (Interim):** osf.4 WR+B; T&T Replay-Abnahme 10.08. OK (beide AGVs). NFC ggf. wiederverwendet — Neuaufnahme blockiert (AGV-2 → FT) |
-| two-agvs-mixed_20260312_165108 | | ✓ | ✓ | ✓ | 2 | **2-AGV-Referenz (Interim):** Stillstand DPS DROP; T&T Replay-Abnahme 10.08. OK (beide AGVs). Siehe Analyse-Link unten |
+| production-wr-agv2-b-agv1-clean_20260513_135600 | | ✓ | | | 2 | **2-AGV (Interim, historisch):** osf.4 WR+B; ersetzt durch `storage-blue-dual-agv-bwr_*` |
+| storage-blue-dual-agv-bwr_20260901_124524 | | ✓ | ✓ | ✓ | 2 | **2-AGV-Referenz (aktuell):** STORAGE BLUE (NFC `9167f7e4d1d752`) → PROD B+W parallel, dann RED; FTS **5iO4**/**xkI4**, CCU Step-Dispatch; OSF **1.3.5**; Intake live |
+| two-agvs-mixed_20260312_165108 | | ✓ | ✓ | ✓ | 2 | **2-AGV (Interim):** Stillstand DPS DROP; Forensik März 2026 |
 | synthetic-arduino-sensors_20260508_091000 | | | | | 0 | Synthetisch: Arduino-Topics (ohne Hardware) |
 
 ---
@@ -54,7 +55,7 @@ Abgleich: `python scripts/check_session_inventory.py`
 | Charge zwischendurch | ✓ `ml-brw`, `ml-wrb-chrg-blue-nok` |
 | DPS/FTS-Störfall | ✓ `ml-bwr_130016` |
 | Startup clean | ✓ `startup-clean` |
-| **2-AGV / parallele FTS** | ✓ T&T Replay-Abnahme Interim-Logs (10.08.). Neuaufnahme eindeutige NFC **blockiert** — AGV-2 dockt nicht an DPS → Reklamation Fischertechnik |
+| **2-AGV / parallele FTS** | ✓ **`storage-blue-dual-agv-bwr_20260901_124524`** (01.09.2026): STORAGE BLUE + parallel PROD B/W/R, **5iO4**/**xkI4**, Step-Dispatch. Interim-Logs historisch. Replay-Abnahme OSF-UI offen. |
 
 ---
 
@@ -75,12 +76,13 @@ Abgleich: `python scripts/check_session_inventory.py`
 | **ml-*_20260807_*** | Multi-Load 1 AGV (Pass / Fail / Charge). | T&T Acceptance Aug 2026 |
 | **storage-production-ml-*** | Multi-Load 1 AGV (04.08., eindeutige NFC). | T&T Mitfahrt / Attribution / Fail |
 
-### 2-AGV (Interim; Neuaufnahme nach FT-Reklamation)
+### 2-AGV (Referenz + Interim)
 
 | Session | Ablauf | Eignung |
 |---------|--------|---------|
-| **production-wr-agv2-b-agv1-clean_20260513_135600** | WR+B unter CCU `1.3.0-osf.4`, ohne manuellen Eingriff. | Parallel-Diagnose / T&T 2-AGV-Zuordnung (NFC nicht kanonisch) |
-| **two-agvs-mixed_20260312_165108** | Stillstand: AGV-2 an DPS, DROP hängt. | Stillstand-Analyse + T&T 2-AGV-Zuordnung |
+| **storage-blue-dual-agv-bwr_20260901_124524** | STORAGE BLUE → PRODUCTION BLUE+WHITE parallel → PRODUCTION RED; dual FTS **5iO4**/**xkI4**; CCU Step-Dispatch; Intake NFC `9167f7e4d1d752`. | **Aktuelle 2-AGV-Referenz**; Replay OSF-UI prüfen |
+| **production-wr-agv2-b-agv1-clean_20260513_135600** | WR+B unter CCU `1.3.0-osf.4`. | Interim / historisch (`leJ4`-Ära) |
+| **two-agvs-mixed_20260312_165108** | Stillstand: AGV-2 an DPS, DROP hängt. | Stillstand-Analyse + Forensik |
 
 ### Sonstige
 
@@ -98,4 +100,4 @@ Abgleich: `python scripts/check_session_inventory.py`
 
 ---
 
-*Stand: 2026-08-10. Juli-Single-Color-Refs (`20260728_*`) entfernt — ersetzt durch Aug-Set `20260807_*` (Pass+NOK W/R/B + ml). 2-AGV: Interim-Logs für T&T abgenommen; Neuaufnahme mit eindeutiger NFC nach Rückkehr AGV-2 (FT-Reklamation DPS-Docking).*
+*Stand: 2026-09-01. Juli-Single-Color-Refs (`20260728_*`) entfernt — ersetzt durch Aug-Set `20260807_*` (Pass+NOK W/R/B + ml). 2-AGV: **`storage-blue-dual-agv-bwr_20260901_124524`** (xkI4); Interim-Logs bleiben als Historie.*

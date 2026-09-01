@@ -83,7 +83,7 @@
 
 ### Demo & Session-Aufnahmen
 
-- [ ] **Dual-AGV Referenz-Sessions aufnehmen:** AGV-1 (`5iO4`) + AGV-2 (`xkI4`), OSF-UI **1.3.5**; Szenarien z. B. Parallel-Transport, Production mit beiden FTS, `startup-clean`; [INVENTORY.md](../../data/osf-data/sessions/INVENTORY.md) pflegen; Material für Bühler (**14.09.**) und Welcome Days (**17.09.**).
+- [ ] **Dual-AGV Referenz-Sessions aufnehmen:** CCU **Step-Dispatch** (kein Order↔AGV); parallel **PRODUCTION** (Pflicht: WR `production-dual-wr-clean_*`, optional WB); HBW vorbestückt, OSF-UI **1.3.5**; Plan [dual-agv-session-plan-2026-09.md](../07-analysis/dual-agv-session-plan-2026-09.md); [INVENTORY.md](../../data/osf-data/sessions/INVENTORY.md); Bühler **14.09.** / Welcome Days **17.09.**
 
 ### Integration & Tests
 

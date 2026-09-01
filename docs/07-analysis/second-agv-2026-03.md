@@ -9,6 +9,26 @@
 
 ---
 
+## CCU-Dispatch — Agent-Pflichtwissen
+
+> **Cursor / OSF-Agenten:** Regel `.cursor/rules/fts-agv-step-dispatch.mdc` (always apply).
+
+**Es gibt keine AGV-Zuordnung zu einem kompletten PRODUCTION-Auftrag.**
+
+| Falsch | Richtig |
+|--------|---------|
+| Order X → AGV-1, Order Y → AGV-2 | Mehrere PRODUCTION-Orders parallel möglich |
+| Farbe ↔ festes FTS | **Pro NAVIGATION-Step** vergibt die CCU ein FTS |
+| „Jedes FTS bedient einen Auftrag“ | **`chooseReadyFtsForStep()`** → **nächstes freies/bereites FTS** |
+
+**Ablauf:** CCU wählt FTS → `sendNavigationRequest()` → Publish `fts/v1/ff/<serial>/order` (Serial = FTS für **diesen** Step). Eine Order kann verschiedene FTS auf verschiedenen Steps nutzen; ein FTS kann nacheinander Steps verschiedener Orders fahren.
+
+**OSF-UI:** AGV-1/AGV-2 = Layout-Labels (`fts[]`: **5iO4**, **xkI4**). Anzeige pro Step: [order-agv-mapping-without-mod3-2026-03.md](order-agv-mapping-without-mod3-2026-03.md) (Option A, `FtsOrderAssignmentService`).
+
+**Session-Aufnahmen:** [dual-agv-session-plan-2026-09.md](dual-agv-session-plan-2026-09.md)
+
+---
+
 ## 1. Umgesetzt
 
 | Bereich | Inhalt |

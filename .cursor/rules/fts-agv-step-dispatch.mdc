@@ -1,0 +1,36 @@
+---
+description: FTS/AGV — keine Order-Zuordnung; CCU vergibt jeden NAVIGATION-Step an das nächste freie FTS (chooseReadyFtsForStep)
+alwaysApply: true
+---
+
+# FTS / Dual-AGV: Step-Dispatch (CCU)
+
+**Pflichtwissen für Agenten** — vor Demo-Texten, Session-Planung, Tests oder UI-Annahmen zu 2 AGVs lesen.
+
+## Falsch (nicht unterstellen)
+
+- ❌ Ein PRODUCTION-Auftrag gehört dauerhaft zu **AGV-1** oder **AGV-2**
+- ❌ „Zwei parallele Orders → jedes FTS bedient einen Auftrag“
+- ❌ Farbe (WHITE/RED/BLUE) ↔ festes FTS
+- ❌ AGV-1/AGV-2 = physische Owner einer `orderId`
+
+## Richtig
+
+- ✅ **CCU** kann **mehrere PRODUCTION-Orders parallel** führen
+- ✅ FTS-Zuordnung erfolgt **pro NAVIGATION-Step**, nicht pro Order
+- ✅ **`chooseReadyFtsForStep()`** → **nächstes freies/bereites FTS** bekommt den Step
+- ✅ Publish: `fts/v1/ff/<serial>/order` (Serial = welches FTS **diesen** Step fährt)
+- ✅ Dieselbe Order kann Step A mit **5iO4** und Step B mit **xkI4** fahren; beide FTS können nacheinander Steps **verschiedener** Orders übernehmen
+
+## OSF-UI
+
+- **AGV-1 / AGV-2** = Labels aus `shopfloor_layout.json` `fts[]` (**5iO4**, **xkI4**) — keine Order-Bindung
+- **FTS-Serial-Liste:** `getEffectiveFtsSerials()` in `osf/apps/osf-ui/src/app/utils/fts-serial-resolver.ts` — Union aus Layout + Fallback `['5iO4','xkI4']` + MessageMonitor-Topics (Replay vor Layout-Load)
+- **Orders-Tab:** AGV pro **NAVIGATION-Step** via `FtsOrderAssignmentService` (Map aus `fts/…/order`, Option A)
+- **Track & Trace:** FTS-Events pro Message-Topic/Serial — ebenfalls step-/eventweise, nicht order-owner; nutzt denselben Resolver
+
+## Referenzen
+
+- [second-agv-2026-03.md](../../docs/07-analysis/second-agv-2026-03.md) — Dual-AGV, Serials, Dispatch-Abschnitt
+- [order-agv-mapping-without-mod3-2026-03.md](../../docs/07-analysis/order-agv-mapping-without-mod3-2026-03.md) — Option A, CCU-Flow
+- [dual-agv-session-plan-2026-09.md](../../docs/07-analysis/dual-agv-session-plan-2026-09.md) — Referenz-Session-Aufnahmen

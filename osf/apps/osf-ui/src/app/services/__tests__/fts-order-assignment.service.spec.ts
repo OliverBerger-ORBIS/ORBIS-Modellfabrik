@@ -23,6 +23,7 @@ describe('FtsOrderAssignmentService', () => {
       getHistory: (topic: string) => {
         return (historyByTopic.get(topic) ?? []) as Array<{ valid: boolean; payload: unknown }>;
       },
+      getTopics: () => [...historyByTopic.keys()],
     };
 
     TestBed.configureTestingModule({
@@ -81,6 +82,45 @@ describe('FtsOrderAssignmentService', () => {
     lastMessageSubjects.get('fts/v1/ff/xkI4/order')?.next({ valid: true, payload });
 
     service.getFtsSerialForStep$('order-2', 'step-nav').subscribe((serial) => {
+      expect(serial).toBe('xkI4');
+      done();
+    });
+  });
+
+  it('should resolve assignment when layout empty (canonical dual-AGV fallback)', (done) => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        FtsOrderAssignmentService,
+        {
+          provide: MessageMonitorService,
+          useValue: {
+            getLastMessage: (topic: string) => {
+              if (!lastMessageSubjects.has(topic)) {
+                lastMessageSubjects.set(topic, new BehaviorSubject<unknown | null>(null));
+              }
+              return lastMessageSubjects.get(topic)!.asObservable();
+            },
+            getHistory: (topic: string) =>
+              (historyByTopic.get(topic) ?? []) as Array<{ valid: boolean; payload: unknown }>,
+            getTopics: () => [...historyByTopic.keys()],
+          },
+        },
+        {
+          provide: ShopfloorMappingService,
+          useValue: { getAgvOptions: () => [] },
+        },
+      ],
+    });
+    const emptyLayoutService = TestBed.inject(FtsOrderAssignmentService);
+    const payload = {
+      orderId: 'order-dual',
+      nodes: [{ id: 'n1', action: { type: 'DOCK', id: 'nav-step' } }],
+    };
+    historyByTopic.set('fts/v1/ff/xkI4/order', [{ valid: true, payload }]);
+    lastMessageSubjects.get('fts/v1/ff/xkI4/order')?.next({ valid: true, payload });
+
+    emptyLayoutService.getFtsSerialForStep$('order-dual', 'nav-step').subscribe((serial) => {
       expect(serial).toBe('xkI4');
       done();
     });

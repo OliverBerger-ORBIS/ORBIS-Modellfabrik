@@ -3,6 +3,8 @@
 **Datum:** 2026-03-10  
 **Kontext:** Mod 3 (optionales `serialNumber` in NAVIGATION-Steps) wurde zurückgebaut. Die osf-ui soll wieder AGV-1/AGV-2 pro Order-Step anzeigen können, **ohne** die bestehende CCU-Order- und NAVIGATION-Logik zu ändern.
 
+> **Agent-Hinweis (01.09.2026):** CCU vergibt FTS **pro NAVIGATION-Step** (`chooseReadyFtsForStep` → nächstes freies FTS), **nicht** pro Order. Keine Annahme „ein Auftrag = ein AGV“. Siehe [second-agv-2026-03.md](second-agv-2026-03.md) § CCU-Dispatch und `.cursor/rules/fts-agv-step-dispatch.mdc`.
+
 ---
 
 ## 1. Mod-3-Rekonstruktion

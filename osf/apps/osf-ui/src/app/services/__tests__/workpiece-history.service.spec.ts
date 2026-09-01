@@ -427,6 +427,39 @@ describe('WorkpieceHistoryService', () => {
 
       svc.ngOnDestroy();
     });
+
+    it('should subscribe to both AGV FTS topics when layout not loaded yet (fallback)', () => {
+      const mappingMock = {
+        getAgvOptions: jest.fn(() => []),
+      };
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [HttpClientTestingModule],
+        providers: [
+          WorkpieceHistoryService,
+          MessageMonitorService,
+          ModuleNameService,
+          EnvironmentService,
+          AgvRouteService,
+          ErpOrderDataService,
+          MessageValidationService,
+          MessagePersistenceService,
+          { provide: ShopfloorMappingService, useValue: mappingMock },
+        ],
+      });
+
+      const svc = TestBed.inject(WorkpieceHistoryService);
+      const mm = TestBed.inject(MessageMonitorService);
+      jest.spyOn(mm, 'getLastMessage').mockReturnValue(of(null));
+
+      svc.initialize('mock');
+
+      expect(mm.getLastMessage).toHaveBeenCalledWith('fts/v1/ff/5iO4/state');
+      expect(mm.getLastMessage).toHaveBeenCalledWith('fts/v1/ff/xkI4/state');
+
+      svc.ngOnDestroy();
+    });
   });
 
   describe('TURN Direction', () => {

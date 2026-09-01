@@ -45,6 +45,7 @@ describe('OrderTabComponent', () => {
     const messageMonitorMock = {
       getLastMessage: jest.fn(() => of({ valid: false, payload: null })),
       getHistory: jest.fn(() => []),
+      getTopics: jest.fn(() => []),
     };
 
     const connectionServiceMock = {

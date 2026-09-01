@@ -41,7 +41,8 @@ Sprint-bezogene und projektweite Analysen für OSF.
 
 **Referenz / Pflege:** [second-agv-2026-03.md](second-agv-2026-03.md) (Konsolidat), [fts-navigation-how-it-works-2026-03.md](fts-navigation-how-it-works-2026-03.md) (Navigation, manuell → HBW / clearLoadHandler).
 
-- [second-agv-2026-03.md](second-agv-2026-03.md) – Zweites AGV (**xkI4**, AGV-2; vorher leJ4/jp93), Dual-UI, Gateway `fts$`, Layout `fts[]`; Sprint 17→18
+- [second-agv-2026-03.md](second-agv-2026-03.md) – Zweites AGV (**xkI4**, AGV-2; vorher leJ4/jp93), **CCU Step-Dispatch** (kein Order-Owner), Dual-UI, Layout `fts[]`; Sprint 17→18
+- [dual-agv-session-plan-2026-09.md](dual-agv-session-plan-2026-09.md) – Referenz-Session-Aufnahmen (parallel PRODUCTION, Bühler/Welcome Days)
 - [fts-navigation-how-it-works-2026-03.md](fts-navigation-how-it-works-2026-03.md) – FTS/AGV-Navigation (CCU, Topics, osf-ui)
 - [two-agvs-mixed-session-data-inventory-2026-03.md](two-agvs-mixed-session-data-inventory-2026-03.md) – two-agvs-mixed: Topic-Inventar, jp93→leJ4 (empirisch)
 - [order-agv-mapping-without-mod3-2026-03.md](order-agv-mapping-without-mod3-2026-03.md) – Order↔AGV ohne Mod-3 in Steps (`fts/order`-Ableitung)
