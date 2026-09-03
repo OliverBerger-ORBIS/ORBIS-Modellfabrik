@@ -1,8 +1,8 @@
 # Sprint 29 – Grafana/Persistenz, Intake-Bridge live & OD-Anbindung
 
-**Zeitraum:** 21.08.2026 – 03.09.2026 · **Status:** Laufend · **Vorheriger Sprint:** [Sprint 28](./sprint_28.md)
+**Zeitraum:** 21.08.2026 – 03.09.2026 · **Status:** Abgeschlossen · **Vorheriger Sprint:** [Sprint 28](./sprint_28.md) · **Nächster Sprint:** [Sprint 30](./sprint_30.md)
 
-**Kurz:** Fokus **Grafana / Edge-Persistenz** und **Workpiece-Intake live** (Bridge auf RPi + optional OSF-UI-Subscribe); Carry-over Netzwerk/Blog/E2E; Demos **Bühler (14.09.)**, **Welcome Days (17.09.)**, Uni Magdeburg Deep-Dive SB (**21./22.09.**).
+**Kurz:** Fokus **Grafana / Edge-Persistenz** und **Workpiece-Intake live** (Bridge auf RPi + OSF-UI-Subscribe); Dual-AGV Sessions + Serial-Resolver **v1.3.6**; T&T Serial-/NFC-first Code lokal; Language-Reload-T&T bewusst auf Sprint 30 verschoben.
 
 ---
 
@@ -23,14 +23,16 @@
 | Stand | Datum | Branches | Functions | Lines | Statements | Gates (B/F/L/S) | Gate-Margin (B/F/L/S) |
 |--------|--------|----------|-----------|-------|------------|------------------|------------------------|
 | Sprint-Start (Baseline = Sprint-28-Ende) | 20.08.2026 | 49.8% | 61.3% | 66.5% | 65.5% | 42 / 52 / 58 / 58 | +7.8 / +9.3 / +8.5 / +7.5 pp |
-| Aktuell | 27.08.2026 | 54.8% | 66.8% | 72.1% | 71.0% | 48 / 59 / 64 / 63 | +6.8 / +7.8 / +8.1 / +8.0 pp |
+| Mid (Coverage D) | 27.08.2026 | 54.8% | 66.8% | 72.1% | 71.0% | 48 / 59 / 64 / 63 | +6.8 / +7.8 / +8.1 / +8.0 pp |
+| **Aktuell (Sprint-Ende)** | **03.09.2026** | **54.77%** | **66.87%** | **71.97%** | **70.89%** | **48 / 59 / 64 / 63** | **+6.8 / +7.9 / +8.0 / +7.9 pp** |
 
 - **Messmethode:** `npm run test:coverage` (`--runInBand`; bei Nx-Daemon-Fehler: `npx nx reset` + `NX_DAEMON=false`) → `coverage/osf-ui/index.html`. Details: [test-coverage-status.md](../07-analysis/test-coverage-status.md).
-- **Top-3 Gaps:**
-  1. `shopfloor-tab` / `agv-tab` (große Dateien)
-  2. DSP-/Customer-Pages
-  3. Restzweige `shopfloor-preview` (Route/SVG)
+- **Top-3 Gaps (Stand 03.09.):**
+  1. `shopfloor-tab` / `agv-tab` / `shopfloor-preview`
+  2. DSP-/UC SVG-Generatoren
+  3. Restzweige `workpiece-history` / große Tabs
 - **Pflege:** Baseline unverändert; nach Messung nur **Aktuell** + Top-Gaps. Am Sprintende Pflicht-Messung vor Abschluss.
+- **Hinweis:** Gates `48 / 59 / 64 / 63` beibehalten (Margins ~7 pp); kein Gate-Bump. Endmessung flat vs. 27.08. (Dual-AGV-Code + Specs).
 
 ---
 
@@ -84,7 +86,9 @@
 
 ### Demo & Session-Aufnahmen
 
-- [x] **Dual-AGV Referenz-Sessions aufnehmen (01.09.2026):** CCU **Step-Dispatch** (kein Order↔AGV); Session `storage-blue-dual-agv-bwr_20260901_124524` (STORAGE BLUE → PROD BLUE+WHITE parallel → PROD RED; beide FTS `5iO4`/`xkI4`). Plan [dual-agv-session-plan-2026-09.md](../07-analysis/dual-agv-session-plan-2026-09.md); [INVENTORY.md](../../data/osf-data/sessions/INVENTORY.md). Replay-Abnahme T&T: offen nach **1.3.6**-Deploy.
+- [x] **Dual-AGV Referenz-Sessions aufnehmen (01.–03.09.2026):** CCU **Step-Dispatch**; Sessions `storage-blue-dual-agv-bwr_*` (01.09.), `storage-brw-dual-agv-brw_*` + **`storage-wbr-dual-agv-rwb_20260903_094319`** (03.09., aktuelle Ref.). Grafana + T&T **live OK** (03.09.). Plan [dual-agv-session-plan-2026-09.md](../07-analysis/dual-agv-session-plan-2026-09.md); [INVENTORY.md](../../data/osf-data/sessions/INVENTORY.md).
+- [x] **T&T Dual-AGV Serial-/NFC-first Code (03.09.2026):** Transportgruppen nach FTS-Serial; AGV-Label aus `moduleId`; fremde Step-`orderId` behält NFC-Phase (`coPassenger`). Specs + Attribution-How-to. **Replay-Abnahme + Commit → Sprint 30.**
+- *Language-Reload vs. T&T (03.09.2026, WAD):* `setLocale` → Full Reload Locale-Build; RAM-Historie weg (Live+Replay). Kein Hotfix in Sprint 29 — Lösung **Sprint 30**. Doku: [osf-ui-track-trace-history-attribution.md](../04-howto/osf-ui-track-trace-history-attribution.md).
 
 ### Integration & Tests
 
@@ -95,8 +99,9 @@
 - [x] **Coverage B – Shopfloor/AGV Helper (Tier A, 26.08.2026):** Helper-Specs für Transport-Row Dock/Charge, `getModuleMessageCount`, HBW/DRILL-MQTT-Parser, `build-fts-preview-positions`, AGV Command-Availability, `handleFtsStateChange`, `detectUnknownAgvOptions`. +20 Tests; B/F/L/S **54.2 / 66.2 / 71.5 / 70.4** (vorher 51.8 / 65.3 / 70.6 / 69.5).
 - [x] **Coverage C – Shopfloor/AGV Interaktion (Tier A, 27.08.2026):** Selection/Modul-Wechsel (`selectModuleByType`, DPS→DRILL), Double-Click→Sidebar, `white_step3`-Fixture-Kette, AGV Serial-Wechsel + `sendNavigateToTarget`, Preview Highlight/Viewport/Follow-Scroll. +14 Tests; B/F/L/S **54.6 / 66.7 / 72.0 / 70.9** (vorher 54.2 / 66.2 / 71.5 / 70.4). **Tier B (Replay/Visual Gate):** manuell gem. [visual gate](../04-howto/osf-ui-shopfloor-route-agv-visual-gate.md) — nicht automatisierbar.
 - [x] **Coverage D – Tab-Logik → Services (Tier A-Vorbereitung, 27.08.2026):** Extrahiert `count-module-messages`, `hbw-stock-metadata`, `agv-route-overlay.utils` (+ Specs); Tabs delegieren. +11 Tests; B/F/L/S **54.8 / 66.8 / 72.1 / 71.0** (leicht ↑, Schwerpunkt Wartbarkeit).
-- [ ] **dsp/correlation/info** E2E (BLOCKED bis Team-Setup aktiv): End-to-End-Nachweis (Topic-Eingang + UI-Kontext) dokumentieren. *(Ursprung: Sprint 18)*
-- [ ] **ccu/order/request** E2E (Ersatzauftrag nach Quality-Fail, BLOCKED bis Team-Setup aktiv): E2E-Nachweis mit klarer Ereigniskette dokumentieren. *(Ursprung: Sprint 18)*
+- [x] **Coverage E – Dual-AGV / Language-Vertrag (03.09.2026):** Specs Language full-reload WAD, FTS empty-serial, NFC-first STORAGE-Phase, serial-first AGV-Label; Endmessung B/F/L/S **54.77 / 66.87 / 71.97 / 70.89**; 1548 Tests passed.
+- [ ] **dsp/correlation/info** E2E (BLOCKED bis Team-Setup aktiv): End-to-End-Nachweis (Topic-Eingang + UI-Kontext) dokumentieren. *(Ursprung: Sprint 18)* → Sprint 30
+- [ ] **ccu/order/request** E2E (Ersatzauftrag nach Quality-Fail, BLOCKED bis Team-Setup aktiv): E2E-Nachweis mit klarer Ereigniskette dokumentieren. *(Ursprung: Sprint 18)* → Sprint 30
 
 ### Router / Netzwerk-Setup
 
@@ -111,17 +116,17 @@
 
 ### Sprint-Wechsel (am Ende des Sprints abarbeiten)
 
-- [ ] **Coverage Standing:** Endmessung (`npm run test:coverage`) → `Aktuell` + Top-Gaps; bei Bedarf [test-coverage-status.md](../07-analysis/test-coverage-status.md) aktualisieren
-- [ ] Sprint 29: Status Abgeschlossen, Datum
-- [ ] Sprint 30 anlegen, offene `[ ]` übernehmen; Coverage-Baseline = Endmessung Sprint 29
-- [ ] PROJECT_STATUS / Roadmap kurz
+- [x] **Coverage Standing:** Endmessung (`npm run test:coverage`) → `Aktuell` + Top-Gaps; [test-coverage-status.md](../07-analysis/test-coverage-status.md) aktualisiert (03.09.2026)
+- [x] Sprint 29: Status Abgeschlossen, Datum 03.09.2026
+- [x] Sprint 30 anlegen, offene `[ ]` übernehmen; Coverage-Baseline = Endmessung Sprint 29
+- [x] PROJECT_STATUS / Roadmap kurz
 
 ---
 
 ## Links
 
-- [Sprint 28](sprint_28.md) · [PROJECT_STATUS.md](../PROJECT_STATUS.md) · [sprints_README.md](sprints_README.md) · [test-coverage-status.md](../07-analysis/test-coverage-status.md) · [DR-30 Intake](../03-decision-records/30-workpiece-intake-mqtt-facade.md)
+- [Sprint 28](sprint_28.md) · [Sprint 30](sprint_30.md) · [PROJECT_STATUS.md](../PROJECT_STATUS.md) · [sprints_README.md](sprints_README.md) · [test-coverage-status.md](../07-analysis/test-coverage-status.md) · [DR-30 Intake](../03-decision-records/30-workpiece-intake-mqtt-facade.md)
 
 ---
 
-*Stand: 01.09.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)
+*Stand: 03.09.2026* · Doku-Workflow: [sprints_README.md](sprints_README.md)

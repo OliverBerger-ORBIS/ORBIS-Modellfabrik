@@ -1,6 +1,6 @@
 # ORBIS SmartFactory – Projektstatus
 
-**Letzte Aktualisierung:** 2026-08-20
+**Letzte Aktualisierung:** 2026-09-03
 
 > **Workflow:** Die Sprint-Tabelle wird bei jedem Sprint-Abschluss aktualisiert (neue Zeile, Events).  
 > Details: [sprints_README.md – Dokumenten-Workflow](sprints/sprints_README.md#-dokumenten-workflow-aktualität-sicherstellen)
@@ -9,12 +9,12 @@
 - OSF (vormals OMF3) produktionsreif für Kunden-Demos; **LogiMAT 2026 durchgeführt** (Demo mit zwei AGVs erfolgreich).
 - **Messe-WLAN:** Nur **2,4 GHz** am Stand → **bekanntes Risiko** für Instabilität; angesichts der **ortsbedingten Einschränkung** keine zuverlässige technische „Lösung“ zu erwarten — **Lessons Learned** für weitere Events (Erwartungsmanagement). Siehe [sprint_18.md – Messe-Ergebnis](sprints/sprint_18.md).
 - OMF2 als Legacy eingefroren.
-- Aktuelle Entwicklung: **Phase 5** — **Sprint 29** (Grafana/Persistenz, Workpiece-Intake Bridge live, OD-Anbindung).
+- Aktuelle Entwicklung: **Phase 5** — **Sprint 30** (T&T sprachunabhängig / Dual-AGV Abnahme; Demos Bühler & Welcome Days).
 - **ORBIS-SmartFactory** ab Sprint 13 (Genehmigung ausstehend, Arbeit wird fortgeführt).
 
 ## 🔥 Aktuelle Schwerpunkte
-- **Sprint 29:** Grafana / Edge-Persistenz; Intake-Bridge RPi-Deploy + OSF-UI-Subscribe `osf/workpiece/intake`; Uni Magdeburg SB Deep-Dive Vorb. (**21./22.09.**). Details: [sprint_29.md](sprints/sprint_29.md).
-- **Sprint 28 (abgeschlossen):** T&T **v1.2.2**; Aug-Session-Set; 2-AGV Replay-Abnahme; Intake-Facade (DR-30) im Repo; Musashi OK (Sven); AGV-2 → FT Reklamation/DPD. Details: [sprint_28.md](sprints/sprint_28.md).
+- **Sprint 30:** T&T Historie über Language-Reload hinweg (Live-Demo); Dual-AGV Replay-Abnahme; **Bühler 14.09.**, **Welcome Days 17.09.**; Uni Magdeburg SB Deep-Dive (**21./22.09.**). Details: [sprint_30.md](sprints/sprint_30.md).
+- **Sprint 29 (abgeschlossen):** Grafana/Edge-Persistenz auf `.201`; Intake-Bridge RPi + OSF-UI; Dual-AGV Sessions + Resolver **v1.3.6**; Language→T&T-Verlust als WAD dokumentiert → Sprint 30. Details: [sprint_29.md](sprints/sprint_29.md).
 - **Phase 5 – MES/DSP-Integration:** ORBIS MES und DSP übernehmen zunehmend die Steuerung; APS-CCU Interim; Zielarchitektur DSP-Orchestrierung (CCU austauschbar).
 - Azure DevOps Migration · Blog-Serie (A3/A4 Review offen).
 
@@ -22,7 +22,8 @@
 
 | Sprint | Zeitraum | Ereignis / Fokus | Status |
 |--------|----------|------------------|--------|
-| **29** | **21.08.26 - 03.09.26** | Grafana/Persistenz; Intake-Bridge RPi + OD; Uni-MD SB Deep-Dive Vorb. 21./22.09. ([sprint_29](sprints/sprint_29.md)) | **Laufend** |
+| **30** | **04.09.26 - 17.09.26** | T&T sprachunabhängig; Dual-AGV Abnahme; Bühler 14.09.; Welcome Days 17.09. ([sprint_30](sprints/sprint_30.md)) | **Laufend** |
+| **29** | **21.08.26 - 03.09.26** | Grafana/Persistenz; Intake-Bridge RPi + OD; Dual-AGV v1.3.6; Uni-MD SB Deep-Dive Vorb. ([sprint_29](sprints/sprint_29.md)) | **Abgeschlossen** |
 | **28** | **07.08.26 - 20.08.26** | Sessions + 2. AGV & Grafana; T&T v1.2.2; Intake DR-30; Musashi OK; AGV-2 FT ([sprint_28](sprints/sprint_28.md)) | **Abgeschlossen** |
 | **27** | **24.07.26 - 06.08.26** | Grafana-Dashboard-Analyse & Track&Trace (v1.2.0/v1.2.1); Hochschulkooperation Teams 03.08. ([sprint_27](sprints/sprint_27.md)) | **Abgeschlossen** |
 | **26** | **10.07.26 - 23.07.26** | NFC-Tags Track&Trace; Use-Case-Darstellung Desktop 2/3; Grafana; Blog A2 online; Office-Tower; v1.1.10 ([sprint_26](sprints/sprint_26.md)) | **Abgeschlossen** |
@@ -70,7 +71,8 @@
 | 26 | 10.07 - 23.07.2026 | ORBIS-SmartFactory | Phase 5 | Probelauf Präsentation (14.–15.07.); Blog A2 veröffentlicht (23.07., [Track und Trace in der Fertigung](https://www.orbis-group.com/de-de/blog/branchen/manufacturing/track-und-trace-in-der-fertigung/)); Office-Tower 3D-Druck; OSF-UI v1.1.10; NFC B-soft Live-Test |
 | 27 | 24.07 - 06.08.2026 | ORBIS-SmartFactory | Phase 5 | Track&Trace v1.2.0/v1.2.1; Hochschulkooperation Magdeburg Teams 03.08. (Proposal folgt); Grafana Carry-over; Coverage-Endmessung 06.08. |
 | 28 | 07.08 - 20.08.2026 | ORBIS-SmartFactory | Phase 5 | Sessions Aug-Set + T&T v1.2.2; 2-AGV Replay; Intake-Facade DR-30; Kaiserslautern/Wonkam OD; Urlaub 11.–14.08.; Musashi 14.08. (Sven Horras) gut; Uni-MD NDA→SB 21./22.09.; AGV-2 DPD/FT; Coverage-Ende 20.08. |
-| 29 | 21.08 - 03.09.2026 | ORBIS-SmartFactory | Phase 5 | Grafana/Persistenz; Intake-Bridge RPi + OSF subscribe; OD Partner; Uni-MD/DSP Deep-Dive SB Vorb. |
+| 29 | 21.08 - 03.09.2026 | ORBIS-SmartFactory | Phase 5 | Grafana/Persistenz `.201`; Intake-Bridge RPi + OSF subscribe; Dual-AGV Sessions + v1.3.6; Language→T&T WAD → Sprint 30; Coverage-Ende 03.09. |
+| 30 | 04.09 - 17.09.2026 | ORBIS-SmartFactory | Phase 5 | T&T sprachunabhängig (Live); Dual-AGV Abnahme; Bühler 14.09.; Welcome Days 17.09.; Uni-MD SB Deep-Dive 21./22.09. |
 
 > **Spalten-Erläuterung:**  
 > - **ORBIS-Projekt:** Interne Projektzuordnung für Abrechnung (ORBIS-Modellfabrik bzw. ORBIS-SmartFactory).  
@@ -94,10 +96,13 @@
 - **07.08.2026:** Hochschulkontakt **Kaiserslautern** — Herr **Nusbaum** (genaue Uni-/Hochschulbezeichnung folgt); Bachelorarbeit **Danil Wonkam** zu **Object Detection** → [sprint_28.md](sprints/sprint_28.md)
 - **11.–14.08.2026:** Urlaub Oliver (reduzierte Sprint-28-Kapazität)
 - **14.08.2026:** Kunde **Musashi** — OSF-Kundentermin (Router/Netzwerk + Windows-Desktop-Praesentation); **Vorführung: Sven Horras** → [sprint_28.md](sprints/sprint_28.md)
+- **14.09.2026:** Firma **Bühler** — OSF live Shopfloor → [sprint_30.md](sprints/sprint_30.md)
+- **17.09.2026:** **ORBIS Welcome Days** — OSF intern → [sprint_30.md](sprints/sprint_30.md)
+- **21.09.2026:** **Uni Magdeburg / Dr. Reggelin** — Deep-Dive OSF/DSP Saarbrücken → [sprint_30.md](sprints/sprint_30.md)
 
 ## 📚 Weitere Dokumentation
 - [Roadmap & Entwicklungsphasen](01-strategy/roadmap.md)
-- [Sprint-Dokumentation](sprints/) – [sprint_28.md](sprints/sprint_28.md) (aktuell)
+- [Sprint-Dokumentation](sprints/) – [sprint_30.md](sprints/sprint_30.md) (aktuell)
 - [Decision Records](03-decision-records/)
 - [Architektur](02-architecture/)
 - [HowTos & Guides](04-howto/)

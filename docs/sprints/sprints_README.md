@@ -1,7 +1,7 @@
 # Sprint Documentation Index
 
 Version: 0.6  
-Letzte Aktualisierung: 2026-08-20  
+Letzte Aktualisierung: 2026-09-03  
 
 ---
 
@@ -100,7 +100,8 @@ Für jeden Sprint gilt ein einheitlicher Ablauf, damit Coverage-Trends vergleich
 - [Sprint 26](sprint_26.md) – NFC-Tags, Use-Case-Darstellung & Grafana Dashboard (10.07 - 23.07.2026) ✅
 - [Sprint 27](sprint_27.md) – Grafana-Dashboard-Analyse & Track&Trace (24.07 - 06.08.2026) ✅
 - [Sprint 28](sprint_28.md) – Sessions komplettieren, 2. AGV & Grafana (07.08 - 20.08.2026) ✅
-- [Sprint 29](sprint_29.md) – Grafana/Persistenz, Intake-Bridge live & OD-Anbindung (21.08 - 03.09.2026) ⏳ **AKTUELL**
+- [Sprint 29](sprint_29.md) – Grafana/Persistenz, Intake-Bridge live & OD-Anbindung (21.08 - 03.09.2026) ✅
+- [Sprint 30](sprint_30.md) – T&T sprachunabhängig, Dual-AGV Abnahme & Demo-Termine (04.09 - 17.09.2026) ⏳ **AKTUELL**
 
 ## Berichte
 - [ORBIS-Projekt-Abschlussbericht Sprints 1-12](ORBIS-Projekt-Abschlussbericht_sprints_01-12.md) – Erstes ORBIS-Projekt (ORBIS-Modellfabrik)
