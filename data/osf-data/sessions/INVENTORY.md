@@ -38,7 +38,9 @@ Abgleich: `python scripts/check_session_inventory.py`
 | storage-production-ml-rrr_20260804_133245 | | ✓ | ✓ | ✓ | 1 | 3× RED Multi-Load; **2. RED** Pos2 Quality-Fail (CRACK, `f6caa206181682`) |
 | storage-production-ml-bbb_20260804_134700 | | ✓ | ✓ | ✓ | 1 | 3× BLUE Multi-Load; **2. BLUE** Pos2 Quality-Fail (MIPO2, `b7b84ce7ad920f`); DRILL+MILL |
 | production-wr-agv2-b-agv1-clean_20260513_135600 | | ✓ | | | 2 | **2-AGV (Interim, historisch):** osf.4 WR+B; ersetzt durch `storage-blue-dual-agv-bwr_*` |
-| storage-blue-dual-agv-bwr_20260901_124524 | | ✓ | ✓ | ✓ | 2 | **2-AGV-Referenz (aktuell):** STORAGE BLUE (NFC `9167f7e4d1d752`) → PROD B+W parallel, dann RED; FTS **5iO4**/**xkI4**, CCU Step-Dispatch; OSF **1.3.5**; Intake live |
+| storage-blue-dual-agv-bwr_20260901_124524 | | ✓ | ✓ | ✓ | 2 | **2-AGV (01.09.):** STORAGE BLUE → PROD B+W parallel, dann RED; FTS **5iO4**/**xkI4**; OSF **1.3.5** |
+| storage-brw-dual-agv-brw_20260903_092247 | | ✓ | ✓ | ✓ | 2 | **2-AGV (03.09. morgen):** STORAGE B/W/R → PROD B+R parallel, dann WHITE; Dock/Init + Charge; OSF **1.3.6** |
+| storage-wbr-dual-agv-rwb_20260903_094319 | | ✓ | ✓ | ✓ | 2 | **2-AGV-Referenz (aktuell):** STORAGE W/B/R → PROD R/W/B (HBW-Start auf AGV-2, AGV-1 später); Charge; FTS **5iO4**/**xkI4**; OSF **1.3.6**; Grafana+T&T **live OK** |
 | two-agvs-mixed_20260312_165108 | | ✓ | ✓ | ✓ | 2 | **2-AGV (Interim):** Stillstand DPS DROP; Forensik März 2026 |
 | synthetic-arduino-sensors_20260508_091000 | | | | | 0 | Synthetisch: Arduino-Topics (ohne Hardware) |
 
@@ -52,10 +54,10 @@ Abgleich: `python scripts/check_session_inventory.py`
 | 1-AGV Storage→Production Fail (W/R/B) | ✓ Aug `*-storage-production-nok_20260807_*` |
 | Multi-Load 1 AGV (gemischt + Fail + Charge) | ✓ Aug `ml-*_20260807_*` + Aug04 `storage-production-ml-*` |
 | Quality-Fail isoliert (gleiche Farbe, Multi-Load) | ✓ `ml-rrr`, `ml-bbb` |
-| Charge zwischendurch | ✓ `ml-brw`, `ml-wrb-chrg-blue-nok` |
+| Charge zwischendurch | ✓ `ml-brw`, `ml-wrb-chrg-blue-nok`, **`storage-brw-dual-agv-brw_*`** (2-AGV + Charge) |
 | DPS/FTS-Störfall | ✓ `ml-bwr_130016` |
 | Startup clean | ✓ `startup-clean` |
-| **2-AGV / parallele FTS** | ✓ **`storage-blue-dual-agv-bwr_20260901_124524`** (01.09.2026): STORAGE BLUE + parallel PROD B/W/R, **5iO4**/**xkI4**, Step-Dispatch. Interim-Logs historisch. Replay-Abnahme OSF-UI offen. |
+| **2-AGV / parallele FTS** | ✓ **`storage-wbr-dual-agv-rwb_20260903_094319`** (03.09.2026): STORAGE W/B/R → PROD R/W/B (zunächst AGV-2 am HBW); Charge; **5iO4**/**xkI4**; OSF **1.3.6**; Grafana+T&T **live OK**. Auch: `storage-brw-dual-agv-brw_*` (Dock/Charge). Vorgänger: `storage-blue-dual-agv-bwr_*` (01.09.). Replay-Abnahme noch offen. |
 
 ---
 
@@ -80,7 +82,9 @@ Abgleich: `python scripts/check_session_inventory.py`
 
 | Session | Ablauf | Eignung |
 |---------|--------|---------|
-| **storage-blue-dual-agv-bwr_20260901_124524** | STORAGE BLUE → PRODUCTION BLUE+WHITE parallel → PRODUCTION RED; dual FTS **5iO4**/**xkI4**; CCU Step-Dispatch; Intake NFC `9167f7e4d1d752`. | **Aktuelle 2-AGV-Referenz**; Replay OSF-UI prüfen |
+| **storage-wbr-dual-agv-rwb_20260903_094319** | STORAGE W/B/R (NFC `513601ee741a12` / `b8b3588da7d8f4` / `aaf21ca1ef1d86`) → PRODUCTION RED, WHITE, BLUE (HBW-Start alle auf AGV-2/`xkI4`; AGV-1 später); Charge stop `5iO4` / start `xkI4`; dual FTS **5iO4**/**xkI4**. | **Aktuelle 2-AGV-Referenz** (OSF 1.3.6); Grafana+T&T live OK; Replay abnehmen |
+| **storage-brw-dual-agv-brw_20260903_092247** | STORAGE B/W/R → PRODUCTION BLUE+RED parallel → WHITE; Dock/Init + Charge; dual FTS **5iO4**/**xkI4**. | 2-AGV 03.09. (Dock/Charge) |
+| **storage-blue-dual-agv-bwr_20260901_124524** | STORAGE BLUE → PRODUCTION BLUE+WHITE parallel → PRODUCTION RED; dual FTS **5iO4**/**xkI4**; Intake NFC `9167f7e4d1d752`. | Vorgänger 01.09. (OSF 1.3.5) |
 | **production-wr-agv2-b-agv1-clean_20260513_135600** | WR+B unter CCU `1.3.0-osf.4`. | Interim / historisch (`leJ4`-Ära) |
 | **two-agvs-mixed_20260312_165108** | Stillstand: AGV-2 an DPS, DROP hängt. | Stillstand-Analyse + Forensik |
 
@@ -100,4 +104,4 @@ Abgleich: `python scripts/check_session_inventory.py`
 
 ---
 
-*Stand: 2026-09-01. Juli-Single-Color-Refs (`20260728_*`) entfernt — ersetzt durch Aug-Set `20260807_*` (Pass+NOK W/R/B + ml). 2-AGV: **`storage-blue-dual-agv-bwr_20260901_124524`** (xkI4); Interim-Logs bleiben als Historie.*
+*Stand: 2026-09-03. 2-AGV-Referenz: **`storage-wbr-dual-agv-rwb_20260903_094319`** (live Grafana+T&T OK); auch `storage-brw-dual-agv-brw_*`; Vorgänger `storage-blue-dual-agv-bwr_*`.*

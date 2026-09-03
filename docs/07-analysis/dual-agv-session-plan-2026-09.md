@@ -1,7 +1,7 @@
 # Dual-AGV Referenz-Sessions — Plan (Sept. 2026)
 
-**Stand:** 01.09.2026  
-**Kontext:** AGV-2 **`xkI4`**, OSF-UI **1.3.5**; Demos **Bühler (14.09.)**, **Welcome Days (17.09.)**  
+**Stand:** 03.09.2026  
+**Kontext:** AGV-2 **`xkI4`**, OSF-UI **1.3.6**; Demos **Bühler (14.09.)**, **Welcome Days (17.09.)**  
 **Dispatch-Modell:** [second-agv-2026-03.md](second-agv-2026-03.md) § CCU-Dispatch — **keine Order↔AGV-Bindung**, Step-Vergabe durch CCU.
 
 ---
@@ -32,9 +32,25 @@
 | **Datei** | `storage-blue-dual-agv-bwr_20260901_124524.log` |
 | **Ablauf** | STORAGE BLUE → PRODUCTION BLUE + WHITE (parallel) → PRODUCTION RED |
 | **FTS** | **5iO4**, **xkI4** — CCU Step-Dispatch |
-| **Status** | Aufnahme **ok**; **Replay-Abnahme OSF-UI** noch offen |
+| **Status** | Aufnahme **ok**; Vorgänger-Referenz (OSF 1.3.5) |
 
-*(Ursprünglich geplant als reine `production-dual-wr-clean` mit HBW vorbestückt — tatsächliche Referenz-Session inkl. Storage BLUE.)*
+### Session A2 — **Referenz** *(03.09.2026 vormittag)*
+
+| Feld | Wert |
+|------|------|
+| **Datei** | `storage-brw-dual-agv-brw_20260903_092247.log` |
+| **Ablauf** | STORAGE B/W/R → PRODUCTION BLUE + RED (parallel) → PRODUCTION WHITE; Dock/Init + Charge |
+| **FTS** | **5iO4**, **xkI4** — CCU Step-Dispatch |
+| **Status** | Aufnahme **ok**; OSF **1.3.6** |
+
+### Session A3 — **Aktuelle Referenz** *(03.09.2026, Live-Abnahme)*
+
+| Feld | Wert |
+|------|------|
+| **Datei** | `storage-wbr-dual-agv-rwb_20260903_094319.log` |
+| **Ablauf** | STORAGE W/B/R → PRODUCTION RED, WHITE, BLUE (HBW-Start auf AGV-2; AGV-1 später); Charge |
+| **FTS** | **5iO4**, **xkI4** — CCU Step-Dispatch |
+| **Status** | Aufnahme **ok**; Grafana + T&T **live OK**; **Replay-Abnahme** noch offen |
 
 ### Session B — **Optional** (zweite Farbkombination)
 
