@@ -2,7 +2,7 @@
 
 **Zeitraum:** 04.09.2026 – 17.09.2026 · **Status:** Laufend · **Vorheriger Sprint:** [Sprint 29](./sprint_29.md)
 
-**Kurz:** Fokus **Track & Trace Live-Historie unabhängig vom Language-Reload**; Dual-AGV Serial-/NFC-first **Replay-Abnahme**; Demos **Bühler (14.09.)**, **Welcome Days (17.09.)**; Uni Magdeburg Deep-Dive SB (**21./22.09.**) vorbereiten.
+**Kurz:** Fokus **Track & Trace Live-Historie unabhängig vom Language-Reload**; Dual-AGV Serial-/NFC-first **visuell abgenommen**; Demos **Bühler (14.09.)**, **Welcome Days (17.09.)**; Uni Magdeburg Deep-Dive SB (**21./22.09.**) vorbereiten.
 
 ---
 
@@ -37,7 +37,7 @@
 ### Track & Trace / Dual-AGV *(Fokus)*
 
 - [ ] **T&T Historie sprachunabhängig (Live-Demo):** Language-Wechsel (`window.location.assign` → Locale-Build-Reload) verwirft RAM-Genealogie; AGV-Events fehlen → wirkt wie Bug. Ziel: vollständige/konsistente T&T-Daten unabhängig von Language-Wahl (Design zuerst, Live priorisieren). WAD-Doku: [osf-ui-track-trace-history-attribution.md](../04-howto/osf-ui-track-trace-history-attribution.md) § Language-Wechsel. *(Ursprung: Sprint 29)*
-- [ ] **T&T Dual-AGV Serial-/NFC-first Replay-Abnahme:** Code lokal (Transportgruppen nach Serial; NFC-first Phase bei fremder Step-`orderId`). Visuell: Reset + Replay `storage-wbr-dual-agv-rwb_20260903_094319` (AGV-2 vor MILL, AGV-1 MILL→AIQS). Danach Commit/Version/Deploy nach User-OK. *(Ursprung: Sprint 29)*
+- [x] **T&T Dual-AGV Serial-/NFC-first visuell abgenommen (03.09.2026):** Screenshots OK (`storage-wbr-dual-agv-rwb_*`); Serial-/NFC-first commit `1b56a33d`. Offen nur Language-Reload (siehe oben).
 
 ### Demo & Outreach
 

@@ -57,7 +57,7 @@ Abgleich: `python scripts/check_session_inventory.py`
 | Charge zwischendurch | ✓ `ml-brw`, `ml-wrb-chrg-blue-nok`, **`storage-brw-dual-agv-brw_*`** (2-AGV + Charge) |
 | DPS/FTS-Störfall | ✓ `ml-bwr_130016` |
 | Startup clean | ✓ `startup-clean` |
-| **2-AGV / parallele FTS** | ✓ **`storage-wbr-dual-agv-rwb_20260903_094319`** (03.09.2026): STORAGE W/B/R → PROD R/W/B (zunächst AGV-2 am HBW); Charge; **5iO4**/**xkI4**; OSF **1.3.6**; Grafana+T&T **live OK**. Auch: `storage-brw-dual-agv-brw_*` (Dock/Charge). Vorgänger: `storage-blue-dual-agv-bwr_*` (01.09.). Replay-Abnahme noch offen. |
+| **2-AGV / parallele FTS** | ✓ **`storage-wbr-dual-agv-rwb_20260903_094319`** (03.09.2026): STORAGE W/B/R → PROD R/W/B (zunächst AGV-2 am HBW); Charge; **5iO4**/**xkI4**; OSF **1.3.6**; Grafana+T&T **live OK**. Auch: `storage-brw-dual-agv-brw_*` (Dock/Charge). Vorgänger: `storage-blue-dual-agv-bwr_*` (01.09.). T&T Serial-/NFC-first **visuell OK**; Language-Reload → Sprint 30. |
 
 ---
 
@@ -82,7 +82,7 @@ Abgleich: `python scripts/check_session_inventory.py`
 
 | Session | Ablauf | Eignung |
 |---------|--------|---------|
-| **storage-wbr-dual-agv-rwb_20260903_094319** | STORAGE W/B/R (NFC `513601ee741a12` / `b8b3588da7d8f4` / `aaf21ca1ef1d86`) → PRODUCTION RED, WHITE, BLUE (HBW-Start alle auf AGV-2/`xkI4`; AGV-1 später); Charge stop `5iO4` / start `xkI4`; dual FTS **5iO4**/**xkI4**. | **Aktuelle 2-AGV-Referenz** (OSF 1.3.6); Grafana+T&T live OK; Replay abnehmen |
+| **storage-wbr-dual-agv-rwb_20260903_094319** | STORAGE W/B/R (NFC `513601ee741a12` / `b8b3588da7d8f4` / `aaf21ca1ef1d86`) → PRODUCTION RED, WHITE, BLUE (HBW-Start alle auf AGV-2/`xkI4`; AGV-1 später); Charge stop `5iO4` / start `xkI4`; dual FTS **5iO4**/**xkI4**. | **Aktuelle 2-AGV-Referenz** (OSF 1.3.6); Grafana+T&T live OK; T&T visuell abgenommen |
 | **storage-brw-dual-agv-brw_20260903_092247** | STORAGE B/W/R → PRODUCTION BLUE+RED parallel → WHITE; Dock/Init + Charge; dual FTS **5iO4**/**xkI4**. | 2-AGV 03.09. (Dock/Charge) |
 | **storage-blue-dual-agv-bwr_20260901_124524** | STORAGE BLUE → PRODUCTION BLUE+WHITE parallel → PRODUCTION RED; dual FTS **5iO4**/**xkI4**; Intake NFC `9167f7e4d1d752`. | Vorgänger 01.09. (OSF 1.3.5) |
 | **production-wr-agv2-b-agv1-clean_20260513_135600** | WR+B unter CCU `1.3.0-osf.4`. | Interim / historisch (`leJ4`-Ära) |

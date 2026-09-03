@@ -87,7 +87,7 @@
 ### Demo & Session-Aufnahmen
 
 - [x] **Dual-AGV Referenz-Sessions aufnehmen (01.–03.09.2026):** CCU **Step-Dispatch**; Sessions `storage-blue-dual-agv-bwr_*` (01.09.), `storage-brw-dual-agv-brw_*` + **`storage-wbr-dual-agv-rwb_20260903_094319`** (03.09., aktuelle Ref.). Grafana + T&T **live OK** (03.09.). Plan [dual-agv-session-plan-2026-09.md](../07-analysis/dual-agv-session-plan-2026-09.md); [INVENTORY.md](../../data/osf-data/sessions/INVENTORY.md).
-- [x] **T&T Dual-AGV Serial-/NFC-first Code (03.09.2026):** Transportgruppen nach FTS-Serial; AGV-Label aus `moduleId`; fremde Step-`orderId` behält NFC-Phase (`coPassenger`). Specs + Attribution-How-to. **Replay-Abnahme + Commit → Sprint 30.**
+- [x] **T&T Dual-AGV Serial-/NFC-first Code (03.09.2026):** Transportgruppen nach FTS-Serial; AGV-Label aus `moduleId`; fremde Step-`orderId` behält NFC-Phase (`coPassenger`). Specs + Attribution-How-to. **Visuell abgenommen** (Screenshots OK); Restthema nur Language-Reload → Sprint 30. Commit `1b56a33d`.
 - *Language-Reload vs. T&T (03.09.2026, WAD):* `setLocale` → Full Reload Locale-Build; RAM-Historie weg (Live+Replay). Kein Hotfix in Sprint 29 — Lösung **Sprint 30**. Doku: [osf-ui-track-trace-history-attribution.md](../04-howto/osf-ui-track-trace-history-attribution.md).
 
 ### Integration & Tests
