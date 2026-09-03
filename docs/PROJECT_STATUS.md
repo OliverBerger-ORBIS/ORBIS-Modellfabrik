@@ -13,7 +13,7 @@
 - **ORBIS-SmartFactory** ab Sprint 13 (Genehmigung ausstehend, Arbeit wird fortgeführt).
 
 ## 🔥 Aktuelle Schwerpunkte
-- **Sprint 30:** T&T Historie über Language-Reload hinweg (Live-Demo); Dual-AGV Replay-Abnahme; **Bühler 14.09.**, **Welcome Days 17.09.**; Uni Magdeburg SB Deep-Dive (**21./22.09.**). Details: [sprint_30.md](sprints/sprint_30.md).
+- **Sprint 30:** T&T Historie über Language-Reload hinweg (Live-Demo); Roadmap-Konzept OD / **SAP Logistic Management** (LogiMAT 2027) / Persistenz↔UI / **Uni Magdeburg Knowledge Graph**; **Bühler 14.09.**, **Welcome Days 17.09.**; Uni Magdeburg SB Deep-Dive (**21./22.09.**). Details: [sprint_30.md](sprints/sprint_30.md).
 - **Sprint 29 (abgeschlossen):** Grafana/Edge-Persistenz auf `.201`; Intake-Bridge RPi + OSF-UI; Dual-AGV Sessions + Resolver **v1.3.6**; Language→T&T-Verlust als WAD dokumentiert → Sprint 30. Details: [sprint_29.md](sprints/sprint_29.md).
 - **Phase 5 – MES/DSP-Integration:** ORBIS MES und DSP übernehmen zunehmend die Steuerung; APS-CCU Interim; Zielarchitektur DSP-Orchestrierung (CCU austauschbar).
 - Azure DevOps Migration · Blog-Serie (A3/A4 Review offen).
@@ -22,7 +22,7 @@
 
 | Sprint | Zeitraum | Ereignis / Fokus | Status |
 |--------|----------|------------------|--------|
-| **30** | **04.09.26 - 17.09.26** | T&T sprachunabhängig; Dual-AGV Abnahme; Bühler 14.09.; Welcome Days 17.09. ([sprint_30](sprints/sprint_30.md)) | **Laufend** |
+| **30** | **04.09.26 - 17.09.26** | T&T sprachunabhängig; Roadmap (OD, SAP Logistic Mgmt / LogiMAT 2027, Persistenz); Bühler 14.09.; Welcome Days 17.09. ([sprint_30](sprints/sprint_30.md)) | **Laufend** |
 | **29** | **21.08.26 - 03.09.26** | Grafana/Persistenz; Intake-Bridge RPi + OD; Dual-AGV v1.3.6; Uni-MD SB Deep-Dive Vorb. ([sprint_29](sprints/sprint_29.md)) | **Abgeschlossen** |
 | **28** | **07.08.26 - 20.08.26** | Sessions + 2. AGV & Grafana; T&T v1.2.2; Intake DR-30; Musashi OK; AGV-2 FT ([sprint_28](sprints/sprint_28.md)) | **Abgeschlossen** |
 | **27** | **24.07.26 - 06.08.26** | Grafana-Dashboard-Analyse & Track&Trace (v1.2.0/v1.2.1); Hochschulkooperation Teams 03.08. ([sprint_27](sprints/sprint_27.md)) | **Abgeschlossen** |
@@ -72,7 +72,7 @@
 | 27 | 24.07 - 06.08.2026 | ORBIS-SmartFactory | Phase 5 | Track&Trace v1.2.0/v1.2.1; Hochschulkooperation Magdeburg Teams 03.08. (Proposal folgt); Grafana Carry-over; Coverage-Endmessung 06.08. |
 | 28 | 07.08 - 20.08.2026 | ORBIS-SmartFactory | Phase 5 | Sessions Aug-Set + T&T v1.2.2; 2-AGV Replay; Intake-Facade DR-30; Kaiserslautern/Wonkam OD; Urlaub 11.–14.08.; Musashi 14.08. (Sven Horras) gut; Uni-MD NDA→SB 21./22.09.; AGV-2 DPD/FT; Coverage-Ende 20.08. |
 | 29 | 21.08 - 03.09.2026 | ORBIS-SmartFactory | Phase 5 | Grafana/Persistenz `.201`; Intake-Bridge RPi + OSF subscribe; Dual-AGV Sessions + v1.3.6; Language→T&T WAD → Sprint 30; Coverage-Ende 03.09. |
-| 30 | 04.09 - 17.09.2026 | ORBIS-SmartFactory | Phase 5 | T&T sprachunabhängig (Live); Dual-AGV Abnahme; Bühler 14.09.; Welcome Days 17.09.; Uni-MD SB Deep-Dive 21./22.09. |
+| 30 | 04.09 - 17.09.2026 | ORBIS-SmartFactory | Phase 5 | T&T sprachunabhängig (Live); Roadmap OD / SAP Logistic Management (LogiMAT 2027 16.–18.03.) / Persistenz↔UI; Bühler 14.09.; Welcome Days 17.09.; Uni-MD SB Deep-Dive 21./22.09. |
 
 > **Spalten-Erläuterung:**  
 > - **ORBIS-Projekt:** Interne Projektzuordnung für Abrechnung (ORBIS-Modellfabrik bzw. ORBIS-SmartFactory).  
@@ -99,6 +99,7 @@
 - **14.09.2026:** Firma **Bühler** — OSF live Shopfloor → [sprint_30.md](sprints/sprint_30.md)
 - **17.09.2026:** **ORBIS Welcome Days** — OSF intern → [sprint_30.md](sprints/sprint_30.md)
 - **21.09.2026:** **Uni Magdeburg / Dr. Reggelin** — Deep-Dive OSF/DSP Saarbrücken → [sprint_30.md](sprints/sprint_30.md)
+- **16.–18.03.2027:** **LogiMAT 2027** — möglicher Showcase SAP Logistic Management + OSF → [sprint_30.md](sprints/sprint_30.md)
 
 ## 📚 Weitere Dokumentation
 - [Roadmap & Entwicklungsphasen](01-strategy/roadmap.md)
