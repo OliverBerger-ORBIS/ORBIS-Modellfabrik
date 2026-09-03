@@ -1028,12 +1028,13 @@ export class WorkpieceHistoryService implements OnDestroy {
         ),
       };
 
-      // Phase: CCU orderType for this orderId (Golden Path) — not location heuristics
+      // Phase: NFC-first — foreign FTS step-order keeps workpiece STORAGE/PRODUCTION journey
       const orderType = this.resolveEventOrderType(
         normalizedOrders,
         state.orderId,
         existingHistory,
-        state.lastNodeId
+        state.lastNodeId,
+        loadType
       );
 
       // Get station info
@@ -2069,21 +2070,65 @@ export class WorkpieceHistoryService implements OnDestroy {
   }
 
   /**
-   * Golden-Path phase: prefer CCU `orderType` for the event's `orderId`
-   * (`ccu/order/active` / completed). Location heuristics are fallback only.
+   * Golden-Path phase for timeline grouping (STORAGE vs PRODUCTION).
+   * Prefer CCU `orderType` for the FTS/module `orderId` when it matches this NFC's color.
+   * Dual-AGV step-dispatch: FTS may carry this NFC under another color's step-order —
+   * then keep the workpiece's own owned phase (NFC-first), not the foreign step-order.
    */
   private resolveEventOrderType(
     orders: { active: Record<string, any>; completed: Record<string, any> },
     orderId: string | undefined,
     history: WorkpieceHistory,
-    location: string
+    location: string,
+    loadType?: string
   ): 'STORAGE' | 'PRODUCTION' {
     const fromCcu = this.resolveCcuOrderType(orders, orderId);
+    const orderColor = this.resolveOrderWorkpieceType(orders, orderId);
+    const load = String(loadType || '').toUpperCase();
+    const isForeignStepOrder = !!orderColor && !!load && orderColor !== load;
+
+    if (isForeignStepOrder) {
+      const ownedPhase = this.resolveOwnedWorkpieceOrderType(history);
+      if (ownedPhase) {
+        return ownedPhase;
+      }
+    }
+
     if (fromCcu) {
       return fromCcu;
     }
     // Do not trust synthetic history.orders (often default STORAGE) — location fallback only
     return this.determineOrderType(location, history.events);
+  }
+
+  /** Latest STORAGE/PRODUCTION phase owned by this workpiece (non-coPassenger). */
+  private resolveOwnedWorkpieceOrderType(
+    history: WorkpieceHistory
+  ): 'STORAGE' | 'PRODUCTION' | null {
+    for (let i = (history.orders?.length ?? 0) - 1; i >= 0; i--) {
+      const order = history.orders![i];
+      const phase = String(order.orderType || '').toUpperCase();
+      if (phase !== 'STORAGE' && phase !== 'PRODUCTION') {
+        continue;
+      }
+      const stillOwned = (history.events ?? []).some(
+        (e) => e.orderId === order.orderId && e.details?.['coPassenger'] !== true
+      );
+      if (stillOwned) {
+        return phase as 'STORAGE' | 'PRODUCTION';
+      }
+    }
+    for (let i = (history.events?.length ?? 0) - 1; i >= 0; i--) {
+      const event = history.events![i];
+      if (event.details?.['coPassenger'] === true) {
+        continue;
+      }
+      const phase = String(event.orderType || '').toUpperCase();
+      if (phase === 'STORAGE' || phase === 'PRODUCTION') {
+        return phase;
+      }
+    }
+    return null;
   }
 
   private resolveCcuOrderType(

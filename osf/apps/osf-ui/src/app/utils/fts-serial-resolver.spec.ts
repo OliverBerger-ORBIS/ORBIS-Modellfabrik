@@ -47,4 +47,12 @@ describe('fts-serial-resolver', () => {
       { serial: 'xkI4', label: 'AGV-2' },
     ]);
   });
+
+  it('should ignore empty layout serials', () => {
+    const serials = getEffectiveFtsSerials({
+      getAgvOptions: () => [{ serial: '' }, { serial: '5iO4' }],
+    });
+    expect(serials).toEqual(expect.arrayContaining(['5iO4', 'xkI4']));
+    expect(serials).not.toContain('');
+  });
 });

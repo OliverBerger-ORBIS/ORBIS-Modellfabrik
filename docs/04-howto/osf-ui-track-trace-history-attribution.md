@@ -1,6 +1,6 @@
 # Track & Trace: Historie-Attribution (Ist + SOLL + ENV)
 
-**Stand:** 2026-08-06  
+**Stand:** 2026-09-03  
 **Scope:** Live-Demo Track & Trace (`WorkpieceHistoryService` + `TrackTraceComponent`)  
 **Architektur-Basis:** [DR-13 Track & Trace Architecture](../03-decision-records/13-track-trace-architecture.md)  
 **Code:** `osf/apps/osf-ui/src/app/services/workpiece-history.service.ts`,  
@@ -233,6 +233,39 @@ Pro Farbe sollen `storage-production-ml-*` / `ml-*` Sessions **mindestens** so v
 - Alte Mixed-Logs (`mixed-pw-*`, ältere `two-agvs-*`) nur noch begrenzt für Attribution nutzen
 
 Unit-Regression: Specs `module attribution (no Blue steal)`, `FTS Ist stops`, ENV-Matrix, Multi-Load sticky (`loadId` omit mit Type; empty clear; HBW PICK clear).
+
+---
+
+### Dual-AGV / Step-Dispatch (Serial-first + NFC-first)
+
+**Stand:** 2026-09-03
+
+| Regel | Bedeutung |
+|-------|-----------|
+| **Serial-first (Anzeige)** | Transportgruppen und AGV-Labels nach `moduleId` (FTS-Serial → Layout `AGV-1`/`AGV-2`). Gruppen splitten bei Serial-Wechsel. Kein „first AGV-* wins“ über gemischte Legs. |
+| **NFC-first (Zugehörigkeit)** | Event gehört zum Werkstück über `loadId`. Fremde FTS-`orderId` (andere Farbe, Step-Dispatch) → `coPassenger` / Ist-Badge, aber **Timeline-Phase** bleibt die eigene STORAGE/PRODUCTION-Reise des NFC. |
+| **AGV-Labels** | `AGV-1`/`AGV-2` aus Layout — nicht i18n. Locale-Wechsel darf Events nicht *filtern*. |
+
+Referenz-Session: `storage-wbr-dual-agv-rwb_20260903_094319` (BLUE: AGV-2 früher, AGV-1 MILL→AIQS).
+
+### Language-Wechsel vs. T&T-Historie (Works as Designed)
+
+**Stand:** 2026-09-03 · Fix-Ziel: **Sprint 30** (Live-Demo konsistent, sprachunabhängig)
+
+| Erwartung | Ist |
+|-----------|-----|
+| Language = nur UI-Texte | Language = **voller Browser-Reload** auf anderen Locale-Build (`/en/` ↔ `/de/` ↔ `/fr/`) |
+
+Ursache: Angular `$localize` compile-time Locales → `LanguageService.setLocale()` ruft `window.location.assign` auf (nicht Soft-Switch).
+
+**Folge (Live und Replay gleich):**
+
+- `WorkpieceHistoryService` (RAM) → weg
+- MessageMonitor-RAM → weg; localStorage nur letzte N Msgs/Topic
+- `osf/workpiece/intake` → `NO_PERSIST` → COLOR/NFC oft weg
+- Nach Reload: Genealogie aus Rest-Puffer + neuen Live-Msgs — **ältere AGV-Legs fehlen oft**
+
+Das ist **kein i18n-/Filter-Bug**, wirkt aber in Präsentationen (Messe, wechselnde Sprache) wie ein Fehler. Workaround bis Sprint 30: Sprache vor der Demo wählen; nach Wechsel Session neu abspielen bzw. Live-Historie neu aufbauen lassen.
 
 ---
 

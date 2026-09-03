@@ -460,6 +460,136 @@ describe('WorkpieceHistoryService', () => {
 
       svc.ngOnDestroy();
     });
+
+    it('keeps PRODUCTION phase on NFC when FTS step-order is another color (dual-AGV)', () => {
+      const blueOrder = 'blue-prod-order';
+      const redOrder = 'red-prod-order';
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+      const orders = {
+        active: {
+          [blueOrder]: { orderId: blueOrder, orderType: 'PRODUCTION', type: 'BLUE' },
+          [redOrder]: { orderId: redOrder, orderType: 'PRODUCTION', type: 'RED' },
+        },
+        completed: {},
+      };
+
+      // Own BLUE production stop at HBW
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: 'xkI4',
+          timestamp: '2026-09-03T10:00:00.000Z',
+          orderId: blueOrder,
+          orderUpdateId: 1,
+          lastNodeId: 'SVR3QA0022',
+          driving: false,
+          actionState: {
+            id: 'dock-hbw',
+            command: 'DOCK',
+            state: 'FINISHED',
+            timestamp: '2026-09-03T10:00:00.000Z',
+          },
+          load: [{ loadId: 'nfc-blue', loadType: 'BLUE', loadPosition: '1' }],
+          _moduleSerialId: 'xkI4',
+        },
+        orders
+      );
+
+      // Same NFC on AGV-2 while CCU step-order is RED (foreign)
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: 'xkI4',
+          timestamp: '2026-09-03T10:01:00.000Z',
+          orderId: redOrder,
+          orderUpdateId: 2,
+          lastNodeId: '1',
+          driving: false,
+          actionState: {
+            id: 'turn-1',
+            command: 'TURN',
+            state: 'FINISHED',
+            timestamp: '2026-09-03T10:01:00.000Z',
+          },
+          load: [{ loadId: 'nfc-blue', loadType: 'BLUE', loadPosition: '1' }],
+          _moduleSerialId: 'xkI4',
+        },
+        orders
+      );
+
+      const blue = service.getSnapshot(env).get('nfc-blue');
+      const turn = blue?.events.find((e) => e.eventType === 'TURN' && e.location === '1');
+      expect(turn).toBeDefined();
+      expect(turn?.orderType).toBe('PRODUCTION');
+      expect(turn?.orderId).toBe(redOrder);
+      expect(turn?.details?.['coPassenger']).toBe(true);
+      expect(turn?.moduleId).toBe('xkI4');
+    });
+
+    it('keeps STORAGE phase on NFC when FTS step-order is another color (dual-AGV)', () => {
+      const whiteStorage = 'white-storage-order';
+      const blueProd = 'blue-prod-order';
+      const sp = service as any;
+      const env = 'mock';
+      service.initialize(env);
+      const orders = {
+        active: {
+          [whiteStorage]: { orderId: whiteStorage, orderType: 'STORAGE', type: 'WHITE' },
+          [blueProd]: { orderId: blueProd, orderType: 'PRODUCTION', type: 'BLUE' },
+        },
+        completed: {},
+      };
+
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: '5iO4',
+          timestamp: '2026-09-03T09:00:00.000Z',
+          orderId: whiteStorage,
+          orderUpdateId: 1,
+          lastNodeId: 'SVR4H73275',
+          driving: false,
+          actionState: {
+            id: 'dock-dps',
+            command: 'DOCK',
+            state: 'FINISHED',
+            timestamp: '2026-09-03T09:00:00.000Z',
+          },
+          load: [{ loadId: 'nfc-white', loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: '5iO4',
+        },
+        orders
+      );
+
+      sp.updateWorkpieceHistory(
+        env,
+        {
+          serialNumber: 'xkI4',
+          timestamp: '2026-09-03T09:01:00.000Z',
+          orderId: blueProd,
+          orderUpdateId: 2,
+          lastNodeId: '2',
+          driving: false,
+          actionState: {
+            id: 'pass-2',
+            command: 'PASS',
+            state: 'FINISHED',
+            timestamp: '2026-09-03T09:01:00.000Z',
+          },
+          load: [{ loadId: 'nfc-white', loadType: 'WHITE', loadPosition: '1' }],
+          _moduleSerialId: 'xkI4',
+        },
+        orders
+      );
+
+      const white = service.getSnapshot(env).get('nfc-white');
+      const pass = white?.events.find((e) => e.eventType === 'PASS' && e.location === '2');
+      expect(pass).toBeDefined();
+      expect(pass?.orderType).toBe('STORAGE');
+      expect(pass?.details?.['coPassenger']).toBe(true);
+    });
   });
 
   describe('TURN Direction', () => {

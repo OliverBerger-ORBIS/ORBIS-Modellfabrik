@@ -655,7 +655,15 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     if (isStationAction && event.stationId) {
       return event.stationId.toUpperCase();
     }
-    return event.moduleName || 'FTS';
+    // Serial-first for FTS/AGV transport rows (layout label), not generic "FTS"
+    const serial = (event.moduleId || '').trim();
+    if (serial) {
+      const agvLabel = this.shopfloorMapping.getAgvLabel(serial);
+      if (agvLabel) {
+        return agvLabel;
+      }
+    }
+    return event.moduleName || serial || 'FTS';
   }
 
   getAgvAccentClass(label: string | null | undefined): string {
@@ -1019,6 +1027,9 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
       transportBuffer = [];
     };
 
+    const transportSerialKey = (event: TrackTraceEvent): string =>
+      (event.moduleId || '').trim() || (event.moduleName || '').trim();
+
     for (const event of sorted) {
       if (!this.isOrderScopedEvent(event)) {
         continue;
@@ -1049,6 +1060,12 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
           istStationChip: null,
         });
       } else {
+        // A: split transport groups when FTS serial (moduleId) changes
+        const serial = transportSerialKey(event);
+        const bufferSerial = transportBuffer.length > 0 ? transportSerialKey(transportBuffer[0]) : '';
+        if (transportBuffer.length > 0 && serial && bufferSerial && serial !== bufferSerial) {
+          flushTransport(null);
+        }
         lastStationVisitId = null;
         transportBuffer.push(event);
       }
@@ -1143,14 +1160,27 @@ export class TrackTraceComponent implements OnInit, OnDestroy {
     return null;
   }
 
+  /**
+   * AGV label for a transport group — serial-first (layout AGV-1/AGV-2).
+   * Does not pick the first AGV-* string across mixed serials (groups are split by moduleId).
+   */
   private resolveAgvLabelFromEvents(events: TrackTraceEvent[]): string {
-    for (const event of events) {
-      const actor = this.getEventPrimaryActor(event);
-      if (actor && /AGV/i.test(actor)) {
-        return actor;
+    const head = events[0];
+    if (!head) {
+      return 'AGV';
+    }
+    const serial = (head.moduleId || '').trim();
+    if (serial) {
+      const fromLayout = this.shopfloorMapping.getAgvLabel(serial);
+      if (fromLayout) {
+        return fromLayout;
       }
     }
-    return 'AGV';
+    const actor = this.getEventPrimaryActor(head);
+    if (actor && /AGV/i.test(actor)) {
+      return actor;
+    }
+    return serial || 'AGV';
   }
 
   trackByTimelineItem(index: number, item: TrackTraceTimelineItem): string {

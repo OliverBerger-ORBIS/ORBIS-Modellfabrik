@@ -69,7 +69,13 @@ describe('TrackTraceComponent', () => {
 
     const shopfloorMappingMock = {
       getAgvColor: jest.fn(() => '#f97316'),
-      getAgvOptions: jest.fn(() => [{ serial: '5iO4', label: 'AGV-1' }]),
+      getAgvOptions: jest.fn(() => [
+        { serial: '5iO4', label: 'AGV-1' },
+        { serial: 'xkI4', label: 'AGV-2' },
+      ]),
+      getAgvLabel: jest.fn((serial: string) =>
+        serial === '5iO4' ? 'AGV-1' : serial === 'xkI4' ? 'AGV-2' : null
+      ),
       initializeLayout: jest.fn(),
       isInitialized: jest.fn(() => true),
       getModuleTypeFromSerial: jest.fn(() => null),
@@ -281,6 +287,17 @@ describe('TrackTraceComponent', () => {
           moduleName: 'AGV-1',
         })
       ).toBe('AIQS');
+    });
+
+    it('uses layout AGV label from FTS moduleId (serial-first)', () => {
+      expect(
+        component.getEventPrimaryActor({
+          timestamp: '2026-09-03T10:00:00.000Z',
+          eventType: 'DOCK',
+          moduleId: 'xkI4',
+          moduleName: 'FTS',
+        })
+      ).toBe('AGV-2');
     });
 
     it('keeps AGV transport context for bracket actions', () => {
@@ -539,6 +556,197 @@ describe('TrackTraceComponent', () => {
         expect(groups[0].fromStation).toBe('HBW');
         expect(groups[0].toStation).toBe('MILL');
         expect(groups[0].istStations).toEqual(['DRILL']);
+      }
+    });
+
+    it('splits transport groups by FTS serial and labels AGV from moduleId (dual-AGV)', () => {
+      const order: OrderContext = {
+        orderId: 'ord-blue',
+        orderType: 'PRODUCTION',
+        plannedStationChain: ['HBW', 'DRILL', 'MILL', 'AIQS', 'DPS'],
+      };
+      const events: TrackTraceEvent[] = [
+        {
+          timestamp: 't1',
+          eventType: 'DROP',
+          stationId: 'HBW',
+          stationName: 'HBW',
+          orderType: 'PRODUCTION',
+          eventSource: 'MODULE',
+        },
+        {
+          timestamp: 't2',
+          eventType: 'TURN',
+          orderType: 'PRODUCTION',
+          eventSource: 'FTS',
+          moduleId: 'xkI4',
+          moduleName: 'AGV-2',
+          location: '1',
+        },
+        {
+          timestamp: 't3',
+          eventType: 'DOCK',
+          orderType: 'PRODUCTION',
+          eventSource: 'FTS',
+          moduleId: 'xkI4',
+          moduleName: 'AGV-2',
+          stationId: 'DRILL',
+          location: 'SVR4H76449',
+        },
+        {
+          timestamp: 't4',
+          eventType: 'PICK',
+          stationId: 'DRILL',
+          stationName: 'DRILL',
+          orderType: 'PRODUCTION',
+          eventSource: 'MODULE',
+        },
+        {
+          timestamp: 't5',
+          eventType: 'DROP',
+          stationId: 'DRILL',
+          stationName: 'DRILL',
+          orderType: 'PRODUCTION',
+          eventSource: 'MODULE',
+        },
+        {
+          timestamp: 't6',
+          eventType: 'DOCK',
+          orderType: 'PRODUCTION',
+          eventSource: 'FTS',
+          moduleId: 'xkI4',
+          moduleName: 'AGV-2',
+          stationId: 'MILL',
+          location: 'SVR3QA2098',
+        },
+        {
+          timestamp: 't7',
+          eventType: 'PICK',
+          stationId: 'MILL',
+          stationName: 'MILL',
+          orderType: 'PRODUCTION',
+          eventSource: 'MODULE',
+        },
+        {
+          timestamp: 't8',
+          eventType: 'DROP',
+          stationId: 'MILL',
+          stationName: 'MILL',
+          orderType: 'PRODUCTION',
+          eventSource: 'MODULE',
+        },
+        {
+          timestamp: 't9',
+          eventType: 'TURN',
+          orderType: 'PRODUCTION',
+          eventSource: 'FTS',
+          moduleId: '5iO4',
+          moduleName: 'AGV-1',
+          location: '2',
+        },
+        {
+          timestamp: 't10',
+          eventType: 'DOCK',
+          orderType: 'PRODUCTION',
+          eventSource: 'FTS',
+          moduleId: '5iO4',
+          moduleName: 'AGV-1',
+          stationId: 'AIQS',
+          location: 'SVR4H76530',
+        },
+        {
+          timestamp: 't11',
+          eventType: 'PICK',
+          stationId: 'AIQS',
+          stationName: 'AIQS',
+          orderType: 'PRODUCTION',
+          eventSource: 'MODULE',
+        },
+      ];
+
+      const timeline = component.buildShopfloorTimeline(events, order);
+      const groups = timeline.filter((i) => i.kind === 'transport-group');
+      expect(groups.length).toBeGreaterThanOrEqual(3);
+      const labels = groups.map((g) => (g.kind === 'transport-group' ? g.agvLabel : ''));
+      expect(labels).toContain('AGV-2');
+      expect(labels).toContain('AGV-1');
+
+      const millToAiqs = groups.find(
+        (g) =>
+          g.kind === 'transport-group' &&
+          g.fromStation === 'MILL' &&
+          g.toStation === 'AIQS'
+      );
+      expect(millToAiqs?.kind === 'transport-group' && millToAiqs.agvLabel).toBe('AGV-1');
+      if (millToAiqs?.kind === 'transport-group') {
+        expect(millToAiqs.events.every((e) => e.moduleId === '5iO4')).toBe(true);
+      }
+
+      const hbwToDrill = groups.find(
+        (g) =>
+          g.kind === 'transport-group' &&
+          g.fromStation === 'HBW' &&
+          g.toStation === 'DRILL'
+      );
+      expect(hbwToDrill?.kind === 'transport-group' && hbwToDrill.agvLabel).toBe('AGV-2');
+    });
+
+    it('keeps NFC journey transport when FTS step-order is foreign (coPassenger) but orderType PRODUCTION', () => {
+      const order: OrderContext = {
+        orderId: 'ord-blue-prod',
+        orderType: 'PRODUCTION',
+        plannedStationChain: ['HBW', 'DRILL', 'MILL', 'AIQS', 'DPS'],
+      };
+      const events: TrackTraceEvent[] = [
+        {
+          timestamp: 't1',
+          eventType: 'DROP',
+          stationId: 'HBW',
+          orderType: 'PRODUCTION',
+          eventSource: 'MODULE',
+          orderId: 'ord-blue-prod',
+        },
+        {
+          timestamp: 't2',
+          eventType: 'TURN',
+          orderType: 'PRODUCTION',
+          eventSource: 'FTS',
+          moduleId: 'xkI4',
+          moduleName: 'AGV-2',
+          orderId: 'ord-red-foreign',
+          details: { coPassenger: true, visitKind: 'IST_ONLY' },
+          location: '1',
+        },
+        {
+          timestamp: 't3',
+          eventType: 'DOCK',
+          orderType: 'PRODUCTION',
+          eventSource: 'FTS',
+          moduleId: 'xkI4',
+          moduleName: 'AGV-2',
+          orderId: 'ord-red-foreign',
+          stationId: 'DRILL',
+          details: { coPassenger: true, visitKind: 'IST_ONLY' },
+          location: 'SVR4H76449',
+        },
+        {
+          timestamp: 't4',
+          eventType: 'PICK',
+          stationId: 'DRILL',
+          orderType: 'PRODUCTION',
+          eventSource: 'MODULE',
+          orderId: 'ord-blue-prod',
+        },
+      ];
+
+      const timeline = component.buildShopfloorTimeline(events, order);
+      const groups = timeline.filter((i) => i.kind === 'transport-group');
+      expect(groups).toHaveLength(1);
+      if (groups[0]?.kind === 'transport-group') {
+        expect(groups[0].agvLabel).toBe('AGV-2');
+        expect(groups[0].events).toHaveLength(2);
+        expect(groups[0].fromStation).toBe('HBW');
+        expect(groups[0].toStation).toBe('DRILL');
       }
     });
   });

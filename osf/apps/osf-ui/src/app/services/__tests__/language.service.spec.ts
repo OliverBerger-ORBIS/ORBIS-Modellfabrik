@@ -107,6 +107,49 @@ describe('LanguageService', () => {
       expect(assignMock).not.toHaveBeenCalled();
     });
 
+    /**
+     * Contract: Angular compile-time locales → language switch is a full page load
+     * (`window.location.assign`), not an in-app i18n toggle. RAM T&T history is lost.
+     */
+    it('should full-reload via location.assign when locale changes (WAD)', () => {
+      mockRouter.url = '/en/track-trace';
+      Object.defineProperty(window, 'location', {
+        value: {
+          ...originalLocation,
+          assign: assignMock,
+          pathname: '/en/',
+          origin: 'http://localhost:4200',
+        },
+        configurable: true,
+        writable: true,
+      });
+
+      service.setLocale('de');
+
+      expect(assignMock).toHaveBeenCalledTimes(1);
+      const target = String(assignMock.mock.calls[0][0]);
+      expect(target).toContain('/de/');
+      expect(target).toContain('#/de/track-trace');
+    });
+
+    it('should append locale segment when pathname has no locale', () => {
+      mockRouter.url = '/order';
+      Object.defineProperty(window, 'location', {
+        value: {
+          ...originalLocation,
+          assign: assignMock,
+          pathname: '/',
+          origin: 'http://localhost:4200',
+        },
+        configurable: true,
+        writable: true,
+      });
+
+      const url = service.buildLocaleSwitchUrl('fr');
+      expect(url).toContain('/fr/');
+      expect(url).toContain('#/fr/order');
+    });
+
     it('should navigate to new locale with same route', () => {
       mockRouter.url = '/en/order';
 

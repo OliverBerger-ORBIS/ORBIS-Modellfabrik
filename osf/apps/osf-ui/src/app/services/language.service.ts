@@ -22,6 +22,11 @@ export class LanguageService {
     return (localStorage?.getItem(STORAGE_KEY) as LocaleKey | null) ?? 'en';
   }
 
+  /**
+   * Compile-time Angular locales → full page load to `/en|de|fr/`.
+   * Not an in-app i18n toggle: RAM state (incl. T&T genealogy) is discarded.
+   * See howto: osf-ui-track-trace-history-attribution.md (Language-Wechsel).
+   */
   setLocale(locale: LocaleKey): void {
     if (locale === this.current) {
       return;
