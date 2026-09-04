@@ -29,9 +29,11 @@ Mit überschaubarem Risiko und begrenztem Anfangsaufwand prüfen, wie DSP zur Pl
 
 ---
 
+**Datenkante (04.09.2026):** Dieselbe Hub-DB `osf_edge` auf `.201` wie Grafana und künftige DSP-Use-Case-Demos; APS-Tabs sind **kein** PoC-Zugang. Details: [dsp-tab-persistence-use-cases-2026-09.md](dsp-tab-persistence-use-cases-2026-09.md).
+
 ## Nächste Schritte (Sprint 30 — Konzept)
 
 - [ ] Kurzfassung für Deep-Dive SB (Stakeholder / DSP-Team)
-- [ ] Datenquellen OSF/Edge (MQTT, Persistenz `.201`, Grafana) vs. DSP-Scope abgrenzen
-- [ ] Lesender PoC-Schnitt: welche Topics/Tabellen zuerst?
+- [x] Datenquellen OSF/Edge (MQTT, Persistenz `.201`, Grafana) vs. DSP-Scope abgrenzen — APS = MQTT-Live; DSP-Hub-DB = Historie; KG lesend darauf
+- [x] Lesender PoC-Schnitt: zuerst `shopfloor_event` + `workpiece` + `env_sensor_snapshot`; MQTT nur für Realtime-Alarm (UC-07-analog)
 - [ ] Rollen: Kshitiz (Technik) / ORBIS (Fachkontext, Zugang, Ansprechpartner)

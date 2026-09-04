@@ -2,6 +2,16 @@ import sql, { ConnectionPool } from 'mssql';
 import { ServiceConfig } from './config';
 import { Logger } from './logger';
 import { PersistenceStore } from './persistenceStore';
+import { mapTimelineRow, mapWorkpieceRow } from './queryMap';
+import { LIST_TIMELINE_SQL, LIST_WORKPIECES_SQL } from './querySql';
+import type {
+  HistoryQueryStore,
+  ShopfloorEventQueryRow,
+  TimeRangeFilter,
+  TimelineEventDto,
+  WorkpieceQueryRow,
+  WorkpieceSummaryDto,
+} from './queryTypes';
 import {
   NormalizedMessage,
   ShopfloorOrderRow,
@@ -11,7 +21,7 @@ import {
   WorkpieceRow,
 } from './types';
 
-export class MssqlPersistenceDb implements PersistenceStore {
+export class MssqlPersistenceDb implements PersistenceStore, HistoryQueryStore {
   private pool: ConnectionPool | null = null;
 
   constructor(
@@ -320,5 +330,28 @@ export class MssqlPersistenceDb implements PersistenceStore {
           (@received_at, @topic, @qos, @retain, @payload_json, @payload_text, @persisted_reason, @payload_hash, @dedup_key);
       `
     );
+  }
+
+  async listWorkpieces(filter: TimeRangeFilter): Promise<WorkpieceSummaryDto[]> {
+    const pool = this.requirePool();
+    const result = await pool
+      .request()
+      .input('from_ts', sql.DateTimeOffset, filter.from ?? null)
+      .input('to_ts', sql.DateTimeOffset, filter.to ?? null)
+      .input('limit', sql.Int, filter.limit)
+      .query(LIST_WORKPIECES_SQL);
+    return (result.recordset ?? []).map((row) => mapWorkpieceRow(row as WorkpieceQueryRow));
+  }
+
+  async listTimeline(nfc: string, filter: TimeRangeFilter): Promise<TimelineEventDto[]> {
+    const pool = this.requirePool();
+    const result = await pool
+      .request()
+      .input('nfc', sql.NVarChar(128), nfc)
+      .input('from_ts', sql.DateTimeOffset, filter.from ?? null)
+      .input('to_ts', sql.DateTimeOffset, filter.to ?? null)
+      .input('limit', sql.Int, filter.limit)
+      .query(LIST_TIMELINE_SQL);
+    return (result.recordset ?? []).map((row) => mapTimelineRow(row as ShopfloorEventQueryRow));
   }
 }

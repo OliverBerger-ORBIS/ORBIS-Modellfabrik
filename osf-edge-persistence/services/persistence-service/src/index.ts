@@ -1,8 +1,10 @@
 import mqtt from 'mqtt';
+import http from 'node:http';
 import { loadConfig } from './config';
 import { createPersistenceStore } from './db.factory';
 import { Logger } from './logger';
 import { normalizeMessage } from './normalizer';
+import { startQueryApi } from './queryApi';
 import { ReplaySessionGate } from './replaySessionGate';
 import { assertReplayTargetAllowed } from './replayTargetGuard';
 import { createSensorPolicyState } from './sensorPolicy';
@@ -35,9 +37,21 @@ async function main(): Promise<void> {
     rawEnabled: config.runtime.enableRawMessages,
     intervalSeconds: config.runtime.sensorIntervalSeconds,
     idleIntervalSeconds: config.runtime.sensorIdleIntervalSeconds,
+    queryApiEnabled: config.queryApi.enabled,
+    queryApiPort: config.queryApi.port,
   });
 
   await db.connect();
+
+  let queryServer: http.Server | undefined;
+  if (config.queryApi.enabled) {
+    queryServer = startQueryApi({
+      port: config.queryApi.port,
+      corsOrigin: config.queryApi.corsOrigin,
+      logger,
+      store: db,
+    });
+  }
 
   const cleanupTimer = setInterval(() => {
     db.cleanupRawRetention().catch((error) => logger.error('Raw retention cleanup failed', error));
@@ -115,6 +129,7 @@ async function main(): Promise<void> {
     logger.info('Shutting down', { signal });
     clearInterval(cleanupTimer);
     try {
+      queryServer?.close();
       client.end(true);
       await db.close();
       process.exit(0);

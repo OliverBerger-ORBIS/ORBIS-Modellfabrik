@@ -24,6 +24,11 @@ export interface ServiceConfig {
     enableCameraTopic: boolean;
     logLevel: 'debug' | 'info' | 'warn' | 'error';
   };
+  queryApi: {
+    enabled: boolean;
+    port: number;
+    corsOrigin: string;
+  };
 }
 
 function asNumber(value: string | undefined, fallback: number): number {
@@ -72,6 +77,11 @@ export function loadConfig(): ServiceConfig {
       enableRawMessages: asBoolean(process.env.ENABLE_RAW_MESSAGES, true),
       enableCameraTopic: asBoolean(process.env.ENABLE_CAMERA_TOPIC, false),
       logLevel: (process.env.LOG_LEVEL as ServiceConfig['runtime']['logLevel']) ?? 'info',
+    },
+    queryApi: {
+      enabled: asBoolean(process.env.QUERY_API_ENABLED, true),
+      port: asNumber(process.env.QUERY_API_PORT, 3081),
+      corsOrigin: process.env.QUERY_API_CORS_ORIGIN?.trim() || '*',
     },
   };
 }

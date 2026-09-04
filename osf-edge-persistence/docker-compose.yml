@@ -84,6 +84,11 @@ services:
       ENABLE_CAMERA_TOPIC: ${ENABLE_CAMERA_TOPIC}
       LOG_LEVEL: ${LOG_LEVEL}
       PERSISTENCE_MODE: ${PERSISTENCE_MODE:-replay}
+      QUERY_API_ENABLED: ${QUERY_API_ENABLED:-true}
+      QUERY_API_PORT: "3081"
+      QUERY_API_CORS_ORIGIN: ${QUERY_API_CORS_ORIGIN:-*}
+    ports:
+      - "${QUERY_API_EXTERNAL_PORT:-3081}:3081"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:

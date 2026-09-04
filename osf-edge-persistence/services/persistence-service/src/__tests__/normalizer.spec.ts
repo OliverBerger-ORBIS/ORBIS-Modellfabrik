@@ -23,6 +23,11 @@ const baseConfig: ServiceConfig = {
     enableCameraTopic: false,
     logLevel: 'debug',
   },
+  queryApi: {
+    enabled: false,
+    port: 3081,
+    corsOrigin: '*',
+  },
 };
 
 describe('normalizeMessage', () => {

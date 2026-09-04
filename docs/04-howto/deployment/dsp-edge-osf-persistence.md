@@ -125,9 +125,9 @@ Apple Silicon: Image `linux/amd64` (Rosetta). Schema: DB `osf_edge` (`db/mssql/`
 |-----------|-------|-------------|
 | *(bestehend)* `rittal_sqlserver` | SQL Server 2022 | **1433** |
 | `osf-edge-grafana` | Grafana OSF | **3000** |
-| `osf-edge-persistence-service` | MQTT-Ingest → SQL Server | — |
+| `osf-edge-persistence-service` | MQTT-Ingest → SQL Server + Query-API | **3081** |
 
-Datenfluss Ziel: **MQTT `.100` → Persistence → SQL Server → Grafana**.
+Datenfluss Ziel: **MQTT `.100` → Persistence → SQL Server → Grafana** und **Query-API `:3081`**.
 
 ### Deploy auf der VE (26.08.2026)
 

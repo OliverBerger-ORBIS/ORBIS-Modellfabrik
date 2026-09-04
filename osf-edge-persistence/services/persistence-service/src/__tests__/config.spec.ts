@@ -69,4 +69,13 @@ describe('loadConfig runtime mode', () => {
       expect(loadConfig().mssql.user).toBe('osf_edge');
     });
   });
+
+  it('defaults query API to enabled on 3081', () => {
+    withEnv({ QUERY_API_ENABLED: undefined, QUERY_API_PORT: undefined }, () => {
+      const cfg = loadConfig();
+      expect(cfg.queryApi.enabled).toBe(true);
+      expect(cfg.queryApi.port).toBe(3081);
+      expect(cfg.queryApi.corsOrigin).toBe('*');
+    });
+  });
 });

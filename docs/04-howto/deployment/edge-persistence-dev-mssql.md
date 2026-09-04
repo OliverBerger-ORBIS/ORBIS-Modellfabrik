@@ -12,6 +12,7 @@ Lokaler Dev-/Replay-Stack auf dem Mac: **derselbe Dialekt** wie Prod auf VE `.20
 |--------|------|---------|
 | SQL Server | `localhost:1433` | Container `osf-edge-mssql` (Apple Silicon: `linux/amd64` / Rosetta) |
 | Grafana | `http://localhost:3000` | Default-Home: **OSF Edge Home** (`osf-home`); Anonymous Admin, Login-Formular aus |
+| Query API | `http://localhost:3081` | V1 UC-01 Read: `/v1/workpieces`, `/v1/workpieces/{nfc}/timeline` — [How-to](./edge-persistence-query-api.md) |
 | Persistence | Compose-Service | MQTT laut `env.replay` / `env.live` |
 
 | DB / User | Wert (Dev) |

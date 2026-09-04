@@ -63,6 +63,8 @@ docker compose up -d
 3. Verify:
 
 - Grafana: `http://localhost:3000`
+- Query API: `http://localhost:3081/v1/health` — Dev-Loop Replay + Dual-AGV: [edge-persistence-query-api.md](../docs/04-howto/deployment/edge-persistence-query-api.md)
+- Check nach Replay: `bash scripts/query-api-check-replay.sh --require`
 - SQL Server: `localhost:1433` (DB `osf_edge`)
 
 ```bash

@@ -62,6 +62,8 @@ Sprint-bezogene und projektweite Analysen für OSF.
 
 ## Weitere Analysen
 
+- [uc01-tt-persistence-gap-2026-09.md](uc01-tt-persistence-gap-2026-09.md) – **2026-09:** UC-01 T&T MQTT/RAM vs. Hub-DB — Lücken, V1-Schnitt, parallele Varianten
+- [dsp-tab-persistence-use-cases-2026-09.md](dsp-tab-persistence-use-cases-2026-09.md) – **2026-09:** APS-Tabs MQTT-Live; DSP-UCs (inkl. **T&T/UC-01 aus Persistenz**) Quelle je Story; Lese-Vertrag `osf_edge` + Uni Magdeburg
 - [dsp-manufacturing-knowledge-graph-poc-2026-09.md](dsp-manufacturing-knowledge-graph-poc-2026-09.md) – Uni Magdeburg / DSP: Manufacturing Knowledge Graph PoC (Management Summary; Sprint 30)
 - **SVG-Diagramme (Doku):** [OSF-UI: SVG label text & line breaks](../04-howto/osf-ui-svg-label-text-conventions.md) — drei Kontexte (DSP-Architecture, DSP-Animation, UC-01); visueller Check; Phase 2: gemeinsame Utils.
 - **Konvention (Doku):** [DR-26 – UTC-Zeitstempel (ms)](../03-decision-records/26-utc-iso-timestamp-ms-convention.md) — OSF/Session Manager; CCU/TXT unverändert.
